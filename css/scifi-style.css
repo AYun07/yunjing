@@ -1,0 +1,149 @@
+/* ============================================================
+   科幻未来主题 - 青碧星穹（全息终端 × 舰桥 HUD）
+   v3.15.0 每界专属 UI 皮肤重做：
+   坐标网格底纹 · 顶栏扫描压线 · 卡片 HUD 角括号 ·
+   选项数据轨指引 · 面板终端标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #6fc2b4;
+    --primary-dim: rgba(111, 194, 180, 0.12);
+    --primary-glow: rgba(111, 194, 180, 0.3);
+    --secondary: #e0a84c;
+    --accent: #6da396;
+    --panel-border: rgba(111, 194, 180, 0.18);
+    background-color: #0f1618;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(111, 194, 180, 0.08), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(224, 168, 76, 0.04), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg stroke='%236fc2b4' stroke-opacity='0.05'%3E%3Cpath d='M0 30 H120 M0 60 H120 M0 90 H120 M30 0 V120 M60 0 V120 M90 0 V120'/%3E%3C/g%3E%3Cg fill='none' stroke='%236fc2b4' stroke-opacity='0.07'%3E%3Cpath d='M0 0 H30 V30'/%3E%3Cpath d='M120 120 H90 V90'/%3E%3C/g%3E%3Cg fill='%23a8ded4' fill-opacity='0.12'%3E%3Ccircle cx='60' cy='30' r='1'/%3E%3Ccircle cx='30' cy='90' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #a8ded4, #6fc2b4); }
+body .progress-fill { background: linear-gradient(90deg, #6fc2b4, #a8ded4); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #a8ded4, #6fc2b4); }
+body .foreshadow-item.planted {
+    background: rgba(111, 194, 180, 0.08);
+    border-left-color: #6fc2b4;
+    color: #9fd3c9;
+}
+body .char-status { color: #6fc2b4; border-color: rgba(111, 194, 180, 0.4); }
+
+/* ─────────── ① 顶栏：舰桥主控台 ─────────── */
+body.theme-scifi .top-bar {
+    background: linear-gradient(180deg, rgba(16, 25, 27, 0.96), rgba(15, 22, 24, 0.92));
+    border-bottom: 1px solid rgba(111, 194, 180, 0.25);
+    box-shadow: 0 1px 0 rgba(111, 194, 180, 0.08), 0 2px 16px rgba(0, 0, 0, 0.35);
+}
+body.theme-scifi #gameTitle {
+    letter-spacing: 3px;
+    text-shadow: 0 0 14px rgba(111, 194, 180, 0.35);
+}
+
+/* ─────────── ② 正文卡：全息显示面板 + HUD 角括号 ─────────── */
+body.theme-scifi .ai-card {
+    position: relative;
+    border-left: 2px solid rgba(111, 194, 180, 0.55);
+    border-radius: 4px;
+    background:
+        linear-gradient(150deg, rgba(111, 194, 180, 0.05), transparent 38%),
+        var(--panel);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+body.theme-scifi .ai-card:hover {
+    border-left-color: rgba(111, 194, 180, 0.9);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.32), 0 0 16px rgba(111, 194, 180, 0.08);
+}
+/* HUD 四角括号：上左 + 下右 */
+body.theme-scifi .ai-card::before,
+body.theme-scifi .ai-card::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    pointer-events: none;
+    opacity: 0.7;
+}
+body.theme-scifi .ai-card::before {
+    top: 6px; right: 6px;
+    border-top: 2px solid rgba(111, 194, 180, 0.6);
+    border-right: 2px solid rgba(111, 194, 180, 0.6);
+}
+body.theme-scifi .ai-card::after {
+    bottom: 6px; left: 8px;
+    width: 10px; height: 4px;
+    background: linear-gradient(90deg, rgba(224, 168, 76, 0.55), transparent);
+    border-radius: 1px;
+}
+body.theme-scifi .ai-card-header {
+    border-bottom: 1px solid rgba(111, 194, 180, 0.2);
+    border-image: linear-gradient(90deg, rgba(111, 194, 180, 0.35), transparent 70%) 1;
+}
+
+/* ─────────── ③ 章节徽章：数据流编号 ─────────── */
+body.theme-scifi .chapter-badge {
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    border: 1px solid rgba(168, 222, 212, 0.5);
+    box-shadow: 0 0 10px rgba(111, 194, 180, 0.25);
+}
+
+/* ─────────── ④ 选项按钮：数据轨 ─────────── */
+body.theme-scifi .option-btn { border-radius: 4px; }
+body.theme-scifi .option-btn::before { content: '› '; color: #6fc2b4; }
+body.theme-scifi .option-btn:hover:not(:disabled) {
+    border-color: rgba(111, 194, 180, 0.7);
+    box-shadow: inset 2px 0 0 #6fc2b4, 0 0 12px rgba(111, 194, 180, 0.12);
+    background: rgba(111, 194, 180, 0.05);
+}
+body.theme-scifi .options-title { letter-spacing: 4px; }
+body.theme-scifi .options-title::after { content: ' ▸'; color: #6fc2b4; }
+
+/* ─────────── ⑤ 输入区：指令台 ─────────── */
+body.theme-scifi #userInput { border-radius: 4px; }
+body.theme-scifi #userInput:focus {
+    border-color: #6fc2b4;
+    box-shadow: 0 0 0 3px rgba(111, 194, 180, 0.15), 0 0 18px rgba(111, 194, 180, 0.1);
+}
+body.theme-scifi #sendBtn {
+    border-radius: 4px;
+    box-shadow: 0 0 12px rgba(111, 194, 180, 0.25);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：终端模块 ─────────── */
+body.theme-scifi .panel-title::before { content: '// '; color: #6da396; font-family: var(--mono); }
+body.theme-scifi .gauge-label { color: #8ac4b8; font-family: var(--mono); font-size: 11.5px; }
+body.theme-scifi .gauge-fill { box-shadow: 0 0 6px rgba(111, 194, 180, 0.35); }
+body.theme-scifi .sheet-box { border-top: 2px solid rgba(111, 194, 180, 0.4); border-radius: 4px 4px 0 0; }
+body.theme-scifi .modal-box { border-top: 2px solid rgba(111, 194, 180, 0.4); border-radius: 4px 4px 0 0; }
+
+/* ─────────── ⑦ 滚动条：能量流 ─────────── */
+body.theme-scifi #chatMessages::-webkit-scrollbar-thumb,
+body.theme-scifi #statusPanel::-webkit-scrollbar-thumb,
+body.theme-scifi #setupWrap::-webkit-scrollbar-thumb { background: rgba(111, 194, 180, 0.3); }
+body.theme-scifi #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(111, 194, 180, 0.5); }
+
+/* ─────────── ⑧ 扮演模式特化：舰载仪表 ─────────── */
+body.theme-scifi .wizard-title { letter-spacing: 3px; text-shadow: 0 0 12px rgba(111, 194, 180, 0.3); }
+body.theme-scifi .book-title-line { color: #6fc2b4; }
+body.theme-scifi .status-panel {
+    border-image: linear-gradient(180deg, rgba(111, 194, 180, 0.35), rgba(111, 194, 180, 0.08)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：功能键 ─────────── */
+body.theme-scifi .quick-btn {
+    border-radius: 4px;
+    font-family: var(--mono);
+}
+body.theme-scifi .quick-btn:hover {
+    border-color: rgba(111, 194, 180, 0.6);
+    box-shadow: 0 0 8px rgba(111, 194, 180, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：坐标大字 ─────────── */
+body.theme-scifi .story-chapter-title {
+    letter-spacing: 6px;
+    text-shadow: 0 0 20px rgba(111, 194, 180, 0.25);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-scifi.mobile .ai-card::before,
+body.theme-scifi.mobile .ai-card::after { display: none; }

@@ -1,0 +1,143 @@
+/* ============================================================
+   完美世界主题 - 柳青荒金（石村烟火 × 太古苍茫）
+   v3.15.0 每界专属 UI 皮肤重做：
+   岩画粗纹底纹 · 顶栏洪荒压边 · 卡片兽纹骨饰 ·
+   选项荒途指引 · 面板古祭标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #7fd878;
+    --primary-dim: rgba(127, 216, 120, 0.12);
+    --primary-glow: rgba(127, 216, 120, 0.3);
+    --secondary: #d4b46a;
+    --accent: #68ae68;
+    --panel-border: rgba(127, 216, 120, 0.18);
+    background-color: #0e120c;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(127, 216, 120, 0.09), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(212, 180, 106, 0.06), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke='%237fd878' stroke-opacity='0.05' stroke-width='1.4' stroke-linecap='round'%3E%3Cpath d='M20 30 L38 22 L54 34 L48 52'/%3E%3Cpath d='M100 20 L118 30 L112 48'/%3E%3Cpath d='M30 100 L24 118 L42 126'/%3E%3Cpath d='M96 104 L112 96 L120 112 L106 124'/%3E%3C/g%3E%3Cg fill='%23d4b46a' fill-opacity='0.08'%3E%3Ccircle cx='70' cy='70' r='1.6'/%3E%3Ccircle cx='36' cy='68' r='1'/%3E%3Ccircle cx='106' cy='72' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #bce8b6, #7fd878); }
+body .progress-fill { background: linear-gradient(90deg, #7fd878, #bce8b6); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #bce8b6, #7fd878); }
+body .foreshadow-item.planted {
+    background: rgba(127, 216, 120, 0.08);
+    border-left-color: #7fd878;
+    color: #aee8a4;
+}
+body .char-status { color: #7fd878; border-color: rgba(127, 216, 120, 0.4); }
+
+/* ─────────── ① 顶栏：荒古祭台 ─────────── */
+body.theme-wanmeishijie .top-bar {
+    background: linear-gradient(180deg, rgba(17, 22, 15, 0.97), rgba(14, 18, 12, 0.93));
+    border-bottom: 2px solid rgba(127, 216, 120, 0.25);
+    box-shadow: 0 3px 18px rgba(0, 0, 0, 0.38), inset 0 -1px 0 rgba(212, 180, 106, 0.12);
+}
+body.theme-wanmeishijie #gameTitle {
+    letter-spacing: 6px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* ─────────── ② 正文卡：兽皮古卷 ─────────── */
+body.theme-wanmeishijie .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 14px 4px 14px 4px;
+    background:
+        radial-gradient(ellipse 260px 130px at 8% 0%, rgba(127, 216, 120, 0.07), transparent 55%),
+        linear-gradient(165deg, rgba(212, 180, 106, 0.04), transparent 42%),
+        var(--panel);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.36);
+}
+/* 兽牙骨饰：左上双垂骨 */
+body.theme-wanmeishijie .ai-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 18px;
+    width: 3px; height: 15px;
+    background: linear-gradient(180deg, rgba(212, 180, 106, 0.5), rgba(212, 180, 106, 0.15));
+    border-radius: 0 0 3px 3px;
+    pointer-events: none;
+}
+body.theme-wanmeishijie .ai-card::after {
+    content: '';
+    position: absolute;
+    top: -1px; left: 25px;
+    width: 2px; height: 10px;
+    background: linear-gradient(180deg, rgba(127, 216, 120, 0.45), rgba(127, 216, 120, 0.1));
+    border-radius: 0 0 3px 3px;
+    pointer-events: none;
+}
+body.theme-wanmeishijie .ai-card-header {
+    border-bottom: 1px solid rgba(127, 216, 120, 0.2);
+    border-image: linear-gradient(90deg, rgba(212, 180, 106, 0.35), rgba(127, 216, 120, 0.15) 60%, transparent) 1;
+}
+
+/* ─────────── ③ 章节徽章：岩画刻痕 ─────────── */
+body.theme-wanmeishijie .chapter-badge {
+    letter-spacing: 3px;
+    border: 1px solid rgba(188, 232, 182, 0.5);
+    border-radius: 10px 3px 10px 3px;
+    box-shadow: 0 0 12px rgba(127, 216, 120, 0.25);
+}
+
+/* ─────────── ④ 选项按钮：荒古小径 ─────────── */
+body.theme-wanmeishijie .option-btn { border-radius: 12px 4px 12px 4px; }
+body.theme-wanmeishijie .option-btn::before { content: '⛰ '; font-size: 0.82em; }
+body.theme-wanmeishijie .option-btn:hover:not(:disabled) {
+    border-color: rgba(127, 216, 120, 0.65);
+    box-shadow: inset 0 2px 0 rgba(127, 216, 120, 0.45), 0 0 12px rgba(127, 216, 120, 0.12);
+    background: rgba(127, 216, 120, 0.05);
+}
+body.theme-wanmeishijie .options-title { letter-spacing: 6px; }
+body.theme-wanmeishijie .options-title::before { content: '❖ '; color: #68ae68; }
+
+/* ─────────── ⑤ 输入区：石碑刻字 ─────────── */
+body.theme-wanmeishijie #userInput { border-radius: 12px 4px 12px 4px; }
+body.theme-wanmeishijie #userInput:focus {
+    border-color: #7fd878;
+    box-shadow: 0 0 0 3px rgba(127, 216, 120, 0.13);
+}
+body.theme-wanmeishijie #sendBtn { border-radius: 12px 4px 12px 4px; letter-spacing: 2px; }
+
+/* ─────────── ⑥ 面板：荒古图腾 ─────────── */
+body.theme-wanmeishijie .panel-title { letter-spacing: 4px; }
+body.theme-wanmeishijie .panel-title::before { content: '⌘ '; color: #68ae68; }
+body.theme-wanmeishijie .gauge-label { color: #78c878; }
+body.theme-wanmeishijie .gauge-fill {
+    box-shadow: 0 0 6px rgba(127, 216, 120, 0.28);
+    background-image: repeating-linear-gradient(90deg, transparent 0 6px, rgba(220, 240, 190, 0.07) 6px 12px);
+    background-size: 12px 100%;
+}
+body.theme-wanmeishijie .sheet-box { border-top: 2px solid rgba(127, 216, 120, 0.4); border-radius: 12px 4px 0 0; }
+body.theme-wanmeishijie .modal-box { border-top: 2px solid rgba(127, 216, 120, 0.4); border-radius: 12px 4px 0 0; }
+
+/* ─────────── ⑦ 滚动条：荒土细流 ─────────── */
+body.theme-wanmeishijie #chatMessages::-webkit-scrollbar-thumb,
+body.theme-wanmeishijie #statusPanel::-webkit-scrollbar-thumb,
+body.theme-wanmeishijie #setupWrap::-webkit-scrollbar-thumb { background: rgba(127, 216, 120, 0.28); }
+body.theme-wanmeishijie #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(127, 216, 120, 0.46); }
+
+/* ─────────── ⑧ 扮演模式特化：修士行囊 ─────────── */
+body.theme-wanmeishijie .wizard-title { letter-spacing: 5px; }
+body.theme-wanmeishijie .book-title-line { color: #7fd878; letter-spacing: 2px; }
+body.theme-wanmeishijie .status-panel {
+    border-image: linear-gradient(180deg, rgba(127, 216, 120, 0.35), rgba(212, 180, 106, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：骨符钮 ─────────── */
+body.theme-wanmeishijie .quick-btn { border-radius: 10px 4px 10px 4px; }
+body.theme-wanmeishijie .quick-btn:hover {
+    border-color: rgba(127, 216, 120, 0.58);
+    box-shadow: 0 0 10px rgba(127, 216, 120, 0.13);
+}
+
+/* ─────────── ⑩ 章节标题：太古巨碑 ─────────── */
+body.theme-wanmeishijie .story-chapter-title {
+    letter-spacing: 11px;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.55), 0 0 26px rgba(127, 216, 120, 0.2);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-wanmeishijie.mobile .ai-card::before,
+body.theme-wanmeishijie.mobile .ai-card::after { display: none; }

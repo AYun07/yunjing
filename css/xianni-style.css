@@ -1,0 +1,150 @@
+/* ============================================================
+   仙逆主题 - 顺为凡，逆则仙（冷灰玄墨 × 幽紫天光 × 一线血色）
+   v3.25.0 每界专属 UI 皮肤：
+   逆转星纹底色 · 顶栏孤月晕 · 卡片逆痕饰 ·
+   选项逆途指引 · 面板残月徽记 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #9d86d0;
+    --primary-dim: rgba(157, 134, 208, 0.12);
+    --primary-glow: rgba(157, 134, 208, 0.3);
+    --secondary: #6a5a90;
+    --accent: #c8b8e8;
+    --panel-border: rgba(157, 134, 208, 0.18);
+    background-color: #0c0a12;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(157, 134, 208, 0.09), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(106, 90, 144, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(216, 88, 104, 0.05), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg stroke='%239d86d0' stroke-opacity='0.05' fill='none'%3E%3Cpath d='M55 20 A 35 35 0 1 0 90 55 A 26 26 0 1 1 55 42 A 16 16 0 1 0 71 55' /%3E%3Cpath d='M55 4 L55 16 M55 94 L55 106 M4 55 L16 55 M94 55 L106 55'/%3E%3C/g%3E%3Cg fill='%23c8b8e8' fill-opacity='0.08'%3E%3Ccircle cx='55' cy='55' r='2.2'/%3E%3Ccircle cx='18' cy='30' r='1'/%3E%3Ccircle cx='92' cy='30' r='0.9'/%3E%3Ccircle cx='18' cy='80' r='0.9'/%3E%3Ccircle cx='92' cy='80' r='1'/%3E%3C/g%3E%3Cg fill='%23d85868' fill-opacity='0.1'%3E%3Ccircle cx='55' cy='20' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #d0c2ee, #9d86d0); }
+body .progress-fill { background: linear-gradient(90deg, #9d86d0, #6a5a90); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #d0c2ee, #9d86d0); }
+body .foreshadow-item.planted {
+    background: rgba(157, 134, 208, 0.08);
+    border-left-color: #9d86d0;
+    color: #c0b4dc;
+}
+body .char-status { color: #9d86d0; border-color: rgba(157, 134, 208, 0.4); }
+
+/* ─────────── ① 顶栏：残月孤照头 ─────────── */
+body.theme-xianni .top-bar {
+    background: linear-gradient(180deg, rgba(16, 12, 24, 0.96), rgba(12, 10, 18, 0.93));
+    border-bottom: 1px solid rgba(157, 134, 208, 0.24);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.48), inset 0 -1px 0 rgba(106, 90, 144, 0.1);
+}
+body.theme-xianni #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(157, 134, 208, 0.4), 0 0 30px rgba(216, 88, 104, 0.14);
+}
+
+/* ─────────── ② 正文卡：逆途刻痕 ─────────── */
+body.theme-xianni .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 4px 14px 4px 14px;
+    background:
+        linear-gradient(160deg, rgba(157, 134, 208, 0.05), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(106, 90, 144, 0.05), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.46);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-xianni .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.52), 0 0 18px rgba(157, 134, 208, 0.08); }
+/* 逆痕饰：左上逆痕斜压 + 右下残月 */
+body.theme-xianni .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 14px;
+    width: 26px; height: 3px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(157, 134, 208, 0.55), transparent);
+    box-shadow: 0 1px 0 rgba(157, 134, 208, 0.2);
+}
+body.theme-xianni .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; right: 12px;
+    width: 20px; height: 20px;
+    pointer-events: none;
+    opacity: 0.45;
+    background:
+        radial-gradient(circle 8px at 42% 50%, transparent 5px, rgba(200, 184, 232, 0.28) 6px, transparent 8px),
+        radial-gradient(circle 3px at 60% 50%, rgba(216, 88, 104, 0.4), transparent 4px);
+}
+body.theme-xianni .ai-card-header { border-bottom: 1px solid rgba(157, 134, 208, 0.2); }
+
+/* ─────────── ③ 章节徽章：逆途编号 ─────────── */
+body.theme-xianni .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(208, 194, 238, 0.5);
+    box-shadow: 0 0 12px rgba(157, 134, 208, 0.28);
+}
+
+/* ─────────── ④ 选项按钮：逆途抉择 ─────────── */
+body.theme-xianni .option-btn { border-radius: 4px 14px 4px 14px; }
+body.theme-xianni .option-btn::before { content: '✵ '; color: #9d86d0; }
+body.theme-xianni .option-btn:hover:not(:disabled) {
+    border-color: rgba(157, 134, 208, 0.72);
+    box-shadow: inset 2px 0 0 #9d86d0, 0 0 14px rgba(106, 90, 144, 0.12);
+    background: rgba(157, 134, 208, 0.05);
+    text-shadow: 0 0 8px rgba(157, 134, 208, 0.35);
+}
+body.theme-xianni .options-title { letter-spacing: 4px; }
+body.theme-xianni .options-title::before { content: '⚡ '; color: #6a5a90; }
+
+/* ─────────── ⑤ 输入区：刻痕落笔 ─────────── */
+body.theme-xianni #userInput { border-radius: 4px 14px 4px 14px; }
+body.theme-xianni #userInput:focus {
+    border-color: #9d86d0;
+    box-shadow: 0 0 0 3px rgba(157, 134, 208, 0.14), 0 0 20px rgba(106, 90, 144, 0.08);
+}
+body.theme-xianni #sendBtn {
+    border-radius: 4px 14px 4px 14px;
+    box-shadow: 0 0 12px rgba(157, 134, 208, 0.26);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：逆道档案 ─────────── */
+body.theme-xianni .panel-title { letter-spacing: 3px; }
+body.theme-xianni .panel-title::before { content: '☾ '; color: #c8b8e8; }
+body.theme-xianni .gauge-label { color: #c8b8e8; }
+body.theme-xianni .gauge-fill {
+    box-shadow: 0 0 7px rgba(157, 134, 208, 0.3);
+    background-image: linear-gradient(90deg, rgba(106, 90, 144, 0.16), rgba(157, 134, 208, 0.2));
+}
+body.theme-xianni .sheet-box { border-top: 2px solid rgba(157, 134, 208, 0.42); border-radius: 4px 4px 0 0; }
+body.theme-xianni .modal-box { border-top: 2px solid rgba(157, 134, 208, 0.42); border-radius: 4px 4px 0 0; }
+
+/* ─────────── ⑦ 滚动条：逆水滑轨 ─────────── */
+body.theme-xianni #chatMessages::-webkit-scrollbar-thumb,
+body.theme-xianni #statusPanel::-webkit-scrollbar-thumb,
+body.theme-xianni #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(157, 134, 208, 0.3), rgba(106, 90, 144, 0.18));
+}
+body.theme-xianni #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(157, 134, 208, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：逆道者面板 ─────────── */
+body.theme-xianni .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(157, 134, 208, 0.3); }
+body.theme-xianni .book-title-line { color: #9d86d0; }
+body.theme-xianni .status-panel {
+    border-image: linear-gradient(180deg, rgba(157, 134, 208, 0.36), rgba(106, 90, 144, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：夜行钮 ─────────── */
+body.theme-xianni .quick-btn { border-radius: 4px 12px 4px 12px; }
+body.theme-xianni .quick-btn:hover {
+    border-color: rgba(157, 134, 208, 0.6);
+    box-shadow: 0 0 10px rgba(157, 134, 208, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：逆天之题 ─────────── */
+body.theme-xianni .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(157, 134, 208, 0.3), 0 0 40px rgba(216, 88, 104, 0.16);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-xianni.mobile .ai-card::before,
+body.theme-xianni.mobile .ai-card::after { display: none; }

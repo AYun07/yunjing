@@ -1,0 +1,157 @@
+/* ============================================================
+   斩神主题 - 迷雾笼罩（都市霓虹 × 病院白 × 迷雾青灰）
+   v3.38.0 每界专属 UI 皮肤：
+   迷雾底纹 · 顶栏雾色压边 · 卡片精神力波纹 ·
+   选项神秘符号 · 面板病院监控风 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #a8c4c8;
+    --primary-dim: rgba(168, 196, 200, 0.12);
+    --primary-glow: rgba(168, 196, 200, 0.3);
+    --secondary: #6a8a98;
+    --accent: #d8e4e8;
+    --panel-border: rgba(168, 196, 200, 0.18);
+    background-color: #101418;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(168, 196, 200, 0.08), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(126, 156, 216, 0.05), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 72% 24%, rgba(158, 122, 208, 0.03), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg stroke='%23a8c4c8' stroke-opacity='0.045'%3E%3Cpath d='M0 35 H140 M0 105 H140'/%3E%3Cpath d='M35 0 L35 140 M105 0 L105 140'/%3E%3Ccircle cx='70' cy='70' r='34' fill='none'/%3E%3Ccircle cx='70' cy='70' r='52' fill='none' stroke-dasharray='4 8'/%3E%3C/g%3E%3Cg fill='%23d8e4e8' fill-opacity='0.1'%3E%3Ccircle cx='35' cy='35' r='1.2'/%3E%3Ccircle cx='105' cy='105' r='1'/%3E%3Ccircle cx='70' cy='18' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #d8e4e8, #a8c4c8); }
+body .progress-fill { background: linear-gradient(90deg, #a8c4c8, #6a8a98); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #d8e4e8, #a8c4c8); }
+body .foreshadow-item.planted {
+    background: rgba(168, 196, 200, 0.08);
+    border-left-color: #a8c4c8;
+    color: #dce8ec;
+}
+body .char-status { color: #a8c4c8; border-color: rgba(168, 196, 200, 0.4); }
+
+/* ─────────── ① 顶栏：守夜人值星条 ─────────── */
+body.theme-zhanhen .top-bar {
+    background: linear-gradient(180deg, rgba(16, 20, 24, 0.96), rgba(14, 17, 20, 0.93));
+    border-bottom: none;
+    box-shadow: inset 0 -1px 0 rgba(168, 196, 200, 0.38), inset 0 -3px 6px rgba(106, 138, 152, 0.12), 0 2px 18px rgba(0, 0, 0, 0.45);
+}
+body.theme-zhanhen #gameTitle {
+    letter-spacing: 3px;
+    text-shadow: 0 0 16px rgba(168, 196, 200, 0.4), 0 0 32px rgba(106, 138, 152, 0.2);
+}
+
+/* ─────────── ② 正文卡：迷雾中的病院白墙 ─────────── */
+body.theme-zhanhen .ai-card {
+    position: relative;
+    border-left: none;
+    border-image: linear-gradient(180deg, rgba(168, 196, 200, 0.55), rgba(106, 138, 152, 0.22), rgba(168, 196, 200, 0.08)) 1;
+    border-left: 3px solid transparent;
+    background:
+        linear-gradient(160deg, rgba(168, 196, 200, 0.05), transparent 40%),
+        radial-gradient(ellipse 240px 120px at 95% 100%, rgba(126, 156, 216, 0.04), transparent 55%),
+        var(--panel);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-zhanhen .ai-card:hover {
+    box-shadow: 0 4px 26px rgba(0, 0, 0, 0.4), 0 0 20px rgba(168, 196, 200, 0.08);
+}
+/* 精神力波纹：右上迷雾纹一线 + 左下神秘微芒 */
+body.theme-zhanhen .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 14px; right: 8px;
+    width: 22px; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(216, 228, 232, 0.55));
+    transform: rotate(-32deg);
+    box-shadow: 0 0 6px rgba(216, 228, 232, 0.25);
+    pointer-events: none;
+}
+body.theme-zhanhen .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 12px; left: 9px;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: rgba(158, 132, 248, 0.6);
+    box-shadow: 0 0 8px rgba(158, 132, 248, 0.4);
+    pointer-events: none;
+}
+body.theme-zhanhen .ai-card-header { border-bottom: 1px solid rgba(168, 196, 200, 0.18); }
+
+/* ─────────── ③ 章节徽章：守夜值星牌 ─────────── */
+body.theme-zhanhen .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(216, 228, 232, 0.45);
+    box-shadow: 0 0 12px rgba(168, 196, 200, 0.28), inset 0 0 6px rgba(168, 196, 200, 0.1);
+    text-shadow: 0 0 8px rgba(168, 196, 200, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：神秘抉择 ─────────── */
+body.theme-zhanhen .option-btn { border-radius: 7px; }
+body.theme-zhanhen .option-btn::before { content: '❖ '; color: #a8c4c8; font-size: 0.85em; }
+body.theme-zhanhen .option-btn:hover:not(:disabled) {
+    border-color: rgba(168, 196, 200, 0.65);
+    box-shadow: inset 2px 0 0 #a8c4c8, 0 0 14px rgba(106, 138, 152, 0.16);
+    background: rgba(168, 196, 200, 0.05);
+    text-shadow: 0 0 8px rgba(216, 228, 232, 0.3);
+}
+body.theme-zhanhen .options-title { letter-spacing: 4px; }
+body.theme-zhanhen .options-title::before { content: '🌫 '; color: #d8e4e8; }
+
+/* ─────────── ⑤ 输入区：入夜指令台 ─────────── */
+body.theme-zhanhen #userInput:focus {
+    border-color: #a8c4c8;
+    box-shadow: 0 0 0 3px rgba(168, 196, 200, 0.14), 0 0 20px rgba(106, 138, 152, 0.12);
+}
+body.theme-zhanhen #sendBtn {
+    box-shadow: 0 0 12px rgba(168, 196, 200, 0.28);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：病院中控监控屏 ─────────── */
+body.theme-zhanhen .panel-title { letter-spacing: 3px; }
+body.theme-zhanhen .panel-title::before { content: '◈ '; color: #d8e4e8; }
+body.theme-zhanhen .gauge-label { color: #dce8ec; }
+body.theme-zhanhen .book-title-line { color: #a8c4c8; }
+body.theme-zhanhen .status-panel {
+    border-image: linear-gradient(180deg, rgba(168, 196, 200, 0.32), rgba(106, 138, 152, 0.14)) 1;
+}
+/* 精神力条迷雾质感 */
+body.theme-zhanhen .gauge-fill {
+    box-shadow: 0 0 7px rgba(168, 196, 200, 0.3);
+    background-image: linear-gradient(90deg, rgba(216, 228, 232, 0.16), transparent);
+}
+body.theme-zhanhen .sheet-box { border-top: 2px solid rgba(168, 196, 200, 0.38); }
+body.theme-zhanhen .modal-box { border-top: 2px solid rgba(168, 196, 200, 0.38); }
+
+/* ─────────── ⑦ 滚动条：迷雾光轨 ─────────── */
+body.theme-zhanhen #chatMessages::-webkit-scrollbar-thumb,
+body.theme-zhanhen #statusPanel::-webkit-scrollbar-thumb,
+body.theme-zhanhen #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(168, 196, 200, 0.28), rgba(106, 138, 152, 0.18));
+}
+body.theme-zhanhen #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(168, 196, 200, 0.45); }
+
+/* ─────────── ⑧ 扮演模式特化：守夜人登记 ─────────── */
+body.theme-zhanhen .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(168, 196, 200, 0.3); }
+
+/* ─────────── ⑨ 快捷指令：值夜钮 ─────────── */
+body.theme-zhanhen .quick-btn { border-radius: 7px; }
+body.theme-zhanhen .quick-btn:hover {
+    border-color: rgba(168, 196, 200, 0.55);
+    box-shadow: 0 0 10px rgba(168, 196, 200, 0.14);
+}
+
+/* ─────────── ⑩ 章节标题：迷雾大字 ─────────── */
+body.theme-zhanhen .story-chapter-title {
+    letter-spacing: 7px;
+    text-shadow: 0 0 18px rgba(168, 196, 200, 0.32), 0 0 36px rgba(106, 138, 152, 0.16);
+}
+
+/* ─────────── ⑪ 界专属模块：迷雾警戒层 ─────────── */
+/* 精神力境界与神秘侵蚀的雾色/警报色 */
+body.theme-zhanhen .we-mod-value-holy { color: #e8f2f4; text-shadow: 0 0 8px rgba(216, 228, 232, 0.35); }
+body.theme-zhanhen .we-mod-value-warn { color: #e88a6a; text-shadow: 0 0 8px rgba(232, 138, 106, 0.35); }
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-zhanhen.mobile .ai-card::before,
+body.theme-zhanhen.mobile .ai-card::after { display: none; }

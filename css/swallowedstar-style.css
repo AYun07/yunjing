@@ -1,0 +1,146 @@
+/* ============================================================
+   吞噬星空主题 - 星海蓝潮（舰桥星图 × 废土冷冽）
+   v3.15.0 每界专属 UI 皮肤重做：
+   星轨轨道底纹 · 顶栏舰桥压边 · 卡片星图角标 ·
+   选项航迹指引 · 面板星域标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #6f9fe8;
+    --primary-dim: rgba(111, 159, 232, 0.12);
+    --primary-glow: rgba(111, 159, 232, 0.3);
+    --secondary: #e0a84c;
+    --accent: #8aa8d4;
+    --panel-border: rgba(111, 159, 232, 0.18);
+    background-color: #0c111d;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(111, 159, 232, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(224, 168, 76, 0.05), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke='%236f9fe8' stroke-opacity='0.05'%3E%3Cellipse cx='75' cy='75' rx='62' ry='24' transform='rotate(-24 75 75)'/%3E%3Cellipse cx='75' cy='75' rx='40' ry='15' transform='rotate(-24 75 75)'/%3E%3C/g%3E%3Cg fill='%23a8c6f0' fill-opacity='0.14'%3E%3Ccircle cx='22' cy='30' r='1'/%3E%3Ccircle cx='118' cy='46' r='1.3'/%3E%3Ccircle cx='60' cy='108' r='0.8'/%3E%3Ccircle cx='132' cy='120' r='1'/%3E%3Ccircle cx='88' cy='12' r='0.7'/%3E%3Ccircle cx='40' cy='80' r='0.6'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #a8c6f0, #6f9fe8); }
+body .progress-fill { background: linear-gradient(90deg, #6f9fe8, #a8c6f0); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #a8c6f0, #6f9fe8); }
+body .foreshadow-item.planted {
+    background: rgba(111, 159, 232, 0.08);
+    border-left-color: #6f9fe8;
+    color: #a4bcf0;
+}
+body .char-status { color: #6f9fe8; border-color: rgba(111, 159, 232, 0.4); }
+
+/* ─────────── ① 顶栏：星际舰桥 ─────────── */
+body.theme-swallowedstar .top-bar {
+    background: linear-gradient(180deg, rgba(13, 19, 32, 0.96), rgba(12, 17, 29, 0.93));
+    border-bottom: 1px solid rgba(111, 159, 232, 0.28);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(111, 159, 232, 0.12);
+}
+body.theme-swallowedstar #gameTitle {
+    letter-spacing: 3px;
+    text-shadow: 0 0 16px rgba(111, 159, 232, 0.4);
+}
+
+/* ─────────── ② 正文卡：星图数据板 ─────────── */
+body.theme-swallowedstar .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 6px;
+    background:
+        linear-gradient(165deg, rgba(111, 159, 232, 0.07), transparent 40%),
+        var(--panel);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-swallowedstar .ai-card:hover { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 18px rgba(111, 159, 232, 0.09); }
+/* 星图角标：左上定位点 + 右下轨道弧 */
+body.theme-swallowedstar .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 10px;
+    width: 6px; height: 6px;
+    border: 1px solid rgba(111, 159, 232, 0.55);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(111, 159, 232, 0.4);
+    pointer-events: none;
+}
+body.theme-swallowedstar .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 6px; right: 8px;
+    width: 26px; height: 13px;
+    border-radius: 50%;
+    border: 1px solid rgba(224, 168, 76, 0.3);
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    transform: rotate(-18deg);
+    pointer-events: none;
+}
+body.theme-swallowedstar .ai-card-header {
+    border-bottom: 1px solid rgba(111, 159, 232, 0.18);
+    border-image: linear-gradient(90deg, rgba(111, 159, 232, 0.4), rgba(111, 159, 232, 0.05) 80%) 1;
+}
+
+/* ─────────── ③ 章节徽章：星域坐标 ─────────── */
+body.theme-swallowedstar .chapter-badge {
+    border: 1px solid rgba(168, 198, 240, 0.5);
+    box-shadow: 0 0 12px rgba(111, 159, 232, 0.28);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ④ 选项按钮：航迹选择 ─────────── */
+body.theme-swallowedstar .option-btn { border-radius: 6px; }
+body.theme-swallowedstar .option-btn::before { content: '➤ '; color: #6f9fe8; font-size: 0.85em; }
+body.theme-swallowedstar .option-btn:hover:not(:disabled) {
+    border-color: rgba(111, 159, 232, 0.7);
+    box-shadow: inset 2px 0 0 #6f9fe8, 0 0 14px rgba(111, 159, 232, 0.12);
+    background: rgba(111, 159, 232, 0.05);
+}
+body.theme-swallowedstar .options-title { letter-spacing: 4px; }
+body.theme-swallowedstar .options-title::before { content: '✧ '; color: #8aa8d4; }
+
+/* ─────────── ⑤ 输入区：通讯频道 ─────────── */
+body.theme-swallowedstar #userInput { border-radius: 6px; }
+body.theme-swallowedstar #userInput:focus {
+    border-color: #6f9fe8;
+    box-shadow: 0 0 0 3px rgba(111, 159, 232, 0.15), 0 0 20px rgba(111, 159, 232, 0.1);
+}
+body.theme-swallowedstar #sendBtn {
+    border-radius: 6px;
+    box-shadow: 0 0 12px rgba(111, 159, 232, 0.28);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：星域档案 ─────────── */
+body.theme-swallowedstar .panel-title::before { content: '◈ '; color: #8aa8d4; }
+body.theme-swallowedstar .gauge-label { color: #8aa8d4; }
+body.theme-swallowedstar .gauge-fill { box-shadow: 0 0 6px rgba(111, 159, 232, 0.3); }
+body.theme-swallowedstar .sheet-box { border-top: 2px solid rgba(111, 159, 232, 0.42); border-radius: 6px 6px 0 0; }
+body.theme-swallowedstar .modal-box { border-top: 2px solid rgba(111, 159, 232, 0.42); border-radius: 6px 6px 0 0; }
+
+/* ─────────── ⑦ 滚动条：星流细轨 ─────────── */
+body.theme-swallowedstar #chatMessages::-webkit-scrollbar-thumb,
+body.theme-swallowedstar #statusPanel::-webkit-scrollbar-thumb,
+body.theme-swallowedstar #setupWrap::-webkit-scrollbar-thumb { background: rgba(111, 159, 232, 0.3); }
+body.theme-swallowedstar #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(111, 159, 232, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：武者档案 ─────────── */
+body.theme-swallowedstar .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(111, 159, 232, 0.32); }
+body.theme-swallowedstar .book-title-line { color: #6f9fe8; }
+body.theme-swallowedstar .status-panel {
+    border-image: linear-gradient(180deg, rgba(111, 159, 232, 0.35), rgba(224, 168, 76, 0.1)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：频道切换 ─────────── */
+body.theme-swallowedstar .quick-btn { border-radius: 6px; }
+body.theme-swallowedstar .quick-btn:hover {
+    border-color: rgba(111, 159, 232, 0.6);
+    box-shadow: 0 0 10px rgba(111, 159, 232, 0.14);
+}
+
+/* ─────────── ⑩ 章节标题：星海刻度 ─────────── */
+body.theme-swallowedstar .story-chapter-title {
+    letter-spacing: 7px;
+    text-shadow: 0 0 22px rgba(111, 159, 232, 0.3);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-swallowedstar.mobile .ai-card::before,
+body.theme-swallowedstar.mobile .ai-card::after { display: none; }

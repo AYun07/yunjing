@@ -1,0 +1,158 @@
+/* ============================================================
+   道诡异仙主题 - 诡红纸灰（民俗恐怖 × 真假莫辨）
+   v3.15.0 每界专属 UI 皮肤重做：
+   纸钱孔纹底纹 · 顶栏香灰压边 · 卡片符箓朱砂饰 ·
+   选项鬼火指引 · 面板神婆标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #c9584a;
+    --primary-dim: rgba(201, 88, 74, 0.12);
+    --primary-glow: rgba(201, 88, 74, 0.3);
+    --secondary: #8a9078;
+    --accent: #d8a898;
+    --panel-border: rgba(201, 88, 74, 0.18);
+    background-color: #100a0c;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(201, 88, 74, 0.09), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(138, 144, 120, 0.06), transparent 60%),
+        radial-gradient(ellipse 400px 260px at 70% 30%, rgba(80, 40, 44, 0.1), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23c9584a' stroke-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='10'/%3E%3Ccircle cx='90' cy='90' r='10'/%3E%3Ccircle cx='60' cy='60' r='6'/%3E%3C/g%3E%3Cg fill='none' stroke='%238a9078' stroke-opacity='0.05'%3E%3Cpath d='M0 60 H120 M60 0 V120'/%3E%3C/g%3E%3Cg fill='%23d8a898' fill-opacity='0.07'%3E%3Ccircle cx='30' cy='30' r='1.2'/%3E%3Ccircle cx='90' cy='90' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #d88a7c, #a83a34); }
+body .progress-fill { background: linear-gradient(90deg, #a83a34, #d88a7c); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #d88a7c, #a83a34); }
+body .foreshadow-item.planted {
+    background: rgba(201, 88, 74, 0.08);
+    border-left-color: #c9584a;
+    color: #d8b0a4;
+}
+body .char-status { color: #d88a7c; border-color: rgba(201, 88, 74, 0.4); }
+
+/* ─────────── ① 顶栏：香案烛光 ─────────── */
+body.theme-daoguiyixian .top-bar {
+    background: linear-gradient(180deg, rgba(20, 11, 13, 0.97), rgba(16, 10, 12, 0.94));
+    border-bottom: 1px solid rgba(201, 88, 74, 0.28);
+    box-shadow: 0 3px 20px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(80, 40, 44, 0.2);
+}
+body.theme-daoguiyixian #gameTitle {
+    letter-spacing: 5px;
+    text-shadow: 0 0 14px rgba(201, 88, 74, 0.4), 1px 0 0 rgba(80, 40, 44, 0.5);
+}
+
+/* ─────────── ② 正文卡：黄纸符箓 ─────────── */
+body.theme-daoguiyixian .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 2px 8px 2px 8px;
+    background:
+        radial-gradient(ellipse 280px 140px at 88% 0%, rgba(80, 40, 44, 0.14), transparent 55%),
+        linear-gradient(170deg, rgba(201, 88, 74, 0.05), transparent 40%),
+        var(--panel);
+    box-shadow: 0 5px 22px rgba(0, 0, 0, 0.45);
+}
+/* 符箓朱砂饰：右上符角 */
+body.theme-daoguiyixian .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 8px; right: 10px;
+    width: 16px; height: 16px;
+    pointer-events: none;
+    opacity: 0.65;
+    background:
+        linear-gradient(90deg, rgba(201, 88, 74, 0.55) 0 1.5px, transparent 1.5px),
+        linear-gradient(0deg, rgba(201, 88, 74, 0.4) 0 1px, transparent 1px);
+    background-size: 5px 5px, 5px 5px;
+    background-position: 0 0, 2px 2px;
+}
+/* 左下：一点鬼火 */
+body.theme-daoguiyixian .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 10px; left: 10px;
+    width: 5px; height: 5px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: rgba(138, 144, 120, 0.5);
+    box-shadow: 0 0 9px rgba(138, 144, 120, 0.45);
+    pointer-events: none;
+}
+body.theme-daoguiyixian .ai-card-header { border-bottom: 1px dashed rgba(201, 88, 74, 0.28); }
+
+/* ─────────── ③ 章节徽章：冥币票号 ─────────── */
+body.theme-daoguiyixian .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(216, 138, 124, 0.5);
+    border-radius: 2px 6px 2px 6px;
+    box-shadow: 0 0 12px rgba(80, 40, 44, 0.4);
+    text-shadow: 0 0 8px rgba(201, 88, 74, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：岔路纸人 ─────────── */
+body.theme-daoguiyixian .option-btn { border-radius: 2px 8px 2px 8px; }
+body.theme-daoguiyixian .option-btn::before { content: '卍 '; color: #c9584a; }
+body.theme-daoguiyixian .option-btn:hover:not(:disabled) {
+    border-color: rgba(201, 88, 74, 0.65);
+    box-shadow: inset 0 0 12px rgba(80, 40, 44, 0.22), 0 0 12px rgba(201, 88, 74, 0.12);
+    background: rgba(201, 88, 74, 0.06);
+    text-shadow: 0 0 6px rgba(201, 88, 74, 0.3);
+}
+body.theme-daoguiyixian .options-title { letter-spacing: 5px; text-shadow: 1px 0 0 rgba(80, 40, 44, 0.6); }
+body.theme-daoguiyixian .options-title::before { content: '囍 '; color: #a83a34; }
+
+/* ─────────── ⑤ 输入区：请神落笔 ─────────── */
+body.theme-daoguiyixian #userInput { border-radius: 2px 8px 2px 8px; }
+body.theme-daoguiyixian #userInput:focus {
+    border-color: #c9584a;
+    box-shadow: 0 0 0 3px rgba(201, 88, 74, 0.14), 0 0 18px rgba(80, 40, 44, 0.25);
+}
+body.theme-daoguiyixian #sendBtn {
+    border-radius: 2px 8px 2px 8px;
+    box-shadow: 0 0 12px rgba(201, 88, 74, 0.24);
+}
+
+/* ─────────── ⑥ 面板：神婆签筒 ─────────── */
+body.theme-daoguiyixian .panel-title { letter-spacing: 3px; }
+body.theme-daoguiyixian .panel-title::before { content: '⁂ '; color: #a83a34; }
+body.theme-daoguiyixian .gauge-label { color: #d8a898; }
+body.theme-daoguiyixian .gauge-fill {
+    box-shadow: 0 0 6px rgba(201, 88, 74, 0.28);
+    background-image: repeating-linear-gradient(90deg, rgba(216, 138, 124, 0.14) 0 3px, transparent 3px 7px);
+    background-size: 7px 100%;
+}
+body.theme-daoguiyixian .sheet-box { border-top: 2px solid rgba(201, 88, 74, 0.38); border-radius: 2px 8px 0 0; }
+body.theme-daoguiyixian .modal-box { border-top: 2px solid rgba(201, 88, 74, 0.38); border-radius: 2px 8px 0 0; }
+
+/* ─────────── ⑦ 滚动条：纸灰飘落 ─────────── */
+body.theme-daoguiyixian #chatMessages::-webkit-scrollbar-thumb,
+body.theme-daoguiyixian #statusPanel::-webkit-scrollbar-thumb,
+body.theme-daoguiyixian #setupWrap::-webkit-scrollbar-thumb { background: rgba(201, 88, 74, 0.28); }
+body.theme-daoguiyixian #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(201, 88, 74, 0.46); }
+
+/* ─────────── ⑧ 扮演模式特化：诡异仪表盘 ─────────── */
+body.theme-daoguiyixian .wizard-title {
+    letter-spacing: 4px;
+    text-shadow: 0 0 12px rgba(80, 40, 44, 0.55);
+}
+body.theme-daoguiyixian .book-title-line { color: #c9584a; }
+body.theme-daoguiyixian .status-panel {
+    border-image: linear-gradient(180deg, rgba(201, 88, 74, 0.35), rgba(138, 144, 120, 0.12)) 1;
+}
+/* 神智条微颤（仅视觉，不动布局） */
+body.theme-daoguiyixian .gauge-fill { box-shadow: 0 0 6px rgba(201, 88, 74, 0.25); }
+
+/* ─────────── ⑨ 快捷指令：符纸钮 ─────────── */
+body.theme-daoguiyixian .quick-btn { border-radius: 2px 8px 2px 8px; }
+body.theme-daoguiyixian .quick-btn:hover {
+    border-color: rgba(201, 88, 74, 0.58);
+    box-shadow: inset 0 0 8px rgba(80, 40, 44, 0.22);
+}
+
+/* ─────────── ⑩ 章节标题：血书大字 ─────────── */
+body.theme-daoguiyixian .story-chapter-title {
+    letter-spacing: 9px;
+    text-shadow: 0 0 16px rgba(201, 88, 74, 0.35), 2px 1px 0 rgba(80, 40, 44, 0.55);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-daoguiyixian.mobile .ai-card::before,
+body.theme-daoguiyixian.mobile .ai-card::after { display: none; }

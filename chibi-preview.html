@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- PWA / iOS 主屏安装（v3.27.1）：Safari「加入主屏幕」后全屏独立运行，HTTPS 部署时离线可玩 -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="云境">
+    <meta name="theme-color" content="#1a1512">
+
+<title>鲸鱼娘形象预览</title>
+<style>
+body { background: #171521; display: flex; flex-wrap: wrap; gap: 40px; padding: 40px; font-family: sans-serif; align-items: flex-end; }
+.cell { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.cell .mo-chibi { position: static; }
+.cell span { color: #e6a4bd; font-size: 14px; }
+.cell.big .mo-chibi { width: 301px; height: 317px; }
+.cell.mid .mo-chibi { width: 128px; height: 135px; }
+.cell.small .mo-chibi { width: 96px; height: 101px; }
+</style>
+<link rel="stylesheet" href="css/base-style.css">
+</head>
+<body>
+<div id="cells"></div>
+<script src="js/mo-chibi.js?v=3.55.7"></script>
+<script>
+/* v1.8.3：静态图片形象(参考图原样) · 无表情系统,展示三种尺寸 */
+const sizes = [
+    { cls: 'big',   label: '原始尺寸 301×317' },
+    { cls: 'mid',   label: '桌面端 128×135' },
+    { cls: 'small', label: '移动端 96×101' },
+];
+const box = document.getElementById('cells');
+sizes.forEach(s => {
+    const cell = document.createElement('div');
+    cell.className = 'cell ' + s.cls;
+    const chibi = document.createElement('div');
+    chibi.className = 'mo-chibi';
+    chibi.innerHTML = `<div class="mc-shadow"></div>` + MoChibi.buildIMG();
+    cell.appendChild(chibi);
+    const label = document.createElement('span');
+    label.textContent = s.label;
+    cell.appendChild(label);
+    box.appendChild(cell);
+});
+</script>
+
+<script>
+    /* PWA：HTTPS 部署时启用离线缓存（本地 http 服务与安卓 APK 内 file:// 均不启用，零影响） */
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('sw.js').catch(function () { });
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+/* ============================================================
+   自由创作主题 - 琉金素夜（书房稿纸 × 暖灯文学）
+   v3.15.0 每界专属 UI 皮肤重做：
+   稿纸横线底纹 · 顶栏书脊压边 · 卡片装订线饰 ·
+   选项墨迹指引 · 面板书签标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #e0a84c;
+    --primary-dim: rgba(224, 168, 76, 0.12);
+    --primary-glow: rgba(224, 168, 76, 0.32);
+    --secondary: #8ab4c8;
+    --accent: #b08d57;
+    --panel-border: rgba(224, 168, 76, 0.16);
+    background-color: #12141d;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(224, 168, 76, 0.08), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(138, 180, 200, 0.05), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cg stroke='%23e0a84c' stroke-opacity='0.045'%3E%3Cpath d='M0 14 H100 M0 28 H100 M0 42 H100'/%3E%3C/g%3E%3Cg fill='%23b08d57' fill-opacity='0.07'%3E%3Ccircle cx='14' cy='14' r='1.2'/%3E%3Ccircle cx='14' cy='28' r='1.2'/%3E%3Ccircle cx='14' cy='42' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #f0cf8c, #e0a84c); }
+body .progress-fill { background: linear-gradient(90deg, #e0a84c, #f0cf8c); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #f0cf8c, #e0a84c); }
+body .foreshadow-item.planted {
+    background: rgba(224, 168, 76, 0.08);
+    border-left-color: #e0a84c;
+    color: #e0c896;
+}
+body .char-status { color: #e0a84c; border-color: rgba(224, 168, 76, 0.4); }
+
+/* ─────────── ① 顶栏：书房暖灯 ─────────── */
+body.theme-free .top-bar {
+    background: linear-gradient(180deg, rgba(20, 22, 31, 0.96), rgba(18, 20, 29, 0.92));
+    border-bottom: 2px solid rgba(224, 168, 76, 0.2);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+}
+body.theme-free #gameTitle { letter-spacing: 3px; }
+
+/* ─────────── ② 正文卡：稿纸装订 ─────────── */
+body.theme-free .ai-card {
+    position: relative;
+    border-left: none;
+    padding-left: 22px;
+    background:
+        linear-gradient(90deg, rgba(224, 168, 76, 0.06), transparent 12%),
+        var(--panel);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+}
+/* 装订线：红色竖线 + 打孔列 */
+body.theme-free .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 6px; bottom: 6px; left: 14px;
+    width: 1px;
+    background: rgba(192, 88, 88, 0.35);
+    pointer-events: none;
+}
+body.theme-free .ai-card::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 6px;
+    background: repeating-linear-gradient(180deg, transparent 0 22px, rgba(224, 168, 76, 0.16) 22px 26px);
+    pointer-events: none;
+}
+body.theme-free .ai-card-header { border-bottom: 1px solid rgba(224, 168, 76, 0.18); }
+
+/* ─────────── ③ 章节徽章：书签烫金 ─────────── */
+body.theme-free .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(240, 207, 140, 0.5);
+    box-shadow: 0 0 10px rgba(224, 168, 76, 0.22);
+}
+
+/* ─────────── ④ 选项按钮：墨迹批注 ─────────── */
+body.theme-free .option-btn { border-radius: 8px; }
+body.theme-free .option-btn::before { content: '✎ '; color: #e0a84c; }
+body.theme-free .option-btn:hover:not(:disabled) {
+    border-color: rgba(224, 168, 76, 0.6);
+    box-shadow: inset 3px 0 0 rgba(224, 168, 76, 0.5);
+    background: rgba(224, 168, 76, 0.05);
+}
+body.theme-free .options-title { letter-spacing: 4px; }
+body.theme-free .options-title::before { content: '❝ '; color: #b08d57; }
+body.theme-free .options-title::after { content: ' ❞'; color: #b08d57; }
+
+/* ─────────── ⑤ 输入区：笔谈便笺 ─────────── */
+body.theme-free #userInput:focus {
+    border-color: #e0a84c;
+    box-shadow: 0 0 0 3px rgba(224, 168, 76, 0.13);
+}
+body.theme-free #sendBtn { box-shadow: 0 0 10px rgba(224, 168, 76, 0.22); letter-spacing: 1px; }
+
+/* ─────────── ⑥ 面板：藏书票 ─────────── */
+body.theme-free .panel-title { letter-spacing: 2.5px; }
+body.theme-free .panel-title::before { content: '◈ '; color: #b08d57; }
+body.theme-free .gauge-label { color: #c8a878; }
+body.theme-free .gauge-fill { box-shadow: 0 0 5px rgba(224, 168, 76, 0.25); }
+body.theme-free .sheet-box { border-top: 2px solid rgba(224, 168, 76, 0.35); }
+body.theme-free .modal-box { border-top: 2px solid rgba(224, 168, 76, 0.35); }
+
+/* ─────────── ⑦ 滚动条：暖光细流 ─────────── */
+body.theme-free #chatMessages::-webkit-scrollbar-thumb,
+body.theme-free #statusPanel::-webkit-scrollbar-thumb,
+body.theme-free #setupWrap::-webkit-scrollbar-thumb { background: rgba(224, 168, 76, 0.26); }
+body.theme-free #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(224, 168, 76, 0.42); }
+
+/* ─────────── ⑧ 扮演模式特化：万能底稿 ─────────── */
+body.theme-free .wizard-title { letter-spacing: 3px; }
+body.theme-free .book-title-line { color: #e0a84c; letter-spacing: 1.5px; }
+body.theme-free .status-panel {
+    border-image: linear-gradient(180deg, rgba(224, 168, 76, 0.3), rgba(138, 180, 200, 0.08)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：便签角贴 ─────────── */
+body.theme-free .quick-btn { border-radius: 8px; }
+body.theme-free .quick-btn:hover {
+    border-color: rgba(224, 168, 76, 0.55);
+    box-shadow: 0 0 8px rgba(224, 168, 76, 0.12);
+}
+
+/* ─────────── ⑩ 章节标题：扉页题字 ─────────── */
+body.theme-free .story-chapter-title {
+    letter-spacing: 6px;
+    text-shadow: 0 0 18px rgba(224, 168, 76, 0.2);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-free.mobile .ai-card::before,
+body.theme-free.mobile .ai-card::after { display: none; }
+body.theme-free.mobile .ai-card { padding-left: revert; }

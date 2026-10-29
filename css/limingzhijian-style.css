@@ -1,0 +1,151 @@
+/* ============================================================
+   黎明之剑主题 - 魔导黎明（蒸汽工业 × 符文鎏金 × 晨光橙）
+   v3.19.0 每界专属 UI 皮肤：
+   符文阵列底纹 · 顶栏齿轮压边 · 卡片魔能管线饰 ·
+   选项黎明指引 · 面板领地徽记 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #d8a04c;
+    --primary-dim: rgba(216, 160, 76, 0.12);
+    --primary-glow: rgba(216, 160, 76, 0.3);
+    --secondary: #5fb8d8;
+    --accent: #b8c49a;
+    --panel-border: rgba(216, 160, 76, 0.18);
+    background-color: #12100a;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(216, 160, 76, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(95, 184, 216, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(216, 160, 76, 0.05), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg stroke='%23d8a04c' stroke-opacity='0.05' fill='none'%3E%3Cpath d='M55 8 L61 18 L73 18 L73 30 L83 36 L73 42 L73 54 L61 60 L55 70 L49 60 L37 54 L37 42 L27 36 L37 30 L37 18 L49 18 Z'/%3E%3C/g%3E%3Cg fill='%235fb8d8' fill-opacity='0.08'%3E%3Ccircle cx='55' cy='36' r='1.4'/%3E%3Ccircle cx='20' cy='76' r='1'/%3E%3Ccircle cx='90' cy='84' r='1.1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #e8c488, #d8a04c); }
+body .progress-fill { background: linear-gradient(90deg, #d8a04c, #5fb8d8); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #e8c488, #d8a04c); }
+body .foreshadow-item.planted {
+    background: rgba(216, 160, 76, 0.08);
+    border-left-color: #d8a04c;
+    color: #d0b088;
+}
+body .char-status { color: #d8a04c; border-color: rgba(216, 160, 76, 0.4); }
+
+/* ─────────── ① 顶栏：黎明地平线 ─────────── */
+body.theme-limingzhijian .top-bar {
+    background: linear-gradient(180deg, rgba(26, 22, 14, 0.96), rgba(18, 16, 10, 0.93));
+    border-bottom: 1px solid rgba(216, 160, 76, 0.24);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.42), inset 0 -1px 0 rgba(95, 184, 216, 0.1);
+}
+body.theme-limingzhijian #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(216, 160, 76, 0.42), 0 0 30px rgba(95, 184, 216, 0.14);
+}
+
+/* ─────────── ② 正文卡：魔导工坊图纸 ─────────── */
+body.theme-limingzhijian .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 8px 14px 8px 14px;
+    background:
+        linear-gradient(160deg, rgba(216, 160, 76, 0.06), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(95, 184, 216, 0.05), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-limingzhijian .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.45), 0 0 18px rgba(216, 160, 76, 0.1); }
+/* 魔能管线饰：右上符文节点 + 左下齿轮弧 */
+body.theme-limingzhijian .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 10px; right: 12px;
+    width: 14px; height: 14px;
+    pointer-events: none;
+    border: 1.5px solid rgba(216, 160, 76, 0.5);
+    transform: rotate(45deg);
+    box-shadow: 0 0 7px rgba(216, 160, 76, 0.3);
+    background: radial-gradient(circle 2.5px at 50% 50%, rgba(95, 184, 216, 0.8), transparent 4px);
+}
+body.theme-limingzhijian .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; left: 10px;
+    width: 24px; height: 12px;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 8px 4px at 6px 12px, transparent 3px, rgba(216, 160, 76, 0.24) 3.5px, transparent 5px),
+        radial-gradient(ellipse 8px 4px at 16px 12px, transparent 3px, rgba(184, 196, 154, 0.2) 3.5px, transparent 5px);
+}
+body.theme-limingzhijian .ai-card-header { border-bottom: 1px solid rgba(216, 160, 76, 0.2); }
+
+/* ─────────── ③ 章节徽章：领地印信 ─────────── */
+body.theme-limingzhijian .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(232, 196, 136, 0.5);
+    box-shadow: 0 0 12px rgba(216, 160, 76, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：晨光抉择 ─────────── */
+body.theme-limingzhijian .option-btn { border-radius: 8px 14px 8px 14px; }
+body.theme-limingzhijian .option-btn::before { content: '⚙ '; color: #d8a04c; }
+body.theme-limingzhijian .option-btn:hover:not(:disabled) {
+    border-color: rgba(216, 160, 76, 0.72);
+    box-shadow: inset 2px 0 0 #d8a04c, 0 0 14px rgba(95, 184, 216, 0.12);
+    background: rgba(216, 160, 76, 0.05);
+    text-shadow: 0 0 8px rgba(216, 160, 76, 0.35);
+}
+body.theme-limingzhijian .options-title { letter-spacing: 4px; }
+body.theme-limingzhijian .options-title::before { content: '▣ '; color: #b8c49a; }
+
+/* ─────────── ⑤ 输入区：符文铭刻 ─────────── */
+body.theme-limingzhijian #userInput { border-radius: 8px 14px 8px 14px; }
+body.theme-limingzhijian #userInput:focus {
+    border-color: #d8a04c;
+    box-shadow: 0 0 0 3px rgba(216, 160, 76, 0.14), 0 0 20px rgba(95, 184, 216, 0.08);
+}
+body.theme-limingzhijian #sendBtn {
+    border-radius: 8px 14px 8px 14px;
+    box-shadow: 0 0 12px rgba(216, 160, 76, 0.28);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：领地档案 ─────────── */
+body.theme-limingzhijian .panel-title { letter-spacing: 3px; }
+body.theme-limingzhijian .panel-title::before { content: '⚒ '; color: #b8c49a; }
+body.theme-limingzhijian .gauge-label { color: #b8c49a; }
+body.theme-limingzhijian .gauge-fill {
+    box-shadow: 0 0 7px rgba(216, 160, 76, 0.3);
+    background-image: linear-gradient(90deg, rgba(95, 184, 216, 0.16), rgba(216, 160, 76, 0.2));
+}
+body.theme-limingzhijian .sheet-box { border-top: 2px solid rgba(216, 160, 76, 0.42); border-radius: 8px 8px 0 0; }
+body.theme-limingzhijian .modal-box { border-top: 2px solid rgba(216, 160, 76, 0.42); border-radius: 8px 8px 0 0; }
+
+/* ─────────── ⑦ 滚动条：魔能流光 ─────────── */
+body.theme-limingzhijian #chatMessages::-webkit-scrollbar-thumb,
+body.theme-limingzhijian #statusPanel::-webkit-scrollbar-thumb,
+body.theme-limingzhijian #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(216, 160, 76, 0.3), rgba(95, 184, 216, 0.18));
+}
+body.theme-limingzhijian #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(216, 160, 76, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：领地文书 ─────────── */
+body.theme-limingzhijian .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(216, 160, 76, 0.32); }
+body.theme-limingzhijian .book-title-line { color: #d8a04c; }
+body.theme-limingzhijian .status-panel {
+    border-image: linear-gradient(180deg, rgba(216, 160, 76, 0.36), rgba(95, 184, 216, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：工坊钮 ─────────── */
+body.theme-limingzhijian .quick-btn { border-radius: 8px 12px 8px 12px; }
+body.theme-limingzhijian .quick-btn:hover {
+    border-color: rgba(216, 160, 76, 0.6);
+    box-shadow: 0 0 10px rgba(216, 160, 76, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：黎明破晓 ─────────── */
+body.theme-limingzhijian .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(216, 160, 76, 0.32), 0 0 40px rgba(95, 184, 216, 0.16);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-limingzhijian.mobile .ai-card::before,
+body.theme-limingzhijian.mobile .ai-card::after { display: none; }

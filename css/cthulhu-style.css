@@ -1,0 +1,151 @@
+/* ============================================================
+   克苏鲁恐怖主题 - 幽紫蚀夜（深渊凝视 × 旧日印记）
+   v3.15.0 每界专属 UI 皮肤重做：
+   深渊波纹底纹 · 顶栏暗蚀压边 · 卡片触须爬行饰 ·
+   选项凝视指引 · 面板禁书标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #b7a8e8;
+    --primary-dim: rgba(183, 168, 232, 0.12);
+    --primary-glow: rgba(183, 168, 232, 0.3);
+    --secondary: #8ab4c8;
+    --accent: #9487bd;
+    --panel-border: rgba(183, 168, 232, 0.18);
+    --bg: #131120;
+    --bg-soft: #16131f;
+    --panel: #1d1930;
+    background-color: #131120;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(183, 168, 232, 0.09), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(70, 82, 74, 0.1), transparent 60%),
+        radial-gradient(ellipse 400px 260px at 70% 30%, rgba(183, 168, 232, 0.04), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='none' stroke='%23b7a8e8' stroke-opacity='0.05'%3E%3Cpath d='M20 90 Q45 60 90 90 T160 90'/%3E%3Cpath d='M0 140 Q40 110 90 140 T180 140'/%3E%3Cpath d='M0 40 Q40 12 90 40 T180 40'/%3E%3C/g%3E%3Cg fill='%238ab4c8' fill-opacity='0.06'%3E%3Ccircle cx='45' cy='65' r='1.2'/%3E%3Ccircle cx='130' cy='115' r='1'/%3E%3Ccircle cx='90' cy='25' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #cec4f0, #b7a8e8); }
+body .progress-fill { background: linear-gradient(90deg, #b7a8e8, #cec4f0); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #cec4f0, #b7a8e8); }
+body .foreshadow-item.planted {
+    background: rgba(183, 168, 232, 0.09);
+    border-left-color: #b7a8e8;
+    color: #c9bfee;
+}
+body .char-status { color: #b7a8e8; border-color: rgba(183, 168, 232, 0.4); }
+body .story-body { line-height: 2.15; }
+body .inspiration-card { border-color: rgba(183, 168, 232, 0.32); }
+
+/* ─────────── ① 顶栏：雾霭深处的灯火 ─────────── */
+body.theme-cthulhu .top-bar {
+    background: linear-gradient(180deg, rgba(23, 19, 36, 0.97), rgba(19, 17, 32, 0.93));
+    border-bottom: 1px solid rgba(183, 168, 232, 0.2);
+    box-shadow: 0 3px 22px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(70, 82, 74, 0.15);
+}
+body.theme-cthulhu #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(183, 168, 232, 0.35), 1px 1px 0 rgba(70, 82, 74, 0.3);
+}
+
+/* ─────────── ② 正文卡：禁忌手记 ─────────── */
+body.theme-cthulhu .ai-card {
+    position: relative;
+    border-left: 3px double rgba(183, 168, 232, 0.45);
+    background:
+        radial-gradient(ellipse 300px 160px at 85% 0%, rgba(70, 82, 74, 0.08), transparent 60%),
+        linear-gradient(160deg, rgba(183, 168, 232, 0.04), transparent 45%),
+        var(--panel);
+    box-shadow: 0 5px 24px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.3s ease;
+}
+body.theme-cthulhu .ai-card:hover { box-shadow: 0 5px 28px rgba(0, 0, 0, 0.5), 0 0 18px rgba(70, 82, 74, 0.1); }
+/* 触须爬行饰：右上角蜿蜒一笔 */
+body.theme-cthulhu .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 10px; right: 12px;
+    width: 34px; height: 18px;
+    background:
+        radial-gradient(circle 2.5px at 4px 4px, rgba(183, 168, 232, 0.5), transparent 3px),
+        radial-gradient(circle 2px at 14px 10px, rgba(138, 180, 200, 0.4), transparent 2.5px),
+        radial-gradient(circle 1.6px at 24px 5px, rgba(183, 168, 232, 0.35), transparent 2px),
+        radial-gradient(circle 1.2px at 31px 13px, rgba(138, 180, 200, 0.3), transparent 1.6px);
+    pointer-events: none;
+}
+/* 左下：一枚旧日之眼 */
+body.theme-cthulhu .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 9px; left: 11px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    border: 1px solid rgba(183, 168, 232, 0.4);
+    background: radial-gradient(circle 2.2px at 50% 50%, rgba(138, 180, 200, 0.7), transparent 3px);
+    box-shadow: 0 0 7px rgba(183, 168, 232, 0.25);
+    pointer-events: none;
+    opacity: 0.6;
+}
+body.theme-cthulhu .ai-card-header { border-bottom: 1px dashed rgba(183, 168, 232, 0.22); }
+
+/* ─────────── ③ 章节徽章：旧日印记 ─────────── */
+body.theme-cthulhu .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(206, 196, 240, 0.45);
+    box-shadow: 0 0 12px rgba(70, 82, 74, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：低语的岔路 ─────────── */
+body.theme-cthulhu .option-btn { border-radius: 10px 4px 10px 4px; }
+body.theme-cthulhu .option-btn::before { content: '⌇ '; color: #9487bd; }
+body.theme-cthulhu .option-btn:hover:not(:disabled) {
+    border-color: rgba(183, 168, 232, 0.55);
+    box-shadow: inset 0 0 14px rgba(70, 82, 74, 0.18), 0 0 12px rgba(183, 168, 232, 0.1);
+    background: rgba(183, 168, 232, 0.05);
+}
+body.theme-cthulhu .options-title { letter-spacing: 5px; text-shadow: 0 0 12px rgba(70, 82, 74, 0.4); }
+body.theme-cthulhu .options-title::before { content: '☬ '; color: #9487bd; }
+
+/* ─────────── ⑤ 输入区：被注视的稿纸 ─────────── */
+body.theme-cthulhu #userInput:focus {
+    border-color: #b7a8e8;
+    box-shadow: 0 0 0 3px rgba(183, 168, 232, 0.12), 0 0 20px rgba(70, 82, 74, 0.2);
+}
+body.theme-cthulhu #sendBtn {
+    border-radius: 10px 4px 10px 4px;
+    box-shadow: 0 0 12px rgba(183, 168, 232, 0.22);
+}
+
+/* ─────────── ⑥ 面板：禁书目录 ─────────── */
+body.theme-cthulhu .panel-title { letter-spacing: 3px; }
+body.theme-cthulhu .panel-title::before { content: '☥ '; color: #9487bd; }
+body.theme-cthulhu .gauge-label { color: #a89ad0; }
+body.theme-cthulhu .gauge-fill { box-shadow: 0 0 7px rgba(183, 168, 232, 0.25); }
+body.theme-cthulhu .sheet-box { border-top: 2px solid rgba(183, 168, 232, 0.38); }
+body.theme-cthulhu .modal-box { border-top: 2px solid rgba(183, 168, 232, 0.38); }
+
+/* ─────────── ⑦ 滚动条：深潜细流 ─────────── */
+body.theme-cthulhu #chatMessages::-webkit-scrollbar-thumb,
+body.theme-cthulhu #statusPanel::-webkit-scrollbar-thumb,
+body.theme-cthulhu #setupWrap::-webkit-scrollbar-thumb { background: rgba(183, 168, 232, 0.26); }
+body.theme-cthulhu #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(183, 168, 232, 0.44); }
+
+/* ─────────── ⑧ 扮演模式特化：理智刻度 ─────────── */
+body.theme-cthulhu .wizard-title { letter-spacing: 4px; text-shadow: 0 0 14px rgba(70, 82, 74, 0.5); }
+body.theme-cthulhu .book-title-line { color: #b7a8e8; }
+body.theme-cthulhu .status-panel {
+    border-image: linear-gradient(180deg, rgba(183, 168, 232, 0.32), rgba(70, 82, 74, 0.15)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：咒文残页 ─────────── */
+body.theme-cthulhu .quick-btn { border-radius: 10px 4px 10px 4px; }
+body.theme-cthulhu .quick-btn:hover {
+    border-color: rgba(70, 82, 74, 0.55);
+    box-shadow: inset 0 0 8px rgba(70, 82, 74, 0.2);
+}
+
+/* ─────────── ⑩ 章节标题：蚀刻铭文 ─────────── */
+body.theme-cthulhu .story-chapter-title {
+    letter-spacing: 9px;
+    text-shadow: 0 0 18px rgba(70, 82, 74, 0.5), 0 0 32px rgba(183, 168, 232, 0.15);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-cthulhu.mobile .ai-card::before,
+body.theme-cthulhu.mobile .ai-card::after { display: none; }

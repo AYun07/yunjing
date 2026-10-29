@@ -1,0 +1,17 @@
+/* 剑来主题 - 窑火鎏金 */
+body{--primary:#d8b86a;--primary-dim:rgba(216,184,106,.12);--primary-glow:rgba(216,184,106,.3);--secondary:#8fae8a;--accent:#b8905c;--panel-border:rgba(216,184,106,.18);--bg:#171310;--bg-soft:#1a1613;--panel:#201a14;background-color:#171310;background-image:radial-gradient(ellipse 760px 440px at 12% -6%,rgba(216,184,106,.09),transparent 62%),radial-gradient(ellipse 640px 480px at 98% 110%,rgba(143,174,138,.08),transparent 60%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%23d8b86a' stroke-opacity='0.05'%3E%3Cpath d='M0 160 Q50 120 100 150 T200 140'/%3E%3Cpath d='M30 0 Q60 40 30 90'/%3E%3Cpath d='M150 0 Q180 50 150 100'/%3E%3C/g%3E%3Cg fill='%238fae8a' fill-opacity='0.06'%3E%3Ccircle cx='60' cy='40' r='1.2'/%3E%3Ccircle cx='160' cy='170' r='1'/%3E%3C/g%3E%3C/svg%3E")}
+body .chapter-badge{background:linear-gradient(135deg,#e8d8a8,#d8b86a)}
+body .progress-fill{background:linear-gradient(90deg,#d8b86a,#e8d8a8)}
+body #sendBtn,body .btn-solid{background:linear-gradient(135deg,#e8d8a8,#d8b86a)}
+body .foreshadow-item.planted{background:rgba(216,184,106,.09);border-left-color:#d8b86a;color:#e0d0a0}
+body .char-status{color:#d8b86a;border-color:rgba(216,184,106,.4)}
+body.theme-jianlai .top-bar{background:linear-gradient(180deg,rgba(26,22,19,.97),rgba(23,19,16,.93));border-bottom:1px solid rgba(216,184,106,.2)}
+body.theme-jianlai #gameTitle{letter-spacing:4px;text-shadow:0 0 16px rgba(216,184,106,.35)}
+body.theme-jianlai .ai-card{position:relative;border-left:3px double rgba(216,184,106,.45);background:radial-gradient(ellipse 300px 160px at 85% 0%,rgba(143,174,138,.07),transparent 60%),linear-gradient(160deg,rgba(216,184,106,.04),transparent 45%),var(--panel)}
+body.theme-jianlai .option-btn{border:1px solid rgba(216,184,106,.3);background:linear-gradient(135deg,rgba(216,184,106,.07),rgba(143,174,138,.04))}
+body.theme-jianlai .option-btn:hover{border-color:rgba(216,184,106,.6)}
+body.theme-jianlai .option-btn::before{content:"◆ ";color:var(--secondary);font-size:12px}
+body.theme-jianlai .panel-title{letter-spacing:3px;color:#d8b86a}
+body.theme-jianlai ::-webkit-scrollbar{width:8px}
+body.theme-jianlai ::-webkit-scrollbar-track{background:rgba(216,184,106,.04)}
+body.theme-jianlai ::-webkit-scrollbar-thumb{background:rgba(216,184,106,.28);border-radius:4px}
