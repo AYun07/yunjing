@@ -1,0 +1,183 @@
+/* ============================================================
+   地球开放世界主题 - 寰宇经纬（真实地景 × 经纬墨线）
+   v3.19.6 每界专属 UI 皮肤：
+   经纬弧线底纹 · 顶栏制图压边 · 卡片等高线饰 ·
+   选项罗盘指引 · 面板寰球标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #5a9e7f;
+    --primary-dim: rgba(90, 158, 127, 0.12);
+    --primary-glow: rgba(90, 158, 127, 0.3);
+    --secondary: #c9a06a;
+    --accent: #7ab8c9;
+    --panel-border: rgba(90, 158, 127, 0.18);
+    background-color: #0e1416;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(90, 158, 127, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(201, 160, 106, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(122, 184, 201, 0.05), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg stroke='%235a9e7f' stroke-opacity='0.05' fill='none'%3E%3Cellipse cx='60' cy='60' rx='52' ry='52'/%3E%3Cellipse cx='60' cy='60' rx='52' ry='34'/%3E%3Cellipse cx='60' cy='60' rx='52' ry='16'/%3E%3Cpath d='M8 60 A52 52 0 0 1 112 60 M8 60 A52 52 0 0 0 112 60'/%3E%3Cpath d='M60 8 A52 52 0 0 1 60 112'/%3E%3Cpath d='M28 22 A52 52 0 0 1 92 98'/%3E%3C/g%3E%3Cg fill='%23c9a06a' fill-opacity='0.08'%3E%3Ccircle cx='60' cy='26' r='1'/%3E%3Ccircle cx='96' cy='52' r='1.2'/%3E%3Ccircle cx='30' cy='88' r='0.9'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #8cc4a8, #5a9e7f); }
+body .progress-fill { background: linear-gradient(90deg, #5a9e7f, #c9a06a); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #8cc4a8, #5a9e7f); }
+body .foreshadow-item.planted {
+    background: rgba(90, 158, 127, 0.08);
+    border-left-color: #5a9e7f;
+    color: #94c4aa;
+}
+body .char-status { color: #5a9e7f; border-color: rgba(90, 158, 127, 0.4); }
+
+/* ─────────── ① 顶栏：制图室台面 ─────────── */
+body.theme-earth .top-bar {
+    background: linear-gradient(180deg, rgba(16, 22, 24, 0.96), rgba(14, 20, 22, 0.93));
+    border-bottom: 1px solid rgba(90, 158, 127, 0.24);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.42), inset 0 -1px 0 rgba(201, 160, 106, 0.1);
+}
+body.theme-earth #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(90, 158, 127, 0.42), 0 0 30px rgba(201, 160, 106, 0.14);
+}
+
+/* ─────────── ② 正文卡：环球日志 ─────────── */
+body.theme-earth .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 8px 14px 8px 14px;
+    background:
+        linear-gradient(160deg, rgba(90, 158, 127, 0.06), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(201, 160, 106, 0.05), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-earth .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.45), 0 0 18px rgba(90, 158, 127, 0.1); }
+/* 经纬饰：右上罗盘针 + 左下等高线弧 */
+body.theme-earth .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 10px; right: 12px;
+    width: 11px; height: 11px;
+    border: 1.5px solid rgba(90, 158, 127, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 7px rgba(90, 158, 127, 0.3);
+    background:
+        linear-gradient(45deg, transparent 44%, rgba(201, 160, 106, 0.85) 46%, rgba(201, 160, 106, 0.85) 54%, transparent 56%),
+        linear-gradient(135deg, transparent 44%, rgba(122, 184, 201, 0.7) 46%, rgba(122, 184, 201, 0.7) 54%, transparent 56%);
+}
+body.theme-earth .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; left: 10px;
+    width: 24px; height: 12px;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 8px 4px at 4px 12px, transparent 3px, rgba(90, 158, 127, 0.22) 3.5px, transparent 5px),
+        radial-gradient(ellipse 8px 4px at 14px 12px, transparent 3px, rgba(122, 184, 201, 0.2) 3.5px, transparent 5px),
+        radial-gradient(ellipse 8px 4px at 24px 12px, transparent 3px, rgba(201, 160, 106, 0.2) 3.5px, transparent 5px);
+}
+body.theme-earth .ai-card-header { border-bottom: 1px solid rgba(90, 158, 127, 0.2); }
+
+/* ─────────── ③ 章节徽章：寰球印记 ─────────── */
+body.theme-earth .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(140, 196, 168, 0.5);
+    box-shadow: 0 0 12px rgba(90, 158, 127, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：寻常日子 ─────────── */
+body.theme-earth .option-btn { border-radius: 8px 14px 8px 14px; }
+body.theme-earth .option-btn::before { content: '⌖ '; color: #5a9e7f; }
+body.theme-earth .option-btn:hover:not(:disabled) {
+    border-color: rgba(90, 158, 127, 0.72);
+    box-shadow: inset 2px 0 0 #5a9e7f, 0 0 14px rgba(201, 160, 106, 0.12);
+    background: rgba(90, 158, 127, 0.05);
+    text-shadow: 0 0 8px rgba(90, 158, 127, 0.35);
+}
+body.theme-earth .options-title { letter-spacing: 4px; }
+body.theme-earth .options-title::before { content: '⌖ '; color: #7ab8c9; }
+
+/* ─────────── ⑤ 输入区：落笔人间 ─────────── */
+body.theme-earth #userInput { border-radius: 8px 14px 8px 14px; }
+body.theme-earth #userInput:focus {
+    border-color: #5a9e7f;
+    box-shadow: 0 0 0 3px rgba(90, 158, 127, 0.14), 0 0 20px rgba(201, 160, 106, 0.08);
+}
+body.theme-earth #sendBtn {
+    border-radius: 8px 14px 8px 14px;
+    box-shadow: 0 0 12px rgba(90, 158, 127, 0.28);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：人生档案 ─────────── */
+body.theme-earth .panel-title { letter-spacing: 3px; }
+body.theme-earth .panel-title::before { content: ''; }
+body.theme-earth .gauge-label { color: #7ab8c9; }
+body.theme-earth .gauge-fill {
+    box-shadow: 0 0 7px rgba(90, 158, 127, 0.3);
+    background-image: linear-gradient(90deg, rgba(201, 160, 106, 0.16), rgba(90, 158, 127, 0.2));
+}
+body.theme-earth .sheet-box { border-top: 2px solid rgba(90, 158, 127, 0.42); border-radius: 8px 8px 0 0; }
+body.theme-earth .modal-box { border-top: 2px solid rgba(90, 158, 127, 0.42); border-radius: 8px 8px 0 0; }
+
+/* ─────────── ⑥-2 v3.30.0 状态面板地球化：时空罗盘 + 生计账本进主面板 ─────────── */
+body.theme-earth .spacetime-chip {
+    border-color: rgba(90, 158, 127, 0.32);
+    background: rgba(90, 158, 127, 0.07);
+    box-shadow: inset 0 0 8px rgba(90, 158, 127, 0.08);
+}
+body.theme-earth .spacetime-chip b { color: #c9a06a; }
+body.theme-earth .acct-row { border-bottom-color: rgba(90, 158, 127, 0.14); }
+body.theme-earth .acct-val.in { color: #8cc4a8; }
+body.theme-earth .acct-val.out { color: #d4956a; }
+
+/* ─────────── ⑦ 滚动条：洋流细纹 ─────────── */
+body.theme-earth #chatMessages::-webkit-scrollbar-thumb,
+body.theme-earth #statusPanel::-webkit-scrollbar-thumb,
+body.theme-earth #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(90, 158, 127, 0.3), rgba(201, 160, 106, 0.18));
+}
+body.theme-earth #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(90, 158, 127, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：身份登记簿 ─────────── */
+body.theme-earth .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(90, 158, 127, 0.32); }
+body.theme-earth .book-title-line { color: #5a9e7f; }
+body.theme-earth .status-panel {
+    border-image: linear-gradient(180deg, rgba(90, 158, 127, 0.36), rgba(201, 160, 106, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：日常钮 ─────────── */
+body.theme-earth .quick-btn { border-radius: 8px 12px 8px 12px; }
+body.theme-earth .quick-btn:hover {
+    border-color: rgba(90, 158, 127, 0.6);
+    box-shadow: 0 0 10px rgba(90, 158, 127, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：人间纪年 ─────────── */
+body.theme-earth .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(90, 158, 127, 0.32), 0 0 40px rgba(201, 160, 106, 0.16);
+}
+
+/* ─────────── ⑪ 地球专属面板：时代校准 · 生计账本 ─────────── */
+body.theme-earth .era-calib-box {
+    border: 1px solid rgba(90, 158, 127, 0.28);
+    border-radius: 8px;
+    background: rgba(14, 20, 22, 0.6);
+    padding: 8px 10px;
+}
+body.theme-earth .era-calib-title { color: #c9a06a; letter-spacing: 2px; }
+body.theme-earth .ledger-row {
+    display: flex;
+    justify-content: space-between;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px dashed rgba(90, 158, 127, 0.15);
+    padding: 3px 0;
+}
+body.theme-earth .ledger-row .ledger-in { color: #8cc4a8; }
+body.theme-earth .ledger-row .ledger-out { color: #d4956a; }
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-earth.mobile .ai-card::before,
+body.theme-earth.mobile .ai-card::after { display: none; }

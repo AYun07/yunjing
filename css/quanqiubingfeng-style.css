@@ -1,0 +1,157 @@
+/* ============================================================
+   全球冰封主题 - 极寒冰蓝（末日暴雪 × 安全屋暖橙微光）
+   v3.32.0 每界专属 UI 皮肤：
+   暴雪冰纹底纹 · 顶栏寒潮压边 · 卡片霜线饰 ·
+   选项冰灯指引 · 面板安全屋中控 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #5fb8d8;
+    --primary-dim: rgba(95, 184, 216, 0.12);
+    --primary-glow: rgba(95, 184, 216, 0.3);
+    --secondary: #2d7a9e;
+    --accent: #b8e8f4;
+    --panel-border: rgba(95, 184, 216, 0.18);
+    background-color: #0a1220;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(95, 184, 216, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(45, 122, 158, 0.08), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 72% 24%, rgba(95, 184, 216, 0.04), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg stroke='%235fb8d8' stroke-opacity='0.05'%3E%3Cpath d='M0 30 H140 M0 90 H140'/%3E%3Cpath d='M28 0 L52 52 L28 140' fill='none'/%3E%3Cpath d='M108 0 L132 52 L108 140' fill='none'/%3E%3C/g%3E%3Cg fill='%23b8e8f4' fill-opacity='0.12'%3E%3Ccircle cx='28' cy='30' r='1.3'/%3E%3Ccircle cx='132' cy='90' r='1'/%3E%3Ccircle cx='70' cy='60' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #b8e8f4, #5fb8d8); }
+body .progress-fill { background: linear-gradient(90deg, #5fb8d8, #2d7a9e); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #b8e8f4, #5fb8d8); }
+body .foreshadow-item.planted {
+    background: rgba(95, 184, 216, 0.08);
+    border-left-color: #5fb8d8;
+    color: #d0ecf4;
+}
+body .char-status { color: #5fb8d8; border-color: rgba(95, 184, 216, 0.4); }
+
+/* ─────────── ① 顶栏：寒潮警报条 ─────────── */
+body.theme-quanqiubingfeng .top-bar {
+    background: linear-gradient(180deg, rgba(13, 21, 36, 0.96), rgba(10, 18, 32, 0.93));
+    border-bottom: none;
+    box-shadow: inset 0 -1px 0 rgba(95, 184, 216, 0.4), inset 0 -3px 6px rgba(45, 122, 158, 0.12), 0 2px 18px rgba(0, 0, 0, 0.45);
+}
+body.theme-quanqiubingfeng #gameTitle {
+    letter-spacing: 3px;
+    text-shadow: 0 0 16px rgba(95, 184, 216, 0.45), 0 0 32px rgba(45, 122, 158, 0.2);
+}
+
+/* ─────────── ② 正文卡：安全屋舷窗 ─────────── */
+body.theme-quanqiubingfeng .ai-card {
+    position: relative;
+    border-left: none;
+    border-image: linear-gradient(180deg, rgba(95, 184, 216, 0.6), rgba(45, 122, 158, 0.25), rgba(95, 184, 216, 0.08)) 1;
+    border-left: 3px solid transparent;
+    background:
+        linear-gradient(160deg, rgba(95, 184, 216, 0.06), transparent 40%),
+        radial-gradient(ellipse 240px 120px at 95% 100%, rgba(45, 122, 158, 0.05), transparent 55%),
+        var(--panel);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-quanqiubingfeng .ai-card:hover {
+    box-shadow: 0 4px 26px rgba(0, 0, 0, 0.4), 0 0 20px rgba(95, 184, 216, 0.1);
+}
+/* 霜线饰：右上冰凌一线 + 左下暖芯（安全屋火光） */
+body.theme-quanqiubingfeng .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 14px; right: 8px;
+    width: 22px; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(184, 232, 244, 0.6));
+    transform: rotate(-32deg);
+    box-shadow: 0 0 6px rgba(184, 232, 244, 0.3);
+    pointer-events: none;
+}
+body.theme-quanqiubingfeng .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 12px; left: 9px;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: rgba(240, 176, 96, 0.75);
+    box-shadow: 0 0 8px rgba(240, 176, 96, 0.5);
+    pointer-events: none;
+}
+body.theme-quanqiubingfeng .ai-card-header { border-bottom: 1px solid rgba(95, 184, 216, 0.2); }
+
+/* ─────────── ③ 章节徽章：温度计牌 ─────────── */
+body.theme-quanqiubingfeng .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(184, 232, 244, 0.5);
+    box-shadow: 0 0 12px rgba(95, 184, 216, 0.3), inset 0 0 6px rgba(95, 184, 216, 0.1);
+    text-shadow: 0 0 8px rgba(95, 184, 216, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：冰灯抉择 ─────────── */
+body.theme-quanqiubingfeng .option-btn { border-radius: 7px; }
+body.theme-quanqiubingfeng .option-btn::before { content: '❄ '; color: #5fb8d8; font-size: 0.85em; }
+body.theme-quanqiubingfeng .option-btn:hover:not(:disabled) {
+    border-color: rgba(95, 184, 216, 0.7);
+    box-shadow: inset 2px 0 0 #5fb8d8, 0 0 14px rgba(45, 122, 158, 0.16);
+    background: rgba(95, 184, 216, 0.05);
+    text-shadow: 0 0 8px rgba(184, 232, 244, 0.35);
+}
+body.theme-quanqiubingfeng .options-title { letter-spacing: 4px; }
+body.theme-quanqiubingfeng .options-title::before { content: '❅ '; color: #b8e8f4; }
+
+/* ─────────── ⑤ 输入区：生存指令台 ─────────── */
+body.theme-quanqiubingfeng #userInput:focus {
+    border-color: #5fb8d8;
+    box-shadow: 0 0 0 3px rgba(95, 184, 216, 0.14), 0 0 20px rgba(45, 122, 158, 0.12);
+}
+body.theme-quanqiubingfeng #sendBtn {
+    box-shadow: 0 0 12px rgba(95, 184, 216, 0.3);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：安全屋中控仪表盘 ─────────── */
+body.theme-quanqiubingfeng .panel-title { letter-spacing: 3px; }
+body.theme-quanqiubingfeng .panel-title::before { content: '◈ '; color: #b8e8f4; }
+body.theme-quanqiubingfeng .gauge-label { color: #d0ecf4; }
+body.theme-quanqiubingfeng .book-title-line { color: #5fb8d8; }
+body.theme-quanqiubingfeng .status-panel {
+    border-image: linear-gradient(180deg, rgba(95, 184, 216, 0.35), rgba(45, 122, 158, 0.14)) 1;
+}
+/* 生存条冰晶质感 */
+body.theme-quanqiubingfeng .gauge-fill {
+    box-shadow: 0 0 7px rgba(95, 184, 216, 0.35);
+    background-image: linear-gradient(90deg, rgba(184, 232, 244, 0.18), transparent);
+}
+body.theme-quanqiubingfeng .sheet-box { border-top: 2px solid rgba(95, 184, 216, 0.42); }
+body.theme-quanqiubingfeng .modal-box { border-top: 2px solid rgba(95, 184, 216, 0.42); }
+
+/* ─────────── ⑦ 滚动条：冰川细流 ─────────── */
+body.theme-quanqiubingfeng #chatMessages::-webkit-scrollbar-thumb,
+body.theme-quanqiubingfeng #statusPanel::-webkit-scrollbar-thumb,
+body.theme-quanqiubingfeng #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(95, 184, 216, 0.3), rgba(45, 122, 158, 0.2));
+}
+body.theme-quanqiubingfeng #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(95, 184, 216, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：灾变倒计时 ─────────── */
+body.theme-quanqiubingfeng .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(95, 184, 216, 0.35); }
+
+/* ─────────── ⑨ 快捷指令：求生钮 ─────────── */
+body.theme-quanqiubingfeng .quick-btn { border-radius: 7px; }
+body.theme-quanqiubingfeng .quick-btn:hover {
+    border-color: rgba(95, 184, 216, 0.6);
+    box-shadow: 0 0 10px rgba(95, 184, 216, 0.16);
+}
+
+/* ─────────── ⑩ 章节标题：冰封大字 ─────────── */
+body.theme-quanqiubingfeng .story-chapter-title {
+    letter-spacing: 7px;
+    text-shadow: 0 0 18px rgba(95, 184, 216, 0.35), 0 0 36px rgba(45, 122, 158, 0.18);
+}
+
+/* ─────────── ⑪ 界专属模块：寒潮预警红温层 ─────────── */
+/* 气温跌破警戒线时，监测站数值泛出冷白 */
+body.theme-quanqiubingfeng .we-mod-value-frost { color: #eaf8fc; text-shadow: 0 0 8px rgba(184, 232, 244, 0.4); }
+body.theme-quanqiubingfeng .we-mod-value-warn { color: #f0b060; text-shadow: 0 0 8px rgba(240, 176, 96, 0.35); }
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-quanqiubingfeng.mobile .ai-card::before,
+body.theme-quanqiubingfeng.mobile .ai-card::after { display: none; }

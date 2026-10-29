@@ -1,0 +1,100 @@
+/* ============================================================
+   悬疑推理主题 - 雾蓝卷宗（案头台灯 × 证物档案）
+   v3.15.0 每界专属 UI 皮肤重做：
+   档案纸点纹 · 顶栏灯晕压边 · 卡片折角证物饰 ·
+   选项红线牵连 · 卷宗标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #8ab4c8;
+    --primary-dim: rgba(138, 180, 200, 0.12);
+    --primary-glow: rgba(138, 180, 200, 0.3);
+    --secondary: #e0a84c;
+    --accent: #7d99ad;
+    --panel-border: rgba(138, 180, 200, 0.18);
+    background-color: #10151c;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(138, 180, 200, 0.07), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(224, 168, 76, 0.04), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='%238ab4c8' fill-opacity='0.05'%3E%3Ccircle cx='12' cy='12' r='1'/%3E%3Ccircle cx='60' cy='28' r='0.8'/%3E%3Ccircle cx='28' cy='64' r='1'/%3E%3Ccircle cx='84' cy='80' r='0.8'/%3E%3Ccircle cx='48' cy='8' r='0.7'/%3E%3C/g%3E%3Cg stroke='%238ab4c8' stroke-opacity='0.045' stroke-dasharray='2 6'%3E%3Cpath d='M0 48 H96'/%3E%3Cpath d='M48 0 V96'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #b8d4e2, #8ab4c8); }
+body .progress-fill { background: linear-gradient(90deg, #8ab4c8, #b8d4e2); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #b8d4e2, #8ab4c8); }
+body .foreshadow-item.planted {
+    background: rgba(138, 180, 200, 0.08);
+    border-left-color: #8ab4c8;
+    color: #a9c6d6;
+}
+body .char-status { color: #8ab4c8; border-color: rgba(138, 180, 200, 0.4); }
+
+/* ─────────── ① 顶栏：台灯下的一方天地 ─────────── */
+body.theme-mystery .top-bar {
+    background: linear-gradient(180deg, rgba(18, 24, 32, 0.96), rgba(16, 21, 28, 0.92));
+    border-bottom: 1px solid rgba(138, 180, 200, 0.22);
+    box-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+body.theme-mystery #gameTitle { letter-spacing: 2.5px; }
+
+/* ─────────── ② 正文卡：证物卷宗 ─────────── */
+body.theme-mystery .ai-card {
+    background:
+        linear-gradient(160deg, rgba(138, 180, 200, 0.05), transparent 42%),
+        var(--panel);
+    border-left: 3px solid #8ab4c8;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+/* 右上折角：档案袋的一角 */
+body.theme-mystery .ai-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; right: -1px;
+    width: 0; height: 0;
+    border-top: 22px solid rgba(138, 180, 200, 0.14);
+    border-left: 22px solid transparent;
+    border-radius: 0 10px 0 0;
+    pointer-events: none;
+}
+body.theme-mystery .ai-card { position: relative; }
+body.theme-mystery .ai-card-header { border-bottom: 1px dotted rgba(138, 180, 200, 0.25); }
+
+/* ─────────── ③ 章节徽章：案卷编号 ─────────── */
+body.theme-mystery .chapter-badge {
+    font-family: var(--mono);
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(184, 212, 226, 0.45);
+}
+
+/* ─────────── ④ 选项按钮：红线牵连 ─────────── */
+body.theme-mystery .option-btn { border-radius: 6px; }
+body.theme-mystery .option-btn:hover:not(:disabled) {
+    border-color: rgba(224, 168, 76, 0.55);
+    box-shadow: inset 2px 0 0 #e0a84c;
+    background: rgba(224, 168, 76, 0.06);
+}
+body.theme-mystery .options-title::before { content: '▸ '; color: #e0a84c; }
+
+/* ─────────── ⑤ 输入区：案头便签 ─────────── */
+body.theme-mystery #userInput:focus {
+    border-color: #8ab4c8;
+    box-shadow: 0 0 0 3px rgba(138, 180, 200, 0.14);
+}
+
+/* ─────────── ⑥ 面板：卷宗目录 ─────────── */
+body.theme-mystery .panel-title::before { content: '└ '; color: #7d99ad; }
+body.theme-mystery .gauge-label { color: #7d99ad; }
+body.theme-mystery .sheet-box { border-top: 2px solid rgba(138, 180, 200, 0.4); }
+body.theme-mystery .modal-box { border-top: 2px solid rgba(138, 180, 200, 0.4); }
+
+/* ─────────── ⑦ 滚动条：雾夜细流 ─────────── */
+body.theme-mystery #chatMessages::-webkit-scrollbar-thumb,
+body.theme-mystery #statusPanel::-webkit-scrollbar-thumb,
+body.theme-mystery #setupWrap::-webkit-scrollbar-thumb { background: rgba(138, 180, 200, 0.28); }
+body.theme-mystery #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(138, 180, 200, 0.45); }
+
+/* ─────────── ⑧ 创作工坊特化：推理板 ─────────── */
+body.theme-mystery .story-chapter-title { letter-spacing: 5px; }
+body.theme-mystery .quick-btn:hover { border-color: rgba(138, 180, 200, 0.55); }
+body.theme-mystery .foreshadow-item.planted { border-left-style: double; }
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-mystery.mobile .ai-card::before { display: none; }

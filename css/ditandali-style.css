@@ -1,0 +1,150 @@
+/* ============================================================
+   开局地摊卖大力主题 - 夜市烟火（暖灯金 × 布幔红 × 霓虹紫）
+   v3.19.0 每界专属 UI 皮肤：
+   摊布格纹底色 · 顶栏灯箱压边 · 卡片布幔饰 ·
+   选项吆喝指引 · 面板灯串徽记 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #e8a04c;
+    --primary-dim: rgba(232, 160, 76, 0.12);
+    --primary-glow: rgba(232, 160, 76, 0.3);
+    --secondary: #c87858;
+    --accent: #f0c890;
+    --panel-border: rgba(232, 160, 76, 0.18);
+    background-color: #131009;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(232, 160, 76, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(200, 120, 88, 0.07), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(168, 96, 200, 0.05), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg stroke='%23e8a04c' stroke-opacity='0.045' fill='none'%3E%3Cpath d='M0 28 L110 28 M0 82 L110 82 M28 0 L28 110 M82 0 L82 110'/%3E%3Cpath d='M0 55 L14 42 L28 55 L42 42 L56 55 L70 42 L84 55 L98 42 L110 55'/%3E%3C/g%3E%3Cg fill='%23c87858' fill-opacity='0.08'%3E%3Ccircle cx='55' cy='55' r='2.6'/%3E%3Ccircle cx='28' cy='28' r='1'/%3E%3Ccircle cx='82' cy='28' r='1'/%3E%3Ccircle cx='28' cy='82' r='1'/%3E%3Ccircle cx='82' cy='82' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #f0c890, #e8a04c); }
+body .progress-fill { background: linear-gradient(90deg, #e8a04c, #c87858); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #f0c890, #e8a04c); }
+body .foreshadow-item.planted {
+    background: rgba(232, 160, 76, 0.08);
+    border-left-color: #e8a04c;
+    color: #e8bc84;
+}
+body .char-status { color: #e8a04c; border-color: rgba(232, 160, 76, 0.4); }
+
+/* ─────────── ① 顶栏：夜市灯箱匾 ─────────── */
+body.theme-ditandali .top-bar {
+    background: linear-gradient(180deg, rgba(30, 22, 12, 0.96), rgba(19, 16, 9, 0.93));
+    border-bottom: 1px solid rgba(232, 160, 76, 0.28);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(200, 120, 88, 0.12);
+}
+body.theme-ditandali #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(232, 160, 76, 0.44), 0 0 30px rgba(168, 96, 200, 0.12);
+}
+
+/* ─────────── ② 正文卡：摊前实录 ─────────── */
+body.theme-ditandali .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 16px 10px 16px 10px;
+    background:
+        linear-gradient(160deg, rgba(232, 160, 76, 0.06), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(200, 120, 88, 0.06), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.38);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-ditandali .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.42), 0 0 18px rgba(232, 160, 76, 0.12); }
+/* 布幔饰：左上幔头斜披 + 右下灯串角 */
+body.theme-ditandali .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 14px;
+    width: 26px; height: 3px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(232, 160, 76, 0.6), transparent);
+    box-shadow: 0 1px 0 rgba(200, 120, 88, 0.22);
+}
+body.theme-ditandali .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; right: 12px;
+    width: 20px; height: 20px;
+    pointer-events: none;
+    opacity: 0.5;
+    background:
+        radial-gradient(circle 8px at 50% 50%, transparent 5px, rgba(240, 200, 144, 0.32) 6px, transparent 8px),
+        radial-gradient(circle 3px at 50% 50%, rgba(232, 160, 76, 0.55), transparent 4px);
+}
+body.theme-ditandali .ai-card-header { border-bottom: 1px solid rgba(232, 160, 76, 0.22); }
+
+/* ─────────── ③ 章节徽章：摊号招牌 ─────────── */
+body.theme-ditandali .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(240, 200, 144, 0.5);
+    box-shadow: 0 0 12px rgba(232, 160, 76, 0.32);
+}
+
+/* ─────────── ④ 选项按钮：吆喝抉择 ─────────── */
+body.theme-ditandali .option-btn { border-radius: 16px 10px 16px 10px; }
+body.theme-ditandali .option-btn::before { content: '🏮 '; color: #e8a04c; }
+body.theme-ditandali .option-btn:hover:not(:disabled) {
+    border-color: rgba(232, 160, 76, 0.72);
+    box-shadow: inset 2px 0 0 #e8a04c, 0 0 14px rgba(200, 120, 88, 0.14);
+    background: rgba(232, 160, 76, 0.05);
+    text-shadow: 0 0 8px rgba(232, 160, 76, 0.35);
+}
+body.theme-ditandali .options-title { letter-spacing: 4px; }
+body.theme-ditandali .options-title::before { content: '🏮 '; color: #c87858; }
+
+/* ─────────── ⑤ 输入区：吆喝落笔 ─────────── */
+body.theme-ditandali #userInput { border-radius: 16px 10px 16px 10px; }
+body.theme-ditandali #userInput:focus {
+    border-color: #e8a04c;
+    box-shadow: 0 0 0 3px rgba(232, 160, 76, 0.14), 0 0 20px rgba(200, 120, 88, 0.1);
+}
+body.theme-ditandali #sendBtn {
+    border-radius: 16px 10px 16px 10px;
+    box-shadow: 0 0 12px rgba(232, 160, 76, 0.3);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：账房柜台 ─────────── */
+body.theme-ditandali .panel-title { letter-spacing: 3px; }
+body.theme-ditandali .panel-title::before { content: '🏮 '; color: #f0c890; }
+body.theme-ditandali .gauge-label { color: #f0c890; }
+body.theme-ditandali .gauge-fill {
+    box-shadow: 0 0 7px rgba(232, 160, 76, 0.3);
+    background-image: linear-gradient(90deg, rgba(200, 120, 88, 0.16), rgba(232, 160, 76, 0.2));
+}
+body.theme-ditandali .sheet-box { border-top: 2px solid rgba(232, 160, 76, 0.42); border-radius: 10px 10px 0 0; }
+body.theme-ditandali .modal-box { border-top: 2px solid rgba(232, 160, 76, 0.42); border-radius: 10px 10px 0 0; }
+
+/* ─────────── ⑦ 滚动条：灯串滑轨 ─────────── */
+body.theme-ditandali #chatMessages::-webkit-scrollbar-thumb,
+body.theme-ditandali #statusPanel::-webkit-scrollbar-thumb,
+body.theme-ditandali #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(232, 160, 76, 0.3), rgba(200, 120, 88, 0.18));
+}
+body.theme-ditandali #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(232, 160, 76, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：摆摊人面板 ─────────── */
+body.theme-ditandali .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(232, 160, 76, 0.34); }
+body.theme-ditandali .book-title-line { color: #e8a04c; }
+body.theme-ditandali .status-panel {
+    border-image: linear-gradient(180deg, rgba(232, 160, 76, 0.36), rgba(200, 120, 88, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：练摊钮 ─────────── */
+body.theme-ditandali .quick-btn { border-radius: 10px 16px 10px 16px; }
+body.theme-ditandali .quick-btn:hover {
+    border-color: rgba(232, 160, 76, 0.6);
+    box-shadow: 0 0 10px rgba(232, 160, 76, 0.16);
+}
+
+/* ─────────── ⑩ 章节标题：夜市灯火 ─────────── */
+body.theme-ditandali .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(232, 160, 76, 0.34), 0 0 40px rgba(200, 120, 88, 0.16);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-ditandali.mobile .ai-card::before,
+body.theme-ditandali.mobile .ai-card::after { display: none; }

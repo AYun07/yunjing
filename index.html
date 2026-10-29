@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- PWA / iOS 主屏安装（v3.27.1）：Safari「加入主屏幕」后全屏独立运行，HTTPS 部署时离线可玩 -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- v3.27.4：补齐图标资源（此前引用但文件缺失，WebView 控制台 404 噪音） -->
+    <link rel="icon" href="favicon.ico" sizes="48x48">
+    <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="云境">
+    <meta name="theme-color" content="#1a1512">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
+    <script src="js/id-migrate.js?v=3.55.7"></script>
+    <title>云境 v3.55.7 · AI创作与开放世界扮演</title>
+    <style>
+        :root {
+            --primary: #e0a84c;
+            --primary-soft: rgba(224, 168, 76, 0.12);
+            --secondary: #8ab4c8;
+            --accent: #b08d57;
+            --bg: #12141d;
+            --bg-soft: #171a26;
+            --panel: #1c2030;
+            --border: rgba(224, 168, 76, 0.14);
+            --line: rgba(232, 228, 216, 0.09);
+            --text: #e8e4d8;
+            --text-muted: #a8a290;
+            --text-faint: #6e6a5e;
+            --ink-on-gold: #16181f;
+            --serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(ellipse 800px 480px at 12% -6%, rgba(224, 168, 76, 0.07), transparent 62%),
+                radial-gradient(ellipse 700px 520px at 96% 108%, rgba(138, 180, 200, 0.06), transparent 60%),
+                radial-gradient(ellipse 500px 300px at 70% 20%, rgba(167, 139, 250, 0.03), transparent 55%);
+            color: var(--text);
+            font-family: var(--serif);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+
+        /* 星尘 */
+        .stars { position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; pointer-events: none; z-index: 0; }
+        .stars i {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: rgba(232, 228, 216, 0.35);
+            border-radius: 50%;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+        .stars i:nth-child(1) { left: 12%; top: 18%; animation-delay: 0s; }
+        .stars i:nth-child(2) { left: 28%; top: 8%; animation-delay: 1.2s; }
+        .stars i:nth-child(3) { left: 55%; top: 14%; animation-delay: 2.1s; }
+        .stars i:nth-child(4) { left: 74%; top: 7%; animation-delay: 0.6s; }
+        .stars i:nth-child(5) { left: 88%; top: 20%; animation-delay: 1.7s; }
+        .stars i:nth-child(6) { left: 8%; top: 42%; animation-delay: 2.6s; }
+        .stars i:nth-child(7) { left: 92%; top: 38%; animation-delay: 3.2s; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.6; } }
+
+        /* ==================== 开屏 ==================== */
+        #splash {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0; inset: 0;
+            background: var(--bg);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            cursor: pointer;
+            transition: opacity 0.6s ease, visibility 0.6s;
+        }
+        #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .splash-mark {
+            font-size: clamp(44px, 12vw, 64px);
+            font-weight: 900;
+            letter-spacing: 20px;
+            text-indent: 20px;
+            background: linear-gradient(135deg, #f2dca4, var(--primary) 55%, #b8893a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            animation: glowIn 1.2s ease forwards;
+        }
+        .splash-sub {
+            font-size: 13px;
+            letter-spacing: 8px;
+            color: var(--text-muted);
+            opacity: 0;
+            animation: glowIn 1s ease 0.7s forwards;
+        }
+        .splash-line {
+            width: 200px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            animation: glowIn 1s ease 1s forwards;
+        }
+        @keyframes glowIn {
+            from { opacity: 0; filter: blur(8px); transform: translateY(6px); }
+            to { opacity: 1; filter: blur(0); transform: translateY(0); }
+        }
+        .splash-hint {
+            position: absolute;
+            bottom: 60px;
+            font-size: 12px;
+            letter-spacing: 6px;
+            color: var(--text-faint);
+            opacity: 0;
+            animation: glowIn 0.8s ease 1.5s forwards;
+        }
+
+        /* ==================== 主体 ==================== */
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 40px 20px calc(30px + env(safe-area-inset-bottom, 0px));
+            position: relative;
+            z-index: 2;
+        }
+
+        .masthead { text-align: center; margin-bottom: 34px; position: relative; }
+        .masthead h1 {
+            font-size: clamp(44px, 9vw, 72px);
+            font-weight: 900;
+            letter-spacing: 16px;
+            text-indent: 16px;
+            background: linear-gradient(135deg, #f2dca4, var(--primary) 55%, #b8893a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .masthead .sub {
+            margin-top: 12px;
+            font-size: 13.5px;
+            letter-spacing: 5px;
+            color: var(--text-muted);
+        }
+        .gold-divider {
+            width: 240px;
+            height: 1px;
+            margin: 18px auto 0;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            position: relative;
+        }
+        .gold-divider::after {
+            content: "◆";
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8px;
+            color: var(--primary);
+            background: var(--bg);
+            padding: 0 8px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 13.5px;
+            letter-spacing: 7px;
+            color: var(--accent);
+            margin: 30px 0 18px;
+        }
+        .section-title::before, .section-title::after {
+            content: "·";
+            color: var(--primary);
+            margin: 0 12px;
+            font-size: 18px;
+            vertical-align: -2px;
+        }
+
+        /* 工坊卡 */
+        .workshops {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+            gap: 14px;
+        }
+        .workshop {
+            position: relative;
+            background: linear-gradient(165deg, rgba(224, 168, 76, 0.05), transparent 45%), var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 15px 19px;
+            text-decoration: none;
+            color: var(--text);
+            text-align: center;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            overflow: hidden;
+        }
+        .workshop::after {
+            content: "";
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 2px;
+            background: var(--ws-hue, var(--primary));
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .workshop:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+            border-color: var(--ws-hue, var(--primary));
+        }
+        .workshop:hover::after { opacity: 1; }
+
+        .ws-glyph {
+            width: 56px; height: 56px;
+            margin: 0 auto 11px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 25px;
+            font-weight: 700;
+            color: var(--ws-hue, var(--primary));
+            background: var(--panel);
+            border: 1px solid var(--ws-hue, var(--primary));
+            box-shadow: 0 0 18px color-mix(in srgb, var(--ws-hue, var(--primary)) 22%, transparent);
+        }
+        .ws-name { font-size: 16.5px; font-weight: 700; letter-spacing: 3px; margin-bottom: 7px; }
+        .ws-desc { font-size: 12px; color: var(--text-muted); line-height: 1.8; letter-spacing: 0.3px; }
+        .ws-enter {
+            display: inline-block;
+            margin-top: 11px;
+            font-size: 11.5px;
+            letter-spacing: 3px;
+            color: var(--ws-hue, var(--primary));
+            opacity: 0.8;
+        }
+        .workshop:hover .ws-enter { opacity: 1; letter-spacing: 4px; }
+
+        /* ==================== 开放世界折叠分组（v3.19.3） ==================== */
+        .ws-groups-ctl {
+            display: none; /* JS 启用后才显示（无 JS 时全展开，控制条无意义） */
+            justify-content: flex-end;
+            gap: 16px;
+            margin: -8px 0 12px;
+        }
+        .ws-ctl-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-faint);
+            padding: 3px 2px;
+            transition: color 0.2s ease;
+        }
+        .ws-ctl-btn:hover { color: var(--primary); }
+
+        .ws-group {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: linear-gradient(170deg, rgba(224, 168, 76, 0.03), transparent 42%), var(--bg-soft);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .ws-group-head {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 14px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            transition: background 0.25s ease;
+        }
+        .ws-group-head:hover { background: rgba(224, 168, 76, 0.045); }
+        .wg-glyph {
+            width: 30px; height: 30px;
+            border-radius: 9px;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--g-hue, var(--primary));
+            border: 1px solid color-mix(in srgb, var(--g-hue, var(--primary)) 42%, transparent);
+            background: color-mix(in srgb, var(--g-hue, var(--primary)) 9%, transparent);
+        }
+        .wg-name {
+            font-size: 14.5px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            color: var(--text);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .wg-sub {
+            flex: 1;
+            min-width: 0;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: var(--text-faint);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wg-count {
+            flex-shrink: 0;
+            font-size: 10.5px;
+            letter-spacing: 1px;
+            color: var(--g-hue, var(--primary));
+            border: 1px solid color-mix(in srgb, var(--g-hue, var(--primary)) 38%, transparent);
+            background: color-mix(in srgb, var(--g-hue, var(--primary)) 8%, transparent);
+            border-radius: 99px;
+            padding: 2.5px 10px;
+        }
+        .wg-caret {
+            flex-shrink: 0;
+            font-size: 11px;
+            color: var(--text-faint);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* 展开态箭头朝下 ▾；收起态逆转朝右 ▸ */
+        .ws-group.closed .wg-caret { transform: rotate(-90deg); }
+        .ws-group-body {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ws-group.closed .ws-group-body { grid-template-rows: 0fr; }
+        .ws-clip { overflow: hidden; min-height: 0; }
+        /* 顶部留 12px：既是组头与卡组的间距，也是悬浮上移的裁剪缓冲 */
+        .ws-clip > .workshops { margin: 12px 13px 14px; }
+
+        /* 双栏信息 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 14px;
+        }
+        .info-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+        }
+        .info-title {
+            font-size: 14px;
+            letter-spacing: 4px;
+            color: var(--primary);
+            padding-bottom: 11px;
+            margin-bottom: 13px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .info-title .dot {
+            width: 7px; height: 7px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--primary);
+        }
+        .info-list { list-style: none; }
+        .info-list li {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.9;
+            padding-left: 16px;
+            position: relative;
+        }
+        .info-list li::before {
+            content: "›";
+            position: absolute;
+            left: 2px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* 沉浸扮演 · 平台宣传区（v1.6.6：原创作日志独立成册 changelog/ 后腾出） */
+        .rp-promo {
+            margin-top: 14px;
+            background:
+                radial-gradient(ellipse 600px 240px at 85% 0%, rgba(111, 159, 232, 0.10), transparent 60%),
+                radial-gradient(ellipse 500px 260px at 0% 100%, rgba(201, 168, 106, 0.10), transparent 55%),
+                var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px 26px 26px;
+            position: relative;
+            overflow: hidden;
+        }
+        .rp-promo-mark {
+            position: absolute;
+            right: 14px; top: 2px;
+            font-size: 88px;
+            font-weight: 900;
+            color: rgba(224, 168, 76, 0.05);
+            pointer-events: none;
+            line-height: 1;
+        }
+        .rp-kicker {
+            font-size: 10.5px;
+            letter-spacing: 5px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        .rp-title {
+            font-size: clamp(22px, 4.2vw, 31px);
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #f2dca4, var(--primary) 55%, #b8893a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .rp-sub {
+            margin-top: 10px;
+            max-width: 640px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 2;
+        }
+        .rp-feats {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .rp-feat {
+            background: rgba(232, 228, 216, 0.03);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 14px 15px 12px;
+            transition: border-color 0.22s, transform 0.22s;
+        }
+        .rp-feat:hover { border-color: var(--border); transform: translateY(-3px); }
+        .rp-feat .fi { font-size: 18px; }
+        .rp-feat .fn {
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin: 7px 0 4px;
+            color: var(--text);
+        }
+        .rp-feat .fd { font-size: 11px; color: var(--text-muted); line-height: 1.8; }
+        .rp-cta {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .rp-cta a {
+            flex: 1;
+            min-width: 160px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--ink-on-gold);
+            background: linear-gradient(135deg, #f2dca4, var(--primary) 60%, #b8893a);
+            border-radius: 10px;
+            padding: 13px 18px;
+            transition: transform 0.2s, box-shadow 0.2s, letter-spacing 0.2s;
+        }
+        .rp-cta a.alt {
+            color: var(--primary);
+            background: transparent;
+            border: 1px solid var(--primary);
+        }
+        .rp-cta a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(224, 168, 76, 0.25);
+            letter-spacing: 3px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 34px 16px 20px;
+            font-size: 11.5px;
+            color: var(--text-faint);
+            letter-spacing: 2px;
+            line-height: 2.1;
+        }
+        .footer .footer-log { margin-top: 6px; }
+        .footer .footer-log a {
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+        .footer .footer-log a:hover { color: #f2dca4; text-decoration: underline; }
+        .ver-badge {
+            position: fixed;
+            right: 12px;
+            bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            z-index: 50;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: var(--primary);
+            background: var(--panel);
+            border: 1px solid var(--primary);
+            border-radius: 99px;
+            padding: 4px 12px;
+            box-shadow: 0 0 14px rgba(224, 168, 76, 0.25);
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .ver-badge:hover {
+            transform: translateY(-2px);
+            background: var(--primary-soft);
+            box-shadow: 0 6px 20px rgba(224, 168, 76, 0.4);
+        }
+
+        /* ==================== 移动端 ==================== */
+        body.mobile .container { padding: 26px 13px calc(24px + env(safe-area-inset-bottom, 0px)); }
+        body.mobile .masthead h1 { letter-spacing: 9px; text-indent: 9px; }
+        body.mobile .masthead .sub { font-size: 12px; letter-spacing: 3px; }
+        body.mobile .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        body.mobile .workshop { padding: 18px 10px 15px; border-radius: 10px; }
+        body.mobile .ws-glyph { width: 46px; height: 46px; font-size: 21px; border-radius: 12px; margin-bottom: 9px; }
+        body.mobile .ws-name { font-size: 14.5px; letter-spacing: 2px; }
+        body.mobile .ws-desc { font-size: 10.5px; line-height: 1.65; }
+        body.mobile .ws-enter { display: none; }
+        body.mobile .info-grid { grid-template-columns: 1fr; }
+        body.mobile .info-card { padding: 16px 16px; }
+        body.mobile .rp-promo { padding: 20px 16px 18px; border-radius: 12px; }
+        body.mobile .rp-promo-mark { font-size: 60px; right: 8px; }
+        body.mobile .rp-kicker { letter-spacing: 3px; }
+        body.mobile .rp-title { font-size: 20px; letter-spacing: 2px; }
+        body.mobile .rp-sub { font-size: 11.5px; }
+        body.mobile .rp-feats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        body.mobile .rp-feat { padding: 11px 12px 10px; }
+        body.mobile .rp-feat .fn { font-size: 11.5px; letter-spacing: 1px; }
+        body.mobile .rp-feat .fd { font-size: 10px; line-height: 1.65; }
+        body.mobile .rp-cta a { padding: 11px 14px; font-size: 12px; min-width: 130px; }
+        body.mobile .footer-log { font-size: 10.5px; }
+        body.mobile .section-title { letter-spacing: 4px; margin: 22px 0 14px; }
+        body.mobile .ws-groups-ctl { margin: -6px 0 10px; gap: 12px; }
+        body.mobile .ws-ctl-btn { font-size: 10.5px; letter-spacing: 1.5px; }
+        body.mobile .ws-group { margin-bottom: 10px; border-radius: 10px; }
+        body.mobile .ws-group-head { padding: 11px 11px 10px; gap: 8px; }
+        body.mobile .wg-glyph { width: 26px; height: 26px; font-size: 12.5px; border-radius: 8px; }
+        body.mobile .wg-name { font-size: 13px; letter-spacing: 1.5px; }
+        body.mobile .wg-sub { font-size: 10px; letter-spacing: 0.3px; }
+        body.mobile .wg-count { font-size: 10px; padding: 2px 8px; }
+        body.mobile .ws-clip > .workshops { margin: 10px 10px 12px; }
+
+        body.mobile.narrow .workshops { grid-template-columns: 1fr; }
+        body.mobile.narrow .ws-desc { display: none; }
+        body.mobile.narrow .rp-feats { grid-template-columns: 1fr; }
+
+        /* 纯 CSS 媒体查询兜底（与 body.mobile 同阈值）：JS 挂类失效时手机端依然适配 */
+        @media (max-width: 760px) {
+            .container { padding: 26px 13px calc(24px + env(safe-area-inset-bottom, 0px)); }
+            .masthead h1 { letter-spacing: 9px; text-indent: 9px; }
+            .masthead .sub { font-size: 12px; letter-spacing: 3px; }
+            .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .workshop { padding: 18px 10px 15px; border-radius: 10px; }
+            .ws-glyph { width: 46px; height: 46px; font-size: 21px; border-radius: 12px; margin-bottom: 9px; }
+            .ws-name { font-size: 14.5px; letter-spacing: 2px; }
+            .ws-desc { font-size: 10.5px; line-height: 1.65; }
+            .ws-enter { display: none; }
+            .info-grid { grid-template-columns: 1fr; }
+            .info-card { padding: 16px 16px; }
+            .rp-promo { padding: 20px 16px 18px; border-radius: 12px; }
+            .rp-promo-mark { font-size: 60px; right: 8px; }
+            .rp-kicker { letter-spacing: 3px; }
+            .rp-title { font-size: 20px; letter-spacing: 2px; }
+            .rp-sub { font-size: 11.5px; }
+            .rp-feats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .rp-feat { padding: 11px 12px 10px; }
+            .rp-feat .fn { font-size: 11.5px; letter-spacing: 1px; }
+            .rp-feat .fd { font-size: 10px; line-height: 1.65; }
+            .rp-cta a { padding: 11px 14px; font-size: 12px; min-width: 130px; }
+            .footer-log { font-size: 10.5px; }
+            .section-title { letter-spacing: 4px; margin: 22px 0 14px; }
+            .ws-groups-ctl { margin: -6px 0 10px; gap: 12px; }
+            .ws-ctl-btn { font-size: 10.5px; letter-spacing: 1.5px; }
+            .ws-group { margin-bottom: 10px; border-radius: 10px; }
+            .ws-group-head { padding: 11px 11px 10px; gap: 8px; }
+            .wg-glyph { width: 26px; height: 26px; font-size: 12.5px; border-radius: 8px; }
+            .wg-name { font-size: 13px; letter-spacing: 1.5px; }
+            .wg-sub { font-size: 10px; letter-spacing: 0.3px; }
+            .wg-count { font-size: 10px; padding: 2px 8px; }
+            .ws-clip > .workshops { margin: 10px 10px 12px; }
+        }
+        @media (max-width: 380px) {
+            .workshops { grid-template-columns: 1fr; }
+            .ws-desc { display: none; }
+            .rp-feats { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <link rel="stylesheet" href="css/ui-polish.css?v=3.55.7">
+    <link rel="stylesheet" href="css/yunjing-theme.css?v=3.55.7">
+    <!-- v3.53.0 主题工坊：head 内同步执行——先上色再解析 body，切主题不闪屏 -->
+    <script src="js/theme-studio.js?v=3.55.7"></script>
+</head>
+
+<body class="page-index">
+    <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.55.7 云境版</a>
+
+    <!-- 开屏 -->
+    <div id="splash">
+        <div class="splash-mark">云境</div>
+        <div class="splash-sub">筆落驚風雨 · 詩成泣鬼神</div>
+        <div class="splash-line"></div>
+        <div class="splash-hint">轻触任意处 展卷</div>
+    </div>
+
+    <div class="container">
+        <div class="masthead">
+            <h1>云境</h1>
+            <div class="sub">多元宇宙 · 任君挑选</div>
+            <div class="gold-divider"></div>
+        </div>
+
+        <!-- 五大创作工坊 -->
+        <div class="section-title">五大类型工坊</div>
+        <div class="workshops">
+            <a class="workshop" href="studio.html?genre=mystery&v=1.6.9" style="--ws-hue:#8ab4c8;">
+                <div class="ws-glyph">悬</div>
+                <div class="ws-name">悬疑推理</div>
+                <div class="ws-desc">迷雾重重，抽丝剥茧，每一处细节皆是证词</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=scifi&v=1.6.9" style="--ws-hue:#6fc2b4;">
+                <div class="ws-glyph">科</div>
+                <div class="ws-name">科幻未来</div>
+                <div class="ws-desc">星辰为幕，文明作注，写尽想象的边界</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=wuxia&v=1.6.9" style="--ws-hue:#9fbf8f;">
+                <div class="ws-glyph">侠</div>
+                <div class="ws-name">武侠仙侠</div>
+                <div class="ws-desc">江湖夜雨，快意恩仇，一剑光寒十九州</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=cthulhu&v=1.6.9" style="--ws-hue:#b7a8e8;">
+                <div class="ws-glyph">异</div>
+                <div class="ws-name">克苏鲁恐怖</div>
+                <div class="ws-desc">不可名状之物低语，理智在真相前碎裂</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=free&v=1.6.9" style="--ws-hue:#e0a84c;">
+                <div class="ws-glyph">笔</div>
+                <div class="ws-name">自由创作</div>
+                <div class="ws-desc">不设藩篱，任意题材，随心落笔成书</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+        </div>
+
+        <!-- 廿四界开放世界扮演（v3.38.0：新增斩神一界，廿三界扩为廿四界；大厅按题材折叠分组） -->
+        <div class="section-title">开放世界扮演 · 28 界（原著 26 界 + 现实地球 1 界 + 自由世界 1 界）｜全站 33 界</div>
+        <div class="ws-groups-ctl" id="wsGroupsCtl">
+            <button type="button" class="ws-ctl-btn" id="wsExpandAll">⊕ 全部展开</button>
+            <button type="button" class="ws-ctl-btn" id="wsCollapseAll">⊖ 全部收起</button>
+        </div>
+
+        <div class="ws-group" data-gkey="xuanhuan" style="--g-hue:#c9a86a;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">玄</span>
+                <span class="wg-name">东方玄幻</span>
+                <span class="wg-sub">遮天 · 斗破苍穹 · 完美世界 · 斗罗大陆 · 帝霸 · 武炼巅峰 · 圣墟</span>
+                <span class="wg-count">7 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=shrouding&v=1.6.9" style="--ws-hue:#c9a86a;">
+                            <div class="ws-glyph">遮</div>
+                            <div class="ws-name">遮天</div>
+                            <div class="ws-desc">九龙拉棺之后再入北斗：凡人之躯，行万古求道之路</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=doupocangqiong&v=1.10.0" style="--ws-hue:#e06a4a;">
+                            <div class="ws-glyph">斗</div>
+                            <div class="ws-name">斗破苍穹</div>
+                            <div class="ws-desc">替代萧炎立下三年之约：戒中药老、异火之途与斗帝之路，皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=wanmeishijie&v=1.11.0" style="--ws-hue:#a8c97f;">
+                            <div class="ws-glyph">完</div>
+                            <div class="ws-name">完美世界</div>
+                            <div class="ws-desc">替代石昊自石村而出：至尊骨被夺的少年就是你，一路打到万古之巅独断万古</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=douluodalu&v=1.11.0" style="--ws-hue:#8f9fe8;">
+                            <div class="ws-glyph">罗</div>
+                            <div class="ws-name">斗罗大陆</div>
+                            <div class="ws-desc">替代唐三觉醒双生武魂：史莱克七怪、海神九考与嘉陵关决战，皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=dibao&v=1.13.0" style="--ws-hue:#e0c888;">
+                            <div class="ws-glyph">帝</div>
+                            <div class="ws-name">帝霸</div>
+                            <div class="ws-desc">踏入万古棋局的时代：命宫十二重与真命之路，大教禁区之间活出你自己的万古</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=wulianfengdian&v=3.19.0" style="--ws-hue:#d89030;">
+                            <div class="ws-glyph">武</div>
+                            <div class="ws-name">武炼巅峰</div>
+                            <div class="ws-desc">从淬体到开天的十六境长征：递出你的第一封战书，挑战台上无父子，武路尽头是高处不胜寒</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=shengxu&v=3.19.0" style="--ws-hue:#4cb8a8;">
+                            <div class="ws-glyph">墟</div>
+                            <div class="ws-name">圣墟</div>
+                            <div class="ws-desc">大漠尽头彼岸花开：大劫之后灵气复苏，一部呼吸法一门神通，山海经的神话睁开了眼</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 仙侠修真（v3.25.0：凡人修仙传 + 仙逆） -->
+        <div class="ws-group" data-gkey="xianxia" style="--g-hue:#6fc9b0;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">仙</span>
+                <span class="wg-name">仙侠修真</span>
+                <span class="wg-sub">凡人修仙传 · 仙逆 · 剑来 · 蛊真人 · 玄鉴仙族</span>
+                <span class="wg-count">5 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=fanrenxiuxian&v=3.25.0" style="--ws-hue:#5db8c8;">
+                            <div class="ws-glyph">凡</div>
+                            <div class="ws-name">凡人修仙传</div>
+                            <div class="ws-desc">青衫修士的凡人流长跑：炼气十三层数着走，掌天瓶催熟灵药，苟道与算计换来一步一生</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=xianni&v=3.46.0" style="--ws-hue:#9d86d0;">
+                            <div class="ws-glyph">逆</div>
+                            <div class="ws-name">仙逆</div>
+                            <div class="ws-desc">顺为凡，逆则仙：平庸少年得天逆珠，从赵国山村的冷眼一路杀到踏天之巅，为挚爱逆天改命</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=jianlai&v=3.46.0" style="--ws-hue:#d8b86a;">
+                            <div class="ws-glyph">剑</div>
+                            <div class="ws-name">剑来</div>
+                            <div class="ws-desc">骊珠洞天坠落人间：泥瓶巷的草鞋少年、齐先生的三问与摔碗酒——浩然天下的规矩与因果，一步一步走出来</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=guzhenren&v=3.46.0" style="--ws-hue:#5fb87a;">
+                            <div class="ws-glyph">蛊</div>
+                            <div class="ws-name">蛊真人</div>
+                            <div class="ws-desc">五百年魔道大能重生回青茅山古月家族——春秋蝉虽败，命不该绝，这一世步步算计</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=xuanjianxianzu&v=3.46.0" style="--ws-hue:#6fc9b0;">
+                            <div class="ws-glyph">玄</div>
+                            <div class="ws-name">玄鉴仙族</div>
+                            <div class="ws-desc">修仙家族经营：灵田、炼丹、坊市、护卫——家族兴衰与个人道途同行</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ws-group" data-gkey="dushi" style="--g-hue:#5fc9d8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">都</span>
+                <span class="wg-name">都市现代</span>
+                <span class="wg-sub">全职高手 · 重生之都市修仙 · 龙族 · 全职法师 · 开局地摊卖大力 · 斩神</span>
+                <span class="wg-count">6 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=quanzhigaoshou&v=1.10.0" style="--ws-hue:#5fc9d8;">
+                            <div class="ws-glyph">全</div>
+                            <div class="ws-name">全职高手</div>
+                            <div class="ws-desc">替代叶修踏上荣耀之巅：被逼退役的教科书就是你，从网吧夜班重返总决赛</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=zhongshengdushi&v=1.12.0" style="--ws-hue:#d8b468;">
+                            <div class="ws-glyph">重</div>
+                            <div class="ws-name">重生之都市修仙</div>
+                            <div class="ws-desc">替代陈凡重回十七岁：五百年北玄仙尊的记忆，从高三晚自习开始的都市问仙路</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=longzu&v=1.13.0" style="--ws-hue:#8a9ae8;">
+                            <div class="ws-glyph">龙</div>
+                            <div class="ws-name">龙族</div>
+                            <div class="ws-desc">一封烫金邀请函寄到你手里：卡塞尔学院的血统测试、言灵觉醒与屠龙者的黎明</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=quanzhifashi&v=3.15.0" style="--ws-hue:#9d8cf0;">
+                            <div class="ws-glyph">法</div>
+                            <div class="ws-name">全职法师</div>
+                            <div class="ws-desc">魔法取代科学的现代都市：觉醒考核亮起你的元素，城墙之外魔物环伺，黑教廷在暗处等你</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=ditandali&v=3.19.0" style="--ws-hue:#e8a04c;">
+                            <div class="ws-glyph">摊</div>
+                            <div class="ws-name">开局地摊卖大力</div>
+                            <div class="ws-desc">灵气复苏二十年，你在夜市支起小摊：破布下压着最强地摊系统——货在人先，人在祸前</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=zhanhen&v=3.46.0" style="--ws-hue:#a8c4c8;">
+                            <div class="ws-glyph">斩</div>
+                            <div class="ws-name">我在精神病院学斩神</div>
+                            <div class="ws-desc">迷雾笼罩的都市：守夜人在暗处巡逻，阳光精神病院里住着诸神——你是执刀的凡人，还是待斩的神</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ws-group" data-gkey="guimi" style="--g-hue:#c9584a;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">幽</span>
+                <span class="wg-name">诡秘无限</span>
+                <span class="wg-sub">道诡异仙 · 轮回乐园 · 神秘复苏 · 诡秘之主</span>
+                <span class="wg-count">4 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=daoguiyixian&v=1.12.0" style="--ws-hue:#c9584a;">
+                            <div class="ws-glyph">诡</div>
+                            <div class="ws-name">道诡异仙</div>
+                            <div class="ws-desc">替代李火旺踏入双世界：白塔医院的消毒水与大傩清风观的苦药，哪个才是真的</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=lunhuileyuan&v=3.19.0" style="--ws-hue:#e05858;">
+                            <div class="ws-glyph">轮</div>
+                            <div class="ws-name">轮回乐园</div>
+                            <div class="ws-desc">濒死之际契约递到面前：乐园把你投入一个个衍生世界执行任务——完成即生，失败即真死</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=shenmifusu&v=3.46.0" style="--ws-hue:#7ab0a8;">
+                            <div class="ws-glyph">复</div>
+                            <div class="ws-name">神秘复苏</div>
+                            <div class="ws-desc">深夜的敲门声、镜子里慢半拍的倒影——厉鬼杀人有规律，剥清它，或者成为它的下一页档案</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=guimi&v=3.46.0" style="--ws-hue:#8a9ab0;">
+                            <div class="ws-glyph">雾</div>
+                            <div class="ws-name">诡秘之主</div>
+                            <div class="ws-desc">灰雾之上的愚者先生、二十二条途径的序列魔药——第五纪的雾都里，占卜家的每一步晋升都要付代价</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 末世寒潮（v3.31.2：全球冰封——重生囤货流 + 安全屋建造 + 黑化复仇） -->
+        <div class="ws-group" data-gkey="moshi" style="--g-hue:#5fb8d8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">冰</span>
+                <span class="wg-name">末世寒潮</span>
+                <span class="wg-sub">全球冰封</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=quanqiubingfeng&v=3.31.4" style="--ws-hue:#5fb8d8;">
+                            <div class="ws-glyph">封</div>
+                            <div class="ws-name">全球冰封</div>
+                            <div class="ws-desc">重生回寒潮降临前三十天：空间异能囤空仓库，打造末日安全屋——上一世递出去的善意全变成了刀，这一世百倍奉还</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ws-group" data-gkey="xinghai" style="--g-hue:#6f9fe8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">星</span>
+                <span class="wg-name">科幻星海</span>
+                <span class="wg-sub">吞噬星空 · 超神学院</span>
+                <span class="wg-count">2 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=swallowedstar&v=1.6.9" style="--ws-hue:#6f9fe8;">
+                            <div class="ws-glyph">吞</div>
+                            <div class="ws-name">吞噬星空</div>
+                            <div class="ws-desc">自定义身份踏入原著世界：基地市与星海之间，活出你自己的传奇</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=chaoshenxueyuan&v=3.46.0" style="--ws-hue:#e8c478;">
+                            <div class="ws-glyph">神</div>
+                            <div class="ws-name">超神学院</div>
+                            <div class="ws-desc">诸神注视下的地球：饕餮舰队压境，雄兵连集结，超级基因觉醒——你是钢铁防线的一员，还是文明夹缝中的变数</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ws-group" data-gkey="mofang" style="--g-hue:#d8a04c;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">魔</span>
+                <span class="wg-name">西幻魔导</span>
+                <span class="wg-sub">黎明之剑</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=limingzhijian&v=3.19.0" style="--ws-hue:#d8a04c;">
+                            <div class="ws-glyph">黎</div>
+                            <div class="ws-name">黎明之剑</div>
+                            <div class="ws-desc">魔潮倒计时的洛伦大陆：高文揭棺而起掀动魔导革命，蒸汽与符文的新时代里留好你的位置</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ws-group" data-gkey="huanqiu" style="--g-hue:#5a9e7f;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">寰</span>
+                <span class="wg-name">现实寰宇</span>
+                <span class="wg-sub">地球开放世界</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=earth&v=3.19.8" style="--ws-hue:#5a9e7f;">
+                            <div class="ws-glyph">地</div>
+                            <div class="ws-name">地球开放世界</div>
+                            <div class="ws-desc">无剧情·全现实：任选时代的真实地球，以普通人身份活一段人生——世界不给故事，只给因果</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 无界创世（v3.24.0：自由世界——全自定义开放世界，第十九界） -->
+        <div class="ws-group" data-gkey="wujie" style="--g-hue:#b98fd8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">凿</span>
+                <span class="wg-name">无界创世</span>
+                <span class="wg-sub">自由世界 · 全自定义</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=freeworld&v=3.24.0" style="--ws-hue:#b98fd8;">
+                            <div class="ws-glyph">凿</div>
+                            <div class="ws-name">自由世界</div>
+                            <div class="ws-desc">全自由·防八股：什么世界、什么法则、什么势力、什么量表全部你说了算——四步创世台亲笔捏世界，唯一管住的是文风不八股</div>
+                            <span class="ws-enter">创世 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 指引与特性 -->
+        <div class="section-title">初来乍到</div>
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-title"><span class="dot"></span>使用指引</div>
+                <ul class="info-list">
+                    <li>创作工坊：完成故事设定（视角 · 文风 · 时代 · 母题 · 开篇 · 技法 · 六维），逐章共创</li>
+                    <li>扮演世界：捏一个身份（姓名 · 出身 · 时代 · 资质 · 入场事件），踏入原著开放漫游</li>
+                    <li>首次使用请点右上角「⚙」配置 AI 接口</li>
+                    <li>与 AI 逐轮推进，或点快捷指令放养续写</li>
+                    <li>满意即导出 TXT / Markdown 存稿</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <div class="info-title"><span class="dot"></span>框架特性</div>
+                <ul class="info-list">
+                    <li>配置驱动：一个 config 文件定义一个文学世界</li>
+                    <li>设定台 60+ 选项：视角/文风/时代/母题全维可调</li>
+                    <li>开放世界扮演：原著知识库 + 原著忠实铁律 + 玩家身份卡</li>
+                    <li>变量系统：角色卡 / 伏笔 / 状态仪表盘全程追踪</li>
+                    <li>动态世界：第二 API 推演远方事件，NPC 档案自动并入</li>
+                    <li>变量AI：第三模型提取状态，主笔专注写正文</li>
+                    <li>双格式接口：OpenAI 兼容 / Gemini</li>
+                    <li>灵感引擎 + DLC 知识包 + 数据隔离存档</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 沉浸扮演 · 平台宣传（v1.6.6：原日志区腾出，创作日志已独立成册 changelog/） -->
+        <div class="rp-promo">
+            <div class="rp-promo-mark">卷</div>
+            <div class="rp-kicker">OPEN WORLD ROLE-PLAY · 沉浸扮演</div>
+            <div class="rp-title">你不是读者 · 你是主角</div>
+            <div class="rp-sub">
+                捏一个身份，踏进原著世界。书里的风会记得你的名字，你视线之外的山河正自行运转——这不是读故事，是活进故事。脚下每一步，世界都随之改变。
+            </div>
+            <div class="rp-feats">
+                <div class="rp-feat">
+                    <div class="fi">🪪</div>
+                    <div class="fn">身份卡入场</div>
+                    <div class="fd">姓名 · 出身 · 时代 · 资质 · 入场事件全自定义，以自己的名义活在书里</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">📜</div>
+                    <div class="fn">原著铁律</div>
+                    <div class="fd">知识库 + 忠实铁律双保险，名场面与设定原汁原味，绝不崩坏</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">🌍</div>
+                    <div class="fn">世界在呼吸</div>
+                    <div class="fd">第二 AI 幕后推演视线之外的事：势力暗流 · 远方传闻 · 伏笔暗涌</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">🧾</div>
+                    <div class="fn">万物皆入档</div>
+                    <div class="fd">18 维 NPC 档案 · 伏笔簿 · 状态仪表盘全程追踪，遇见的人都记得你</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">🎭</div>
+                    <div class="fn">抉择即剧情</div>
+                    <div class="fd">每轮行动选项由你定夺；写坏了 ↻ 换写法，后悔了 ↩ 回退本轮</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">⚡</div>
+                    <div class="fn">逐字登场</div>
+                    <div class="fd">流式打字机演出，正文如墨迹在纸面洇开，看它落笔即是享受</div>
+                </div>
+            </div>
+            <div class="rp-cta">
+                <a href="studio.html?genre=swallowedstar&v=1.6.9">吞噬星空 · 入场</a>
+                <a href="studio.html?genre=shrouding&v=1.6.9" class="alt">遮天 · 入场</a>
+                <a href="studio.html?genre=quanzhigaoshou&v=1.10.0" class="alt">全职高手 · 入场</a>
+                <a href="studio.html?genre=doupocangqiong&v=1.10.0" class="alt">斗破苍穹 · 入场</a>
+                <a href="studio.html?genre=wanmeishijie&v=1.11.0" class="alt">完美世界 · 入场</a>
+                <a href="studio.html?genre=douluodalu&v=1.11.0" class="alt">斗罗大陆 · 入场</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>首次进入需配置 AI 接口（支持 OpenAI 兼容格式与 Gemini 格式）</p>
+            <p>建议通过本地 HTTP 服务访问 · 支持电脑 / 平板 / 手机多端创作</p>
+            <p class="footer-log">📜 <a href="changelog/">创作日志 · 独立成册</a> · 点击右下角版本徽标亦可直达</p>
+        </div>
+    </div>
+
+    <!-- v3.38.1 错误哨兵：脚本加载失败/运行异常时屏幕直接显示出错文件 -->
+    <script defer src="js/boot-error-guard.js?v=3.55.7"></script>
+    <script>
+        // 响应式模式类（与 studio.html 同策略；判空防异常，媒体查询兜底已内置）
+        (function () {
+            function fitMode() {
+                if (!document.body) return;
+                document.body.classList.toggle('mobile', window.innerWidth <= 760);
+                document.body.classList.toggle('narrow', window.innerWidth <= 380);
+            }
+            window.addEventListener('resize', fitMode);
+            window.addEventListener('orientationchange', fitMode);
+            document.addEventListener('DOMContentLoaded', fitMode);
+            window.addEventListener('load', fitMode);
+            fitMode();
+        })();
+
+        // 开屏动画：点击跳过，2.4 秒自动展开
+        (function () {
+            const splash = document.getElementById('splash');
+            let closed = false;
+            function close() {
+                if (closed) return;
+                closed = true;
+                splash.classList.add('hidden');
+                setTimeout(() => splash.remove(), 600);
+            }
+            splash.addEventListener('click', close);
+            setTimeout(close, 2400);
+        })();
+
+        // 开放世界折叠分组（v3.19.3）：同题材归组手风琴 + localStorage 状态记忆
+        // 首访默认展开第一组；无 JS 时全部展开（控制条隐藏），渐进增强
+        (function () {
+            var groups = Array.prototype.slice.call(document.querySelectorAll('.ws-group'));
+            if (!groups.length) return;
+            var LS_KEY = 'yunjingLobbyWsGroups';
+
+            var ctlBar = document.getElementById('wsGroupsCtl');
+            if (ctlBar) ctlBar.style.display = 'flex';
+
+            function setGroup(g, open) {
+                g.classList.toggle('closed', !open);
+                var head = g.querySelector('.ws-group-head');
+                if (head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+            function persist() {
+                var state = {};
+                groups.forEach(function (g) {
+                    state[g.getAttribute('data-gkey') || ''] = !g.classList.contains('closed');
+                });
+                try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { }
+            }
+
+            var saved = null;
+            try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { }
+            groups.forEach(function (g, i) {
+                setGroup(g, saved ? !!saved[g.getAttribute('data-gkey')] : i === 0);
+            });
+
+            groups.forEach(function (g) {
+                var head = g.querySelector('.ws-group-head');
+                if (!head) return;
+                head.addEventListener('click', function () {
+                    setGroup(g, g.classList.contains('closed'));
+                    persist();
+                });
+            });
+
+            var expandAll = document.getElementById('wsExpandAll');
+            var collapseAll = document.getElementById('wsCollapseAll');
+            if (expandAll) expandAll.addEventListener('click', function () {
+                groups.forEach(function (g) { setGroup(g, true); });
+                persist();
+            });
+            if (collapseAll) collapseAll.addEventListener('click', function () {
+                groups.forEach(function (g) { setGroup(g, false); });
+                persist();
+            });
+        })();
+
+        // 预加载创作室
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = 'studio.html';
+        document.head.appendChild(link);
+    </script>
+
+<script>
+    /* PWA：HTTPS 部署时启用离线缓存（本地 http 服务与安卓 APK 内 file:// 均不启用，零影响） */
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('sw.js').catch(function () { });
+        });
+    }
+</script>
+
+<script>
+(function(){
+  try{
+    if(location.protocol!=='file:')return;try{if(localStorage.getItem('yunjingFileBannerOff'))return;}catch(e){}
+    var d=document.createElement('div');d.id='yunjing-file-banner';
+    d.style.cssText='position:fixed;left:12px;right:12px;bottom:12px;z-index:99999;background:#2a2320;color:#f0d9ad;border:1px solid #e0a84c55;border-radius:10px;padding:12px 14px;font:14px/1.6 "Microsoft YaHei",sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5)';
+    d.innerHTML=`<b>当前是受限模式(直接打开文件)。</b>关闭本页,双击文件夹里的「启动-Windows.bat」可获得完整体验。<span style="float:right;cursor:pointer;margin-left:10px" onclick="try{localStorage.setItem('yunjingFileBannerOff',1)}catch(e){}this.parentNode.remove()">知道了✕</span>`;
+    document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(d)});
+  }catch(e){}
+})();
+</script></body>
+
+</html>

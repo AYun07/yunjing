@@ -1,0 +1,150 @@
+/* ============================================================
+   凡人修仙传主题 - 凡人视角的仙路苍茫（冷青月白 × 灵石微光 × 墨青底）
+   v3.25.0 每界专属 UI 皮肤：
+   灵草丹纹底色 · 顶栏月白晕 · 卡片剑光饰 ·
+   选项斗法指引 · 面板丹炉徽记 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #5db8c8;
+    --primary-dim: rgba(93, 184, 200, 0.12);
+    --primary-glow: rgba(93, 184, 200, 0.3);
+    --secondary: #4a8090;
+    --accent: #a8d8e0;
+    --panel-border: rgba(93, 184, 200, 0.18);
+    background-color: #0a0f12;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(93, 184, 200, 0.09), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(74, 128, 144, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(216, 200, 120, 0.04), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg stroke='%235db8c8' stroke-opacity='0.05' fill='none'%3E%3Cpath d='M55 10 C42 30 42 46 55 62 C68 46 68 30 55 10 Z'/%3E%3Ccircle cx='55' cy='78' r='12'/%3E%3Cpath d='M18 30 L30 42 M92 30 L80 42 M18 92 L30 80 M92 92 L80 80'/%3E%3C/g%3E%3Cg fill='%23a8d8e0' fill-opacity='0.08'%3E%3Ccircle cx='55' cy='78' r='2'/%3E%3Ccircle cx='20' cy='55' r='1'/%3E%3Ccircle cx='90' cy='55' r='1'/%3E%3Ccircle cx='55' cy='24' r='0.9'/%3E%3Ccircle cx='55' cy='98' r='1.1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #a8dce8, #5db8c8); }
+body .progress-fill { background: linear-gradient(90deg, #5db8c8, #4a8090); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #a8dce8, #5db8c8); }
+body .foreshadow-item.planted {
+    background: rgba(93, 184, 200, 0.08);
+    border-left-color: #5db8c8;
+    color: #a8ccd8;
+}
+body .char-status { color: #5db8c8; border-color: rgba(93, 184, 200, 0.4); }
+
+/* ─────────── ① 顶栏：仙门月白头 ─────────── */
+body.theme-fanrenxiuxian .top-bar {
+    background: linear-gradient(180deg, rgba(10, 20, 24, 0.96), rgba(10, 15, 18, 0.93));
+    border-bottom: 1px solid rgba(93, 184, 200, 0.24);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.46), inset 0 -1px 0 rgba(74, 128, 144, 0.1);
+}
+body.theme-fanrenxiuxian #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(93, 184, 200, 0.4), 0 0 30px rgba(216, 200, 120, 0.12);
+}
+
+/* ─────────── ② 正文卡：坊市卷宗 ─────────── */
+body.theme-fanrenxiuxian .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 4px 14px 4px 14px;
+    background:
+        linear-gradient(160deg, rgba(93, 184, 200, 0.05), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(74, 128, 144, 0.05), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.44);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-fanrenxiuxian .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.5), 0 0 18px rgba(93, 184, 200, 0.08); }
+/* 剑光饰：左上剑光斜掠 + 右下灵草露珠 */
+body.theme-fanrenxiuxian .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 14px;
+    width: 26px; height: 3px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(93, 184, 200, 0.55), transparent);
+    box-shadow: 0 1px 0 rgba(93, 184, 200, 0.2);
+}
+body.theme-fanrenxiuxian .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; right: 12px;
+    width: 20px; height: 20px;
+    pointer-events: none;
+    opacity: 0.45;
+    background:
+        radial-gradient(circle 8px at 50% 50%, transparent 5px, rgba(168, 216, 224, 0.28) 6px, transparent 8px),
+        radial-gradient(circle 3px at 50% 50%, rgba(216, 200, 120, 0.4), transparent 4px);
+}
+body.theme-fanrenxiuxian .ai-card-header { border-bottom: 1px solid rgba(93, 184, 200, 0.2); }
+
+/* ─────────── ③ 章节徽章：坊市编号 ─────────── */
+body.theme-fanrenxiuxian .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(168, 220, 232, 0.5);
+    box-shadow: 0 0 12px rgba(93, 184, 200, 0.28);
+}
+
+/* ─────────── ④ 选项按钮：斗法抉择 ─────────── */
+body.theme-fanrenxiuxian .option-btn { border-radius: 4px 14px 4px 14px; }
+body.theme-fanrenxiuxian .option-btn::before { content: '⚔ '; color: #5db8c8; }
+body.theme-fanrenxiuxian .option-btn:hover:not(:disabled) {
+    border-color: rgba(93, 184, 200, 0.72);
+    box-shadow: inset 2px 0 0 #5db8c8, 0 0 14px rgba(74, 128, 144, 0.12);
+    background: rgba(93, 184, 200, 0.05);
+    text-shadow: 0 0 8px rgba(93, 184, 200, 0.35);
+}
+body.theme-fanrenxiuxian .options-title { letter-spacing: 4px; }
+body.theme-fanrenxiuxian .options-title::before { content: '☯ '; color: #4a8090; }
+
+/* ─────────── ⑤ 输入区：符纸落笔 ─────────── */
+body.theme-fanrenxiuxian #userInput { border-radius: 4px 14px 4px 14px; }
+body.theme-fanrenxiuxian #userInput:focus {
+    border-color: #5db8c8;
+    box-shadow: 0 0 0 3px rgba(93, 184, 200, 0.14), 0 0 20px rgba(74, 128, 144, 0.08);
+}
+body.theme-fanrenxiuxian #sendBtn {
+    border-radius: 4px 14px 4px 14px;
+    box-shadow: 0 0 12px rgba(93, 184, 200, 0.26);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：修士档案 ─────────── */
+body.theme-fanrenxiuxian .panel-title { letter-spacing: 3px; }
+body.theme-fanrenxiuxian .panel-title::before { content: '⚗ '; color: #a8d8e0; }
+body.theme-fanrenxiuxian .gauge-label { color: #a8d8e0; }
+body.theme-fanrenxiuxian .gauge-fill {
+    box-shadow: 0 0 7px rgba(93, 184, 200, 0.3);
+    background-image: linear-gradient(90deg, rgba(74, 128, 144, 0.16), rgba(93, 184, 200, 0.2));
+}
+body.theme-fanrenxiuxian .sheet-box { border-top: 2px solid rgba(93, 184, 200, 0.42); border-radius: 4px 4px 0 0; }
+body.theme-fanrenxiuxian .modal-box { border-top: 2px solid rgba(93, 184, 200, 0.42); border-radius: 4px 4px 0 0; }
+
+/* ─────────── ⑦ 滚动条：灵脉滑轨 ─────────── */
+body.theme-fanrenxiuxian #chatMessages::-webkit-scrollbar-thumb,
+body.theme-fanrenxiuxian #statusPanel::-webkit-scrollbar-thumb,
+body.theme-fanrenxiuxian #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(93, 184, 200, 0.3), rgba(74, 128, 144, 0.18));
+}
+body.theme-fanrenxiuxian #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(93, 184, 200, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：修仙者面板 ─────────── */
+body.theme-fanrenxiuxian .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(93, 184, 200, 0.3); }
+body.theme-fanrenxiuxian .book-title-line { color: #5db8c8; }
+body.theme-fanrenxiuxian .status-panel {
+    border-image: linear-gradient(180deg, rgba(93, 184, 200, 0.36), rgba(74, 128, 144, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：遁光钮 ─────────── */
+body.theme-fanrenxiuxian .quick-btn { border-radius: 4px 12px 4px 12px; }
+body.theme-fanrenxiuxian .quick-btn:hover {
+    border-color: rgba(93, 184, 200, 0.6);
+    box-shadow: 0 0 10px rgba(93, 184, 200, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：仙路之题 ─────────── */
+body.theme-fanrenxiuxian .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(93, 184, 200, 0.3), 0 0 40px rgba(216, 200, 120, 0.14);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-fanrenxiuxian.mobile .ai-card::before,
+body.theme-fanrenxiuxian.mobile .ai-card::after { display: none; }

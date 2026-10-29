@@ -1,0 +1,151 @@
+/* ============================================================
+   龙族主题 - 雨夜屠龙（都市霓虹 × 血裔冷紫）
+   v3.15.0 每界专属 UI 皮肤重做：
+   雨丝斜幕底纹 · 顶栏雨幕压边 · 卡片龙瞳鳞饰 ·
+   选项血裔指引 · 面板卡塞尔标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #6a8ad8;
+    --primary-dim: rgba(106, 138, 216, 0.12);
+    --primary-glow: rgba(106, 138, 216, 0.3);
+    --secondary: #d87a94;
+    --accent: #8a94c8;
+    --panel-border: rgba(106, 138, 216, 0.18);
+    background-color: #0d0c16;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(106, 138, 216, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(216, 122, 148, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(106, 138, 216, 0.05), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg stroke='%236a8ad8' stroke-opacity='0.05'%3E%3Cpath d='M18 -8 L6 34 M44 -8 L32 34 M70 -8 L58 34 M96 -8 L84 34 M112 -8 L100 34'/%3E%3Cpath d='M4 44 L-8 88 M30 44 L18 88 M56 44 L44 88 M82 44 L70 88 M108 44 L96 88'/%3E%3C/g%3E%3Cg fill='%2398b0e0' fill-opacity='0.08'%3E%3Ccircle cx='30' cy='22' r='1'/%3E%3Ccircle cx='76' cy='60' r='1.2'/%3E%3Ccircle cx='12' cy='76' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #98b0e0, #6a8ad8); }
+body .progress-fill { background: linear-gradient(90deg, #6a8ad8, #d87a94); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #98b0e0, #6a8ad8); }
+body .foreshadow-item.planted {
+    background: rgba(106, 138, 216, 0.08);
+    border-left-color: #6a8ad8;
+    color: #84a0d0;
+}
+body .char-status { color: #6a8ad8; border-color: rgba(106, 138, 216, 0.4); }
+
+/* ─────────── ① 顶栏：雨夜天台 ─────────── */
+body.theme-longzu .top-bar {
+    background: linear-gradient(180deg, rgba(15, 14, 25, 0.96), rgba(13, 12, 22, 0.93));
+    border-bottom: 1px solid rgba(106, 138, 216, 0.24);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.42), inset 0 -1px 0 rgba(216, 122, 148, 0.1);
+}
+body.theme-longzu #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(106, 138, 216, 0.42), 0 0 30px rgba(216, 122, 148, 0.14);
+}
+
+/* ─────────── ② 正文卡：龙裔手记 ─────────── */
+body.theme-longzu .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 8px 14px 8px 14px;
+    background:
+        linear-gradient(160deg, rgba(106, 138, 216, 0.06), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(216, 122, 148, 0.05), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-longzu .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.45), 0 0 18px rgba(106, 138, 216, 0.1); }
+/* 龙瞳饰：右上竖瞳 + 左下鳞弧 */
+body.theme-longzu .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 10px; right: 12px;
+    width: 13px; height: 8px;
+    border: 1.5px solid rgba(106, 138, 216, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 7px rgba(106, 138, 216, 0.3);
+    background: radial-gradient(ellipse 2px 5px at 50% 50%, rgba(216, 122, 148, 0.75), transparent 6px);
+}
+body.theme-longzu .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; left: 10px;
+    width: 22px; height: 10px;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 7px 4px at 5px 10px, transparent 3px, rgba(106, 138, 216, 0.22) 3.5px, transparent 5px),
+        radial-gradient(ellipse 7px 4px at 15px 10px, transparent 3px, rgba(138, 148, 200, 0.2) 3.5px, transparent 5px);
+}
+body.theme-longzu .ai-card-header { border-bottom: 1px solid rgba(106, 138, 216, 0.2); }
+
+/* ─────────── ③ 章节徽章：学院徽记 ─────────── */
+body.theme-longzu .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(152, 176, 224, 0.5);
+    box-shadow: 0 0 12px rgba(106, 138, 216, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：血裔抉择 ─────────── */
+body.theme-longzu .option-btn { border-radius: 8px 14px 8px 14px; }
+body.theme-longzu .option-btn::before { content: '⌖ '; color: #6a8ad8; }
+body.theme-longzu .option-btn:hover:not(:disabled) {
+    border-color: rgba(106, 138, 216, 0.72);
+    box-shadow: inset 2px 0 0 #6a8ad8, 0 0 14px rgba(216, 122, 148, 0.12);
+    background: rgba(106, 138, 216, 0.05);
+    text-shadow: 0 0 8px rgba(106, 138, 216, 0.35);
+}
+body.theme-longzu .options-title { letter-spacing: 4px; }
+body.theme-longzu .options-title::before { content: '⌘ '; color: #8a94c8; }
+
+/* ─────────── ⑤ 输入区：言灵低语 ─────────── */
+body.theme-longzu #userInput { border-radius: 8px 14px 8px 14px; }
+body.theme-longzu #userInput:focus {
+    border-color: #6a8ad8;
+    box-shadow: 0 0 0 3px rgba(106, 138, 216, 0.14), 0 0 20px rgba(216, 122, 148, 0.08);
+}
+body.theme-longzu #sendBtn {
+    border-radius: 8px 14px 8px 14px;
+    box-shadow: 0 0 12px rgba(106, 138, 216, 0.28);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：卡塞尔档案 ─────────── */
+body.theme-longzu .panel-title { letter-spacing: 3px; }
+body.theme-longzu .panel-title::before { content: '⬗ '; color: #8a94c8; }
+body.theme-longzu .gauge-label { color: #8a94c8; }
+body.theme-longzu .gauge-fill {
+    box-shadow: 0 0 7px rgba(106, 138, 216, 0.3);
+    background-image: linear-gradient(90deg, rgba(216, 122, 148, 0.16), rgba(106, 138, 216, 0.2));
+}
+body.theme-longzu .sheet-box { border-top: 2px solid rgba(106, 138, 216, 0.42); border-radius: 8px 8px 0 0; }
+body.theme-longzu .modal-box { border-top: 2px solid rgba(106, 138, 216, 0.42); border-radius: 8px 8px 0 0; }
+
+/* ─────────── ⑦ 滚动条：雨幕细流 ─────────── */
+body.theme-longzu #chatMessages::-webkit-scrollbar-thumb,
+body.theme-longzu #statusPanel::-webkit-scrollbar-thumb,
+body.theme-longzu #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(106, 138, 216, 0.3), rgba(216, 122, 148, 0.18));
+}
+body.theme-longzu #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(106, 138, 216, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：血统档案 ─────────── */
+body.theme-longzu .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(106, 138, 216, 0.32); }
+body.theme-longzu .book-title-line { color: #6a8ad8; }
+body.theme-longzu .status-panel {
+    border-image: linear-gradient(180deg, rgba(106, 138, 216, 0.36), rgba(216, 122, 148, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：言灵钮 ─────────── */
+body.theme-longzu .quick-btn { border-radius: 8px 12px 8px 12px; }
+body.theme-longzu .quick-btn:hover {
+    border-color: rgba(106, 138, 216, 0.6);
+    box-shadow: 0 0 10px rgba(106, 138, 216, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：屠龙之夜 ─────────── */
+body.theme-longzu .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(106, 138, 216, 0.32), 0 0 40px rgba(216, 122, 148, 0.16);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-longzu.mobile .ai-card::before,
+body.theme-longzu.mobile .ai-card::after { display: none; }

@@ -1,0 +1,150 @@
+/* ============================================================
+   斗罗大陆主题 - 蓝银紫金（蓝银缠绕 × 魂环流光）
+   v3.15.0 每界专属 UI 皮肤重做：
+   魂环同心底纹 · 顶栏魂导压边 · 卡片魂环饰 ·
+   选项武魂指引 · 面板魂师标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #8f9fe8;
+    --primary-dim: rgba(143, 159, 232, 0.12);
+    --primary-glow: rgba(143, 159, 232, 0.3);
+    --secondary: #c9a0e8;
+    --accent: #8a9ad0;
+    --panel-border: rgba(143, 159, 232, 0.18);
+    background-color: #0d0e18;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(143, 159, 232, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(201, 160, 232, 0.06), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%238f9fe8' stroke-opacity='0.05'%3E%3Ccircle cx='40' cy='40' r='30'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='10'/%3E%3C/g%3E%3Cg fill='none' stroke='%23c9a0e8' stroke-opacity='0.045'%3E%3Ccircle cx='120' cy='110' r='26'/%3E%3Ccircle cx='120' cy='110' r='16'/%3E%3C/g%3E%3Cg fill='%23b8c4f0' fill-opacity='0.1'%3E%3Ccircle cx='88' cy='44' r='1.2'/%3E%3Ccircle cx='30' cy='120' r='1'/%3E%3Ccircle cx='140' cy='36' r='0.9'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #b8c4f0, #8f9fe8); }
+body .progress-fill { background: linear-gradient(90deg, #8f9fe8, #c9a0e8); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #b8c4f0, #8f9fe8); }
+body .foreshadow-item.planted {
+    background: rgba(143, 159, 232, 0.08);
+    border-left-color: #8f9fe8;
+    color: #c0caf2;
+}
+body .char-status { color: #8f9fe8; border-color: rgba(143, 159, 232, 0.4); }
+
+/* ─────────── ① 顶栏：魂导器台 ─────────── */
+body.theme-douluodalu .top-bar {
+    background: linear-gradient(180deg, rgba(16, 17, 28, 0.96), rgba(13, 14, 24, 0.93));
+    border-bottom: 1px solid rgba(143, 159, 232, 0.26);
+    box-shadow: 0 2px 18px rgba(0, 0, 0, 0.38), inset 0 -1px 0 rgba(201, 160, 232, 0.14);
+}
+body.theme-douluodalu #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(143, 159, 232, 0.4);
+}
+
+/* ─────────── ② 正文卡：魂技施放 ─────────── */
+body.theme-douluodalu .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 12px;
+    background:
+        radial-gradient(ellipse 240px 120px at 92% 4%, rgba(201, 160, 232, 0.06), transparent 55%),
+        linear-gradient(160deg, rgba(143, 159, 232, 0.06), transparent 42%),
+        var(--panel);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.36);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-douluodalu .ai-card:hover { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(143, 159, 232, 0.1); }
+/* 魂环饰：右上双环（白/紫） */
+body.theme-douluodalu .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 9px; right: 12px;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(143, 159, 232, 0.5);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(143, 159, 232, 0.3);
+    pointer-events: none;
+}
+body.theme-douluodalu .ai-card::after {
+    content: '';
+    position: absolute;
+    top: 12px; right: 15px;
+    width: 8px; height: 8px;
+    border: 1.5px solid rgba(201, 160, 232, 0.55);
+    border-radius: 50%;
+    pointer-events: none;
+}
+body.theme-douluodalu .ai-card-header {
+    border-bottom: 1px solid rgba(143, 159, 232, 0.2);
+    border-image: linear-gradient(90deg, rgba(143, 159, 232, 0.35), rgba(201, 160, 232, 0.2) 50%, transparent 85%) 1;
+}
+
+/* ─────────── ③ 章节徽章：魂环刻度 ─────────── */
+body.theme-douluodalu .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(184, 196, 240, 0.5);
+    box-shadow: 0 0 12px rgba(143, 159, 232, 0.3), inset 0 0 8px rgba(201, 160, 232, 0.1);
+}
+
+/* ─────────── ④ 选项按钮：魂技选择 ─────────── */
+body.theme-douluodalu .option-btn { border-radius: 10px; }
+body.theme-douluodalu .option-btn::before { content: '◉ '; color: #8f9fe8; font-size: 0.85em; }
+body.theme-douluodalu .option-btn:hover:not(:disabled) {
+    border-color: rgba(143, 159, 232, 0.7);
+    box-shadow: inset 2px 0 0 #8f9fe8, inset -2px 0 0 rgba(201, 160, 232, 0.4), 0 0 14px rgba(143, 159, 232, 0.14);
+    background: rgba(143, 159, 232, 0.05);
+}
+body.theme-douluodalu .options-title { letter-spacing: 4px; }
+body.theme-douluodalu .options-title::before { content: '⟠ '; color: #8a9ad0; }
+
+/* ─────────── ⑤ 输入区：魂力灌注 ─────────── */
+body.theme-douluodalu #userInput { border-radius: 10px; }
+body.theme-douluodalu #userInput:focus {
+    border-color: #8f9fe8;
+    box-shadow: 0 0 0 3px rgba(143, 159, 232, 0.15), 0 0 20px rgba(201, 160, 232, 0.1);
+}
+body.theme-douluodalu #sendBtn {
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(143, 159, 232, 0.3);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：魂师名录 ─────────── */
+body.theme-douluodalu .panel-title { letter-spacing: 3px; }
+body.theme-douluodalu .panel-title::before { content: '⬡ '; color: #8a9ad0; }
+body.theme-douluodalu .gauge-label { color: #9aa8e0; }
+body.theme-douluodalu .gauge-fill {
+    box-shadow: 0 0 7px rgba(143, 159, 232, 0.32);
+    background-image: linear-gradient(90deg, rgba(201, 160, 232, 0.2), rgba(143, 159, 232, 0.2));
+}
+body.theme-douluodalu .sheet-box { border-top: 2px solid rgba(143, 159, 232, 0.42); border-radius: 10px 10px 0 0; }
+body.theme-douluodalu .modal-box { border-top: 2px solid rgba(143, 159, 232, 0.42); border-radius: 10px 10px 0 0; }
+
+/* ─────────── ⑦ 滚动条：魂力流光 ─────────── */
+body.theme-douluodalu #chatMessages::-webkit-scrollbar-thumb,
+body.theme-douluodalu #statusPanel::-webkit-scrollbar-thumb,
+body.theme-douluodalu #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(143, 159, 232, 0.3), rgba(201, 160, 232, 0.2));
+}
+body.theme-douluodalu #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(143, 159, 232, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：魂师之路 ─────────── */
+body.theme-douluodalu .wizard-title { letter-spacing: 4px; text-shadow: 0 0 14px rgba(143, 159, 232, 0.32); }
+body.theme-douluodalu .book-title-line { color: #8f9fe8; }
+body.theme-douluodalu .status-panel {
+    border-image: linear-gradient(180deg, rgba(143, 159, 232, 0.38), rgba(201, 160, 232, 0.14)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：魂导钮 ─────────── */
+body.theme-douluodalu .quick-btn { border-radius: 10px; }
+body.theme-douluodalu .quick-btn:hover {
+    border-color: rgba(143, 159, 232, 0.6);
+    box-shadow: 0 0 10px rgba(201, 160, 232, 0.14);
+}
+
+/* ─────────── ⑩ 章节标题：魂环大字 ─────────── */
+body.theme-douluodalu .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(143, 159, 232, 0.3), 0 0 40px rgba(201, 160, 232, 0.15);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-douluodalu.mobile .ai-card::before,
+body.theme-douluodalu.mobile .ai-card::after { display: none; }

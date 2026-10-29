@@ -1,0 +1,14 @@
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# 日志与临时产物
+*.log
+_test_presets/
+node_modules/
+__pycache__/
+
+# 注意：releases/ 必须提交（云境「☁ 云端同步」与酒馆直链下载都读这里的固定路径）

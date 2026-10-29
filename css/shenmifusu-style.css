@@ -1,0 +1,150 @@
+/* ============================================================
+   神秘复苏主题 - 人间如狱（冥纸青 × 鬼火冷 × 噬魂墨黑）
+   v3.19.0 每界专属 UI 皮肤：
+   冥纹底色 · 顶栏压尸布边 · 卡片封条饰 ·
+   选项叩门指引 · 面板禁锢徽记 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #7ab0a8;
+    --primary-dim: rgba(122, 176, 168, 0.12);
+    --primary-glow: rgba(122, 176, 168, 0.3);
+    --secondary: #6a8880;
+    --accent: #a8c8c0;
+    --panel-border: rgba(122, 176, 168, 0.18);
+    background-color: #0a0f0e;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(122, 176, 168, 0.09), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(106, 136, 128, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(168, 80, 80, 0.04), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg stroke='%237ab0a8' stroke-opacity='0.05' fill='none'%3E%3Ccircle cx='55' cy='55' r='30'/%3E%3Ccircle cx='55' cy='55' r='14'/%3E%3Cpath d='M55 4 L55 26 M55 84 L55 106 M4 55 L26 55 M84 55 L106 55'/%3E%3Cpath d='M22 22 L34 34 M88 22 L76 34 M22 88 L34 76 M88 88 L76 76'/%3E%3C/g%3E%3Cg fill='%23a8c8c0' fill-opacity='0.08'%3E%3Ccircle cx='55' cy='55' r='2.2'/%3E%3Ccircle cx='20' cy='55' r='1'/%3E%3Ccircle cx='90' cy='55' r='1'/%3E%3Ccircle cx='55' cy='20' r='0.9'/%3E%3Ccircle cx='55' cy='90' r='1.1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #a8d8d0, #7ab0a8); }
+body .progress-fill { background: linear-gradient(90deg, #7ab0a8, #6a8880); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #a8d8d0, #7ab0a8); }
+body .foreshadow-item.planted {
+    background: rgba(122, 176, 168, 0.08);
+    border-left-color: #7ab0a8;
+    color: #a8ccc4;
+}
+body .char-status { color: #7ab0a8; border-color: rgba(122, 176, 168, 0.4); }
+
+/* ─────────── ① 顶栏：灵异通报头 ─────────── */
+body.theme-shenmifusu .top-bar {
+    background: linear-gradient(180deg, rgba(12, 20, 18, 0.96), rgba(10, 15, 14, 0.93));
+    border-bottom: 1px solid rgba(122, 176, 168, 0.24);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.46), inset 0 -1px 0 rgba(106, 136, 128, 0.1);
+}
+body.theme-shenmifusu #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(122, 176, 168, 0.4), 0 0 30px rgba(168, 80, 80, 0.12);
+}
+
+/* ─────────── ② 正文卡：事件卷宗 ─────────── */
+body.theme-shenmifusu .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 4px 14px 4px 14px;
+    background:
+        linear-gradient(160deg, rgba(122, 176, 168, 0.05), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(106, 136, 128, 0.05), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.44);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-shenmifusu .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.5), 0 0 18px rgba(122, 176, 168, 0.08); }
+/* 封条饰：左上封条斜压 + 右下鬼瞳 */
+body.theme-shenmifusu .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 14px;
+    width: 26px; height: 3px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(122, 176, 168, 0.55), transparent);
+    box-shadow: 0 1px 0 rgba(122, 176, 168, 0.2);
+}
+body.theme-shenmifusu .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; right: 12px;
+    width: 20px; height: 20px;
+    pointer-events: none;
+    opacity: 0.45;
+    background:
+        radial-gradient(circle 8px at 50% 50%, transparent 5px, rgba(168, 200, 192, 0.28) 6px, transparent 8px),
+        radial-gradient(circle 3px at 50% 50%, rgba(168, 80, 80, 0.4), transparent 4px);
+}
+body.theme-shenmifusu .ai-card-header { border-bottom: 1px solid rgba(122, 176, 168, 0.2); }
+
+/* ─────────── ③ 章节徽章：事件编号 ─────────── */
+body.theme-shenmifusu .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(168, 216, 208, 0.5);
+    box-shadow: 0 0 12px rgba(122, 176, 168, 0.28);
+}
+
+/* ─────────── ④ 选项按钮：叩门抉择 ─────────── */
+body.theme-shenmifusu .option-btn { border-radius: 4px 14px 4px 14px; }
+body.theme-shenmifusu .option-btn::before { content: '🕯 '; color: #7ab0a8; }
+body.theme-shenmifusu .option-btn:hover:not(:disabled) {
+    border-color: rgba(122, 176, 168, 0.72);
+    box-shadow: inset 2px 0 0 #7ab0a8, 0 0 14px rgba(106, 136, 128, 0.12);
+    background: rgba(122, 176, 168, 0.05);
+    text-shadow: 0 0 8px rgba(122, 176, 168, 0.35);
+}
+body.theme-shenmifusu .options-title { letter-spacing: 4px; }
+body.theme-shenmifusu .options-title::before { content: '☠ '; color: #6a8880; }
+
+/* ─────────── ⑤ 输入区：卷宗落笔 ─────────── */
+body.theme-shenmifusu #userInput { border-radius: 4px 14px 4px 14px; }
+body.theme-shenmifusu #userInput:focus {
+    border-color: #7ab0a8;
+    box-shadow: 0 0 0 3px rgba(122, 176, 168, 0.14), 0 0 20px rgba(106, 136, 128, 0.08);
+}
+body.theme-shenmifusu #sendBtn {
+    border-radius: 4px 14px 4px 14px;
+    box-shadow: 0 0 12px rgba(122, 176, 168, 0.26);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：禁锢档案 ─────────── */
+body.theme-shenmifusu .panel-title { letter-spacing: 3px; }
+body.theme-shenmifusu .panel-title::before { content: '🕯 '; color: #a8c8c0; }
+body.theme-shenmifusu .gauge-label { color: #a8c8c0; }
+body.theme-shenmifusu .gauge-fill {
+    box-shadow: 0 0 7px rgba(122, 176, 168, 0.3);
+    background-image: linear-gradient(90deg, rgba(106, 136, 128, 0.16), rgba(122, 176, 168, 0.2));
+}
+body.theme-shenmifusu .sheet-box { border-top: 2px solid rgba(122, 176, 168, 0.42); border-radius: 4px 4px 0 0; }
+body.theme-shenmifusu .modal-box { border-top: 2px solid rgba(122, 176, 168, 0.42); border-radius: 4px 4px 0 0; }
+
+/* ─────────── ⑦ 滚动条：冥河滑轨 ─────────── */
+body.theme-shenmifusu #chatMessages::-webkit-scrollbar-thumb,
+body.theme-shenmifusu #statusPanel::-webkit-scrollbar-thumb,
+body.theme-shenmifusu #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(122, 176, 168, 0.3), rgba(106, 136, 128, 0.18));
+}
+body.theme-shenmifusu #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(122, 176, 168, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：驭鬼者面板 ─────────── */
+body.theme-shenmifusu .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(122, 176, 168, 0.3); }
+body.theme-shenmifusu .book-title-line { color: #7ab0a8; }
+body.theme-shenmifusu .status-panel {
+    border-image: linear-gradient(180deg, rgba(122, 176, 168, 0.36), rgba(106, 136, 128, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：夜行钮 ─────────── */
+body.theme-shenmifusu .quick-btn { border-radius: 4px 12px 4px 12px; }
+body.theme-shenmifusu .quick-btn:hover {
+    border-color: rgba(122, 176, 168, 0.6);
+    box-shadow: 0 0 10px rgba(122, 176, 168, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：鬼夜之题 ─────────── */
+body.theme-shenmifusu .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(122, 176, 168, 0.3), 0 0 40px rgba(168, 80, 80, 0.14);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-shenmifusu.mobile .ai-card::before,
+body.theme-shenmifusu.mobile .ai-card::after { display: none; }

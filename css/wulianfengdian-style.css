@@ -1,0 +1,150 @@
+/* ============================================================
+   武炼巅峰主题 - 武道长征（熔金 × 玄铁 × 锻炉赤光）
+   v3.19.0 每界专属 UI 皮肤：
+   锻纹底色 · 顶栏铁幕压边 · 卡片剑痕饰 ·
+   选项武道指引 · 面板武纹徽记 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #d89030;
+    --primary-dim: rgba(216, 144, 48, 0.12);
+    --primary-glow: rgba(216, 144, 48, 0.3);
+    --secondary: #9a8468;
+    --accent: #c8a878;
+    --panel-border: rgba(216, 144, 48, 0.18);
+    background-color: #100d0a;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(216, 144, 48, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(154, 132, 104, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 50% 110%, rgba(200, 80, 40, 0.05), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg stroke='%23d89030' stroke-opacity='0.05' fill='none'%3E%3Cpath d='M0 55 L110 55'/%3E%3Cpath d='M55 0 L55 110'/%3E%3Cpath d='M8 8 L102 102 M102 8 L8 102'/%3E%3Ccircle cx='55' cy='55' r='24'/%3E%3C/g%3E%3Cg fill='%23c8a878' fill-opacity='0.09'%3E%3Ccircle cx='55' cy='55' r='2.4'/%3E%3Ccircle cx='31' cy='55' r='1'/%3E%3Ccircle cx='79' cy='55' r='1'/%3E%3Ccircle cx='55' cy='31' r='0.9'/%3E%3Ccircle cx='55' cy='79' r='1.1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #e8b060, #d89030); }
+body .progress-fill { background: linear-gradient(90deg, #d89030, #9a8468); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #e8b060, #d89030); }
+body .foreshadow-item.planted {
+    background: rgba(216, 144, 48, 0.08);
+    border-left-color: #d89030;
+    color: #d8a868;
+}
+body .char-status { color: #d89030; border-color: rgba(216, 144, 48, 0.4); }
+
+/* ─────────── ① 顶栏：山门匾额 ─────────── */
+body.theme-wulianfengdian .top-bar {
+    background: linear-gradient(180deg, rgba(24, 19, 13, 0.96), rgba(16, 13, 10, 0.93));
+    border-bottom: 1px solid rgba(216, 144, 48, 0.26);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.42), inset 0 -1px 0 rgba(154, 132, 104, 0.1);
+}
+body.theme-wulianfengdian #gameTitle {
+    letter-spacing: 4px;
+    text-shadow: 0 0 16px rgba(216, 144, 48, 0.42), 0 0 30px rgba(154, 132, 104, 0.14);
+}
+
+/* ─────────── ② 正文卡：武者行录 ─────────── */
+body.theme-wulianfengdian .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 14px 8px 14px 8px;
+    background:
+        linear-gradient(160deg, rgba(216, 144, 48, 0.06), transparent 40%),
+        radial-gradient(ellipse 300px 150px at 90% 100%, rgba(154, 132, 104, 0.05), transparent 55%),
+        var(--panel);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-wulianfengdian .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.45), 0 0 18px rgba(216, 144, 48, 0.1); }
+/* 剑痕饰：左上剑锋斜痕 + 右下锻纹 */
+body.theme-wulianfengdian .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 14px;
+    width: 26px; height: 3px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(216, 144, 48, 0.55), transparent);
+    box-shadow: 0 1px 0 rgba(216, 144, 48, 0.2);
+}
+body.theme-wulianfengdian .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; right: 12px;
+    width: 20px; height: 20px;
+    pointer-events: none;
+    opacity: 0.5;
+    background:
+        radial-gradient(circle 8px at 50% 50%, transparent 5px, rgba(200, 168, 120, 0.3) 6px, transparent 8px),
+        radial-gradient(circle 3px at 50% 50%, rgba(216, 144, 48, 0.5), transparent 4px);
+}
+body.theme-wulianfengdian .ai-card-header { border-bottom: 1px solid rgba(216, 144, 48, 0.2); }
+
+/* ─────────── ③ 章节徽章：武道印 ─────────── */
+body.theme-wulianfengdian .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(232, 176, 96, 0.5);
+    box-shadow: 0 0 12px rgba(216, 144, 48, 0.3);
+}
+
+/* ─────────── ④ 选项按钮：武道抉择 ─────────── */
+body.theme-wulianfengdian .option-btn { border-radius: 14px 8px 14px 8px; }
+body.theme-wulianfengdian .option-btn::before { content: '⚔ '; color: #d89030; }
+body.theme-wulianfengdian .option-btn:hover:not(:disabled) {
+    border-color: rgba(216, 144, 48, 0.72);
+    box-shadow: inset 2px 0 0 #d89030, 0 0 14px rgba(154, 132, 104, 0.12);
+    background: rgba(216, 144, 48, 0.05);
+    text-shadow: 0 0 8px rgba(216, 144, 48, 0.35);
+}
+body.theme-wulianfengdian .options-title { letter-spacing: 4px; }
+body.theme-wulianfengdian .options-title::before { content: '❖ '; color: #9a8468; }
+
+/* ─────────── ⑤ 输入区：战书落笔 ─────────── */
+body.theme-wulianfengdian #userInput { border-radius: 14px 8px 14px 8px; }
+body.theme-wulianfengdian #userInput:focus {
+    border-color: #d89030;
+    box-shadow: 0 0 0 3px rgba(216, 144, 48, 0.14), 0 0 20px rgba(154, 132, 104, 0.08);
+}
+body.theme-wulianfengdian #sendBtn {
+    border-radius: 14px 8px 14px 8px;
+    box-shadow: 0 0 12px rgba(216, 144, 48, 0.28);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：演武场 ─────────── */
+body.theme-wulianfengdian .panel-title { letter-spacing: 3px; }
+body.theme-wulianfengdian .panel-title::before { content: '⚔ '; color: #c8a878; }
+body.theme-wulianfengdian .gauge-label { color: #c8a878; }
+body.theme-wulianfengdian .gauge-fill {
+    box-shadow: 0 0 7px rgba(216, 144, 48, 0.3);
+    background-image: linear-gradient(90deg, rgba(154, 132, 104, 0.16), rgba(216, 144, 48, 0.2));
+}
+body.theme-wulianfengdian .sheet-box { border-top: 2px solid rgba(216, 144, 48, 0.42); border-radius: 8px 8px 0 0; }
+body.theme-wulianfengdian .modal-box { border-top: 2px solid rgba(216, 144, 48, 0.42); border-radius: 8px 8px 0 0; }
+
+/* ─────────── ⑦ 滚动条：锻光滑轨 ─────────── */
+body.theme-wulianfengdian #chatMessages::-webkit-scrollbar-thumb,
+body.theme-wulianfengdian #statusPanel::-webkit-scrollbar-thumb,
+body.theme-wulianfengdian #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(216, 144, 48, 0.3), rgba(154, 132, 104, 0.18));
+}
+body.theme-wulianfengdian #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(216, 144, 48, 0.48); }
+
+/* ─────────── ⑧ 扮演模式特化：武者面板 ─────────── */
+body.theme-wulianfengdian .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(216, 144, 48, 0.32); }
+body.theme-wulianfengdian .book-title-line { color: #d89030; }
+body.theme-wulianfengdian .status-panel {
+    border-image: linear-gradient(180deg, rgba(216, 144, 48, 0.36), rgba(154, 132, 104, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：演武钮 ─────────── */
+body.theme-wulianfengdian .quick-btn { border-radius: 8px 12px 8px 12px; }
+body.theme-wulianfengdian .quick-btn:hover {
+    border-color: rgba(216, 144, 48, 0.6);
+    box-shadow: 0 0 10px rgba(216, 144, 48, 0.15);
+}
+
+/* ─────────── ⑩ 章节标题：武路之夜 ─────────── */
+body.theme-wulianfengdian .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(216, 144, 48, 0.32), 0 0 40px rgba(154, 132, 104, 0.16);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-wulianfengdian.mobile .ai-card::before,
+body.theme-wulianfengdian.mobile .ai-card::after { display: none; }

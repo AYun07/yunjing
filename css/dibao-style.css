@@ -1,0 +1,153 @@
+/* ============================================================
+   帝霸主题 - 万古帝金（纪元苍茫 × 帝铜鎏金）
+   v3.15.0 每界专属 UI 皮肤重做：
+   龙鳞叠纹底纹 · 顶栏帝威压边 · 卡片帝印龙角饰 ·
+   选项圣旨指引 · 面板帝典标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #d8b46a;
+    --primary-dim: rgba(216, 180, 106, 0.12);
+    --primary-glow: rgba(216, 180, 106, 0.3);
+    --secondary: #a8745a;
+    --accent: #c8a888;
+    --panel-border: rgba(216, 180, 106, 0.18);
+    background-color: #14100a;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(216, 180, 106, 0.11), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(168, 116, 90, 0.07), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='68' viewBox='0 0 120 68'%3E%3Cg fill='none' stroke='%23d8b46a' stroke-opacity='0.055'%3E%3Cpath d='M0 34 Q15 14 30 34 T60 34 T90 34 T120 34'/%3E%3Cpath d='M-15 54 Q0 34 15 54 T45 54 T75 54 T105 54 T135 54'/%3E%3Cpath d='M-15 14 Q0 -6 15 14 T45 14 T75 14 T105 14 T135 14'/%3E%3C/g%3E%3Cg fill='%23f0d8a0' fill-opacity='0.09'%3E%3Ccircle cx='30' cy='34' r='1.2'/%3E%3Ccircle cx='90' cy='34' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #f0d8a0, #d8b46a); }
+body .progress-fill { background: linear-gradient(90deg, #d8b46a, #f0d8a0); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #f0d8a0, #d8b46a); }
+body .foreshadow-item.planted {
+    background: rgba(216, 180, 106, 0.08);
+    border-left-color: #d8b46a;
+    color: #e0cca0;
+}
+body .char-status { color: #d8b46a; border-color: rgba(216, 180, 106, 0.4); }
+
+/* ─────────── ① 顶栏：万古帝阙 ─────────── */
+body.theme-dibao .top-bar {
+    background: linear-gradient(180deg, rgba(24, 19, 11, 0.97), rgba(20, 16, 10, 0.94));
+    border-bottom: none;
+    box-shadow: inset 0 -2px 0 rgba(216, 180, 106, 0.42), inset 0 -5px 0 rgba(168, 116, 90, 0.14), 0 3px 20px rgba(0, 0, 0, 0.45);
+}
+body.theme-dibao #gameTitle {
+    letter-spacing: 7px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7), 0 0 22px rgba(216, 180, 106, 0.4);
+}
+
+/* ─────────── ② 正文卡：帝典金页 ─────────── */
+body.theme-dibao .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 4px;
+    background:
+        linear-gradient(175deg, rgba(216, 180, 106, 0.09), transparent 48%),
+        var(--panel);
+    border-top: 1px solid rgba(240, 216, 160, 0.3);
+    border-bottom: 1px solid rgba(216, 180, 106, 0.22);
+    box-shadow: 0 5px 24px rgba(0, 0, 0, 0.42);
+}
+/* 帝印饰：右上金印 + 左下龙角弧 */
+body.theme-dibao .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 9px; right: 10px;
+    width: 13px; height: 13px;
+    border: 1.5px solid rgba(216, 180, 106, 0.55);
+    border-radius: 2px;
+    transform: rotate(45deg);
+    box-shadow: 0 0 8px rgba(216, 180, 106, 0.3), inset 0 0 5px rgba(216, 180, 106, 0.18);
+    pointer-events: none;
+}
+body.theme-dibao .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 7px; left: 9px;
+    width: 20px; height: 9px;
+    border: 1.5px solid rgba(168, 116, 90, 0.4);
+    border-top: none;
+    border-right-color: transparent;
+    border-radius: 0 0 0 12px;
+    pointer-events: none;
+}
+body.theme-dibao .ai-card-header {
+    border-bottom: 1px solid rgba(216, 180, 106, 0.24);
+    border-image: linear-gradient(90deg, rgba(216, 180, 106, 0.5), rgba(168, 116, 90, 0.2) 60%, transparent) 1;
+}
+
+/* ─────────── ③ 章节徽章：帝旨玉玺 ─────────── */
+body.theme-dibao .chapter-badge {
+    letter-spacing: 3px;
+    border: 1px solid rgba(240, 216, 160, 0.55);
+    box-shadow: 0 0 14px rgba(216, 180, 106, 0.35), inset 0 0 8px rgba(216, 180, 106, 0.14);
+    text-shadow: 0 0 8px rgba(216, 180, 106, 0.35);
+}
+
+/* ─────────── ④ 选项按钮：帝路抉择 ─────────── */
+body.theme-dibao .option-btn { border-radius: 4px; }
+body.theme-dibao .option-btn::before { content: '⚜ '; color: #d8b46a; font-size: 0.85em; }
+body.theme-dibao .option-btn:hover:not(:disabled) {
+    border-color: rgba(216, 180, 106, 0.7);
+    box-shadow: inset 0 2px 0 rgba(216, 180, 106, 0.5), 0 0 16px rgba(216, 180, 106, 0.14);
+    background: rgba(216, 180, 106, 0.06);
+    text-shadow: 0 0 8px rgba(240, 216, 160, 0.35);
+}
+body.theme-dibao .options-title { letter-spacing: 6px; }
+body.theme-dibao .options-title::before { content: '〓 '; color: #c8a888; }
+body.theme-dibao .options-title::after { content: ' 〓'; color: #c8a888; }
+
+/* ─────────── ⑤ 输入区：帝笔御批 ─────────── */
+body.theme-dibao #userInput { border-radius: 4px; }
+body.theme-dibao #userInput:focus {
+    border-color: #d8b46a;
+    box-shadow: 0 0 0 3px rgba(216, 180, 106, 0.15), inset 0 1px 0 rgba(216, 180, 106, 0.12);
+}
+body.theme-dibao #sendBtn {
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 0 12px rgba(216, 180, 106, 0.22);
+    letter-spacing: 2px;
+}
+
+/* ─────────── ⑥ 面板：万古帝典 ─────────── */
+body.theme-dibao .panel-title { letter-spacing: 5px; }
+body.theme-dibao .panel-title::before { content: '❖ '; color: #c8a888; }
+body.theme-dibao .gauge-label { color: #c8a888; }
+body.theme-dibao .gauge-fill {
+    box-shadow: 0 0 7px rgba(216, 180, 106, 0.32);
+    background-image: repeating-linear-gradient(45deg, transparent 0 6px, rgba(240, 216, 160, 0.08) 6px 12px);
+}
+body.theme-dibao .sheet-box { border-top: 3px double rgba(216, 180, 106, 0.45); border-radius: 4px 4px 0 0; }
+body.theme-dibao .modal-box { border-top: 3px double rgba(216, 180, 106, 0.45); border-radius: 4px 4px 0 0; }
+
+/* ─────────── ⑦ 滚动条：鎏金帝轨 ─────────── */
+body.theme-dibao #chatMessages::-webkit-scrollbar-thumb,
+body.theme-dibao #statusPanel::-webkit-scrollbar-thumb,
+body.theme-dibao #setupWrap::-webkit-scrollbar-thumb { background: rgba(216, 180, 106, 0.3); }
+body.theme-dibao #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(216, 180, 106, 0.5); }
+
+/* ─────────── ⑧ 扮演模式特化：帝途仪表 ─────────── */
+body.theme-dibao .wizard-title { letter-spacing: 5px; text-shadow: 0 0 16px rgba(216, 180, 106, 0.35); }
+body.theme-dibao .book-title-line { color: #d8b468; letter-spacing: 2px; }
+body.theme-dibao .status-panel {
+    border-image: linear-gradient(180deg, rgba(216, 180, 106, 0.4), rgba(168, 116, 90, 0.14)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：帝兵钮 ─────────── */
+body.theme-dibao .quick-btn { border-radius: 4px; letter-spacing: 1px; }
+body.theme-dibao .quick-btn:hover {
+    border-color: rgba(216, 180, 106, 0.62);
+    box-shadow: inset 0 1px 0 rgba(216, 180, 106, 0.3), 0 0 10px rgba(216, 180, 106, 0.14);
+}
+
+/* ─────────── ⑩ 章节标题：万古帝碑 ─────────── */
+body.theme-dibao .story-chapter-title {
+    letter-spacing: 13px;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6), 0 0 28px rgba(216, 180, 106, 0.32);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-dibao.mobile .ai-card::before,
+body.theme-dibao.mobile .ai-card::after { display: none; }
