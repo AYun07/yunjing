@@ -65,6 +65,9 @@ async function buildStoryMessages(userMessage) {
     messages.push(msg);
   };
   const vaOn = !!(window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()));
+  /* v3.55.10 基础小模型适配：轻量协议块替代全量咩咩预设，知识库背景与
+     生图/沉浸指令暂停加载（强模型用户不受影响） */
+  const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isEnabled());
   const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
   const rawRule = config.defaultSystemPrompt || "";
   const chapterNow = Number((_a = state.variables) == null ? void 0 : _a.chapter) || 0;
@@ -112,8 +115,8 @@ stats.张力: +5
   const isRPMode = config.mode === "roleplay";
   const endgame = isRPMode && StoryFreedom.isFree() ? "" : buildEndgamePressure(state.variables, isRPMode);
   const freedomRule = buildFreedomDirective(isRPMode);
-  const imageRule = window.StoryImageGen && window.StoryImageGen.buildDirective ? window.StoryImageGen.buildDirective() : "";
-  const immerseRule = window.ImmersionPlus && window.ImmersionPlus.buildDirective ? window.ImmersionPlus.buildDirective() : "";
+  const imageRule = (!bmmOn && window.StoryImageGen && window.StoryImageGen.buildDirective) ? window.StoryImageGen.buildDirective() : "";
+  const immerseRule = (!bmmOn && window.ImmersionPlus && window.ImmersionPlus.buildDirective) ? window.ImmersionPlus.buildDirective() : "";
   // v3.47.14 创作性质声明 + 内容尺度（由 content-scale.js 提供分级指令与硬底线）
   const fictionPreamble = `【创作性质声明】本次对话是合法的架空小说/互动文学创作平台内的虚构写作：所有世界观、人物与情节均为虚构，创作目的是文学表达。请以专业小说家的笔法处理题材内在的冲突、残酷、恐怖与悲剧——它们是叙事的养分，应忠实于世界设定地写出，而非回避或稀释；同时保持叙事张力服务于故事本身。`;
   const scaleDirective = window.MoContentScale && window.MoContentScale.buildDirective
@@ -139,7 +142,11 @@ stats.张力: +5
   // 说明：不改预设任何 prompt 文本，只在渲染时按 genreKey 选中文风档、关掉出厂默认的日轻档
   let miaomiaoBlock = '';
   try {
-    if (window.MoMiaomiaoBridge && window.MoMiaomiaoBridge.render) {
+    if (bmmOn && window.BaseModelMode && window.BaseModelMode.buildLitePreset) {
+      /* v3.55.10 基础小模型适配：小模型注意力有限，全量预设（数万字协议）
+         换成 ~1.4k 字的云心精简核心（实测协议遵从率反而更高） */
+      miaomiaoBlock = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
+    } else if (window.MoMiaomiaoBridge && window.MoMiaomiaoBridge.render) {
       miaomiaoBlock = window.MoMiaomiaoBridge.render({
         char: (state.setup && state.setup.playerName) || '主角',
         user: '你'
@@ -165,7 +172,9 @@ ${digest}` });
   }
   const storyKB = window.StoryKnowledge;
   if (storyKB && storyKB.getCount() > 0) {
-    for (const m of storyKB.buildBackgroundKnowledge()) push(m, "知识库·背景", 10);
+    /* v3.55.10 基础小模型适配：背景知识整包注入对小模型是负担，
+       暂停背景包、保留前景检索（与玩家当前输入相关的条目照常注入） */
+    if (!bmmOn) for (const m of storyKB.buildBackgroundKnowledge()) push(m, "知识库·背景", 10);
   }
   const recap = state.digest;
   if (recap && recap.summary) {

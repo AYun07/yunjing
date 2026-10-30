@@ -734,7 +734,7 @@ ${body || "（今天风平浪静）"}
     const link = document.createElement("link");
     link.id = "phSocialCss";
     link.rel = "stylesheet";
-    link.href = "css/phone-social.css?v=3.55.9";
+    link.href = "css/phone-social.css?v=3.55.10";
     document.head.appendChild(link);
   }
 })();

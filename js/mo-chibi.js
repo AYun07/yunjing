@@ -38,7 +38,7 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.55.9" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.55.10" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
   /** 手动设定形态（luo / yu），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
@@ -59,8 +59,8 @@ const MoChibi = {
     const box = document.getElementById("moChibi");
     if (box) box.dataset.style = this.currentStyle();
     const img = document.querySelector("#moChibi .mc-img");
-    if (img) img.src = this.chibiSrc() + "?v=3.55.9";
-    const face = this.faceSrc() + "?v=3.55.9";
+    if (img) img.src = this.chibiSrc() + "?v=3.55.10";
+    const face = this.faceSrc() + "?v=3.55.10";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
