@@ -4,11 +4,11 @@ const StoryResponseHandler = {
     const fw = window.storyFramework;
     const parser = window.VariableInstructionParser;
     let reply = window.stripAIThink ? window.stripAIThink(rawReply) : rawReply;
-    /* v3.47.18 咩咩专用正则：在解析变量/选项/正文之前先过一遍，
+    /* v3.47.18 某预设专用正则：在解析变量/选项/正文之前先过一遍，
        让 <selection> 变成【行动选项】（这样云境既有的选项按钮能直接接管），
        并让"去 AI 味"清理的结果贯穿变量解析、选项提取与存档。 */
-    reply = window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.enabled()
-      ? window.MoMiaomiaoRegex.preParse(reply)
+    reply = window.旧预设正则 && window.旧预设正则.enabled()
+      ? window.旧预设正则.preParse(reply)
       : reply;
     const oldCh = Number(fw.storyState.variables && fw.storyState.variables.chapter) || 0;
     const { newVariables, updateBlock } = parser.parse(reply, fw.storyState.variables, { storyRegistration: true });
@@ -344,7 +344,7 @@ const StoryResponseHandler = {
         if (text.length >= 2 && text.length <= 80) options.push(text);
       }
     }
-    return options.slice(0, 4);
+    return options.slice(0, 6);
   },
   /** 侦测本轮选项区标题（扮演模式「行动选项」/ 创作模式「情节走向」），供按钮区显示 */
   detectOptionsLabel(reply) {
@@ -363,14 +363,14 @@ const StoryResponseHandler = {
     const IG = window.StoryImageGen;
     const bodyForCount = IG && IG.stripMarkers ? IG.stripMarkers(body) : body;
     const words = bodyForCount ? bodyForCount.replace(/\s/g, "").length : 0;
-    /* v3.47.18 咩咩专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
+    /* v3.47.18 某预设专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
        从正文里抽出来渲染成折叠卡片 —— 否则它们会以裸 XML 落在正文里。
-       v3.51.0：改为 always —— 即使玩家把「咩咩正则」总开关关掉，也只停用"去 AI 味"，
+       v3.51.0：改为 always —— 即使玩家把「某预设正则」总开关关掉，也只停用"去 AI 味"，
        协议块照旧收进卡片，绝不把 <status> 原样吐在正文里。 */
     let prose = body;
     let cardsHtml = "";
-    if (window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.process) {
-      const rg = window.MoMiaomiaoRegex.process(body, { always: true });
+    if (window.旧预设正则 && window.旧预设正则.process) {
+      const rg = window.旧预设正则.process(body, { always: true });
       prose = rg.prose;
       cardsHtml = rg.cardsHtml || "";
     }
@@ -405,11 +405,11 @@ const StoryResponseHandler = {
       const dramatic = !!(window.ImmersionPlus && window.ImmersionPlus.isDramatic && window.ImmersionPlus.isDramatic(label));
       /* v3.55.6 云起专属美化：行动选项美化开着 → 序号徽章 + yq-opts 皮肤；
          关闭时回退朴素按钮（纯文本序号）。 */
-      const yqOptOn = !!(window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.ruleOn && window.MoMiaomiaoRegex.ruleOn("云起·行动选项美化"));
+      const yqOptOn = !!(window.旧预设正则 && window.旧预设正则.ruleOn && window.旧预设正则.ruleOn("云起·行动选项美化"));
       html += `<div class="options-area${dramatic ? " dramatic" : ""}${yqOptOn ? " yq-opts" : ""}"><div class="options-title">▸ ${this.escapeHtml(label)}</div>`;
       options.forEach((opt, i) => {
         const delay = dramatic ? ` style="animation-delay:${(0.18 + i * 0.35).toFixed(2)}s"` : "";
-        const key = ["A", "B", "C", "D"][i] || i + 1;
+        const key = ["①", "②", "③", "④", "⑤", "⑥"][i] || i + 1;
         const keyHtml = yqOptOn ? `<span class="opt-key">${key}</span>` : `${key}. `;
         html += `<button class="option-btn" onclick="window.StoryInput.chooseOption(this)" data-text="${this.escapeAttr(this.mdPlain(opt))}"${delay}>${keyHtml}${this.mdInline(opt)}</button>`;
       });
@@ -736,7 +736,48 @@ const StoryResponseHandler = {
       totalChapters: "总章数",
       title: "书名",
       tension: "叙事张力",
-      sanity: "理智值"
+      sanity: "理智值",
+      /* v3.55.14 变量块嵌套键全中文：此前面板直接吐 characters/name/state… 英文，
+         玩家投诉"状态栏出现其他语言"。这里把容器与子字段一律映射成中文。 */
+      characters: "角色",
+      character: "角色",
+      characterCards: "角色",
+      name: "名字",
+      role: "身份",
+      age: "年龄",
+      personality: "性格",
+      motivation: "动机",
+      secret: "秘密",
+      appearance: "外貌",
+      speechPattern: "语言习惯",
+      trust: "信任度",
+      arc: "弧光",
+      firstAppearance: "首次出场",
+      state: "状态",
+      status: "状态",
+      location: "位置",
+      items: "道具",
+      item: "道具",
+      holder: "持有者",
+      count: "数量",
+      foreshadowings: "伏笔",
+      foreshadowing: "伏笔",
+      content: "内容",
+      plotPoints: "伏笔",
+      history: "轨迹",
+      dashboard: "仪表盘",
+      gauges: "仪表",
+      stats: "六维",
+      dimensions: "六维",
+      time: "时间",
+      mood: "情绪",
+      money: "金钱",
+      goal: "目标",
+      realm: "境界",
+      health: "健康",
+      injury: "伤势",
+      lust: "情欲",
+      intimacy: "亲密"
     });
     const labelOf = (k) => labelMap[k] || k;
     const clip = (s, n) => {
@@ -745,6 +786,7 @@ const StoryResponseHandler = {
     };
     const chips = [];
     const lines = String(block).split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
+    let curContainer = "";
     for (const line of lines) {
       let m;
       if (m = line.match(/^>>\s*(.+?)\.history\s*[:：]\s*(.+)$/)) {
@@ -775,6 +817,24 @@ const StoryResponseHandler = {
         } else {
           const fieldLabel = { role: "身份", age: "年龄", personality: "性格", motivation: "动机", secret: "秘密", status: "状态", appearance: "外貌", speechPattern: "语言习惯", trust: "信任度", arc: "弧光", firstAppearance: "首次出场", history: "轨迹" };
           chips.push({ icon: "👤", text: `${clip(c1, 8)} · ${fieldLabel[c2] || c2} → ${clip(c3, 16)}`, cls: "info" });
+        }
+        continue;
+      }
+      /* v3.55.14 容器标题行（characters: / items: / foreshadowings: 冒号后无值）→ 中文小标题，杜绝英文裸奔 */
+      if (m = line.match(/^([A-Za-z\u4e00-\u9fa5_]+)\s*[:：]\s*$/)) {
+        curContainer = labelOf(m[1]);
+        chips.push({ icon: "▸", text: `【${curContainer}】`, cls: "" });
+        continue;
+      }
+      /* v3.55.14 列表子项（- name: 陆尘 / - content: … / - status: …）→ 去掉前缀并译成中文 */
+      if (m = line.match(/^[-•*·]\s*([A-Za-z\u4e00-\u9fa5_]+)\s*[:：]\s*(.+)$/)) {
+        const k = m[1].trim();
+        const v = m[2].trim().replace(/^["'“”]+|["'“”,]+$/g, "");
+        if (v) {
+          const isName = /^(name|名字)$/i.test(k);
+          const prefix = curContainer || "角色";
+          const text = isName ? `${prefix} · ${clip(v, 12)}` : `${labelOf(k)} → ${clip(v, 16)}`;
+          chips.push({ icon: isName ? "·" : "✒", text, cls: "info" });
         }
         continue;
       }

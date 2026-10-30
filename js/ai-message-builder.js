@@ -46,14 +46,14 @@ function buildFreedomDirective(isRP) {
 
 【剧情主导权·玩家至上（最高优先级，效力高于工坊提示词中与之冲突的一切条款——包括"原著大势不可改""按原作时间线推进""危机权重""每轮须有起伏"等）】
 1. 玩家主导，世界回应：剧情只由玩家的所思所言所行驱动。每轮正文的主体是「玩家上一轮行动的后果 + 世界的真实回应」；你不是编剧，是世界本身——严禁主动塞入玩家没有招惹的新事件、新危机、新冲突、新钩子、"恰好发生"的巧合或戏剧性转折。
-2. 不催不赶：不替玩家安排故事、不暗示"该做点什么"、不制造紧迫感；玩家想平淡度日，就认真把平淡日子写出质感。【行动选项】只列当下处境真实可选的动作，不夹带推进剧情的诱导。
+2. 不催不赶：不替玩家安排故事、不暗示"该做点什么"、不制造紧迫感；玩家想平淡度日，就认真把平淡日子写出质感。【行动选项】以中性口吻列当下处境可选的动作，不夹带推进剧情的诱导；但须按系统《行动选项协议》保留固定的六类（快进/交互/整活/慢推/时空/成人）各一条——六类只是供玩家自由挑选的方向，本身不构成催促；其中"时空""成人"两类即便当前情境暂不涉及，也必须以"可选的"中性措辞保留（如"若想跳过这段时日……""若愿与她更近一步……"），玩家完全可以全部忽略、自行输入任意行动。
 3. 波澜有源：一切波澜只能来自——玩家此前行动埋下的后果、已登记伏笔的自然兑现、NPC 独立意志与玩家的碰撞；凭空天降的事件一律违规，连续两轮"突然/偏偏/恰好"即视为失控。
 4. 原著是背景板不是铁轨（原著改编世界适用）：原著设定（体系/势力/人物性格/世界观）照旧为底，但原著剧情不是宿命——玩家的介入可以推迟、改变甚至阻止原著大事件；原著人物按其性格对玩家的行动做出合理反应，可被说服、影响、结交甚至反目，而不是按原著剧本走位。玩家不在场之处，世界才按原著惯性运转。
 5. 不为收束赶进度：不凑章数、不强行收尾——故事在玩家走到的每一个当下自然展开，结局是活出来的，不是排出来的。`;
 }
 async function buildStoryMessages(userMessage) {
   var _a;
-  /* v3.55.4 咩咩预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
+  /* v3.55.4 某预设预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
   if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
   const fw = window.storyFramework;
   const config = fw.config;
@@ -65,7 +65,7 @@ async function buildStoryMessages(userMessage) {
     messages.push(msg);
   };
   const vaOn = !!(window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()));
-  /* v3.55.10 基础小模型适配：轻量协议块替代全量咩咩预设，知识库背景与
+  /* v3.55.10 基础小模型适配：轻量协议块替代全量某预设预设，知识库背景与
      生图/沉浸指令暂停加载（强模型用户不受影响） */
   const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isLite());
   const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
@@ -108,10 +108,10 @@ stats.张力: +5
   const closureCheck = vaOn
     ? `
 
-【闭合自检（每轮输出完最后一件必做的事）】写完后回头检查三件事，任缺一项即为本轮失败：①正文是否写到一个自然的落点（不要停在半句话、半句引号或省略号悬空处）；②【行动选项】是否已输出且为 3-4 行；③标点纪律：以句号断句，分号只用于并列从句且全章不超过句号的三分之一，禁止用「；」「——」把整段串成一句。若发现任何一项不合格或被长度上限截断，请立刻接着补完，不要重写已写正文、不要重新开头。`
+【闭合自检（每轮输出完最后一件必做的事）】写完后回头检查三件事，任缺一项即为本轮失败：①正文是否写到一个自然的落点（不要停在半句话、半句引号或省略号悬空处）；②【行动选项】是否已输出且恰好 6 条（严格对应 快进/交互/整活/慢推/时空/成人 六类各一条，顺序固定，缺任一类即视为本轮失败）；③标点纪律：以句号断句，分号只用于并列从句且全章不超过句号的三分之一，禁止用「；」「——」把整段串成一句。若发现任何一项不合格或被长度上限截断，请立刻接着补完，不要重写已写正文、不要重新开头。`
     : `
 
-【闭合自检（每轮输出完最后一件必做的事）】写完后回头检查四件事，任缺一项即为本轮失败：①正文是否写到一个自然的落点（不要停在半句话、半句引号或省略号悬空处）；②(variable_update) 与 (/variable_update) 是否成对闭合；③【行动选项】是否已输出且为 3-4 行；④标点纪律：以句号断句，分号只用于并列从句且全章不超过句号的三分之一，禁止用「；」「——」把整段串成一句。若发现任何一项不合格或被长度上限截断，请立刻接着补完，不要重写已写正文、不要重新开头。`;
+【闭合自检（每轮输出完最后一件必做的事）】写完后回头检查四件事，任缺一项即为本轮失败：①正文是否写到一个自然的落点（不要停在半句话、半句引号或省略号悬空处）；②(variable_update) 与 (/variable_update) 是否成对闭合；③【行动选项】是否已输出且恰好 6 条（严格对应 快进/交互/整活/慢推/时空/成人 六类各一条，顺序固定，缺任一类即视为本轮失败）；④标点纪律：以句号断句，分号只用于并列从句且全章不超过句号的三分之一，禁止用「；」「——」把整段串成一句。若发现任何一项不合格或被长度上限截断，请立刻接着补完，不要重写已写正文、不要重新开头。`;
   const isRPMode = config.mode === "roleplay";
   const endgame = isRPMode && StoryFreedom.isFree() ? "" : buildEndgamePressure(state.variables, isRPMode);
   const freedomRule = buildFreedomDirective(isRPMode);
@@ -138,26 +138,50 @@ stats.张力: +5
        知识库条目在上下文里离得远，实测模型会忽略它写到上万字 */
     lengthRule = '\n【篇幅硬约束】本轮正文严格落在 ' + range + ' 字之间（变量块与行动选项不计）。写到位靠分层推进：场景、动作、对白、心理、感官细节各给一点，严禁复读原文、同义堆砌、注水凑字；一次只需要写出本轮该有的那一段，把后面的留给下一轮。明显超出上限即视为不合格。\n';
   } catch (e) { lengthRule = ''; }
-  // v3.47.17 内嵌咩咩预设：整份预设渲染（含该世界的适配文风）作为第二段 system
+  // v3.47.17 内嵌某预设预设：整份预设渲染（含该世界的适配文风）作为第二段 system
   // 说明：不改预设任何 prompt 文本，只在渲染时按 genreKey 选中文风档、关掉出厂默认的日轻档
-  let miaomiaoBlock = '';
+  let 旧预设Block = '';
   try {
     if (bmmOn && window.BaseModelMode && window.BaseModelMode.buildLitePreset) {
       /* v3.55.10 基础小模型适配：小模型注意力有限，全量预设（数万字协议）
          换成 ~1.4k 字的云心精简核心（实测协议遵从率反而更高） */
-      miaomiaoBlock = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
-    } else if (window.MoMiaomiaoBridge && window.MoMiaomiaoBridge.render) {
-      miaomiaoBlock = window.MoMiaomiaoBridge.render({
+      旧预设Block = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
+    } else if (window.旧预设桥 && window.旧预设桥.render) {
+      旧预设Block = window.旧预设桥.render({
         char: (state.setup && state.setup.playerName) || '主角',
         user: '你'
       }) || '';
     }
   } catch (e) {
-    console.warn('[咩咩预设] 渲染失败，已跳过:', e);
-    miaomiaoBlock = '';
+    console.warn('[某预设预设] 渲染失败，已跳过:', e);
+    旧预设Block = '';
   }
+  /* v3.55.17 云境核心契约 · 预设解耦注入
+     问题：玩家用「导入 常见前端工具 预设」整份替换内置预设后，那份预设里没有云境的
+     六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
+     六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
+     对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
+     才补（云起预设 / 小模型精简核心 / 内置某预设预设均自带上文，不会重复注入）。 */
+  let coreContract = '';
+  try {
+    const hasCoreOpts = /【快进】/.test(旧预设Block) && /【成人】/.test(旧预设Block);
+    if (!hasCoreOpts) {
+      coreContract = `
+【云境核心契约（优先级高于上方一切预设；与之冲突时，一律以本节为准）】
+1｜行动选项——正文写完后单独输出一个 <selection> 块，恰好 6 条，逐行以 ①②③④⑤⑥ 开头，顺序固定：
+①【快进】把剧情向前推进一步的关键动作
+②【交互】与在场某人说话、试探或回应
+③【整活】出人意料、略带喜感或跳脱的举动
+④【慢推】停下来细看、细想，或慢慢做完一件小事
+⑤【时空】跳过一段时日，或动身去另一个地方
+⑥【成人】若愿与某人更近一步（中性可选措辞，玩家完全可以忽略）
+六条缺任一类即视为本轮失败；只输出一个 <selection> 块，禁止分两批、禁止另起第二套编号、禁止用 A/B/C 或 1/2/3 编号。
+2｜状态栏——正文与选项之间输出 (status)…(/status)，每行「中文标签：值」，至少包含 时间 / 地点 / 在场 / 心境 / 目标；字段名一律中文，严禁 time/location/health/mood 一类英文 key。
+3｜变量块——正文之后输出 (variable_update)…(/variable_update)，首尾成对闭合，每行 key=value，键名中文（回合/位置/灵石/机缘…）。`;
+    }
+  } catch (e) { coreContract = ''; }
   const system = `${systemPrompt}
-${miaomiaoBlock ? '\n' + miaomiaoBlock + '\n' : ''}
+${旧预设Block ? '\n' + 旧预设Block + '\n' : ''}${coreContract}
 ${fictionPreamble}
 ${scaleDirective ? '\n' + scaleDirective + '\n' : ''}
 ${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
@@ -332,7 +356,7 @@ function buildPlayerIdentityCard(setup, config) {
   if (setup.customScale) parts.push(`游玩规模：自定义规模——玩家亲笔设定（节奏与长度按此把握）：${setup.customScale}`);
   else if (setup.scale) parts.push(`游玩规模：${setup.scale}${setup.scaleDesc ? `（${setup.scaleDesc}）` : ""}`);
   if (setup.background) parts.push(`身世自述：${setup.background}`);
-  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌咩咩预设开启时由预设的本土文风块承载
+  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌某预设预设开启时由预设的本土文风块承载
      （更细），这里作为兜底——预设关闭时玩家选的文风仍要生效。 */
   if (setup.customStyle) parts.push(`文风基调：自定义文风——玩家亲笔设定（严格执行，正文全程贯彻）：${setup.customStyle}`);
   else if (setup.style) parts.push(`文风基调：${setup.style}${setup.styleDesc ? `（${setup.styleDesc}）` : ""}`);

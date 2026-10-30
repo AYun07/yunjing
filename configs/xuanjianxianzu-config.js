@@ -26,7 +26,7 @@ const fullSystemPrompt = `角色设定：你是《玄鉴仙族》（季越人著
 每次回复必须包含：
 1. 一章完整正文（800-1600字）
 2. (variable_update) 变量块
-3. 【行动选项】3-4 个
+3. 【行动选项】6 个
 
 【叙事风格】
 修仙家族文：细致写灵田种植、炼丹过程、坊市交易的经营细节；人物对话有修仙界的敬语与辈分；战斗简洁精准不拖沓。
@@ -322,7 +322,7 @@ const XuanjianStoryConfig = {
         const ap = setup.customAptitude ? `自定义资质：${setup.customAptitude}` : `资质：${setup.aptitude}`;
         const sty = setup.customStyle ? `文风：${setup.customStyle}` : `文风：${setup.style || '原著文风·季越人'}`;
         const tm = setup.customTimeline ? `自定义节点：${setup.customTimeline}` : `节点：${setup.timeline}`;
-        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${id}，${ap}）踏入《玄鉴仙族》——${tm}。${sty}。请主持开场：呈现家族/灵田/坊市场景，引入家族利益相关事件；结尾附(variable_update)与3-4个【行动选项】。`;
+        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${id}，${ap}）踏入《玄鉴仙族》——${tm}。${sty}。请主持开场：呈现家族/灵田/坊市场景，引入家族利益相关事件；结尾附(variable_update)与6个【行动选项】。`;
     },
     onInit: function(framework) {
         document.body.classList.add('theme-xuanjianxianzu');

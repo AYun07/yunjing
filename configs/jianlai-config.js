@@ -30,7 +30,7 @@ const fullSystemPrompt = `角色设定：你是《剑来》（烽火戏诸侯著
 每次回复必须包含：
 1. 一章完整的小说正文（800-1600字，章回小说排版，无任何系统字样）
 2. (variable_update) 变量更新块：章节推进、字数累计、仪表盘变化、新角色档案卡、伏笔登记/回收、道具进出、主角状态卡、大事记
-3. 结尾以【行动选项】给出 3-4 个走向选项（各选项须真正分岔）
+3. 结尾以【行动选项】给出 6 个走向选项（各选项须真正分岔）
 
 【叙事风格】
 章回体底色：白描见烟火，闲笔藏山河。写小镇要有龙窑的窑火气与青石巷的湿意，写修行要有"一叶知秋"的克制，写剑要留三分锋芒七分意。
@@ -146,7 +146,7 @@ const defaultSystemPrompt = `
 每次回复必须包含：
 1. 一章完整正文（800-1600字，无系统字样）
 2. (variable_update) 变量更新块
-3. 【行动选项】3-4 个真正分岔的选项
+3. 【行动选项】6 个真正分岔的选项
 4. 若推进至收束节点，以【全文完】标记。
 
 【variableUpdate 检查清单】
@@ -293,7 +293,7 @@ const JianlaiStoryConfig = {
         const entryPart = setup.customEntry ? `；入场事件：${setup.customEntry}` : '';
         const boonPart = setup.customBoon ? `；机缘：${setup.customBoon}` : '';
         const bgPart = (!setup.customIdentity && setup.background) ? `；身世：${setup.background}` : '';
-        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${identityPart}，${aptPart}）踏入《剑来》原著世界——${timePart}${entryPart}${boonPart}${bgPart}。${stylePart}。请主持开场：按时代节点呈现场景与烟火气，落实处境，引入至少一位原著人物或暗流产生交集；结尾附(variable_update)与3-4个【行动选项】。`;
+        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${identityPart}，${aptPart}）踏入《剑来》原著世界——${timePart}${entryPart}${boonPart}${bgPart}。${stylePart}。请主持开场：按时代节点呈现场景与烟火气，落实处境，引入至少一位原著人物或暗流产生交集；结尾附(variable_update)与6个【行动选项】。`;
     },
     onInit: function(framework) {
         document.body.classList.add('theme-jianlai');
