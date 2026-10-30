@@ -312,7 +312,7 @@ const MoChibi = {
         (_a2 = window.MoAssistant) == null ? void 0 : _a2.toggleTTS();
         this.renderMenu();
       } },
-      /* v3.55.18 悬浮球收敛：世界动态 / 手机 / 太虚阁 并入小云的「模块」二级面板。
+      /* v3.55.19 悬浮球收敛：世界动态 / 手机 / 太虚阁 并入小云的「模块」二级面板。
          不直接摊在扇形菜单里——扇形 radius 110 / spread 150°，项数一多就互相压叠。 */
       { ico: "🧰", label: "模块", act: () => this.openModules() },
       { ico: "🌙", label: "收起", act: () => this.hide() }
@@ -344,6 +344,19 @@ const MoChibi = {
     } catch (e) {}
     if (window.ImmersiveSuite && !this._isEarth()) {
       list.push({ ico: "⛩", name: "太虚阁 · 沉浸万象", note: "人物志 / 藏宝阁 / 编年史", act: () => window.ImmersiveSuite.toggle(true) });
+    }
+    /* v3.55.19 剧情上下文：人物 / 机缘归属 / 伏笔 / 大事记 聚成一屏，两种视图可切 */
+    if (window.ContextPanel) {
+      list.push({ ico: "📖", name: "剧情上下文", note: "人物 · 机缘归属 · 伏笔 · 大事记", act: () => window.ContextPanel.open() });
+    }
+    /* v3.55.19 叙事立场：取代主角 / 同行者 / 搅局者 */
+    if (window.StoryStance) {
+      const st = window.StoryStance.info();
+      list.push({ ico: st.ico, name: "叙事立场：" + st.name, note: "点按切换 · " + st.desc, act: () => {
+        const id = window.StoryStance.cycle();
+        const info = window.StoryStance.info();
+        this.say("叙事立场已切到「" + info.name + "」——" + info.desc, 4200);
+      } });
     }
     return list;
   },

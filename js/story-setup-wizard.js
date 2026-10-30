@@ -356,6 +356,22 @@ const StorySetupWizard = {
             <div class="wizard-title">✦ ${config.genreName} · 身份设定台</div>
             <div class="wizard-sub">${subIntro}</div>
 
+            <div class="wiz-section wiz-stance-sec">
+                <div class="wiz-label">✦ 叙事立场 <span class="wiz-hint">（你与原著主角的关系——开局后仍可随时切换）</span></div>
+                <div class="wiz-stance">
+                    <button type="button" class="wiz-stance-btn" data-stance="replace" onclick="StorySetupWizard.setStance('replace')">
+                        <b>👑 取代主角</b><i>你就是原著主角本人</i>
+                    </button>
+                    <button type="button" class="wiz-stance-btn on" data-stance="cohabit" onclick="StorySetupWizard.setStance('cohabit')">
+                        <b>🧍 同行者</b><i>你是世界的一份子（推荐）</i>
+                    </button>
+                    <button type="button" class="wiz-stance-btn" data-stance="freewill" onclick="StorySetupWizard.setStance('freewill')">
+                        <b>🌪 搅局者</b><i>可改写原著大势</i>
+                    </button>
+                </div>
+                <div class="wiz-desc" id="wiz_stanceHint"></div>
+            </div>
+
             <div class="fate-hero">
                 <div class="fate-copy"><b>随缘开局</b><span>不想逐项设置？一键随机全套身份 —— 姓名/身世/出身/时代/资质/入场事件/机缘/点数全帮你掷好，不满意可重掷，也可掷完再微调单项</span></div>
                 <button class="fate-btn" onclick="StorySetupWizard.diceAll()">🎲 随缘开局</button>
@@ -615,6 +631,26 @@ const StorySetupWizard = {
     this.randomStats();
   },
   /** 扮演模式：收集身份并入场 */
+  /** v3.55.19 叙事立场：开局即选「取代主角 / 同行者 / 搅局者」——
+      旧版没有这一项，想替代原著主角只能在自定义身份里手写，AI 常常认不出来 */
+  setStance(id) {
+    if (window.StoryStance && !StoryStance.MODES[id]) id = "cohabit";
+    document.querySelectorAll(".wiz-stance-btn").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.stance === id);
+    });
+    if (!window.StoryStance) return;
+    StoryStance.set(id);
+    const info = StoryStance.info();
+    const canon = StoryStance.canonHeroName();
+    const hint = document.getElementById("wiz_stanceHint");
+    if (hint) {
+      hint.textContent = id === "replace"
+        ? "你就是" + canon + "本人——原著主线由你亲历，" + canon + "不再作为独立人物登场。"
+        : id === "freewill"
+          ? "你是自创角色，行动可以偏转甚至改写原著大势与" + canon + "的命运。"
+          : "你是这世界里活生生的一份子；" + canon + "有他自己的人生主线，不因你而改道——除非你亲手夺走本属于他的东西。";
+    }
+  },
   async startRoleplay() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
     const fw = window.storyFramework;
@@ -625,6 +661,12 @@ const StorySetupWizard = {
       return;
     }
     const meta = config.setupMeta || {};
+    /* v3.55.19 落定叙事立场（取代主角 / 同行者 / 搅局者） */
+    {
+      const on = document.querySelector(".wiz-stance-btn.on");
+      const sid = on && on.dataset.stance ? on.dataset.stance : "cohabit";
+      if (window.StoryStance) StoryStance.set(sid);
+    }
     const selVal = (field) => {
       var _a2;
       return ((_a2 = document.getElementById("wiz_" + field)) == null ? void 0 : _a2.value) || "";

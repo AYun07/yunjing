@@ -333,7 +333,17 @@ function buildSetupCard(setup, config) {
 function buildPlayerIdentityCard(setup, config) {
   const free = StoryFreedom.isFree();
   const parts = [`【玩家身份卡（最高优先级，全程锁定）】`];
-  parts.push(free ? `世界：《${config.genreName}》原著世界观（原著设定为底 · 剧情走向由玩家主导）` : `世界：《${config.genreName}》原著世界（严格遵循原著设定，禁止二创改动）`);
+  /* v3.55.19 世界描述随叙事立场变化（旧文案只有「玩家主导 / 禁止二创」两档，
+     没有「玩家取代原著主角」这一档） */
+  const _stance = window.StoryStance ? StoryStance.get() : free ? "freewill" : "cohabit";
+  const _canon = window.StoryStance ? StoryStance.canonHeroName() : "原著主角";
+  parts.push(
+    _stance === "replace"
+      ? `世界：《${config.genreName}》原著世界（玩家取代原著主角${_canon}——${_canon}不再作为独立人物登场，原著主线由玩家亲历）`
+      : _stance === "freewill"
+        ? `世界：《${config.genreName}》原著世界（原著设定为底 · 剧情走向由玩家主导，可改写原著大势）`
+        : `世界：《${config.genreName}》原著世界（严格遵循原著设定；玩家是这世界里活生生的一份子，${_canon}有他自己的一生）`
+  );
   if (setup.playerName) parts.push(`玩家角色：${setup.playerName}（${setup.gender || "男"}，${setup.age || 18}岁）`);
   /* v3.47.18 玩家亲笔的主角小传：这是「我是这个世界的一份子」最核心的自定义内容。
      创作模式原本就有，扮演模式此前漏了 —— 玩家写了小传却没进提示词。 */
@@ -383,10 +393,20 @@ function buildPlayerIdentityCard(setup, config) {
     });
     parts.push(`角色资质：${statKeys.map((k) => `${labelMap[k] || k} ${stats[k]}`).join(" / ")}`);
   }
-  if (free) {
-    parts.push(`【铁律】玩家是这个世界中的自定义角色；你的职责是主持世界——原著人物、势力按其性格与逻辑行动；原著设定是世界观底色，但原著剧情不是铁轨：玩家的行动可以影响、偏转、甚至改写原著大势与原著人物的命运；你不得用原著剧情推着玩家走，也不得为"还原原著"而扭曲玩家的选择与际遇；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。`);
+  /* v3.55.19 立场铁律三选一：取代主角 / 同行者（默认）/ 搅局者。
+     旧逻辑只有「自由 / 原著」两档，且没有「取代主角」这一档——玩家想替代原著主角时
+     只能在自定义身份里手写，AI 常常认不出来。 */
+  if (window.StoryStance) {
+    const isRP = config && config.mode === "roleplay";
+    parts.push(StoryStance.buildDirective(setup.playerName || "", StoryStance.canonHeroName(), isRP));
   } else {
-    parts.push(`【铁律】玩家是原著世界中的普通自定义角色，不是原著主角；你的职责是主持世界——所有原著人物、势力、事件一律按原著性格与命运行动，原著大势（主线事件与主角命运轨迹）不可因玩家而改写，玩家的行动只作用于自身际遇与身边支线；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。`);
+    parts.push(free ? `【铁律】玩家是这个世界中的自定义角色；你的职责是主持世界——原著人物、势力按其性格与逻辑行动；原著设定是世界观底色，但原著剧情不是铁轨：玩家的行动可以影响、偏转、甚至改写原著大势与原著人物的命运；你不得用原著剧情推着玩家走，也不得为"还原原著"而扭曲玩家的选择与际遇；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。` : `【铁律】玩家是原著世界中的普通自定义角色，不是原著主角；你的职责是主持世界——所有原著人物、势力、事件一律按原著性格与命运行动，原著大势（主线事件与主角命运轨迹）不可因玩家而改写，玩家的行动只作用于自身际遇与身边支线；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。`);
+  }
+  /* v3.55.19 机缘归属账本：让世界真正动态——夺走的东西不会失而复得 */
+  if (window.CanonLedger) {
+    const led = CanonLedger.buildPromptBlock();
+    if (led) parts.push(led);
+    parts.push(CanonLedger.buildProtocol());
   }
   return parts.join("\n");
 }

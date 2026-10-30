@@ -67,6 +67,14 @@ const StoryResponseHandler = {
   extractBody(reply, options) {
     if (!reply) return "";
     let body = reply;
+    /* v3.55.19 机缘归属账本：先把 (claimed) 块吸收进世界账本（幂等），再从正文剥离——
+       这块是给世界看的登记簿，不是给读者看的正文 */
+    if (window.CanonLedger) {
+      try {
+        CanonLedger.parse(reply);
+      } catch (e) {}
+      body = body.replace(/\(claimed\)[\s\S]*?\(\/claimed\)/gi, "").replace(/【claimed】[\s\S]*?【\/claimed】/gi, "").replace(/<claimed>[\s\S]*?<\/claimed>/gi, "");
+    }
     /* v3.53.0：先摘掉迷你状态协议（(: 名.字段: 值; …)），再走常规剥离 */
     body = this._stripMiniStatus(body);
     /* v3.46.2 纵深防御：自带 think 剥离（常规调用方均已预剥，此处兜底，
