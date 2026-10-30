@@ -67,7 +67,7 @@ const StoryKnowledge = {
       return Promise.resolve(true);
     }
     if (window.__kbLoading) return window.__kbLoading;
-    const v = (window.YJ_VER || "3.55.9");
+    const v = (window.YJ_VER || "3.55.10");
     const loadOne = (src) => new Promise((resolve) => {
       const el = document.createElement("script");
       el.src = src;

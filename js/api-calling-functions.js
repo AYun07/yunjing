@@ -469,9 +469,27 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
     const callOnce = (msgs, o = {}) => {
       const isCont = o && o.isContinuation;
       const passOpts = isCont ? { ...o, onDelta: undefined } : o;
-      return fw.apiConfig.type === "gemini" ? callGemini(msgs, passOpts) : callOpenAI(msgs, passOpts);
+      /* v3.55.10 基础小模型适配：cfgOverride 传参数锁副本（温度≤0.75/上限≤8000），
+         不改用户保存的原值；强模型用户关闭开关时完全零改动 */
+      const bmmCfg = (window.BaseModelMode && window.BaseModelMode.isEnabled())
+        ? window.BaseModelMode.clampParams(fw.apiConfig) : undefined;
+      return fw.apiConfig.type === "gemini" ? callGemini(msgs, passOpts, bmmCfg) : callOpenAI(msgs, passOpts, bmmCfg);
     };
     let reply = await callOnce(messages, opts);
+    /* v3.55.10 复读自检：基础小模型偶发"复读崩塌"（同义堆砌一路跑飞），
+       检测到即降温 0.2 重发一次，成功且不复读才替换，用户无感 */
+    if (window.BaseModelMode && window.BaseModelMode.isEnabled() && window.BaseModelMode.detectCollapse(reply)) {
+      console.warn('[基础模型适配] 检测到复读崩塌，降温重发一次');
+      try {
+        const retryCfg = window.BaseModelMode.clampParams(fw.apiConfig);
+        retryCfg.temperature = Math.max(0.5, (retryCfg.temperature || 0.75) - 0.2);
+        const r2 = fw.apiConfig.type === "gemini"
+          ? await callGemini(messages, opts, retryCfg)
+          : await callOpenAI(messages, opts, retryCfg);
+        if (r2 && !window.BaseModelMode.detectCollapse(r2)) reply = r2;
+        else console.warn('[基础模型适配] 重发仍未达标，保留原回复');
+      } catch (e) { console.warn('[基础模型适配] 重发失败，保留原回复', e); }
+    }
     // v3.47.14 防截断：被 max_tokens 掐断时自动续写（最多 2 轮，可从接口设置关闭）
     if (!isTest && window.MoNetGuard && fw.apiConfig.autoContinue !== false) {
       reply = await window.MoNetGuard.continueIfTruncated(messages, reply, callOnce);

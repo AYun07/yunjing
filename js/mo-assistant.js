@@ -534,7 +534,7 @@ ${report}${fileRep}`;
     drawer.innerHTML = `
             <div class="mo-head">
                 <div class="mo-head-id">
-                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.9" alt="小云" draggable="false" decoding="async"></div>
+                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.10" alt="小云" draggable="false" decoding="async"></div>
                     <div class="mo-head-txt">
                         <div class="mo-name">小云 <span class="mo-name-tag" id="moModeTag">管家</span></div>
                         <div class="mo-status" id="moStatus"><i class="mo-dot"></i><span>随时待命</span></div>
@@ -626,7 +626,7 @@ ${report}${fileRep}`;
       box.innerHTML = `
                 <div class="mo-welcome">
                     <div class="mo-welcome-drop">
-                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.9" alt="小云" draggable="false" decoding="async"></div>
+                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.10" alt="小云" draggable="false" decoding="async"></div>
                     </div>
                     <div class="mo-welcome-title">云端的小云，已就位 ✨</div>
                     <div class="mo-welcome-sub">聊灵感、点评剧情、卡文急救，或者让小云给工坊做个体检～</div>
@@ -658,7 +658,7 @@ ${report}${fileRep}`;
     ).join("");
     return `
         <div class="mo-msg mo-msg-mo">
-            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.9" alt="小云" draggable="false" decoding="async"></div>
+            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.10" alt="小云" draggable="false" decoding="async"></div>
             <div class="mo-bubble mo-bubble-mo">${this.mdLite(body)}${chips ? `<div class="mo-suggests">${chips}</div>` : ""}</div>
         </div>`;
   },
@@ -679,7 +679,7 @@ ${report}${fileRep}`;
     if (!box) return null;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.9" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.10" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo" id="moTypingBubble">
                     <div class="mo-typing"><i></i><i></i><i></i></div>
                 </div>
@@ -697,7 +697,7 @@ ${report}${fileRep}`;
     if (!box) return;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.9" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=3.55.10" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo ${type === "error" ? "mo-bubble-error" : ""}">${this.mdLite(text)}</div>
             </div>`);
     this.scrollBottom();
