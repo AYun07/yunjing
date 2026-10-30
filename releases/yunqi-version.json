@@ -1,11 +1,11 @@
 {
   "name": "云起预设",
-  "version": "2.0.0",
-  "yunjing": "3.55.8",
+  "version": "3.0.0",
+  "yunjing": "3.55.9",
   "updated": "2026-10-30",
-  "blocks": 76,
-  "enabled": 39,
-  "regex": 37,
+  "blocks": 86,
+  "enabled": 49,
+  "regex": 40,
   "params": {
     "max_tokens": 65535,
     "max_context": 2000000,
