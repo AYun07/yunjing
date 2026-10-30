@@ -31,7 +31,7 @@ const fullSystemPrompt = `角色设定：你是《蛊真人》（蛊真人著）
 每次回复必须包含：
 1. 一章完整的小说正文（800-1600字，无任何系统字样）
 2. (variable_update) 变量更新块
-3. 【行动选项】3-4 个真正分岔的选项
+3. 【行动选项】6 个真正分岔的选项
 
 【叙事风格】
 暗黑冷静流：叙述克制精确，算计描述层层展开如棋局推演；战斗写得凶狠果决，没有废话；人物内心独白冷峻自嘲。方源式的"我不要特色，我命由我不由天"的韧性贯穿。
@@ -119,7 +119,7 @@ const defaultSystemPrompt = `
 每次回复必须包含：
 1. 一章完整正文（800-1600字）
 2. (variable_update) 变量块
-3. 【行动选项】3-4 个
+3. 【行动选项】6 个
 
 【variableUpdate 检查清单】
 1. 章节+字数 2. 真元/声望/威胁 3. 角色卡18字段 4. 主角状态卡 5. 道具伏笔 6. 主角卡加isPlayer:true
@@ -252,7 +252,7 @@ const GuzhenrenStoryConfig = {
         const tm = setup.customTimeline ? `自定义节点：${setup.customTimeline}` : `节点：${setup.timeline}`;
         const en = setup.customEntry ? `；入场：${setup.customEntry}` : '';
         const bn = setup.customBoon ? `；机缘：${setup.customBoon}` : '';
-        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${id}，${ap}）踏入《蛊真人》——${tm}${en}${bn}。${sty}。请主持开场：呈现古月家族/青茅山场景，引入蛊虫或原著人物交集；结尾附(variable_update)与3-4个【行动选项】。`;
+        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${id}，${ap}）踏入《蛊真人》——${tm}${en}${bn}。${sty}。请主持开场：呈现古月家族/青茅山场景，引入蛊虫或原著人物交集；结尾附(variable_update)与6个【行动选项】。`;
     },
     onInit: function(framework) {
         document.body.classList.add('theme-guzhenren');

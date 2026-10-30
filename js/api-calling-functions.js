@@ -129,6 +129,11 @@ window.stripAIThink = function(text) {
 };
 async function readSSEStream(response, opts = {}) {
   const { onDelta, extract, idleMs = 3e5, firstIdleMs } = opts;
+  /* v3.55.14 防跑飞：辅助AI（变量/舞台/记忆）在部分模型上会无视 max_tokens 无限复读，
+     实测出现过 197KB/254KB 的失控流。传入 maxChars 即硬截断，超限立即停止累积。
+     主笔正文不传此项（默认 0=不限），不受影响。 */
+  const maxChars = Number(opts.maxChars) || 0;
+  let capped = false;
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let timer = null;
@@ -166,7 +171,9 @@ async function readSSEStream(response, opts = {}) {
       buffer = lines.pop() || "";
       for (const line of lines) {
         processLine(line);
+        if (capped) break;
       }
+      if (capped) break;
     }
     buffer += decoder.decode();
     if (buffer) processLine(buffer);
@@ -198,6 +205,10 @@ async function readSSEStream(response, opts = {}) {
     }
     if (delta) {
       full += delta;
+      if (maxChars > 0 && full.length >= maxChars) {
+        full = full.slice(0, maxChars);
+        capped = true;
+      }
       if (onDelta) onDelta(delta, full);
     }
   }

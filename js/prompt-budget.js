@@ -1,16 +1,78 @@
 (function() {
   "use strict";
+  /* v3.55.17：预算不再写死 11 万字符，改为按「主接口模型的上下文窗口」自适应。
+     原先 11 万字符 ≈ 7 万 token，对 8K/16K/32K 上下文的小模型是致命的——请求直接
+     400 或被服务端静默截头，玩家看到的是"AI 突然失忆"。此处按模型名/显式配置推断
+     上下文窗口，留 40% 给输出，超出的部分仍由原有的优先级裁剪兜住。 */
+  const CTX_RULES = [
+    [/gemini-1\.5|gemini-2|gemini-3|\b1m\b|1000k/i, 1000000],
+    [/claude/i, 200000],
+    [/gpt-4o|gpt-4\.1|gpt-5|\bo1-|\bo3-|nemotron|llama-3\.[13]|mistral-large|qwen3|128k/i, 128000],
+    [/deepseek|64k/i, 64000],
+    [/qwen|glm|32k/i, 32000],
+    [/16k/i, 16000],
+    [/8k/i, 8000]
+  ];
   const PromptBudget = {
     KEY: "storyPromptBudget",
-    defaults: { enabled: true, limit: 11e4 },
+    CTX_KEY: "storyContextWindow",
+    defaults: { enabled: true, limit: 11e4, auto: true },
     /** 上一次构建的账单（UI 展示用） */
     lastReport: null,
-    get() {
+    /** 主接口模型的上下文窗口（tokens）；推断不出返回 0 */
+    ctxTokens() {
       try {
-        return { ...this.defaults, ...JSON.parse(localStorage.getItem(this.KEY) || "{}") };
+        const api = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.api) || {};
+        const explicit = Number(api.contextWindow || api.ctxWindow || api.context_length || 0);
+        if (explicit > 0) return explicit;
+        const model = String(api.model || "");
+        if (model) {
+          for (let i = 0; i < CTX_RULES.length; i++) if (CTX_RULES[i][0].test(model)) return CTX_RULES[i][1];
+        }
+      } catch (e) {}
+      try {
+        const v = Number(localStorage.getItem(this.CTX_KEY) || 0);
+        if (v > 0) return v;
+      } catch (e) {}
+      return 0;
+    },
+    /** 按上下文窗口换算成字符上限：中文约 1 字 ≈ 1.2 token，留 40% 给输出与波动 */
+    autoLimit() {
+      const ctx = this.ctxTokens();
+      if (!(ctx > 0)) return 0;
+      const chars = Math.floor(ctx * 0.6 / 1.2);
+      return Math.max(3000, Math.min(this.defaults.limit, chars));
+    },
+    /** 粗略 token 估算（中文字 1.2、其余 0.3），仅用于展示，不参与裁剪判断 */
+    estTokens(messages) {
+      let t = 0;
+      (messages || []).forEach((m) => {
+        const s = String((m && m.content) || "");
+        const cjk = (s.match(/[\u3400-\u9fff\u3000-\u303f\uff00-\uffef]/g) || []).length;
+        t += cjk * 1.2 + (s.length - cjk) * 0.3;
+      });
+      return Math.round(t);
+    },
+    get() {
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem(this.KEY) || "{}") || {};
       } catch (e) {
-        return { ...this.defaults };
+        saved = {};
       }
+      const cfg = { ...this.defaults, ...saved };
+      /* 老玩家兼容：曾手动切过档位（存了 limit）但没有 auto 标记的，尊重手动值 */
+      if (saved.auto === undefined && Object.prototype.hasOwnProperty.call(saved, "limit")) cfg.auto = false;
+      cfg.autoLimitChars = 0;
+      if (cfg.auto !== false) {
+        const auto = this.autoLimit();
+        if (auto > 0) {
+          cfg.limit = auto;
+          cfg.autoLimitChars = auto;
+        }
+      }
+      cfg.ctxTokens = this.ctxTokens();
+      return cfg;
     },
     save(cfg) {
       try {
@@ -39,6 +101,9 @@
         total,
         limit: cfg.limit,
         enabled: cfg.enabled,
+        tokens: this.estTokens(messages),
+        auto: cfg.auto !== false && cfg.autoLimitChars > 0,
+        ctxTokens: cfg.ctxTokens,
         trimmed: [],
         segs: Object.entries(segChars).map(([label, chars]) => ({ label, chars })).sort((a, b) => b.chars - a.chars)
       };
@@ -80,6 +145,7 @@
       }
       const out = messages.filter((_, i) => alive.has(i) || !segs.some((s) => s.idx === i));
       report.final = out.reduce((s, m) => s + this._chars(m), 0);
+      report.finalTokens = this.estTokens(out);
       this.lastReport = report;
       console.warn(`[PromptBudget] 超预算裁剪：${report.total} → ${report.final} 字符（裁掉：${[...new Set(report.trimmed)].join("、")}）`);
       return out;
@@ -101,9 +167,11 @@
       }).join("");
       return `<div style="margin:6px 0 10px;">
                 <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px;">
-                    <b style="font-size:13px;color:${color};">${(r.total / 1e4).toFixed(1)} 万 / ${(cfg.limit / 1e4).toFixed(0)} 万字符</b>
+                    <b style="font-size:13px;color:${color};">${(r.total / 1e4).toFixed(1)} 万 / ${(cfg.limit / 1e4).toFixed(1)} 万字符</b>
+                    <i style="font-style:normal;font-size:11px;color:var(--imt,#9a8c6e);">≈${((r.tokens || 0) / 1000).toFixed(1)}k token</i>
                     ${r.trimmed && r.trimmed.length ? `<i style="font-style:normal;font-size:11px;color:#e0a04c;">上轮裁剪：${[...new Set(r.trimmed)].join("、")}</i>` : '<i style="font-style:normal;font-size:11px;color:#8fd9a8;">上轮未超预算</i>'}
                 </div>
+                <div style="font-size:11px;color:var(--imt,#9a8c6e);margin-bottom:6px;">${r.auto ? `🔎 已按模型上下文自适应（${((r.ctxTokens || 0) / 1000).toFixed(0)}k 上下文 → ${(cfg.limit / 1e4).toFixed(1)} 万字符）` : '📌 使用手动档位（点下方「字符上限」可循环切换；想恢复自适应请关闭再开启预算）'}</div>
                 <div style="height:6px;border-radius:3px;background:var(--ip,#c9a86a)1a;overflow:hidden;"><i style="display:block;height:100%;width:${pct}%;background:${color};"></i></div>
             </div>${bars}`;
     }

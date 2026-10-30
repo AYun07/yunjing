@@ -1339,7 +1339,9 @@ ${notes.map((n) => "· " + n).join("\n")}
       const dock = document.getElementById("phDock");
       if (!dock) return;
       const show = !!(fw && fw.storyState && fw.storyState.isStoryStarted && this.tier() !== "none");
-      dock.style.display = show ? "flex" : "none";
+      /* v3.55.17 悬浮球收敛：界面只留小云一个悬浮球，手机改由小云菜单进入。
+         徽标/未读逻辑保留（小云菜单会读 #phDockBadge 显示未读数）。 */
+      dock.style.display = "none";
       if (show && !dock._moDraggable && window.MoChibi) {
         window.MoChibi.makeDraggable(dock, { storageKey: "storyPhoneDockPos" });
       }

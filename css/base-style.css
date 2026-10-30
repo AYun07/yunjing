@@ -4585,3 +4585,29 @@ html.low-spec .typing-dot, html.low-spec .typing-dots span, html.low-spec .illus
     animation: none !important;
     opacity: .7;
 }
+
+/* ---------- 小云 · 模块二级面板（v3.55.16：悬浮球收敛，世界动态/手机/太虚阁并入小云） ---------- */
+.mc-modules { position: fixed; inset: 0; z-index: 96; display: none; }
+.mc-modules.show { display: block; }
+.mc-modules .mcm-back { position: absolute; inset: 0; background: rgba(0, 0, 0, .35); backdrop-filter: blur(2px); }
+.mc-modules .mcm-card {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: min(320px, 86vw); padding: 14px; border-radius: 16px;
+    background: linear-gradient(155deg, #322845, #1d1728 80%);
+    border: 1px solid rgba(217, 139, 166, .45);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+    color: #e8dce4; font-family: var(--sans);
+}
+.mc-modules .mcm-title { font-size: 13px; letter-spacing: 1px; margin-bottom: 10px; opacity: .9; }
+.mc-modules .mcm-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 10px; margin-bottom: 8px; border-radius: 12px; cursor: pointer;
+    background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08);
+    color: inherit; text-align: left; font-family: inherit;
+}
+.mc-modules .mcm-item:hover { background: rgba(217, 139, 166, .16); border-color: rgba(217, 139, 166, .4); }
+.mc-modules .mcm-ico { font-size: 20px; line-height: 1; }
+.mc-modules .mcm-txt { display: flex; flex-direction: column; gap: 2px; }
+.mc-modules .mcm-txt b { font-size: 12.5px; font-weight: 600; }
+.mc-modules .mcm-txt i { font-size: 10.5px; font-style: normal; opacity: .6; }
+.mc-modules .mcm-foot { font-size: 10.5px; opacity: .45; text-align: center; margin-top: 4px; }

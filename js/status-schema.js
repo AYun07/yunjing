@@ -280,7 +280,9 @@
     return gs.map(function (g) {
       var rows = g.fields.map(function (f) {
         var val = readField(f);
-        if (!val && localStorage.getItem(K_SHOWEMPTY) !== '1') return '';
+        /* 成人向字段组：用户已通过成年确认并开启，就常驻显示（空则显示「—」）。
+           否则模型不主动上报时整组会被折叠掉，状态栏里根本看不到 NSFW 字段。 */
+        if (!val && !(g.adult && adultOn() && adultConfirmed()) && localStorage.getItem(K_SHOWEMPTY) !== '1') return '';
         return '<div class="yj-st-row" data-fk="' + esc(f.k) + '">' +
           '<span class="yj-st-k">' + esc(f.label) + '</span>' +
           '<span class="yj-st-v' + (val ? '' : ' empty') + '" onclick="StatusSchema.editField(\'' + esc(f.k) + '\')">' + esc(val || '—') + '</span>' +
@@ -510,7 +512,7 @@
       var rest = [];
       gs.forEach(function (g) {
         g.fields.forEach(function (f) {
-          var tag = f.label + '(' + f.keys[0] + ')';
+          var tag = f.label;
           if (CORE.indexOf(f.k) !== -1) core.push(tag);
         });
         var others = g.fields.filter(function (f) { return CORE.indexOf(f.k) === -1; })
@@ -518,10 +520,15 @@
         if (others.length) rest.push('· ' + g.name + '：' + others.join(' / '));
       });
       var out = '【状态栏上报契约（每轮必报）】本轮结束时，在 (variable_update) 块内按下列字段如实上报；' +
-        '未变化的也照报（状态栏要连续），确实没有的填「无」。中英文键均可。\n' +
+        '未变化的也照报（状态栏要连续），确实没有的填「无」。一律使用中文 label（如 所在：骊珠洞天），严禁英文 key（location: 之类）。\n' +
         '必报八项：' + core.join(' / ') + '\n';
+      /* 成人向常驻字段：默认归在「选报」会被模型整轮跳过 → 值为空 → 状态栏里整组不显示。
+         这里提升为必报，并写明 readField 认得的键名（情欲/亲密关系），无则填「无」。 */
+      if (adultOn() && adultConfirmed()) {
+        out += '成人向必报（每轮必报，无则填「无」，键名照抄）：情欲 / 亲密关系\n';
+      }
       if (rest.length) out += '选报（与情节相关就报，能显著提升状态栏的信息量）：\n' + rest.join('\n') + '\n';
-      out += '每项一行，形如 `location: 骊珠洞天·泥瓶巷`。成人向字段仅在作者开启时上报，且不得涉及未成年人。';
+      out += '每项一行，形如 `所在：骊珠洞天`（严禁英文 key）。成人向状态（情欲状态/亲密关系/事后余韵/双方意愿）按当前内容尺度如实上报：尺度允许时写清，不允许时填「无」，且绝不涉及未成年人。';
       return out;
     },
     /** 自检用：当前启用字段数 */
