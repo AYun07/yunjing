@@ -65,11 +65,11 @@
 ## 目录结构
 
 ```
-ai-story-generator/
+yunjing/
 ├── index.html                 # 工坊大厅（入口页）
 ├── studio.html                # 创作室（?genre= 动态装配配置）
 ├── story-framework.js         # 通用框架类
-├── configs/                   # 类型配置（一个文件 = 一个文学世界）
+├── configs/                   # 类型配置（一个文件 = 一个文学世界，共 33 个，详见 configs/ 目录）
 │   ├── mystery-config.js      # 悬疑推理
 │   ├── scifi-config.js        # 科幻未来
 │   ├── wuxia-config.js        # 武侠仙侠
