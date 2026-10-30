@@ -58,7 +58,7 @@
     var cur = raw;
     for (var i = 0; i < 4; i++) {
       if (!cur || typeof cur !== 'object' || Array.isArray(cur)) break;
-      /* v3.55.7：当前层本身就有 prompts → 它就是预设本体，别再往 data 里钻。
+      /* v3.55.8：当前层本身就有 prompts → 它就是预设本体，别再往 data 里钻。
          酒馆「四入口通用」文件顶层同时带 prompts（预设）与 data（角色卡），
          钻进 data 会只剩 system_prompt 一块（实测 230 块变 1 块）。 */
       if (cur.prompts || cur.prompt_list || cur.prompts_list) break;

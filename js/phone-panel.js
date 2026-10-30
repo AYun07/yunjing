@@ -2364,20 +2364,20 @@ ${notes.map((n) => "· " + n).join("\n")}
     try {
       const link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "css/phone-style.css?v=3.55.7";
+      link.href = "css/phone-style.css?v=3.55.8";
       document.head.appendChild(link);
       PhonePanel.install();
       const aliveScript = document.createElement("script");
-      aliveScript.src = "js/phone-alive.js?v=3.55.7";
+      aliveScript.src = "js/phone-alive.js?v=3.55.8";
       aliveScript.onerror = () => console.warn("[PhoneAlive] 主动联系引擎加载失败（不影响手机基础功能）");
       document.head.appendChild(aliveScript);
       const appsScript = document.createElement("script");
-      appsScript.src = "js/phone-apps.js?v=3.55.7";
+      appsScript.src = "js/phone-apps.js?v=3.55.8";
       appsScript.onerror = () => console.warn("[PhoneApps] App 生态加载失败（不影响手机基础功能）");
       document.head.appendChild(appsScript);
       /* v3.47.0 墨韵融合：微博/匿名树洞/日历/商城/日记（CSS 由该模块自注入） */
       const socialScript = document.createElement("script");
-      socialScript.src = "js/phone-social.js?v=3.55.7";
+      socialScript.src = "js/phone-social.js?v=3.55.8";
       socialScript.onerror = () => console.warn("[PhoneSocial] 墨韵融合社交包加载失败（基础 App 不受影响）");
       document.head.appendChild(socialScript);
     } catch (e) {
