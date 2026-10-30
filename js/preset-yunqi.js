@@ -670,7 +670,7 @@ window.YUNQI_PRESET = {
   {
    "identifier": "yq-proto-status",
    "name": "🎴协议·状态栏（默认开）",
-   "content": "## 状态栏协议\n\n每轮正文**之后**（不是之前），输出一个 <status> 块，用简洁条目记录主角当前状态。内容每轮重新推导，不许复制。\n\n**格式**（四到六行，每行一个字段，用中文冒号）：\n<status>\n时间：（故事内的具体时间，如\"雨夜·三更\"\"第 3 日清晨\"）\n地点：（具体到场景，如\"城南旧巷·米铺后院\"）\n状态：（身体状况、伤势、体力、精神状态）\n持有：（随身的重要物品，有增减就更新）\n关系：（与在场/关键 NPC 的关系状态，一句话）\n</status>\n\n**规则**：只写已发生的事实，不写推测、不写预告。字段值要具体：不写\"状态良好\"，写\"左臂刀伤已包扎，体力偏低\"。\n没有变化的字段也要保留（保持结构稳定），但内容必须更新。不要超过六行；块内不使用 markdown 符号或表格。",
+   "content": "## 状态栏协议（输出硬约束·不可省略）\n\n**这是输出结构的硬性要求，不是建议**：每一轮回复的正文结束后，必须紧跟一个 <status> 块。缺少 <status> 块的回复视为不完整输出。\n\n每轮正文**之后**（不是之前），输出一个 <status> 块，用简洁条目记录主角当前状态。内容每轮重新推导，不许复制。\n\n**格式**（四到六行，每行一个字段，用中文冒号）：\n<status>\n时间：（故事内的具体时间，如\"雨夜·三更\"\"第 3 日清晨\"）\n地点：（具体到场景，如\"城南旧巷·米铺后院\"）\n状态：（身体状况、伤势、体力、精神状态）\n持有：（随身的重要物品，有增减就更新）\n关系：（与在场/关键 NPC 的关系状态，一句话）\n</status>\n\n**规则**：只写已发生的事实，不写推测、不写预告。字段值要具体：不写\"状态良好\"，写\"左臂刀伤已包扎，体力偏低\"。\n没有变化的字段也要保留（保持结构稳定），但内容必须更新。不要超过六行；块内不使用 markdown 符号或表格。",
    "role": "system",
    "enabled": true,
    "system_prompt": false,
@@ -1262,18 +1262,6 @@ window.YUNQI_PRESET = {
    "enabled": true
   },
   {
-   "identifier": "yq-proto-status",
-   "enabled": true
-  },
-  {
-   "identifier": "yq-proto-sel",
-   "enabled": true
-  },
-  {
-   "identifier": "yq-proto-mem",
-   "enabled": true
-  },
-  {
    "identifier": "yq-proto-npc",
    "enabled": false
   },
@@ -1284,10 +1272,6 @@ window.YUNQI_PRESET = {
   {
    "identifier": "yq-proto-wlog",
    "enabled": false
-  },
-  {
-   "identifier": "yq-proto-echo",
-   "enabled": true
   },
   {
    "identifier": "yq-pov-3",
@@ -1384,6 +1368,22 @@ window.YUNQI_PRESET = {
   {
    "identifier": "yq-craft-12",
    "enabled": false
+  },
+  {
+   "identifier": "yq-proto-status",
+   "enabled": true
+  },
+  {
+   "identifier": "yq-proto-sel",
+   "enabled": true
+  },
+  {
+   "identifier": "yq-proto-mem",
+   "enabled": true
+  },
+  {
+   "identifier": "yq-proto-echo",
+   "enabled": true
   }
  ],
  "_yunjing": {
