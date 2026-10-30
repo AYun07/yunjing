@@ -608,6 +608,19 @@ ${text}` }
 【当前状态快照（在此基础增量登记）】
 ${digest}`;
     }
+    /* v3.55.19 机缘归属账本：辅助登记同样受唯一性约束——
+       否则主笔刚让玩家夺走掌天瓶，变量 AI 转头又把它登记回原著主角名下 */
+    if (window.CanonLedger) {
+      const led = CanonLedger.buildPromptBlock();
+      if (led) {
+        sys += `
+
+【机缘归属账本（登记时一并遵守）】
+${led.replace(/^【机缘归属账本[^\n]*\n/, "")}
+· 登记道具/持有者时不得与上述归属冲突：已被玩家夺走之物不得再登记在原著主角名下，
+  也不得凭空补发等价替代品；原著主角应登记其「缺失此物之后」的真实处境。`;
+      }
+    }
     const messages = [{ role: "system", content: sys }];
     const hist = fw.storyState.conversationHistory || [];
     const lastUser = [...hist].reverse().find((m) => m.role === "user");

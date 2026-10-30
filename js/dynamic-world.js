@@ -367,6 +367,8 @@ ${tl.era ? `- 时代铁律：所有远方事件必须严格处于上述时代（
 ` : ""}- 禁止描写${hero}正在做什么，禁止涉及${hero}当前场景与在场人物
 - 只写远方：不同地点的传闻、势力动态、环境变化
 - ${isRP ? "严格遵循《" + fw.config.genreName + "》原著设定（原著人物与势力按原著行动，不改变原著大势，不剧透未发生的关键转折）" : "贴合故事题材与既有伏笔，不剧透主线真相"}
+${isRP && window.StoryStance ? window.StoryStance.buildWorldClause(window.StoryStance.canonHeroName()) : ""}
+${window.CanonLedger ? window.CanonLedger.buildPromptBlock() : ""}
 - 字数要求：正文至少${s.minWords || 200}字`;
     messages.push({ role: "user", content: context });
     const depth = Math.max(0, parseInt(s.historyDepth) || 5);
@@ -448,7 +450,7 @@ ${entry.story}` });
     const fw = window.storyFramework;
     const dock = document.getElementById("dwDock");
     const show = !!(fw && fw.storyState.isStoryStarted);
-    /* v3.55.18 悬浮球收敛：界面只留小云一个悬浮球，世界动态改由小云菜单进入。
+    /* v3.55.19 悬浮球收敛：界面只留小云一个悬浮球，世界动态改由小云菜单进入。
        徽标/未读逻辑保留（小云菜单会读 #dwDockBadge 显示未读数）。 */
     if (dock) dock.style.display = "none";
     if (dock && show && !dock._moDraggable && window.MoChibi) {

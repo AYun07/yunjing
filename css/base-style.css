@@ -4611,3 +4611,75 @@ html.low-spec .typing-dot, html.low-spec .typing-dots span, html.low-spec .illus
 .mc-modules .mcm-txt b { font-size: 12.5px; font-weight: 600; }
 .mc-modules .mcm-txt i { font-size: 10.5px; font-style: normal; opacity: .6; }
 .mc-modules .mcm-foot { font-size: 10.5px; opacity: .45; text-align: center; margin-top: 4px; }
+
+/* ---------- 剧情上下文面板（v3.55.19） ---------- */
+.ctx-panel { position: fixed; inset: 0; z-index: 97; display: none; }
+.ctx-panel.show { display: block; }
+.ctx-panel .ctx-mask { position: absolute; inset: 0; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); }
+.ctx-panel .ctx-card-wrap {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    width: min(560px, 92vw); max-height: 84vh; display: flex; flex-direction: column;
+    border-radius: 16px; overflow: hidden;
+    background: linear-gradient(160deg, #2c2338, #191424 80%);
+    border: 1px solid rgba(217,139,166,.4); box-shadow: 0 16px 48px rgba(0,0,0,.55);
+    color: #e8dce4; font-family: var(--sans);
+}
+.ctx-panel .ctx-head {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,.09);
+}
+.ctx-panel .ctx-head b { font-size: 14px; letter-spacing: .5px; }
+.ctx-panel .ctx-tabs { display: flex; gap: 6px; margin-left: auto; }
+.ctx-panel .ctx-tab {
+    padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 12px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: #cfc4d4;
+}
+.ctx-panel .ctx-tab.on { background: rgba(217,139,166,.24); border-color: rgba(217,139,166,.55); color: #fff; }
+.ctx-panel .ctx-x {
+    background: none; border: none; color: #b9aec4; font-size: 15px; cursor: pointer; padding: 2px 4px;
+}
+.ctx-panel .ctx-body { overflow-y: auto; padding: 12px 14px; }
+.ctx-panel .ctx-foot {
+    padding: 8px 14px; font-size: 10.5px; opacity: .45; text-align: center;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+.ctx-panel .ctx-cat-hero {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;
+    padding: 10px 12px; margin-bottom: 12px; border-radius: 12px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); font-size: 12px;
+}
+.ctx-panel .ctx-cat-line b { display: inline-block; min-width: 60px; opacity: .6; font-weight: 500; }
+.ctx-panel .ctx-sec { margin-bottom: 14px; }
+.ctx-panel .ctx-sec-h {
+    font-size: 12px; letter-spacing: .5px; opacity: .85; margin-bottom: 7px;
+    display: flex; align-items: center; gap: 7px;
+}
+.ctx-panel .ctx-count {
+    font-style: normal; font-size: 10px; padding: 1px 7px; border-radius: 999px;
+    background: rgba(217,139,166,.22); color: #f0dde6;
+}
+.ctx-panel .ctx-card {
+    padding: 8px 10px; margin-bottom: 6px; border-radius: 10px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); font-size: 12.5px;
+}
+.ctx-panel .ctx-card b { display: block; margin-bottom: 2px; }
+.ctx-panel .ctx-sub { display: block; font-size: 11px; opacity: .62; line-height: 1.5; }
+.ctx-panel .ctx-tag {
+    font-style: normal; font-size: 10px; padding: 1px 7px; border-radius: 999px; margin-right: 6px;
+}
+.ctx-panel .ctx-tag.mine { background: rgba(224,120,120,.26); color: #ffd9d9; }
+.ctx-panel .ctx-tag.other { background: rgba(140,170,220,.2); color: #dbe6f6; }
+.ctx-panel .ctx-empty { font-size: 11.5px; opacity: .45; padding: 6px 2px; }
+
+/* ---------- 叙事立场选择（v3.55.19） ---------- */
+.wiz-stance { display: flex; gap: 8px; flex-wrap: wrap; }
+.wiz-stance-btn {
+    flex: 1 1 140px; display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+    padding: 9px 11px; border-radius: 12px; cursor: pointer; text-align: left;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: inherit;
+    font-family: inherit; transition: background .15s, border-color .15s;
+}
+.wiz-stance-btn:hover { background: rgba(255,255,255,.09); }
+.wiz-stance-btn.on { background: rgba(217,139,166,.18); border-color: rgba(217,139,166,.55); }
+.wiz-stance-btn b { font-size: 12.5px; font-weight: 600; }
+.wiz-stance-btn i { font-style: normal; font-size: 10.5px; opacity: .62; line-height: 1.45; }
