@@ -466,29 +466,32 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
   try {
     // v3.47.16 主笔独立节流队列：与动态世界/变量AI/生图/手机互不阻塞
     // 续写轮（isContinuation）关闭流式增量回调，避免把续段当作新回复重绘
+    const bmm = window.BaseModelMode; // v3.55.11 模型自适应：提到 callOnce 外层，自检块共享
     const callOnce = (msgs, o = {}) => {
       const isCont = o && o.isContinuation;
       const passOpts = isCont ? { ...o, onDelta: undefined } : o;
       /* v3.55.10 基础小模型适配：cfgOverride 传参数锁副本（温度≤0.75/上限≤8000），
          不改用户保存的原值；强模型用户关闭开关时完全零改动 */
-      const bmmCfg = (window.BaseModelMode && window.BaseModelMode.isEnabled())
-        ? window.BaseModelMode.clampParams(fw.apiConfig) : undefined;
+      const bmmCfg = (bmm && bmm.isLite && bmm.isLite()) ? bmm.clampParams(fw.apiConfig) : undefined;
       return fw.apiConfig.type === "gemini" ? callGemini(msgs, passOpts, bmmCfg) : callOpenAI(msgs, passOpts, bmmCfg);
     };
     let reply = await callOnce(messages, opts);
-    /* v3.55.10 复读自检：基础小模型偶发"复读崩塌"（同义堆砌一路跑飞），
-       检测到即降温 0.2 重发一次，成功且不复读才替换，用户无感 */
-    if (window.BaseModelMode && window.BaseModelMode.isEnabled() && window.BaseModelMode.detectCollapse(reply)) {
-      console.warn('[基础模型适配] 检测到复读崩塌，降温重发一次');
+    /* v3.55.11 复读自检（全档安全基线）：任意档检测到「复读崩塌」自动降温重发一次；
+       auto 档首轮若崩→降级 lite 并缓存，首轮稳→缓存初判，均用户无感 */
+    if (bmm && bmm.detectCollapse && bmm.detectCollapse(reply)) {
+      if (bmm.noteCollapse) bmm.noteCollapse();
+      console.warn('[模型自适应] 检测到复读崩塌，降温重发一次');
       try {
-        const retryCfg = window.BaseModelMode.clampParams(fw.apiConfig);
+        const retryCfg = (bmm.isLite && bmm.isLite()) ? bmm.clampParams(fw.apiConfig) : Object.assign({}, fw.apiConfig);
         retryCfg.temperature = Math.max(0.5, (retryCfg.temperature || 0.75) - 0.2);
         const r2 = fw.apiConfig.type === "gemini"
           ? await callGemini(messages, opts, retryCfg)
           : await callOpenAI(messages, opts, retryCfg);
-        if (r2 && !window.BaseModelMode.detectCollapse(r2)) reply = r2;
-        else console.warn('[基础模型适配] 重发仍未达标，保留原回复');
-      } catch (e) { console.warn('[基础模型适配] 重发失败，保留原回复', e); }
+        if (r2 && !(bmm.detectCollapse && bmm.detectCollapse(r2))) reply = r2;
+        else console.warn('[模型自适应] 重发仍未达标，保留原回复');
+      } catch (e) { console.warn('[模型自适应] 重发失败，保留原回复', e); }
+    } else if (bmm && bmm.noteStable && bmm.isAuto && bmm.isAuto()) {
+      bmm.noteStable();
     }
     // v3.47.14 防截断：被 max_tokens 掐断时自动续写（最多 2 轮，可从接口设置关闭）
     if (!isTest && window.MoNetGuard && fw.apiConfig.autoContinue !== false) {

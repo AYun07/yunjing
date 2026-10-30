@@ -310,11 +310,16 @@ const ConfigModal = {
                                 <input type="checkbox" id="cfg_stream" checked>
                                 <b>流式输出</b><i>推荐开启：边生成边显示，长正文不超时；「假流式」中转模型必须开启。个别老接口不兼容时可关闭</i>
                             </label>
-                            <!-- v3.55.10 基础小模型适配 -->
-                            <label class="check-row">
-                                <input type="checkbox" id="cfg_baseMode">
-                                <b>🪶 基础小模型适配</b><i>免费/基础级模型（如各类免费 flash 档）勾选：自动锁定温度≤0.75与输出上限8000（防复读崩塌/截断）、精简提示词、暂停变量登记与灵感的额外请求（防限流）、复读自动重发。用强模型请勿勾选</i>
-                            </label>
+                            <!-- v3.55.11 模型能力自适应（三档） -->
+                            <div class="form-row">
+                                <label>模型能力档位</label>
+                                <select id="cfg_baseMode">
+                                    <option value="auto">🤖 自动适配（推荐·零配置）</option>
+                                    <option value="lite">🪶 低端/基础/免费大模型（求稳）</option>
+                                    <option value="full">✨ 高端大模型（求全·更完美）</option>
+                                </select>
+                                <i>自动适配：系统按接口特征与首轮表现自动判断——免费/自定义接口走安全档（锁参数+精简提示词+暂停额外请求），知名大厂官方接口走全功能档。若自动判断不满意可手动指定。</i>
+                            </div>
                             <div class="form-tip">温度高更奔放、低更稳重；流式开启时超时只在「持续无任何数据」时触发，生成再久也不中断。</div>
                         </div>
                         <div id="cfg_testResult" class="test-result"></div>
@@ -2951,8 +2956,9 @@ const ConfigModal = {
     document.getElementById("cfg_temperature").value = (_a = c.temperature) != null ? _a : 0.9;
     document.getElementById("cfg_timeout").value = c.timeout || 300;
     document.getElementById("cfg_stream").checked = c.stream !== false;
-    /* v3.55.10 基础小模型适配开关回填（apiConfig 优先，其次 localStorage 记忆） */
-    document.getElementById("cfg_baseMode").checked = !!(c.baseModelMode || (window.BaseModelMode && window.BaseModelMode.isEnabledRaw && window.BaseModelMode.isEnabledRaw()));
+    /* v3.55.11 模型能力档位回填（apiConfig 优先，其次 localStorage；默认 auto） */
+    const tierVal = (typeof c.baseModelMode === 'string' && (c.baseModelMode === 'auto' || c.baseModelMode === 'lite' || c.baseModelMode === 'full')) ? c.baseModelMode : (window.BaseModelMode && BaseModelMode.getTier ? BaseModelMode.getTier() : 'auto');
+    document.getElementById("cfg_baseMode").value = tierVal;
     this.updateProviderUI("cfg");
     this.fillDynamicWorldForm();
     this.fillVarAIForm();
@@ -2983,8 +2989,8 @@ const ConfigModal = {
       temperature: this.clampTemp(document.getElementById("cfg_temperature").value, 0.9),
       timeout: clamp(document.getElementById("cfg_timeout").value, 60, 1800, 300),
       stream: document.getElementById("cfg_stream").checked,
-      /* v3.55.10 基础小模型适配开关随「保存」落盘 */
-      baseModelMode: document.getElementById("cfg_baseMode").checked
+      /* v3.55.11 模型能力档位随「保存」落盘 */
+      baseModelMode: document.getElementById("cfg_baseMode").value
     };
   },
   save() {

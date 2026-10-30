@@ -14,18 +14,18 @@
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
-    <script src="js/id-migrate.js?v=3.55.10"></script>
+    <script src="js/id-migrate.js?v=3.55.11"></script>
     <title>云境 v3.55.10 · AI短篇小说创作室</title>
-    <link rel="stylesheet" href="css/base-style.css?v=3.55.10">
-    <link rel="stylesheet" href="css/immersive-style.css?v=3.55.10">
+    <link rel="stylesheet" href="css/base-style.css?v=3.55.11">
+    <link rel="stylesheet" href="css/immersive-style.css?v=3.55.11">
     <!-- v3.38.1 错误哨兵：必须最先加载（ES5 写法，任何内核可解析）——
          脚本加载失败/运行异常时屏幕直接显示出错文件，玩家可截图反馈 -->
-    <script src="js/boot-error-guard.js?v=3.55.10"></script>
+    <script src="js/boot-error-guard.js?v=3.55.11"></script>
     <!-- v3.47.5-opt 优化基础层：公共工具 + 安全存储门面（须最先于业务模块加载） -->
-    <script src="js/mo-utils.js?v=3.55.10"></script>
-    <script src="js/mo-store.js?v=3.55.10"></script>
+    <script src="js/mo-utils.js?v=3.55.11"></script>
+    <script src="js/mo-store.js?v=3.55.11"></script>
     <!-- v3.55.3 流畅模式：非 defer 抢在首帧前自举，低配机不先渲染重特效再降级 -->
-    <script src="js/perf-mode.js?v=3.55.10"></script>
+    <script src="js/perf-mode.js?v=3.55.11"></script>
     <script>
         /* 响应式模式：≤900px 挂 mobile 类（含桌面缩窗），≤380px 再挂 narrow
            注意：脚本位于 head，body 可能尚未解析——先判空，DOMContentLoaded 再补一次 */
@@ -59,10 +59,10 @@
         })();
     </script>
 
-    <link rel="stylesheet" href="css/ui-polish.css?v=3.55.10">
-    <link rel="stylesheet" href="css/yunjing-theme.css?v=3.55.10">
+    <link rel="stylesheet" href="css/ui-polish.css?v=3.55.11">
+    <link rel="stylesheet" href="css/yunjing-theme.css?v=3.55.11">
     <!-- v3.53.0 主题工坊：head 内同步执行——先上色再解析 body，切主题不闪屏 -->
-    <script src="js/theme-studio.js?v=3.55.10"></script>
+    <script src="js/theme-studio.js?v=3.55.11"></script>
 </head>
 
 <body class="page-studio">
@@ -310,17 +310,17 @@
     <input type="file" id="toolboxImport" accept=".json" style="display:none" onchange="StoryInput.importSave(this.files[0])">
 
     <!-- 框架核心（模仿原框架的脚本加载顺序：框架 → 功能模块 → 配置） -->
-    <script defer src="story-framework.js?v=3.55.10"></script>
+    <script defer src="story-framework.js?v=3.55.11"></script>
     <!-- v3.31.3：安卓 WebView 下载桥终于接上线（此前 js/android-bridge.js 一直在包里却没有任何页面加载，
          APK 内导出存档/卡片/图片会静默失败；浏览器环境此文件自动休眠，零影响） -->
-    <script defer src="js/android-bridge.js?v=3.55.10"></script>
-    <script defer src="js/ui-dialog.js?v=3.55.10"></script>
-    <script defer src="js/net-guard.js?v=3.55.10"></script>
-    <script defer src="js/content-scale.js?v=3.55.10"></script>
-    <script defer src="js/api-calling-functions.js?v=3.55.10"></script>
-    <script defer src="js/variable-parser.js?v=3.55.10"></script>
+    <script defer src="js/android-bridge.js?v=3.55.11"></script>
+    <script defer src="js/ui-dialog.js?v=3.55.11"></script>
+    <script defer src="js/net-guard.js?v=3.55.11"></script>
+    <script defer src="js/content-scale.js?v=3.55.11"></script>
+    <script defer src="js/api-calling-functions.js?v=3.55.11"></script>
+    <script defer src="js/variable-parser.js?v=3.55.11"></script>
     <!-- v3.55.10 基础小模型适配：参数安全锁 / 轻量协议块 / 辅助AI静默 / 复读自检 -->
-    <script defer src="js/base-model-mode.js?v=3.55.10"></script>
+    <script defer src="js/base-model-mode.js?v=3.55.11"></script>
     <!-- v3.55.5 内置「云起预设」（云境原创）：数据 + 渲染引擎 + 世界对齐桥 -->
     <!-- 云起预设数据(170KB)按需加载：首屏不解析，load 后空闲预热；发送/打开预设面板时强制等待 -->
     <script>
@@ -331,7 +331,7 @@
           if (pend) return pend;
           pend = new Promise(function (res) {
             var s = document.createElement('script');
-            s.src = 'js/preset-yunqi.js?v=3.55.10';
+            s.src = 'js/preset-yunqi.js?v=3.55.11';
             s.onload = function () { res(); };
             s.onerror = function () { pend = null; res(); }; // 失败放行，走内置降级
             document.head.appendChild(s);
@@ -345,119 +345,119 @@
       });
     </script>
     <!-- v3.51.1 预设/正则导入替换层（必须在引擎之前，引擎用它取"当前预设"） -->
-    <script defer src="js/preset-io.js?v=3.55.10"></script>
-    <script defer src="js/regex-io.js?v=3.55.10"></script>
-    <script defer src="js/miaomiao-engine.js?v=3.55.10"></script>
-    <script defer src="js/miaomiao-bridge.js?v=3.55.10"></script>
+    <script defer src="js/preset-io.js?v=3.55.11"></script>
+    <script defer src="js/regex-io.js?v=3.55.11"></script>
+    <script defer src="js/miaomiao-engine.js?v=3.55.11"></script>
+    <script defer src="js/miaomiao-bridge.js?v=3.55.11"></script>
     <!-- v3.55.5 云起正则（云境原创）：数据 + 引擎（协议块转卡片 / 去 AI 味 / 上下文裁剪） -->
-    <script defer src="js/yunqi-regex-data.js?v=3.55.10"></script>
-    <script defer src="js/miaomiao-regex.js?v=3.55.10"></script>
+    <script defer src="js/yunqi-regex-data.js?v=3.55.11"></script>
+    <script defer src="js/miaomiao-regex.js?v=3.55.11"></script>
     <!-- v3.55.10 云起预设云端同步：从 GitHub 拉最新版，预设更新不用再导入 -->
-    <script defer src="js/yunqi-sync.js?v=3.55.10"></script>
-    <script defer src="js/ai-message-builder.js?v=3.55.10"></script>
-    <script defer src="js/ai-response-handler.js?v=3.55.10"></script>
-    <script defer src="js/story-status-renderer.js?v=3.55.10"></script>
-    <script defer src="js/atlas-panel.js?v=3.55.10"></script>
-    <script defer src="js/ambience-layer.js?v=3.55.10"></script>
-    <script defer src="js/game-layer.js?v=3.55.10"></script>
-    <script defer src="js/world-seals.js?v=3.55.10"></script>
-    <script defer src="js/reader-letters.js?v=3.55.10"></script>
-    <script defer src="js/immersive-suite.js?v=3.55.10"></script>
-    <script defer src="js/immersion-plus.js?v=3.55.10"></script>
-    <script defer src="js/timeline-branch.js?v=3.55.10"></script>
-    <script defer src="js/story-setup-wizard.js?v=3.55.10"></script>
-    <script defer src="js/user-input-handler.js?v=3.55.10"></script>
-    <script defer src="js/inspiration-engine.js?v=3.55.10"></script>
-    <script defer src="js/dynamic-world.js?v=3.55.10"></script>
-    <script defer src="js/variable-ai.js?v=3.55.10"></script>
-    <script defer src="js/image-gen.js?v=3.55.10"></script>
-    <script defer src="js/prompt-engineer.js?v=3.55.10"></script>
-    <script defer src="js/mo-assistant.js?v=3.55.10"></script>
+    <script defer src="js/yunqi-sync.js?v=3.55.11"></script>
+    <script defer src="js/ai-message-builder.js?v=3.55.11"></script>
+    <script defer src="js/ai-response-handler.js?v=3.55.11"></script>
+    <script defer src="js/story-status-renderer.js?v=3.55.11"></script>
+    <script defer src="js/atlas-panel.js?v=3.55.11"></script>
+    <script defer src="js/ambience-layer.js?v=3.55.11"></script>
+    <script defer src="js/game-layer.js?v=3.55.11"></script>
+    <script defer src="js/world-seals.js?v=3.55.11"></script>
+    <script defer src="js/reader-letters.js?v=3.55.11"></script>
+    <script defer src="js/immersive-suite.js?v=3.55.11"></script>
+    <script defer src="js/immersion-plus.js?v=3.55.11"></script>
+    <script defer src="js/timeline-branch.js?v=3.55.11"></script>
+    <script defer src="js/story-setup-wizard.js?v=3.55.11"></script>
+    <script defer src="js/user-input-handler.js?v=3.55.11"></script>
+    <script defer src="js/inspiration-engine.js?v=3.55.11"></script>
+    <script defer src="js/dynamic-world.js?v=3.55.11"></script>
+    <script defer src="js/variable-ai.js?v=3.55.11"></script>
+    <script defer src="js/image-gen.js?v=3.55.11"></script>
+    <script defer src="js/prompt-engineer.js?v=3.55.11"></script>
+    <script defer src="js/mo-assistant.js?v=3.55.11"></script>
     <!-- v3.53.0 原创设计工坊：自设势力/人物/道具/技能等模板化入世界书 -->
-    <script defer src="js/creator-forge.js?v=3.55.10"></script>
+    <script defer src="js/creator-forge.js?v=3.55.11"></script>
     <!-- v3.53.0 状态栏字段全集（含成人向字段组与破限开关） -->
-    <script defer src="js/status-schema.js?v=3.55.10"></script>
+    <script defer src="js/status-schema.js?v=3.55.11"></script>
     <!-- v3.53.0 文件桥：内置助手自检并直接改项目文件 -->
-    <script defer src="js/file-bridge.js?v=3.55.10"></script>
-    <script defer src="js/mo-chibi.js?v=3.55.10"></script>
-    <script defer src="js/config-modal.js?v=3.55.10"></script>
+    <script defer src="js/file-bridge.js?v=3.55.11"></script>
+    <script defer src="js/mo-chibi.js?v=3.55.11"></script>
+    <script defer src="js/config-modal.js?v=3.55.11"></script>
     <!-- v3.53.0 保险箱：存档 / 配置 / 整机 三档导入导出 + 回滚 -->
-    <script defer src="js/vault.js?v=3.55.10"></script>
+    <script defer src="js/vault.js?v=3.55.11"></script>
     <!-- v3.53.0 世界书装载改由 knowledge-manager 按需注入（见 _ensureKB）：
          旧版在这里用 document.write 抢解析期装载，实测两个内联块之间没有执行屏障——
          第二个块检查 __KB_SPLIT_OK__ 时第一个块写入的脚本还没跑，于是"分界"与"整包"双双被加载，
          每次进世界白拉 9.4MB（实测首屏 12.7MB JS）。现在只留一个版本号给动态加载用。 -->
     <script>window.YJ_VER = '3.55.10';</script>
-    <script defer src="js/antibagu-guard.js?v=3.55.10"></script>
-    <script defer src="js/knowledge-manager.js?v=3.55.10"></script>
-    <script defer src="js/kb-vector.js?v=3.55.10"></script>
-<script defer src="js/st-import.js?v=3.55.10"></script>
-<script defer src="js/kb-enhance.js?v=3.55.10"></script>
-    <script defer src="js/dlc-manager.js?v=3.55.10"></script>
-    <script defer src="js/prompt-budget.js?v=3.55.10"></script>
-    <script defer src="js/save-slots.js?v=3.55.10"></script>
-    <script defer src="js/recap-engine.js?v=3.55.10"></script>
-    <script defer src="js/welcome-recap.js?v=3.55.10"></script>
-    <script defer src="js/npc-portrait.js?v=3.55.10"></script>
+    <script defer src="js/antibagu-guard.js?v=3.55.11"></script>
+    <script defer src="js/knowledge-manager.js?v=3.55.11"></script>
+    <script defer src="js/kb-vector.js?v=3.55.11"></script>
+<script defer src="js/st-import.js?v=3.55.11"></script>
+<script defer src="js/kb-enhance.js?v=3.55.11"></script>
+    <script defer src="js/dlc-manager.js?v=3.55.11"></script>
+    <script defer src="js/prompt-budget.js?v=3.55.11"></script>
+    <script defer src="js/save-slots.js?v=3.55.11"></script>
+    <script defer src="js/recap-engine.js?v=3.55.11"></script>
+    <script defer src="js/welcome-recap.js?v=3.55.11"></script>
+    <script defer src="js/npc-portrait.js?v=3.55.11"></script>
     <!-- v3.17.0 长卷守望版：craft-meter 先于 chapter-nav（目录行内消费密度函数） -->
-    <script defer src="js/craft-meter.js?v=3.55.10"></script>
-    <script defer src="js/chapter-nav.js?v=3.55.10"></script>
-    <script defer src="js/system-guard.js?v=3.55.10"></script>
-    <script defer src="js/weekly-report.js?v=3.55.10"></script>
+    <script defer src="js/craft-meter.js?v=3.55.11"></script>
+    <script defer src="js/chapter-nav.js?v=3.55.11"></script>
+    <script defer src="js/system-guard.js?v=3.55.11"></script>
+    <script defer src="js/weekly-report.js?v=3.55.11"></script>
     <!-- v3.18.0 万卡归宗版：card-io 先于 card-hub（互通中枢消费 PNG 读写引擎）；
          memory-layers / scene-state 挂轮次事件（story:turn-saved 由 ai-response-handler 广播） -->
-    <script defer src="js/card-io.js?v=3.55.10"></script>
-    <script defer src="js/card-hub.js?v=3.55.10"></script>
-    <script defer src="js/memory-layers.js?v=3.55.10"></script>
-    <script defer src="js/scene-state.js?v=3.55.10"></script>
-    <script defer src="js/quality-suite.js?v=3.55.10"></script>
-    <script defer src="js/draft-lab.js?v=3.55.10"></script>
-    <script defer src="js/channel-hub.js?v=3.55.10"></script>
+    <script defer src="js/card-io.js?v=3.55.11"></script>
+    <script defer src="js/card-hub.js?v=3.55.11"></script>
+    <script defer src="js/memory-layers.js?v=3.55.11"></script>
+    <script defer src="js/scene-state.js?v=3.55.11"></script>
+    <script defer src="js/quality-suite.js?v=3.55.11"></script>
+    <script defer src="js/draft-lab.js?v=3.55.11"></script>
+    <script defer src="js/channel-hub.js?v=3.55.11"></script>
     <!-- v3.32.0 实体玩法引擎：账本/住户/工程三组件（须先于 world-ext-core 装载，
          define() 挂载点检测 window.EE） -->
-    <script defer src="js/entity-engine.js?v=3.55.10"></script>
-    <script defer src="js/world-ext/world-ext-core.js?v=3.55.10"></script>
+    <script defer src="js/entity-engine.js?v=3.55.11"></script>
+    <script defer src="js/world-ext/world-ext-core.js?v=3.55.11"></script>
     <!-- v3.26.0 玩家随身套装：每界自动挂「玩家面板+背包」随身器官（须先于界扩展装载，
          define() 钩子在 {genre}-ext.js 注册时调用 PlayerKit.augment） -->
-    <script defer src="js/player-kit.js?v=3.55.10"></script>
+    <script defer src="js/player-kit.js?v=3.55.11"></script>
     <!-- v3.33.0→v3.36.1 世界专属功能四件套：模块数值自定义面板 → 通讯形态注册表 → 通讯中枢 → 装备设备系统
          （经 WorldExt.injectModules 挂载，与界扩展 define() 先后无关；v3.34.0 通讯/装备 22 界全覆盖） -->
-    <script defer src="js/module-settings.js?v=3.55.10"></script>
-    <script defer src="js/comm-configs.js?v=3.55.10"></script>
-    <script defer src="js/comm-core.js?v=3.55.10"></script>
-    <script defer src="js/gear-core.js?v=3.55.10"></script>
+    <script defer src="js/module-settings.js?v=3.55.11"></script>
+    <script defer src="js/comm-configs.js?v=3.55.11"></script>
+    <script defer src="js/comm-core.js?v=3.55.11"></script>
+    <script defer src="js/gear-core.js?v=3.55.11"></script>
     <!-- v3.34.0→v3.36.1 界专属玩法深化 · 第二扩展槽：焚决融合/猎魂小队/武者量化/灵植园/凶兽猎录/淬炼台/
          天逆珠/掌天瓶/主线面板 + 符箓画案/复仇清单/学院任务板/黄金市场/摊位经营/荣耀角色卡/弟子名册/
          猎者任务板/领地建设/异果采摘录/镖局账本/星图航程/调查员档案（22 界玩法器官全配齐） -->
-    <script defer src="js/world-plus.js?v=3.55.10"></script>
+    <script defer src="js/world-plus.js?v=3.55.11"></script>
     <!-- v3.36.1 移动端深度适配层：≤640px 触屏规则——通讯浮层全屏聊天页(安全区/16px 输入)、
          设置弹窗底部抽屉、按钮/阶梯/装备格触屏尺寸、浮层期间锁滚动；须最后装载 -->
-    <script defer src="js/mobile-fit.js?v=3.55.10"></script>
+    <script defer src="js/mobile-fit.js?v=3.55.11"></script>
     <!-- v3.19.0 万象扩展版：五件第三方扩展（libs/ 全部本地文件零外联）。
          localforage/confetti 随首屏加载（29KB/11KB，特效与存储讲究即时）；
          lunar/cytoscape/仙侠名词库为大库（307KB/373KB/49KB）由各模块
          loadLibOnce 按需懒加载，首屏零负担。加载顺序晚于消费方
          （npc-portrait/game-layer/scene-state）无碍——消费点全部在运行期
          （config onload / 轮次钩子 / 面板打开），届时早已就绪 -->
-    <script defer src="libs/localforage.min.js?v=3.55.10"></script>
-<script defer src="js/store-guard.js?v=3.55.10"></script>
-    <script defer src="libs/confetti.browser.min.js?v=3.55.10"></script>
-    <script defer src="js/storage-boost.js?v=3.55.10"></script>
-    <script defer src="js/lunar-stamp.js?v=3.55.10"></script>
-    <script defer src="js/inspiration-dice.js?v=3.55.10"></script>
-    <script defer src="js/celebration.js?v=3.55.10"></script>
-    <script defer src="js/relationship-graph.js?v=3.55.10"></script>
+    <script defer src="libs/localforage.min.js?v=3.55.11"></script>
+<script defer src="js/store-guard.js?v=3.55.11"></script>
+    <script defer src="libs/confetti.browser.min.js?v=3.55.11"></script>
+    <script defer src="js/storage-boost.js?v=3.55.11"></script>
+    <script defer src="js/lunar-stamp.js?v=3.55.11"></script>
+    <script defer src="js/inspiration-dice.js?v=3.55.11"></script>
+    <script defer src="js/celebration.js?v=3.55.11"></script>
+    <script defer src="js/relationship-graph.js?v=3.55.11"></script>
     <!-- v3.39.0-3.44.0 World Runtime 全家桶 -->
-    <link rel="stylesheet" href="css/world-runtime.css?v=3.55.10">
-    <script defer src="js/world-runtime.js?v=3.55.10"></script>
-    <script defer src="js/world-bus.js?v=3.55.10"></script>
-    <script defer src="js/module-forge.js?v=3.55.10"></script>
-    <script defer src="js/combat-core.js?v=3.55.10"></script>
-    <script defer src="js/quest-chain.js?v=3.55.10"></script>
-    <script defer src="js/world-stage.js?v=3.55.10"></script>
-    <script defer src="js/story-hooks.js?v=3.55.10"></script>
-    <script defer src="js/world-director.js?v=3.55.10"></script>
-    <script defer src="js/world-legacy.js?v=3.55.10"></script>
+    <link rel="stylesheet" href="css/world-runtime.css?v=3.55.11">
+    <script defer src="js/world-runtime.js?v=3.55.11"></script>
+    <script defer src="js/world-bus.js?v=3.55.11"></script>
+    <script defer src="js/module-forge.js?v=3.55.11"></script>
+    <script defer src="js/combat-core.js?v=3.55.11"></script>
+    <script defer src="js/quest-chain.js?v=3.55.11"></script>
+    <script defer src="js/world-stage.js?v=3.55.11"></script>
+    <script defer src="js/story-hooks.js?v=3.55.11"></script>
+    <script defer src="js/world-director.js?v=3.55.11"></script>
+    <script defer src="js/world-legacy.js?v=3.55.11"></script>
 
     <script>function togglePanel() {
   const panel = document.getElementById("statusPanel");
@@ -731,17 +731,17 @@ window.Snapshots = Snapshots;
   }
   const themeLink = document.createElement("link");
   themeLink.rel = "stylesheet";
-  themeLink.href = `css/${genre}-style.css?v=3.55.10`;
+  themeLink.href = `css/${genre}-style.css?v=3.55.11`;
   document.head.appendChild(themeLink);
   const configScript = document.createElement("script");
-  configScript.src = `configs/${genre}-config.js?v=3.55.10`;
+  configScript.src = `configs/${genre}-config.js?v=3.55.11`;
   configScript.onerror = () => {
     document.body.innerHTML = `<div style="padding:40px;font-family:monospace;color:#e0a84c;">
                     配置文件加载失败：configs/${genre}-config.js<br>请通过本地 HTTP 服务（如 python -m http.server）访问本项目。</div>`;
   };
   configScript.onload = () => {
     const extScript = document.createElement("script");
-    extScript.src = `js/world-ext/${genre}-ext.js?v=3.55.10`;
+    extScript.src = `js/world-ext/${genre}-ext.js?v=3.55.11`;
     extScript.onerror = () => {
       console.warn(`[WorldExt] 本界无专属扩展文件：${genre}`);
       bootFramework();
@@ -752,7 +752,7 @@ window.Snapshots = Snapshots;
   document.head.appendChild(configScript);
   if (genre === "earth") {
     const phScript = document.createElement("script");
-    phScript.src = "js/phone-panel.js?v=3.55.10";
+    phScript.src = "js/phone-panel.js?v=3.55.11";
     phScript.onerror = () => console.warn("[PhonePanel] 手机分身模块加载失败（不影响主流程）");
     document.head.appendChild(phScript);
   }
