@@ -4,11 +4,11 @@ const StoryResponseHandler = {
     const fw = window.storyFramework;
     const parser = window.VariableInstructionParser;
     let reply = window.stripAIThink ? window.stripAIThink(rawReply) : rawReply;
-    /* v3.47.18 咩咩专用正则：在解析变量/选项/正文之前先过一遍，
+    /* v3.47.18 某预设专用正则：在解析变量/选项/正文之前先过一遍，
        让 <selection> 变成【行动选项】（这样云境既有的选项按钮能直接接管），
        并让"去 AI 味"清理的结果贯穿变量解析、选项提取与存档。 */
-    reply = window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.enabled()
-      ? window.MoMiaomiaoRegex.preParse(reply)
+    reply = window.旧预设正则 && window.旧预设正则.enabled()
+      ? window.旧预设正则.preParse(reply)
       : reply;
     const oldCh = Number(fw.storyState.variables && fw.storyState.variables.chapter) || 0;
     const { newVariables, updateBlock } = parser.parse(reply, fw.storyState.variables, { storyRegistration: true });
@@ -67,6 +67,14 @@ const StoryResponseHandler = {
   extractBody(reply, options) {
     if (!reply) return "";
     let body = reply;
+    /* v3.55.19 机缘归属账本：先把 (claimed) 块吸收进世界账本（幂等），再从正文剥离——
+       这块是给世界看的登记簿，不是给读者看的正文 */
+    if (window.CanonLedger) {
+      try {
+        CanonLedger.parse(reply);
+      } catch (e) {}
+      body = body.replace(/\(claimed\)[\s\S]*?\(\/claimed\)/gi, "").replace(/【claimed】[\s\S]*?【\/claimed】/gi, "").replace(/<claimed>[\s\S]*?<\/claimed>/gi, "");
+    }
     /* v3.53.0：先摘掉迷你状态协议（(: 名.字段: 值; …)），再走常规剥离 */
     body = this._stripMiniStatus(body);
     /* v3.46.2 纵深防御：自带 think 剥离（常规调用方均已预剥，此处兜底，
@@ -363,14 +371,14 @@ const StoryResponseHandler = {
     const IG = window.StoryImageGen;
     const bodyForCount = IG && IG.stripMarkers ? IG.stripMarkers(body) : body;
     const words = bodyForCount ? bodyForCount.replace(/\s/g, "").length : 0;
-    /* v3.47.18 咩咩专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
+    /* v3.47.18 某预设专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
        从正文里抽出来渲染成折叠卡片 —— 否则它们会以裸 XML 落在正文里。
-       v3.51.0：改为 always —— 即使玩家把「咩咩正则」总开关关掉，也只停用"去 AI 味"，
+       v3.51.0：改为 always —— 即使玩家把「某预设正则」总开关关掉，也只停用"去 AI 味"，
        协议块照旧收进卡片，绝不把 <status> 原样吐在正文里。 */
     let prose = body;
     let cardsHtml = "";
-    if (window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.process) {
-      const rg = window.MoMiaomiaoRegex.process(body, { always: true });
+    if (window.旧预设正则 && window.旧预设正则.process) {
+      const rg = window.旧预设正则.process(body, { always: true });
       prose = rg.prose;
       cardsHtml = rg.cardsHtml || "";
     }
@@ -405,7 +413,7 @@ const StoryResponseHandler = {
       const dramatic = !!(window.ImmersionPlus && window.ImmersionPlus.isDramatic && window.ImmersionPlus.isDramatic(label));
       /* v3.55.6 云起专属美化：行动选项美化开着 → 序号徽章 + yq-opts 皮肤；
          关闭时回退朴素按钮（纯文本序号）。 */
-      const yqOptOn = !!(window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.ruleOn && window.MoMiaomiaoRegex.ruleOn("云起·行动选项美化"));
+      const yqOptOn = !!(window.旧预设正则 && window.旧预设正则.ruleOn && window.旧预设正则.ruleOn("云起·行动选项美化"));
       html += `<div class="options-area${dramatic ? " dramatic" : ""}${yqOptOn ? " yq-opts" : ""}"><div class="options-title">▸ ${this.escapeHtml(label)}</div>`;
       options.forEach((opt, i) => {
         const delay = dramatic ? ` style="animation-delay:${(0.18 + i * 0.35).toFixed(2)}s"` : "";

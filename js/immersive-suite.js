@@ -1129,7 +1129,7 @@ const ImmersiveSuite = function() {
         fab.title = "太虚阁 · 沉浸万象（拖动换位，长按归位）";
         fab.innerHTML = "⛩";
         document.body.appendChild(fab);
-        /* v3.55.18 悬浮球收敛：界面只留小云一个悬浮球，太虚阁改由小云菜单进入。
+        /* v3.55.19 悬浮球收敛：界面只留小云一个悬浮球，太虚阁改由小云菜单进入。
            模块本体照常挂载（抽屉/数据不受影响），只是入口球不再显示。 */
         fab.style.display = "none";
         makeFabDraggable(fab);
@@ -2497,7 +2497,7 @@ ${(() => {
       PromptBudget.save({ enabled: !cfg.enabled });
       if (state.open && state.tab === "settings") renderTab();
     },
-    /** v3.5.0 预算上限档位循环：8万 / 11万 / 15万 / 20万字符；v3.55.18 末尾回到自适应 */
+    /** v3.5.0 预算上限档位循环：8万 / 11万 / 15万 / 20万字符；v3.55.19 末尾回到自适应 */
     cycleBudgetLimit() {
       if (!window.PromptBudget) return;
       const steps = [8e4, 11e4, 15e4, 2e5];

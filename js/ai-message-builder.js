@@ -53,7 +53,7 @@ function buildFreedomDirective(isRP) {
 }
 async function buildStoryMessages(userMessage) {
   var _a;
-  /* v3.55.4 咩咩预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
+  /* v3.55.4 某预设预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
   if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
   const fw = window.storyFramework;
   const config = fw.config;
@@ -65,7 +65,7 @@ async function buildStoryMessages(userMessage) {
     messages.push(msg);
   };
   const vaOn = !!(window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()));
-  /* v3.55.10 基础小模型适配：轻量协议块替代全量咩咩预设，知识库背景与
+  /* v3.55.10 基础小模型适配：轻量协议块替代全量某预设预设，知识库背景与
      生图/沉浸指令暂停加载（强模型用户不受影响） */
   const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isLite());
   const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
@@ -138,33 +138,33 @@ stats.张力: +5
        知识库条目在上下文里离得远，实测模型会忽略它写到上万字 */
     lengthRule = '\n【篇幅硬约束】本轮正文严格落在 ' + range + ' 字之间（变量块与行动选项不计）。写到位靠分层推进：场景、动作、对白、心理、感官细节各给一点，严禁复读原文、同义堆砌、注水凑字；一次只需要写出本轮该有的那一段，把后面的留给下一轮。明显超出上限即视为不合格。\n';
   } catch (e) { lengthRule = ''; }
-  // v3.47.17 内嵌咩咩预设：整份预设渲染（含该世界的适配文风）作为第二段 system
+  // v3.47.17 内嵌某预设预设：整份预设渲染（含该世界的适配文风）作为第二段 system
   // 说明：不改预设任何 prompt 文本，只在渲染时按 genreKey 选中文风档、关掉出厂默认的日轻档
-  let miaomiaoBlock = '';
+  let 旧预设Block = '';
   try {
     if (bmmOn && window.BaseModelMode && window.BaseModelMode.buildLitePreset) {
       /* v3.55.10 基础小模型适配：小模型注意力有限，全量预设（数万字协议）
          换成 ~1.4k 字的云心精简核心（实测协议遵从率反而更高） */
-      miaomiaoBlock = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
-    } else if (window.MoMiaomiaoBridge && window.MoMiaomiaoBridge.render) {
-      miaomiaoBlock = window.MoMiaomiaoBridge.render({
+      旧预设Block = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
+    } else if (window.旧预设桥 && window.旧预设桥.render) {
+      旧预设Block = window.旧预设桥.render({
         char: (state.setup && state.setup.playerName) || '主角',
         user: '你'
       }) || '';
     }
   } catch (e) {
-    console.warn('[咩咩预设] 渲染失败，已跳过:', e);
-    miaomiaoBlock = '';
+    console.warn('[某预设预设] 渲染失败，已跳过:', e);
+    旧预设Block = '';
   }
   /* v3.55.17 云境核心契约 · 预设解耦注入
-     问题：玩家用「导入 SillyTavern 预设」整份替换内置预设后，那份预设里没有云境的
+     问题：玩家用「导入 常见前端工具 预设」整份替换内置预设后，那份预设里没有云境的
      六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
      六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
      对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
-     才补（云起预设 / 小模型精简核心 / 内置咩咩预设均自带上文，不会重复注入）。 */
+     才补（云起预设 / 小模型精简核心 / 内置某预设预设均自带上文，不会重复注入）。 */
   let coreContract = '';
   try {
-    const hasCoreOpts = /【快进】/.test(miaomiaoBlock) && /【成人】/.test(miaomiaoBlock);
+    const hasCoreOpts = /【快进】/.test(旧预设Block) && /【成人】/.test(旧预设Block);
     if (!hasCoreOpts) {
       coreContract = `
 【云境核心契约（优先级高于上方一切预设；与之冲突时，一律以本节为准）】
@@ -181,7 +181,7 @@ stats.张力: +5
     }
   } catch (e) { coreContract = ''; }
   const system = `${systemPrompt}
-${miaomiaoBlock ? '\n' + miaomiaoBlock + '\n' : ''}${coreContract}
+${旧预设Block ? '\n' + 旧预设Block + '\n' : ''}${coreContract}
 ${fictionPreamble}
 ${scaleDirective ? '\n' + scaleDirective + '\n' : ''}
 ${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
@@ -333,7 +333,17 @@ function buildSetupCard(setup, config) {
 function buildPlayerIdentityCard(setup, config) {
   const free = StoryFreedom.isFree();
   const parts = [`【玩家身份卡（最高优先级，全程锁定）】`];
-  parts.push(free ? `世界：《${config.genreName}》原著世界观（原著设定为底 · 剧情走向由玩家主导）` : `世界：《${config.genreName}》原著世界（严格遵循原著设定，禁止二创改动）`);
+  /* v3.55.19 世界描述随叙事立场变化（旧文案只有「玩家主导 / 禁止二创」两档，
+     没有「玩家取代原著主角」这一档） */
+  const _stance = window.StoryStance ? StoryStance.get() : free ? "freewill" : "cohabit";
+  const _canon = window.StoryStance ? StoryStance.canonHeroName() : "原著主角";
+  parts.push(
+    _stance === "replace"
+      ? `世界：《${config.genreName}》原著世界（玩家取代原著主角${_canon}——${_canon}不再作为独立人物登场，原著主线由玩家亲历）`
+      : _stance === "freewill"
+        ? `世界：《${config.genreName}》原著世界（原著设定为底 · 剧情走向由玩家主导，可改写原著大势）`
+        : `世界：《${config.genreName}》原著世界（严格遵循原著设定；玩家是这世界里活生生的一份子，${_canon}有他自己的一生）`
+  );
   if (setup.playerName) parts.push(`玩家角色：${setup.playerName}（${setup.gender || "男"}，${setup.age || 18}岁）`);
   /* v3.47.18 玩家亲笔的主角小传：这是「我是这个世界的一份子」最核心的自定义内容。
      创作模式原本就有，扮演模式此前漏了 —— 玩家写了小传却没进提示词。 */
@@ -356,7 +366,7 @@ function buildPlayerIdentityCard(setup, config) {
   if (setup.customScale) parts.push(`游玩规模：自定义规模——玩家亲笔设定（节奏与长度按此把握）：${setup.customScale}`);
   else if (setup.scale) parts.push(`游玩规模：${setup.scale}${setup.scaleDesc ? `（${setup.scaleDesc}）` : ""}`);
   if (setup.background) parts.push(`身世自述：${setup.background}`);
-  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌咩咩预设开启时由预设的本土文风块承载
+  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌某预设预设开启时由预设的本土文风块承载
      （更细），这里作为兜底——预设关闭时玩家选的文风仍要生效。 */
   if (setup.customStyle) parts.push(`文风基调：自定义文风——玩家亲笔设定（严格执行，正文全程贯彻）：${setup.customStyle}`);
   else if (setup.style) parts.push(`文风基调：${setup.style}${setup.styleDesc ? `（${setup.styleDesc}）` : ""}`);
@@ -383,10 +393,20 @@ function buildPlayerIdentityCard(setup, config) {
     });
     parts.push(`角色资质：${statKeys.map((k) => `${labelMap[k] || k} ${stats[k]}`).join(" / ")}`);
   }
-  if (free) {
-    parts.push(`【铁律】玩家是这个世界中的自定义角色；你的职责是主持世界——原著人物、势力按其性格与逻辑行动；原著设定是世界观底色，但原著剧情不是铁轨：玩家的行动可以影响、偏转、甚至改写原著大势与原著人物的命运；你不得用原著剧情推着玩家走，也不得为"还原原著"而扭曲玩家的选择与际遇；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。`);
+  /* v3.55.19 立场铁律三选一：取代主角 / 同行者（默认）/ 搅局者。
+     旧逻辑只有「自由 / 原著」两档，且没有「取代主角」这一档——玩家想替代原著主角时
+     只能在自定义身份里手写，AI 常常认不出来。 */
+  if (window.StoryStance) {
+    const isRP = config && config.mode === "roleplay";
+    parts.push(StoryStance.buildDirective(setup.playerName || "", StoryStance.canonHeroName(), isRP));
   } else {
-    parts.push(`【铁律】玩家是原著世界中的普通自定义角色，不是原著主角；你的职责是主持世界——所有原著人物、势力、事件一律按原著性格与命运行动，原著大势（主线事件与主角命运轨迹）不可因玩家而改写，玩家的行动只作用于自身际遇与身边支线；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。`);
+    parts.push(free ? `【铁律】玩家是这个世界中的自定义角色；你的职责是主持世界——原著人物、势力按其性格与逻辑行动；原著设定是世界观底色，但原著剧情不是铁轨：玩家的行动可以影响、偏转、甚至改写原著大势与原著人物的命运；你不得用原著剧情推着玩家走，也不得为"还原原著"而扭曲玩家的选择与际遇；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。` : `【铁律】玩家是原著世界中的普通自定义角色，不是原著主角；你的职责是主持世界——所有原著人物、势力、事件一律按原著性格与命运行动，原著大势（主线事件与主角命运轨迹）不可因玩家而改写，玩家的行动只作用于自身际遇与身边支线；资质数值是际遇倾向导向而非战力数值；正文严禁出现任何变量、面板、系统字样。`);
+  }
+  /* v3.55.19 机缘归属账本：让世界真正动态——夺走的东西不会失而复得 */
+  if (window.CanonLedger) {
+    const led = CanonLedger.buildPromptBlock();
+    if (led) parts.push(led);
+    parts.push(CanonLedger.buildProtocol());
   }
   return parts.join("\n");
 }
