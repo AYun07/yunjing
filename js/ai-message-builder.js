@@ -53,7 +53,7 @@ function buildFreedomDirective(isRP) {
 }
 async function buildStoryMessages(userMessage) {
   var _a;
-  /* v3.55.4 咩咩预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
+  /* v3.55.4 某预设预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
   if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
   const fw = window.storyFramework;
   const config = fw.config;
@@ -65,9 +65,9 @@ async function buildStoryMessages(userMessage) {
     messages.push(msg);
   };
   const vaOn = !!(window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()));
-  /* v3.55.10 基础小模型适配：轻量协议块替代全量咩咩预设，知识库背景与
+  /* v3.55.10 基础小模型适配：轻量协议块替代全量某预设预设，知识库背景与
      生图/沉浸指令暂停加载（强模型用户不受影响） */
-  const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isEnabled());
+  const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isLite());
   const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
   const rawRule = config.defaultSystemPrompt || "";
   const chapterNow = Number((_a = state.variables) == null ? void 0 : _a.chapter) || 0;
@@ -138,26 +138,26 @@ stats.张力: +5
        知识库条目在上下文里离得远，实测模型会忽略它写到上万字 */
     lengthRule = '\n【篇幅硬约束】本轮正文严格落在 ' + range + ' 字之间（变量块与行动选项不计）。写到位靠分层推进：场景、动作、对白、心理、感官细节各给一点，严禁复读原文、同义堆砌、注水凑字；一次只需要写出本轮该有的那一段，把后面的留给下一轮。明显超出上限即视为不合格。\n';
   } catch (e) { lengthRule = ''; }
-  // v3.47.17 内嵌咩咩预设：整份预设渲染（含该世界的适配文风）作为第二段 system
+  // v3.47.17 内嵌某预设预设：整份预设渲染（含该世界的适配文风）作为第二段 system
   // 说明：不改预设任何 prompt 文本，只在渲染时按 genreKey 选中文风档、关掉出厂默认的日轻档
-  let miaomiaoBlock = '';
+  let 旧预设Block = '';
   try {
     if (bmmOn && window.BaseModelMode && window.BaseModelMode.buildLitePreset) {
       /* v3.55.10 基础小模型适配：小模型注意力有限，全量预设（数万字协议）
          换成 ~1.4k 字的云心精简核心（实测协议遵从率反而更高） */
-      miaomiaoBlock = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
-    } else if (window.MoMiaomiaoBridge && window.MoMiaomiaoBridge.render) {
-      miaomiaoBlock = window.MoMiaomiaoBridge.render({
+      旧预设Block = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
+    } else if (window.旧预设桥 && window.旧预设桥.render) {
+      旧预设Block = window.旧预设桥.render({
         char: (state.setup && state.setup.playerName) || '主角',
         user: '你'
       }) || '';
     }
   } catch (e) {
-    console.warn('[咩咩预设] 渲染失败，已跳过:', e);
-    miaomiaoBlock = '';
+    console.warn('[某预设预设] 渲染失败，已跳过:', e);
+    旧预设Block = '';
   }
   const system = `${systemPrompt}
-${miaomiaoBlock ? '\n' + miaomiaoBlock + '\n' : ''}
+${旧预设Block ? '\n' + 旧预设Block + '\n' : ''}
 ${fictionPreamble}
 ${scaleDirective ? '\n' + scaleDirective + '\n' : ''}
 ${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
@@ -332,7 +332,7 @@ function buildPlayerIdentityCard(setup, config) {
   if (setup.customScale) parts.push(`游玩规模：自定义规模——玩家亲笔设定（节奏与长度按此把握）：${setup.customScale}`);
   else if (setup.scale) parts.push(`游玩规模：${setup.scale}${setup.scaleDesc ? `（${setup.scaleDesc}）` : ""}`);
   if (setup.background) parts.push(`身世自述：${setup.background}`);
-  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌咩咩预设开启时由预设的本土文风块承载
+  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌某预设预设开启时由预设的本土文风块承载
      （更细），这里作为兜底——预设关闭时玩家选的文风仍要生效。 */
   if (setup.customStyle) parts.push(`文风基调：自定义文风——玩家亲笔设定（严格执行，正文全程贯彻）：${setup.customStyle}`);
   else if (setup.style) parts.push(`文风基调：${setup.style}${setup.styleDesc ? `（${setup.styleDesc}）` : ""}`);
