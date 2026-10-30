@@ -2224,7 +2224,7 @@ const ConfigModal = {
     const rc = document.getElementById("mm_regexEnabled");
     if (rc && RX) rc.checked = RX.enabled();
 
-    /* v3.55.7：云端同步状态（仓库 / 已同步版本 / 上次同步时间） */
+    /* v3.55.8：云端同步状态（仓库 / 已同步版本 / 上次同步时间） */
     try {
       const YS = window.YunqiSync;
       const chipS = document.getElementById("yqSyncChip");
@@ -2529,7 +2529,7 @@ const ConfigModal = {
     } catch (e) { this.mmSay("导出失败：" + e.message, "error"); }
   },
   /* ---------- 预设整份替换 ---------- */
-  /* ---------- v3.55.7 云起预设 · 云端同步（不用重新导入的更新方式） ---------- */
+  /* ---------- v3.55.8 云起预设 · 云端同步（不用重新导入的更新方式） ---------- */
   yqSyncCheck() {
     const YS = window.YunqiSync;
     if (!YS) {
