@@ -67,7 +67,7 @@ async function buildStoryMessages(userMessage) {
   const vaOn = !!(window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()));
   /* v3.55.10 基础小模型适配：轻量协议块替代全量咩咩预设，知识库背景与
      生图/沉浸指令暂停加载（强模型用户不受影响） */
-  const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isEnabled());
+  const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isLite());
   const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
   const rawRule = config.defaultSystemPrompt || "";
   const chapterNow = Number((_a = state.variables) == null ? void 0 : _a.chapter) || 0;
