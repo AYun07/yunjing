@@ -14,18 +14,18 @@
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
-    <script src="js/id-migrate.js?v=3.55.17"></script>
-    <title>云境 v3.55.17 · AI短篇小说创作室</title>
-    <link rel="stylesheet" href="css/base-style.css?v=3.55.17">
-    <link rel="stylesheet" href="css/immersive-style.css?v=3.55.17">
+    <script src="js/id-migrate.js?v=3.55.18"></script>
+    <title>云境 v3.55.18 · AI短篇小说创作室</title>
+    <link rel="stylesheet" href="css/base-style.css?v=3.55.18">
+    <link rel="stylesheet" href="css/immersive-style.css?v=3.55.18">
     <!-- v3.38.1 错误哨兵：必须最先加载（ES5 写法，任何内核可解析）——
          脚本加载失败/运行异常时屏幕直接显示出错文件，玩家可截图反馈 -->
-    <script src="js/boot-error-guard.js?v=3.55.17"></script>
+    <script src="js/boot-error-guard.js?v=3.55.18"></script>
     <!-- v3.47.5-opt 优化基础层：公共工具 + 安全存储门面（须最先于业务模块加载） -->
-    <script src="js/mo-utils.js?v=3.55.17"></script>
-    <script src="js/mo-store.js?v=3.55.17"></script>
+    <script src="js/mo-utils.js?v=3.55.18"></script>
+    <script src="js/mo-store.js?v=3.55.18"></script>
     <!-- v3.55.3 流畅模式：非 defer 抢在首帧前自举，低配机不先渲染重特效再降级 -->
-    <script src="js/perf-mode.js?v=3.55.17"></script>
+    <script src="js/perf-mode.js?v=3.55.18"></script>
     <script>
         /* 响应式模式：≤900px 挂 mobile 类（含桌面缩窗），≤380px 再挂 narrow
            注意：脚本位于 head，body 可能尚未解析——先判空，DOMContentLoaded 再补一次 */
@@ -59,10 +59,10 @@
         })();
     </script>
 
-    <link rel="stylesheet" href="css/ui-polish.css?v=3.55.17">
-    <link rel="stylesheet" href="css/yunjing-theme.css?v=3.55.17">
+    <link rel="stylesheet" href="css/ui-polish.css?v=3.55.18">
+    <link rel="stylesheet" href="css/yunjing-theme.css?v=3.55.18">
     <!-- v3.53.0 主题工坊：head 内同步执行——先上色再解析 body，切主题不闪屏 -->
-    <script src="js/theme-studio.js?v=3.55.17"></script>
+    <script src="js/theme-studio.js?v=3.55.18"></script>
 </head>
 
 <body class="page-studio">
@@ -70,7 +70,7 @@
     <div class="top-bar">
         <a href="index.html" class="back-link" title="返回工坊大厅"><span class="ico">←</span><span class="txt">大厅</span></a>
         <span id="gameTitle">加载中…</span>
-        <span class="ver-dot" title="v3.55.17 稳固三修:①云境核心契约与预设解耦——导入酒馆/SillyTavern 第三方预设整份替换后,六类行动选项/中文状态栏/变量块定义不再丢失(闭合自检此前只说「六类」却没说是哪六类,模型自由发挥退回 3-4 条、状态栏英文 key 复现);契约独立注入,云起预设/内置咩咩/小模型精简核心自带上文不重复注入;②上下文预算按模型自适应——原先写死 11 万字符(约 7 万 token),8K/16K/32K 上下文的小模型直接 400 或被服务端静默截头(表现为「AI 突然失忆」),现按主接口模型名或显式上下文窗口推断,留 40% 给输出:8k→4千、32k→1.6万、64k→3.2万、128k→6.4万字符,识别不出仍保守 11 万;账单新增 token 估算与预算来源,手动档位循环到底回到自适应;③存储配额兜底——全项目仍有 48 个文件直写 localStorage,配额一满(安卓 WebView 5MB/iOS 隐私模式/大存档)即抛 QuotaExceededError,轻则丢档重则整轮崩;现于存储原语层兜一层:写失败自动转存 IndexedDB+内存镜像、读时回退命中、删除同步清理,并补 IndexedDB 预热(防刷新后镜像清空读不到),对 48 个调用方零改造、只接管配额错、不碰 sessionStorage;实测 8M 字符写入不抛错且读回一致;④悬浮球收敛为仅小云一个:太虚阁/世界动态/手机分身三球隐藏,收进小云「🧰 模块」二级面板(带未读数);小云确认为全身立绘(萝/御双形态 440×916、360×1245),换形象即整只换装;v3.55.16 NSFW 状态栏兜底:成人字段组常驻显示(空值显示—),不再依赖模型是否上报。v3.55.10 云端同步与开源:云起预设/正则上 GitHub(公开仓库「云境」),云境内新增☁云端同步——预设更新点一下即拉最新版,不用重新导入;同时致敬墨枢与觅长生框架。v3.55.6 云起专属美化:独属于云起的14条「云起·XX美化」正则(开场白/玩家状态栏/角色好感度/NPC内心话/世界运行报告/剧情记忆归档/行动选项/特殊状态栏/平行线/同人搜索/战斗引擎/故事引擎/角色心理/思维链)——键名加粗/数值徽章/心声斜体/序号徽章;协议块卡片换云起专属皮肤(每卡型专属配色徽章+结构化行排版+wlog时徽章),思维链折叠云起卡片化,行动选项按钮序号徽章;逐条开关,关闭即回退朴素显示,导入咩咩预设自动回落朴素卡兼容原版;云起正则16条扩为30条;v3.55.5 云起预设:云境原创内置预设(230块=60核心+170世界文风)与配套正则16条——破限三档/防截断/防空回/防频控/文风11档/NSFW分级(绝对红线:成年合意无真人无违法)/数据清洗/禁词/防泄漏/状态栏/行动选项/记忆归档/NPC小剧场/好感度/世界运行/名场面回响/思维链/人称字数节奏转述/防支配防全知抗绝望防机械化防重复防抢话活人感;第三方预设数据不再随包分发(版权出清);四套社区预设(双人成行/夏瑾/Reborn/Kemini)逐一实测适配——正则导入认预设内嵌extensions.regex_scripts/导入预设自动装载配套正则/导入名用文件名/出厂开关默认开;v3.55.4 轻量提速二期:存档微任务合并写(同tick多次saveStory仅一次落盘)/状态面板七分区签名缓存(内容没变不重建DOM)/预设数据懒加载(首屏不解析,空闲预热)/选区selectionchange改rAF合帧消除高频强制布局+滚动监听passive+resize防抖/读档回放分帧渲染(每帧≤12ms时间片)/变量AI热路径日志降噪;v3.55.3 轻量提速一期:资产瘦身92%(3873KB→318KB)/SW预缓存减负63%/摸头判定rect缓存/幽灵遮罩看门狗降频/decoding=async/定时器降耗;v3.55.3 小云形象版:内置助手更名「小云」并换新形象（云朵短发/天蓝大眼/云朵发饰），头像与桌面宠物同步换装；品牌更名与全站视觉精修；知识检索接入 BAAI/bge-m3 与 BAAI/bge-reranker-v2-m3（BM25 候选池→向量/重排→失败回退）；33 界世界书全部 300+ 条并拆分独立装载；v3.47.18 咩咩正则内嵌版:把玩家提供的《咩咩预设 ver 6.0.0》(SillyTavern格式,182块)原样内嵌——preset-miaomiao.js存数据(prompt内容一字未改,只翻开关),miaomiao-engine.js按prompt_order逐块渲染setvar/getvar/addvar宏,miaomiao-bridge.js按世界与开局文风对齐;文风组末尾追加33个云境世界×170档本土文风块(剑来/龙族/诡秘/克苏鲁等各3-11档,逐档独立撰写),随开局向导所选的style自动选中,设置面板可手动换档;出厂默认开但与云境冲突的7块(日轻文风/中日双语/acg心理模型/思维模式-故事/3个ST预填充hack)在渲染时关闭,玩家可手动开回;预设原有破限三档/防429随机串/防截断/防空回<|sep|>/状态栏/互动选项/NPC小剧场/剧情记忆归档全部按原设计生效;清理渲染后残留的空箭头行与失效标签引用;接入buildStoryMessages作为第二段system(约1.3万字),关闭时零开销;v3.38.1 安卓兼容版:修复部分安卓机(WebView内核Chrome<80)装机后「页面能显示但点了没反应」——57个JS文件1100处可选链/空值合并等新语法全量转译为老语法,创作室内联脚本与inset简写同步降级,新增启动错误哨兵(脚本加载失败/运行异常屏幕直接显示出错文件,玩家可截图反馈),旧内核机型从此可用;v3.38.0 迷雾降临·斩神版:新增我在精神病院学斩神(zhanhen)第廿四界+正文字数调节知识库条目;v3.19.0 万象扩展版:新增黎明之剑与轮回乐园两个开放世界(原著十一界扩为十三界)——黎明之剑(远瞳著,configs/limingzhijian-config.js):魔导革命机制为世界引擎,魔潮倒计时的洛伦大陆上魔能机械刚点火/符文阵列嗡鸣/教会圣光与王国权谋交织/废土深处沉睡刚铎遗产,主角替代协议默认共世(高文揭棺而起照原著时间线发生),写明「替代高文」则千年之谜与魔导革命的因果让渡给玩家,法师等阶学徒→九级→传奇;轮回乐园(那一只蚊子著,configs/lunhuileyuan-config.js):无限轮回机制为世界引擎,乐园在现世挑选濒死绝望或适格的凡人缔结契约投入衍生世界执行任务,完成即生失败即真死,主角替代协议默认共世,写明「替代苏晓」则屠戮尖兵的因果让渡给玩家,契约者阶位一阶→十阶→绝强者→至强者;两界知识库各21条整本考据(世界观总纲/原著忠实铁律/力量体系/势力谱系/人物志/文风圣经/年表/术语速查),主题CSS/界专属扩展(黎明之剑·魔导工坊与奥术阶梯/轮回乐园·乐园面板与品级阶梯)/行旅图鉴/沉浸套件/天道骰语/氛围尘埃/插图画风全部按界定制;另五件第三方扩展即插即用——①存储扩容(js/storage-boost.js+libs/localforage.min.js):localForage把大体积立绘dataURL分流进IndexedDB(数百MB容量),存档只留idb://标记瘦身,随档上限12→30人,启动预热灌回会话内存表同步读零改造,裁剪/删除联动清IDB;②干支纪年(js/lunar-stamp.js+libs/lunar.min.js):故事世界自有历法——开篇起甲子年正月,每24轮进一年/每2轮进一月/日按六十甲子循环,时辰映射舞台快照,纪年随提示词注入防时间感漂移,附今日黄历(干支/节气/宜忌)与八字五行排盘(角色命理卡),历法节奏可调;③灵感骰子(js/inspiration-dice.js+libs/fantasy-names.min.js):仙侠名词骰盅12类即点即掷(人名/道号/功法/秘籍/生灵/材料/法宝/丹药/门派/国度/地点/大陆,七档稀有度配色),机缘卡/开宗立派组合抽取,一键送输入框让AI织入剧情;④庆典特效(js/celebration.js+libs/confetti.browser.min.js):成就解锁金花雨/天道金榜两侧礼炮/命运骰星屑/境界突破全屏金炮,单类2.5秒节流防炸屏,工具箱可关;⑤人物关系网(js/relationship-graph.js+libs/cytoscape.min.js):Cytoscape把记忆L2关系史+众生相relation+舞台共演三路合并成可拖拽关系图,情感着色(敌红/情粉/友绿/亲缘金/师徒铜/从属蓝),节点大小=好感,点击高亮一度邻居,力导/环形双布局;大库按需懒加载(lunar/cytoscape/名词库首屏不载,首屏仅+40KB);v3.18.1 修缮版:11项缺陷修复(think思考段三层剥离防英文前缀/书档槽位隔离防新开书残留旧角色/模型芯片XSS转义+事件委托/选项区剥离双闸防误删正文尾部/parseValue增量对非数值旧值按绝对值落表/舞台快照turn=0合法/知识库window遮蔽改名/记忆去重键trim对称/立绘onerror不清父节点/润色缓存键拼genre/NAI ZIP多图择优),51项专项回归+全量原包回归零失败;v3.18.0 万卡归宗版:角色卡生态四通八达——①角色卡读写引擎(js/card-io.js):PNG tEXt块读写,兼容V2(chara,Base64+URL-safe)/V3(ccv3,UTF-8)双规范与JSON文件,读出自动归一化(name/description/personality/scenario/first_mes/tags/world/lorebook),写出带CRC32校验的合法PNG(画师签发不破坏图像);②角色卡互通中枢(js/card-hub.js):众生相NPC一键导出标准卡(PNG含卡面/JSON纯净档),拉进Chub/SillyTavern/RisuAI/Agnai社区即用;导入社区卡四路落地——众生相登记/知识库人物建档(按需检索)/世界书转关键词触发条目/登场白直发聊天流,选项自由勾选;③知识库关键词触发(v3.18.0):条目新增keys[]触发词字段(世界书语义),命中「本轮指令+最近scanDepth轮正文」才注入(扫描深度1-10轮可调,默认4),大小写不敏感中文子串匹配,常驻条目不参与,命中数排序上限5条防膨胀,ST/V2 lorebook原生条目经此通道无缝落地;④分层长期记忆(js/memory-layers.js):五层明账——L1事实(身份/能力/外貌)/L2关系(关系变化)/L3秘密(信息差,谁知道什么)/L4场景(何地发生过什么)/L5故事弧(主线推进到哪),变量AI每5轮自动提取登记(8s错峰),输出严格JSON五层结构,与已有记忆去重合并,每层上限40条自动淘汰最旧;注入按本轮上下文命中挑取L1-L3(who命中扫描窗口),L4/L5取最近几条,与前情提要互补——摘要是剧情线记忆层是设定线;⑤舞台快照(js/scene-state.js):舞台监督每轮登记(3s错峰)当前地点/时辰/天气/在场人物(位置/着装/情绪)/台面道具/张力值,正文未提及字段沿用上一幕防凭空发明,同轮重复登记只覆盖current,历幕上限12条;状态面板新增🎬舞台徽标(点击开详情),注入「舞台现状」紧贴本轮指令——防场景漂移(无故换景/换人/换时辰),转场必须由剧情推动;⑥提示词装配层升级(ai-message-builder.js):4.6长期记忆段+6.7舞台现状段+前景层关键词触发段,预算优先级65/55/20,全部模块就绪零侵入挂载(15界零改动全覆盖);工具箱新增🃏角色卡互通/🧠记忆分层/🎬舞台快照三入口;随档保存新增memoryLayers/sceneState两字段;v3.17.0 长卷守望版:九项质量优化体验齐发——①章节目录(js/chapter-nav.js):右侧抽屉按章分组列出全部正文卡(章号/首句摘要/字数/对话密度),点击平滑滚动到卡并高亮闪烁,当前连载章自动置顶标记,中文数字章号兼容;②全文搜索:目录顶部搜索框实时穿透全部正文+众生相角色卡+伏笔线索,命中关键词高亮(mark防XSS),正文命中点击跳转,找配角上次出场不再翻屏;③名场面书签:目录任意章右侧🔖一键收藏(记轮号data-turn+章号+首句摘录),书签墙汇总/点击跳回/可删除,随档保存(storyState.bookmarks)上限30,回退删卡后跳转给可读提示不静默失败;④对话密度仪表(js/craft-meter.js):densityOf统计中西文引号内字符占比,黄金区间30%-60%,<15%叙述主导>75%剧本化五档评语,目录每章行内💬小条+质量面板逐章条形图(黄金区间底纹标尺);⑤三幕结构地图:全书张力曲线压成横幅SVG,开端25%/发展50%/高潮收束25%三段底色分区,张力折线叠加,当前章游标虚线标注,中期注水一眼可辨;⑥存档体检(js/system-guard.js):navigator.storage.estimate()真实配额条+localStorage逐键占用排行前8,主存档JSON完整性校验(损坏即红色告警指路导出抢救),占用>85%预警;⑦上下文预算条:输入框上方5px分段细条实时显示整包占用(历史/知识库/摘要各段分色,复用PromptBudget.lastReport),>80%变橙出数字,>93%红色+toast指路压缩前情提要,点击弹明细浮层+瘦身顺序说明;⑧创作周报(js/weekly-report.js):每轮落档顺手给本周记流水(monkey-patch saveStory,storyState.weeklyLog保留12周:章节/字数/相识名单/成就名单/伏笔/起始轮次),周报面板对比最近两笔——本周字数增量/章节推进/落笔轮次/新登场人物/新解锁成就/创作节奏评语(笔耕不辍/稳步推进/细水长流),首周展示开篇至今总览,回退负增量按0显示;⑨深夜护眼:一键暖褐滤镜(sepia.28+brightness.82)+全动效降级,body.night类,localStorage持久,首次使用跟随系统prefers-color-scheme自动开启;工具箱新增📑章节目录/📐质量仪表/📅创作周报/🛡存档体检/🌙深夜护眼五入口;v3.16.0 说书立绘版:游玩体验三艺齐发——①前情回顾:读档回归时聊天流顶部自动展开「前情回顾」卡(书名/章节/字数/上次执笔时间+说书人AI回顾≤180字,滚动摘要与最近剧情作原料,无接口或失败时退摘要→末段原文永不空白,+张力曲线小图复用近24轮描点含平淡预警+境界/相识最深三人/未回收伏笔关键档案),摘要随档保存(storyState.recap)同章读档零调用,章节推进后读档自动重说,卡内可手动「重新说一遍」;②界专属成就:十六界各配一套专属成就定义(js/world-seals.js,共百余枚:全职法师元素觉醒/双系觉醒者/禁咒之阶/星辉不熄,龙族S级血统/言灵初鸣/直面龙王,斗罗武魂觉醒/双生武魂/海神九考等),GameLayer新增registerSeals注册接口,换界monkey-patch自动重注册,每轮吃剧情变量检定(境界/等阶/元素/血统/章节/字数),解锁即金光印章盖入收藏册与通用成就同墙展示;③NPC立绘:新角色首次登场自动画像(每轮至多好感最高一位控生图开销),复用插图引擎四模式(images/chat/nai/文墨画师全兼容),提示词=角色档案(姓名/身份/描述/台词基调)+本界画风库,正文流内插「角色登场」卡(立绘+身份+档案+台词,生成中转圈,点击放大),众生相页签程序绘纹章自动让位真实立绘(MutationObserver装饰),工具箱新增「立绘本」全员立绘墙(重绘/删除/自动画像开关),随档保存(storyState.npcPortraits)限12人/单图500KB体积防御,失败记档防每轮重试烧钱;星轨法界版:全职法师开放世界+十六界专属皮肤重做——新增第十一位原著世界「全职法师」(乱著,configs/quanzhifashi-config.js):灾变与守夜机制为世界引擎(魔法取代科学的现代都市,结界之内月考夜市与法阵霓虹,结界之外魔物荒野与猎者悬赏),主角替代协议默认共世(莫凡的故事照原著时间线发生),写明「替代莫凡」则双系天赋的因果让渡给玩家;知识库23条整本考据(世界观总纲/元素体系与双系铁律/法师等阶/势力谱系/人物志/文风圣经/年表/术语速查);行旅图鉴三层图28处原著地点(城内结界之下/城外荒野猎场/暗面黑教廷之地);界专属扩展「星辰法典·元素圣徽」——法师等阶拾级stepper(学徒→禁咒每级都是质变)+星辉充沛仪表(精神续航,走低时施法哑火越级反噬)+元素圣徽集录(每次觉醒记下星辉);十六界专属UI皮肤全部重做(css/*-style.css全量翻新):每界一套完整视觉语言——顶栏专属压边/正文卡专属装饰伪元素/章节徽章/选项按钮/面板/滚动条/SVG底纹纹理,十六界主色两两差异≥24RGB距离(星紫/雾蓝/幻紫/暖金/深空蓝/铜金/电竞青/异火红/翠野绿/魂环蓝紫/朱砂红/霓虹粉紫/帝金/钴蓝/荧光青/竹青),每界SVG底纹指纹互异,遮天调深铜金/都市修仙改霓虹粉紫/龙族改深钴蓝/完美世界改翠野绿消除四组撞色近似;皮肤缓存版本升至v3.15.0击穿旧缓存;附233项全职法师专项回归+皮肤差异化矩阵校验;v3.14.0 沉浸九艺版:游玩质量与沉浸感九艺齐备(全部可在太虚阁⚙设置页独立开关)——①事件音效:复用太虚阁AudioBox合成引擎新增翻纸/低鼓两枚音色,章节扉页翻纸·关键抉择低鼓·金榜刷新落雷,零音频文件;②章节扉页:章号翻新时全屏扉页卡——章回标题·时辰天象·卷首引语(正文首句),点击/Esc/4秒自动入卷,同章不重复,回退重生成不打扰;③键盘快捷键:1-9选选项·Ctrl+Enter发送·Esc逐层关浮层(扉页→结算→工具箱→弹窗→阅读态)·Backspace确认后回退本轮·R切阅读态;④张力曲线:变量AI每轮必报tension绝对值0-100(日常≤20/暗流30-50/冲突60-80/生死90+),编年史页绘SVG折线+面积图,近三章极差≤6弹「波澜不惊」预警,旧档自动补字段;⑤抉择时刻:主笔在重大转折把选项标题写成【关键抉择】,系统启用聚光演出——径向聚光背景+选项逐个浮现(错峰动画)+低鼓音;⑥沉浸阅读态:顶栏📖按钮或R键一键隐去顶栏侧栏,正文居中全宽纯读书态;⑦下回预告:主笔章末输出(next:25字悬念钩子),卡片底部以悬念样式呈现,标记自动从正文/导出/朗读剥离;⑧记忆回响:主笔回望旧事输出(echo:名场面名称)或正文字面命中旧名场面,正文后插「记忆碎片」毛玻璃卡(章号+摘录),同一场面只回响一次;⑨殒命结算:主笔输出(gameover:死因)或主角变量现死亡字样,全屏结算卡——死因+行囊遗物清单+回退改写命运/读快照/继续观书三选,同章只结算一次;协议注入走ai-message-builder装配层(15界零改动全覆盖,全关时零开销);演出标记(next/echo/gameover)在extractBody统一剥离保正文纯净;v3.13.1 除障修缮版:玩家反馈专项排查修复五处——①桌面端点「状态面板」零反馈(用户反馈主诉):桌面常驻布局下切换的.open/.show两个class在桌面CSS无任何规则,点了毫无反应;现togglePanel检测抽屉模式(getComputedStyle position=fixed),桌面模式改为一次高亮脉冲动画指明面板位置,移动端抽屉开合照旧;②跨断点抽屉残留:桌面宽窗点过状态面板后缩窗至<900px切抽屉模式,残留.open让面板/backdrop凭空弹出挡屏——fitMode检测断点切换时自动清理;③书架导出裸崩:存档半损坏(配额截断/手改)时点「导出」JSON.parse直接抛错整函数崩掉无提示——加try-catch出可读报错;④存档失败无感知:配额满/隐私模式时saveStory只打console用户以为存上了刷新整章蒸发——加toast明确告警并指路导出备份;⑤灵感引擎并发:自动触发(每3轮)不检查isProcessing,快速推进多轮与手动按钮并行调API出重复卡——加_running并发锁;顺手:工具箱「字号调节」条目旧版点击零反应(只能用行内A±)改为1.0/1.15/1.3三档循环切换;loadSnapshot对损坏快照出提示;syncMeta写失败出console告警;v3.13.0 丹青精绘版:文墨画师画质四重优化——①锁死调色板:六种画风各配专属色值(扁平/水墨/剪影/暗黑/柔彩/霓虹),文本模型自创配色必脏,锁色即提质,严禁自创新色与灰泥色;②五层构图骨架:背景渐变→远景剪影(低透明度拉景深)→中景主体→前景光源glow→暗角vignette收拢视线,从后往前按序绘制每层至少一元素,专治构图松散;③人物剪影铁律:人物一律剪影/半剪影纯色轮廓块,用发型轮廓/衣摆/姿态讲故事,严禁画五官(SVG画脸必崩),全图人物最多3个,严禁画面边缘塞头像/圆脸/多余符号(专治Q版头像污染);④画师系统提示词内嵌完整范例SVG标杆(学结构禁照抄)+单一光源纪律;⑤精绘模式(默认开,可关):先由构图规划师产出JSON五层规划(调色板/光源/分层/主体剪影要点),画师再按规划作画——先想清楚再动笔,规划失败静默降级单步直画;⑥画后质量自检:形状元素数(5-400)/纯色数(3-24)/渐变缺失四项软指标,不合格自动带反馈重画一次,重画稿问题更少才采用,重画失败保留初稿绝不阻断;⚙文墨参数区新增「精绘模式」开关,v3.12.0旧存档默认开启;生成中状态沿用🖌文墨挥毫中;v3.12.0 文墨画师版:插图引擎第四模式「文墨画师」——不接任何生图API,由纯文本模型手写SVG矢量插图,浏览器直接渲染,零生图成本(没生图模型/花不起钱的玩家福音);默认复用主笔接口(零额外配置,协议自动跟随主笔,免费gemini-3.5-flash/deepseek皆可),也可本卡独立配置(OpenAI/Gemini双协议);画师系统提示词注入画布规格+六种画风技法(扁平插画/水墨国风/极简剪影/暗黑氛围/柔彩绘本/霓虹夜色)+硬性约束(禁文字禁外链禁脚本纯代码输出);输出经消毒(剥script/foreignObject/事件属性/外部链接纵深防御)+尺寸修正(缺viewBox/宽高自动补全);模型偶尔改交字符画时ASCII兜底自动包等宽SVG照样出图;超大SVG(>200KB)拒绝渲染可读报错;⚙接口模式新增「文墨画师」选项,展开文墨专属参数区(复用主笔开关/画风下拉/协议选择),生图厂商新增文墨画师预设,保存提示区分ink模式(复用主笔时三件套可空不误报未配置);生成中状态换🖌文墨挥毫中;提示词工程师润色稿对文墨模式同样生效;v3.11.0 NovelAI原生版:插图引擎新增第三模式「NovelAI原生」(POST /ai/generate-image),NAI V3/V4/V4.5/V5 全系模型直连——官方 image.novelai.net 或任意 NAI 代理站(地址填根地址自动补全);请求体带 v4_prompt 结构化提示与 Heavy 负面预设,V5 引号句子自动去除防被画成图内文字;返回 zip 包前端零依赖解压(zip 文件头解析+DecompressionStream,失败裸扫 PNG 签名兜底);⚙接口模式新增「NovelAI 原生」选项,展开 NAI 专属参数区(7 个模型代号快捷按钮/5 档常用尺寸/负面提示词),生图厂商新增 NovelAI 官方,尺寸自动收敛为 64 倍数(256-1536);v3.10.0 提示词工程师版:第五接口上线——正文写完即开工,本章全部插图提示词先由专职文字模型一次批量润色扩写(细节/镜头语言/光影/色调/画风关键词,忠于原描述不改画面),再送第四接口生图,插图卡下方可展开「实际生图提示词(工程师润色稿)」;两段式状态✍正在优化提示词→🎨正在生成插图;⚙接口设置新增第五张「✍提示词工程师」卡(启用开关/厂商下拉/三接口快捷复用/拉模型/温度超时/连通测试);省流四保——同提示词改写结果本地缓存(上限100条,重绘回放零重复调用),批量合并整章一次调用,改写失败自动回退原始描述绝不阻断生图,回放仍绝不调用;顺手修复v3.9.0隐藏bug——画风补充词误入存档键导致回放缓存永不命中的问题,现存档始终以原始描述为键;TXT/MD导出附「实际生图提示词」行;Token按「提示词工程师」单独记账;v3.9.0 插图引擎版;v3.8.3 收纳清爽版;v3.8.2 外挂页签复活;v3.8.1 双症同修版;v3.7.1 通道枢纽版;v3.7.0 通道分道;v3.6.0 质检套件;v3.5.0 长局四柱;v3.4.0 界专属引擎;v3.3.0 八界同辉;v3.2.0 万象归枢;v3.1.0 氛围引擎;v3.0.0 沉浸套件;v1.12.0 行旅图鉴;v1.11.0 六界扮演版">v3.55.17</span>
+        <span class="ver-dot" title="v3.55.18 酒馆正则导入防护:导入第三方(酒馆 SillyTavern)正则时,正文渲染链路此前只看开关、不看 promptOnly——酒馆里靠 placement 限定只作用于历史楼层的「隐藏不发送」类规则(整段通配+空替换,如点星通配 s 模式)落到云境正文就是整章清空;现加两道防护:promptOnly 且未标记 markdownOnly 的规则不碰显示正文;整段通配且替换串为空的规则一律跳过并告警。实测:导入「三合一数据库配套正则」(4 条,含 1 条 find 为点星通配 s 模式、替换为空)后正文 42 字完整保留,修复前会被清空;另经评估:该套「SP·数据库 VII」核心为 AI 自动填结构化表+向量 RAG 召回+面板可视化+老楼层不发送,云境已有等价实现且更强——变量AI+状态快照+众生相 / 知识库 BM25+bge-m3 向量+reranker 三路检索 / 状态面板+众生相+舞台快照+行旅图鉴 / PromptBudget 裁剪且记忆层读完整历史不丢信息;其配套正则依赖脚本喂数据与酒馆主题变量,直接导入不可用;v3.55.17 稳固三修:①云境核心契约与预设解耦——导入酒馆/SillyTavern 第三方预设整份替换后,六类行动选项/中文状态栏/变量块定义不再丢失(闭合自检此前只说「六类」却没说是哪六类,模型自由发挥退回 3-4 条、状态栏英文 key 复现);契约独立注入,云起预设/内置咩咩/小模型精简核心自带上文不重复注入;②上下文预算按模型自适应——原先写死 11 万字符(约 7 万 token),8K/16K/32K 上下文的小模型直接 400 或被服务端静默截头(表现为「AI 突然失忆」),现按主接口模型名或显式上下文窗口推断,留 40% 给输出:8k→4千、32k→1.6万、64k→3.2万、128k→6.4万字符,识别不出仍保守 11 万;账单新增 token 估算与预算来源,手动档位循环到底回到自适应;③存储配额兜底——全项目仍有 48 个文件直写 localStorage,配额一满(安卓 WebView 5MB/iOS 隐私模式/大存档)即抛 QuotaExceededError,轻则丢档重则整轮崩;现于存储原语层兜一层:写失败自动转存 IndexedDB+内存镜像、读时回退命中、删除同步清理,并补 IndexedDB 预热(防刷新后镜像清空读不到),对 48 个调用方零改造、只接管配额错、不碰 sessionStorage;实测 8M 字符写入不抛错且读回一致;④悬浮球收敛为仅小云一个:太虚阁/世界动态/手机分身三球隐藏,收进小云「🧰 模块」二级面板(带未读数);小云确认为全身立绘(萝/御双形态 440×916、360×1245),换形象即整只换装;v3.55.16 NSFW 状态栏兜底:成人字段组常驻显示(空值显示—),不再依赖模型是否上报。v3.55.10 云端同步与开源:云起预设/正则上 GitHub(公开仓库「云境」),云境内新增☁云端同步——预设更新点一下即拉最新版,不用重新导入;同时致敬墨枢与觅长生框架。v3.55.6 云起专属美化:独属于云起的14条「云起·XX美化」正则(开场白/玩家状态栏/角色好感度/NPC内心话/世界运行报告/剧情记忆归档/行动选项/特殊状态栏/平行线/同人搜索/战斗引擎/故事引擎/角色心理/思维链)——键名加粗/数值徽章/心声斜体/序号徽章;协议块卡片换云起专属皮肤(每卡型专属配色徽章+结构化行排版+wlog时徽章),思维链折叠云起卡片化,行动选项按钮序号徽章;逐条开关,关闭即回退朴素显示,导入咩咩预设自动回落朴素卡兼容原版;云起正则16条扩为30条;v3.55.5 云起预设:云境原创内置预设(230块=60核心+170世界文风)与配套正则16条——破限三档/防截断/防空回/防频控/文风11档/NSFW分级(绝对红线:成年合意无真人无违法)/数据清洗/禁词/防泄漏/状态栏/行动选项/记忆归档/NPC小剧场/好感度/世界运行/名场面回响/思维链/人称字数节奏转述/防支配防全知抗绝望防机械化防重复防抢话活人感;第三方预设数据不再随包分发(版权出清);四套社区预设(双人成行/夏瑾/Reborn/Kemini)逐一实测适配——正则导入认预设内嵌extensions.regex_scripts/导入预设自动装载配套正则/导入名用文件名/出厂开关默认开;v3.55.4 轻量提速二期:存档微任务合并写(同tick多次saveStory仅一次落盘)/状态面板七分区签名缓存(内容没变不重建DOM)/预设数据懒加载(首屏不解析,空闲预热)/选区selectionchange改rAF合帧消除高频强制布局+滚动监听passive+resize防抖/读档回放分帧渲染(每帧≤12ms时间片)/变量AI热路径日志降噪;v3.55.3 轻量提速一期:资产瘦身92%(3873KB→318KB)/SW预缓存减负63%/摸头判定rect缓存/幽灵遮罩看门狗降频/decoding=async/定时器降耗;v3.55.3 小云形象版:内置助手更名「小云」并换新形象（云朵短发/天蓝大眼/云朵发饰），头像与桌面宠物同步换装；品牌更名与全站视觉精修；知识检索接入 BAAI/bge-m3 与 BAAI/bge-reranker-v2-m3（BM25 候选池→向量/重排→失败回退）；33 界世界书全部 300+ 条并拆分独立装载；v3.47.18 咩咩正则内嵌版:把玩家提供的《咩咩预设 ver 6.0.0》(SillyTavern格式,182块)原样内嵌——preset-miaomiao.js存数据(prompt内容一字未改,只翻开关),miaomiao-engine.js按prompt_order逐块渲染setvar/getvar/addvar宏,miaomiao-bridge.js按世界与开局文风对齐;文风组末尾追加33个云境世界×170档本土文风块(剑来/龙族/诡秘/克苏鲁等各3-11档,逐档独立撰写),随开局向导所选的style自动选中,设置面板可手动换档;出厂默认开但与云境冲突的7块(日轻文风/中日双语/acg心理模型/思维模式-故事/3个ST预填充hack)在渲染时关闭,玩家可手动开回;预设原有破限三档/防429随机串/防截断/防空回<|sep|>/状态栏/互动选项/NPC小剧场/剧情记忆归档全部按原设计生效;清理渲染后残留的空箭头行与失效标签引用;接入buildStoryMessages作为第二段system(约1.3万字),关闭时零开销;v3.38.1 安卓兼容版:修复部分安卓机(WebView内核Chrome<80)装机后「页面能显示但点了没反应」——57个JS文件1100处可选链/空值合并等新语法全量转译为老语法,创作室内联脚本与inset简写同步降级,新增启动错误哨兵(脚本加载失败/运行异常屏幕直接显示出错文件,玩家可截图反馈),旧内核机型从此可用;v3.38.0 迷雾降临·斩神版:新增我在精神病院学斩神(zhanhen)第廿四界+正文字数调节知识库条目;v3.19.0 万象扩展版:新增黎明之剑与轮回乐园两个开放世界(原著十一界扩为十三界)——黎明之剑(远瞳著,configs/limingzhijian-config.js):魔导革命机制为世界引擎,魔潮倒计时的洛伦大陆上魔能机械刚点火/符文阵列嗡鸣/教会圣光与王国权谋交织/废土深处沉睡刚铎遗产,主角替代协议默认共世(高文揭棺而起照原著时间线发生),写明「替代高文」则千年之谜与魔导革命的因果让渡给玩家,法师等阶学徒→九级→传奇;轮回乐园(那一只蚊子著,configs/lunhuileyuan-config.js):无限轮回机制为世界引擎,乐园在现世挑选濒死绝望或适格的凡人缔结契约投入衍生世界执行任务,完成即生失败即真死,主角替代协议默认共世,写明「替代苏晓」则屠戮尖兵的因果让渡给玩家,契约者阶位一阶→十阶→绝强者→至强者;两界知识库各21条整本考据(世界观总纲/原著忠实铁律/力量体系/势力谱系/人物志/文风圣经/年表/术语速查),主题CSS/界专属扩展(黎明之剑·魔导工坊与奥术阶梯/轮回乐园·乐园面板与品级阶梯)/行旅图鉴/沉浸套件/天道骰语/氛围尘埃/插图画风全部按界定制;另五件第三方扩展即插即用——①存储扩容(js/storage-boost.js+libs/localforage.min.js):localForage把大体积立绘dataURL分流进IndexedDB(数百MB容量),存档只留idb://标记瘦身,随档上限12→30人,启动预热灌回会话内存表同步读零改造,裁剪/删除联动清IDB;②干支纪年(js/lunar-stamp.js+libs/lunar.min.js):故事世界自有历法——开篇起甲子年正月,每24轮进一年/每2轮进一月/日按六十甲子循环,时辰映射舞台快照,纪年随提示词注入防时间感漂移,附今日黄历(干支/节气/宜忌)与八字五行排盘(角色命理卡),历法节奏可调;③灵感骰子(js/inspiration-dice.js+libs/fantasy-names.min.js):仙侠名词骰盅12类即点即掷(人名/道号/功法/秘籍/生灵/材料/法宝/丹药/门派/国度/地点/大陆,七档稀有度配色),机缘卡/开宗立派组合抽取,一键送输入框让AI织入剧情;④庆典特效(js/celebration.js+libs/confetti.browser.min.js):成就解锁金花雨/天道金榜两侧礼炮/命运骰星屑/境界突破全屏金炮,单类2.5秒节流防炸屏,工具箱可关;⑤人物关系网(js/relationship-graph.js+libs/cytoscape.min.js):Cytoscape把记忆L2关系史+众生相relation+舞台共演三路合并成可拖拽关系图,情感着色(敌红/情粉/友绿/亲缘金/师徒铜/从属蓝),节点大小=好感,点击高亮一度邻居,力导/环形双布局;大库按需懒加载(lunar/cytoscape/名词库首屏不载,首屏仅+40KB);v3.18.1 修缮版:11项缺陷修复(think思考段三层剥离防英文前缀/书档槽位隔离防新开书残留旧角色/模型芯片XSS转义+事件委托/选项区剥离双闸防误删正文尾部/parseValue增量对非数值旧值按绝对值落表/舞台快照turn=0合法/知识库window遮蔽改名/记忆去重键trim对称/立绘onerror不清父节点/润色缓存键拼genre/NAI ZIP多图择优),51项专项回归+全量原包回归零失败;v3.18.0 万卡归宗版:角色卡生态四通八达——①角色卡读写引擎(js/card-io.js):PNG tEXt块读写,兼容V2(chara,Base64+URL-safe)/V3(ccv3,UTF-8)双规范与JSON文件,读出自动归一化(name/description/personality/scenario/first_mes/tags/world/lorebook),写出带CRC32校验的合法PNG(画师签发不破坏图像);②角色卡互通中枢(js/card-hub.js):众生相NPC一键导出标准卡(PNG含卡面/JSON纯净档),拉进Chub/SillyTavern/RisuAI/Agnai社区即用;导入社区卡四路落地——众生相登记/知识库人物建档(按需检索)/世界书转关键词触发条目/登场白直发聊天流,选项自由勾选;③知识库关键词触发(v3.18.0):条目新增keys[]触发词字段(世界书语义),命中「本轮指令+最近scanDepth轮正文」才注入(扫描深度1-10轮可调,默认4),大小写不敏感中文子串匹配,常驻条目不参与,命中数排序上限5条防膨胀,ST/V2 lorebook原生条目经此通道无缝落地;④分层长期记忆(js/memory-layers.js):五层明账——L1事实(身份/能力/外貌)/L2关系(关系变化)/L3秘密(信息差,谁知道什么)/L4场景(何地发生过什么)/L5故事弧(主线推进到哪),变量AI每5轮自动提取登记(8s错峰),输出严格JSON五层结构,与已有记忆去重合并,每层上限40条自动淘汰最旧;注入按本轮上下文命中挑取L1-L3(who命中扫描窗口),L4/L5取最近几条,与前情提要互补——摘要是剧情线记忆层是设定线;⑤舞台快照(js/scene-state.js):舞台监督每轮登记(3s错峰)当前地点/时辰/天气/在场人物(位置/着装/情绪)/台面道具/张力值,正文未提及字段沿用上一幕防凭空发明,同轮重复登记只覆盖current,历幕上限12条;状态面板新增🎬舞台徽标(点击开详情),注入「舞台现状」紧贴本轮指令——防场景漂移(无故换景/换人/换时辰),转场必须由剧情推动;⑥提示词装配层升级(ai-message-builder.js):4.6长期记忆段+6.7舞台现状段+前景层关键词触发段,预算优先级65/55/20,全部模块就绪零侵入挂载(15界零改动全覆盖);工具箱新增🃏角色卡互通/🧠记忆分层/🎬舞台快照三入口;随档保存新增memoryLayers/sceneState两字段;v3.17.0 长卷守望版:九项质量优化体验齐发——①章节目录(js/chapter-nav.js):右侧抽屉按章分组列出全部正文卡(章号/首句摘要/字数/对话密度),点击平滑滚动到卡并高亮闪烁,当前连载章自动置顶标记,中文数字章号兼容;②全文搜索:目录顶部搜索框实时穿透全部正文+众生相角色卡+伏笔线索,命中关键词高亮(mark防XSS),正文命中点击跳转,找配角上次出场不再翻屏;③名场面书签:目录任意章右侧🔖一键收藏(记轮号data-turn+章号+首句摘录),书签墙汇总/点击跳回/可删除,随档保存(storyState.bookmarks)上限30,回退删卡后跳转给可读提示不静默失败;④对话密度仪表(js/craft-meter.js):densityOf统计中西文引号内字符占比,黄金区间30%-60%,<15%叙述主导>75%剧本化五档评语,目录每章行内💬小条+质量面板逐章条形图(黄金区间底纹标尺);⑤三幕结构地图:全书张力曲线压成横幅SVG,开端25%/发展50%/高潮收束25%三段底色分区,张力折线叠加,当前章游标虚线标注,中期注水一眼可辨;⑥存档体检(js/system-guard.js):navigator.storage.estimate()真实配额条+localStorage逐键占用排行前8,主存档JSON完整性校验(损坏即红色告警指路导出抢救),占用>85%预警;⑦上下文预算条:输入框上方5px分段细条实时显示整包占用(历史/知识库/摘要各段分色,复用PromptBudget.lastReport),>80%变橙出数字,>93%红色+toast指路压缩前情提要,点击弹明细浮层+瘦身顺序说明;⑧创作周报(js/weekly-report.js):每轮落档顺手给本周记流水(monkey-patch saveStory,storyState.weeklyLog保留12周:章节/字数/相识名单/成就名单/伏笔/起始轮次),周报面板对比最近两笔——本周字数增量/章节推进/落笔轮次/新登场人物/新解锁成就/创作节奏评语(笔耕不辍/稳步推进/细水长流),首周展示开篇至今总览,回退负增量按0显示;⑨深夜护眼:一键暖褐滤镜(sepia.28+brightness.82)+全动效降级,body.night类,localStorage持久,首次使用跟随系统prefers-color-scheme自动开启;工具箱新增📑章节目录/📐质量仪表/📅创作周报/🛡存档体检/🌙深夜护眼五入口;v3.16.0 说书立绘版:游玩体验三艺齐发——①前情回顾:读档回归时聊天流顶部自动展开「前情回顾」卡(书名/章节/字数/上次执笔时间+说书人AI回顾≤180字,滚动摘要与最近剧情作原料,无接口或失败时退摘要→末段原文永不空白,+张力曲线小图复用近24轮描点含平淡预警+境界/相识最深三人/未回收伏笔关键档案),摘要随档保存(storyState.recap)同章读档零调用,章节推进后读档自动重说,卡内可手动「重新说一遍」;②界专属成就:十六界各配一套专属成就定义(js/world-seals.js,共百余枚:全职法师元素觉醒/双系觉醒者/禁咒之阶/星辉不熄,龙族S级血统/言灵初鸣/直面龙王,斗罗武魂觉醒/双生武魂/海神九考等),GameLayer新增registerSeals注册接口,换界monkey-patch自动重注册,每轮吃剧情变量检定(境界/等阶/元素/血统/章节/字数),解锁即金光印章盖入收藏册与通用成就同墙展示;③NPC立绘:新角色首次登场自动画像(每轮至多好感最高一位控生图开销),复用插图引擎四模式(images/chat/nai/文墨画师全兼容),提示词=角色档案(姓名/身份/描述/台词基调)+本界画风库,正文流内插「角色登场」卡(立绘+身份+档案+台词,生成中转圈,点击放大),众生相页签程序绘纹章自动让位真实立绘(MutationObserver装饰),工具箱新增「立绘本」全员立绘墙(重绘/删除/自动画像开关),随档保存(storyState.npcPortraits)限12人/单图500KB体积防御,失败记档防每轮重试烧钱;星轨法界版:全职法师开放世界+十六界专属皮肤重做——新增第十一位原著世界「全职法师」(乱著,configs/quanzhifashi-config.js):灾变与守夜机制为世界引擎(魔法取代科学的现代都市,结界之内月考夜市与法阵霓虹,结界之外魔物荒野与猎者悬赏),主角替代协议默认共世(莫凡的故事照原著时间线发生),写明「替代莫凡」则双系天赋的因果让渡给玩家;知识库23条整本考据(世界观总纲/元素体系与双系铁律/法师等阶/势力谱系/人物志/文风圣经/年表/术语速查);行旅图鉴三层图28处原著地点(城内结界之下/城外荒野猎场/暗面黑教廷之地);界专属扩展「星辰法典·元素圣徽」——法师等阶拾级stepper(学徒→禁咒每级都是质变)+星辉充沛仪表(精神续航,走低时施法哑火越级反噬)+元素圣徽集录(每次觉醒记下星辉);十六界专属UI皮肤全部重做(css/*-style.css全量翻新):每界一套完整视觉语言——顶栏专属压边/正文卡专属装饰伪元素/章节徽章/选项按钮/面板/滚动条/SVG底纹纹理,十六界主色两两差异≥24RGB距离(星紫/雾蓝/幻紫/暖金/深空蓝/铜金/电竞青/异火红/翠野绿/魂环蓝紫/朱砂红/霓虹粉紫/帝金/钴蓝/荧光青/竹青),每界SVG底纹指纹互异,遮天调深铜金/都市修仙改霓虹粉紫/龙族改深钴蓝/完美世界改翠野绿消除四组撞色近似;皮肤缓存版本升至v3.15.0击穿旧缓存;附233项全职法师专项回归+皮肤差异化矩阵校验;v3.14.0 沉浸九艺版:游玩质量与沉浸感九艺齐备(全部可在太虚阁⚙设置页独立开关)——①事件音效:复用太虚阁AudioBox合成引擎新增翻纸/低鼓两枚音色,章节扉页翻纸·关键抉择低鼓·金榜刷新落雷,零音频文件;②章节扉页:章号翻新时全屏扉页卡——章回标题·时辰天象·卷首引语(正文首句),点击/Esc/4秒自动入卷,同章不重复,回退重生成不打扰;③键盘快捷键:1-9选选项·Ctrl+Enter发送·Esc逐层关浮层(扉页→结算→工具箱→弹窗→阅读态)·Backspace确认后回退本轮·R切阅读态;④张力曲线:变量AI每轮必报tension绝对值0-100(日常≤20/暗流30-50/冲突60-80/生死90+),编年史页绘SVG折线+面积图,近三章极差≤6弹「波澜不惊」预警,旧档自动补字段;⑤抉择时刻:主笔在重大转折把选项标题写成【关键抉择】,系统启用聚光演出——径向聚光背景+选项逐个浮现(错峰动画)+低鼓音;⑥沉浸阅读态:顶栏📖按钮或R键一键隐去顶栏侧栏,正文居中全宽纯读书态;⑦下回预告:主笔章末输出(next:25字悬念钩子),卡片底部以悬念样式呈现,标记自动从正文/导出/朗读剥离;⑧记忆回响:主笔回望旧事输出(echo:名场面名称)或正文字面命中旧名场面,正文后插「记忆碎片」毛玻璃卡(章号+摘录),同一场面只回响一次;⑨殒命结算:主笔输出(gameover:死因)或主角变量现死亡字样,全屏结算卡——死因+行囊遗物清单+回退改写命运/读快照/继续观书三选,同章只结算一次;协议注入走ai-message-builder装配层(15界零改动全覆盖,全关时零开销);演出标记(next/echo/gameover)在extractBody统一剥离保正文纯净;v3.13.1 除障修缮版:玩家反馈专项排查修复五处——①桌面端点「状态面板」零反馈(用户反馈主诉):桌面常驻布局下切换的.open/.show两个class在桌面CSS无任何规则,点了毫无反应;现togglePanel检测抽屉模式(getComputedStyle position=fixed),桌面模式改为一次高亮脉冲动画指明面板位置,移动端抽屉开合照旧;②跨断点抽屉残留:桌面宽窗点过状态面板后缩窗至<900px切抽屉模式,残留.open让面板/backdrop凭空弹出挡屏——fitMode检测断点切换时自动清理;③书架导出裸崩:存档半损坏(配额截断/手改)时点「导出」JSON.parse直接抛错整函数崩掉无提示——加try-catch出可读报错;④存档失败无感知:配额满/隐私模式时saveStory只打console用户以为存上了刷新整章蒸发——加toast明确告警并指路导出备份;⑤灵感引擎并发:自动触发(每3轮)不检查isProcessing,快速推进多轮与手动按钮并行调API出重复卡——加_running并发锁;顺手:工具箱「字号调节」条目旧版点击零反应(只能用行内A±)改为1.0/1.15/1.3三档循环切换;loadSnapshot对损坏快照出提示;syncMeta写失败出console告警;v3.13.0 丹青精绘版:文墨画师画质四重优化——①锁死调色板:六种画风各配专属色值(扁平/水墨/剪影/暗黑/柔彩/霓虹),文本模型自创配色必脏,锁色即提质,严禁自创新色与灰泥色;②五层构图骨架:背景渐变→远景剪影(低透明度拉景深)→中景主体→前景光源glow→暗角vignette收拢视线,从后往前按序绘制每层至少一元素,专治构图松散;③人物剪影铁律:人物一律剪影/半剪影纯色轮廓块,用发型轮廓/衣摆/姿态讲故事,严禁画五官(SVG画脸必崩),全图人物最多3个,严禁画面边缘塞头像/圆脸/多余符号(专治Q版头像污染);④画师系统提示词内嵌完整范例SVG标杆(学结构禁照抄)+单一光源纪律;⑤精绘模式(默认开,可关):先由构图规划师产出JSON五层规划(调色板/光源/分层/主体剪影要点),画师再按规划作画——先想清楚再动笔,规划失败静默降级单步直画;⑥画后质量自检:形状元素数(5-400)/纯色数(3-24)/渐变缺失四项软指标,不合格自动带反馈重画一次,重画稿问题更少才采用,重画失败保留初稿绝不阻断;⚙文墨参数区新增「精绘模式」开关,v3.12.0旧存档默认开启;生成中状态沿用🖌文墨挥毫中;v3.12.0 文墨画师版:插图引擎第四模式「文墨画师」——不接任何生图API,由纯文本模型手写SVG矢量插图,浏览器直接渲染,零生图成本(没生图模型/花不起钱的玩家福音);默认复用主笔接口(零额外配置,协议自动跟随主笔,免费gemini-3.5-flash/deepseek皆可),也可本卡独立配置(OpenAI/Gemini双协议);画师系统提示词注入画布规格+六种画风技法(扁平插画/水墨国风/极简剪影/暗黑氛围/柔彩绘本/霓虹夜色)+硬性约束(禁文字禁外链禁脚本纯代码输出);输出经消毒(剥script/foreignObject/事件属性/外部链接纵深防御)+尺寸修正(缺viewBox/宽高自动补全);模型偶尔改交字符画时ASCII兜底自动包等宽SVG照样出图;超大SVG(>200KB)拒绝渲染可读报错;⚙接口模式新增「文墨画师」选项,展开文墨专属参数区(复用主笔开关/画风下拉/协议选择),生图厂商新增文墨画师预设,保存提示区分ink模式(复用主笔时三件套可空不误报未配置);生成中状态换🖌文墨挥毫中;提示词工程师润色稿对文墨模式同样生效;v3.11.0 NovelAI原生版:插图引擎新增第三模式「NovelAI原生」(POST /ai/generate-image),NAI V3/V4/V4.5/V5 全系模型直连——官方 image.novelai.net 或任意 NAI 代理站(地址填根地址自动补全);请求体带 v4_prompt 结构化提示与 Heavy 负面预设,V5 引号句子自动去除防被画成图内文字;返回 zip 包前端零依赖解压(zip 文件头解析+DecompressionStream,失败裸扫 PNG 签名兜底);⚙接口模式新增「NovelAI 原生」选项,展开 NAI 专属参数区(7 个模型代号快捷按钮/5 档常用尺寸/负面提示词),生图厂商新增 NovelAI 官方,尺寸自动收敛为 64 倍数(256-1536);v3.10.0 提示词工程师版:第五接口上线——正文写完即开工,本章全部插图提示词先由专职文字模型一次批量润色扩写(细节/镜头语言/光影/色调/画风关键词,忠于原描述不改画面),再送第四接口生图,插图卡下方可展开「实际生图提示词(工程师润色稿)」;两段式状态✍正在优化提示词→🎨正在生成插图;⚙接口设置新增第五张「✍提示词工程师」卡(启用开关/厂商下拉/三接口快捷复用/拉模型/温度超时/连通测试);省流四保——同提示词改写结果本地缓存(上限100条,重绘回放零重复调用),批量合并整章一次调用,改写失败自动回退原始描述绝不阻断生图,回放仍绝不调用;顺手修复v3.9.0隐藏bug——画风补充词误入存档键导致回放缓存永不命中的问题,现存档始终以原始描述为键;TXT/MD导出附「实际生图提示词」行;Token按「提示词工程师」单独记账;v3.9.0 插图引擎版;v3.8.3 收纳清爽版;v3.8.2 外挂页签复活;v3.8.1 双症同修版;v3.7.1 通道枢纽版;v3.7.0 通道分道;v3.6.0 质检套件;v3.5.0 长局四柱;v3.4.0 界专属引擎;v3.3.0 八界同辉;v3.2.0 万象归枢;v3.1.0 氛围引擎;v3.0.0 沉浸套件;v1.12.0 行旅图鉴;v1.11.0 六界扮演版">v3.55.18</span>
         <div class="top-actions">
             <!-- v3.8.3 极简顶栏：功能按钮全部收进 ☰ 工具箱（桌面/移动同构），只留状态面板与工具箱两个常驻入口 -->
             <button class="top-btn" id="panelToggle" onclick="togglePanel()" title="状态面板"><span class="ico">📊</span><span class="txt">状态</span></button>
@@ -310,17 +310,17 @@
     <input type="file" id="toolboxImport" accept=".json" style="display:none" onchange="StoryInput.importSave(this.files[0])">
 
     <!-- 框架核心（模仿原框架的脚本加载顺序：框架 → 功能模块 → 配置） -->
-    <script defer src="story-framework.js?v=3.55.17"></script>
+    <script defer src="story-framework.js?v=3.55.18"></script>
     <!-- v3.31.3：安卓 WebView 下载桥终于接上线（此前 js/android-bridge.js 一直在包里却没有任何页面加载，
          APK 内导出存档/卡片/图片会静默失败；浏览器环境此文件自动休眠，零影响） -->
-    <script defer src="js/android-bridge.js?v=3.55.17"></script>
-    <script defer src="js/ui-dialog.js?v=3.55.17"></script>
-    <script defer src="js/net-guard.js?v=3.55.17"></script>
-    <script defer src="js/content-scale.js?v=3.55.17"></script>
-    <script defer src="js/api-calling-functions.js?v=3.55.17"></script>
-    <script defer src="js/variable-parser.js?v=3.55.17"></script>
+    <script defer src="js/android-bridge.js?v=3.55.18"></script>
+    <script defer src="js/ui-dialog.js?v=3.55.18"></script>
+    <script defer src="js/net-guard.js?v=3.55.18"></script>
+    <script defer src="js/content-scale.js?v=3.55.18"></script>
+    <script defer src="js/api-calling-functions.js?v=3.55.18"></script>
+    <script defer src="js/variable-parser.js?v=3.55.18"></script>
     <!-- v3.55.10 基础小模型适配：参数安全锁 / 轻量协议块 / 辅助AI静默 / 复读自检 -->
-    <script defer src="js/base-model-mode.js?v=3.55.17"></script>
+    <script defer src="js/base-model-mode.js?v=3.55.18"></script>
     <!-- v3.55.5 内置「云起预设」（云境原创）：数据 + 渲染引擎 + 世界对齐桥 -->
     <!-- 云起预设数据(170KB)按需加载：首屏不解析，load 后空闲预热；发送/打开预设面板时强制等待 -->
     <script>
@@ -331,7 +331,7 @@
           if (pend) return pend;
           pend = new Promise(function (res) {
             var s = document.createElement('script');
-            s.src = 'js/preset-yunqi.js?v=3.55.17';
+            s.src = 'js/preset-yunqi.js?v=3.55.18';
             s.onload = function () { res(); };
             s.onerror = function () { pend = null; res(); }; // 失败放行，走内置降级
             document.head.appendChild(s);
@@ -345,119 +345,119 @@
       });
     </script>
     <!-- v3.51.1 预设/正则导入替换层（必须在引擎之前，引擎用它取"当前预设"） -->
-    <script defer src="js/preset-io.js?v=3.55.17"></script>
-    <script defer src="js/regex-io.js?v=3.55.17"></script>
-    <script defer src="js/miaomiao-engine.js?v=3.55.17"></script>
-    <script defer src="js/miaomiao-bridge.js?v=3.55.17"></script>
+    <script defer src="js/preset-io.js?v=3.55.18"></script>
+    <script defer src="js/regex-io.js?v=3.55.18"></script>
+    <script defer src="js/miaomiao-engine.js?v=3.55.18"></script>
+    <script defer src="js/miaomiao-bridge.js?v=3.55.18"></script>
     <!-- v3.55.5 云起正则（云境原创）：数据 + 引擎（协议块转卡片 / 去 AI 味 / 上下文裁剪） -->
-    <script defer src="js/yunqi-regex-data.js?v=3.55.17"></script>
-    <script defer src="js/miaomiao-regex.js?v=3.55.17"></script>
+    <script defer src="js/yunqi-regex-data.js?v=3.55.18"></script>
+    <script defer src="js/miaomiao-regex.js?v=3.55.18"></script>
     <!-- v3.55.10 云起预设云端同步：从 GitHub 拉最新版，预设更新不用再导入 -->
-    <script defer src="js/yunqi-sync.js?v=3.55.17"></script>
-    <script defer src="js/ai-message-builder.js?v=3.55.17"></script>
-    <script defer src="js/ai-response-handler.js?v=3.55.17"></script>
-    <script defer src="js/story-status-renderer.js?v=3.55.17"></script>
-    <script defer src="js/atlas-panel.js?v=3.55.17"></script>
-    <script defer src="js/ambience-layer.js?v=3.55.17"></script>
-    <script defer src="js/game-layer.js?v=3.55.17"></script>
-    <script defer src="js/world-seals.js?v=3.55.17"></script>
-    <script defer src="js/reader-letters.js?v=3.55.17"></script>
-    <script defer src="js/immersive-suite.js?v=3.55.17"></script>
-    <script defer src="js/immersion-plus.js?v=3.55.17"></script>
-    <script defer src="js/timeline-branch.js?v=3.55.17"></script>
-    <script defer src="js/story-setup-wizard.js?v=3.55.17"></script>
-    <script defer src="js/user-input-handler.js?v=3.55.17"></script>
-    <script defer src="js/inspiration-engine.js?v=3.55.17"></script>
-    <script defer src="js/dynamic-world.js?v=3.55.17"></script>
-    <script defer src="js/variable-ai.js?v=3.55.17"></script>
-    <script defer src="js/image-gen.js?v=3.55.17"></script>
-    <script defer src="js/prompt-engineer.js?v=3.55.17"></script>
-    <script defer src="js/mo-assistant.js?v=3.55.17"></script>
+    <script defer src="js/yunqi-sync.js?v=3.55.18"></script>
+    <script defer src="js/ai-message-builder.js?v=3.55.18"></script>
+    <script defer src="js/ai-response-handler.js?v=3.55.18"></script>
+    <script defer src="js/story-status-renderer.js?v=3.55.18"></script>
+    <script defer src="js/atlas-panel.js?v=3.55.18"></script>
+    <script defer src="js/ambience-layer.js?v=3.55.18"></script>
+    <script defer src="js/game-layer.js?v=3.55.18"></script>
+    <script defer src="js/world-seals.js?v=3.55.18"></script>
+    <script defer src="js/reader-letters.js?v=3.55.18"></script>
+    <script defer src="js/immersive-suite.js?v=3.55.18"></script>
+    <script defer src="js/immersion-plus.js?v=3.55.18"></script>
+    <script defer src="js/timeline-branch.js?v=3.55.18"></script>
+    <script defer src="js/story-setup-wizard.js?v=3.55.18"></script>
+    <script defer src="js/user-input-handler.js?v=3.55.18"></script>
+    <script defer src="js/inspiration-engine.js?v=3.55.18"></script>
+    <script defer src="js/dynamic-world.js?v=3.55.18"></script>
+    <script defer src="js/variable-ai.js?v=3.55.18"></script>
+    <script defer src="js/image-gen.js?v=3.55.18"></script>
+    <script defer src="js/prompt-engineer.js?v=3.55.18"></script>
+    <script defer src="js/mo-assistant.js?v=3.55.18"></script>
     <!-- v3.53.0 原创设计工坊：自设势力/人物/道具/技能等模板化入世界书 -->
-    <script defer src="js/creator-forge.js?v=3.55.17"></script>
+    <script defer src="js/creator-forge.js?v=3.55.18"></script>
     <!-- v3.53.0 状态栏字段全集（含成人向字段组与破限开关） -->
-    <script defer src="js/status-schema.js?v=3.55.17"></script>
+    <script defer src="js/status-schema.js?v=3.55.18"></script>
     <!-- v3.53.0 文件桥：内置助手自检并直接改项目文件 -->
-    <script defer src="js/file-bridge.js?v=3.55.17"></script>
-    <script defer src="js/mo-chibi.js?v=3.55.17"></script>
-    <script defer src="js/config-modal.js?v=3.55.17"></script>
+    <script defer src="js/file-bridge.js?v=3.55.18"></script>
+    <script defer src="js/mo-chibi.js?v=3.55.18"></script>
+    <script defer src="js/config-modal.js?v=3.55.18"></script>
     <!-- v3.53.0 保险箱：存档 / 配置 / 整机 三档导入导出 + 回滚 -->
-    <script defer src="js/vault.js?v=3.55.17"></script>
+    <script defer src="js/vault.js?v=3.55.18"></script>
     <!-- v3.53.0 世界书装载改由 knowledge-manager 按需注入（见 _ensureKB）：
          旧版在这里用 document.write 抢解析期装载，实测两个内联块之间没有执行屏障——
          第二个块检查 __KB_SPLIT_OK__ 时第一个块写入的脚本还没跑，于是"分界"与"整包"双双被加载，
          每次进世界白拉 9.4MB（实测首屏 12.7MB JS）。现在只留一个版本号给动态加载用。 -->
-    <script>window.YJ_VER = '3.55.17';</script>
-    <script defer src="js/antibagu-guard.js?v=3.55.17"></script>
-    <script defer src="js/knowledge-manager.js?v=3.55.17"></script>
-    <script defer src="js/kb-vector.js?v=3.55.17"></script>
-<script defer src="js/st-import.js?v=3.55.17"></script>
-<script defer src="js/kb-enhance.js?v=3.55.17"></script>
-    <script defer src="js/dlc-manager.js?v=3.55.17"></script>
-    <script defer src="js/prompt-budget.js?v=3.55.17"></script>
-    <script defer src="js/save-slots.js?v=3.55.17"></script>
-    <script defer src="js/recap-engine.js?v=3.55.17"></script>
-    <script defer src="js/welcome-recap.js?v=3.55.17"></script>
-    <script defer src="js/npc-portrait.js?v=3.55.17"></script>
+    <script>window.YJ_VER = '3.55.18';</script>
+    <script defer src="js/antibagu-guard.js?v=3.55.18"></script>
+    <script defer src="js/knowledge-manager.js?v=3.55.18"></script>
+    <script defer src="js/kb-vector.js?v=3.55.18"></script>
+<script defer src="js/st-import.js?v=3.55.18"></script>
+<script defer src="js/kb-enhance.js?v=3.55.18"></script>
+    <script defer src="js/dlc-manager.js?v=3.55.18"></script>
+    <script defer src="js/prompt-budget.js?v=3.55.18"></script>
+    <script defer src="js/save-slots.js?v=3.55.18"></script>
+    <script defer src="js/recap-engine.js?v=3.55.18"></script>
+    <script defer src="js/welcome-recap.js?v=3.55.18"></script>
+    <script defer src="js/npc-portrait.js?v=3.55.18"></script>
     <!-- v3.17.0 长卷守望版：craft-meter 先于 chapter-nav（目录行内消费密度函数） -->
-    <script defer src="js/craft-meter.js?v=3.55.17"></script>
-    <script defer src="js/chapter-nav.js?v=3.55.17"></script>
-    <script defer src="js/system-guard.js?v=3.55.17"></script>
-    <script defer src="js/weekly-report.js?v=3.55.17"></script>
+    <script defer src="js/craft-meter.js?v=3.55.18"></script>
+    <script defer src="js/chapter-nav.js?v=3.55.18"></script>
+    <script defer src="js/system-guard.js?v=3.55.18"></script>
+    <script defer src="js/weekly-report.js?v=3.55.18"></script>
     <!-- v3.18.0 万卡归宗版：card-io 先于 card-hub（互通中枢消费 PNG 读写引擎）；
          memory-layers / scene-state 挂轮次事件（story:turn-saved 由 ai-response-handler 广播） -->
-    <script defer src="js/card-io.js?v=3.55.17"></script>
-    <script defer src="js/card-hub.js?v=3.55.17"></script>
-    <script defer src="js/memory-layers.js?v=3.55.17"></script>
-    <script defer src="js/scene-state.js?v=3.55.17"></script>
-    <script defer src="js/quality-suite.js?v=3.55.17"></script>
-    <script defer src="js/draft-lab.js?v=3.55.17"></script>
-    <script defer src="js/channel-hub.js?v=3.55.17"></script>
+    <script defer src="js/card-io.js?v=3.55.18"></script>
+    <script defer src="js/card-hub.js?v=3.55.18"></script>
+    <script defer src="js/memory-layers.js?v=3.55.18"></script>
+    <script defer src="js/scene-state.js?v=3.55.18"></script>
+    <script defer src="js/quality-suite.js?v=3.55.18"></script>
+    <script defer src="js/draft-lab.js?v=3.55.18"></script>
+    <script defer src="js/channel-hub.js?v=3.55.18"></script>
     <!-- v3.32.0 实体玩法引擎：账本/住户/工程三组件（须先于 world-ext-core 装载，
          define() 挂载点检测 window.EE） -->
-    <script defer src="js/entity-engine.js?v=3.55.17"></script>
-    <script defer src="js/world-ext/world-ext-core.js?v=3.55.17"></script>
+    <script defer src="js/entity-engine.js?v=3.55.18"></script>
+    <script defer src="js/world-ext/world-ext-core.js?v=3.55.18"></script>
     <!-- v3.26.0 玩家随身套装：每界自动挂「玩家面板+背包」随身器官（须先于界扩展装载，
          define() 钩子在 {genre}-ext.js 注册时调用 PlayerKit.augment） -->
-    <script defer src="js/player-kit.js?v=3.55.17"></script>
+    <script defer src="js/player-kit.js?v=3.55.18"></script>
     <!-- v3.33.0→v3.36.1 世界专属功能四件套：模块数值自定义面板 → 通讯形态注册表 → 通讯中枢 → 装备设备系统
          （经 WorldExt.injectModules 挂载，与界扩展 define() 先后无关；v3.34.0 通讯/装备 22 界全覆盖） -->
-    <script defer src="js/module-settings.js?v=3.55.17"></script>
-    <script defer src="js/comm-configs.js?v=3.55.17"></script>
-    <script defer src="js/comm-core.js?v=3.55.17"></script>
-    <script defer src="js/gear-core.js?v=3.55.17"></script>
+    <script defer src="js/module-settings.js?v=3.55.18"></script>
+    <script defer src="js/comm-configs.js?v=3.55.18"></script>
+    <script defer src="js/comm-core.js?v=3.55.18"></script>
+    <script defer src="js/gear-core.js?v=3.55.18"></script>
     <!-- v3.34.0→v3.36.1 界专属玩法深化 · 第二扩展槽：焚决融合/猎魂小队/武者量化/灵植园/凶兽猎录/淬炼台/
          天逆珠/掌天瓶/主线面板 + 符箓画案/复仇清单/学院任务板/黄金市场/摊位经营/荣耀角色卡/弟子名册/
          猎者任务板/领地建设/异果采摘录/镖局账本/星图航程/调查员档案（22 界玩法器官全配齐） -->
-    <script defer src="js/world-plus.js?v=3.55.17"></script>
+    <script defer src="js/world-plus.js?v=3.55.18"></script>
     <!-- v3.36.1 移动端深度适配层：≤640px 触屏规则——通讯浮层全屏聊天页(安全区/16px 输入)、
          设置弹窗底部抽屉、按钮/阶梯/装备格触屏尺寸、浮层期间锁滚动；须最后装载 -->
-    <script defer src="js/mobile-fit.js?v=3.55.17"></script>
+    <script defer src="js/mobile-fit.js?v=3.55.18"></script>
     <!-- v3.19.0 万象扩展版：五件第三方扩展（libs/ 全部本地文件零外联）。
          localforage/confetti 随首屏加载（29KB/11KB，特效与存储讲究即时）；
          lunar/cytoscape/仙侠名词库为大库（307KB/373KB/49KB）由各模块
          loadLibOnce 按需懒加载，首屏零负担。加载顺序晚于消费方
          （npc-portrait/game-layer/scene-state）无碍——消费点全部在运行期
          （config onload / 轮次钩子 / 面板打开），届时早已就绪 -->
-    <script defer src="libs/localforage.min.js?v=3.55.17"></script>
-<script defer src="js/store-guard.js?v=3.55.17"></script>
-    <script defer src="libs/confetti.browser.min.js?v=3.55.17"></script>
-    <script defer src="js/storage-boost.js?v=3.55.17"></script>
-    <script defer src="js/lunar-stamp.js?v=3.55.17"></script>
-    <script defer src="js/inspiration-dice.js?v=3.55.17"></script>
-    <script defer src="js/celebration.js?v=3.55.17"></script>
-    <script defer src="js/relationship-graph.js?v=3.55.17"></script>
+    <script defer src="libs/localforage.min.js?v=3.55.18"></script>
+<script defer src="js/store-guard.js?v=3.55.18"></script>
+    <script defer src="libs/confetti.browser.min.js?v=3.55.18"></script>
+    <script defer src="js/storage-boost.js?v=3.55.18"></script>
+    <script defer src="js/lunar-stamp.js?v=3.55.18"></script>
+    <script defer src="js/inspiration-dice.js?v=3.55.18"></script>
+    <script defer src="js/celebration.js?v=3.55.18"></script>
+    <script defer src="js/relationship-graph.js?v=3.55.18"></script>
     <!-- v3.39.0-3.44.0 World Runtime 全家桶 -->
-    <link rel="stylesheet" href="css/world-runtime.css?v=3.55.17">
-    <script defer src="js/world-runtime.js?v=3.55.17"></script>
-    <script defer src="js/world-bus.js?v=3.55.17"></script>
-    <script defer src="js/module-forge.js?v=3.55.17"></script>
-    <script defer src="js/combat-core.js?v=3.55.17"></script>
-    <script defer src="js/quest-chain.js?v=3.55.17"></script>
-    <script defer src="js/world-stage.js?v=3.55.17"></script>
-    <script defer src="js/story-hooks.js?v=3.55.17"></script>
-    <script defer src="js/world-director.js?v=3.55.17"></script>
-    <script defer src="js/world-legacy.js?v=3.55.17"></script>
+    <link rel="stylesheet" href="css/world-runtime.css?v=3.55.18">
+    <script defer src="js/world-runtime.js?v=3.55.18"></script>
+    <script defer src="js/world-bus.js?v=3.55.18"></script>
+    <script defer src="js/module-forge.js?v=3.55.18"></script>
+    <script defer src="js/combat-core.js?v=3.55.18"></script>
+    <script defer src="js/quest-chain.js?v=3.55.18"></script>
+    <script defer src="js/world-stage.js?v=3.55.18"></script>
+    <script defer src="js/story-hooks.js?v=3.55.18"></script>
+    <script defer src="js/world-director.js?v=3.55.18"></script>
+    <script defer src="js/world-legacy.js?v=3.55.18"></script>
 
     <script>function togglePanel() {
   const panel = document.getElementById("statusPanel");
@@ -731,17 +731,17 @@ window.Snapshots = Snapshots;
   }
   const themeLink = document.createElement("link");
   themeLink.rel = "stylesheet";
-  themeLink.href = `css/${genre}-style.css?v=3.55.17`;
+  themeLink.href = `css/${genre}-style.css?v=3.55.18`;
   document.head.appendChild(themeLink);
   const configScript = document.createElement("script");
-  configScript.src = `configs/${genre}-config.js?v=3.55.17`;
+  configScript.src = `configs/${genre}-config.js?v=3.55.18`;
   configScript.onerror = () => {
     document.body.innerHTML = `<div style="padding:40px;font-family:monospace;color:#e0a84c;">
                     配置文件加载失败：configs/${genre}-config.js<br>请通过本地 HTTP 服务（如 python -m http.server）访问本项目。</div>`;
   };
   configScript.onload = () => {
     const extScript = document.createElement("script");
-    extScript.src = `js/world-ext/${genre}-ext.js?v=3.55.17`;
+    extScript.src = `js/world-ext/${genre}-ext.js?v=3.55.18`;
     extScript.onerror = () => {
       console.warn(`[WorldExt] 本界无专属扩展文件：${genre}`);
       bootFramework();
@@ -752,7 +752,7 @@ window.Snapshots = Snapshots;
   document.head.appendChild(configScript);
   if (genre === "earth") {
     const phScript = document.createElement("script");
-    phScript.src = "js/phone-panel.js?v=3.55.17";
+    phScript.src = "js/phone-panel.js?v=3.55.18";
     phScript.onerror = () => console.warn("[PhonePanel] 手机分身模块加载失败（不影响主流程）");
     document.head.appendChild(phScript);
   }

@@ -260,8 +260,18 @@
       if (!on[r.id]) return;
       var kd = kindOf(r);
       if (kd !== 'purge' && kd !== 'custom') return;
+      /* v3.55.18 导入第三方（酒馆）正则的两道防护：
+         ① promptOnly 的正则在酒馆里只作用于「发给模型的 prompt」，靠 placement 限定在
+            历史楼层；云境这里处理的是「显示给玩家的正文」，照单执行会把正文清空。
+         ② 整段通配（点星、[\s\S] 星号之类）+ 空替换的规则，在酒馆里是"隐藏不发送"
+            的省 token 手段，落到正文就是全清——一律跳过。                      */
+      if (r.promptOnly && !r.markdownOnly) return;
       var re = toRegex(adaptSource(r));
       if (!re) return;
+      if (isWipeRule(re, r.replaceString)) {
+        try { console.warn('[正则] 已跳过会清空全文的规则：' + (r.scriptName || r.id)); } catch (e) {}
+        return;
+      }
       var flags = re.flags.indexOf('g') >= 0 ? re.flags : re.flags + 'g';
       try { re = new RegExp(re.source, flags); } catch (e) {}
       try {
@@ -271,6 +281,21 @@
       } catch (e) {}
     });
     return touched ? polish(out) : out;
+  }
+
+  /**
+   * v3.55.18：这条规则会不会把整段文字清空？
+   * 判定：替换串为空（或纯空白）+ 正则体是通配（.*  / [\s\S]*  / ^[\s\S]*$  / 空）。
+   * 酒馆里这类规则是"隐藏不发送"的省 token 手段，落到正文渲染就是灾难。
+   */
+  function isWipeRule(re, replaceString) {
+    if (replaceString && String(replaceString).trim()) return false;
+    var src = String((re && re.source) || '').replace(/^\^+/, '').replace(/\$+$/, '');
+    if (src === '') return true;
+    if (/^\[\\?s\\?S\][*+]$/.test(src)) return true;   // [\s\S]* / [\s\S]+
+    if (/^\.[*+]$/.test(src)) return true;             // .* / .+
+    if (/^\\?\[\^?\][*+]$/.test(src)) return true;
+    return false;
   }
 
   /* ---------------- 上下文裁剪（ctx）：作用于发给模型的历史 ---------------- */
