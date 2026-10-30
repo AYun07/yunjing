@@ -1,11 +1,11 @@
 /* ============================================================
- * 云境工坊 · 咩咩专用正则引擎（ver 7.2 → 云境适配）
+ * 云境工坊 · 某预设专用正则引擎（ver 7.2 → 云境适配）
  * ------------------------------------------------------------
- * 原版 45 条是给 SillyTavern 用的，直接搬会有三处水土不服：
+ * 原版 45 条是给 常见前端工具 用的，直接搬会有三处水土不服：
  *   1) 美化模板是几千字节的内联 <style> + 赛博朋克动画，和云境的
  *      水墨/世界皮肤互相打架，还会在每轮正文里重复注入全局样式；
- *   2) 有 2 条是 SillyTavern 专属版（选项美化、特殊状态栏美化），
- *      云境该用同文件里配套的「非SillyTavern」版；
+ *   2) 有 2 条是 常见前端工具 专属版（选项美化、特殊状态栏美化），
+ *      云境该用同文件里配套的「非常见前端工具」版；
  *   3) 云境的正文渲染是 escapeHtml 的，正则生成的 HTML 会被转义成纯文本。
  *
  * 适配原则（与预设一致：识别规则照搬，渲染换成云境自己）：
@@ -17,8 +17,8 @@
 (function () {
   'use strict';
 
-  var KEY = 'storyUseMiaomiaoRegex';
-  var OV_KEY = 'storyMiaomiaoRegexOverrides';
+  var KEY = 'storyUseYunqiRegex';
+  var OV_KEY = 'story旧预设RegexOverrides';
 
   function rules() {
     /* v3.51.0：玩家导入的正则整份替换内置（js/regex-io.js）
@@ -28,7 +28,7 @@
       try { a = window.YunjingRegexIO.active(); } catch (e) { a = null; }
       if (a && a.length) return a;
     }
-    return (typeof window !== 'undefined' && (window.YUNQI_REGEX || window.MIAOMIAO_REGEX)) || [];
+    return (typeof window !== 'undefined' && (window.YUNQI_REGEX || window.旧正则)) || [];
   }
 
   /** 规则类别：内置按名字查表；导入的一律当"自定义文本替换" */
@@ -47,7 +47,7 @@
       if (v === '0') return false;
     } catch (e) { return false; }
     try {
-      var M = window.MoMiaomiao;
+      var M = window.旧预设对象;
       if (M && typeof M.enabled === 'function') return !!M.enabled();
     } catch (e) { }
     return false;
@@ -121,16 +121,16 @@
     '战斗引擎': 'card',
     '故事引擎': 'card',
     'acg角色心理模型': 'card',
-    '特殊状态栏美化-SillyTavern': 'card',
-    '特殊状态栏美化-非SillyTavern': 'card',
+    '特殊状态栏美化-常见前端工具': 'card',
+    '特殊状态栏美化-非常见前端工具': 'card',
     '剧情记忆归档美化': 'card',
     '世界运行报告美化': 'card',
     '玩家状态栏美化': 'card',
     '角色好感度美化': 'card',
     'NPC内心话美化': 'card',
     '平行线美化': 'card',
-    '选项美化-SillyTavern': 'card',
-    '选项美化-非SillyTavern': 'card',
+    '选项美化-常见前端工具': 'card',
+    '选项美化-非常见前端工具': 'card',
     '双语美化-默认': 'misc',
     '双语美化-折叠': 'misc',
     '***符号转分行': 'purge',
@@ -154,7 +154,7 @@
   };
 
   /** 协议块 → 云境卡片的定义（图标/标题/提取用的容错正则）
-   *  rule：咩咩规则名（导入咩咩预设时，关闭该规则 → 隐藏卡片，兼容原版行为）
+   *  rule：某预设规则名（导入某预设预设时，关闭该规则 → 隐藏卡片，兼容原版行为）
    *  yqRule：云起专属美化规则名（关闭 → 卡片回退朴素样式，内容照常显示） */
   var CARD_DEFS = [
     { key: 'opening', rule: '开场白美化', yqRule: '云起·开场白美化',    icon: '🎬', title: '开场白',     re: /<opening>\s*([\s\S]*?)\s*<\/opening>/gi },
@@ -162,7 +162,7 @@
     { key: 'combat', rule: '战斗引擎', yqRule: '云起·战斗引擎美化',     icon: '⚔️', title: '战斗推演',   re: /<combat_driver>\s*([\s\S]*?)\s*<\/combat_driver>/gi },
     { key: 'story', rule: '故事引擎', yqRule: '云起·故事引擎美化',      icon: '🧠', title: '故事推演',   re: /<story_driver>\s*([\s\S]*?)\s*<\/story_driver>/gi },
     { key: 'acg', rule: 'acg角色心理模型', yqRule: '云起·角色心理美化',        icon: '🎭', title: '角色心理',   re: /<acg_think>\s*([\s\S]*?)\s*<\/acg_think>/gi },
-    { key: 'special', rule: '特殊状态栏美化-非SillyTavern', yqRule: '云起·特殊状态栏美化',    icon: '🩺', title: '特殊状态',   re: /<special_status>\s*([\s\S]*?)\s*<\/special_status>/gi },
+    { key: 'special', rule: '特殊状态栏美化-非常见前端工具', yqRule: '云起·特殊状态栏美化',    icon: '🩺', title: '特殊状态',   re: /<special_status>\s*([\s\S]*?)\s*<\/special_status>/gi },
     { key: 'memory', rule: '剧情记忆归档美化', yqRule: '云起·剧情记忆归档美化',     icon: '📑', title: '剧情记忆归档', re: /<memory_log>\s*([\s\S]*?)\s*<\/memory_log>/gi },
     { key: 'wlog', rule: '世界运行报告美化', yqRule: '云起·世界运行报告美化',       icon: '🌍', title: '世界运行报告', re: /<wlog(?:\s+time="([^"]*)")?\s*>\s*([\s\S]*?)\s*<\/wlog>/gi },
     { key: 'status', rule: '玩家状态栏美化', yqRule: '云起·玩家状态栏美化',     icon: '📜', title: '玩家状态栏', re: /<status>\s*([\s\S]*?)\s*<\/status>/gi },
@@ -170,7 +170,7 @@
     { key: 'npc', rule: 'NPC内心话美化', yqRule: '云起·NPC内心话美化',        icon: '👁️', title: 'NPC内心话', re: /<npc_log>\s*([\s\S]*?)\s*<\/npc_log>/gi },
     { key: 'parallel', rule: '平行线美化', yqRule: '云起·平行线美化',   icon: '〰️', title: '平行线',     re: /<parallel_line_drive>\s*([\s\S]*?)\s*<\/parallel_line_drive>/gi },
     { key: 'parallel2', rule: '平行线美化', yqRule: '云起·平行线美化',  icon: '〰️', title: '平行线',     re: /<parallel_line>\s*([\s\S]*?)\s*<\/parallel_line>/gi },
-    { key: 'selection', rule: '选项美化-非SillyTavern', yqRule: '云起·行动选项美化',  icon: '🎯', title: '行动选项',   re: /<selection>\s*([\s\S]*?)\s*<\/selection>/gi }
+    { key: 'selection', rule: '选项美化-非常见前端工具', yqRule: '云起·行动选项美化',  icon: '🎯', title: '行动选项',   re: /<selection>\s*([\s\S]*?)\s*<\/selection>/gi }
   ];
 
   /** 每条规则当前是否生效（玩家覆盖 > 原版 disabled） */
@@ -182,18 +182,18 @@
   }
 
   /**
-   * 云境侧的默认调整：原版出厂开着的两条是 SillyTavern 专属版，
-   * 云境改用配套的「非SillyTavern」版（原版里这两条是关着的）。
+   * 云境侧的默认调整：原版出厂开着的两条是 常见前端工具 专属版，
+   * 云境改用配套的「非常见前端工具」版（原版里这两条是关着的）。
    * 玩家手动改过就不干预。
    */
   function resolveDefaults() {
     var ov = getOverrides();
     var flip = {
-      // 原版出厂开着的是 SillyTavern 专属版，云境改用配套的「非SillyTavern」版
-      '选项美化-SillyTavern': false,
-      '选项美化-非SillyTavern': true,
-      '特殊状态栏美化-SillyTavern': false,
-      '特殊状态栏美化-非SillyTavern': true
+      // 原版出厂开着的是 常见前端工具 专属版，云境改用配套的「非常见前端工具」版
+      '选项美化-常见前端工具': false,
+      '选项美化-非常见前端工具': true,
+      '特殊状态栏美化-常见前端工具': false,
+      '特殊状态栏美化-非常见前端工具': true
       /* 注：「清理废话修饰词」「清理动物比喻」保持原版出厂的关闭状态。
          它们确实是去 AI 味的利器，但也会误伤正常文学表达
          （"似乎""某种""抿了抿唇"都是合法写法），交由玩家在面板里自选开启。 */
@@ -354,7 +354,7 @@
 
   /**
    * 正文容器标签：剥掉标签、保留内容。
-   * 原版没有对应规则 —— 因为 SillyTavern 走浏览器渲染，未知标签会被吞掉；
+   * 原版没有对应规则 —— 因为 常见前端工具 走浏览器渲染，未知标签会被吞掉；
    * 云境正文是 escapeHtml 的，不剥就会以字面量 "<story_scene>" 出现在正文里。
    */
   var WRAPPER_TAGS = ['story_scene', 'locator', 'opening', 'parallel_line_drive', 'parallel_line'];
@@ -427,7 +427,7 @@
     rules().forEach(function (r) { byName[r.scriptName] = on[r.id]; });
 
     return cards.filter(function (c) {
-      // 咩咩规则名被显式关闭 → 不渲染（导入咩咩预设时保持原版行为）；
+      // 某预设规则名被显式关闭 → 不渲染（导入某预设预设时保持原版行为）；
       // 云起美化规则关闭不隐藏卡片，只回退朴素样式。
       if (c.rule && byName[c.rule] === false) return false;
       // 空内容的块不占位（如无战斗时模型会输出 <combat_driver>无</combat_driver>）
@@ -435,7 +435,7 @@
     }).map(function (c, i) {
       var open = (i === 0 && openFirst) ? ' open' : '';
       /* 云起专属美化开关：规则存在且开着才上皮肤；
-         导入咩咩预设（无云起美化规则）时 byName[yqRule] === undefined → 朴素渲染 */
+         导入某预设预设（无云起美化规则）时 byName[yqRule] === undefined → 朴素渲染 */
       var yqOn = !!(c.yqRule && byName[c.yqRule] === true);
       var body = yqOn ? applyYqPolish(c.body, c.yqRule) : String(c.body == null ? '' : c.body);
       var bodyHtml = yqOn ? yqRows(body) : richText(body);
@@ -513,7 +513,7 @@
     });
   }
 
-  window.MoMiaomiaoRegex = {
+  window.旧预设正则 = {
     enabled: enabled,
     setEnabled: setEnabled,
     getOverrides: getOverrides,
