@@ -520,5 +520,57 @@ window.YUNQI_REGEX = [
   "substituteRegex": 1,
   "minDepth": null,
   "maxDepth": null
+ },
+
+ {
+  "id": "yq_leak_mid",
+  "scriptName": "云起·泄漏短语清理(显示)",
+  "findRegex": "/(?:作为(?:一个)?(?:AI|人工智能|语言模型|助手)[，,。\\n]|我无法(?:为你|提供|满足|继续|生成|创作|扮演)[^。\\n]*[。\\n]|我(?:不能|不应该|没有资格)(?:为你|提供|继续|创作|扮演)[^。\\n]*[。\\n]|请注意[，,:：][^。\\n]*[。\\n])/gi",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [
+   2
+  ],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": null,
+  "maxDepth": null
+ },
+ {
+  "id": "yq_divider",
+  "scriptName": "云起·章节分隔美化(显示)",
+  "findRegex": "/(^|\\n)\\s*(?:-{3,}|\\*{3,}|_{3,})\\s*(\\n|$)/g",
+  "replaceString": "$1<hr style=\"border:none;border-top:1px solid rgba(127,179,255,.18);margin:14px 0\">$2",
+  "trimStrings": [],
+  "placement": [
+   2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": null,
+  "maxDepth": null
+ },
+ {
+  "id": "yq_think_open",
+  "scriptName": "云起·思链未闭合保险(显示)",
+  "findRegex": "/<thinking>(?:(?!<\\/thinking>)[\\s\\S])*$/i",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [
+   2
+  ],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": null,
+  "maxDepth": null
  }
 ];
