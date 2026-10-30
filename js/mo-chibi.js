@@ -312,7 +312,7 @@ const MoChibi = {
         (_a2 = window.MoAssistant) == null ? void 0 : _a2.toggleTTS();
         this.renderMenu();
       } },
-      /* v3.55.17 悬浮球收敛：世界动态 / 手机 / 太虚阁 并入小云的「模块」二级面板。
+      /* v3.55.18 悬浮球收敛：世界动态 / 手机 / 太虚阁 并入小云的「模块」二级面板。
          不直接摊在扇形菜单里——扇形 radius 110 / spread 150°，项数一多就互相压叠。 */
       { ico: "🧰", label: "模块", act: () => this.openModules() },
       { ico: "🌙", label: "收起", act: () => this.hide() }

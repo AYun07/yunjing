@@ -305,7 +305,7 @@ const DynamicWorld = {
     const date = [v.date, v.日期, v.year].map((x) => String(x || "").trim()).find((x) => x && x !== "未上报") || "";
     return { era, date };
   },
-  /** 构建发给额外API的消息序列（模仿觅长生 buildOptimizedMessages 的分层策略） */
+  /** 构建发给额外API的消息序列（模仿某文字游戏框架 buildOptimizedMessages 的分层策略） */
   buildMessages(s) {
     const fw = window.storyFramework;
     const v = fw.storyState.variables;
@@ -448,7 +448,7 @@ ${entry.story}` });
     const fw = window.storyFramework;
     const dock = document.getElementById("dwDock");
     const show = !!(fw && fw.storyState.isStoryStarted);
-    /* v3.55.17 悬浮球收敛：界面只留小云一个悬浮球，世界动态改由小云菜单进入。
+    /* v3.55.18 悬浮球收敛：界面只留小云一个悬浮球，世界动态改由小云菜单进入。
        徽标/未读逻辑保留（小云菜单会读 #dwDockBadge 显示未读数）。 */
     if (dock) dock.style.display = "none";
     if (dock && show && !dock._moDraggable && window.MoChibi) {
