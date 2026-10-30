@@ -41,7 +41,8 @@
     'doubao', 'zhipuai', 'bigmodel.cn', 'baichuan', 'minimax', '01.ai',
     'lingyiwanwu.com', 'tencentcloudapi.com', 'hunyuan', 'siliconflow',
     'openrouter.ai', 'cohere', 'mistral', 'ai21', 'groq', 'fireworks.ai',
-    'qwen', 'kimi', 'stepfun', 'anthropic', 'x.ai', 'meta.ai'
+    'qwen', 'kimi', 'stepfun', 'anthropic', 'x.ai', 'meta.ai',
+    'nvidia'            // NVIDIA 托管网关：旗下多为强力对话模型（如 nemotron 系列），初判 full 走全功能
   ];
 
   function fwApiConfig() {
