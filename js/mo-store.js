@@ -22,6 +22,13 @@
   var _db = null;
   var _mem = {};        // IndexedDB 暂存值的内存镜像（供同步读回退）
   var _opening = null;
+  /* v3.55.17：保存原始存储原语。全局兜底劫持 Storage.prototype 后，本模块内部
+     必须走原生函数，否则会被自己的劫持层"假成功"吞掉（写进 _mem 又被 delete）。 */
+  var _lsSet = null, _lsGet = null;
+  try {
+    _lsSet = window.Storage.prototype.setItem;
+    _lsGet = window.Storage.prototype.getItem;
+  } catch (e) { _lsSet = null; _lsGet = null; }
 
   function openDB(cb) {
     if (_db) { cb && cb(_db); return; }
@@ -60,10 +67,10 @@
   }
 
   function lsGet(key) {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
+    try { return _lsGet ? _lsGet.call(window.localStorage, key) : localStorage.getItem(key); } catch (e) { return null; }
   }
   function lsSet(key, val) {
-    try { localStorage.setItem(key, val); return true; } catch (e) { return false; }
+    try { (_lsSet ? _lsSet.call(window.localStorage, key, val) : localStorage.setItem(key, val)); return true; } catch (e) { return false; }
   }
 
   var MoStore = {
@@ -104,4 +111,87 @@
   };
 
   window.MoStore = MoStore;
+
+  /* ==================== v3.55.17 全局存储兜底 ====================
+     现状：全项目仍有 48 个文件直写 localStorage.setItem（存档 / 书架 / 立绘 /
+     知识库缓存…）。配额一满（安卓 WebView 5MB、iOS 隐私模式、大存档）就抛
+     QuotaExceededError：轻则本轮写档失败、刷新后章节蒸发，重则整轮流程崩掉。
+     与其逐个改造 48 个调用方（易漏、易回归），不如在存储原语上兜一层：
+     写失败即自动转存 IndexedDB + 内存镜像，读时回退命中，对上层完全透明。
+     只接管 localStorage（不碰 sessionStorage），只接管配额错误（其它错误照抛）。 */
+  if (_lsSet && _lsGet) {
+    try {
+      window.Storage.prototype.setItem = function (k, v) {
+        try {
+          var ok = _lsSet.call(this, k, v);
+          var isLocal = false;
+          try { isLocal = this === window.localStorage; } catch (e0) { isLocal = false; }
+          if (isLocal && Object.prototype.hasOwnProperty.call(_mem, k)) {
+            delete _mem[k];
+            idbDel(k);
+          }
+          return ok;
+        } catch (err) {
+          var quota = err && (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED" || err.code === 22 || err.code === 1014);
+          var isL = false;
+          try { isL = this === window.localStorage; } catch (e1) { isL = false; }
+          if (!quota || !isL) throw err;
+          var s;
+          try { s = String(v); } catch (e2) { s = v; }
+          _mem[k] = s;
+          idbPut(k, s);
+          if (window.console && console.warn) {
+            console.warn("[存储兜底] 配额超限，已转存 IndexedDB：" + k + "（约 " + Math.round(String(s).length / 1024) + "KB）");
+          }
+          return undefined;
+        }
+      };
+      window.Storage.prototype.getItem = function (k) {
+        var v = _lsGet.call(this, k);
+        if (v !== null) return v;
+        var isL = false;
+        try { isL = this === window.localStorage; } catch (e1) { isL = false; }
+        if (isL && Object.prototype.hasOwnProperty.call(_mem, k)) return _mem[k];
+        return v;
+      };
+      var _lsRemove = window.Storage.prototype.removeItem;
+      if (_lsRemove) {
+        window.Storage.prototype.removeItem = function (k) {
+          _lsRemove.call(this, k);
+          var isL = false;
+          try { isL = this === window.localStorage; } catch (e1) { isL = false; }
+          if (isL && Object.prototype.hasOwnProperty.call(_mem, k)) {
+            delete _mem[k];
+            idbDel(k);
+          }
+        };
+      }
+    } catch (e) { /* 极端环境（原型只读）静默跳过，退回原行为 */ }
+  }
+  window.__yjStoreGuard = true;
+
+  /* ---- v3.55.17 IDB 预热 ----
+     兜底/降级值只存在 IndexedDB 里，而 MoStore 是同步 API、_mem 是内存镜像：
+     一旦刷新页面，_mem 清空 → 明明 IDB 里有，却读不到（存档"凭空消失"）。
+     本模块在 <head> 就该加载（studio.html 第 26 行，远早于 defer 的业务脚本），
+     因此在这里立刻异步回灌，业务脚本执行时通常已经就位；回灌完成再广播事件，
+     让已在等待的模块补读一次。 */
+  (function warm() {
+    openDB(function (db) {
+      if (!db) return;
+      try {
+        var tx = db.transaction(STORE, "readonly");
+        var req = tx.objectStore(STORE).openCursor();
+        req.onsuccess = function () {
+          var cur = req.result;
+          if (!cur) {
+            try { window.dispatchEvent(new CustomEvent("yj-store-ready", { detail: { keys: Object.keys(_mem).length } })); } catch (e) {}
+            return;
+          }
+          if (!Object.prototype.hasOwnProperty.call(_mem, cur.key)) _mem[cur.key] = cur.value;
+          cur.continue();
+        };
+      } catch (e) { /* 静默 */ }
+    });
+  })();
 })();

@@ -312,8 +312,72 @@ const MoChibi = {
         (_a2 = window.MoAssistant) == null ? void 0 : _a2.toggleTTS();
         this.renderMenu();
       } },
+      /* v3.55.17 悬浮球收敛：世界动态 / 手机 / 太虚阁 并入小云的「模块」二级面板。
+         不直接摊在扇形菜单里——扇形 radius 110 / spread 150°，项数一多就互相压叠。 */
+      { ico: "🧰", label: "模块", act: () => this.openModules() },
       { ico: "🌙", label: "收起", act: () => this.hide() }
     ];
+  },
+  /* ==================== 模块二级面板（收编的悬浮球功能） ==================== */
+  _isEarth() {
+    try { return (new URLSearchParams(location.search).get("genre") || "") === "earth"; } catch (e) { return false; }
+  },
+  /** 读（已隐藏的）原悬浮球徽标的未读数 */
+  _dockUnread(id) {
+    try {
+      const b = document.getElementById(id);
+      if (!b || b.style.display === "none") return "";
+      return (b.textContent || "").trim();
+    } catch (e) { return ""; }
+  },
+  moduleEntries() {
+    const list = [];
+    if (window.DynamicWorld) {
+      const u = this._dockUnread("dwDockBadge");
+      list.push({ ico: "🌍", name: "世界动态", note: u ? u + " 条未读" : "额外 AI 推演的远方事件", act: () => window.DynamicWorld.openPanel() });
+    }
+    try {
+      if (window.PhonePanel && this._isEarth() && window.PhonePanel.tier && window.PhonePanel.tier() !== "none") {
+        const u = this._dockUnread("phDockBadge");
+        list.push({ ico: "📱", name: "手机分身", note: u ? u + " 条未读" : "聊天 / 朋友圈", act: () => window.PhonePanel.open() });
+      }
+    } catch (e) {}
+    if (window.ImmersiveSuite && !this._isEarth()) {
+      list.push({ ico: "⛩", name: "太虚阁 · 沉浸万象", note: "人物志 / 藏宝阁 / 编年史", act: () => window.ImmersiveSuite.toggle(true) });
+    }
+    return list;
+  },
+  openModules() {
+    let host = document.getElementById("mcModules");
+    if (!host) {
+      host = document.createElement("div");
+      host.id = "mcModules";
+      host.className = "mc-modules";
+      document.body.appendChild(host);
+    }
+    const items = this.moduleEntries();
+    if (!items.length) {
+      this.say("这个题材没有可开的模块哦～", 2600);
+      return;
+    }
+    host.innerHTML =
+      '<div class="mcm-back" data-close="1"></div>' +
+      '<div class="mcm-card">' +
+        '<div class="mcm-title">🧰 模块</div>' +
+        items.map((it, i) => '<button class="mcm-item" data-i="' + i + '">' +
+          '<span class="mcm-ico">' + it.ico + '</span>' +
+          '<span class="mcm-txt"><b>' + it.name + '</b><i>' + it.note + '</i></span></button>').join("") +
+        '<div class="mcm-foot">点空白处关闭</div>' +
+      '</div>';
+    host.classList.add("show");
+    host.querySelectorAll(".mcm-item").forEach((b) => {
+      b.onclick = () => {
+        const it = items[parseInt(b.dataset.i, 10)];
+        host.classList.remove("show");
+        try { if (it && it.act) it.act(); } catch (e) {}
+      };
+    });
+    host.querySelectorAll("[data-close]").forEach((el) => { el.onclick = () => host.classList.remove("show"); });
   },
   renderMenu() {
     const menu = document.getElementById("mcMenu");

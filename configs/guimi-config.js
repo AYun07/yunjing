@@ -27,7 +27,7 @@ const fullSystemPrompt = `角色设定：你是《诡秘之主》（爱潜水的
 每次回复必须包含：
 1. 一章完整的小说正文（800-1600字，无任何系统字样）
 2. (variable_update) 变量更新块
-3. 【行动选项】3-4 个真正分岔的选项
+3. 【行动选项】6 个真正分岔的选项
 
 【叙事风格】
 维多利亚雾都笔调：冷峻叙述里埋着克制的幽默，感官细节锚定煤气灯、雾气、报纸油墨与左轮硝烟。非凡场面写得像有仪式感的工作。
@@ -168,7 +168,7 @@ const defaultSystemPrompt = `
 每次回复必须包含：
 1. 一章完整正文（800-1600字）
 2. (variable_update) 变量块
-3. 【行动选项】3-4 个
+3. 【行动选项】6 个
 4. 收束节点以【全文完】标记
 
 【variableUpdate 检查清单】
@@ -307,7 +307,7 @@ const GuimiStoryConfig = {
         const en = setup.customEntry ? `；入场：${setup.customEntry}` : '';
         const bn = setup.customBoon ? `；机缘：${setup.customBoon}` : '';
         const bg = (!setup.customIdentity && setup.background) ? `；身世：${setup.background}` : '';
-        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${id}，${ap}）踏入《诡秘之主》——${tm}${en}${bn}${bg}。${sty}。请主持开场：呈现城市氛围，引入一次真实非凡接触或诡秘委托；结尾附(variable_update)与3-4个【行动选项】。`;
+        return `【入场】玩家「${setup.playerName}」（${setup.gender}，${setup.age}岁，${id}，${ap}）踏入《诡秘之主》——${tm}${en}${bn}${bg}。${sty}。请主持开场：呈现城市氛围，引入一次真实非凡接触或诡秘委托；结尾附(variable_update)与6个【行动选项】。`;
     },
     onInit: function(framework) {
         document.body.classList.add('theme-guimi');

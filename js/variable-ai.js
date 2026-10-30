@@ -154,8 +154,10 @@ const VariableAI = {
       const data = await this._readBody(response2.json(), fullMs);
       const msg = (_b2 = (_a2 = data.choices) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.message;
       const content = (_d = (_c2 = msg == null ? void 0 : msg.content) != null ? _c2 : msg == null ? void 0 : msg.reasoning_content) != null ? _d : "";
-      return (content || "").trim();
+      return (content || "").trim().slice(0, AUX_MAX);
     };
+    /* v3.55.14 辅助AI输出硬上限：防个别模型无视 max_tokens 无限复读（曾实测 197KB/254KB 失控） */
+    const AUX_MAX = 20000;
     try {
       const response2 = await doFetch(true);
       if (!response2.ok) {
@@ -169,6 +171,7 @@ const VariableAI = {
         const text = await window.readSSEStream(response2, {
           firstIdleMs: firstMs,
           idleMs: fullMs,
+          maxChars: AUX_MAX,
           extract: (json) => {
             var _a2;
             const d = json.choices && json.choices[0] && json.choices[0].delta;

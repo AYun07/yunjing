@@ -39,7 +39,7 @@ const fullSystemPrompt = `角色设定：你是一位通吃各类型文学的全
 每次回复必须包含：
 1. 一章完整的小说正文（800-1600字，纯文学排版，无任何系统字样）
 2. (variable_update) 变量更新块：章节推进、字数累计、仪表盘变化、新角色档案卡、伏笔登记/回收、道具进出、主角状态卡（isPlayer/location/status）、自定义变量（若有登记）、大事记
-3. 结尾以【情节走向】为题给出 3-4 个走向选项（各选项须真正分岔）
+3. 结尾以【情节走向】为题给出 6 个走向选项（各选项须真正分岔）
 
 【叙事风格】
 依题材与作者设定自适应：言情则细腻绵密，历史则考据沉稳，都市则烟火人间，奇幻则奇崛瑰丽。守恒的部分：场景先行、对话有潜台词、细节即伏笔、结尾有余味。
@@ -118,7 +118,7 @@ const defaultSystemPrompt = `
 【极其重要】每次回复必须包含以下核心部分：
 1. 一章完整正文（小说排版，无系统字样）
 2. (variable_update) 变量更新块（系统的核心，必须逐项检查）
-3. 【情节走向】3-4 个真正分岔的选项
+3. 【情节走向】6 个真正分岔的选项
 4. 若故事推进至终局，坦然收束全篇，以【全文完】标记，回收所有已登记伏笔。
 
 【最高优先级 - variableUpdate 字段检查清单】
@@ -327,7 +327,7 @@ const FreeStoryConfig = {
         // v1.6.9 修复：targetWords 缺失/为 0 时「约NaN字」进提示词；字数不可靠时整段省略
         const perChap = Math.round((Number(setup.targetWords) || 0) / (Number(setup.totalChapters) || 0));
         const lenHint = (perChap > 200) ? `（约${perChap}字）` : '';
-        return `【开始创作】书名《${setup.title}》。${setup.premise ? `题材梗概：${setup.premise}。` : ''}请按【通用短篇开局模板】写出第一章${lenHint}：以具体场景开场，完成打破日常的事件与章末钩子，确立全篇叙述声音；结尾附(variable_update)变量块（含主角与至少两名角色档案卡）与3-4个情节走向选项。`;
+        return `【开始创作】书名《${setup.title}》。${setup.premise ? `题材梗概：${setup.premise}。` : ''}请按【通用短篇开局模板】写出第一章${lenHint}：以具体场景开场，完成打破日常的事件与章末钩子，确立全篇叙述声音；结尾附(variable_update)变量块（含主角与至少两名角色档案卡）与6个情节走向选项。`;
     },
 
     onInit: function (framework) {

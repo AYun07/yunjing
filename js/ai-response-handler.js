@@ -344,7 +344,7 @@ const StoryResponseHandler = {
         if (text.length >= 2 && text.length <= 80) options.push(text);
       }
     }
-    return options.slice(0, 4);
+    return options.slice(0, 6);
   },
   /** 侦测本轮选项区标题（扮演模式「行动选项」/ 创作模式「情节走向」），供按钮区显示 */
   detectOptionsLabel(reply) {
@@ -409,7 +409,7 @@ const StoryResponseHandler = {
       html += `<div class="options-area${dramatic ? " dramatic" : ""}${yqOptOn ? " yq-opts" : ""}"><div class="options-title">▸ ${this.escapeHtml(label)}</div>`;
       options.forEach((opt, i) => {
         const delay = dramatic ? ` style="animation-delay:${(0.18 + i * 0.35).toFixed(2)}s"` : "";
-        const key = ["A", "B", "C", "D"][i] || i + 1;
+        const key = ["①", "②", "③", "④", "⑤", "⑥"][i] || i + 1;
         const keyHtml = yqOptOn ? `<span class="opt-key">${key}</span>` : `${key}. `;
         html += `<button class="option-btn" onclick="window.StoryInput.chooseOption(this)" data-text="${this.escapeAttr(this.mdPlain(opt))}"${delay}>${keyHtml}${this.mdInline(opt)}</button>`;
       });
@@ -736,7 +736,48 @@ const StoryResponseHandler = {
       totalChapters: "总章数",
       title: "书名",
       tension: "叙事张力",
-      sanity: "理智值"
+      sanity: "理智值",
+      /* v3.55.14 变量块嵌套键全中文：此前面板直接吐 characters/name/state… 英文，
+         玩家投诉"状态栏出现其他语言"。这里把容器与子字段一律映射成中文。 */
+      characters: "角色",
+      character: "角色",
+      characterCards: "角色",
+      name: "名字",
+      role: "身份",
+      age: "年龄",
+      personality: "性格",
+      motivation: "动机",
+      secret: "秘密",
+      appearance: "外貌",
+      speechPattern: "语言习惯",
+      trust: "信任度",
+      arc: "弧光",
+      firstAppearance: "首次出场",
+      state: "状态",
+      status: "状态",
+      location: "位置",
+      items: "道具",
+      item: "道具",
+      holder: "持有者",
+      count: "数量",
+      foreshadowings: "伏笔",
+      foreshadowing: "伏笔",
+      content: "内容",
+      plotPoints: "伏笔",
+      history: "轨迹",
+      dashboard: "仪表盘",
+      gauges: "仪表",
+      stats: "六维",
+      dimensions: "六维",
+      time: "时间",
+      mood: "情绪",
+      money: "金钱",
+      goal: "目标",
+      realm: "境界",
+      health: "健康",
+      injury: "伤势",
+      lust: "情欲",
+      intimacy: "亲密"
     });
     const labelOf = (k) => labelMap[k] || k;
     const clip = (s, n) => {
@@ -745,6 +786,7 @@ const StoryResponseHandler = {
     };
     const chips = [];
     const lines = String(block).split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
+    let curContainer = "";
     for (const line of lines) {
       let m;
       if (m = line.match(/^>>\s*(.+?)\.history\s*[:：]\s*(.+)$/)) {
@@ -775,6 +817,24 @@ const StoryResponseHandler = {
         } else {
           const fieldLabel = { role: "身份", age: "年龄", personality: "性格", motivation: "动机", secret: "秘密", status: "状态", appearance: "外貌", speechPattern: "语言习惯", trust: "信任度", arc: "弧光", firstAppearance: "首次出场", history: "轨迹" };
           chips.push({ icon: "👤", text: `${clip(c1, 8)} · ${fieldLabel[c2] || c2} → ${clip(c3, 16)}`, cls: "info" });
+        }
+        continue;
+      }
+      /* v3.55.14 容器标题行（characters: / items: / foreshadowings: 冒号后无值）→ 中文小标题，杜绝英文裸奔 */
+      if (m = line.match(/^([A-Za-z\u4e00-\u9fa5_]+)\s*[:：]\s*$/)) {
+        curContainer = labelOf(m[1]);
+        chips.push({ icon: "▸", text: `【${curContainer}】`, cls: "" });
+        continue;
+      }
+      /* v3.55.14 列表子项（- name: 陆尘 / - content: … / - status: …）→ 去掉前缀并译成中文 */
+      if (m = line.match(/^[-•*·]\s*([A-Za-z\u4e00-\u9fa5_]+)\s*[:：]\s*(.+)$/)) {
+        const k = m[1].trim();
+        const v = m[2].trim().replace(/^["'“”]+|["'“”,]+$/g, "");
+        if (v) {
+          const isName = /^(name|名字)$/i.test(k);
+          const prefix = curContainer || "角色";
+          const text = isName ? `${prefix} · ${clip(v, 12)}` : `${labelOf(k)} → ${clip(v, 16)}`;
+          chips.push({ icon: isName ? "·" : "✒", text, cls: "info" });
         }
         continue;
       }

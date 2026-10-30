@@ -1129,6 +1129,9 @@ const ImmersiveSuite = function() {
         fab.title = "太虚阁 · 沉浸万象（拖动换位，长按归位）";
         fab.innerHTML = "⛩";
         document.body.appendChild(fab);
+        /* v3.55.17 悬浮球收敛：界面只留小云一个悬浮球，太虚阁改由小云菜单进入。
+           模块本体照常挂载（抽屉/数据不受影响），只是入口球不再显示。 */
+        fab.style.display = "none";
         makeFabDraggable(fab);
       } catch (e) {
         console.warn("[Immersive] 悬浮球创建失败:", e.message);
@@ -1864,7 +1867,8 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
             <div class="st-row"><span>预算控制</span>
                 <button class="imm-mini big ${window.PromptBudget && PromptBudget.get().enabled ? "on" : ""}" onclick="ImmersiveSuite.toggleBudget()">${window.PromptBudget && PromptBudget.get().enabled ? "✅ 开启中（点击关闭）" : "已关闭 · 开启"}</button></div>
             <div class="st-row"><span>预算上限</span>
-                <button class="imm-mini big" onclick="ImmersiveSuite.cycleBudgetLimit()">${window.PromptBudget ? (PromptBudget.get().limit / 1e4).toFixed(0) + " 万字符（点击切换）" : "—"}</button></div>
+                <button class="imm-mini big" onclick="ImmersiveSuite.cycleBudgetLimit()">${window.PromptBudget ? (PromptBudget.get().auto !== false && PromptBudget.get().autoLimitChars ? "🔎 自适应 · " + (PromptBudget.get().limit / 1e4).toFixed(1) + " 万字符" : (PromptBudget.get().limit / 1e4).toFixed(0) + " 万字符") + "（点击切换）" : "—"}</button></div>
+            <div class="st-note">🔎 自适应：按主接口模型的上下文窗口自动定预算（如 32K 上下文 ≈ 1.6 万字符）；点上面的按钮可切换成手动档位，循环到底回到自适应。</div>
             <div class="st-note">超预算时按"先丢最不值"裁剪：知识库背景 → 前景检索 → 反八股 → 历史最旧（保底12条）→ 场域注记 → 前情提要；系统提示词 / 设定卡 / 状态面板 / 本轮指令永不裁</div>
         </div>
         <div class="st-sec">
@@ -2493,13 +2497,18 @@ ${(() => {
       PromptBudget.save({ enabled: !cfg.enabled });
       if (state.open && state.tab === "settings") renderTab();
     },
-    /** v3.5.0 预算上限档位循环：8万 / 11万 / 15万 / 20万字符 */
+    /** v3.5.0 预算上限档位循环：8万 / 11万 / 15万 / 20万字符；v3.55.17 末尾回到自适应 */
     cycleBudgetLimit() {
       if (!window.PromptBudget) return;
       const steps = [8e4, 11e4, 15e4, 2e5];
-      const cur = PromptBudget.get().limit;
-      const next = steps[(steps.indexOf(cur) + 1) % steps.length] || 11e4;
-      PromptBudget.save({ limit: next });
+      const cfg = PromptBudget.get();
+      if (cfg.auto !== false && cfg.autoLimitChars > 0) {
+        PromptBudget.save({ limit: steps[0], auto: false });
+      } else {
+        const idx = steps.indexOf(cfg.limit);
+        if (idx < 0 || idx === steps.length - 1) PromptBudget.save({ auto: true });
+        else PromptBudget.save({ limit: steps[idx + 1], auto: false });
+      }
       if (state.open && state.tab === "settings") renderTab();
     },
     /** v3.2.0 一键设定集：全量档案导出为独立 HTML */
