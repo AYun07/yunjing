@@ -76,18 +76,49 @@ const StoryKnowledge = {
       el.onerror = () => resolve(false);
       (document.head || document.documentElement).appendChild(el);
     });
-    window.__kbLoading = loadOne(`js/kb/${g}.js?v=${v}`).then(async (ok) => {
+    /* v3.55.28：世界书二次拆分——进界先挂 core（常驻/高优先，最大约 45KB，原整包最大 411KB），
+       其余条目由 ext 在空闲时补齐并自动补注入，玩家感知不到先后，进界不再背整包下载 */
+    window.__kbLoading = loadOne(`js/kb/${g}.core.js?v=${v}`).then(async (ok) => {
       if (ok && window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
         window.__KB_SPLIT_OK__ = true;
+        this._loadExt(g, v, loadOne);
         return true;
       }
-      /* 该界没有独立文件（或路径 404）→ 回退整包，功能优先于体积 */
-      const ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+      /* 该界没有独立文件（或路径 404）→ 回退整包，但先查索引，别为一条都没有的界白下 9MB */
+      let ok2 = false;
+      try {
+        const idx = await fetch(`js/kb/_index.json?v=${v}`).then((r) => r.ok ? r.json() : null).catch(() => null);
+        if (idx && idx.genres && !idx.genres[g]) {
+          console.warn(`[StoryKnowledge] 整包预置库无「${g}」条目，跳过 9MB 整包下载`);
+        } else {
+          ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+        }
+      } catch (e) {
+        ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+      }
       window.__KB_SPLIT_OK__ = ok2;
       if (!ok2) console.warn("[StoryKnowledge] 世界书加载失败：本界将只有玩家自建条目");
       return ok2;
     });
     return window.__kbLoading;
+  },
+  /** 空闲补齐世界书扩展包（core 之外的条目），补齐后自动并入知识库并落盘 */
+  _loadExt(g, v, loadOne) {
+    if (window.__kbExtLoaded === g) return;
+    window.__kbExtLoaded = g;
+    const self = this;
+    const go = function () {
+      loadOne(`js/kb/${g}.ext.js?v=${v}`).then(function (ok) {
+        if (!ok) return;
+        const presets = (window.KB_PRESETS && window.KB_PRESETS[g]) || [];
+        const added = self._mergePresets(presets);
+        if (added) self.save({ silent: true });
+        try { document.dispatchEvent(new CustomEvent("story:kb-ext-ready", { detail: { genre: g, added } })); } catch (e) { }
+        if (added) console.log(`[StoryKnowledge] 世界书扩展包已补齐 ${added} 条（${g}）`);
+      });
+    };
+    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 3000 });
+    else setTimeout(go, 800);
   },
   _loadGlobal() {
     try {
