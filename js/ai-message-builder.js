@@ -386,6 +386,18 @@ function buildPlayerIdentityCard(setup, config) {
   else if (setup.timeline) parts.push(`时代节点：${setup.timeline}${setup.timelineDesc ? `（${setup.timelineDesc}）` : ""}`);
   if (setup.customAptitude) parts.push(`资质天赋：自定义资质——玩家亲笔设定（严格执行，成长际遇按此倾向展开）：${setup.customAptitude}`);
   else if (setup.aptitude) parts.push(`资质天赋：${setup.aptitude}${setup.aptitudeDesc ? `（${setup.aptitudeDesc}）` : ""}`);
+  /* v3.55.25 天赋社会反响（世界自适应）：资质不是静态标签，而是这个世界里
+     被人掂量、被人争夺的社会事实——顶级天赋不该再默默无闻当外门弟子。 */
+  if (setup.customAptitude || setup.aptitude) {
+    parts.push(
+      `【天赋社会反响（世界自适应，必须执行）】\n` +
+      `· 先定档：按本世界世界观与世界书，评估玩家资质在本世界的稀有度——顶级（万中无一，足以惊动顶尖势力）/ 稀有（强宗名门争抢）/ 中平 / 低劣（被认为前途有限）。定档以本世界的共识为准，不由现实常识决定。\n` +
+      `· 顶级/稀有且已暴露：知情者必须给出相称的对待——高层亲自过问、势力抢着收徒、稀缺资源与功法主动倾斜、旁观者另眼相看、好感与重视度显著更高；同时也招来嫉妒、拉拢与算计。玩家开局即为顶级天赋时，不得仍按普通弟子剧本安排其起点。\n` +
+      `· 低劣天赋：倨傲、势利、以天赋论人的角色会轻视、冷落、克扣；但温和厚道或阅历深的角色不以天赋取人，照常相待甚至暗中扶持——世界不只有一个腔调，白眼与善意并存。\n` +
+      `· 隐瞒有效：玩家刻意藏拙时，不知情者一律按表面表现对待，任何人不得未卜先知；一旦暴露（测试、出手、传开），上述反响按规则补上并持续发酵、口耳相传。\n` +
+      `· 反响写进剧情：用具体人物的具体言行呈现（谁改了口、谁递了什么、谁皱了眉），同步体现在变量块的好感/态度与后续际遇分配上，不得只在旁白空喊。`
+    );
+  }
   if (setup.customPerspective) parts.push(`叙述视角：自定义视角——玩家亲笔设定（严格执行）：${setup.customPerspective}`);
   else if (setup.perspective) parts.push(`叙述视角：${setup.perspective}${setup.perspectiveDesc ? `（${setup.perspectiveDesc}）` : ""}`);
   if (setup.customScale) parts.push(`游玩规模：自定义规模——玩家亲笔设定（节奏与长度按此把握）：${setup.customScale}`);
