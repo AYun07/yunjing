@@ -185,6 +185,27 @@
     }
     html += "</div>";
 
+    /* v3.55.22 长程记忆体检：几千楼也不忘剧情、不掉格式的运行状态一览 */
+    try {
+      var fwL = window.storyFramework;
+      var histL = (fwL && fwL.storyState && fwL.storyState.conversationHistory) || [];
+      var dgL = (fwL && fwL.storyState && fwL.storyState.digest) || {};
+      var upToL = Number(dgL.upToIndex) || 0;
+      var covL = histL.length ? Math.min(upToL, histL.length) : 0;
+      var covPct = histL.length ? Math.round(covL / histL.length * 100) : 0;
+      var blksL = (dgL.blocks || []).length;
+      var trOn = false;
+      try { trOn = !!(fwL && localStorage.getItem(fwL.getSaveKey() + ".tr")); } catch (e2) {}
+      var retrL = window.TranscriptRetrieval && TranscriptRetrieval.stats ? TranscriptRetrieval.stats() : null;
+      var estTok = 0;
+      for (var ti = 0; ti < histL.length; ti++) estTok += Math.ceil(String(histL[ti] && histL[ti].content || "").length / 1.6);
+      var memHtml = '<div class="ctx-cat-line"><b>总楼层</b>' + histL.length + " 楼（≈" + (estTok > 10000 ? (estTok / 10000).toFixed(1) + "万" : estTok) + " 字原文）</div>";
+      memHtml += '<div class="ctx-cat-line"><b>全量存档</b>' + (trOn ? "✅ IndexedDB 已启用（刷新不丢楼）" : "⚠ 未启用（仅内联最近 80 轮）") + "</div>";
+      memHtml += '<div class="ctx-cat-line"><b>前情提要</b>已压缩 ' + covL + "/" + histL.length + " 楼（" + covPct + "%）" + (blksL ? " · 章节存档 " + blksL + " 段" : "") + "</div>";
+      if (retrL) memHtml += '<div class="ctx-cat-line"><b>旧章检索</b>BM25 已索引 ' + retrL.indexed + " 楼" + (window.KBVector && KBVector.isOn() ? " + 向量精排 ✅" : "（纯本地）") + "</div>";
+      html += section("🧠 长程记忆体检", memHtml);
+    } catch (eL) {}
+
     /* 机缘归属：世界动态性的那一栏 */
     html += section("🔑 机缘归属（唯一性）", led.length ? led.map(function (x) {
       var tag = x.holder === "player" ? '<i class="ctx-tag mine">已归玩家</i>' : '<i class="ctx-tag other">归' + esc(x.who || "他人") + "</i>";

@@ -4,11 +4,11 @@ const StoryResponseHandler = {
     const fw = window.storyFramework;
     const parser = window.VariableInstructionParser;
     let reply = window.stripAIThink ? window.stripAIThink(rawReply) : rawReply;
-    /* v3.47.18 咩咩专用正则：在解析变量/选项/正文之前先过一遍，
+    /* v3.47.18 某预设专用正则：在解析变量/选项/正文之前先过一遍，
        让 <selection> 变成【行动选项】（这样云境既有的选项按钮能直接接管），
        并让"去 AI 味"清理的结果贯穿变量解析、选项提取与存档。 */
-    reply = window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.enabled()
-      ? window.MoMiaomiaoRegex.preParse(reply)
+    reply = window.旧预设正则 && window.旧预设正则.enabled()
+      ? window.旧预设正则.preParse(reply)
       : reply;
     const oldCh = Number(fw.storyState.variables && fw.storyState.variables.chapter) || 0;
     const { newVariables, updateBlock } = parser.parse(reply, fw.storyState.variables, { storyRegistration: true });
@@ -371,14 +371,14 @@ const StoryResponseHandler = {
     const IG = window.StoryImageGen;
     const bodyForCount = IG && IG.stripMarkers ? IG.stripMarkers(body) : body;
     const words = bodyForCount ? bodyForCount.replace(/\s/g, "").length : 0;
-    /* v3.47.18 咩咩专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
+    /* v3.47.18 某预设专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
        从正文里抽出来渲染成折叠卡片 —— 否则它们会以裸 XML 落在正文里。
-       v3.51.0：改为 always —— 即使玩家把「咩咩正则」总开关关掉，也只停用"去 AI 味"，
+       v3.51.0：改为 always —— 即使玩家把「某预设正则」总开关关掉，也只停用"去 AI 味"，
        协议块照旧收进卡片，绝不把 <status> 原样吐在正文里。 */
     let prose = body;
     let cardsHtml = "";
-    if (window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.process) {
-      const rg = window.MoMiaomiaoRegex.process(body, { always: true });
+    if (window.旧预设正则 && window.旧预设正则.process) {
+      const rg = window.旧预设正则.process(body, { always: true });
       prose = rg.prose;
       cardsHtml = rg.cardsHtml || "";
     }
@@ -413,7 +413,7 @@ const StoryResponseHandler = {
       const dramatic = !!(window.ImmersionPlus && window.ImmersionPlus.isDramatic && window.ImmersionPlus.isDramatic(label));
       /* v3.55.6 云起专属美化：行动选项美化开着 → 序号徽章 + yq-opts 皮肤；
          关闭时回退朴素按钮（纯文本序号）。 */
-      const yqOptOn = !!(window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.ruleOn && window.MoMiaomiaoRegex.ruleOn("云起·行动选项美化"));
+      const yqOptOn = !!(window.旧预设正则 && window.旧预设正则.ruleOn && window.旧预设正则.ruleOn("云起·行动选项美化"));
       html += `<div class="options-area${dramatic ? " dramatic" : ""}${yqOptOn ? " yq-opts" : ""}"><div class="options-title">▸ ${this.escapeHtml(label)}</div>`;
       options.forEach((opt, i) => {
         const delay = dramatic ? ` style="animation-delay:${(0.18 + i * 0.35).toFixed(2)}s"` : "";
@@ -442,7 +442,7 @@ const StoryResponseHandler = {
             </div>
         `;
     card.innerHTML = html;
-    this.tagTurnCard(card);
+    this.tagTurnCard(card, opts && opts.turnOverride);
     container.appendChild(card);
     if (window.StoryImageGen && window.StoryImageGen.processCard) {
       const fw = window.storyFramework;
@@ -451,13 +451,27 @@ const StoryResponseHandler = {
         if (fw.replayTurnCursor != null) {
           const snap = (fw.storyState.turns || [])[fw.replayTurnCursor];
           turn = snap && typeof snap.index === "number" ? snap.index : null;
+        } else if (opts && opts.turnOverride != null) {
+          turn = opts.turnOverride;
         } else {
           turn = fw.currentTurnIndex();
         }
       }
       window.StoryImageGen.processCard(card, { live: opts.live !== false, turn });
     }
-    this.scrollToBottom();
+    /* v3.55.22 聊天虚拟化：虚拟器激活时，把新楼同步给它（状态同步 + DOM 上限裁剪），
+       卡片已由本方法挂到 #chatMessages；窗口化重建（fromVirtualizer）时仅追加不重复登记 */
+    if (window.ChatVirtualizer && ChatVirtualizer.active) {
+      if (!(opts && opts.noScroll)) this.scrollToBottom();
+      if (!opts || !opts.fromVirtualizer) {
+        ChatVirtualizer.onAppendLive({
+          role: "assistant", content: body, body, block: updateBlock,
+          options, vars, label: optionsLabel, turn: (opts && opts.turnOverride)
+        });
+      }
+    } else {
+      this.scrollToBottom();
+    }
   },
   /**
    * 给聊天流卡片打上当前轮次标签（data-turn）
@@ -909,7 +923,7 @@ const StoryResponseHandler = {
     }
     return out;
   },
-  renderSystemMessage(text, type = "info") {
+  renderSystemMessage(text, type = "info", opts) {
     const container = document.getElementById("chatMessages");
     if (!container) return;
     const chatArea = document.getElementById("chatArea");
@@ -919,19 +933,27 @@ const StoryResponseHandler = {
     const card = document.createElement("div");
     card.className = `message-card system-card ${type}`;
     card.innerHTML = `<div class="system-inner">${this.escapeHtml(text)}</div>`;
-    this.tagTurnCard(card);
+    this.tagTurnCard(card, opts && opts.turnOverride);
     container.appendChild(card);
-    this.scrollToBottom();
+    if (!(opts && opts.noScroll)) this.scrollToBottom();
   },
-  renderUserMessage(text) {
+  renderUserMessage(text, opts) {
     const container = document.getElementById("chatMessages");
     if (!container) return;
     const card = document.createElement("div");
     card.className = "message-card user-card";
     card.innerHTML = `<div class="user-inner"><span class="user-tag">☞ 你的指令</span>${this.escapeHtml(text)}</div>`;
-    this.tagTurnCard(card);
+    this.tagTurnCard(card, opts && opts.turnOverride);
     container.appendChild(card);
-    this.scrollToBottom();
+    /* v3.55.22 聊天虚拟化：激活时把新楼同步给虚拟器（仅追加，不重复登记窗口化重建） */
+    if (window.ChatVirtualizer && ChatVirtualizer.active) {
+      if (!(opts && opts.noScroll)) this.scrollToBottom();
+      if (!opts || !opts.fromVirtualizer) {
+        ChatVirtualizer.onAppendLive({ role: "user", content: text, turn: (opts && opts.turnOverride) });
+      }
+    } else {
+      this.scrollToBottom();
+    }
   },
   scrollToBottom() {
     const container = document.getElementById("chatMessages");

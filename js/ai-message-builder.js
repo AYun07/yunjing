@@ -53,7 +53,7 @@ function buildFreedomDirective(isRP) {
 }
 async function buildStoryMessages(userMessage) {
   var _a;
-  /* v3.55.4 咩咩预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
+  /* v3.55.4 某预设预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
   if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
   const fw = window.storyFramework;
   const config = fw.config;
@@ -65,7 +65,7 @@ async function buildStoryMessages(userMessage) {
     messages.push(msg);
   };
   const vaOn = !!(window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()));
-  /* v3.55.10 基础小模型适配：轻量协议块替代全量咩咩预设，知识库背景与
+  /* v3.55.10 基础小模型适配：轻量协议块替代全量某预设预设，知识库背景与
      生图/沉浸指令暂停加载（强模型用户不受影响） */
   const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isLite());
   const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
@@ -138,33 +138,33 @@ stats.张力: +5
        知识库条目在上下文里离得远，实测模型会忽略它写到上万字 */
     lengthRule = '\n【篇幅硬约束】本轮正文严格落在 ' + range + ' 字之间（变量块与行动选项不计）。写到位靠分层推进：场景、动作、对白、心理、感官细节各给一点，严禁复读原文、同义堆砌、注水凑字；一次只需要写出本轮该有的那一段，把后面的留给下一轮。明显超出上限即视为不合格。\n';
   } catch (e) { lengthRule = ''; }
-  // v3.47.17 内嵌咩咩预设：整份预设渲染（含该世界的适配文风）作为第二段 system
+  // v3.47.17 内嵌某预设预设：整份预设渲染（含该世界的适配文风）作为第二段 system
   // 说明：不改预设任何 prompt 文本，只在渲染时按 genreKey 选中文风档、关掉出厂默认的日轻档
-  let miaomiaoBlock = '';
+  let 旧预设Block = '';
   try {
     if (bmmOn && window.BaseModelMode && window.BaseModelMode.buildLitePreset) {
       /* v3.55.10 基础小模型适配：小模型注意力有限，全量预设（数万字协议）
          换成 ~1.4k 字的云心精简核心（实测协议遵从率反而更高） */
-      miaomiaoBlock = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
-    } else if (window.MoMiaomiaoBridge && window.MoMiaomiaoBridge.render) {
-      miaomiaoBlock = window.MoMiaomiaoBridge.render({
+      旧预设Block = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
+    } else if (window.旧预设桥 && window.旧预设桥.render) {
+      旧预设Block = window.旧预设桥.render({
         char: (state.setup && state.setup.playerName) || '主角',
         user: '你'
       }) || '';
     }
   } catch (e) {
-    console.warn('[咩咩预设] 渲染失败，已跳过:', e);
-    miaomiaoBlock = '';
+    console.warn('[某预设预设] 渲染失败，已跳过:', e);
+    旧预设Block = '';
   }
   /* v3.55.17 云境核心契约 · 预设解耦注入
-     问题：玩家用「导入 SillyTavern 预设」整份替换内置预设后，那份预设里没有云境的
+     问题：玩家用「导入 常见前端工具 预设」整份替换内置预设后，那份预设里没有云境的
      六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
      六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
      对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
-     才补（云起预设 / 小模型精简核心 / 内置咩咩预设均自带上文，不会重复注入）。 */
+     才补（云起预设 / 小模型精简核心 / 内置某预设预设均自带上文，不会重复注入）。 */
   let coreContract = '';
   try {
-    const hasCoreOpts = /【快进】/.test(miaomiaoBlock) && /【成人】/.test(miaomiaoBlock);
+    const hasCoreOpts = /【快进】/.test(旧预设Block) && /【成人】/.test(旧预设Block);
     if (!hasCoreOpts) {
       coreContract = `
 【云境核心契约（优先级高于上方一切预设；与之冲突时，一律以本节为准）】
@@ -181,7 +181,7 @@ stats.张力: +5
     }
   } catch (e) { coreContract = ''; }
   const system = `${systemPrompt}
-${miaomiaoBlock ? '\n' + miaomiaoBlock + '\n' : ''}${coreContract}
+${旧预设Block ? '\n' + 旧预设Block + '\n' : ''}${coreContract}
 ${fictionPreamble}
 ${scaleDirective ? '\n' + scaleDirective + '\n' : ''}
 ${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
@@ -201,12 +201,25 @@ ${digest}` });
     if (!bmmOn) for (const m of storyKB.buildBackgroundKnowledge()) push(m, "知识库·背景", 10);
   }
   const recap = state.digest;
-  if (recap && recap.summary) {
+  if (recap && (recap.summary || (recap.blocks && recap.blocks.length))) {
+    /* v3.55.22 分层记忆：滚动摘要（近章）+ 章节存档块（远章浓缩档案），两级都必须延续 */
+    const arch = window.RecapEngine && RecapEngine.archiveBlock ? RecapEngine.archiveBlock() : "";
     push({ role: "system", content: `【前情提要（较早章节的自动摘要，剧情连贯性依据，必须严格延续）】
-${recap.summary}` }, "前情提要", 60);
+${recap.summary || "（近章暂无）"}${arch ? `
+
+【更早章节存档（更远剧情的浓缩档案，其中的事实同样不得矛盾或遗忘）】
+${arch}` : ""}` }, "前情提要", 60);
   }
   const memMsg = window.MemoryLayers && window.MemoryLayers.buildInjection ? window.MemoryLayers.buildInjection(userMessage, state.conversationHistory) : null;
   if (memMsg) push(memMsg, "长期记忆", 65);
+  /* v3.55.22 双通道召回：全楼层 BM25（+可选向量精排）检索与本轮输入相关的旧楼原文，
+     摘要保梗概、检索保细节——几千楼前的伏笔仍能被精确想起 */
+  if (window.TranscriptRetrieval) {
+    try {
+      const retr = await TranscriptRetrieval.buildInjection(userMessage, state);
+      if (retr) push({ role: "system", content: retr }, "旧章召回", 55);
+    } catch (e) { console.warn("[长程召回] 失败（静默跳过）:", e && e.message); }
+  }
   const recent = state.conversationHistory.slice(-17, -1);
   for (const msg of recent) {
     if (!msg || !msg.role || msg.content == null) continue;
@@ -278,6 +291,18 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
   }
   const sceneMsg = window.SceneState && window.SceneState.buildInjection ? window.SceneState.buildInjection() : null;
   if (sceneMsg) push(sceneMsg, "舞台现状", 55);
+  /* v3.55.22 格式契约：贴着生成位置重申输出骨架——几千楼后上下文变长，
+     预设里的格式定义离得远、注意力稀释导致格式漂移（状态栏丢字段、选项缩水、
+     变量块漏闭合），这条在末尾兜底，不依赖任何预设文本。
+     变量块条款跟随 vaOn：变量AI 模式下变量登记由独立系统完成，正文严禁带块。 */
+  const fmtVarLine = vaOn
+    ? `2) 严禁输出任何变量更新块、状态指令或数值面板——状态登记由独立系统完成；`
+    : `2) 变量更新块（(variable_update)…(/variable_update)）与此前楼层格式完全一致，标签成对闭合；`;
+  push({ role: "system", content: `【格式契约（无论写到第几千楼，每一楼都必须完整遵守）】
+1) 正文为中文小说体，台词用「」，段落充分展开，严禁因楼层变多而缩短篇幅或改写概括式流水账；
+${fmtVarLine}
+3) 正文后必须输出【行动选项】，六类（快进/交互/整活/慢推/时空/成人）各一条、顺序固定、格式照旧，严禁省略或合并；
+4) 除上述骨架外，不得输出任何状态面板、数值清单或 OOC 说明。` }, "格式契约", 90);
   push({ role: "user", content: userMessage });
   return window.PromptBudget && PromptBudget.finalize(messages, segs) || messages;
 }
@@ -366,7 +391,7 @@ function buildPlayerIdentityCard(setup, config) {
   if (setup.customScale) parts.push(`游玩规模：自定义规模——玩家亲笔设定（节奏与长度按此把握）：${setup.customScale}`);
   else if (setup.scale) parts.push(`游玩规模：${setup.scale}${setup.scaleDesc ? `（${setup.scaleDesc}）` : ""}`);
   if (setup.background) parts.push(`身世自述：${setup.background}`);
-  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌咩咩预设开启时由预设的本土文风块承载
+  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌某预设预设开启时由预设的本土文风块承载
      （更细），这里作为兜底——预设关闭时玩家选的文风仍要生效。 */
   if (setup.customStyle) parts.push(`文风基调：自定义文风——玩家亲笔设定（严格执行，正文全程贯彻）：${setup.customStyle}`);
   else if (setup.style) parts.push(`文风基调：${setup.style}${setup.styleDesc ? `（${setup.styleDesc}）` : ""}`);
