@@ -7624,7 +7624,8 @@
   }
   function matchNode(genre, rawLoc) {
     if (!rawLoc) return null;
-    const parts = String(rawLoc).split(/[,，、\/]|(?:->|→|至|到)/).map(norm).filter((v) => v.length >= 2);
+    /* v3.55.23 「·」也分段——「越国·黄枫谷」应命中预置「黄枫谷」，而不是拿前缀造动态地标 */
+    const parts = String(rawLoc).split(/[,，、\/·・]|(?:->|→|至|到)/).map(norm).filter((v) => v.length >= 2);
     if (!parts.length) return null;
     const nodes = allNodes(genre);
     let last = null;
@@ -7643,7 +7644,8 @@
   }
   function resolveLocation(genre, rawLoc, round) {
     if (!rawLoc) return null;
-    const parts = String(rawLoc).split(/[,，、\/]|(?:->|→|至|到)/).map(norm).filter((v) => v.length >= 2);
+    /* v3.55.23 「·」也分段（与 matchNode 同口径）——「越国·黄枫谷」直接命中预置「黄枫谷」 */
+    const parts = String(rawLoc).split(/[,，、\/·・]|(?:->|→|至|到)/).map(norm).filter((v) => v.length >= 2);
     if (!parts.length) return null;
     const nodes = allNodes(genre);
     const findPreset = (v) => nodes.find((n) => !n.dyn && (norm(n.n) === v || (n.aliases || []).some((a) => norm(a) === v))) || nodes.find((n) => !n.dyn && v.includes(norm(n.n)) && norm(n.n).length >= 2) || nodes.find((n) => !n.dyn && norm(n.n).includes(v));
@@ -7736,10 +7738,69 @@
   }
   function removeDyn(id) {
     state.dyn = (state.dyn || []).filter((d) => d.id !== id);
-    state.visits = state.visits.filter((v) => v.id !== id);
-    if (state.currentId === id) state.currentId = null;
+    state.visits = state.visits.filter((v) => v.id !== id);    if (state.currentId === id) state.currentId = null;
     save();
     if (state.open) render();
+  }
+  /* v3.55.23 资料库上地图：把本界资料库的地理条目落成地图节点——
+     预置舆图里已有的直接挂说明，没有的按名称就近锚定生成 📚 资料库地标；
+     人物/势力条目回填到其锚定地点，作为「此地相关」展示 */
+  function syncFromWorldBook() {
+    if (!(window.WorldBook && WorldBook.byCat && window.storyFramework)) return 0;
+    const genre = state.genre;
+    if (!genre) return 0;
+    /* 种子词条可能还没落库（首次开局未发过消息）——先确保种子存在 */
+    try { if (WorldBook.ensureSeed) WorldBook.ensureSeed(); } catch (e) {}
+    let added = 0;
+    const geo = WorldBook.byCat("地理") || [];
+    const people = (WorldBook.byCat("人物") || []).concat(WorldBook.byCat("势力") || []);
+    /* 严格去重：预置节点名/别名 或 已有动态地标的精确同名（不做模糊包含，
+       否则「越国·黄枫谷」会因包含「越国」被误判为已上图） */
+    const known = (nm) => {
+      const v = norm(nm);
+      if (!v) return true;
+      const preset = allNodes(genre).find((n) => norm(n.n) === v || (n.aliases || []).some((a) => norm(a) === v));
+      if (preset) return preset;
+      return (state.dyn || []).find((d) => norm(d.n) === v || (d.aliases || []).some((a) => norm(a) === v)) || null;
+    };
+    for (const e of geo) {
+      if (!e || !e.name) continue;
+      const hit = known(e.name);
+      if (hit) {
+        if (hit.dyn && !hit.desc && e.text) {
+          hit.desc = e.text;
+          hit.c = "📚 本界资料库 · 地理";
+          hit.src = "wb";
+        }
+        continue;
+      }
+      const poi = resolveLocation(genre, e.name, 0);
+      if (poi && poi.dyn) {
+        poi.desc = e.text || "";
+        poi.c = "📚 本界资料库 · 地理";
+        poi.src = "wb";
+        added++;
+      }
+      /* resolveLocation 命中预置节点（如「越国·七玄门」→ 预置「彩霞山·七玄门」）则无需上图 */
+    }
+    /* 人物/势力条目：找到其名称/文本里提到的地图地点，挂为该地相关 */
+    for (const p of people) {
+      if (!p || !p.name) continue;
+      let host = null;
+      for (const n of allNodes(genre)) {
+        if ((p.text || "").includes(n.n) || (p.name || "").includes(n.n)) { host = n; break; }
+      }
+      if (host && !host.related) host.related = [];
+      if (host && !host.related.some((r) => r.n === p.name)) {
+        host.related.push({ n: p.name, cat: p.cat || "人物", text: (p.text || "").slice(0, 60) });
+        if (host.related.length > 6) host.related.shift();
+      }
+    }
+    if (added) {
+      save();
+      if (state.open) render();
+    }
+    return added;
   }
   function playerName() {
     const fw = window.storyFramework;
@@ -8196,7 +8257,9 @@
                 <div class="ad-badges">${badge}<span class="ab">${typeTxt(node.t)}</span><span class="ab">${node.rg}</span></div>
             </div>
             <div class="ad-row"><span>危险度</span><span class="ad-v">${dangerStars(node.d, P)}</span></div>
-            <div class="ad-desc">${node.dyn ? isTraceMode() ? `此处不在预置舆图之上——第 ${node.round} 回合你的行踪落在「${node.raw}」，行旅图鉴随行迹落笔生成此地，坐落于「${node.anchorN}」一带。` : `此处不在原著舆图之上——第 ${node.round} 回合你的行踪落在「${node.raw}」，行旅图鉴随剧情落笔生成此地，坐落于「${node.anchorN}」一带。` : node.desc}</div>
+            <div class="ad-desc">${node.dyn && !node.src ? isTraceMode() ? `此处不在预置舆图之上——第 ${node.round} 回合你的行踪落在「${node.raw}」，行旅图鉴随行迹落笔生成此地，坐落于「${node.anchorN}」一带。` : `此处不在原著舆图之上——第 ${node.round} 回合你的行踪落在「${node.raw}」，行旅图鉴随剧情落笔生成此地，坐落于「${node.anchorN}」一带。` : node.desc || ""}</div>
+            ${node.dyn && node.src === "wb" ? `<div class="ad-canon" style="border-left-color:${hexA(P.accent, 0.6)};">📚 资料库地标 · 来自本界资料库的地理条目，随资料库增补自动上图</div>` : ""}
+            ${node.related && node.related.length ? `<div class="ad-canon" style="border-left-color:${hexA(P.primary, 0.5)};">此地相关：${node.related.map((r) => r.cat + "「" + r.n + "」").join(" · ")}</div>` : ""}
             ${routes.length ? `<div class="ad-route">古道通连 · ${routes.join(" ↔ ")}</div>` : ""}
             ${node.dyn ? `<div class="ad-canon" style="border-left-color:${hexA(P.accent, 0.6)};">${isTraceMode() ? "✦ 行迹地标 · 由 AI 上报行踪实时生成，随经历累积；如系误报可移除" : "✦ 剧情地标 · 由 AI 上报行踪实时生成，随剧情累积；如系误报可移除"}</div>
                    <button class="ad-del" onclick="StoryAtlas.removeDyn('${node.id}')">✕ 移除此地标</button>` : `<div class="ad-canon" style="border-left-color:${hexA(P.primary, 0.55)};">${isTraceMode() ? "风土地理志" : "原著地理志"} · ${node.c}</div>`}
@@ -8240,6 +8303,17 @@
             </div>
             <div class="atlas-map" style="border-color:${hexA(P.primary, 0.3)};">${layerSvg(layer)}</div>
             <div id="atlasDetail"></div>
+            ${(() => {
+              try {
+                const tl = window.CanonTimeline && CanonTimeline.all ? CanonTimeline.all() : [];
+                if (!tl.length) return "";
+                const ST = CanonTimeline.STATUS;
+                return `<div class="atlas-storm"><div class="as-t">风云 · 大势演化账本</div>` + tl.slice(0, 6).map((x) => {
+                  const st = ST[x.status] || ST.pending;
+                  return `<div class="as-row" title="${(x.trigger ? "诱因：" + x.trigger + "　" : "") + (x.now ? "现状：" + x.now : "")}"><span class="as-ico">${st.ico}</span><b>${x.name}</b><i>${st.name}</i>${x.trigger ? `<span class="as-tr">${x.trigger}</span>` : ""}</div>`;
+                }).join("") + `</div>`;
+              } catch (e) { return ""; }
+            })()}
             <div class="atlas-legend">
                 <span><i class="lg lg-cur" style="background:${P.primary};box-shadow:0 0 5px ${P.primary};"></i>当前</span>
                 <span><i class="lg" style="background:${hexA(P.primary, 0.9)};"></i>已到访</span>
@@ -8428,6 +8502,8 @@
         if (vars) onVars(vars);
       } catch (e) {
       }
+      /* v3.55.23 打开面板即同步资料库地理条目上地图（幂等，已登记的不重复落） */
+      try { syncFromWorldBook(); } catch (e) {}
       render();
       ov.classList.add("on");
       pn.classList.add("on");
@@ -8548,6 +8624,12 @@
         .lg-fog{background:transparent;border:1px dashed var(--text-muted,#a8a290);}
         .lg-road{width:16px;height:0;border-top:1.5px dashed color-mix(in srgb,var(--primary,#c9a86a) 55%,transparent);}
         .lg-hint{opacity:.7;}
+        .atlas-storm{margin:8px 0 0;border:1px solid color-mix(in srgb,var(--panel-border,rgba(200,170,110,.25)) 80%,transparent);border-radius:10px;padding:8px 10px;background:rgba(127,127,127,.05);}
+        .atlas-storm .as-t{font-size:11px;letter-spacing:2px;color:var(--accent,#8ab0c8);margin-bottom:5px;opacity:.9;}
+        .atlas-storm .as-row{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text,#e9e6da);line-height:1.8;min-width:0;}
+        .atlas-storm .as-row b{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .atlas-storm .as-row i{font-style:normal;font-size:10px;border:1px solid rgba(200,170,110,.3);border-radius:99px;padding:0 6px;color:var(--accent,#8ab0c8);white-space:nowrap;}
+        .atlas-storm .as-tr{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.65;font-size:10.5px;}
         @media (max-width:560px){#atlasPanel{width:100vw;}.atlas-svg{max-height:47vh;min-height:280px;}.atlas-map{min-height:280px;}}
         `;
     document.head.appendChild(st);
@@ -8563,6 +8645,10 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && state.open) toggle(false);
     });
+    /* v3.55.23 资料库增补地理条目时，自动同步上地图 */
+    if (window.WorldBook && WorldBook.onChange) {
+      WorldBook.onChange(() => { try { syncFromWorldBook(); } catch (e) {} });
+    }
   }
   const StoryAtlas = {
     toggle,
@@ -8571,6 +8657,9 @@
     init,
     resetFootprint,
     removeDyn,
+    syncFromWorldBook,
+    /* v3.55.23 当前图上「资料库地标」数量（syncFromWorldBook 幂等，落过即不再重复） */
+    wbCount: function () { return (state.dyn || []).filter((d) => d.src === "wb").length; },
     data: ATLAS_DATA,
     reset: function() {
       state.visits = [];

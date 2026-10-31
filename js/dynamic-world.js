@@ -366,10 +366,11 @@ ${tlLines ? tlLines + "\n" : ""}- ${hero}身边的登场人物：${nearChars}
 ${tl.era ? `- 时代铁律：所有远方事件必须严格处于上述时代（${tl.era}）之内——科技、器物、称谓、物价、事件类型与时代氛围一律与该时代相符；出现不属于该时代的事物即为重大违规
 ` : ""}- 禁止描写${hero}正在做什么，禁止涉及${hero}当前场景与在场人物
 - 只写远方：不同地点的传闻、势力动态、环境变化
-- ${isRP ? "严格遵循《" + fw.config.genreName + "》原著设定（原著人物与势力按原著行动，不改变原著大势，不剧透未发生的关键转折）" : "贴合故事题材与既有伏笔，不剧透主线真相"}
+- ${isRP ? "严格遵循《" + fw.config.genreName + "》原著设定（原著人物与势力按其性格与处境行动，不剧透未发生的关键转折）；但原著大势不是铁轨——《大势演化账本》已登记的走向具有约束力：诱因已断的大事不得发生，已改变的大事按新形态推演，新生事件须推演其连锁后果" : "贴合故事题材与既有伏笔，不剧透主线真相"}
 ${isRP && window.StoryStance ? window.StoryStance.buildWorldClause(window.StoryStance.canonHeroName()) : ""}
 ${isRP && window.StoryIdentity ? window.StoryIdentity.buildWorldClause() : ""}
 ${window.CanonLedger ? window.CanonLedger.buildPromptBlock() : ""}
+${isRP && window.CanonTimeline ? window.CanonTimeline.buildPromptBlock() : ""}
 - 字数要求：正文至少${s.minWords || 200}字`;
     messages.push({ role: "user", content: context });
     const depth = Math.max(0, parseInt(s.historyDepth) || 5);
