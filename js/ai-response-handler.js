@@ -32,6 +32,11 @@ const StoryResponseHandler = {
       }
     } catch (e) { /* 保底不干扰主解析 */ }
     fw.storyState.variables = newVariables;
+    /* v3.55.23 行旅图鉴实时追踪：每轮变量落地即上报——AI 报了玩家新位置，
+       地图足迹与剧情地标立刻生成，不再等到打开面板才补读 */
+    try {
+      if (window.StoryAtlas && StoryAtlas.onVars) StoryAtlas.onVars(fw.storyState.variables);
+    } catch (e) {}
     const options = this.extractOptions(reply);
     const body = this.extractBody(reply, options);
     const IP = window.ImmersionPlus;
@@ -74,6 +79,14 @@ const StoryResponseHandler = {
         CanonLedger.parse(reply);
       } catch (e) {}
       body = body.replace(/\(claimed\)[\s\S]*?\(\/claimed\)/gi, "").replace(/【claimed】[\s\S]*?【\/claimed】/gi, "").replace(/<claimed>[\s\S]*?<\/claimed>/gi, "");
+    }
+    /* v3.55.23 大势演化账本：把 (world) 块吸收进大势账本（幂等），再从正文剥离——
+       诱因终结、大事改道、羁绊易主、新生事件，都从这里落账 */
+    if (window.CanonTimeline) {
+      try {
+        CanonTimeline.parse(reply);
+      } catch (e) {}
+      body = body.replace(/\(world\)[\s\S]*?\(\/world\)/gi, "").replace(/【world】[\s\S]*?【\/world】/gi, "").replace(/<world>[\s\S]*?<\/world>/gi, "");
     }
     /* v3.53.0：先摘掉迷你状态协议（(: 名.字段: 值; …)），再走常规剥离 */
     body = this._stripMiniStatus(body);

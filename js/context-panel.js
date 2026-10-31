@@ -212,6 +212,23 @@
       return card(esc(x.name), tag + (x.note ? '<span class="ctx-sub">' + esc(x.note) + "</span>" : "") + (x.round ? '<span class="ctx-sub">第' + esc(x.round) + "回合</span>" : ""));
     }).join("") : empty("尚无易主机缘。玩家从原著主角手里夺走什么，这里会永久记下——世界不会把它还回去。"), led.length);
 
+    /* v3.55.23 大势演化账本：原著大势可改——诱因可断、大事可改道、羁绊可易主、新事可生 */
+    try {
+      var ctlEvs = window.CanonTimeline ? CanonTimeline.all() : [];
+      var ctlBds = window.CanonTimeline ? CanonTimeline.allBonds() : [];
+      var STI = CanonTimeline ? CanonTimeline.STATUS : {};
+      var tlHtml = ctlEvs.map(function (x) {
+        var st = STI[x.status] || STI.pending;
+        var tag = '<i class="ctx-tag other">' + st.ico + " " + st.name + "</i>";
+        return card(esc(x.name), tag + (x.trigger ? '<span class="ctx-sub">诱因：' + esc(x.trigger) + "</span>" : "") + (x.now ? '<span class="ctx-sub">现状：' + esc(x.now) + "</span>" : ""));
+      }).join("") + ctlBds.map(function (b) {
+        var who = b.holder === "player" ? "玩家" : (b.holder === "canon" ? canon : (b.who || "他人"));
+        var tag = '<i class="ctx-tag ' + (b.holder === "player" ? "mine" : "other") + '">💞 ' + esc(who) + "</i>";
+        return card(esc(b.name), tag + (b.note ? '<span class="ctx-sub">' + esc(b.note) + "</span>" : ""));
+      }).join("");
+      html += section("🌊 大势账本（因果可改）", tlHtml || empty("原著大事按轨道酝酿。玩家终结诱因、改写际遇、羁绊易主时，主笔会上报 (world) 块落账——大势随因果而活。"), ctlEvs.length + ctlBds.length);
+    } catch (eT) {}
+
     html += section("👥 人物", chars.length ? chars.slice(0, 60).map(function (c) {
       var sub = fieldLine(c.fields) || c.value || "";
       return card(esc(c.name), sub ? '<span class="ctx-sub">' + sub + "</span>" : "");

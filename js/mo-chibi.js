@@ -353,6 +353,15 @@ const MoChibi = {
     if (window.WorldBook) {
       list.push({ ico: "📚", name: "本界资料库", note: "点开看 · 增补缺失的世界书 / 从故事抽取", act: () => window.WorldBook.open() });
     }
+    /* v3.55.23 大势演化账本：诱因可断、大事可改道、羁绊可易主、新事可生 */
+    if (window.CanonTimeline) {
+      const nEv = CanonTimeline.all().length, nBd = CanonTimeline.allBonds().length;
+      list.push({ ico: "🌊", name: "大势演化账本", note: nEv + nBd ? "大事 " + nEv + " · 羁绊 " + nBd + " · 因果可改" : "原著大势可改 · 诱因亡则事亡", act: () => window.CanonTimeline.open() });
+    }
+    /* v3.55.23 行旅图鉴：可视化动态地图——足迹点亮、剧情地标、资料库地理上图 */
+    if (window.StoryAtlas) {
+      list.push({ ico: "🗺", name: "行旅图鉴 · 世界地图", note: "足迹走到哪 · 点亮到哪", act: () => window.StoryAtlas.toggle(true) });
+    }
     /* v3.55.20 玩家身份（穿越者 / 土著）与主角关系（同伴 / 敌对 / 陌路） */
     if (window.StoryIdentity) {
       const idn = window.StoryIdentity.infoIdentity();
