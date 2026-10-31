@@ -282,6 +282,44 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="模块 稳定 体验" style="--entry-hue:#c8e8d8;">
+            <div class="log-head">
+                <span class="ver-chip">v3.55.28</span>
+                <span class="log-date">2026-10-31</span>
+                <span class="log-badge">分层加载 · 世界书瘦身</span>
+            </div>
+            <div class="tag-row">
+                <span class="tag" data-tag="模块" style="--tag-hue:#c8c8e0;">📦 模块</span>
+                <span class="tag" data-tag="稳定" style="--tag-hue:#c2d6e6;">🛡 稳定</span>
+                <span class="tag" data-tag="体验" style="--tag-hue:#d8c8a0;">✨ 体验</span>
+            </div>
+            <p><b>① 首屏分层加载（<code>js/lazy-boot.js</code>）</b>：此前首屏一次性串行拉取并解析 <b>2.78MB / 100 个脚本</b>，低端机开局要等好几秒白屏。现改为三层——<b>核心脚本首屏直出</b>、<b>42 个次要脚本首屏后分帧补载</b>、<b>25 个面板/工具模块真正按需加载</b>。实测首屏 <b>2.78MB → 0.67MB（-76%）</b>，首屏请求数 100 → 31。</p>
+            <p>按需模块<b>未加载时不是空的</b>：lazy-boot 为每个模块预埋"影子对象"，任何属性读取/方法调用都会<b>先加载真实脚本再透传执行</b>（同步调用场景直接返回，避免引擎拿到 Promise 静默降级）；用户一旦有交互，剩余模块在空闲帧自动预取，真用到时零等待。排障可加 <code>?yjlazy=0</code> 一键退回全量直出。</p>
+            <p><b>② 世界书二次拆分</b>：单界世界书此前整包挂载，最大的界一次要下 <b>411KB</b>。现拆成 <code>&lt;界&gt;.core.js</code>（常驻 + 高优先条目，进界即挂，<b>≤105KB</b>）+ <code>&lt;界&gt;.ext.js</code>（其余，空闲补齐）。<b>条目一条不少</b>——实测斗罗界 core 后叠加 ext 共 <b>488 条</b>，与原整包完全一致。</p>
+            <p><b>③ 离线缓存清单纠错</b>：Service Worker 预缓存此前<b>漏了 15 个核心脚本</b>（<code>attribute-engine</code> / <code>canon-*</code> / <code>chat-virtualizer</code> / <code>story-identity</code> / <code>lazy-boot</code> 等），离线模式下这些文件既不在缓存也拉不到网络，<b>直接白屏</b>；现已补齐。同时移除全库零引用的 <code>phone-alive / phone-apps / phone-social</code>（<b>268KB 死重</b>），并为无数据的界跳过 9MB 整包回退（新增 1KB 索引 <code>js/kb/_index.json</code>）。</p>
+            <p><b>④ 补上 <code>YJ_DEBUG</code></b>：此前代码只读不写这个开关，等于调试日志<b>永远打不开</b>；现支持 <code>?yjdebug=1</code> 开启。</p>
+            <p>✅ <b>实测</b>（本地 Chromium）：分层加载后首屏 0.67MB、控制台 0 报错 0 404，按需面板（图谱/沉浸/配置/手机）点击后真实加载并可用；千楼压测 IDB 104KB / DOM 619 节点 / 检索 47ms / 刷新 1000→1000 完整恢复、0 异常；六套逻辑单测 <b>41 / 45 / 16 / 17 / 30 / 34 全通过</b>；全部 JS 过 <code>node --check</code>；成品不含任何密钥；SW_VER = <code>yunjing-v3.55.28</code>。</p>
+        </article>
+
+        <article class="log-entry" data-tags="设定 稳定 模块" style="--entry-hue:#dcd0e8;">
+            <div class="log-head">
+                <span class="ver-chip">v3.55.20–27</span>
+                <span class="log-date">2026-10-31</span>
+                <span class="log-badge">身份三态 · 活世界 · 属性真值</span>
+            </div>
+            <div class="tag-row">
+                <span class="tag" data-tag="设定" style="--tag-hue:#d8c8a0;">🎛 设定</span>
+                <span class="tag" data-tag="稳定" style="--tag-hue:#c2d6e6;">🛡 稳定</span>
+                <span class="tag" data-tag="模块" style="--tag-hue:#c8c8e0;">📦 模块</span>
+            </div>
+            <p><b>① 身份双轨与关系三态</b>：开局可选<b>穿越者 / 土著</b>两条身份线；人物关系拆为<b>同伴 / 敌对 / 陌路</b>三态，不再只有好感度一个数字。世界不再静止——<b>自主演化</b>（大势推进、势力消长）并按界装配专属资料库。</p>
+            <p><b>② 原著大势可改</b>：可视化动态地图由世界书驱动；原著既定大势<b>可以被玩家改写</b>（原主角的道侣可以变成玩家的；移除触发条件即取消事件；也能凭空生出新事件）。</p>
+            <p><b>③ 千楼不忘</b>：完整对白落 IndexedDB（尾对齐合并）+ BM25 检索（含稀有单字回退与命中质量闸门），聊天区窗口化渲染但内存保留全量镜像——<b>千楼规模实测不丢剧情、不掉格式、不卡顿</b>。</p>
+            <p><b>④ 六维属性真值引擎</b>（<code>js/attribute-engine.js</code>）：每种属性都有<b>强项偏向</b>与成长轴，数值按资质档位 / 行动强度 / 时间跨度真实计算增长并钳制上限——<b>不会冒出离谱数值</b>（AI 报 +999 实测只吃 +6）。时间跨越（数天至数年）自动结算合理成长：三年闭关 +47.9、十年 +74.7、顶级资质三年 +63.3、囚禁三年 +24.8。</p>
+            <p><b>⑤ 天赋社会反应</b>：顶级/稀有天赋开局<b>不可能是普通外门弟子</b>——会招来招揽、资源倾斜与示好；天赋过差被傲慢者轻视、被温和者包容； concealment（隐藏）在暴露前有效。</p>
+            <p><b>⑥ 刷新丢档修复</b>：刷新后 102 条变 80 条的根因是 IndexedDB 迁移只搬了一次快照（旧库写、新库读），改为迁移完成事件 + 收尾补齐拷贝，千楼实测 <b>1000 → 1000</b>。</p>
+        </article>
+
         <article class="log-entry" data-tags="设定 体验 模块" style="--entry-hue:#e8d6f0;">
             <div class="log-head">
                 <span class="ver-chip">v3.55.10</span>
