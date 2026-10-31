@@ -408,6 +408,20 @@ function buildPlayerIdentityCard(setup, config) {
     if (led) parts.push(led);
     parts.push(CanonLedger.buildProtocol());
   }
+  /* v3.55.20 玩家身份（穿越者 / 土著）与原著主角关系（同伴 / 敌对 / 陌路）：
+     补上「元认知边界」与「相处铁律」，让穿越者不会全知、土著不被剧透、
+     陌路时世界照样在主角视线外自走一生 */
+  if (window.StoryIdentity) {
+    parts.push(StoryIdentity.buildIdentityDirective());
+    const _rel = StoryIdentity.buildRelationDirective();
+    if (_rel) parts.push(_rel);
+  }
+  /* v3.55.20 本界资料库：注入相关设定锚点，提升设定一致性与世界真实感 */
+  if (window.WorldBook) {
+    try { WorldBook.ensureSeed(); } catch (e) {}
+    const _wb = WorldBook.buildPromptBlock();
+    if (_wb) parts.push(_wb);
+  }
   return parts.join("\n");
 }
 function buildStoryDigest() {
