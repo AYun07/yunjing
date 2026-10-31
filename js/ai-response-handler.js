@@ -442,7 +442,7 @@ const StoryResponseHandler = {
             </div>
         `;
     card.innerHTML = html;
-    this.tagTurnCard(card);
+    this.tagTurnCard(card, opts && opts.turnOverride);
     container.appendChild(card);
     if (window.StoryImageGen && window.StoryImageGen.processCard) {
       const fw = window.storyFramework;
@@ -451,13 +451,27 @@ const StoryResponseHandler = {
         if (fw.replayTurnCursor != null) {
           const snap = (fw.storyState.turns || [])[fw.replayTurnCursor];
           turn = snap && typeof snap.index === "number" ? snap.index : null;
+        } else if (opts && opts.turnOverride != null) {
+          turn = opts.turnOverride;
         } else {
           turn = fw.currentTurnIndex();
         }
       }
       window.StoryImageGen.processCard(card, { live: opts.live !== false, turn });
     }
-    this.scrollToBottom();
+    /* v3.55.22 聊天虚拟化：虚拟器激活时，把新楼同步给它（状态同步 + DOM 上限裁剪），
+       卡片已由本方法挂到 #chatMessages；窗口化重建（fromVirtualizer）时仅追加不重复登记 */
+    if (window.ChatVirtualizer && ChatVirtualizer.active) {
+      if (!(opts && opts.noScroll)) this.scrollToBottom();
+      if (!opts || !opts.fromVirtualizer) {
+        ChatVirtualizer.onAppendLive({
+          role: "assistant", content: body, body, block: updateBlock,
+          options, vars, label: optionsLabel, turn: (opts && opts.turnOverride)
+        });
+      }
+    } else {
+      this.scrollToBottom();
+    }
   },
   /**
    * 给聊天流卡片打上当前轮次标签（data-turn）
@@ -909,7 +923,7 @@ const StoryResponseHandler = {
     }
     return out;
   },
-  renderSystemMessage(text, type = "info") {
+  renderSystemMessage(text, type = "info", opts) {
     const container = document.getElementById("chatMessages");
     if (!container) return;
     const chatArea = document.getElementById("chatArea");
@@ -919,19 +933,27 @@ const StoryResponseHandler = {
     const card = document.createElement("div");
     card.className = `message-card system-card ${type}`;
     card.innerHTML = `<div class="system-inner">${this.escapeHtml(text)}</div>`;
-    this.tagTurnCard(card);
+    this.tagTurnCard(card, opts && opts.turnOverride);
     container.appendChild(card);
-    this.scrollToBottom();
+    if (!(opts && opts.noScroll)) this.scrollToBottom();
   },
-  renderUserMessage(text) {
+  renderUserMessage(text, opts) {
     const container = document.getElementById("chatMessages");
     if (!container) return;
     const card = document.createElement("div");
     card.className = "message-card user-card";
     card.innerHTML = `<div class="user-inner"><span class="user-tag">☞ 你的指令</span>${this.escapeHtml(text)}</div>`;
-    this.tagTurnCard(card);
+    this.tagTurnCard(card, opts && opts.turnOverride);
     container.appendChild(card);
-    this.scrollToBottom();
+    /* v3.55.22 聊天虚拟化：激活时把新楼同步给虚拟器（仅追加，不重复登记窗口化重建） */
+    if (window.ChatVirtualizer && ChatVirtualizer.active) {
+      if (!(opts && opts.noScroll)) this.scrollToBottom();
+      if (!opts || !opts.fromVirtualizer) {
+        ChatVirtualizer.onAppendLive({ role: "user", content: text, turn: (opts && opts.turnOverride) });
+      }
+    } else {
+      this.scrollToBottom();
+    }
   },
   scrollToBottom() {
     const container = document.getElementById("chatMessages");
