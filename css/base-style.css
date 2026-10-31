@@ -4723,3 +4723,19 @@ html.low-spec .typing-dot, html.low-spec .typing-dots span, html.low-spec .illus
 .wb-tag.harv { background: rgba(150,210,150,.18); color: #bfe6bf; }
 .wb-tag.user { background: rgba(217,139,166,.2); color: #f0c6d8; }
 .wb-foot { padding: 9px 16px; font-size: 11px; opacity: .55; border-top: 1px solid rgba(255,255,255,.06); }
+
+/* v3.55.22 聊天虚拟化：上滚加载更早楼层的哨兵 */
+.cv-sentinel.cv-top {
+  text-align: center;
+  font-size: 12px;
+  color: var(--imt, #9a8c6e);
+  padding: 10px 12px;
+  margin: 4px auto 10px;
+  cursor: pointer;
+  border: 1px dashed rgba(201,168,106,.3);
+  border-radius: 10px;
+  background: rgba(201,168,106,.06);
+  transition: background .2s;
+  user-select: none;
+}
+.cv-sentinel.cv-top:hover { background: rgba(201,168,106,.14); }

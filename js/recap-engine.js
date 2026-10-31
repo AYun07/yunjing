@@ -13,8 +13,23 @@
       return {
         summary: d.summary || "",
         upTo: Number(d.upToIndex) || 0,
-        total: hist.length
+        total: hist.length,
+        blocks: d.blocks || []
       };
+    },
+    /** v3.55.22 章节存档注入块（远章浓缩档案，体量有界 ≤ ~1900 字） */
+    archiveBlock() {
+      const d = (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.digest) || {};
+      const blocks = d.blocks || [];
+      if (!blocks.length) return "";
+      let lines = blocks.map((b) => `◆ 第${(Number(b.from) || 0) + 1}–${Number(b.to) || "?"}楼：${b.text}`);
+      /* 超体量：从最旧侧收起，保最新存档（更旧的有双通道检索兜底） */
+      let out = lines.join("\n");
+      while (out.length > 1900 && lines.length > 1) {
+        lines = lines.slice(1);
+        out = `（更早 ${blocks.length - lines.length} 段存档已归并略）\n` + lines.join("\n");
+      }
+      return out;
     },
     /** 手动重压：把窗口外积压立即并入（不等 BATCH 阈值；至少积压 2 条才值得调用） */
     async regenerate() {
@@ -53,10 +68,39 @@
         const text = older.map(
           (m) => (m.role === "user" ? "【指令】" : "【正文】") + va._trimForSummary(String(m.content || ""))
         ).join("\n");
-        const prev = digest.summary ? `【已有摘要（把新内容并入其中，重写为一段）】
+        /* v3.55.22 分层摘要：摘要超过 ~440 字说明它已承载太多旧章、继续并入必然挤丢细节。
+           此时先把整段摘要降级为一条「章节存档块」（进一步浓缩的档案），
+           新摘要只覆盖新内容——摘要链永远是「章节存档（远）+ 滚动摘要（近）」两级，
+           几千楼也不塌缩；更早的存档块超量时自动归并。 */
+        let blocks = (digest.blocks || []).slice();
+        let prev = digest.summary ? `【已有摘要（把新内容并入其中，重写为一段）】
 ${digest.summary}
 
 ` : "";
+        if (digest.summary && digest.summary.length >= 440) {
+          const fromFloor = blocks.length ? (Number(blocks[blocks.length - 1].to) || 0) + 1 : 0;
+          const demoted = await va.recapCall([
+            { role: "system", content: `你是"章节存档官"。把这段前情提要进一步压缩为不超过 190 字的章节存档。必须保留：人物与其关系的最终状态、未回收的伏笔与悬念、关键道具与重要约定的原文说法、重大转折的因果。删除场景细节与过程描写。只输出存档正文，不要标题、不要解释。` },
+            { role: "user", content: digest.summary }
+          ]);
+          const blockText = String(demoted || "").trim().slice(0, 240);
+          if (blockText) {
+            blocks.push({ from: fromFloor, to: Number(digest.upToIndex) || 0, text: blockText });
+            /* 存档块 > 10 条时归并最旧 5 条为 1 条（层级三重压缩，体量有界） */
+            if (blocks.length > 10) {
+              try {
+                const oldOnes = blocks.slice(0, 5);
+                const merged = await va.recapCall([
+                  { role: "system", content: `把这几段更早的章节存档归并为一段不超过 220 字的总存档。人物、伏笔、道具、约定一条都不能丢，只合并重复、删除过程。只输出归并后的正文。` },
+                  { role: "user", content: oldOnes.map((b) => `◆第${(b.from || 0) + 1}–${b.to}楼：${b.text}`).join("\n") }
+                ]);
+                const mergedText = String(merged || "").trim().slice(0, 280);
+                blocks = (mergedText ? [{ from: oldOnes[0].from, to: oldOnes[4].to, text: mergedText }] : oldOnes).concat(blocks.slice(5));
+              } catch (e2) { /* 归并失败保留原块，不影响主线压缩 */ }
+            }
+            prev = ""; /* 摘要已降级：新摘要只覆盖新内容，避免同一内容双层重复 */
+          }
+        }
         const out = await va.recapCall([
           { role: "system", content: `你是小说工坊的"前情提要官"。请把已有摘要与新内容合并，输出一段不超过 400 字的连贯前情提要（第三人称、按时间顺序）。必须保留：主线关键进展、人物登场与关系变化、未回收的伏笔与悬念、关键道具得失、当前所处危机。删除：重复信息与次要场景细节。只输出提要正文，不要标题、不要解释。` },
           { role: "user", content: `${prev}【新内容（待并入摘要）】
@@ -68,7 +112,8 @@ ${text}` }
         fw.storyState.digest = {
           summary,
           upToIndex: end,
-          anchor: anchorMsg ? String(anchorMsg.content || "").slice(0, 80) : void 0
+          anchor: anchorMsg ? String(anchorMsg.content || "").slice(0, 80) : void 0,
+          blocks: blocks.length ? blocks : undefined   /* v3.55.22 章节存档块（分层摘要） */
         };
         fw.saveStory();
         (_d = window.showToast) == null ? void 0 : _d.call(window, `✅ 已压缩 ${older.length} 条旧剧情入前情提要`, "success");
@@ -107,6 +152,7 @@ ${text}` }
       const hist = ((_b = (_a = window.storyFramework) == null ? void 0 : _a.storyState) == null ? void 0 : _b.conversationHistory) || [];
       const KEEP = 16;
       const backlog = Math.max(0, hist.length - KEEP - covered);
+      const archLine = (s.blocks && s.blocks.length) ? `<span>· 章节存档 <b>${s.blocks.length}</b> 段</span>` : "";
       const html = `
             <div class="rp-overlay" onclick="if(event.target===this)RecapEngine.close()">
                 <div class="rp-modal">
@@ -118,7 +164,7 @@ ${text}` }
                         <div class="rp-meta">
                             <span>已压缩 <b>${covered}</b> / ${s.total} 条历史</span>
                             <span>· 覆盖率 <b>${pct}%</b></span>
-                            <span>· 待压缩积压 <b>${backlog}</b> 条</span>
+                            <span>· 待压缩积压 <b>${backlog}</b> 条</span>${archLine}
                             <span>· 通道：${channel}</span>
                         </div>
                         <div class="rp-bar"><i style="width:${pct}%;"></i></div>

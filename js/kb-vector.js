@@ -435,6 +435,8 @@
     DEF_EMBED: DEF_EMBED, DEF_RERANK: DEF_RERANK,
     load: load, save: save, isOn: isOn, hasRerank: hasRerank,
     retrieve: retrieve, test: test, fetchModels: fetchModels,
+    /* v3.55.22 长程召回：把底层 embed/rerank 开放给 transcript 检索复用 */
+    embed: embed, rerank: rerank,
     buildPanelHTML: buildPanelHTML,
     saveFromUI: saveFromUI, testFromUI: testFromUI, fetchFromUI: fetchFromUI,
     last: function () { return Object.assign({}, _last); }

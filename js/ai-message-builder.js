@@ -201,12 +201,25 @@ ${digest}` });
     if (!bmmOn) for (const m of storyKB.buildBackgroundKnowledge()) push(m, "知识库·背景", 10);
   }
   const recap = state.digest;
-  if (recap && recap.summary) {
+  if (recap && (recap.summary || (recap.blocks && recap.blocks.length))) {
+    /* v3.55.22 分层记忆：滚动摘要（近章）+ 章节存档块（远章浓缩档案），两级都必须延续 */
+    const arch = window.RecapEngine && RecapEngine.archiveBlock ? RecapEngine.archiveBlock() : "";
     push({ role: "system", content: `【前情提要（较早章节的自动摘要，剧情连贯性依据，必须严格延续）】
-${recap.summary}` }, "前情提要", 60);
+${recap.summary || "（近章暂无）"}${arch ? `
+
+【更早章节存档（更远剧情的浓缩档案，其中的事实同样不得矛盾或遗忘）】
+${arch}` : ""}` }, "前情提要", 60);
   }
   const memMsg = window.MemoryLayers && window.MemoryLayers.buildInjection ? window.MemoryLayers.buildInjection(userMessage, state.conversationHistory) : null;
   if (memMsg) push(memMsg, "长期记忆", 65);
+  /* v3.55.22 双通道召回：全楼层 BM25（+可选向量精排）检索与本轮输入相关的旧楼原文，
+     摘要保梗概、检索保细节——几千楼前的伏笔仍能被精确想起 */
+  if (window.TranscriptRetrieval) {
+    try {
+      const retr = await TranscriptRetrieval.buildInjection(userMessage, state);
+      if (retr) push({ role: "system", content: retr }, "旧章召回", 55);
+    } catch (e) { console.warn("[长程召回] 失败（静默跳过）:", e && e.message); }
+  }
   const recent = state.conversationHistory.slice(-17, -1);
   for (const msg of recent) {
     if (!msg || !msg.role || msg.content == null) continue;
@@ -278,6 +291,18 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
   }
   const sceneMsg = window.SceneState && window.SceneState.buildInjection ? window.SceneState.buildInjection() : null;
   if (sceneMsg) push(sceneMsg, "舞台现状", 55);
+  /* v3.55.22 格式契约：贴着生成位置重申输出骨架——几千楼后上下文变长，
+     预设里的格式定义离得远、注意力稀释导致格式漂移（状态栏丢字段、选项缩水、
+     变量块漏闭合），这条在末尾兜底，不依赖任何预设文本。
+     变量块条款跟随 vaOn：变量AI 模式下变量登记由独立系统完成，正文严禁带块。 */
+  const fmtVarLine = vaOn
+    ? `2) 严禁输出任何变量更新块、状态指令或数值面板——状态登记由独立系统完成；`
+    : `2) 变量更新块（(variable_update)…(/variable_update)）与此前楼层格式完全一致，标签成对闭合；`;
+  push({ role: "system", content: `【格式契约（无论写到第几千楼，每一楼都必须完整遵守）】
+1) 正文为中文小说体，台词用「」，段落充分展开，严禁因楼层变多而缩短篇幅或改写概括式流水账；
+${fmtVarLine}
+3) 正文后必须输出【行动选项】，六类（快进/交互/整活/慢推/时空/成人）各一条、顺序固定、格式照旧，严禁省略或合并；
+4) 除上述骨架外，不得输出任何状态面板、数值清单或 OOC 说明。` }, "格式契约", 90);
   push({ role: "user", content: userMessage });
   return window.PromptBudget && PromptBudget.finalize(messages, segs) || messages;
 }

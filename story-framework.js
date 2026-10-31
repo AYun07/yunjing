@@ -197,6 +197,20 @@ class StoryFramework {
         sceneState: this.storyState.sceneState || undefined,     // 舞台快照 {current, history[≤12]}
             savedAt: new Date().toISOString()
         };
+        /* v3.55.22 几千楼不忘剧情：localStorage 内联仅留最近 80 轮作兜底/快速冷加载，
+           全量 conversationHistory 另存 IndexedDB（数百 MB 配额，刷新不丢）。
+           带 upTo 元数据：读档时用「尾对齐」合并，陈旧 IDB 永不截断更新的内联楼层。
+           楼数未变的重复保存直接跳过（性能护栏）。 */
+        const trKey = this.getSaveKey();
+        const fullCH = this.storyState.conversationHistory;
+        if (window.StorageBoost && StorageBoost.ready() && Array.isArray(fullCH) && fullCH.length) {
+            try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+            if (fullCH.length !== (this._trFlushedLen || 0)) {
+                this._trFlushedLen = fullCH.length;
+                /* StorageBoost.get 会 String(v)——对象必须先 JSON.stringify，读端再 parse 回来 */
+                StorageBoost.put('transcript/' + trKey, JSON.stringify({ upTo: fullCH.length, floors: fullCH })).catch(() => { this._trFlushedLen = 0; });
+            }
+        }
         let json = JSON.stringify(data);
         const key = this.getSaveKey();
 
@@ -304,6 +318,48 @@ class StoryFramework {
                 console.warn('[StoryFramework] 主存档损坏，已从自动备份恢复');
                 window.showToast?.('⚠ 主存档已损坏，已自动从上一份备份恢复', 'info');
             }
+            /* v3.55.22 几千楼不忘剧情：内联主档仅 80 轮，全量 transcript 落在 IndexedDB。
+               此处异步补回完整历史，并用 Promise 暴露给启动链路——replayHistory 前 await，
+               避免几千楼只渲/只恢复最近 80 轮。
+               合并算法（尾对齐）：IDB 记录 upTo（已覆盖楼层总数）。在最近 80 轮的内联
+               尾部里找 IDB 末楼的对齐点，IDB 之前的全量 + 对齐点之后的内联增量拼接——
+               即使 IDB 落盘比内联旧几楼（最后一次 flush 被跳过/中断），也一楼不丢。 */
+            this._transcriptPromise = null;
+            if (localStorage.getItem(this.getSaveKey() + '.tr') && window.StorageBoost && StorageBoost.ready()) {
+                const tk = 'transcript/' + this.getSaveKey();
+                this._transcriptPromise = StorageBoost.get(tk).then(raw => {
+                    /* StorageBoost.get 返回 JSON 字符串（旧格式直接返回数组），先归一化 */
+                    let rec = raw;
+                    if (typeof raw === 'string') { try { rec = JSON.parse(raw); } catch (e) { rec = null; } }
+                    const inline = this.storyState.conversationHistory || [];
+                    const floors = rec && Array.isArray(rec.floors) ? rec.floors : (Array.isArray(rec) ? rec : null);
+                    if (!floors || !floors.length) return this.storyState;
+                    let merged = null;
+                    try {
+                        const upTo = Number(rec.upTo) || floors.length;
+                        const lastPersisted = floors[upTo - 1];
+                        if (lastPersisted && upTo < upTo + inline.length) {
+                            /* 在内联尾部（从后往前）找 IDB 末楼：找到则内联在其后为增量 */
+                            for (let j = inline.length - 1; j >= 0; j--) {
+                                const m = inline[j];
+                                if (m && m.content != null &&
+                                    String(m.content) === String(lastPersisted.content) &&
+                                    (m.role || 'assistant') === (lastPersisted.role || 'assistant')) {
+                                    merged = floors.slice(0, upTo).concat(inline.slice(j + 1));
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (e) { merged = null; }
+                    if (!merged) merged = floors.length >= inline.length ? floors.slice() : inline;
+                    if (merged.length > inline.length) {
+                        this.storyState.conversationHistory = merged;
+                        this._trFlushedLen = merged.length;
+                        console.log('[StoryFramework] 已从 IndexedDB 恢复全量对话，共', merged.length, '条历史');
+                    }
+                    return this.storyState;
+                }).catch(() => this.storyState);
+            }
             return true;
         }
         if (localStorage.getItem(this.getSaveKey()) || localStorage.getItem(this.getSaveKey() + '.bak')) {
@@ -327,18 +383,32 @@ class StoryFramework {
         return false;
     }
 
+    /** v3.55.22 启动链路等待全量 transcript 从 IDB 恢复（无 IDB/无标记时立即 resolve） */
+    whenTranscriptLoaded() {
+        return (this._transcriptPromise && typeof this._transcriptPromise.then === 'function')
+            ? this._transcriptPromise
+            : Promise.resolve(this.storyState);
+    }
+
     clearSave() {
         /* v3.55.4：清档先取消挂起的合并写——否则微任务里的旧状态会在清档后复活 */
         this._saveDirty = false;
         this._saveQueued = false;
         localStorage.removeItem(this.getSaveKey());
         localStorage.removeItem(this.getSaveKey() + '.bak');   // v1.6.9：显式清档时备份一并清除（尊重清空意图）
+        // v3.55.22：全量 transcript 的 IDB 记录一并清理，防止幽灵档
+        try { localStorage.removeItem(this.getSaveKey() + '.tr'); } catch (e) { }
         // v3.19.2：配额耗尽时转存 IndexedDB 的整档一并清理（旗标+原档），
         // 防止清档后 IDB 幽灵档在下次启动时又被恢复回来
         try {
             localStorage.removeItem(this.getSaveKey() + '.idb');
-            if (window.StorageBoost && StorageBoost.ready()) StorageBoost.remove('主档/' + this.getSaveKey());
+            if (window.StorageBoost && StorageBoost.ready()) {
+                StorageBoost.remove('主档/' + this.getSaveKey());
+                StorageBoost.remove('transcript/' + this.getSaveKey());
+            }
         } catch (e) { }
+        this._trFlushedLen = 0;   /* v3.55.22 transcript 节流游标归零 */
+        this._transcriptPromise = null;
         window.TokenUsage?.reset();   // v1.6.9 T2-⑩：用量记账一并清零
         // v1.12.0：行旅图鉴足迹随清档重置
         try {
