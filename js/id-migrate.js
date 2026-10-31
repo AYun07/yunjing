@@ -149,14 +149,26 @@
     };
   }
 
-  /** 后台搬迁所有已知旧库（首启不阻塞，成功一个记一个） */
+  /** 后台搬迁所有已知旧库（首启不阻塞，成功一个记一个）
+   *  v3.55.24 修复（升级会话丢写 bug）：
+   *  旧逻辑「复制完 → 立即标记完成 → deleteDatabase」存在数据丢失窗口：
+   *  标记写入后本会话的 localforage 仍握着旧库连接并继续写入（deleteDatabase
+   *  因连接占用被阻塞挂起，本会话后续写入全部落在旧库），刷新后 dbName()
+   *  切读的新库只是「复制发起时刻」的快照——实测全量对话 transcript 从 104 楼
+   *  退回迁移时刻的 1 楼快照，玩家升级后第一次刷新即丢档尾。
+   *  新逻辑：复制完 → 标记 → **保留旧库不删** → 派发事件，由 storage-boost
+   *  把旧库（含本会话最新写入）补写进新库后自行切换，任何时刻无丢失。 */
   function migrateDBs() {
     Object.keys(DBS).forEach(function (oldName) {
       if (dbDone().indexOf(oldName) >= 0) return;
       copyDB(oldName, DBS[oldName], function (ok) {
         if (!ok) return;
         dbMark(oldName);
-        try { indexedDB.deleteDatabase(oldName); } catch (e) { }
+        /* 不再 deleteDatabase：本会话连接仍握着旧库，删了会丢/挂起；
+           旧库留作数据兜底，消费方切换完毕后自然不再读写它 */
+        try {
+          window.dispatchEvent(new CustomEvent('yunjing-db-migrated', { detail: { from: oldName, to: DBS[oldName] } }));
+        } catch (e) { }
       });
     });
   }
