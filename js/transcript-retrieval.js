@@ -1,6 +1,12 @@
 /* =========================================================================
  * 云境 · 全楼层检索（v3.55.22 · 几千楼不忘剧情——精确细节召回通道）
  *
+ * v3.55.25 措辞盲区修复：此前只索引二字 bigram，玩家换措辞追问旧事
+ *       （问「山坡/时辰」而原文写「落霞坡/戌时」）时零命中、召回失败。
+ *       现补「稀有单字回退」：单字也入索引，但文档频率过高的常用字
+ *       （df ≥ max(8, N·25%)，如「的」「山」）不入——既让「坡」「戌」这类
+ *       稀有字能靠单字命中，又不撑爆索引。查询侧同步产出单字。
+ *
  * 职责：对 conversationHistory 的每一楼建立 BM25 索引，玩家每轮输入时
  *       召回与当前剧情最相关的「旧楼层原文」，注入主笔——
  *       让几千楼之前的伏笔/人物/约定仍能被精确想起（摘要只保梗概，检索保细节）。
@@ -18,15 +24,25 @@
   function tokenize(s) {
     var out = [];
     var str = String(s || "");
-    /* 中英混排：连续字母数字为一个词，汉字逐字（bigram 提精度） */
+    /* 中英混排：连续字母数字为一个词，汉字逐字（bigram 提精度 + 单字回退提召回） */
     var latin = str.match(/[A-Za-z0-9]{2,}/g) || [];
     for (var i = 0; i < latin.length; i++) out.push(latin[i].toLowerCase());
     var han = str.replace(/[^\u4e00-\u9fa5]/g, "");
-    for (var j = 0; j < han.length - 1; j++) {
-      var bg = han.slice(j, j + 2);
+    for (var j = 0; j < han.length; j++) {
+      var ch = han[j];
+      if (!STOP.has(ch)) out.push(ch);
+    }
+    for (var k = 0; k < han.length - 1; k++) {
+      var bg = han.slice(k, k + 2);
       if (!STOP.has(bg)) out.push(bg);
     }
     return out;
+  }
+
+  /* 常用字不入索引的文档频率阈值：df 达到该值视为「无区分度」，跳过。
+     max(8,·) 防止前期楼层少时误杀；单字与 bigram 共用同一 df 表。 */
+  function dfTooHigh(w) {
+    return (_idx.df[w] || 0) >= Math.max(8, _idx.N * 0.25);
   }
 
   /* ---------- BM25 增量索引 ---------- */
@@ -47,8 +63,13 @@
     for (var i = _idx.upto; i < hist.length; i++) {
       var toks = tokenize(floorText(hist[i]));
       var tf = {};
-      for (var t = 0; t < toks.length; t++) tf[toks[t]] = (tf[toks[t]] || 0) + 1;
-      for (var w in tf) _idx.df[w] = (_idx.df[w] || 0) + 1;
+      for (var t = 0; t < toks.length; t++) {
+        var w = toks[t];
+        if (tf[w] !== undefined) { tf[w]++; continue; }
+        if (dfTooHigh(w)) continue; /* 高频词无区分度，不入索引（该文档不计其 df） */
+        tf[w] = 1;
+      }
+      for (var w2 in tf) _idx.df[w2] = (_idx.df[w2] || 0) + 1;
       _idx.docs.push({ tf: tf, len: toks.length || 1 });
       _idx.N++;
     }
@@ -64,18 +85,20 @@
     var scores = [];
     for (var i = 0; i < _idx.N; i++) {
       var doc = _idx.docs[i], score = 0;
-      var seen = {};
+      var seen = {}, matched = 0, multi = false;
       for (var q = 0; q < qtoks.length; q++) {
         var w = qtoks[q];
         if (seen[w]) continue;
         seen[w] = 1;
         var f = doc.tf[w];
         if (!f) continue;
+        if (w.length >= 2) multi = true; else matched++;
         var df = _idx.df[w] || 1;
         var idf = Math.log(1 + (_idx.N - df + 0.5) / (df + 0.5));
         score += idf * (f * (K1 + 1)) / (f + K1 * (1 - B + B * doc.len / _idx.avgdl));
       }
-      if (score > 0) scores.push([i, score]);
+      /* v3.55.25 命中质量守卫：只有零散单字（<2 个不同字）或无二字词命中的文档视为噪音 */
+      if (score > 0 && (multi || matched >= 2)) scores.push([i, score]);
     }
     scores.sort(function (a, b) { return b[1] - a[1]; });
     return scores.slice(0, poolSize || 40);
@@ -124,6 +147,9 @@
       var cands = bm25(q, 40);
       if (!cands.length) return [];
       cands = await vectorRerank(q, cands, state);
+      /* v3.55.25 相对得分线：低于最高分 32% 的候选是弱相关，不注入（防噪音灌进主笔） */
+      var top = cands.length ? cands[0][1] : 0;
+      cands = cands.filter(function (c) { return c[1] >= top * 0.32; });
       var hist = state.conversationHistory || [];
       var k = topK || 5;
       var out = [];
