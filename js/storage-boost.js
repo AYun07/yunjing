@@ -60,6 +60,45 @@
         /** 生成占位标记 */
         marker(key) { return IDB_PREFIX + key; },
 
+        /* ============ 品牌库迁移收尾（v3.55.24 协作 id-migrate.js） ============
+           id-migrate 复制旧库(moshu)→新库(yunjing)并标记完成后派发本事件。
+           此前直接切读新库会丢「迁移后本会话的写入」（实测全量对话 transcript
+           104 楼退回 1 楼快照）。现由本模块收尾：把旧库当前最新数据整库补写进
+           新库（旧库在本会话是超集——迁移后的写入全落在旧库实例上），然后清掉
+           实例缓存，此后新建的仓一律用新库名。旧库保留作数据兜底。 */
+        _installMigrationTail() {
+            if (this._migTailInstalled || !window.localforage) return;
+            this._migTailInstalled = true;
+            const self = this;
+            window.addEventListener('yunjing-db-migrated', async (ev) => {
+                try {
+                    const from = (ev && ev.detail && ev.detail.from) || 'moshu';
+                    const to = (ev && ev.detail && ev.detail.to);
+                    if (!to || from === to) return;
+                    if (window.YunjingID && typeof window.YunjingID.dbName === 'function' && window.YunjingID.dbName(from) === from) {
+                        /* 标记尚未生效（异常时序）：不切换，仅保留旧库 */
+                    }
+                    const oldStore = window.localforage.createInstance({ name: from, storeName: 'media' });
+                    const keys = await oldStore.keys();
+                    /* 目标必须是显式新建的新库实例——self.store() 此时可能返回
+                       缓存的旧库实例（本会话早已建仓），补写会自我覆盖而失效 */
+                    const dst = window.localforage.createInstance({ name: to, storeName: 'media' });
+                    let copied = 0;
+                    for (const k of keys) {
+                        try {
+                            const v = await oldStore.getItem(k);
+                            if (v != null) { await dst.setItem(k, v); copied++; }
+                        } catch (e) { /* 单键失败不阻断 */ }
+                    }
+                    /* 切换：清缓存后本会话后续 store() 一律新库名（已含全部最新数据） */
+                    self._store = null;
+                    console.log('[存储扩容] 品牌库迁移收尾完成：', from, '→', to, '，补写', copied, '键，已切换新库');
+                } catch (e) {
+                    console.warn('[存储扩容] 迁移收尾失败（保留旧库，下次会话重试）:', e && e.message);
+                }
+            });
+        },
+
         /** 写入（dataURL / 长文本）。成功返回 true；库缺失 / 写失败返回 false（消费方自行降级） */
         async put(key, value) {
             const st = this.store();
@@ -135,4 +174,5 @@
     };
 
     window.StorageBoost = StorageBoost;
+    StorageBoost._installMigrationTail();
 })();
