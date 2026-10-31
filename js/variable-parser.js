@@ -1,6 +1,6 @@
 const VariableInstructionParser = {
   /** 保留容器名：出现在 "xxx.字段" 前缀时按容器处理而非角色 */
-  RESERVED_CONTAINERS: ["stats", "dashboard", "plotPoints", "characters", "foreshadowings", "items", "history", "gauges", "dimensions", "天赋"],
+  RESERVED_CONTAINERS: ["stats", "dashboard", "plotPoints", "characters", "foreshadowings", "items", "history", "gauges", "dimensions", "天赋", "时间"],
   /* v3.27.6：玩家自定义变量命名空间——「自定义.字段: 值」行式指令归此容器，
    * 严禁当作角色名建档（旧版把「自定义」建成幽灵角色卡，档案区常年挂一张空壳） */
   CUSTOM_NS: ["自定义", "自定义追踪", "customVars"],
@@ -19,14 +19,24 @@ const VariableInstructionParser = {
    * @returns {{newVariables: object, updateBlock: string|null}}
    */
   parse(aiReply, currentVars, opts) {
-    this._storyReg = !!(opts && opts.storyRegistration);
-    /* v3.55.26 数值平衡：每轮属性增量预算在解析开始时重置 */
-    if (window.AttributeEngine) window.AttributeEngine.beginTurn();
+    const isStoryReg = !!(opts && opts.storyRegistration);
+    this._storyReg = isStoryReg;
+    /* v3.55.26 数值平衡：每轮属性增量预算在解析开始时重置
+       v3.55.27：同时把本轮回复交给引擎解析时间跨度并预算各属性的时间成长额度 */
+    const AE = window.AttributeEngine;
+    if (AE) AE.beginTurn(aiReply, currentVars);
+    let res;
     try {
-      return this._parseInner(aiReply, currentVars);
+      res = this._parseInner(aiReply, currentVars);
     } finally {
       this._storyReg = false;
     }
+    /* v3.55.27 时间跨越成长结算：AI 未上报（或报不足）的成长由引擎按公式真实补涨。
+       仅正文登记路径结算——动态世界的旁白推演不算玩家亲身经历的时间。 */
+    if (AE && res && res.newVariables) {
+      try { AE.settleTimeGrowth(res.newVariables, isStoryReg); } catch (e) { /* 不阻断 */ }
+    }
+    return res;
   },
   /** v3.27.9：解除角色的远方标记（正文登场 = 已遇见，通讯录可同步） */
   unmarkFaraway(charObj) {
@@ -652,6 +662,11 @@ const VariableInstructionParser = {
           } else {
             this.applyNumeric(target, key, rawValue);
           }
+          return;
+        }
+        /* v3.55.27 时间账本：跨度/纪元/期间状态，绝不建幽灵角色卡 */
+        if (container === "时间" || container === "time") {
+          if (window.AttributeEngine) window.AttributeEngine.absorbTime(vars, field, rawValue);
           return;
         }
         /* v3.55.26 天赋状态机：定档/暴露（单向）/名称，绝不建幽灵角色卡 */

@@ -554,6 +554,9 @@ ${text}` }
   -已回收伏笔名称           ← 回收伏笔
   +道具名称 x1              ← 道具增减
   角色名.字段: 值           ← 新登场或有变化的角色（字段：role/relation/age/appearance/personality/speechPattern/mannerism/realm/faction/location/motivation/goal/secret/impression/relationship/trust/status/firstAppearance/arc/occupation/income/assets/note）
+  时间.跨度: 三年           ← 本轮剧情发生时间跨越时必写（数日/数月/数十年皆可）
+  时间.纪元: 天历三十七年   ← 世界观有年号/纪元时写（可选）
+  时间.期间: 闭关苦修       ← 这段时间玩家在做什么（决定成长快慢，可选）
   角色名.favor: 55          ← 好感 0-100（随剧情涨落才写）
   天赋.定档: 顶级/稀有/中平/低劣  ← 仅玩家资质为自定义且正文已可判断时定档一次（引擎已自动定档的不得改写）
   天赋.暴露: 已暴露          ← 仅当正文真实发生测灵/出手/传开等暴露事件时写；隐藏→已暴露单向，已暴露不得改回，不得未卜先知
