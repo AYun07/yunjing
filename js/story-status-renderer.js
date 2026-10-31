@@ -204,17 +204,34 @@ const StoryStatusRenderer = {
     if (!area) return;
     const fw = window.storyFramework;
     const keys = Object.keys(stats);
+    /* v3.55.26 天赋行（属性引擎状态：名称/档位/暴露） */
+    let talentHTML = "";
+    const t = fw && fw.storyState && fw.storyState.variables && fw.storyState.variables.talent;
+    if (t && (t.name || t.tier)) {
+      const tTier = t.tier || "待定档";
+      const tExp = t.exposure === "exposed" ? "已暴露" : "隐藏中";
+      const tCls = t.exposure === "exposed" ? "🔥" : "🙈";
+      talentHTML = `<div class="stat-row" title="天赋档位与暴露状态（隐藏→已暴露单向，暴露后社会反响持续发酵）">
+                <span class="stat-label">🎭 天赋</span>
+                <div class="stat-bar" style="display:flex;align-items:center"><span style="font-size:11px">${this.esc(String(t.name || "未定"))} · ${this.esc(tTier)} · ${tCls}${tExp}</span></div>
+            </div>`;
+    }
     if (!keys.length) {
-      if (this._same("stats", "empty")) return;
-      area.innerHTML = '<div class="empty-hint">开篇后自动生成</div>';
+      const emptyHTML = talentHTML || '<div class="empty-hint">开篇后自动生成</div>';
+      if (this._same("stats", emptyHTML)) return;
+      area.innerHTML = emptyHTML;
       return;
     }
     const labels = this.statLabelMap();
-    const html = keys.map((k) => {
+    /* v3.55.26 强项标记：值最高的前二（≥55）标 ★，与主笔提示词的强项偏向同源 */
+    const sortedKeys = keys.slice().sort((a, b) => (stats[b] || 0) - (stats[a] || 0));
+    const strongSet = new Set(sortedKeys.slice(0, 2).filter((k) => (stats[k] || 0) >= 55));
+    const html = talentHTML + keys.map((k) => {
       const val = Math.max(0, Math.min(100, stats[k]));
       const color = this.statColor(val);
+      const star = strongSet.has(k) ? ' <span title="强项：该维度主导的行动天然占优" style="color:#e8b339">★</span>' : "";
       return `<div class="stat-row">
-                <span class="stat-label">${this.esc(labels[k] || k)}</span>
+                <span class="stat-label">${this.esc(labels[k] || k)}${star}</span>
                 <div class="stat-bar"><div class="stat-fill" style="width:${val}%;background:${color}"></div></div>
                 <span class="stat-num">${val}</span>
             </div>`;

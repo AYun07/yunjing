@@ -492,8 +492,16 @@ function buildStoryDigest() {
   (fw.config.statKeys || []).forEach((s) => {
     statLabel[s.key] = s.label;
   });
-  const statStr = Object.entries(stats).map(([k, val]) => `${statLabel[k] || k} ${val}`).join(" / ");
-  if (statStr) lines.push(isRP ? `角色资质：${statStr}` : `创作六维：${statStr}`);
+  /* v3.55.26 属性引擎：扮演模式下用实盘块取代静态行——当前值+强项偏向+天赋
+     档位/暴露状态+增长纪律（数值平衡由引擎在解析侧真实钳制，见 attribute-engine.js） */
+  let liveBlock = "";
+  if (isRP && window.AttributeEngine) liveBlock = window.AttributeEngine.buildLiveBlock(fw);
+  if (liveBlock) {
+    lines.push(liveBlock);
+  } else {
+    const statStr = Object.entries(stats).map(([k, val]) => `${statLabel[k] || k} ${val}`).join(" / ");
+    if (statStr) lines.push(isRP ? `角色资质：${statStr}` : `创作六维：${statStr}`);
+  }
   const customSrc = {};
   if (v.自定义 && typeof v.自定义 === "object" && !Array.isArray(v.自定义)) {
     Object.entries(v.自定义).forEach(([k, val]) => {

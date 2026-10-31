@@ -555,6 +555,8 @@ ${text}` }
   +道具名称 x1              ← 道具增减
   角色名.字段: 值           ← 新登场或有变化的角色（字段：role/relation/age/appearance/personality/speechPattern/mannerism/realm/faction/location/motivation/goal/secret/impression/relationship/trust/status/firstAppearance/arc/occupation/income/assets/note）
   角色名.favor: 55          ← 好感 0-100（随剧情涨落才写）
+  天赋.定档: 顶级/稀有/中平/低劣  ← 仅玩家资质为自定义且正文已可判断时定档一次（引擎已自动定档的不得改写）
+  天赋.暴露: 已暴露          ← 仅当正文真实发生测灵/出手/传开等暴露事件时写；隐藏→已暴露单向，已暴露不得改回，不得未卜先知
   角色名.格子名: 新值       ← 更新快照里标注「玩家已交还AI管理」的自定义格子（未标注的格子是玩家亲笔，严禁改动）
   自定义.字段名: 新值       ← 更新快照「玩家自定义追踪」栏里的字段（玩家指定追踪的私货变量；正文里它对应的状态变化时必须如实更新，如「自定义.境界: 练气后期」「自定义.灵石: +50」）
   era: 1925年·喧嚣年代      ← 时代（开篇轮正文落地的时代照实登记；变了才写）
