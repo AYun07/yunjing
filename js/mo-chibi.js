@@ -349,6 +349,28 @@ const MoChibi = {
     if (window.ContextPanel) {
       list.push({ ico: "📖", name: "剧情上下文", note: "人物 · 机缘归属 · 伏笔 · 大事记", act: () => window.ContextPanel.open() });
     }
+    /* v3.55.20 本界资料库：每个世界自己的 lore 库，可看 / 增补 / 从故事抽取 */
+    if (window.WorldBook) {
+      list.push({ ico: "📚", name: "本界资料库", note: "点开看 · 增补缺失的世界书 / 从故事抽取", act: () => window.WorldBook.open() });
+    }
+    /* v3.55.20 玩家身份（穿越者 / 土著）与主角关系（同伴 / 敌对 / 陌路） */
+    if (window.StoryIdentity) {
+      const idn = window.StoryIdentity.infoIdentity();
+      list.push({ ico: idn.ico, name: "玩家身份：" + idn.name, note: "点按切换 · " + idn.desc, act: () => {
+        const id = window.StoryIdentity.cycleIdentity();
+        const info = window.StoryIdentity.infoIdentity();
+        this.say("玩家身份已切到「" + info.name + "」——" + info.hint, 4200);
+      } });
+      const rel = window.StoryIdentity.infoRelation();
+      if (rel) {
+        list.push({ ico: rel.ico, name: "主角关系：" + rel.name, note: "点按切换 · " + rel.desc, act: () => {
+          const id = window.StoryIdentity.cycleRelation();
+          const info = window.StoryIdentity.infoRelation();
+          if (!info) { this.say("取代主角立场下没有「关系」——你就是原著主角本人。", 3800); return; }
+          this.say("主角关系已切到「" + info.name + "」——" + info.hint, 4200);
+        } });
+      }
+    }
     /* v3.55.19 叙事立场：取代主角 / 同行者 / 搅局者 */
     if (window.StoryStance) {
       const st = window.StoryStance.info();

@@ -331,6 +331,11 @@ const StorySetupWizard = {
       stats: { ...config.baseAttributes || {} },
       remainingPoints: config.maxPoints || 100
     };
+    /* v3.55.20 玩家身份（穿越者 / 土著）与原著主角关系（同伴 / 敌对 / 陌路）：
+       读取已存选择，用于模板里的动态「on」态；取代主角立场下关系失效 */
+    const _idCur = (window.StoryIdentity && StoryIdentity.getIdentity()) || "transmigrator";
+    const _relCur = (window.StoryIdentity && StoryIdentity.getRelation()) || "stranger";
+    const _relDisabled = !!(window.StoryStance && StoryStance.get() === "replace");
     const container = document.getElementById("setupContainer");
     if (!container) return;
     let _s = 0;
@@ -370,6 +375,35 @@ const StorySetupWizard = {
                     </button>
                 </div>
                 <div class="wiz-desc" id="wiz_stanceHint"></div>
+            </div>
+
+            <div class="wiz-section wiz-id-sec">
+                <div class="wiz-label">✦ 玩家身份 <span class="wiz-hint">（你带着什么记忆降临这个世界）</span></div>
+                <div class="wiz-stance">
+                    <button type="button" class="wiz-stance-btn ${_idCur === "transmigrator" ? "on" : ""}" data-identity="transmigrator" onclick="StorySetupWizard.setIdentity('transmigrator')">
+                        <b>🌀 穿越者</b><i>先知先觉，但预知有界</i>
+                    </button>
+                    <button type="button" class="wiz-stance-btn ${_idCur === "native" ? "on" : ""}" data-identity="native" onclick="StorySetupWizard.setIdentity('native')">
+                        <b>🌱 土著</b><i>对原著一无所知</i>
+                    </button>
+                </div>
+                <div class="wiz-desc" id="wiz_idHint"></div>
+            </div>
+
+            <div class="wiz-section wiz-rel-sec ${_relDisabled ? "wiz-rel-disabled" : ""}">
+                <div class="wiz-label">✦ 与原著主角的关系 <span class="wiz-hint">（取代主角立场下此栏失效——你即主角）</span></div>
+                <div class="wiz-stance">
+                    <button type="button" class="wiz-stance-btn ${!_relDisabled && _relCur === "ally" ? "on" : ""}" data-relation="ally" onclick="StorySetupWizard.setRelation('ally')">
+                        <b>🤝 同伴</b><i>与主角同行</i>
+                    </button>
+                    <button type="button" class="wiz-stance-btn ${!_relDisabled && _relCur === "enemy" ? "on" : ""}" data-relation="enemy" onclick="StorySetupWizard.setRelation('enemy')">
+                        <b>⚔ 敌对</b><i>与主角为敌</i>
+                    </button>
+                    <button type="button" class="wiz-stance-btn ${!_relDisabled && _relCur === "stranger" ? "on" : ""}" data-relation="stranger" onclick="StorySetupWizard.setRelation('stranger')">
+                        <b>🌫 陌路</b><i>此生可能无交集</i>
+                    </button>
+                </div>
+                <div class="wiz-desc" id="wiz_relHint"></div>
             </div>
 
             <div class="fate-hero">
@@ -649,6 +683,54 @@ const StorySetupWizard = {
         : id === "freewill"
           ? "你是自创角色，行动可以偏转甚至改写原著大势与" + canon + "的命运。"
           : "你是这世界里活生生的一份子；" + canon + "有他自己的人生主线，不因你而改道——除非你亲手夺走本属于他的东西。";
+    }
+    this.syncIdentityRelation();
+  },
+  /** v3.55.20 玩家身份：穿越者 / 土著 */
+  setIdentity(id) {
+    if (window.StoryIdentity && !StoryIdentity.IDENTITY[id]) id = "transmigrator";
+    document.querySelectorAll(".wiz-stance-btn[data-identity]").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.identity === id);
+    });
+    if (!window.StoryIdentity) return;
+    StoryIdentity.setIdentity(id);
+    const info = StoryIdentity.infoIdentity();
+    const hint = document.getElementById("wiz_idHint");
+    if (hint) hint.textContent = info.desc + " —— " + info.hint;
+  },
+  /** v3.55.20 与原著主角的关系：同伴 / 敌对 / 陌路（取代主角立场下失效） */
+  setRelation(id) {
+    if (window.StoryStance && StoryStance.get() === "replace") return; /* 你即主角，无关系可言 */
+    if (window.StoryIdentity && !StoryIdentity.RELATION[id]) id = "stranger";
+    document.querySelectorAll(".wiz-stance-btn[data-relation]").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.relation === id);
+    });
+    if (!window.StoryIdentity) return;
+    StoryIdentity.setRelation(id);
+    const info = StoryIdentity.infoRelation();
+    const hint = document.getElementById("wiz_relHint");
+    if (hint) hint.textContent = info ? info.desc + " —— " + info.hint : "";
+  },
+  /** v3.55.20 立场切换时刷新「关系」栏的可用性与选中态 */
+  syncIdentityRelation() {
+    const relSec = document.querySelector(".wiz-rel-sec");
+    const disabled = !!(window.StoryStance && StoryStance.get() === "replace");
+    if (relSec) relSec.classList.toggle("wiz-rel-disabled", disabled);
+    const rel = (window.StoryIdentity && StoryIdentity.getRelation()) || "stranger";
+    document.querySelectorAll(".wiz-stance-btn[data-relation]").forEach(function (b) {
+      b.classList.toggle("on", !disabled && b.dataset.relation === rel);
+      b.disabled = disabled;
+    });
+    const id = (window.StoryIdentity && StoryIdentity.getIdentity()) || "transmigrator";
+    document.querySelectorAll(".wiz-stance-btn[data-identity]").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.identity === id);
+    });
+    const idHint = document.getElementById("wiz_idHint");
+    if (idHint && window.StoryIdentity) idHint.textContent = StoryIdentity.infoIdentity().desc;
+    const relHint = document.getElementById("wiz_relHint");
+    if (relHint && window.StoryIdentity) {
+      const ri = StoryIdentity.infoRelation();
+      relHint.textContent = disabled ? "取代主角立场下此栏失效——你就是原著主角本人。" : (ri ? ri.desc : "");
     }
   },
   async startRoleplay() {
