@@ -216,8 +216,24 @@ const StoryStatusRenderer = {
                 <div class="stat-bar" style="display:flex;align-items:center"><span style="font-size:11px">${this.esc(String(t.name || "未定"))} · ${this.esc(tTier)} · ${tCls}${tExp}</span></div>
             </div>`;
     }
+    /* v3.55.27 时间账本行：世界时间推进 / 期间状态 / 上次跨越结算的成长 */
+    let timeHTML = "";
+    const tv = fw && fw.storyState && fw.storyState.variables && fw.storyState.variables.time;
+    if (tv && (tv.days > 0 || tv.span)) {
+      const AEW = window.AttributeEngine;
+      const dTxt = AEW && AEW.daysText ? AEW.daysText : (d) => String(d);
+      const parts = [];
+      if (tv.era) parts.push(String(tv.era));
+      parts.push("累计 " + dTxt(tv.days || 0));
+      if (tv.span) parts.push("上次跨越 " + (tv.spanText || dTxt(tv.span)) + "·" + (tv.activity || "寻常度日"));
+      if (tv.lastGrowthTotal > 0) parts.push("成长 +" + tv.lastGrowthTotal);
+      timeHTML = `<div class="stat-row" title="世界时间账本：时间跨越时属性按公式结算成长（引擎侧真实落表）">
+                <span class="stat-label">⏳ 时间</span>
+                <div class="stat-bar" style="display:flex;align-items:center"><span style="font-size:11px">${this.esc(parts.join(" · "))}</span></div>
+            </div>`;
+    }
     if (!keys.length) {
-      const emptyHTML = talentHTML || '<div class="empty-hint">开篇后自动生成</div>';
+      const emptyHTML = talentHTML + timeHTML || '<div class="empty-hint">开篇后自动生成</div>';
       if (this._same("stats", emptyHTML)) return;
       area.innerHTML = emptyHTML;
       return;
@@ -226,7 +242,7 @@ const StoryStatusRenderer = {
     /* v3.55.26 强项标记：值最高的前二（≥55）标 ★，与主笔提示词的强项偏向同源 */
     const sortedKeys = keys.slice().sort((a, b) => (stats[b] || 0) - (stats[a] || 0));
     const strongSet = new Set(sortedKeys.slice(0, 2).filter((k) => (stats[k] || 0) >= 55));
-    const html = talentHTML + keys.map((k) => {
+    const html = talentHTML + timeHTML + keys.map((k) => {
       const val = Math.max(0, Math.min(100, stats[k]));
       const color = this.statColor(val);
       const star = strongSet.has(k) ? ' <span title="强项：该维度主导的行动天然占优" style="color:#e8b339">★</span>' : "";
