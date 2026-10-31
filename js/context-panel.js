@@ -177,6 +177,12 @@
     html += '<div class="ctx-cat-line"><b>你的角色</b>' + esc(hero || "（未命名）") + "</div>";
     html += '<div class="ctx-cat-line"><b>原著主角</b>' + esc(canon) + "</div>";
     if (stance) html += '<div class="ctx-cat-line"><b>叙事立场</b>' + esc(stance.ico + " " + stance.name) + "</div>";
+    if (window.StoryIdentity) {
+      var idn = window.StoryIdentity.infoIdentity();
+      if (idn) html += '<div class="ctx-cat-line"><b>玩家身份</b>' + esc(idn.ico + " " + idn.name) + "</div>";
+      var rel = window.StoryIdentity.infoRelation();
+      html += '<div class="ctx-cat-line"><b>主角关系</b>' + esc(rel ? rel.ico + " " + rel.name : "（取代主角立场·你即主角）") + "</div>";
+    }
     html += "</div>";
 
     /* 机缘归属：世界动态性的那一栏 */
