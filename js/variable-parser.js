@@ -1,6 +1,6 @@
 const VariableInstructionParser = {
   /** 保留容器名：出现在 "xxx.字段" 前缀时按容器处理而非角色 */
-  RESERVED_CONTAINERS: ["stats", "dashboard", "plotPoints", "characters", "foreshadowings", "items", "history", "gauges", "dimensions"],
+  RESERVED_CONTAINERS: ["stats", "dashboard", "plotPoints", "characters", "foreshadowings", "items", "history", "gauges", "dimensions", "天赋"],
   /* v3.27.6：玩家自定义变量命名空间——「自定义.字段: 值」行式指令归此容器，
    * 严禁当作角色名建档（旧版把「自定义」建成幽灵角色卡，档案区常年挂一张空壳） */
   CUSTOM_NS: ["自定义", "自定义追踪", "customVars"],
@@ -20,6 +20,8 @@ const VariableInstructionParser = {
    */
   parse(aiReply, currentVars, opts) {
     this._storyReg = !!(opts && opts.storyRegistration);
+    /* v3.55.26 数值平衡：每轮属性增量预算在解析开始时重置 */
+    if (window.AttributeEngine) window.AttributeEngine.beginTurn();
     try {
       return this._parseInner(aiReply, currentVars);
     } finally {
@@ -144,10 +146,14 @@ const VariableInstructionParser = {
     const statsObj = this.pickObj(obj, ["stats", "dimensions", "六维", "创作六维"]);
     if (statsObj) {
       vars.stats = vars.stats || {};
+      /* v3.55.26 数值平衡：JSON 变体路径同样经引擎钳制（AI 违规输出 JSON 时仍拦截跳变） */
+      const AEJ = window.AttributeEngine;
       Object.entries(statsObj).forEach(([k, v]) => {
         const key = statMap[k] || k;
         const n = num(v);
-        if (n != null) this.applyNumeric(vars.stats, key, v);
+        if (n == null) return;
+        if (AEJ) AEJ.applyStatDelta(vars.stats, key, String(v));
+        else this.applyNumeric(vars.stats, key, v);
       });
     }
     const charsObj = this.pickObj(obj, ["characters", "角色", "characterCards", "人物"]);
@@ -638,7 +644,19 @@ const VariableInstructionParser = {
           const map = container === "stats" ? this.labelToKeyMap(cfg.statKeys) : this.labelToKeyMap(cfg.gauges);
           const key = map[field] || field;
           const target = container === "stats" ? vars.stats = vars.stats || {} : vars;
-          this.applyNumeric(target, key, rawValue);
+          /* v3.55.26 数值平衡：属性增量经属性引擎钳制（单项±6/轮、合计±10/轮、值域0-100），
+             无正文依据的离谱跳变在此被真实拦截——不只靠提示词自觉 */
+          const AE = window.AttributeEngine;
+          if (AE && container === "stats" && /^[+-]?\s*\d+(?:\.\d+)?$/.test(rawValue)) {
+            AE.applyStatDelta(target, key, rawValue);
+          } else {
+            this.applyNumeric(target, key, rawValue);
+          }
+          return;
+        }
+        /* v3.55.26 天赋状态机：定档/暴露（单向）/名称，绝不建幽灵角色卡 */
+        if (container === "天赋" || container === "talent") {
+          if (window.AttributeEngine) window.AttributeEngine.absorbTalent(vars, field, rawValue);
           return;
         }
         if (this.CUSTOM_NS.includes(container)) {
@@ -682,7 +700,7 @@ const VariableInstructionParser = {
         vars.wordCount = this.applyWordCount(rawValue, vars.wordCount);
         return;
       }
-      if (this.RESERVED_CONTAINERS.includes(rawKey) || this.CUSTOM_NS.includes(rawKey) || this.EE_NS.includes(rawKey) || ["道具", "关键道具", "伏笔", "伏笔清单", "大事记", "编年史", "六维", "仪表盘", "角色"].includes(rawKey)) return;
+      if (this.RESERVED_CONTAINERS.includes(rawKey) || this.CUSTOM_NS.includes(rawKey) || this.EE_NS.includes(rawKey) || ["道具", "关键道具", "伏笔", "伏笔清单", "大事记", "编年史", "六维", "仪表盘", "角色", "天赋"].includes(rawKey)) return;
       /* v3.47.5：增量清单值展开——「储物袋账簿: +召唤令 x1, +任意门 x1」把值按逗号/顿号
        * 拆成裸 +/- 行逐条入账（applyListOp 进 vars.items 喂背包模块）；
        * 防误拆：段首须是中文/字母/【[（纯数字增量「灵石: +30」仍走 parseValue 数值路径） */
