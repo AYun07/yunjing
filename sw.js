@@ -8,7 +8,8 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.57.0';  /* v3.57.0「让世界活起来」引擎全套（P2-P5）：
+const SW_VER = 'yunjing-v3.57.1';  /* v3.57.0「让世界活起来」引擎全套（P2-P5）：
+   v3.57.1 修复：EntityStore 单复数归一（list("characters") 曾恒空，关系连线在角色池上静默失效）。
    ① entity-editor.js 统一填表（法宝/势力/地点/关系，schema 驱动）
    ② sim-core.js 推演引擎（规则核心·种子化可复算·what-if 分叉）
    ③ world-clock.js 自主世界时钟（单飞有界定时器·后台不积累·世界日结算）
