@@ -34,7 +34,7 @@ const MoChibi = {
   },
   STYLE_LABEL: { luo: "萝莉", yu: "御姐", jiaohua: "校花", qingchun: "清纯", linjia: "邻家", kusa: "酷飒", wenrou: "温柔", aojiao: "傲娇", keai: "可爱", gaoguai: "搞怪", youtai: "幼态", zhixing: "知性" },
   STYLE_DESC: {
-    luo: "云朵短发 · 可爱俏皮", yu: "银白直发 · 成熟从容",
+    luo: "云朵短发 · 可爱俏皮", yu: "香槟金裙 · 明媚大方",
     jiaohua: "学院西装 · 优雅自信", qingchun: "水手裙 · 羞涩纯真",
     linjia: "怀抱白猫 · 温柔治愈", kusa: "黑色皮衣 · 桀骜酷飒",
     wenrou: "淡紫长裙 · 恬静温婉", aojiao: "红蝶结 · 傲娇别扭",
