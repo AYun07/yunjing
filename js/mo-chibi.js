@@ -10,31 +10,36 @@ const MoChibi = {
   /* ==================== 表情定义 ==================== */
   // 每种表情：嘴形 + 眼形 + 眉形（CSS 按 data-face 切换显示）
   faces: ["idle", "happy", "shy", "angry", "think", "sleepy", "surprise", "wink", "sing"],
-  /* ==================== 形象(v3.59.0 · 小云 · 五形态) ==================== */
-  /* 「小云」——云精灵少女。五形态：
-     · 萝莉：银白蓬松长发 + 云朵发夹 + 大眼，可爱俏皮（PNG）
-     · 御姐：银白直长发 + 露肩 + 从容微挑，成熟妩媚（PNG）
-     · 校花：学院西装 + 格纹裙 + 浅蓝丝带发带，怀抱书本，优雅自信（SVG）
-     · 青春：高马尾 + 连帽卫衣，比着胜利手势，元气满满（SVG）
-     · 邻家：低双马尾 + 奶白开衫，怀抱白猫，温柔治愈（SVG）
+  /* ==================== 形象(v3.59.1 · 小云 · 十二形态) ==================== */
+  /* 「小云」——云精灵少女。十二形态（AI 生图 agnes-image-2.5-flash，白底泛洪抠图转透明）：
+     萝莉 / 御姐 / 校花 / 清纯 / 邻家 / 酷飒 / 温柔 / 傲娇 / 可爱 / 搞怪 / 幼态 / 知性。
      默认随机一种；长按菜单「换形象」打开形象面板自由挑选（持久化）。 */
   STYLE_KEY: "moChibiStyle",
-  STYLES: ["luo", "yu", "jiaohua", "qingchun", "linjia"],
+  STYLES: ["luo", "yu", "jiaohua", "qingchun", "linjia", "kusa", "wenrou", "aojiao", "keai", "gaoguai", "youtai", "zhixing"],
   IMGS: {
     luo: "assets/xiaoyun-chibi-luo.png", yu: "assets/xiaoyun-chibi-yu.png",
-    jiaohua: "assets/xiaoyun-chibi-jiaohua.svg", qingchun: "assets/xiaoyun-chibi-qingchun.svg",
-    linjia: "assets/xiaoyun-chibi-linjia.svg"
+    jiaohua: "assets/xiaoyun-chibi-jiaohua.png", qingchun: "assets/xiaoyun-chibi-qingchun.png",
+    linjia: "assets/xiaoyun-chibi-linjia.png", kusa: "assets/xiaoyun-chibi-kusa.png",
+    wenrou: "assets/xiaoyun-chibi-wenrou.png", aojiao: "assets/xiaoyun-chibi-aojiao.png",
+    keai: "assets/xiaoyun-chibi-keai.png", gaoguai: "assets/xiaoyun-chibi-gaoguai.png",
+    youtai: "assets/xiaoyun-chibi-youtai.png", zhixing: "assets/xiaoyun-chibi-zhixing.png"
   },
   FACES: {
     luo: "assets/xiaoyun-face-luo.png", yu: "assets/xiaoyun-face-yu.png",
-    jiaohua: "assets/xiaoyun-face-jiaohua.svg", qingchun: "assets/xiaoyun-face-qingchun.svg",
-    linjia: "assets/xiaoyun-face-linjia.svg"
+    jiaohua: "assets/xiaoyun-face-jiaohua.png", qingchun: "assets/xiaoyun-face-qingchun.png",
+    linjia: "assets/xiaoyun-face-linjia.png", kusa: "assets/xiaoyun-face-kusa.png",
+    wenrou: "assets/xiaoyun-face-wenrou.png", aojiao: "assets/xiaoyun-face-aojiao.png",
+    keai: "assets/xiaoyun-face-keai.png", gaoguai: "assets/xiaoyun-face-gaoguai.png",
+    youtai: "assets/xiaoyun-face-youtai.png", zhixing: "assets/xiaoyun-face-zhixing.png"
   },
-  STYLE_LABEL: { luo: "萝莉", yu: "御姐", jiaohua: "校花", qingchun: "青春", linjia: "邻家" },
+  STYLE_LABEL: { luo: "萝莉", yu: "御姐", jiaohua: "校花", qingchun: "清纯", linjia: "邻家", kusa: "酷飒", wenrou: "温柔", aojiao: "傲娇", keai: "可爱", gaoguai: "搞怪", youtai: "幼态", zhixing: "知性" },
   STYLE_DESC: {
     luo: "云朵短发 · 可爱俏皮", yu: "银白直发 · 成熟从容",
-    jiaohua: "学院西装 · 优雅自信", qingchun: "高马尾 · 元气满满",
-    linjia: "怀抱白猫 · 温柔治愈"
+    jiaohua: "学院西装 · 优雅自信", qingchun: "水手裙 · 羞涩纯真",
+    linjia: "怀抱白猫 · 温柔治愈", kusa: "黑色皮衣 · 桀骜酷飒",
+    wenrou: "淡紫长裙 · 恬静温婉", aojiao: "红蝶结 · 傲娇别扭",
+    keai: "云朵卫衣 · 元气满满", gaoguai: "彩色拼衣 · 俏皮鬼脸",
+    youtai: "毛绒裙 · 天真软萌", zhixing: "细框眼镜 · 知性书卷"
   },
   _style: null,
   _resolved: false,
@@ -53,7 +58,7 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.59.0" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.59.1" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
   /** 手动设定形态（合法 key），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
@@ -80,7 +85,7 @@ const MoChibi = {
     ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(8,14,22,.66);display:flex;align-items:center;justify-content:center;padding:18px;";
     const card = (k) => `
       <button data-style="${k}" style="width:31%;min-width:96px;padding:10px 6px;border:2px solid ${k === cur ? "#7ab8e8" : "rgba(140,180,220,.28)"};border-radius:14px;background:linear-gradient(160deg,rgba(20,32,48,.92),rgba(14,22,34,.92));cursor:pointer;text-align:center;transition:transform .15s;">
-        <img src="${this.IMGS[k]}?v=3.59.0" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
+        <img src="${this.IMGS[k]}?v=3.59.1" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
         <div style="font-size:13.5px;font-weight:700;color:#cfe6f8;margin-top:6px;">${this.STYLE_LABEL[k]}</div>
         <div style="font-size:10.5px;color:#7e9ab4;margin-top:2px;">${this.STYLE_DESC[k] || ""}</div>
       </button>`;
@@ -109,8 +114,8 @@ const MoChibi = {
     const box = document.getElementById("moChibi");
     if (box) box.dataset.style = this.currentStyle();
     const img = document.querySelector("#moChibi .mc-img");
-    if (img) img.src = this.chibiSrc() + "?v=3.59.0";
-    const face = this.faceSrc() + "?v=3.59.0";
+    if (img) img.src = this.chibiSrc() + "?v=3.59.1";
+    const face = this.faceSrc() + "?v=3.59.1";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
