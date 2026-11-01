@@ -56,6 +56,55 @@
 
   var interacted = false;
 
+  /* ---------------------------------------------------------------------------
+     v3.55.29 · DOMContentLoaded 语义补全（懒加载的系统性副作用）
+
+     全库有 12 个脚本以 `document.addEventListener("DOMContentLoaded", init)`
+     作为唯一启动入口（world-ext-core / world-runtime / quest-chain / combat-core /
+     module-forge / world-stage / world-director / atlas-panel / immersive-suite /
+     immersion-plus / image-gen / mo-chibi）。
+
+     它们原本是首屏同步脚本，一定赶在 DOMContentLoaded 之前注册，事件一到就启动。
+     改成延后加载后，脚本插入时 DOM 早已解析完毕、事件早就发过了 —— 监听器永远等不到，
+     init() 一次都不会执行。表现为「页面不报错，但模块静默全废」：
+     WorldExt.hasModules() 恒 false、界专属扩展/主线三幕/战斗/市集全部不挂载。
+
+     修法（在加载器层一处解决，不必逐个改脚本）：加载期间临时接管 addEventListener，
+     凡是注册 DOMContentLoaded 的，直接安排到下一个微任务执行——此时 DOM 确实已就绪，
+     语义等价。加载结束立刻还原。
+     --------------------------------------------------------------------------- */
+  var dclDepth = 0;
+  var origDocAdd = null, origWinAdd = null;
+
+  function patchDCL(on) {
+    if (on) {
+      if (dclDepth++ > 0) return;
+      var makePatched = function (target, orig) {
+        return function (type, fn, opts) {
+          if (type === 'DOMContentLoaded' && typeof fn === 'function' && document.readyState !== 'loading') {
+            var self = this;
+            setTimeout(function () {
+              try { fn.call(self, { type: 'DOMContentLoaded', target: target }); }
+              catch (e) { console.warn('[YJLazy] DOMContentLoaded 回调异常：' + (e && e.message)); }
+            }, 0);
+            return undefined;
+          }
+          return orig.call(this, type, fn, opts);
+        };
+      };
+      origDocAdd = document.addEventListener;
+      origWinAdd = window.addEventListener;
+      document.addEventListener = makePatched(document, origDocAdd);
+      window.addEventListener = makePatched(window, origWinAdd);
+    } else {
+      if (dclDepth > 0) dclDepth--;
+      if (dclDepth > 0) return;
+      dclDepth = 0;
+      if (origDocAdd) { document.addEventListener = origDocAdd; origDocAdd = null; }
+      if (origWinAdd) { window.addEventListener = origWinAdd; origWinAdd = null; }
+    }
+  }
+
   function loadRec(rec) {
     if (rec.status === 'done') return Promise.resolve(true);
     if (rec.promise) return rec.promise;
@@ -66,8 +115,9 @@
       s.src = rec.src;
       s.async = false;                 // 动态插入也保持插入顺序执行
       s.dataset.yjLazy = rec.name;
-      s.onload = function () { finish(rec); resolve(true); };
-      s.onerror = function () { finish(rec); resolve(false); };
+      s.onload = function () { patchDCL(false); finish(rec); resolve(true); };
+      s.onerror = function () { patchDCL(false); finish(rec); resolve(false); };
+      patchDCL(true);                  /* 必须在脚本体执行前打上补丁 */
       document.head.appendChild(s);
       if (rec.el) rec.el.setAttribute('data-yj-status', 'loading');
     });
