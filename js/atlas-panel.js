@@ -7635,7 +7635,7 @@
     }
     return last;
   }
-  const DYN_MAX = 16;
+  const DYN_MAX = 28; /* v3.58.0 16→28：世界实体（原创势力/地点）也要上图，扩容防互相挤兑 */
   function strHash(s) {
     let h = 5381;
     s = String(s);
@@ -7727,7 +7727,9 @@
     state.dyn = state.dyn || [];
     state.dyn.push(poi);
     if (state.dyn.length > DYN_MAX) {
-      const idx = state.dyn.findIndex((d) => d.id !== poi.id);
+      /* v3.58.0 淘汰优先非实体节点（世界实体由 syncEntities 管理生命周期） */
+      let idx = state.dyn.findIndex((d) => d.id !== poi.id && d.src !== "ent");
+      if (idx < 0) idx = state.dyn.findIndex((d) => d.id !== poi.id);
       if (idx >= 0) {
         const dead = state.dyn[idx];
         state.dyn.splice(idx, 1);
@@ -7802,6 +7804,60 @@
     }
     return added;
   }
+  /* v3.58.0 世界实体的实体库上图：原创势力/地点自动落成地图节点，
+     已上图的随势力发展（成员/影响力）与地点危险度动态更新图标与说明。
+     幂等：按名字精确匹配（原著实体命中预置节点则沿用，不重复造点）。 */
+  function syncEntities(vars) {
+    if (!state.genre || !vars || !vars.entities) return 0;
+    const ent = vars.entities;
+    let changed = 0;
+    const round = Number(vars.chapter || vars["回合数"]) || window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.turnCount || 0;
+    const depthOf = (n) => (Number(n) >= 2000 ? 3 : Number(n) >= 300 ? 2 : 1);
+    const dangerDepth = (d) => (Number(d) >= 60 ? 3 : Number(d) >= 25 ? 2 : 1);
+    const descOf = (type, def) => type === "faction"
+      ? `${def.ideology || "理念未明"} · 成员约 ${Number(def.members) || 0} · 影响力 ${Number(def.influence) || 0}/100`
+      : `${def.region || "四野"} · 危险度 ${Number(def.danger) || 0}${def.desc ? " · " + def.desc : ""}`;
+    const ensureNode = (name, type, def) => {
+      const v0 = norm(name);
+      if (v0.length < 2) return null;
+      const exist = (state.dyn || []).find((d) => d.src === "ent" && norm(d.n) === v0);
+      if (exist) {
+        const nd = type === "faction" ? depthOf(def.members) : dangerDepth(def.danger);
+        if (nd && exist.d !== nd) { exist.d = nd; changed++; }
+        const ds = descOf(type, def);
+        if (ds && exist.desc !== ds) { exist.desc = ds; changed++; }
+        return exist;
+      }
+      const preset = allNodes(state.genre).find((n) => norm(n.n) === v0 || (n.aliases || []).some((a) => norm(a) === v0));
+      if (preset) return preset; /* 原著实体沿用预置节点 */
+      const anchorRaw = type === "faction" ? (def.territory || "") : (def.region || "");
+      /* v3.58.1 修正：节点名一律用实体名——territory/region 只用于锚定坐标，
+         否则「游走四方」「边荒」这类范围文案会变成地标名 */
+      const poi = resolveLocation(state.genre, name, round);
+      if (!poi || !poi.dyn) return null;
+      if (anchorRaw) {
+        const anchor = matchNode(state.genre, anchorRaw);
+        if (anchor && anchor.id !== poi.id) {
+          const a = prand(strHash(name), 3) * Math.PI * 2;
+          const r = 5 + prand(strHash(name) + 7, 3) * 4;
+          poi.x = +Math.min(94, Math.max(6, anchor.x + Math.cos(a) * r)).toFixed(1);
+          poi.y = +Math.min(92, Math.max(8, anchor.y + Math.sin(a) * r)).toFixed(1);
+        }
+      }
+      poi.src = "ent";
+      poi.entType = type;
+      poi.t = type === "faction" ? "sect" : (Number(def.danger) >= 60 ? "danger" : Number(def.danger) >= 15 ? "city" : "wild");
+      poi.desc = descOf(type, def);
+      poi.c = type === "faction" ? "🏛 世界实体 · 原创势力" : "🗺 世界实体 · 原创地点";
+      poi.d = type === "faction" ? depthOf(def.members) : dangerDepth(def.danger);
+      changed++;
+      return poi;
+    };
+    Object.values(ent.factions || {}).forEach((f) => { if (f && f.name) try { ensureNode(f.name, "faction", f); } catch (e) {} });
+    Object.values(ent.places || {}).forEach((p) => { if (p && p.name) try { ensureNode(p.name, "place", p); } catch (e) {} });
+    if (changed) { save(); if (state.open) render(); }
+    return changed;
+  }
   function playerName() {
     const fw = window.storyFramework;
     const s = fw && fw.storyState && fw.storyState.setup;
@@ -7846,6 +7902,8 @@
       load(gk);
     }
     if (!state.genre || !ATLAS_DATA[state.genre]) return;
+    /* v3.58.0 每次变量更新同步世界实体上图（势力发展/新地点自动标注） */
+    try { syncEntities(vars); } catch (e) {}
     const loc = extractPlayerLocation(vars);
     if (!loc) return;
     const round = Number(vars && (vars.chapter || vars["回合数"])) || window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.turnCount || 0;
@@ -8658,6 +8716,8 @@
     resetFootprint,
     removeDyn,
     syncFromWorldBook,
+    /* v3.58.0 世界实体（原创势力/地点）自动上图与动态更新 */
+    syncEntities,
     /* v3.55.23 当前图上「资料库地标」数量（syncFromWorldBook 幂等，落过即不再重复） */
     wbCount: function () { return (state.dyn || []).filter((d) => d.src === "wb").length; },
     data: ATLAS_DATA,

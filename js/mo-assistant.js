@@ -406,7 +406,9 @@ ${String(recap.summary).slice(0, 600)}`);
     { icon: "🧭", label: "世界诊断", tool: "diagnose" },
     { icon: "🔮", label: "推演未来", tool: "whatif" },
     { icon: "🎯", label: "剧情规划", tool: "plan" },
-    { icon: "⏱️", label: "世界时钟", tool: "clock" }
+    { icon: "⏱️", label: "世界时钟", tool: "clock" },
+    { icon: "👥", label: "人物志", tool: "roster" },
+    { icon: "🎲", label: "自由人生", tool: "life" }
   ],
   runQuick(action) {
     if (action.health) {
