@@ -282,6 +282,24 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="修复 测试 稳定" style="--entry-hue:#e0d8c8;">
+            <div class="log-head">
+                <span class="ver-chip">v3.57.1</span>
+                <span class="log-date">2026-11-01</span>
+                <span class="log-badge">真实玩家之旅 E2E 抓漏</span>
+            </div>
+            <div class="tag-row">
+                <span class="tag" data-tag="修复" style="--tag-hue:#e8c8c8;">🔧 修复</span>
+                <span class="tag" data-tag="测试" style="--tag-hue:#d0e0c8;">🧪 测试</span>
+                <span class="tag" data-tag="稳定" style="--tag-hue:#c2d6e6;">🛡 稳定</span>
+            </div>
+            <p>给 v3.57.0 补了一场<b>完整玩家之旅 E2E</b>（无头 Chromium 走真实开档向导 → 跑真实回合 → UI 逐个点新功能 → 刷新验证存档），抓出并修复 <b>1 个真 bug</b>：</p>
+            <ul>
+                <li><code>EntityStore.list("characters")</code> 因键名复数化拼接产生 <code>"characterss"</code> 而<b>恒为 undefined</b>——关系连线的角色池静默失效。现做单/复数归一（<code>list/get/upsert</code> 均接受两种键名），<code>list</code> 永不返回 undefined。</li>
+            </ul>
+            <p>同时确认了两道防护按设计工作：自环关系（两端同实体）被正确拒绝；<code>vars.history</code> 仅在 AI 回复含 history 块时写入（世界时钟事件另路入史）。最终<b>单元 26 项 + 玩家之旅 E2E 25 项全过</b>，全程零 JS 错误。SW_VER = <code>yunjing-v3.57.1</code>。</p>
+        </article>
+
         <article class="log-entry" data-tags="设定 世界引擎 推演 小云 沉浸" style="--entry-hue:#c8e0d8;">
             <div class="log-head">
                 <span class="ver-chip">v3.57.0</span>

@@ -129,6 +129,12 @@
   /* ---------- EntityStore：统一实体存储 + 旧档幂等镜像 ---------- */
   const EntityStore = {
     TYPES: ["character", "item", "faction", "place", "relation"],
+    /* v3.57.1 修复：单复数归一——此前 list("characters") 会拼出 "characterss" 恒 undefined，
+       导致关系连线等依赖 list 的功能在角色池上静默失效。现接受单/复数两种入参。 */
+    _norm(type) {
+      const t = String(type || "");
+      return ({ characters: "character", items: "item", factions: "faction", places: "place" })[t] || t;
+    },
     /** 确保 vars.entities 结构存在（不破坏任何既有字段） */
     ensure(vars) {
       if (!vars || typeof vars !== "object") return null;
@@ -156,6 +162,7 @@
       return ent;
     },
     upsert(type, data, vars) {
+      type = this._norm(type);
       if (!this.TYPES.includes(type) || !isObj(data)) return null;
       vars = vars || (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables);
       if (!vars) return null;
@@ -170,7 +177,8 @@
       vars = vars || (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables);
       if (!vars) return type === "relation" ? [] : {};
       this.ensure(vars);
-      return type === "relation" ? vars.entities.relations : vars.entities[type + "s"];
+      const t = this._norm(type);
+      return t === "relation" ? (vars.entities.relations || []) : (vars.entities[t + "s"] || {});
     },
     get(id, vars) {
       vars = vars || (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables);
