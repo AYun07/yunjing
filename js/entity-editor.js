@@ -81,6 +81,7 @@
       else window.EntityStore.upsert(type, data, v);
     }
     save();
+    try { window.MoChibi && MoChibi.react && MoChibi.react("entity", { type }); } catch (e) {}
     return { ok: true };
   }
 

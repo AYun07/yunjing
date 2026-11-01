@@ -275,6 +275,10 @@ const StoryInput = {
       if (window.DraftLab && fw.storyState.isStoryStarted) {
         window.DraftLab.onTurnComplete(reply, turnIdx).catch((e) => console.warn("[责编自审] 触发失败:", e));
       }
+      /* v3.60.0 小云剧情感知：回合完成即反应（表情必有、碎碎念限流在 react 内部） */
+      if (window.MoChibi && window.MoChibi.react) {
+        try { window.MoChibi.react("turn", { tension: fw.storyState.variables && fw.storyState.variables.tension }); } catch (e) { }
+      }
     } catch (err) {
       console.error(err);
       if (fw.storyState.turns && fw.storyState.turns.length) {

@@ -175,6 +175,9 @@ const MoChibi = {
         box.classList.remove("dragging");
         this.setFace("happy", 1600);
         this.say("呀～飞过来啦！(≧▽≦)", 2600);
+        this.spawnClouds(3);
+        this.addBond(2);
+        this._lastInteract = Date.now();
       }
     });
     box.addEventListener("dblclick", (e) => {
@@ -221,10 +224,15 @@ const MoChibi = {
       box.classList.add("dim");
     }, 6e3);
   },
-  /** 唤醒：退出半透明并重新计时 */
+  /** 唤醒：退出半透明、清瞌睡 ZZZ、刷新交互时间戳并重新计时 */
   wake() {
     var _a;
     (_a = document.getElementById("moChibi")) == null ? void 0 : _a.classList.remove("dim");
+    const z = document.getElementById("mcZzz");
+    if (z) z.classList.remove("show");
+    const box = document.getElementById("moChibi");
+    if (box && box.dataset.face === "sleepy") this.setFace("idle");
+    this._lastInteract = Date.now();
     this._armDim();
   },
   /* ==================== 表情系统 ==================== */
@@ -304,21 +312,35 @@ const MoChibi = {
   bubbleEl() {
     return document.getElementById("mcBubble");
   },
-  /* ==================== 互动：摸头 / 戳脸 ==================== */
+  /* ==================== 互动：摸头 / 戳脸（v3.60.0 连击 + 亲密度） ==================== */
   patHead() {
+    this._lastInteract = Date.now();
+    /* 连击：3 秒内连摸 3 次触发害羞爆发 */
+    const now = Date.now();
+    this._patStreak = now - (this._patAt || 0) < 3000 ? (this._patStreak || 0) + 1 : 1;
+    this._patAt = now;
     this.setFace("happy", 2400);
     this.spawnHearts(4);
+    this.addBond(this._patStreak >= 3 ? 3 : 1);
     const lines = [
       "嘿嘿…主人在摸小云的头 (〃ω〃)",
       "呜哇…头发要乱啦～",
       "再摸就要长不高了哦！…才怪,继续摸也可以 (〃▽〃)",
       "主人的手好温暖呀…"
     ];
+    if (this._patStreak >= 3) {
+      this.setFace("shy", 3200);
+      this.spawnHearts(8);
+      this.say("呀啊啊…连、连续摸头是要害羞死小云吗！(⁄ ⁄•⁄ω⁄•⁄ ⁄)", 3600);
+      return;
+    }
     this.say(lines[Math.floor(Math.random() * lines.length)], 3200);
   },
   poke() {
+    this._lastInteract = Date.now();
     this.setFace("shy", 2200);
     this.spawnHearts(2);
+    this.addBond(1);
     const lines = [
       "呀!戳、戳哪里啦 >_<",
       "呜…小云不是布丁啦!",
@@ -347,6 +369,12 @@ const MoChibi = {
     var _a, _b, _c;
     const ttsOn = (_c = (_b = (_a = window.MoAssistant) == null ? void 0 : _a.getCfg) == null ? void 0 : _b.call(_a)) == null ? void 0 : _c.tts;
     return [
+      { ico: "💕", label: `亲密度 Lv.${this.bondLevel()}`, act: () => {
+        const lv = this.bondLevel();
+        this.setFace("shy", 3000);
+        this.spawnHearts(5);
+        this.say(`现在和小云的亲密度是 Lv.${lv} 哦～摸摸头、聊聊天都会涨的嘛 (〃∀〃)`, 4200);
+      } },
       { ico: "💬", label: "聊天", act: () => {
         var _a2;
         return (_a2 = window.MoAssistant) == null ? void 0 : _a2.openPanel();
@@ -628,48 +656,215 @@ const MoChibi = {
     }
     this.setFace(face, 4e3);
     this.say(line, 5e3);
+    /* v3.60.0 开场小蹦跶 + 老朋友问候 */
+    this.playAnim("mc-hop", 700);
+    if (this.bondLevel() >= 3 && Math.random() < 0.5) {
+      setTimeout(() => this.say(`已经是 Lv.${this.bondLevel()} 啦，主人今天也想小云了吧～嘿嘿`, 3800), 5200);
+    }
   },
-  /* ==================== 待机行为循环 ==================== */
+  /* ==================== 待机行为循环（v3.60.0 动态小云 · 行为引擎） ====================
+     单循环、有界、document.hidden 时静默——延续 v3.55.29 定时器铁律。
+     动作池：蹦跳 / 转圈 / 歪头 / 伸懒腰 / 探头张望 / 哼歌 / 闲逛 / 唠嗑 / 打盹。
+     久坐（>4 分钟无交互）进入真瞌睡；交互即唤醒。 */
   startIdleLoop() {
     if (this._idleOn) return;
     this._idleOn = true;
+    this._lastInteract = Date.now();
+    const ACTS = ["hop", "twirl", "tilt", "stretch", "peek", "hum", "wander", "chat", "nap"];
     const loop = () => {
-      if (this.isHidden() || this._dragging || this._talkTimer) {
-        setTimeout(loop, 8e3);
+      setTimeout(loop, 13e3 + Math.random() * 15e3);
+      if (document.hidden || this.isHidden() || this._dragging || this._talkTimer) return;
+      if (document.querySelector(".mc-menu.show")) return;
+      const box = document.getElementById("moChibi");
+      if (!box) return;
+      const idleMs = Date.now() - (this._lastInteract || Date.now());
+      if (idleMs > 24e4) {
+        /* 久坐真瞌睡：不再只有表情，ZZZ 挂起直到被唤醒 */
+        this.setFace("sleepy", 6e4);
+        const z = document.getElementById("mcZzz");
+        if (z) z.classList.add("show");
         return;
       }
-      const roll = Math.random();
-      if (roll < 0.3) {
-        this.setFace("surprise", 2e3);
-        const box = document.getElementById("moChibi");
-        box == null ? void 0 : box.classList.add("tilt");
-        setTimeout(() => box == null ? void 0 : box.classList.remove("tilt"), 1800);
-      } else if (roll < 0.5) {
-        this.setFace("sleepy", 2600);
-        const z = document.getElementById("mcZzz");
-        if (z) {
-          z.classList.add("show");
-          setTimeout(() => z.classList.remove("show"), 2400);
-        }
-      } else if (roll < 0.72) {
-        const lines = [
-          "主人在写什么呀?让小云瞄一眼嘛～",
-          "小云在这里哦,随时待命!٩(๑•̀ω•́๑)۶",
-          "嘿嘿,刚才那个情节写得好棒!",
-          "要不要休息一下下?小云给你唱歌…才怪 (´,,•ω•,,)♡",
-          "笔别停呀,小云等着看下文呢!",
-          "悄悄说:知识库好久没喂新设定了哦…"
-        ];
-        this.say(lines[Math.floor(Math.random() * lines.length)], 3800);
-        this.setFace("wink", 3e3);
-      } else {
-        const box = document.getElementById("moChibi");
-        box == null ? void 0 : box.classList.add("wave");
-        setTimeout(() => box == null ? void 0 : box.classList.remove("wave"), 2e3);
-      }
-      setTimeout(loop, 18e3 + Math.random() * 2e4);
+      const act = ACTS[Math.floor(Math.random() * ACTS.length)];
+      try { this["act_" + act](); } catch (e) { /* 单动作失败不影响循环 */ }
     };
-    setTimeout(loop, 9e3);
+    setTimeout(loop, 7e3);
+  },
+  /** 播放一次性动作动画（互斥：先清旧类，强制回流再上新类） */
+  playAnim(cls, ms) {
+    const f = document.querySelector("#moChibi .mc-float");
+    if (!f) return;
+    f.classList.remove("mc-hop", "mc-twirl", "mc-peek", "mc-stretch");
+    void f.offsetWidth;
+    f.classList.add(cls);
+    setTimeout(() => f.classList.remove(cls), ms);
+  },
+  act_hop() {
+    this.playAnim("mc-hop", 700);
+    this.setFace("happy", 1800);
+    if (Math.random() < 0.5) this.spawnClouds(1);
+  },
+  act_twirl() {
+    this.playAnim("mc-twirl", 960);
+    this.setFace("sing", 2200);
+  },
+  act_tilt() {
+    this.setFace("surprise", 2e3);
+    this.playAnim("mc-peek", 1400);
+  },
+  act_stretch() {
+    this.playAnim("mc-stretch", 1300);
+    this.setFace("sleepy", 2400);
+  },
+  act_peek() {
+    this.playAnim("mc-peek", 1400);
+    if (Math.random() < 0.4) this.say("咦？那边好像有什么…让小云看看～", 2600);
+  },
+  act_hum() {
+    this.setFace("sing", 4e3);
+    const lines = ["♪ 啦啦啦～云朵软绵绵 ♪", "♪ 呼噜噜～风把故事吹过来啦 ♪", "♪ 嗯嗯嗯～下一章写什么好呢 ♪"];
+    this.say(lines[Math.floor(Math.random() * lines.length)], 3600);
+  },
+  act_wander() {
+    const box = document.getElementById("moChibi");
+    if (!box) return;
+    const w = box.offsetWidth || 100;
+    const cur = box.getBoundingClientRect();
+    /* 在当前位置附近 ±140px 溜达，出屏则收回屏内 */
+    let nx = cur.left + (Math.random() * 280 - 140);
+    nx = Math.max(6, Math.min(nx, window.innerWidth - w - 6));
+    box.classList.add("strolling");
+    box.style.left = nx + "px";
+    this.spawnClouds(2);
+    setTimeout(() => box.classList.remove("strolling"), 1200);
+  },
+  act_chat() {
+    const lines = [
+      "主人在写什么呀?让小云瞄一眼嘛～",
+      "小云在这里哦,随时待命!٩(๑•̀ω•́๑)۶",
+      "嘿嘿,刚才那个情节写得好棒!",
+      "笔别停呀,小云等着看下文呢!",
+      `我们已经是 Lv.${this.bondLevel()} 的老朋友啦,再摸摸头也…也不是想要你摸啦！(￣▽￣)`,
+      "悄悄说:知识库好久没喂新设定了哦…"
+    ];
+    this.say(lines[Math.floor(Math.random() * lines.length)], 3800);
+    this.setFace("wink", 3e3);
+  },
+  act_nap() {
+    this.setFace("sleepy", 2600);
+    const z = document.getElementById("mcZzz");
+    if (z) {
+      z.classList.add("show");
+      setTimeout(() => z.classList.remove("show"), 2400);
+    }
+  },
+  /* ==================== 亲密度（v3.60.0 · 持久化） ==================== */
+  BOND_KEY: "moChibiBond",
+  _bond: 0,
+  _bondLoaded: false,
+  loadBond() {
+    if (this._bondLoaded) return this._bond;
+    try { this._bond = Number(localStorage.getItem(this.BOND_KEY)) || 0; } catch (e) { }
+    this._bondLoaded = true;
+    return this._bond;
+  },
+  addBond(n) {
+    this.loadBond();
+    const before = this.bondLevel();
+    this._bond = Math.max(0, this._bond + n);
+    try { localStorage.setItem(this.BOND_KEY, String(this._bond)); } catch (e) { }
+    const after = this.bondLevel();
+    if (after > before) {
+      this.setFace("surprise", 2600);
+      this.spawnHearts(8);
+      this.say(`哇！和小云的亲密度升到 Lv.${after} 了！！(≧∇≦)/`, 4200);
+      this.playAnim("mc-twirl", 960);
+    }
+    return after;
+  },
+  bondLevel() {
+    const b = this.loadBond();
+    const T = [0, 5, 15, 30, 60, 100, 160, 240, 350, 500];
+    let lv = 1;
+    for (let i = 0; i < T.length; i++) if (b >= T[i]) lv = i + 1;
+    return lv;
+  },
+  /* ==================== 剧情感知（v3.60.0 · 世界事件反应） ====================
+     react("turn"|"day"|"entity"|"plan", detail)——各引擎挂钩调用。
+     同类事件 90 秒内只碎碎念一次，表情反应不设限。 */
+  react(ev, data) {
+    try {
+      const now = Date.now();
+      if (!this._reactAt) this._reactAt = {};
+      const fresh = now - (this._reactAt[ev] || 0) > 9e4;
+      this._reactAt[ev] = now;
+      if (this.isHidden()) return;
+      if (ev === "turn") {
+        const t = Number(data && data.tension) || 0;
+        if (t >= 75) {
+          this.setFace("surprise", 3600);
+          if (fresh) this.say("剧情张力好高！小云的心也跟着揪起来了 (⊙ω⊙)", 3800);
+        } else if (t >= 40) {
+          this.setFace("think", 3200);
+          if (fresh) this.say("唔…接下来会怎么发展呢？小云盯着呢～", 3400);
+        } else {
+          this.setFace("happy", 2600);
+          if (fresh) this.say("记好啦～这一轮的小云账本记完了哦 ♪", 3200);
+        }
+        this.addBond(1);
+      } else if (ev === "day") {
+        this.setFace("wink", 3200);
+        if (fresh) this.say(`世界自己走到第 ${data && data.day} 天啦～${(data && data.ev) || "风平浪静"}`, 4000);
+      } else if (ev === "entity") {
+        this.setFace("surprise", 2600);
+        this.playAnim("mc-hop", 700);
+        if (fresh) this.say("哦！新面孔进世界登记啦，小云记小本本上了 ✍", 3600);
+      } else if (ev === "plan") {
+        this.setFace("sing", 3600);
+        this.spawnHearts(3);
+        if (fresh) this.say("目标定下来啦！小云会盯着进度陪主人一起推进的 (๑•̀ㅂ•́)و", 4200);
+      } else if (ev === "style") {
+        this.setFace("happy", 2400);
+      }
+    } catch (e) { /* 反应失败绝不打扰主流程 */ }
+  },
+  /* ==================== 视线跟随（v3.60.0 · 光标处微微侧身） ==================== */
+  bindFollow() {
+    if (this._followOn) return;
+    this._followOn = true;
+    let last = 0;
+    document.addEventListener("mousemove", (e) => {
+      if (document.hidden) return;
+      const now = Date.now();
+      if (now - last < 130) return;
+      last = now;
+      const box = document.getElementById("moChibi");
+      if (!box || this._dragging || this.isHidden()) { box == null ? void 0 : box.classList.remove("watching"); return; }
+      const r = box.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const near = Math.abs(dx) < 460 && e.clientY > r.top - 260;
+      if (near) {
+        box.style.setProperty("--mc-lean", ((dx / 460) * 4.5).toFixed(2) + "deg");
+        box.classList.add("watching");
+      } else {
+        box.classList.remove("watching");
+      }
+    }, { passive: true });
+  },
+  /** 云尘粒子（脚下飘起的小云） */
+  spawnClouds(n = 2) {
+    const box = document.getElementById("mcHearts");
+    if (!box) return;
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("span");
+      s.className = "mc-cloud";
+      s.textContent = "☁️";
+      s.style.left = 18 + Math.random() * 60 + "%";
+      s.style.setProperty("--mc-cdx", (Math.random() * 40 - 20).toFixed(0) + "px");
+      s.style.animationDelay = i * 0.12 + "s";
+      box.appendChild(s);
+      setTimeout(() => s.remove(), 1500);
+    }
   },
   /* ==================== 显示 / 隐藏 ==================== */
   isHidden() {
@@ -905,7 +1100,8 @@ const MoChibi = {
     this.startBlinkLoop();
     this.startIdleLoop();
     this.startDimWatch();
-    console.log("[小云] 桌面宠物形象已就位（可拖拽 / 长按菜单 / 双击互动 / 闲置自动避让）");
+    this.bindFollow();
+    console.log("[小云] 桌面宠物形象已就位（可拖拽 / 长按菜单 / 双击互动 / 闲置自动避让 / 亲密度 / 剧情感知）");
   }
 };
 window.MoChibi = MoChibi;

@@ -26,6 +26,7 @@
   function _savePlan(goal, steps) {
     const p = { goal: String(goal || "").slice(0, 80), steps, createdAt: Date.now(), updatedAt: Date.now() };
     save(p);
+    try { window.MoChibi && MoChibi.react && MoChibi.react("plan", { goal: p.goal }); } catch (e) {}
     return p;
   }
 
