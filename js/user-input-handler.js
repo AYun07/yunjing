@@ -189,7 +189,20 @@ const StoryInput = {
         if (flat.length > 320 && semis >= 8 && semis > Math.max(3, stops * 0.8)) return true;
         return false;
       };
-      const needsRewrite = () => bodyLenOf(reply) < 15 || isRunawayText(reply);
+      /* v3.55.30 契约校验熔断：回复已结构合规（同时含 (variable_update) 变量块与【行动选项】/选项）
+         时，即便正文剥离后偶发偏短，也视为模型正常输出、跳过自动重写——避免「第N回合：」式常规开场
+         被误判为空正文、凭空多发一次请求（实测：合规回复按 1 次/轮结算，无需重写通道兜底）。
+         失控正文（isRunawayText）无论如何都重写，不受熔断影响。 */
+      const isCompliant = /\(?\/?variable_update/i.test(reply) &&
+        (RH.extractOptions(reply).length > 0 || (RH.OPT_HEADER_RE && RH.OPT_HEADER_RE.test(reply)));
+      const needsRewrite = () => {
+        if (isRunawayText(reply)) return true;
+        if (bodyLenOf(reply) < 15) {
+          if (isCompliant && bodyLenOf(reply) > 0) return false; /* 熔断：合规且非空，不重写 */
+          return true;
+        }
+        return false;
+      };
       if (needsRewrite()) {
         const why = bodyLenOf(reply) < 15 ? "未输出可识别的正文（可能只回了变量块、或正文被格式标记吞掉）" : "正文疑似解码失控（词表狂奔/标点消失/复读循环）";
         window.StoryResponseHandler.notice(`模型${why}，正在自动重写一次…`, "warn", 9000);

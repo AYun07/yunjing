@@ -282,6 +282,30 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="接口 变量AI 稳定 修复" style="--entry-hue:#c8d8f0;">
+            <div class="log-head">
+                <span class="ver-chip">v3.55.30</span>
+                <span class="log-date">2026-11-01</span>
+                <span class="log-badge">多连接配置 · 正文误重写修复 · 契约校验熔断</span>
+            </div>
+            <div class="tag-row">
+                <span class="tag" data-tag="接口" style="--tag-hue:#c8e8d8;">⚙ 接口</span>
+                <span class="tag" data-tag="变量AI" style="--tag-hue:#e8d8c8;">🧾 变量AI</span>
+                <span class="tag" data-tag="稳定" style="--tag-hue:#c2d6e6;">🛡 稳定</span>
+                <span class="tag" data-tag="修复" style="--tag-hue:#f0c8c8;">🔧 修复</span>
+            </div>
+            <p><b>① 多连接配置（Connection Profiles）</b> —— 设计灵感来自本轮对<b>酒馆（SillyTavern）多 API / 智能体机制</b>的调研（见研究笔记 <code>changelog/research/酒馆多API机制调研.md</code>）。酒馆用 <b>Connection Profiles</b>（官方内置，存 API 类型 / URL / Key / 模型 / 模板）一键切换后端；群聊场景用 <code>ST-Multi-Model-Chat</code> 按角色分配 Profile；副 AI 专职做变量提取 / 前情摘要。<b>核心洞察：把机械活（变量登记、前情摘要）丢给廉价模型，主叙事保声线一致、省 token。</b></p>
+            <ul>
+                <li>新增 <code>js/connection-profiles.js</code>：多 Profile 各存独立 <code>endpoint / apiKey / model / maxTokens / temperature / timeout</code>，存于 <code>localStorage['yunjing.profiles']</code>。</li>
+                <li>三个角色分流：<b>主叙事</b>（沿用原 storyVarApi 主配置）、<b>副AI变量·状态登记官</b>（原第三接口）、<b>副AI摘要·前情提要官</b>；角色指派存于 <code>localStorage['yunjing.profileRoles']</code>（值可为 profileId / <code>__legacy__</code> / <code>__main__</code> / null）。</li>
+                <li>UI：配置面板新增「🔗 多连接配置」折叠区，可增删改、按角色指派；<code>resolve(role)</code> 在「已指派且字段填全」时才返回配置，否则返回 null 走兜底。<b>首次运行自动把旧 storyVarApi 单配置迁成默认连接并指派副AI变量</b>（<code>migrateLegacy()</code> 哨兵 <code>yunjing.profilesMigrated</code>）。</li>
+                <li><code>variable-ai.js</code> 接线：<code>activeConfig()</code> 优先 <code>ConnectionProfiles.resolve("varAI")</code>，无则回退旧版单配置；<code>recapCall / recapReady</code> 增加 <code>summary</code> 解析路径。</li>
+            </ul>
+            <p><b>② 修复 <code>extractBody</code> 误吞「第N回合：」致空正文、触发浪费性自动重写的 bug</b>。根因是章节标题剥离正则 <code>^\s*…第\s*[…]\s*[章回节卷][^\n]{0,40}?\s*\n+</code> —— <code>[章回节卷]</code> 含<b>「回」</b>，懒惰类 <code>[^\n]{0,40}?</code> 会跨到下一个换行，导致任何以「<b>第N回合：叙事正文…</b>」起头的首段被整段当作假章节标题删空（本作 genre 里「第N回合：」是标准开场白）。短回复正文被清空 → <code>bodyLen</code> 归零 → 误判空 → 触发自动重写、多发一次请求。修复后判别式收紧为「<b>无句读的真标题</b>」才剥（<code>[^\n：，。！？…]{0,40}?</code>），保真标题仍剥、叙事首段保留。</p>
+            <p><b>③ 契约校验熔断</b>：改造 <code>needsRewrite()</code> —— 回复已结构合规（含 <code>variable_update</code> 块 + 选项）时，即便正文剥离后偶发偏短也视为正常输出、<b>跳过自动重写</b>，避免「第N回合：」式开场被误判空、多发请求；而<b>失控正文（<code>isRunawayText</code>）无论如何都重写</b>，不受熔断影响。</p>
+            <p>✅ <b>实测纠正</b>：此前用短 mock 测到的「每轮 2 次请求」是剥离 bug 假象；修复后<b>真实 LLM 稳定 1 请求/轮</b>，7 轮连玩零崩溃、堆 9–12MB。ConnectionProfiles 12 项逻辑断言全过，全部改动 JS 过 <code>node --check</code>；SW_VER = <code>yunjing-v3.55.30</code>。</p>
+        </article>
+
         <article class="log-entry" data-tags="崩溃 稳定 模块 修复" style="--entry-hue:#f0c8c8;">
             <div class="log-head">
                 <span class="ver-chip">v3.55.29</span>

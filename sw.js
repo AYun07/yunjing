@@ -8,11 +8,10 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.55.29';  /* v3.55.28 分层加载 + 离线清单补齐：
-   ① 首屏脚本由 2.78MB 降到 0.67MB（js/lazy-boot.js 分层加载器：batch 分帧 / demand 按需）
-   ② 补齐此前遗漏的核心脚本（attribute-engine / canon-* / chat-virtualizer / story-identity 等 15 个），
-      否则离线模式这些文件既不在预缓存也拉不到网络，直接白屏
-   ③ 移除零引用的 phone-alive/phone-apps/phone-social（268KB 死重）
+const SW_VER = 'yunjing-v3.55.30';  /* v3.55.30 多连接配置 + 正文误重写修复：
+   ① 新增「多连接配置」(Connection Profiles)：主叙事 / 副AI变量 / 副AI摘要 各存独立 API+模型，UI 一键切换
+   ② 修复 extractBody 章节标题正则误吞「第N回合：叙事正文…」致空正文、触发浪费性自动重写的 bug
+   ③ 新增契约校验熔断：回复已结构合规（含 variable_update 块 + 选项）即跳过自动重写，真实 LLM 稳定 1 请求/轮
    逐版说明见 changelog/。改动必须递增 SW_VER */
 const CORE = [
   './', './index.html', './studio.html', './manifest.webmanifest',
