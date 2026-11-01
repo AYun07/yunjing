@@ -8,7 +8,7 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.55.28';  /* v3.55.28 分层加载 + 离线清单补齐：
+const SW_VER = 'yunjing-v3.55.29';  /* v3.55.28 分层加载 + 离线清单补齐：
    ① 首屏脚本由 2.78MB 降到 0.67MB（js/lazy-boot.js 分层加载器：batch 分帧 / demand 按需）
    ② 补齐此前遗漏的核心脚本（attribute-engine / canon-* / chat-virtualizer / story-identity 等 15 个），
       否则离线模式这些文件既不在预缓存也拉不到网络，直接白屏
@@ -99,7 +99,7 @@ const CORE2 = CORE.concat(GEN, [
   /* --- 安卓 WebView 桥 --- */
   'js/android-bridge.js',
   /* --- v3.55.28 补齐：这些脚本此前不在任何预缓存清单，离线模式必 404 --- */
-  'js/lazy-boot.js','js/attribute-engine.js','js/base-model-mode.js',
+  'js/lazy-boot.js','js/dep-wait.js','js/attribute-engine.js','js/base-model-mode.js',
   'js/mo-utils.js','js/mo-store.js','js/net-guard.js','js/content-scale.js',
   'js/chat-virtualizer.js','js/transcript-retrieval.js','js/world-book.js',
   'js/story-stance.js','js/story-identity.js','js/canon-ledger.js',

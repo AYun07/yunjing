@@ -267,14 +267,26 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
     console.log(`[WorldExt] ${genre} 界专属模块就位：${modules.map((m) => m.name).join(" / ")}${entMod ? "（实体引擎已挂载）" : ""}`);
     mountStrip();
   }
+  /* v3.55.29：PlayerKit 不可用（尚未加载 / 加载失败）时，原逻辑「这次不在就永远算了」——
+     界专属模块就此静默全废，外界只看到 hasModules() 恒 false。改为等到就绪再补挂。 */
+  function tryPlayerKit() {
+    var PK = window.PlayerKit;
+    if (!PK || typeof PK.augment !== "function") return false;
+    var got = PK.augment(genre, []);
+    if (!Array.isArray(got)) return false;          /* 影子对象会返回 Promise，不能当数组用 */
+    modules = got;
+    load();
+    modules.forEach(ensureState);
+    console.log(`[WorldExt] ${genre} 界无扩展文件，仅挂随身器官：${modules.map((m) => m.name).join(" / ")}`);
+    return true;
+  }
   function init() {
     injectStyle();
     try {
-      if (!modules.length && window.PlayerKit && typeof window.PlayerKit.augment === "function") {
-        modules = window.PlayerKit.augment(genre, []);
-        load();
-        modules.forEach(ensureState);
-        console.log(`[WorldExt] ${genre} 界无扩展文件，仅挂随身器官：${modules.map((m) => m.name).join(" / ")}`);
+      if (!modules.length) {
+        if (!tryPlayerKit() && window.YJWait) {
+          YJWait.for(tryPlayerKit, null, { name: "world-ext.playerkit", base: 150, max: 60 });
+        }
       }
     } catch (e) {
     }
