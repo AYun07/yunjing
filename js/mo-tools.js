@@ -130,7 +130,7 @@
   }
   function simReady() { return !!window.SimCore; }
 
-  /* ---------- 🎯 / ⏱ ---------- */
+  /* ---------- 🎯 / ⏱ / 👥 / 🎲 ---------- */
   function plan() {
     if (window.Planner) Planner.panel();
     else toast("规划器未加载", "error");
@@ -139,13 +139,23 @@
     if (window.WorldClock) WorldClock.toggle();
     else toast("世界时钟未加载", "error");
   }
+  function roster() {
+    if (window.NpcSpawn) NpcSpawn.rosterPanel();
+    else toast("众生谱未加载", "error");
+  }
+  function life() {
+    if (window.LifeMode) LifeMode.panel();
+    else toast("自由人生未加载", "error");
+  }
 
   function run(tool) {
     if (tool === "diagnose") return diagnose();
     if (tool === "whatif") return whatif();
     if (tool === "plan") return plan();
     if (tool === "clock") return clock();
+    if (tool === "roster") return roster();
+    if (tool === "life") return life();
   }
 
-  window.MoTools = { run, diagnose, whatif, plan, clock };
+  window.MoTools = { run, diagnose, whatif, plan, clock, roster, life };
 })();
