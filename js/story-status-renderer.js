@@ -855,12 +855,14 @@ const StoryStatusRenderer = {
     if (!area) return;
     const pl = ((_b = (_a = window.storyFramework) == null ? void 0 : _a.config) == null ? void 0 : _b.panelLabels) || {};
     if (this._same("items", items)) return;
+    /* v3.57.0：物品区底部挂统一填表入口（法宝/势力/地点/关系） */
+    const addRow = window.EntityEditor ? window.EntityEditor.addRowHTML() : "";
     if (!items.length) {
-      area.innerHTML = `<div class="empty-hint">${pl.itemsEmpty || "尚无关键道具"}</div>`;
+      area.innerHTML = `<div class="empty-hint">${pl.itemsEmpty || "尚无关键道具"}</div>` + addRow;
       return;
     }
     const icon = pl.itemIcon || "🔑";
-    area.innerHTML = items.map((i) => `<div class="item-chip">${icon} ${this.esc(i.name)} ×${i.count || 1}</div>`).join("");
+    area.innerHTML = items.map((i) => `<div class="item-chip">${icon} ${this.esc(i.name)} ×${i.count || 1}</div>`).join("") + addRow;
   },
   renderHistory(hist) {
     var _a, _b;

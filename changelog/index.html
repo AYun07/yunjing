@@ -282,6 +282,28 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="设定 世界引擎 推演 小云 沉浸" style="--entry-hue:#c8e0d8;">
+            <div class="log-head">
+                <span class="ver-chip">v3.57.0</span>
+                <span class="log-date">2026-11-01</span>
+                <span class="log-badge">「让世界活起来」引擎全套（P2-P5）</span>
+            </div>
+            <div class="tag-row">
+                <span class="tag" data-tag="设定" style="--tag-hue:#d8c8a0;">🎛 设定</span>
+                <span class="tag" data-tag="世界引擎" style="--tag-hue:#c8e0d8;">🌍 世界引擎</span>
+                <span class="tag" data-tag="推演" style="--tag-hue:#d0c8e8;">🔮 推演</span>
+                <span class="tag" data-tag="小云" style="--tag-hue:#e8d8c8;">🐶 小云</span>
+                <span class="tag" data-tag="沉浸" style="--tag-hue:#c8e8d8;">🏮 沉浸</span>
+            </div>
+            <p>「让世界充分活过来」系列正式成型：变量（v3.56.1 基座）之外，<b>填表 / 推演 / 推进 / 规划 / 小云智能化</b>五大能力一次到位。全部遵循「规则核心 + LLM 润色」与「单飞有界定时器」两条铁律。</p>
+            <p><b>① 统一填表 <code>entity-editor.js</code>（P2）</b>：物品区新增「＋法宝 / ＋势力 / ＋地点 / ⛓关系」登记入口，表单字段由 SchemaRegistry 模板驱动（改模板即改表单）；法宝仍回写 <code>vars.items</code> 旧路径零破坏，势力/地点/关系走统一实体库；关系连线跨类型解析实体、自环拒绝。</p>
+            <p><b>② 推演引擎 <code>sim-core.js</code>（P3）</b>：确定性前向模拟——势力实力模型（成员/地盘/驻地角色）、关系边自然衰减、敌对升温推高张力、地点危险度回归区域基线。<b>种子化可复算</b>（同输入同输出），what-if 分叉对比基线给出差异判定；LLM 不参与推演本身，只润色解读。</p>
+            <p><b>③ 自主世界时钟 <code>world-clock.js</code>（P4）</b>：世界脱离玩家操作按真实时间演化（默认 180s = 世界 1 天，可调 30-3600s）。世界日结算：张力回落、关系淡忘、随机世界事件入史并暂存 <code>pendingEvents</code> 供后续提示词引用。定时器安全复刻 v3.55.29 教训：全局唯一 interval、重复 start 不裂变、后台页签跳过结算不积累、启动等待有界（≤60 次）。</p>
+            <p><b>④ 剧情规划器 <code>planner.js</code>（P5a）</b>：目标 → 3-6 步计划（主叙事 API 生成，规则解析容错中文序号/顿号/破折号），按 genre 持久化；每轮经 <code>WorldExt.takeDirective</code> 把「正在推进 / 下一步」注入主笔提示词——<b>规划→推进闭环</b>。</p>
+            <p><b>⑤ 小云工具箱 <code>mo-tools.js</code>（P5b）</b>：快捷指令新增 🧭世界诊断（实体统计 + 悬空关系体检 + 一键清理 + 推演摘要 + 规划进度 + 时钟状态）、🔮推演未来（规则跑分叉 + 可让小云润色）、🎯剧情规划（面板直开）、⏱世界时钟（一键开关）。<b>本地工具直执行不烧 token</b>，需要解读时才请小云开口。</p>
+            <p>✅ <b>自测记录</b>：22 项引擎断言（vm 真实执行）+ 17 项浏览器冒烟（无头 Chromium 加载真实 studio.html）全过，控制台零报错；全部 JS 过 <code>node --check</code>。SW_VER = <code>yunjing-v3.57.0</code>。</p>
+        </article>
+
         <article class="log-entry" data-tags="稳定 修复 测试" style="--entry-hue:#e6dcc8;">
             <div class="log-head">
                 <span class="ver-chip">v3.56.2</span>

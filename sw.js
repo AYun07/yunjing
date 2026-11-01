@@ -8,7 +8,13 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.56.2';  /* v3.56.2 修复：upsert/link 接受可选 vars（不再依赖全局初始化）、remove 删实体级联清关系边。v3.56.1 世界基座：统一实体模型 + 变量模板 + 校验器：
+const SW_VER = 'yunjing-v3.57.0';  /* v3.57.0「让世界活起来」引擎全套（P2-P5）：
+   ① entity-editor.js 统一填表（法宝/势力/地点/关系，schema 驱动）
+   ② sim-core.js 推演引擎（规则核心·种子化可复算·what-if 分叉）
+   ③ world-clock.js 自主世界时钟（单飞有界定时器·后台不积累·世界日结算）
+   ④ planner.js 剧情规划（持久化 + LLM 生成 + 指令注入推进闭环）
+   ⑤ mo-tools.js 小云工具箱（世界诊断/推演解读/规划/时钟，快捷指令直达）
+   v3.56.2 修复：upsert/link 接受可选 vars、remove 级联清关系边。v3.56.1 世界基座：统一实体模型 + 变量模板 + 校验器：
    ① 新增 js/world-schema.js：SchemaRegistry（设计者预定义本世界字段+类型+约束）/ EntityStore（统一角色·法宝·势力·地点·关系）/ SchemaValidator（解析出口钳制收敛，不否决 AI）
    ② variable-parser 出口挂 SchemaValidator.sanitize；world-ext onVars 每轮同步实体镜像；WorldExt.schema() 暴露模板与实体统计
    逐版说明见 changelog/。改动必须递增 SW_VER */

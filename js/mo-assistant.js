@@ -402,11 +402,21 @@ ${String(recap.summary).slice(0, 600)}`);
     { icon: "🧵", label: "伏笔清单", text: "小云，把我目前埋下的伏笔全部列出来，标注哪些该收了、哪些还能再养养，给出回收时机建议！" },
     { icon: "🎭", label: "文风调校", text: "小云，分析一下我目前的文风特点，再给我三种不同风格的改写示例（同一段各写一遍）！" },
     { icon: "🔧", label: "工坊体检", health: true },
-    { icon: "🎲", label: "随机脑洞", text: "小云，来一个天马行空完全不设限的脑洞，最好吓我一跳的那种！" }
+    { icon: "🎲", label: "随机脑洞", text: "小云，来一个天马行空完全不设限的脑洞，最好吓我一跳的那种！" },
+    { icon: "🧭", label: "世界诊断", tool: "diagnose" },
+    { icon: "🔮", label: "推演未来", tool: "whatif" },
+    { icon: "🎯", label: "剧情规划", tool: "plan" },
+    { icon: "⏱️", label: "世界时钟", tool: "clock" }
   ],
   runQuick(action) {
     if (action.health) {
       this.runHealthCheck();
+      return;
+    }
+    /* v3.57.0：小云工具箱（世界诊断/推演/规划/时钟）——本地工具直执行，不烧 LLM */
+    if (action.tool) {
+      if (window.MoTools) window.MoTools.run(action.tool);
+      else if (window.showToast) window.showToast("小云工具箱未就绪，请刷新后再试", "error");
       return;
     }
     this.send(action.text);

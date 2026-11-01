@@ -333,8 +333,13 @@
     <script defer src="js/content-scale.js?v=3.55.29"></script>
     <script defer src="js/api-calling-functions.js?v=3.55.29"></script>
     <script defer src="js/attribute-engine.js?v=3.55.29"></script>
-    <script defer src="js/world-schema.js?v=3.56.2"></script>
-    <script defer src="js/variable-parser.js?v=3.56.2"></script>
+    <script defer src="js/world-schema.js?v=3.57.0"></script>
+    <script defer src="js/entity-editor.js?v=3.57.0"></script>
+    <script defer src="js/sim-core.js?v=3.57.0"></script>
+    <script defer src="js/world-clock.js?v=3.57.0"></script>
+    <script defer src="js/planner.js?v=3.57.0"></script>
+    <script defer src="js/mo-tools.js?v=3.57.0"></script>
+    <script defer src="js/variable-parser.js?v=3.57.0"></script>
     <!-- v3.55.10 基础小模型适配：参数安全锁 / 轻量协议块 / 辅助AI静默 / 复读自检 -->
     <script defer src="js/base-model-mode.js?v=3.55.29"></script>
     <!-- v3.55.5 内置「云起预设」（云境原创）：数据 + 渲染引擎 + 世界对齐桥 -->
@@ -372,7 +377,7 @@
     <script type="text/yj-lazy" data-src="js/yunqi-sync.js?v=3.55.29" data-yj-group="batch"></script>
     <script defer src="js/ai-message-builder.js?v=3.55.29"></script>
     <script defer src="js/ai-response-handler.js?v=3.55.30"></script>
-    <script defer src="js/story-status-renderer.js?v=3.56.2"></script>
+    <script defer src="js/story-status-renderer.js?v=3.57.0"></script>
     <script type="text/yj-lazy" data-src="js/atlas-panel.js?v=3.55.29" data-yj-group="demand" data-yj-globals="StoryAtlas"></script>
     <script type="text/yj-lazy" data-src="js/ambience-layer.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/game-layer.js?v=3.55.29" data-yj-group="batch"></script>
@@ -436,7 +441,7 @@
     <script type="text/yj-lazy" data-src="js/entity-engine.js?v=3.55.29" data-yj-group="batch"></script>
     <!-- v3.55.29：world-ext-core 必须早于 {genre}-ext.js 存在（ext 里是 `if (window.WorldExt) WorldExt.define(...)`，
      WorldExt 不在就静默跳过、模块永不注册），故提回首屏直出，不再走延后加载。仅 29KB。 -->
-    <script src="js/world-ext/world-ext-core.js?v=3.56.2"></script>
+    <script src="js/world-ext/world-ext-core.js?v=3.57.0"></script>
     <!-- v3.26.0 玩家随身套装：每界自动挂「玩家面板+背包」随身器官（须先于界扩展装载，
          define() 钩子在 {genre}-ext.js 注册时调用 PlayerKit.augment） -->
     <!-- v3.55.29：PlayerKit 被 world-ext-core 的 init() 同步依赖（PlayerKit.augment 必须返回真数组），
