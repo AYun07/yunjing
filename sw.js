@@ -52,8 +52,8 @@ const CORE2 = CORE.concat(GEN, [
   'js/entity-engine.js','js/variable-ai.js','js/dynamic-world.js',
   'js/image-gen.js','js/prompt-engineer.js','js/prompt-budget.js',
   /* --- 云起预设（v3.55.5 内置原创） --- */
-  'js/preset-yunqi.js','js/miaomiao-engine.js','js/miaomiao-bridge.js',
-  'js/yunqi-regex-data.js','js/miaomiao-regex.js',
+  'js/preset-yunqi.js','js/旧预设引擎.js','js/旧预设桥.js',
+  'js/yunqi-regex-data.js','js/旧预设正则.js',
   'js/yunqi-sync.js',
   /* --- 设定与向导 --- */
   'js/story-setup-wizard.js','js/config-modal.js','js/ui-dialog.js',
