@@ -1904,6 +1904,18 @@ body.narrow .form-row.three-col { grid-template-columns: 1fr; }
     padding-top: 12px;
 }
 .dw-sub-title { font-size: 12px; color: #7fd4dc; letter-spacing: 1.5px; margin-bottom: 11px; }
+/* v3.55.30 多连接配置（Connection Profiles）列表与编辑区 */
+.cp-profile-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+.cp-profile-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 9px 12px; border: 1px solid rgba(94, 197, 207, 0.22); border-radius: 8px;
+    background: rgba(94, 197, 207, 0.05);
+}
+.cp-profile-meta { display: flex; flex-direction: column; min-width: 0; }
+.cp-profile-meta b { font-size: 13px; color: var(--text); }
+.cp-profile-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-profile-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.cp-edit-actions { display: flex; gap: 8px; margin-top: 12px; }
 .check-row {
     display: flex;
     align-items: baseline;
