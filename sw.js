@@ -8,7 +8,7 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.58.0';  /* v3.58.0 世界自活（P6）：原创人物/势力/地点自动繁衍上图 + 自由人生。v3.57.0「让世界活起来」引擎全套（P2-P5）：
+const SW_VER = 'yunjing-v3.59.0';  /* v3.59.0 主界面换肤「晓云天光」+ 小云五形态换装。v3.58.0 世界自活（P6）：原创人物/势力/地点自动繁衍上图 + 自由人生。v3.57.0「让世界活起来」引擎全套（P2-P5）：
    v3.57.1 修复：EntityStore 单复数归一（list("characters") 曾恒空，关系连线在角色池上静默失效）。
    ① entity-editor.js 统一填表（法宝/势力/地点/关系，schema 驱动）
    ② sim-core.js 推演引擎（规则核心·种子化可复算·what-if 分叉）
@@ -52,8 +52,8 @@ const CORE2 = CORE.concat(GEN, [
   'js/entity-engine.js','js/variable-ai.js','js/dynamic-world.js',
   'js/image-gen.js','js/prompt-engineer.js','js/prompt-budget.js',
   /* --- 云起预设（v3.55.5 内置原创） --- */
-  'js/preset-yunqi.js','js/miaomiao-engine.js','js/miaomiao-bridge.js',
-  'js/yunqi-regex-data.js','js/miaomiao-regex.js',
+  'js/preset-yunqi.js','js/旧预设引擎.js','js/旧预设桥.js',
+  'js/yunqi-regex-data.js','js/旧预设正则.js',
   'js/yunqi-sync.js',
   /* --- 设定与向导 --- */
   'js/story-setup-wizard.js','js/config-modal.js','js/ui-dialog.js',

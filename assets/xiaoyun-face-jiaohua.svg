@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="114 92 212 262">
+  <g><!-- ===== 头部 ===== -->
+    <!-- 脸 -->
+    <path d="M136 234
+             C 136 302, 170 350, 220 350
+             C 270 350, 304 302, 304 234
+             C 304 168, 268 126, 220 126
+             C 172 126, 136 168, 136 234 Z"
+          fill="#ffeede" stroke="#ecc8b0" stroke-width="2.5"/>
+    <!-- 刘海：扇贝形平刘海，底缘连续波浪垂到眉线 -->
+    <path d="M132 242
+             C 124 150, 172 102, 220 102
+             C 268 102, 316 150, 308 242
+             C 300 252, 288 252, 282 243
+             C 274 252, 262 252, 256 243
+             C 248 252, 236 252, 230 243
+             C 222 252, 210 252, 202 243
+             C 194 252, 182 252, 176 243
+             C 168 252, 156 252, 148 243
+             C 142 250, 134 250, 132 242 Z"
+          fill="#e8edf6" stroke="#a8b4c8" stroke-width="3"/>
+    <path d="M188 132 C 178 160, 172 200, 174 232" fill="none" stroke="#c4cfe0" stroke-width="2.5" opacity="0.8"/>
+    <path d="M252 132 C 262 160, 268 200, 266 232" fill="none" stroke="#c4cfe0" stroke-width="2.5" opacity="0.8"/>
+    <path d="M220 118 C 220 156, 220 196, 220 230" fill="none" stroke="#c4cfe0" stroke-width="2" opacity="0.6"/>
+    <!-- 头顶高光 -->
+    <path d="M170 126 C 190 112, 218 108, 240 114" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+    <!-- 丝带发带（贴头顶弧线） -->
+    <path d="M136 176 C 168 128, 272 128, 304 176 L 296 196 C 266 152, 174 152, 144 196 Z" fill="#a8c8f0" stroke="#7aa3d8" stroke-width="2"/>
+    <!-- 丝带结（右侧） -->
+    <path d="M300 172 L 326 158 L 320 194 Z" fill="#a8c8f0" stroke="#7aa3d8" stroke-width="2"/>
+    <path d="M300 172 L 282 162 L 288 188 Z" fill="#bcd4f4" stroke="#7aa3d8" stroke-width="2"/>
+    <circle cx="300" cy="174" r="6" fill="#c8dcf6" stroke="#7aa3d8" stroke-width="2"/>
+    <!-- 云朵发饰（左上，扣在发带上） -->
+    <g transform="translate(152,138) rotate(-12)">
+      <ellipse cx="0" cy="0" rx="17" ry="10" fill="#ffffff" stroke="#c0cce0" stroke-width="2"/>
+      <ellipse cx="-9" cy="-4" rx="8" ry="6.5" fill="#ffffff" stroke="#c0cce0" stroke-width="2"/>
+      <ellipse cx="8" cy="-5" rx="9" ry="7" fill="#ffffff" stroke="#c0cce0" stroke-width="2"/>
+    </g>
+    <!-- 眼睛 -->
+    <g>
+      <ellipse cx="185" cy="272" rx="17" ry="21" fill="#5aa8e8" stroke="#3a78b8" stroke-width="2"/>
+      <ellipse cx="185" cy="272" rx="8" ry="11" fill="#2a5a98"/>
+      <circle cx="181" cy="264" r="5" fill="#ffffff"/>
+      <circle cx="190" cy="280" r="2.6" fill="#ffffff" opacity="0.85"/>
+      <path d="M167 254 C 173 244, 197 244, 203 254" fill="none" stroke="#5a4a42" stroke-width="4" stroke-linecap="round"/>
+      <path d="M168 240 C 176 236, 186 236, 192 239" fill="none" stroke="#8a7a70" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g>
+      <ellipse cx="255" cy="272" rx="17" ry="21" fill="#5aa8e8" stroke="#3a78b8" stroke-width="2"/>
+      <ellipse cx="255" cy="272" rx="8" ry="11" fill="#2a5a98"/>
+      <circle cx="251" cy="264" r="5" fill="#ffffff"/>
+      <circle cx="260" cy="280" r="2.6" fill="#ffffff" opacity="0.85"/>
+      <path d="M237 254 C 243 244, 267 244, 273 254" fill="none" stroke="#5a4a42" stroke-width="4" stroke-linecap="round"/>
+      <path d="M248 240 C 254 236, 264 236, 272 240" fill="none" stroke="#8a7a70" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <!-- 腮红 -->
+    <ellipse cx="160" cy="296" rx="13" ry="7" fill="#ffc8b0" opacity="0.55"/>
+    <ellipse cx="280" cy="296" rx="13" ry="7" fill="#ffc8b0" opacity="0.55"/>
+    <!-- 微笑 -->
+    <path d="M209 310 Q 220 320, 231 310" fill="none" stroke="#d88a6a" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="220" cy="296" r="2" fill="#ecc8b0"/>
+  </g>
+</svg>
