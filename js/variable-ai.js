@@ -24,15 +24,26 @@ const VariableAI = {
   save(cfg) {
     localStorage.setItem(this.KEY, JSON.stringify(cfg));
   },
+  /** v3.55.30 多连接配置：当前实际生效的连接配置
+   *  优先取「多连接配置」里指派给 varAI 角色的连接；未指派则回退本模块旧版单配置（需启用） */
+  activeConfig() {
+    const CP = window.ConnectionProfiles;
+    if (CP) {
+      const p = CP.resolve("varAI");
+      if (p) return p;
+    }
+    const c = this.get();
+    if (c.enabled && c.endpoint && c.apiKey && c.model) return c;
+    return null;
+  },
   /** 第三接口是否填全（地址/Key/模型） */
   isReady() {
-    const c = this.get();
-    return !!(c.endpoint && c.apiKey && c.model);
+    const c = this.activeConfig();
+    return !!(c && c.endpoint && c.apiKey && c.model);
   },
-  /** 变量AI整体是否生效（启用 + 接口就绪） */
+  /** 变量AI整体是否生效（有生效连接即可；指派了连接即视为启用） */
   isEnabled() {
-    const c = this.get();
-    return !!(c.enabled && c.endpoint && c.apiKey && c.model);
+    return !!this.activeConfig();
   },
   /** v3.27.6 主笔兜底是否生效：第三接口未启用 + 兜底开关开 + 主笔已配置。
    *  背景：登记官架构下主笔提示词不带变量协议（v1.6.0 分流），弱模型不会自觉
@@ -41,7 +52,7 @@ const VariableAI = {
    *  登记官提示词（低温强指令），与前情提要 v3.5.0 解耦同款哲学：
    *  状态面板是刚需，不该被第三接口绑死。 */
   isFallbackActive() {
-    if (this.isEnabled()) return false;
+    if (this.activeConfig()) return false;
     const c = this.get();
     if (c.fallbackMain === false) return false;
     const fw = window.storyFramework;
@@ -103,7 +114,7 @@ const VariableAI = {
   },
   async _callAPIInner(messages, cfgOverride) {
     var _a, _b, _c;
-    const cfg = cfgOverride ? { ...this.defaults, ...cfgOverride } : this.get();
+    const cfg = cfgOverride ? { ...this.defaults, ...cfgOverride } : (this.activeConfig() || this.get());
     if (!(cfg.endpoint && cfg.apiKey && cfg.model)) throw new Error("变量AI未配置完整（地址 / Key / 模型）");
     if (cfg.type === "gemini") {
       const endpoint = `${cfg.endpoint.trim().replace(/\/+$/, "")}/models/${cfg.model}:generateContent?key=${cfg.apiKey}`;
@@ -361,6 +372,11 @@ const VariableAI = {
     if (window.ChannelHub && window.ChannelHub.canCall("scribe")) {
       return await window.ChannelHub.call("scribe", messages);
     }
+    /* v3.55.30 多连接配置：副AI摘要可独立指派连接（如更便宜的摘要模型），优先于变量AI单配置 */
+    if (window.ConnectionProfiles) {
+      const sc = window.ConnectionProfiles.resolve("summary");
+      if (sc) return await this._callAPIInner(messages, sc);
+    }
     if (this.isEnabled()) return await this.callAPI(messages);
     const fw = window.storyFramework;
     if (!fw || !fw.isApiConfigured || !fw.isApiConfigured()) throw new Error("主笔接口未配置");
@@ -382,6 +398,7 @@ const VariableAI = {
   /** 摘要能力是否可用（摘要官链就绪 / 第三接口就绪 / 主笔已配置 任一即可） */
   recapReady() {
     if (window.ChannelHub && window.ChannelHub.canCall("scribe")) return true;
+    if (window.ConnectionProfiles && window.ConnectionProfiles.resolve("summary")) return true;
     if (this.isEnabled()) return true;
     const fw = window.storyFramework;
     return !!(fw && fw.isApiConfigured && fw.isApiConfigured());

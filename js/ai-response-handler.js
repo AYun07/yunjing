@@ -4,11 +4,11 @@ const StoryResponseHandler = {
     const fw = window.storyFramework;
     const parser = window.VariableInstructionParser;
     let reply = window.stripAIThink ? window.stripAIThink(rawReply) : rawReply;
-    /* v3.47.18 咩咩专用正则：在解析变量/选项/正文之前先过一遍，
+    /* v3.47.18 某预设专用正则：在解析变量/选项/正文之前先过一遍，
        让 <selection> 变成【行动选项】（这样云境既有的选项按钮能直接接管），
        并让"去 AI 味"清理的结果贯穿变量解析、选项提取与存档。 */
-    reply = window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.enabled()
-      ? window.MoMiaomiaoRegex.preParse(reply)
+    reply = window.旧预设正则 && window.旧预设正则.enabled()
+      ? window.旧预设正则.preParse(reply)
       : reply;
     const oldCh = Number(fw.storyState.variables && fw.storyState.variables.chapter) || 0;
     const { newVariables, updateBlock } = parser.parse(reply, fw.storyState.variables, { storyRegistration: true });
@@ -180,8 +180,11 @@ const StoryResponseHandler = {
       body = ate > 0 ? head + lines.slice(i).join("\n") : head + tail;
     }
     /* v3.53.0：剥掉正文开头的章节标题行（"第一章·雪落泥瓶巷" / "### 第 3 章 雪夜" / "**第2章**"）。
-       模型有时把标题当正文第一段写进来，渲染后像一句孤零零的话；只处理开头一行，正文中间不动。 */
-    body = body.replace(/^\s*(?:#{1,4}\s*)?(?:\*\*)?\s*第\s*[零一二三四五六七八九十百千0-9]{1,6}\s*[章回节卷][^\n]{0,40}?(?:\*\*)?\s*\n+/, '');
+       模型有时把标题当正文第一段写进来，渲染后像一句孤零零的话；只处理开头一行，正文中间不动。
+       v3.55.30 修复：标题段内不得含句读（：，。！？…）——否则会误吞「第X回合：叙事正文…」这类
+       以「第N回」起头的正常叙事首段（本作 genre 里「第N回合：…」是标准开场白），把整段正文当标题删空，
+       进而触发空正文自动重写、凭空多发一次请求。判别式收紧为「无句读的真标题」才剥。 */
+    body = body.replace(/^\s*(?:#{1,4}\s*)?(?:\*\*)?\s*第\s*[零一二三四五六七八九十百千0-9]{1,6}\s*[章回节卷][^\n：，。！？…]{0,40}?(?:\*\*)?\s*\n+/, '');
     return body;
   },
   /** 从 tail 开头逐行收集协议行，返回"仅协议行"文本（供变量解析器切割未闭合块，正文截断丢弃） */
@@ -384,14 +387,14 @@ const StoryResponseHandler = {
     const IG = window.StoryImageGen;
     const bodyForCount = IG && IG.stripMarkers ? IG.stripMarkers(body) : body;
     const words = bodyForCount ? bodyForCount.replace(/\s/g, "").length : 0;
-    /* v3.47.18 咩咩专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
+    /* v3.47.18 某预设专用正则：把预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）
        从正文里抽出来渲染成折叠卡片 —— 否则它们会以裸 XML 落在正文里。
-       v3.51.0：改为 always —— 即使玩家把「咩咩正则」总开关关掉，也只停用"去 AI 味"，
+       v3.51.0：改为 always —— 即使玩家把「某预设正则」总开关关掉，也只停用"去 AI 味"，
        协议块照旧收进卡片，绝不把 <status> 原样吐在正文里。 */
     let prose = body;
     let cardsHtml = "";
-    if (window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.process) {
-      const rg = window.MoMiaomiaoRegex.process(body, { always: true });
+    if (window.旧预设正则 && window.旧预设正则.process) {
+      const rg = window.旧预设正则.process(body, { always: true });
       prose = rg.prose;
       cardsHtml = rg.cardsHtml || "";
     }
@@ -426,7 +429,7 @@ const StoryResponseHandler = {
       const dramatic = !!(window.ImmersionPlus && window.ImmersionPlus.isDramatic && window.ImmersionPlus.isDramatic(label));
       /* v3.55.6 云起专属美化：行动选项美化开着 → 序号徽章 + yq-opts 皮肤；
          关闭时回退朴素按钮（纯文本序号）。 */
-      const yqOptOn = !!(window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.ruleOn && window.MoMiaomiaoRegex.ruleOn("云起·行动选项美化"));
+      const yqOptOn = !!(window.旧预设正则 && window.旧预设正则.ruleOn && window.旧预设正则.ruleOn("云起·行动选项美化"));
       html += `<div class="options-area${dramatic ? " dramatic" : ""}${yqOptOn ? " yq-opts" : ""}"><div class="options-title">▸ ${this.escapeHtml(label)}</div>`;
       options.forEach((opt, i) => {
         const delay = dramatic ? ` style="animation-delay:${(0.18 + i * 0.35).toFixed(2)}s"` : "";

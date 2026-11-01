@@ -570,6 +570,71 @@ const ConfigModal = {
                     </div>
                 </div>
 
+                <!-- 🔗 多连接配置（多连接配置 · v3.55.30） -->
+                <div class="dw-config api-card">
+                    <div class="dw-config-head api-card-head" id="cpSectionHead" onclick="ConfigModal.toggleCPSection()">
+                        <span class="api-head-left">
+                            <span class="dw-config-title">🔗 多连接配置</span>
+                            <span class="api-role-chip">多模型分流</span>
+                            <span class="api-state-chip" id="cp_stateChip"></span>
+                        </span>
+                        <span class="dw-caret" id="cpCaret">▸</span>
+                    </div>
+                    <div class="dw-config-body" id="cpSectionBody" style="display:none">
+                        <div class="form-tip dw-intro">
+                            借鉴酒馆 多连接配置：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
+                            主笔只管写正文，机械活（状态登记 / 滚动摘要）交给廉价跟随模型——声线一致、还省钱。
+                        </div>
+                        <div id="cp_profileList" class="cp-profile-list"></div>
+                        <div class="dw-subgroup">
+                            <div class="dw-sub-title">➕ 新增 / 编辑连接</div>
+                            <div class="form-row">
+                                <label>连接名称</label>
+                                <input id="cp_name" type="text" placeholder="如：GLM-闪光-登记 / 硅基流动-摘要">
+                            </div>
+                            <div class="form-row">
+                                <label>AI 厂商（选定自动填地址与协议）</label>
+                                <select id="cp_provider">${providerOptions()}</select>
+                                <div class="form-tip provider-tip" id="cp_providerTip"></div>
+                            </div>
+                            <div class="form-row">
+                                <label>API 地址 (Endpoint)</label>
+                                <input id="cp_endpoint" type="text" placeholder="例如 https://api.deepseek.com/v1 或自定义中转完整地址">
+                            </div>
+                            <div class="form-row">
+                                <label>API Key</label>
+                                <input id="cp_key" type="password" placeholder="sk-...">
+                            </div>
+                            <div class="form-row">
+                                <label>模型名称 (Model)</label>
+                                <input id="cp_model" type="text" placeholder="可手填，或点其他接口的「获取」拉取列表">
+                            </div>
+                            <div class="form-row three-col">
+                                <div><label>最大Tokens</label><input id="cp_maxTokens" type="number" value="4096"></div>
+                                <div><label>温度 (0-2)</label><input id="cp_temperature" type="number" step="0.1" min="0" max="2" value="0.2"></div>
+                                <div><label>超时（秒）</label><input id="cp_timeout" type="number" min="30" max="600" value="90"></div>
+                            </div>
+                            <div class="cp-edit-actions">
+                                <button type="button" class="btn-ghost" onclick="ConfigModal.saveProfile()">保存连接</button>
+                                <button type="button" class="btn-mini" onclick="ConfigModal.resetProfileForm()">清空表单</button>
+                            </div>
+                        </div>
+                        <div class="dw-subgroup">
+                            <div class="dw-sub-title">🎯 角色指派</div>
+                            <div class="form-row">
+                                <label>副AI变量 · 状态登记官</label>
+                                <select id="cp_role_varAI"></select>
+                            </div>
+                            <div class="form-row">
+                                <label>副AI摘要 · 前情提要官</label>
+                                <select id="cp_role_summary"></select>
+                            </div>
+                            <div class="form-tip">未指派时：登记官沿用上方「变量AI」单配置，前情提要官复用主笔接口；指派后该角色只用指定连接。编辑/删除连接后再回来重选即可。</div>
+                            <button type="button" class="btn-ghost" onclick="ConfigModal.saveCPSection()">保存连接与角色指派</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 🖼 插图引擎：第四接口（正文生图），可折叠分区 -->
                 <div class="dw-config api-card">
                     <div class="dw-config-head api-card-head" id="imgSectionHead" onclick="ConfigModal.toggleImgSection()">
@@ -944,7 +1009,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="mmSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            云境工坊原创内置预设（SillyTavern 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 SillyTavern 预设整份替换。
+                            云境工坊原创内置预设（常见前端工具 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 常见前端工具 预设整份替换。
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">📦 当前预设 <span class="api-role-chip" id="mmPresetChip"></span></div>
@@ -956,7 +1021,7 @@ const ConfigModal = {
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
-                                支持 SillyTavern 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
+                                支持 常见前端工具 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
                                 导入后整份替换内置预设，旧的逐条开关会自动清空；随时可一键恢复内置。
                             </div>
                         </div>
@@ -975,14 +1040,14 @@ const ConfigModal = {
                         </div>
                         <div class="dw-subgroup">
                             <label class="check-row">
-                                <input type="checkbox" id="mm_enabled" onchange="ConfigModal.toggleMiaomiao(this.checked)">
+                                <input type="checkbox" id="mm_enabled" onchange="ConfigModal.toggleYunqi(this.checked)">
                                 <b>启用云起预设</b>
                                 <i>关闭时完全不影响现有流程（零开销）</i>
                             </label>
                         </div>
                         <div class="dw-subgroup">
                             <label class="check-row">
-                                <input type="checkbox" id="mm_regexEnabled" onchange="ConfigModal.toggleMiaomiaoRegexAll(this.checked)">
+                                <input type="checkbox" id="mm_regexEnabled" onchange="ConfigModal.toggleYunqiRegexAll(this.checked)">
                                 <b>启用云起正则</b>
                                 <i>ver 7.2：协议块变卡片 + 去 AI 腔。关掉只停清理，协议块仍会被收口</i>
                             </label>
@@ -990,7 +1055,7 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🎨 本世界文风（随开局所选档位自动匹配）</div>
                             <div class="form-tip" id="mm_styleInfo"></div>
-                            <select id="mm_stylePick" onchange="ConfigModal.pickMiaomiaoStyle(this.value)"></select>
+                            <select id="mm_stylePick" onchange="ConfigModal.pick旧预设Style(this.value)"></select>
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔧 逐条开关 · 预设条目 <span id="mmBlockCount"></span></div>
@@ -1246,6 +1311,12 @@ const ConfigModal = {
         !phEnabled ? "off" : phReady ? "ok" : "warn"
       );
     }
+    if (document.getElementById("cp_stateChip")) {
+      const CP = window.ConnectionProfiles;
+      const anyProfile = CP && CP.list().length > 0;
+      const active = CP && (CP.resolve("varAI") || CP.resolve("summary"));
+      set("cp_stateChip", !anyProfile ? "未配置连接" : active ? "✓ 已指派" : "未指派角色", !anyProfile ? "off" : active ? "ok" : "warn");
+    }
   },
   /** 快捷复用：把主接口连接配置填入动态世界表单 */
   copyMainToExtra() {
@@ -1484,6 +1555,121 @@ const ConfigModal = {
       fallbackMain: document.getElementById("va_fallbackMain").checked
       // v3.27.6
     };
+  },
+  /* ==================== 🔗 多连接配置（多连接配置 · v3.55.30） ==================== */
+  toggleCPSection() {
+    const body = document.getElementById("cpSectionBody");
+    const caret = document.getElementById("cpCaret");
+    if (!body) return;
+    const open = body.style.display === "none";
+    body.style.display = open ? "block" : "none";
+    if (caret) caret.textContent = open ? "▾" : "▸";
+  },
+  renderProfileList() {
+    const CP = window.ConnectionProfiles;
+    const box = document.getElementById("cp_profileList");
+    if (!box || !CP) return;
+    const list = CP.list();
+    if (!list.length) {
+      box.innerHTML = '<div class="form-tip">尚无连接。先在下方「新增连接」添加一个（例如一个便宜的跟随模型），保存后会自动指派给状态登记官。</div>';
+      return;
+    }
+    box.innerHTML = list.map((p) => {
+      const endpoint = String(p.endpoint || "").replace(/\/+$/, "");
+      const summary = `${p.type === "gemini" ? "Gemini" : "OpenAI"} · ${p.model || "?"} @ ${endpoint}`;
+      return `<div class="cp-profile-item" data-id="${p.id}">
+        <div class="cp-profile-meta"><b>${this.escCp(p.name || "(未命名)")}</b><span class="cp-profile-sub">${this.escCp(summary)}</span></div>
+        <div class="cp-profile-actions">
+          <button type="button" class="btn-mini" onclick="ConfigModal.editProfile('${p.id}')">编辑</button>
+          <button type="button" class="btn-mini" onclick="ConfigModal.deleteProfile('${p.id}')">删除</button>
+        </div>
+      </div>`;
+    }).join("");
+  },
+  escCp(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  },
+  fillCPRoles() {
+    const CP = window.ConnectionProfiles;
+    if (!CP) return;
+    const setOpts = (selId, role) => {
+      const sel = document.getElementById(selId);
+      if (!sel) return;
+      const cur = CP.roleValue(role) || "";
+      sel.innerHTML = CP.picklist(role).map((o) => `<option value="${o.id}">${this.escCp(o.name)}</option>`).join("");
+      sel.value = cur;
+    };
+    setOpts("cp_role_varAI", "varAI");
+    setOpts("cp_role_summary", "summary");
+  },
+  resetProfileForm() {
+    const set = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
+    set("cp_name", ""); set("cp_endpoint", ""); set("cp_key", ""); set("cp_model", "");
+    set("cp_maxTokens", 4096); set("cp_temperature", 0.2); set("cp_timeout", 90);
+    const prov = document.getElementById("cp_provider"); if (prov) prov.value = "openai";
+    this.updateProviderUI("cp");
+    this._cpEditId = null;
+  },
+  editProfile(id) {
+    const CP = window.ConnectionProfiles; if (!CP) return;
+    const p = CP.get(id); if (!p) return;
+    document.getElementById("cp_name").value = p.name || "";
+    document.getElementById("cp_provider").value = p.type === "gemini" ? "gemini" : "openai";
+    document.getElementById("cp_endpoint").value = p.endpoint || "";
+    document.getElementById("cp_key").value = p.apiKey || "";
+    document.getElementById("cp_model").value = p.model || "";
+    document.getElementById("cp_maxTokens").value = p.maxTokens || 4096;
+    document.getElementById("cp_temperature").value = (p.temperature != null) ? p.temperature : 0.2;
+    document.getElementById("cp_timeout").value = p.timeout || 90;
+    this._cpEditId = p.id;
+    this.updateProviderUI("cp");
+    if (window.showToast) window.showToast("已载入「" + (p.name || p.model) + "」到编辑表单", "info");
+  },
+  deleteProfile(id) {
+    const CP = window.ConnectionProfiles; if (!CP) return;
+    if (typeof confirm === "function" && !confirm("确定删除该连接？已指派给它的角色将自动解除指派。")) return;
+    CP.remove(id);
+    if (this._cpEditId === id) this._cpEditId = null;
+    this.renderProfileList();
+    this.fillCPRoles();
+    this.refreshApiCardStates();
+  },
+  saveProfile() {
+    const CP = window.ConnectionProfiles; if (!CP) return;
+    const endpoint = document.getElementById("cp_endpoint").value.trim();
+    const apiKey = document.getElementById("cp_key").value.trim();
+    const model = document.getElementById("cp_model").value.trim();
+    if (!endpoint || !apiKey || !model) {
+      if (window.showToast) window.showToast("地址 / Key / 模型 三项都要填", "error");
+      return;
+    }
+    const profile = {
+      name: document.getElementById("cp_name").value.trim() || model,
+      type: document.getElementById("cp_provider").value === "gemini" ? "gemini" : "openai",
+      endpoint, apiKey, model,
+      maxTokens: parseInt(document.getElementById("cp_maxTokens").value) || 4096,
+      temperature: (() => { const t = parseFloat(document.getElementById("cp_temperature").value); return isNaN(t) ? 0.2 : t; })(),
+      timeout: parseInt(document.getElementById("cp_timeout").value) || 90
+    };
+    if (this._cpEditId) profile.id = this._cpEditId;
+    const saved = CP.upsert(profile);
+    /* 降低上手门槛：若两个角色都还没指派，且这是首个连接，自动指派给状态登记官 */
+    const roles = CP.roles();
+    if (!roles.varAI && !roles.summary) CP.assign("varAI", saved.id);
+    this._cpEditId = null;
+    this.renderProfileList();
+    this.fillCPRoles();
+    this.refreshApiCardStates();
+    if (window.showToast) window.showToast("已保存连接：" + (saved.name || saved.model), "success");
+  },
+  saveCPSection() {
+    const CP = window.ConnectionProfiles; if (!CP) return;
+    const va = document.getElementById("cp_role_varAI");
+    const su = document.getElementById("cp_role_summary");
+    if (va) CP.assign("varAI", va.value || null);
+    if (su) CP.assign("summary", su.value || null);
+    this.refreshApiCardStates();
+    if (window.showToast) window.showToast("角色指派已保存", "success");
   },
   /** 第三接口：拉取模型列表 */
   async fetchVarModels() {
@@ -2218,19 +2404,19 @@ const ConfigModal = {
   },
   /** 渲染云起预设面板 */
   renderMMSection() {
-    const M = window.MoMiaomiao;
-    const B = window.MoMiaomiaoBridge;
+    const M = window.旧预设对象;
+    const B = window.旧预设桥;
     const chip = document.getElementById("mm_stateChip");
     if (!M || !B) {
       const info = document.getElementById("mm_styleInfo");
-      if (info) info.textContent = "预设模块未加载（preset-yunqi / miaomiao-engine / miaomiao-bridge 缺失）。";
+      if (info) info.textContent = "预设模块未加载（preset-yunqi / 旧预设-engine / 旧预设-bridge 缺失）。";
       return;
     }
     const on = M.enabled();
     if (chip) chip.textContent = on ? "已启用" : "已关闭";
     const cb = document.getElementById("mm_enabled");
     if (cb) cb.checked = on;
-    const RX = window.MoMiaomiaoRegex;
+    const RX = window.旧预设正则;
     const rc = document.getElementById("mm_regexEnabled");
     if (rc && RX) rc.checked = RX.enabled();
 
@@ -2310,8 +2496,8 @@ const ConfigModal = {
   },
   /** 渲染「预设条目」逐条开关（全量 352 条，按分组折叠） */
   renderMMBlocks() {
-    const M = window.MoMiaomiao;
-    const B = window.MoMiaomiaoBridge;
+    const M = window.旧预设对象;
+    const B = window.旧预设桥;
     const list = document.getElementById("mm_blockList");
     if (!list || !M) return;
     const all = M.listBlocks().filter((b) => !this.mmIsSkippable(b));
@@ -2363,7 +2549,7 @@ const ConfigModal = {
     const on = ov[b.name] !== undefined ? !!ov[b.name] : b.on;
     const changed = ov[b.name] !== undefined;
     return `<label class="check-row mm-row${changed ? " mm-changed" : ""}">
-        <input type="checkbox"${on ? " checked" : ""} onchange="ConfigModal.toggleMiaomiaoBlock('${this.esc(b.name).replace(/'/g, "\\'")}', this.checked)">
+        <input type="checkbox"${on ? " checked" : ""} onchange="ConfigModal.toggleYunqiBlock('${this.esc(b.name).replace(/'/g, "\\'")}', this.checked)">
         <span>${this.esc(b.name)}${b.edited ? ' <i class="mm-edited">已改</i>' : ""}</span>
         <i>${b.len} 字</i>
         <button type="button" class="mm-edit-btn" title="编辑这条提示词（本机生效，可还原）" onclick="event.preventDefault();event.stopPropagation();ConfigModal.mmEditBlock('${this.esc(b.id)}')">✎</button>
@@ -2371,7 +2557,7 @@ const ConfigModal = {
   },
   /** 渲染「云起正则」逐条开关（30 条，含 14 条云起专属美化） */
   renderMMRegex() {
-    const R = window.MoMiaomiaoRegex;
+    const R = window.旧预设正则;
     const list = document.getElementById("mm_regexList");
     if (!list) return;
     if (!R) {
@@ -2408,7 +2594,7 @@ const ConfigModal = {
   mmRegexRow(c) {
     const changed = c.on !== c.origin;
     return `<label class="check-row mm-row${changed ? " mm-changed" : ""}">
-        <input type="checkbox"${c.on ? " checked" : ""} onchange="ConfigModal.toggleMiaomiaoRegex('${this.esc(c.id)}', this.checked)">
+        <input type="checkbox"${c.on ? " checked" : ""} onchange="ConfigModal.toggleYunqiRegex('${this.esc(c.id)}', this.checked)">
         <span>${this.esc(c.name)}</span>
         <i>${c.kind}${changed ? " · 已改" : ""}</i>
       </label>`;
@@ -2436,9 +2622,9 @@ const ConfigModal = {
   mmFillGroup(groupEl, g) {
     const box = groupEl.querySelector(".mm-group-body");
     if (!box) return;
-    const M = window.MoMiaomiao;
-    const R = window.MoMiaomiaoRegex;
-    const B = window.MoMiaomiaoBridge;
+    const M = window.旧预设对象;
+    const R = window.旧预设正则;
+    const B = window.旧预设桥;
     // 正则列表
     if (R && groupEl.closest && groupEl.closest("#mm_regexList")) {
       const cat = R.catalog().filter((c) => c.kind === g);
@@ -2475,35 +2661,35 @@ const ConfigModal = {
   },
   /** 清除所有手动改动，回到预设出厂状态 */
   mmResetOverrides() {
-    if (window.MoMiaomiao) window.MoMiaomiao.clearOverrides();
-    if (window.MoMiaomiaoRegex) window.MoMiaomiaoRegex.clearOverrides();
+    if (window.旧预设对象) window.旧预设对象.clearOverrides();
+    if (window.旧预设正则) window.旧预设正则.clearOverrides();
     this.renderMMSection();
   },
   /** 正则总开关 */
-  toggleMiaomiaoRegexAll(on) {
-    const R = window.MoMiaomiaoRegex;
+  toggleYunqiRegexAll(on) {
+    const R = window.旧预设正则;
     if (!R) return;
     R.setEnabled(!!on);
     this.renderMMSection();
   },
   /** 单条正则开关 */
-  toggleMiaomiaoRegex(id, on) {
-    const R = window.MoMiaomiaoRegex;
+  toggleYunqiRegex(id, on) {
+    const R = window.旧预设正则;
     if (!R) return;
     R.setOverride(id, !!on);
     this.renderMMRegex();
   },
   /** 整份预设启停 */
-  toggleMiaomiao(on) {
-    const M = window.MoMiaomiao;
+  toggleYunqi(on) {
+    const M = window.旧预设对象;
     if (!M) return;
     M.setEnabled(!!on);
     this.renderMMSection();
   },
   /** 手动改本世界文风档（写入 override，覆盖开局选择） */
-  pickMiaomiaoStyle(pickName) {
-    const M = window.MoMiaomiao;
-    const B = window.MoMiaomiaoBridge;
+  pick旧预设Style(pickName) {
+    const M = window.旧预设对象;
+    const B = window.旧预设桥;
     if (!M || !B || !pickName) return;
     const world = B.worldName();
     if (!world) return;
@@ -2515,8 +2701,8 @@ const ConfigModal = {
     this.renderMMSection();
   },
   /** 单个预设条目开关 */
-  toggleMiaomiaoBlock(name, on) {
-    const M = window.MoMiaomiao;
+  toggleYunqiBlock(name, on) {
+    const M = window.旧预设对象;
     if (!M) return;
     M.setOverride(name, !!on);
     this.renderMMSection();
@@ -2641,7 +2827,7 @@ const ConfigModal = {
   },
   /* ---------- 单条提示词改写 ---------- */
   async mmEditBlock(id) {
-    const M = window.MoMiaomiao;
+    const M = window.旧预设对象;
     const IO = window.YunjingPresetIO;
     if (!M || !IO) return;
     if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
@@ -2962,6 +3148,8 @@ const ConfigModal = {
     this.updateProviderUI("cfg");
     this.fillDynamicWorldForm();
     this.fillVarAIForm();
+    this.renderProfileList();
+    this.fillCPRoles();
     this.fillImgForm();
     this.fillPeForm();
     this.fillPhForm();
