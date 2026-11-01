@@ -82,6 +82,10 @@
       const day = (Number(v.时间.clockDay) || 0) + 1;
       v.时间.clockDay = day;
       const rnd = mulberry32(hashStr(genre() + ":" + day));
+      /* v3.58.0 众生繁衍 + 自由人生日结算（先于事件抽取：新人物可入当日传闻；全部有界幂等） */
+      let spawnEvents = [];
+      try { if (window.NpcSpawn) spawnEvents = NpcSpawn.daily(v, day, rnd) || []; } catch (e) {}
+      try { if (window.LifeMode) LifeMode.daily(v, day, rnd); } catch (e) {}
       /* 张力自然回落 */
       if (v.tension != null) v.tension = clamp(Math.round(Number(v.tension)) - (rnd() < 0.5 ? 1 : 0), 0, 100);
       /* 关系淡忘：|强度|>20 每日衰减 1（世界推进，非玩家回合） */
@@ -93,7 +97,10 @@
       const ev = pickEvent(v, rnd);
       if (!Array.isArray(v.history)) v.history = [];
       v.history.push(`【世界】第${day}日 · ${ev}`);
+      spawnEvents.forEach((e) => v.history.push(`【众生】第${day}日 · ${e}`));
       if (v.history.length > MAX_HISTORY) v.history.splice(0, v.history.length - MAX_HISTORY);
+      /* v3.58.0 新实体（人物/势力/地点）自动上图并随发展更新标注 */
+      try { window.StoryAtlas && StoryAtlas.syncEntities && StoryAtlas.syncEntities(v); } catch (e) {}
       /* 待注入事件（供导演/规划在下一轮提示词引用） */
       v.时间.pendingEvents = [ev].concat(Array.isArray(v.时间.pendingEvents) ? v.时间.pendingEvents : []).slice(0, 3);
       v.时间.lastClockAt = Date.now();

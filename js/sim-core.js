@@ -40,6 +40,9 @@
         id: f.id || f.name, name: f.name || f.id || "无名势力",
         members: Math.max(0, Number(f.members) || 0),
         territory: String(f.territory || "").length,
+        /* v3.58.0 势力动态：影响力进入推演模型 */
+        influence: clamp(Math.round(Number(f.influence) || 0), 0, 100),
+        origin: f.origin || "",
         ideology: f.ideology || ""
       };
     });
@@ -67,11 +70,12 @@
     };
   }
   function factionPower(f) {
-    /* 成员为主，地盘与驻地角色为辅（对数压扁防天梯垄断） */
+    /* 成员为主，地盘、驻地角色与影响力为辅（对数压扁防天梯垄断） */
     return Math.round(
       Math.log2(1 + f.members) * 10 +
       Math.log2(1 + f.territory) * 3 +
-      f.roster * 4
+      f.roster * 4 +
+      (f.influence || 0) / 5
     );
   }
 
@@ -92,6 +96,8 @@
       const f = st.factions[id];
       const drift = Math.round((rnd() * 2 - 1) * 3) + (f.roster ? 1 : -1);
       f.members = Math.max(0, f.members + drift * 3);
+      /* v3.58.0 影响力小步漂移（与世界时钟同量级，玩家势力 origin:player 略占优） */
+      f.influence = clamp((f.influence || 0) + Math.round(rnd() * 4 - 2) + (f.origin === "player" ? 1 : 0), 0, 100);
       f._power = factionPower(f);
       void i;
     });

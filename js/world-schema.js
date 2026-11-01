@@ -57,28 +57,35 @@
           trust:      { type: "int", min: 0, max: 100, label: "信任度" },
           favor:      { type: "int", min: 0, max: 100, label: "好感度" },
           location:   { type: "string", max: 60, label: "位置" },
-          relationship: { type: "string", max: 50, label: "关系" }
+          relationship: { type: "string", max: 50, label: "关系" },
+          /* v3.58.0 档案完善：全员人物志所需字段（NpcSpawn.enrich 只补空缺） */
+          appearance: { type: "string", max: 60, label: "外貌" },
+          personality: { type: "string", max: 40, label: "性格" },
+          ambition:   { type: "string", max: 60, label: "志向" }
         }
       },
       item: {
         fields: {
           rarity: { type: "enum", enumValues: ["凡品", "灵品", "宝物", "仙器", "神器", "未知"], default: "未知", label: "品阶" },
           count:  { type: "int", min: 0, max: 999999, label: "数量" },
-          owner:  { type: "ref", refType: "character", label: "持有者" }
+          owner:  { type: "ref", refType: "character", label: "持有者" },
+          desc:   { type: "string", max: 80, label: "描述" }
         }
       },
       faction: {
         fields: {
           ideology: { type: "string", max: 80, label: "理念" },
           territory:{ type: "string", max: 80, label: "势力范围" },
-          members:  { type: "int", min: 0, max: 1e9, label: "成员数" }
+          members:  { type: "int", min: 0, max: 1e9, label: "成员数" },
+          influence:{ type: "int", min: 0, max: 100, label: "影响力" }
         }
       },
       place: {
         fields: {
           region: { type: "string", max: 40, label: "区域" },
           danger:{ type: "int", min: 0, max: 100, label: "危险度" },
-          owner:  { type: "ref", refType: "faction", label: "归属" }
+          owner:  { type: "ref", refType: "faction", label: "归属" },
+          desc:   { type: "string", max: 80, label: "描述" }
         }
       }
     },
