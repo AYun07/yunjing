@@ -155,9 +155,9 @@
       }
       return ent;
     },
-    upsert(type, data) {
+    upsert(type, data, vars) {
       if (!this.TYPES.includes(type) || !isObj(data)) return null;
-      const vars = window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables;
+      vars = vars || (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables);
       if (!vars) return null;
       this.ensure(vars);
       const id = data.id || ("ent_" + type + "_" + (data.name || Math.random().toString(36).slice(2, 8)));
@@ -188,14 +188,17 @@
         if (isObj(vars.entities[t]) && vars.entities[t][id]) { delete vars.entities[t][id]; ok = true; }
       }
       if (Array.isArray(vars.entities.relations)) {
-        const i = vars.entities.relations.findIndex((r) => r.id === id);
-        if (i >= 0) { vars.entities.relations.splice(i, 1); ok = true; }
+        /* v3.56.2 修复：删实体时级联清掉以其为端点的关系边（a/b 任一命中），
+           否则关系网会残留悬空引用。 */
+        const before = vars.entities.relations.length;
+        vars.entities.relations = vars.entities.relations.filter((r) => r.id !== id && r.a !== id && r.b !== id);
+        if (vars.entities.relations.length !== before) ok = true;
       }
       return ok;
     },
     /** 统一关系网：aId -[kind,strength]- bId */
-    link(aId, kind, bId, strength) {
-      const vars = window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables;
+    link(aId, kind, bId, strength, vars) {
+      vars = vars || (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables);
       if (!vars) return null;
       this.ensure(vars);
       const rel = { id: "rel_" + aId + "_" + bId, type: "relation", a: aId, b: bId, kind: kind || "陌路", strength: clampNum(strength, -100, 100) || 0, at: Date.now() };
