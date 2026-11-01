@@ -1603,6 +1603,52 @@ body.narrow .mo-bubble { max-width: 92%; }
     50% { transform: translateY(-6px) rotate(6deg); }
 }
 
+/* ---- v3.60.0 动态小云：自主小动作 / 云尘 / 闲逛 / 视线跟随 ---- */
+/* 闲逛平滑位移（仅闲逛时启用过渡，拖拽时绝不插值——跟手优先） */
+.mo-chibi.strolling { transition: left 1.15s ease-in-out, top 1.15s ease-in-out; }
+@keyframes mcHop {
+    0%   { transform: translateY(0) scale(1); }
+    20%  { transform: translateY(-30px) scale(0.97, 1.06); }
+    50%  { transform: translateY(-8px) scale(1.05, 0.94); }
+    78%  { transform: translateY(0) scale(1.05, 0.93); }
+    100% { transform: translateY(0) scale(1); }
+}
+.mc-float.mc-hop { animation: mcHop 0.66s cubic-bezier(.3, 1.4, .5, 1); }
+@keyframes mcTwirl {
+    0%   { transform: rotateY(0) translateY(0); }
+    50%  { transform: rotateY(180deg) translateY(-10px); }
+    100% { transform: rotateY(360deg) translateY(0); }
+}
+.mc-float.mc-twirl { animation: mcTwirl 0.95s ease-in-out; }
+@keyframes mcStretch {
+    0%, 100% { transform: scale(1, 1); }
+    40%      { transform: scale(1.05, 0.94) translateY(3px); }
+    70%      { transform: scale(0.97, 1.05) translateY(-4px); }
+}
+.mc-float.mc-stretch { animation: mcStretch 1.25s ease-in-out; }
+@keyframes mcPeek {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    30%      { transform: translateX(9px) rotate(4.5deg); }
+    60%      { transform: translateX(-7px) rotate(-3.5deg); }
+}
+.mc-float.mc-peek { animation: mcPeek 1.35s ease-in-out; }
+/* 视线跟随：整身朝光标方向轻微倾斜（气泡随之微倾，像转头看人） */
+.mo-chibi.watching { transform: rotate(var(--mc-lean, 0deg)); transition: transform .4s ease; }
+.mo-chibi.dragging.watching { transform: rotate(-9deg) scale(1.06); }
+/* 云尘粒子（闲逛 / 落地时脚下飘起的小云） */
+.mc-cloud {
+    position: absolute; bottom: 4%;
+    color: #eef4fb; font-size: 13px; opacity: 0.9;
+    animation: mcCloudDrift 1.25s ease-out forwards;
+    filter: drop-shadow(0 0 5px rgba(190, 214, 245, 0.8));
+    pointer-events: none; z-index: 8;
+}
+@keyframes mcCloudDrift {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.5); }
+    25%  { opacity: 0.95; }
+    100% { opacity: 0; transform: translate(var(--mc-cdx, 14px), -34px) scale(1.25); }
+}
+
 /* ---- 扇形菜单（长按 / 右键弹出） ---- */
 .mc-menu { position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 82; display: none; }
 .mc-menu.show { display: block; }

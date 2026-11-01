@@ -107,6 +107,7 @@
       save();
       toast(`⏱ 世界第${day}日：${ev}`, "info");
       try { window.StoryStatusRenderer && StoryStatusRenderer.renderHistory && StoryStatusRenderer.renderHistory(v.history); } catch (e) {}
+      try { window.MoChibi && MoChibi.react && MoChibi.react("day", { day, ev }); } catch (e) {}
     } catch (e) { /* 单拍失败绝不杀死时钟 */ }
     finally { ticking = false; }
   }
