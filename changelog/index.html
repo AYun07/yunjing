@@ -282,6 +282,25 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="稳定 修复 测试" style="--entry-hue:#e6dcc8;">
+            <div class="log-head">
+                <span class="ver-chip">v3.56.2</span>
+                <span class="log-date">2026-11-01</span>
+                <span class="log-badge">世界基座自测修复</span>
+            </div>
+            <div class="tag-row">
+                <span class="tag" data-tag="稳定" style="--tag-hue:#c2d6e6;">🛡 稳定</span>
+                <span class="tag" data-tag="修复" style="--tag-hue:#e8c8c8;">🔧 修复</span>
+                <span class="tag" data-tag="测试" style="--tag-hue:#d0e0c8;">🧪 测试</span>
+            </div>
+            <p>为 P1 世界基座补上<b>真实执行测试</b>（<code>probe-world-schema.mjs</code>，23 项断言：SchemaRegistry 覆盖持久化 / EntityStore 镜像与幂等 / 关系图 / 校验器钳制与锁定），自测抓出并修复 <b>2 个真实 bug</b>：</p>
+            <ul>
+                <li><code>EntityStore.upsert/link</code> 硬编码读 <code>window.storyFramework</code>——框架未初始化时静默失效；现接受可选 <code>vars</code> 参数回退。</li>
+                <li><code>EntityStore.remove</code> 删实体不级联清理以其为端点的关系边，留下悬空引用；现已级联清除。</li>
+            </ul>
+            <p>SW_VER = <code>yunjing-v3.56.2</code>。</p>
+        </article>
+
         <article class="log-entry" data-tags="设定 变量AI 稳定 沉浸" style="--entry-hue:#d8e0c8;">
             <div class="log-head">
                 <span class="ver-chip">v3.56.1</span>
