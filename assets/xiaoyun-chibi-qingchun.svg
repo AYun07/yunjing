@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 916">
+  <!-- 云境·小云「青春」形态：高马尾+浅蓝连帽卫衣+运动短裤，元气满满 -->
+  <ellipse cx="220" cy="884" rx="118" ry="20" fill="#0a1a2e" opacity="0.12"/>
+  <g>
+    <!-- ===== 高马尾（画在最底，从头顶右侧甩下） ===== -->
+    <path d="M290 130
+             C 340 140, 366 210, 362 300
+             C 359 400, 372 520, 356 620
+             C 350 660, 324 668, 318 632
+             C 330 540, 322 420, 318 320
+             C 314 240, 300 180, 276 150 Z"
+          fill="#dde4f0" stroke="#b4c0d4" stroke-width="3"/>
+    <path d="M330 240 C 336 340, 338 460, 330 560" fill="none" stroke="#c4cfe0" stroke-width="2.5" opacity="0.7"/>
+    <!-- 头后短发底 -->
+    <path d="M136 220 C 132 280, 136 330, 148 360 L 292 360 C 304 330, 308 280, 304 220 C 290 160, 260 130, 220 128 C 180 130, 150 160, 136 220 Z"
+          fill="#dde4f0" stroke="#b4c0d4" stroke-width="3"/>
+    <!-- ===== 腿部 ===== -->
+    <path d="M182 620 L178 846 Q178 862 194 862 L204 862 L208 630 Z" fill="#ffeede" stroke="#ecc8b0" stroke-width="2"/>
+    <path d="M258 620 L262 846 Q262 862 246 862 L236 862 L232 630 Z" fill="#ffeede" stroke="#ecc8b0" stroke-width="2"/>
+    <!-- 白色中筒袜 -->
+    <path d="M180 736 L178 846 Q178 862 194 862 L204 862 L206 740 Z" fill="#f8fbff" stroke="#d8e0ee" stroke-width="2"/>
+    <path d="M260 736 L262 846 Q262 862 246 862 L236 862 L234 740 Z" fill="#f8fbff" stroke="#d8e0ee" stroke-width="2"/>
+    <!-- 白运动鞋（青色勾线） -->
+    <path d="M176 854 Q172 878 198 878 L210 878 Q216 878 214 862 L208 848 Z" fill="#ffffff" stroke="#c8d4e0" stroke-width="2.5"/>
+    <path d="M264 854 Q268 878 242 878 L230 878 Q224 878 226 862 L232 848 Z" fill="#ffffff" stroke="#c8d4e0" stroke-width="2.5"/>
+    <path d="M176 868 L214 868 M226 868 L264 868" stroke="#6fc2d8" stroke-width="3" fill="none"/>
+    <!-- ===== 运动短裤 ===== -->
+    <path d="M158 560 L282 560 L292 636 L232 640 L220 606 L208 640 L148 636 Z" fill="#3a547c" stroke="#2c3f60" stroke-width="3"/>
+    <path d="M208 638 L208 620 M232 638 L232 620" stroke="#2c3f60" stroke-width="2" opacity="0.6"/>
+    <!-- ===== 连帽卫衣 ===== -->
+    <!-- 帽子（垂在颈后） -->
+    <path d="M172 380 C 160 420, 162 452, 176 470 L 264 470 C 278 452, 280 420, 268 380 C 254 402, 240 410, 220 410 C 200 410, 186 402, 172 380 Z" fill="#79b4dc" stroke="#5f9cc4" stroke-width="2.5"/>
+    <!-- 衣身 -->
+    <path d="M162 400
+             C 148 452, 146 508, 152 566
+             L 288 566
+             C 294 508, 292 452, 278 400
+             C 262 380, 242 372, 220 372
+             C 198 372, 178 380, 162 400 Z"
+          fill="#8fc4e8" stroke="#6fa6cc" stroke-width="3"/>
+    <!-- 袋鼠口袋 -->
+    <path d="M178 486 L262 486 L254 540 L186 540 Z" fill="#7db4da" stroke="#6fa6cc" stroke-width="2.5"/>
+    <!-- 抽绳 -->
+    <path d="M206 404 L204 452 M234 404 L236 452" stroke="#f2f8fc" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="204" cy="456" r="4" fill="#f2f8fc"/>
+    <circle cx="236" cy="456" r="4" fill="#f2f8fc"/>
+    <!-- 云朵印花 -->
+    <g transform="translate(220,510)">
+      <ellipse cx="0" cy="0" rx="26" ry="13" fill="#f4f9fe" opacity="0.95"/>
+      <ellipse cx="-14" cy="-6" rx="12" ry="9" fill="#f4f9fe" opacity="0.95"/>
+      <ellipse cx="12" cy="-7" rx="13" ry="10" fill="#f4f9fe" opacity="0.95"/>
+    </g>
+    <!-- ===== 双臂（一手叉腰一手比耶） ===== -->
+    <path d="M164 408 C 146 442, 140 480, 146 512 L 168 514 C 162 482, 168 444, 180 414 Z" fill="#8fc4e8" stroke="#6fa6cc" stroke-width="2"/>
+    <path d="M276 408 C 294 442, 300 480, 294 512 L 272 514 C 278 482, 272 444, 260 414 Z" fill="#8fc4e8" stroke="#6fa6cc" stroke-width="2"/>
+    <ellipse cx="156" cy="522" rx="13" ry="11" fill="#ffeede" stroke="#ecc8b0" stroke-width="2"/>
+    <ellipse cx="284" cy="522" rx="13" ry="11" fill="#ffeede" stroke="#ecc8b0" stroke-width="2"/>
+    <!-- 胜利手势（右手两指） -->
+    <path d="M280 512 L 276 488 M 288 512 L 292 490" stroke="#ffeede" stroke-width="9" stroke-linecap="round"/>
+    <path d="M280 512 L 276 488 M 288 512 L 292 490" stroke="#ecc8b0" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+    <!-- ===== 头部 ===== -->
+    <path d="M136 234
+             C 136 302, 170 350, 220 350
+             C 270 350, 304 302, 304 234
+             C 304 168, 268 126, 220 126
+             C 172 126, 136 168, 136 234 Z"
+          fill="#ffeede" stroke="#ecc8b0" stroke-width="2.5"/>
+    <!-- 刘海：扇贝形平刘海 -->
+    <path d="M132 242
+             C 124 150, 172 102, 220 102
+             C 268 102, 316 150, 308 242
+             C 300 252, 288 252, 282 243
+             C 274 252, 262 252, 256 243
+             C 248 252, 236 252, 230 243
+             C 222 252, 210 252, 202 243
+             C 194 252, 182 252, 176 243
+             C 168 252, 156 252, 148 243
+             C 142 250, 134 250, 132 242 Z"
+          fill="#e8edf6" stroke="#a8b4c8" stroke-width="3"/>
+    <path d="M188 132 C 178 160, 172 200, 174 232 M252 132 C 262 160, 268 200, 266 232" fill="none" stroke="#c4cfe0" stroke-width="2.5" opacity="0.8"/>
+    <!-- 白色发圈（高马尾根） -->
+    <path d="M282 138 C 296 130, 312 132, 320 142 C 314 152, 298 156, 286 150 Z" fill="#ffffff" stroke="#c8d4e0" stroke-width="2.5"/>
+    <!-- 云朵发饰（左上） -->
+    <g transform="translate(152,138) rotate(-12)">
+      <ellipse cx="0" cy="0" rx="17" ry="10" fill="#ffffff" stroke="#c0cce0" stroke-width="2"/>
+      <ellipse cx="-9" cy="-4" rx="8" ry="6.5" fill="#ffffff" stroke="#c0cce0" stroke-width="2"/>
+      <ellipse cx="8" cy="-5" rx="9" ry="7" fill="#ffffff" stroke="#c0cce0" stroke-width="2"/>
+    </g>
+    <!-- 眼睛（更亮更圆：元气） -->
+    <g>
+      <ellipse cx="185" cy="272" rx="17" ry="21" fill="#5aa8e8" stroke="#3a78b8" stroke-width="2"/>
+      <ellipse cx="185" cy="272" rx="8" ry="11" fill="#2a5a98"/>
+      <circle cx="181" cy="264" r="5" fill="#ffffff"/>
+      <circle cx="190" cy="280" r="2.6" fill="#ffffff" opacity="0.85"/>
+      <path d="M167 254 C 173 244, 197 244, 203 254" fill="none" stroke="#5a4a42" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <g>
+      <ellipse cx="255" cy="272" rx="17" ry="21" fill="#5aa8e8" stroke="#3a78b8" stroke-width="2"/>
+      <ellipse cx="255" cy="272" rx="8" ry="11" fill="#2a5a98"/>
+      <circle cx="251" cy="264" r="5" fill="#ffffff"/>
+      <circle cx="260" cy="280" r="2.6" fill="#ffffff" opacity="0.85"/>
+      <path d="M237 254 C 243 244, 267 244, 273 254" fill="none" stroke="#5a4a42" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <!-- 张嘴大笑（元气） -->
+    <path d="M206 306 Q 220 306, 234 306 Q 232 322, 220 322 Q 208 322, 206 306 Z" fill="#e88a72" stroke="#d07858" stroke-width="2"/>
+    <path d="M210 310 Q 220 316, 230 310" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.8"/>
+    <!-- 腮红 -->
+    <ellipse cx="158" cy="296" rx="13" ry="7" fill="#ffc8b0" opacity="0.55"/>
+    <ellipse cx="282" cy="296" rx="13" ry="7" fill="#ffc8b0" opacity="0.55"/>
+    <!-- 汗滴（运动感） -->
+    <path d="M312 240 C 318 250, 318 258, 312 260 C 306 258, 306 250, 312 240 Z" fill="#a8dcf0" stroke="#7ab8d8" stroke-width="1.5"/>
+  </g>
+</svg>

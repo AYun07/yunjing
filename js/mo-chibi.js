@@ -10,26 +10,41 @@ const MoChibi = {
   /* ==================== 表情定义 ==================== */
   // 每种表情：嘴形 + 眼形 + 眉形（CSS 按 data-face 切换显示）
   faces: ["idle", "happy", "shy", "angry", "think", "sleepy", "surprise", "wink", "sing"],
-  /* ==================== 形象(v3.55.3 · 小云 · 长发可御可萝) ==================== */
-  /* 「小云」——云精灵少女。长发双形态：
-     · 萝版：银白蓬松长发 + 云朵发夹 + 大眼，可爱俏皮带点小性感
-     · 御版：银白直长发 + 露肩 + 从容微挑，成熟妩媚
-     均由使用者自配生图模型（agnes-image-2.5-flash）生成，纯绿背景抠图转透明。
-     默认随机一种，长按菜单「换形象」可手动切换（持久化）。立绘叠 CSS 漂浮/呼吸/
-     轻摆动效，单张静态图也有活气；拖拽/单击/长按/双击交互全部保留。 */
+  /* ==================== 形象(v3.59.0 · 小云 · 五形态) ==================== */
+  /* 「小云」——云精灵少女。五形态：
+     · 萝莉：银白蓬松长发 + 云朵发夹 + 大眼，可爱俏皮（PNG）
+     · 御姐：银白直长发 + 露肩 + 从容微挑，成熟妩媚（PNG）
+     · 校花：学院西装 + 格纹裙 + 浅蓝丝带发带，怀抱书本，优雅自信（SVG）
+     · 青春：高马尾 + 连帽卫衣，比着胜利手势，元气满满（SVG）
+     · 邻家：低双马尾 + 奶白开衫，怀抱白猫，温柔治愈（SVG）
+     默认随机一种；长按菜单「换形象」打开形象面板自由挑选（持久化）。 */
   STYLE_KEY: "moChibiStyle",
-  IMGS: { luo: "assets/xiaoyun-chibi-luo.png", yu: "assets/xiaoyun-chibi-yu.png" },
-  FACES: { luo: "assets/xiaoyun-face-luo.png", yu: "assets/xiaoyun-face-yu.png" },
-  STYLE_LABEL: { luo: "萝", yu: "御" },
+  STYLES: ["luo", "yu", "jiaohua", "qingchun", "linjia"],
+  IMGS: {
+    luo: "assets/xiaoyun-chibi-luo.png", yu: "assets/xiaoyun-chibi-yu.png",
+    jiaohua: "assets/xiaoyun-chibi-jiaohua.svg", qingchun: "assets/xiaoyun-chibi-qingchun.svg",
+    linjia: "assets/xiaoyun-chibi-linjia.svg"
+  },
+  FACES: {
+    luo: "assets/xiaoyun-face-luo.png", yu: "assets/xiaoyun-face-yu.png",
+    jiaohua: "assets/xiaoyun-face-jiaohua.svg", qingchun: "assets/xiaoyun-face-qingchun.svg",
+    linjia: "assets/xiaoyun-face-linjia.svg"
+  },
+  STYLE_LABEL: { luo: "萝莉", yu: "御姐", jiaohua: "校花", qingchun: "青春", linjia: "邻家" },
+  STYLE_DESC: {
+    luo: "云朵短发 · 可爱俏皮", yu: "银白直发 · 成熟从容",
+    jiaohua: "学院西装 · 优雅自信", qingchun: "高马尾 · 元气满满",
+    linjia: "怀抱白猫 · 温柔治愈"
+  },
   _style: null,
   _resolved: false,
-  /** 解析当前形态：显式存了 luo/yu 就用它；'random' 或未设置则随机。
+  /** 解析当前形态：显式存了合法 key 就用它；'random' 或未设置则随机（五选一）。
       幂等：每会话只随机一次，保证宠物立绘与各处头像始终同一形态。 */
   resolveStyle() {
     if (this._resolved && this._style) return this._style;
     let s = "random";
     try { s = localStorage.getItem(this.STYLE_KEY) || "random"; } catch (e) { }
-    if (s !== "luo" && s !== "yu") s = Math.random() < 0.5 ? "luo" : "yu";
+    if (!this.STYLES.includes(s)) s = this.STYLES[Math.floor(Math.random() * this.STYLES.length)];
     this._style = s;
     this._resolved = true;
     return s;
@@ -38,29 +53,64 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.55.10" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.59.0" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
-  /** 手动设定形态（luo / yu），持久化并立刻刷新宠物与所有头像 */
+  /** 手动设定形态（合法 key），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
-    if (s !== "luo" && s !== "yu") return;
+    if (!this.STYLES.includes(s)) return;
     try { localStorage.setItem(this.STYLE_KEY, s); } catch (e) { }
     this._style = s;
     this._resolved = true;
     this.applyStyle();
   },
   toggleStyle() {
-    const next = this.currentStyle() === "luo" ? "yu" : "luo";
+    const i = this.STYLES.indexOf(this.currentStyle());
+    const next = this.STYLES[(i + 1) % this.STYLES.length];
     this.setStyle(next);
     this.setFace("happy", 1800);
     this.say(`换成「${this.STYLE_LABEL[next]}」形态啦～`, 2200);
+  },
+  /** 形象选择面板：五形态预览网格，点选即换（v3.59.0） */
+  openStylePicker() {
+    const old = document.getElementById("mcStylePicker");
+    if (old) { old.remove(); return; }
+    const cur = this.currentStyle();
+    const ov = document.createElement("div");
+    ov.id = "mcStylePicker";
+    ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(8,14,22,.66);display:flex;align-items:center;justify-content:center;padding:18px;";
+    const card = (k) => `
+      <button data-style="${k}" style="width:31%;min-width:96px;padding:10px 6px;border:2px solid ${k === cur ? "#7ab8e8" : "rgba(140,180,220,.28)"};border-radius:14px;background:linear-gradient(160deg,rgba(20,32,48,.92),rgba(14,22,34,.92));cursor:pointer;text-align:center;transition:transform .15s;">
+        <img src="${this.IMGS[k]}?v=3.59.0" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
+        <div style="font-size:13.5px;font-weight:700;color:#cfe6f8;margin-top:6px;">${this.STYLE_LABEL[k]}</div>
+        <div style="font-size:10.5px;color:#7e9ab4;margin-top:2px;">${this.STYLE_DESC[k] || ""}</div>
+      </button>`;
+    ov.innerHTML = `<div style="width:min(420px,94vw);max-height:88vh;overflow:auto;background:linear-gradient(165deg,#101c2a,#0b141e);border:1px solid rgba(120,170,220,.32);border-radius:18px;padding:18px;">
+      <div style="font-weight:700;font-size:15px;color:#a8d0ee;margin-bottom:4px;">💇 小云 · 形象换装</div>
+      <div style="font-size:11.5px;color:#7e9ab4;margin-bottom:12px;">选一个你喜欢的形态，随时再来换～</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">${this.STYLES.map(card).join("")}</div>
+      <button data-act="close" style="width:100%;margin-top:12px;padding:9px;border:1px solid rgba(120,170,220,.32);border-radius:10px;background:transparent;color:#8fb4d0;cursor:pointer;">关闭</button>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-style]");
+      if (btn) {
+        const k = btn.dataset.style;
+        this.setStyle(k);
+        this.setFace("happy", 1800);
+        this.say(`换成「${this.STYLE_LABEL[k]}」形态啦～`, 2200);
+        ov.remove();
+        return;
+      }
+      if (e.target === ov || e.target.dataset.act === "close") ov.remove();
+    });
   },
   /** 原地换图（不重建 DOM）：宠物立绘 + 抽屉/欢迎/消息三处头像一起换 */
   applyStyle() {
     const box = document.getElementById("moChibi");
     if (box) box.dataset.style = this.currentStyle();
     const img = document.querySelector("#moChibi .mc-img");
-    if (img) img.src = this.chibiSrc() + "?v=3.55.10";
-    const face = this.faceSrc() + "?v=3.55.10";
+    if (img) img.src = this.chibiSrc() + "?v=3.59.0";
+    const face = this.faceSrc() + "?v=3.59.0";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
@@ -306,7 +356,7 @@ const MoChibi = {
         return (_a2 = window.MoAssistant) == null ? void 0 : _a2.runHealthCheck();
       } },
       { ico: "🎭", label: "表情", act: () => this.cycleFace() },
-      { ico: "💇", label: "换形象", act: () => this.toggleStyle() },
+      { ico: "💇", label: "换形象", act: () => this.openStylePicker() },
       { ico: ttsOn ? "🔊" : "🔇", label: ttsOn ? "语音开" : "语音关", act: () => {
         var _a2;
         (_a2 = window.MoAssistant) == null ? void 0 : _a2.toggleTTS();

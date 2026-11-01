@@ -1,0 +1,167 @@
+/* ============================================================
+   云境 · 主界面皮肤「晓云天光」 v3.59.0
+   —— 告别最初的墨枢式「暗夜鎏金」，立云境自己的门面：
+   晓色的天、流动的云、清透的天青与霞光。
+   只加载于 index.html（世界门户），仅在基础层与精修层之后叠加，
+   不改任何业务类名与交互结构。
+   ============================================================ */
+
+:root {
+    --primary: #6fb7e8;          /* 天青 */
+    --primary-soft: rgba(111, 183, 232, 0.14);
+    --secondary: #f0b080;        /* 霞橙 */
+    --accent: #7ac8c0;           /* 云岫青 */
+    --bg: #0c1522;
+    --bg-soft: #101c2c;
+    --panel: #16243a;
+    --border: rgba(111, 183, 232, 0.18);
+    --line: rgba(210, 232, 248, 0.09);
+    --text: #e6eef6;
+    --text-muted: #9db4c8;
+    --text-faint: #647c90;
+}
+
+/* ---------- 天光背景：晨昏天穹 + 流云 ---------- */
+body.page-index {
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse 900px 520px at 14% -8%, rgba(111, 183, 232, 0.13), transparent 62%),
+        radial-gradient(ellipse 760px 540px at 94% 6%, rgba(240, 176, 128, 0.10), transparent 58%),
+        radial-gradient(ellipse 680px 480px at 50% 118%, rgba(122, 200, 192, 0.08), transparent 60%);
+}
+
+/* 流云：两朵缓移的柔云（纯 CSS，替代墨枢式纯星尘氛围） */
+body.page-index::before,
+body.page-index::after {
+    content: "";
+    position: fixed;
+    width: 46vw; height: 18vh;
+    border-radius: 50%;
+    filter: blur(46px);
+    pointer-events: none;
+    z-index: 0;
+}
+body.page-index::before {
+    top: 8vh; left: -12vw;
+    background: rgba(150, 196, 236, 0.10);
+    animation: yjCloudDrift 90s linear infinite;
+}
+body.page-index::after {
+    bottom: 12vh; right: -16vw;
+    background: rgba(240, 190, 140, 0.07);
+    animation: yjCloudDrift 120s linear infinite reverse;
+}
+@keyframes yjCloudDrift {
+    0% { transform: translateX(-6vw); }
+    50% { transform: translateX(10vw); }
+    100% { transform: translateX(-6vw); }
+}
+
+/* 星尘重着色为「云隙光点」 */
+body.page-index .stars i { background: rgba(200, 226, 248, 0.4); }
+
+/* ---------- 开屏 ---------- */
+body.page-index #splash { background: linear-gradient(178deg, #0c1522 55%, #12233a 88%, #1a2f4a); }
+body.page-index .splash-mark {
+    background: linear-gradient(135deg, #dceefc, var(--primary) 55%, #4a88c0);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 0 26px rgba(111, 183, 232, 0.35));
+}
+body.page-index .splash-line { background: linear-gradient(90deg, transparent, var(--primary) 30%, var(--secondary) 70%, transparent); height: 1.5px; }
+
+/* ---------- 门面 masthead ---------- */
+body.page-index .masthead h1 {
+    background: linear-gradient(135deg, #e8f4fd 12%, #9ecdf0 48%, #f0c096 92%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 22px rgba(111, 183, 232, 0.28));
+}
+/* 门面吉祥物：小云立于标题侧上（仅宽屏显示） */
+.mh-mascot {
+    display: none;
+    position: absolute;
+    top: -34px; right: 6%;
+    width: 96px;
+    filter: drop-shadow(0 8px 22px rgba(10, 24, 40, 0.55));
+    animation: yjMascotFloat 5.2s ease-in-out infinite;
+    pointer-events: none;
+    user-select: none;
+}
+@keyframes yjMascotFloat {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-9px) rotate(2.5deg); }
+}
+@media (min-width: 900px) { .mh-mascot { display: block; } }
+
+/* 标语胶囊：这版云境有什么 */
+.mh-chips {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    margin-top: 14px;
+}
+.mh-chips span {
+    font-size: 11.5px; letter-spacing: 1px;
+    padding: 5px 12px; border-radius: 999px;
+    color: #bcd8ee;
+    background: rgba(111, 183, 232, 0.08);
+    border: 1px solid rgba(111, 183, 232, 0.22);
+}
+
+/* 天光分隔线（原 gold-divider 类名不变，只换皮） */
+body.page-index .gold-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(111, 183, 232, 0.75) 28%, rgba(240, 176, 128, 0.75) 72%, transparent);
+}
+body.page-index .gold-divider::after {
+    background: radial-gradient(circle, #cfe6f8 0 30%, transparent 34%);
+    box-shadow: none;
+}
+
+/* ---------- 工坊卡：清透云母玻璃 ---------- */
+body.page-index .workshop {
+    background: linear-gradient(168deg, rgba(24, 40, 62, 0.72), rgba(15, 26, 42, 0.82));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 2px 14px rgba(4, 12, 22, 0.35);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+body.page-index .workshop:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(6, 16, 30, 0.5), 0 0 22px color-mix(in srgb, var(--ws-hue, var(--primary)) 16%, transparent);
+}
+body.page-index .ws-glyph {
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ws-hue, var(--primary)) 10%, transparent);
+    text-shadow: 0 0 14px color-mix(in srgb, var(--ws-hue, var(--primary)) 45%, transparent);
+}
+
+/* ---------- 分组与标题 ---------- */
+body.page-index .section-title { color: #cfe2f2; }
+body.page-index .section-title::before,
+body.page-index .section-title::after {
+    background: linear-gradient(90deg, transparent, rgba(111, 183, 232, 0.55));
+}
+body.page-index .section-title::after { transform: scaleX(-1); }
+body.page-index .ws-group {
+    background: linear-gradient(170deg, rgba(20, 34, 54, 0.6), rgba(13, 23, 38, 0.7));
+    border-color: var(--border);
+    border-radius: 16px;
+}
+body.page-index .ws-group-head:hover { background: rgba(111, 183, 232, 0.06); }
+body.page-index .ws-ctl-btn { border-color: rgba(111, 183, 232, 0.3); color: #9dc4e2; }
+
+/* ---------- 版本徽标 / 页脚 ---------- */
+body.page-index .ver-badge {
+    background: linear-gradient(135deg, rgba(111, 183, 232, 0.16), rgba(240, 176, 128, 0.14));
+    border: 1px solid rgba(111, 183, 232, 0.4);
+    color: #cfe4f6;
+    border-radius: 999px;
+}
+body.page-index .ver-badge:hover { box-shadow: 0 0 18px rgba(111, 183, 232, 0.35); }
+body.page-index .footer { color: var(--text-faint); }
+body.page-index .footer-log a { color: #9dc4e2; }
+
+/* ---------- 手机端微调 ---------- */
+@media (max-width: 760px) {
+    .mh-chips span { font-size: 10.5px; padding: 4px 10px; }
+    body.page-index::before, body.page-index::after { filter: blur(34px); }
+}
