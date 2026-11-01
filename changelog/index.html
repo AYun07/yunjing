@@ -282,6 +282,46 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="崩溃 稳定 模块 修复" style="--entry-hue:#f0c8c8;">
+            <div class="log-head">
+                <span class="ver-chip">v3.55.29</span>
+                <span class="log-date">2026-11-01</span>
+                <span class="log-badge">定时器炸弹拆除 · 界专属模块复活</span>
+            </div>
+            <div class="log-body">
+                <p><b>连玩几轮必崩 —— 根因是「每次裂变两条链」的定时器炸弹。</b>
+                    起因是排查「连玩 4~8 轮渲染进程崩溃」：给页面挂上定时器计数器后实测，
+                    <b>静置 5 秒就累积 124 万次定时器</b>，3 轮后 843 万次，堆一路涨到 150MB 后崩掉。</p>
+                <p>根因在四个世界模块的依赖等待写法：<code>inject()</code> 失败时排一个 <code>setTimeout</code>，
+                    <code>tryInject()</code> 发现没注入再排一个 —— <b>每次调用裂变成两条链，指数翻倍</b>。
+                    它们等的 <code>WorldExt.hasModules()</code> 恒为 false（见下），于是永不收敛。</p>
+                <ul>
+                    <li><b>新增统一等待器 <code>js/dep-wait.js</code></b>：同一任务全局单飞、绝不裂变；
+                        退避递增（120ms→2.5s）且有尝试上限，依赖永远不来就体面放弃并告警，而不是把内存吃干。
+                        已替换 6 处手写轮询（quest-chain / combat-core / module-forge / world-stage ×2 / world-director / st-import）。</li>
+                    <li><b>实测结果</b>：定时器 843 万次 → <b>252 次</b>；8 轮连玩零崩溃；
+                        堆从「33→153MB 一路涨」变成<b>稳定 8MB</b>；千楼场景堆 45MB → <b>9MB</b>。</li>
+                </ul>
+                <p><b>顺带挖出两个「不报错、但功能静默全废」的隐藏故障</b>（都是 v3.55.28 分层加载引入的顺序副作用）：</p>
+                <ul>
+                    <li><b>界专属模块其实从未挂载过</b>：<code>WorldExt.hasModules()</code> 恒 false，
+                        于是主线三幕、战斗核心、万能市集、世界阶段、随身背包、界专属机制
+                        <b>全线静默失效</b> —— 玩家看到的只是「面板空着」，日志无任何报错。
+                        原因是 <code>player-kit.js</code> 被放进按需组，<code>WorldExt.init()</code> 拿到的是影子对象，
+                        <code>PlayerKit.augment()</code> 返回 Promise 而非数组，被 try/catch 吞掉。
+                        现把 PlayerKit 提回首屏后即载，并让 init 改为「等它就绪再补挂」而非「这次不在就永远算了」。</li>
+                    <li><b>12 个脚本的启动入口根本没触发</b>：它们以 <code>DOMContentLoaded</code> 为唯一启动入口，
+                        原本是首屏同步脚本一定赶得上；改成延后加载后事件早已发过，<code>init()</code> 一次都不会执行
+                        （world-ext-core / world-runtime / quest-chain / combat-core / module-forge / world-stage /
+                        world-director / atlas-panel / immersive-suite / immersion-plus / image-gen / mo-chibi）。
+                        现由加载器在加载期间临时补全 DOMContentLoaded 语义 —— 一处解决，不必逐个改脚本。</li>
+                </ul>
+                <p><b>回归验证</b>：逻辑单测 41/45/16/17/30/34 全通过；端到端（懒加载开 / 关双组对照）各 12/12 通过；
+                    千楼压测挂载 434ms、DOM 644 节点、检索 24ms、刷新 1000→1000 完整恢复、零异常；
+                    首屏 0.81MB、控制台 0 错误 0 404。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="模块 稳定 体验" style="--entry-hue:#c8e8d8;">
             <div class="log-head">
                 <span class="ver-chip">v3.55.28</span>

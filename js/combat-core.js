@@ -68,7 +68,8 @@ o+=cards+'<div class="wr-actions"><div class="wr-act"><div class="wr-act-hd"><b>
 o+=WR.ui.logHTML(s);return o},
 directive:function(st){if(st.inBattle&&st.foeId){var f=foeById[st.foeId];return"战斗进行中：「"+(f?f.n:"?")+"」敌 "+st.foeHp+"/"+st.foeMax+"，我 "+(st.hp!=null?st.hp:100)+"——正文须与战况同步。"}if(Number(st.hurtUntil)>WR.round())return"玩家重伤未愈——两轮内不宜再战。";return""}})}
 var genre=WR.genre;var injected=false;
-function inject(){if(injected)return;if(!window.WorldExt||!window.WorldExt.hasModules||!window.WorldExt.hasModules()){setTimeout(function(){tryInject()},300);return}try{WorldExt.injectModules(genre,[combatModule(genre)]);console.log("[CombatCore] "+genre+" 就位")}catch(e){console.warn("[CombatCore]",e.message)}injected=true}
-function tryInject(){if(injected)return;inject();if(!injected)setTimeout(tryInject,340)}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",tryInject);else tryInject();
+function inject(){if(injected)return true;if(!window.WorldExt||!window.WorldExt.hasModules||!window.WorldExt.hasModules())return false;try{WorldExt.injectModules(genre,[combatModule(genre)]);console.log("[CombatCore] "+genre+" 就位")}catch(e){console.warn("[CombatCore]",e.message)}injected=true;return true}
+/* v3.55.29：同上，改为单飞 + 有界的 YJWait，杜绝定时器裂变 */
+if(window.YJWait)YJWait.for(inject,null,{name:"combat-core",base:140,max:60});
+else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inject);else inject();
 window.WRCombat={module:combatModule,rosters:R}})();

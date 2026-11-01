@@ -121,7 +121,7 @@
 (function () {
   function boot() {
     var KM = window.StoryKnowledge || window.KnowledgeManager;
-    if (!KM || !KM.knowledgeBase) { setTimeout(boot, 800); return; }
+    if (!KM || !KM.knowledgeBase) return false;      /* v3.55.29：不再自递归轮询 */
     var disL = [], disG = [];
     function split() { if (1) return;
       try {
@@ -187,7 +187,9 @@
     MoUtils.pollUntil(mount, { interval: 2500, max: 80 });
     console.log('[KB] 条目开关就绪');
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  /* v3.55.29：改为有界等待（原为每 800ms 无限自轮询） */
+  if (window.YJWait) YJWait.for(boot, null, { name: 'st-import.kbtoggle', base: 200, max: 40 });
+  else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 /* ---- v1.3 PNG角色卡导入 + 导出为ST世界书 ---- */
 (function () {

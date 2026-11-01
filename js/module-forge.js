@@ -42,8 +42,9 @@ M("wr_sealed","📦","封印物管理","封印物/权限",{clearance:{v:1,max:5,
 M("wr_meditate","🧘","神秘学冥想","灵性/扮演",{spirit2:{v:20,max:100,label:"灵性厚实",icon:"🧘"}},null,[{id:"daily",label:"灵性冥想",icon:"🧘",desc:"灵性+7",cooldown:1,effect:{stats:{spirit2:7},fact:"冥想。"}},{id:"acting",label:"践行扮演",icon:"🎭",desc:"消化更稳",cooldown:2,effect:{stats:{spirit2:5},fact:"践行扮演。"}}],function(st){return"灵性 "+(st.spirit2||20)})
 ]}};
 var injected=false;
-function inject(){if(injected)return;if(!window.WorldExt){setTimeout(inject,300);return}if(window.WorldExt.hasModules&&!window.WorldExt.hasModules()){setTimeout(inject,300);return}
-var defs=[npcModule(),creatorModule()];var nwf=NEW_WORLDS[genre];var nw=nwf?nwf():[];nw.forEach(function(m){if(m)defs.push(m)});try{WorldExt.injectModules(genre,defs);console.log("[ModuleForge] "+genre+" 注入 "+defs.length+" 模块")}catch(e){console.warn("[ModuleForge]",e.message)}injected=true}
-function tryInject(){if(injected)return;inject();if(!injected)setTimeout(tryInject,300)}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",tryInject);else tryInject();
+function inject(){if(injected)return true;if(!window.WorldExt)return false;if(window.WorldExt.hasModules&&!window.WorldExt.hasModules())return false
+var defs=[npcModule(),creatorModule()];var nwf=NEW_WORLDS[genre];var nw=nwf?nwf():[];nw.forEach(function(m){if(m)defs.push(m)});try{WorldExt.injectModules(genre,defs);console.log("[ModuleForge] "+genre+" 注入 "+defs.length+" 模块")}catch(e){console.warn("[ModuleForge]",e.message)}injected=true;return true}
+/* v3.55.29：改用 YJWait（单飞 + 有界） */
+if(window.YJWait)YJWait.for(inject,null,{name:"module-forge",base:140,max:60});
+else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inject);else inject();
 })();
