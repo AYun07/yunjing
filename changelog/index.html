@@ -282,6 +282,29 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="设定 变量AI 稳定 沉浸" style="--entry-hue:#d8e0c8;">
+            <div class="log-head">
+                <span class="ver-chip">v3.56.1</span>
+                <span class="log-date">2026-11-01</span>
+                <span class="log-badge">世界基座 · 统一实体模型 · 变量模板</span>
+            </div>
+            <div class="tag-row">
+                <span class="tag" data-tag="设定" style="--tag-hue:#d8c8a0;">🎛 设定</span>
+                <span class="tag" data-tag="变量AI" style="--tag-hue:#e8d8c8;">🧾 变量AI</span>
+                <span class="tag" data-tag="稳定" style="--tag-hue:#c2d6e6;">🛡 稳定</span>
+                <span class="tag" data-tag="沉浸" style="--tag-hue:#c8e8d8;">🏮 沉浸</span>
+            </div>
+            <p><b>「让世界充分活起来」系列开篇（P1 地基）</b>。本版不追求立刻上演推演/推进/规划，而是先把<b>世界的数据底座</b>钉死——没有统一的实体与变量模板，后面所有"活"的能力都是空中楼阁。</p>
+            <p><b>① 新增 <code>js/world-schema.js</code>：三件套</b></p>
+            <ul>
+                <li><b>SchemaRegistry</b>：设计者可预定义「本世界有哪些字段 + 类型 + 约束」（标量 + 实体字段 + 中文别名 + 关系类型），按 genre 持久化，运行时即生效。AI 仍自由生成，模板只做收敛不改写。</li>
+                <li><b>EntityStore</b>：统一实体模型 <code>Entity</code>，一统<b>角色 / 法宝 / 势力 / 地点 / 关系</b>。存于 <code>vars.entities</code>，并与 <code>vars.characters / vars.items</code> 保持<b>引用级镜像</b>——旧路径零破坏，编辑自动双向同步。</li>
+                <li><b>SchemaValidator</b>：在变量解析出口做后处理——标量越界收敛、角色 trust/favor 钳 0–100、玩家锁定字段 AI 永不覆盖（双保险）、道具品阶非法值回退默认。<b>不否决 AI，只收敛</b>。</li>
+            </ul>
+            <p><b>② 无侵入接入</b>：<code>variable-parser.js</code> 出口挂 <code>SchemaValidator.sanitize</code>（<code>window.</code> 守卫解耦加载顺序）；<code>world-ext onVars</code> 每轮同步实体镜像；新增 <code>WorldExt.schema()</code> 暴露当前模板与实体统计。<code>story-status-renderer.js</code> 手动建档即写入统一镜像。</p>
+            <p>✅ <b>旧档兼容</b>：所有改动以「后处理 / 钩子 / 镜像」方式叠加，旧存档不崩；全部改动 JS 过 <code>node --check</code>；SW_VER = <code>yunjing-v3.56.1</code>。后续 P2 填表 UI / P3 推演 / P4 自主时钟 / P5 规划+小云智能化 将在此基座上依次长出。</p>
+        </article>
+
         <article class="log-entry" data-tags="接口 变量AI 稳定 修复" style="--entry-hue:#c8d8f0;">
             <div class="log-head">
                 <span class="ver-chip">v3.55.30</span>

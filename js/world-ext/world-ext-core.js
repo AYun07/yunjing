@@ -308,7 +308,10 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
     return modules.length > 0;
   }
   function onVars(vars, round) {
-    if (!modules.length || !vars) return;
+    if (!vars) return;
+    /* v3.56.1：每轮同步统一实体镜像（引用级，零破坏旧路径） */
+    try { if (window.EntityStore) window.EntityStore.bootstrap(vars); } catch (e) {}
+    if (!modules.length) return;
     let dirty = false;
     for (const m of modules) {
       if (!visible(m)) continue;
@@ -627,6 +630,20 @@ ${directives.join("\n")}
     modState(id) {
       const m = modules.find((x) => x.id === id);
       return m ? ensureState(m) : null;
+    },
+    /* v3.56.1 世界基座入口：当前变量模板 + 实体统计（供 P2 编辑器 / 小云诊断消费） */
+    schema() {
+      const g = genre;
+      const vs = window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables;
+      const ent = (vs && vs.entities) || null;
+      const counts = {
+        characters: ent && ent.characters ? Object.keys(ent.characters).length : 0,
+        items: ent && ent.items ? Object.keys(ent.items).length : 0,
+        factions: ent && ent.factions ? Object.keys(ent.factions).length : 0,
+        places: ent && ent.places ? Object.keys(ent.places).length : 0,
+        relations: ent && ent.relations ? ent.relations.length : 0
+      };
+      return { genre: g, schema: window.SchemaRegistry ? window.SchemaRegistry.get(g) : null, entityCounts: counts };
     },
     _reset() {
       var _a;

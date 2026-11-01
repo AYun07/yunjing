@@ -36,6 +36,11 @@ const VariableInstructionParser = {
     if (AE && res && res.newVariables) {
       try { AE.settleTimeGrowth(res.newVariables, isStoryReg); } catch (e) { /* 不阻断 */ }
     }
+    /* v3.56.1 变量模板校验：解析出口对 AI 变量做钳制/越界收敛/锁定跳过（不否决 AI，只收敛）。
+       window.SchemaValidator 守卫：未加载时跳过，解耦脚本加载顺序。 */
+    if (window.SchemaValidator && res && res.newVariables) {
+      try { res.newVariables = window.SchemaValidator.sanitize(res.newVariables, currentVars); } catch (e) { console.warn("[SchemaValidator] sanitize 失败：", e.message); }
+    }
     return res;
   },
   /** v3.27.9：解除角色的远方标记（正文登场 = 已遇见，通讯录可同步） */

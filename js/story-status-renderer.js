@@ -780,6 +780,8 @@ const StoryStatusRenderer = {
     }
     const vars = fw.storyState.variables;
     vars.characters = vars.characters || {};
+    /* v3.56.1：建档即同步统一实体镜像（引用级，零破坏） */
+    try { if (window.EntityStore) window.EntityStore.bootstrap(vars); } catch (e) {}
     if (vars.characters[name]) {
       (_d = window.showToast) == null ? void 0 : _d.call(window, "已有同名角色，直接打开 TA 的档案", "info");
       return this.editCharacter(name);

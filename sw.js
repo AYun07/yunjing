@@ -8,10 +8,9 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.55.30';  /* v3.55.30 多连接配置 + 正文误重写修复：
-   ① 新增「多连接配置」(Connection Profiles)：主叙事 / 副AI变量 / 副AI摘要 各存独立 API+模型，UI 一键切换
-   ② 修复 extractBody 章节标题正则误吞「第N回合：叙事正文…」致空正文、触发浪费性自动重写的 bug
-   ③ 新增契约校验熔断：回复已结构合规（含 variable_update 块 + 选项）即跳过自动重写，真实 LLM 稳定 1 请求/轮
+const SW_VER = 'yunjing-v3.56.1';  /* v3.56.1 世界基座：统一实体模型 + 变量模板 + 校验器：
+   ① 新增 js/world-schema.js：SchemaRegistry（设计者预定义本世界字段+类型+约束）/ EntityStore（统一角色·法宝·势力·地点·关系）/ SchemaValidator（解析出口钳制收敛，不否决 AI）
+   ② variable-parser 出口挂 SchemaValidator.sanitize；world-ext onVars 每轮同步实体镜像；WorldExt.schema() 暴露模板与实体统计
    逐版说明见 changelog/。改动必须递增 SW_VER */
 const CORE = [
   './', './index.html', './studio.html', './manifest.webmanifest',
