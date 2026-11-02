@@ -4370,7 +4370,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   padding: 8px 10px;
 }
 
-/* ==================== 📕 咩咩预设面板（v3.47.17） ==================== */
+/* ==================== 📕 云起预设面板（v3.47.17） ==================== */
 .mm-block-list {
   display: flex;
   flex-direction: column;
@@ -4413,7 +4413,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   resize: vertical;
 }
 
-/* ==================== 咩咩正则卡片（v3.47.18） ==================== */
+/* ==================== 云起正则卡片（v3.47.18） ==================== */
 /* 预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）渲染成的折叠卡片。
    跟随世界皮肤变量，不内联任何动画样式 —— 与 ST 原版的内联赛博朋克模板区别在此。 */
 .mm-card-area {
@@ -4534,7 +4534,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   letter-spacing: 0;
 }
 
-/* ==================== 咩咩条目面板（v3.47.18） ==================== */
+/* ==================== 云起条目面板（v3.47.18） ==================== */
 .mm-toolbar { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
 .mm-toolbar input[type=text] { flex: 1; min-width: 160px; }
 .mm-toolbar button { padding: 3px 8px; font-size: 12px; }

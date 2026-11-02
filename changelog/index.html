@@ -282,6 +282,20 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="原创 品牌 预设 版权" style="--entry-hue:#e0a84c;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.69.0</span>
+                <span class="entry-date">2026-11-02</span>
+                <span class="entry-title">预设品牌去第三方化 · 云起(Yunqi)系更名</span>
+            </div>
+            <div class="entry-body">
+                <p><b>把预设模块的命名品牌从第三方「咩咩」彻底出清，落为本作自己的「云起(Yunqi)」系。</b></p>
+                <p><b>背景</b>：云境内置预设（提示词文本）早在 v3.55.5 已是<b>云境原创</b>，不基于任何第三方预设；第三方咩咩数据自那时起即不再随包分发。但引擎/桥/正则三件套仍挂第三方名字，易引发「是否用了别人东西」的误解。</p>
+                <p><b>改动</b>：① 文件 <code>miaomiao-engine.js / miaomiao-bridge.js / miaomiao-regex.js</code> → <code>yunqi-engine.js / yunqi-bridge.js / yunqi-regex.js</code>；② 全局对象 <code>MoMiaomiao / MoMiaomiaoBridge / MoMiaomiaoRegex</code> → <code>YunqiPreset / YunqiPresetBridge / YunqiPresetRegex</code>；③ 删除全部指向第三方 <code>MIAOMIAO_PRESET / MIAOMIAO_REGEX</code> 的死兜底引用与 <code>preset-miaomiao.js</code> 注释；④ 存储键 <code>storyUseMiaomiao*</code> → <code>storyUseYunqi*</code>；⑤ 一键开关/风格方法 <code>toggleMiaomiao*</code> → <code>toggleYunqi*</code>。</p>
+                <p>✅ <b>验收</b>：Node 语法校验全过；真机冒烟——<code>window.YUNQI_PRESET</code> 仍正常加载（86 块原创提示词）、<code>YunqiPresetBridge.render</code> 正常渲染、预览正文照常生成、<code>MoMiaomiao</code> 已彻底不存在、控制台 0 报错。产品内已无任何第三方预设命名痕迹（更新日志历史条目除外，保留以如实记录演进）。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="审计 修复 串档 XSS 接线" style="--entry-hue:#e8c8b0;">
             <div class="entry-head">
                 <span class="entry-ver">v3.68.0</span>
