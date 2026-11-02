@@ -282,6 +282,24 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="视觉 UI 主界面 大厅 美化" style="--entry-hue:#e8c97a;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.73.0</span>
+                <span class="entry-date">2026-11-02</span>
+                <span class="entry-title">大厅焕新「鎏金云海」：门面 / 工坊卡 / 世界分组 / 卷首语全面重排</span>
+            </div>
+            <div class="entry-body">
+                <p><b>大厅一入眼的气质重做。新增独立样式 <code>css/lobby-refresh.css</code>（作用域 <code>html body.page-index</code>，加载于最末，可整体移除回滚），不动 DOM 与逻辑。</b></p>
+                <p><b>① 天幕</b>：深夜底 + 金色地平线霞光 + 双侧淡极光，星点转暖白金并加辉光。</p>
+                <p><b>② 门面</b>：衬线大字「云境」（最大 84px）+ 英文眉线 + 暖金标语胶囊 + 小云脚下金色落影。</p>
+                <p><b>③ 五大工坊</b>：门户大卡化——按各自 <code>--ws-hue</code> 色相琉璃化（字形章发光、描边同色），hover 上浮 6px + 同色光晕，「入坊」变胶囊钮。</p>
+                <p><b>④ 世界分组</b>：33 界卡同语言小一号；分组头 glyph 方章 + 界数 pill + 圆框折叠箭头，全部吃 <code>--g-hue</code>。</p>
+                <p><b>⑤ 卷首语横幅</b>：衬线金标题「你不是读者 · 你是主角」，六 feat 玻璃块图标发光，CTA 首钮鎏金实心、其余描金 ghost。</p>
+                <p><b>⑥ 收尾</b>：初来乍到信息卡、版本徽标、页脚统一暖金口径。</p>
+                <p>✅ <b>验收</b>：1440×900 首屏 / 中段 / 底部三屏截图无控制台报错；移动端断点内整套适配（双列卡、隐藏入场钮、缩小 mascot）。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="视觉 UI 主界面 板式 主题 设定台" style="--entry-hue:#e8c97a;">
             <div class="entry-head">
                 <span class="entry-ver">v3.72.0</span>
