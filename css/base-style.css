@@ -1501,23 +1501,6 @@ body.narrow .mo-bubble { max-width: 92%; }
     -webkit-user-drag: none;
     pointer-events: none;
 }
-/* v3.61.0 小云动态引擎：idle 视频循环 + 关键动作帧动画（chibi-anim.js 三层架构） */
-.mc-video {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: contain;
-    object-position: bottom center;
-    pointer-events: none;
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.3));
-}
-.mc-frame {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: contain;
-    object-position: bottom center;
-    pointer-events: none;
-    display: none;
-}
 
 /* v1.9.0 闲置避让：闲置 6s 自动降透明,底下文字透出;指针靠近恢复(见 mo-chibi.js wake) */
 .mo-chibi.dim { opacity: 0.3; }
@@ -1649,6 +1632,10 @@ body.narrow .mo-bubble { max-width: 92%; }
     60%      { transform: translateX(-7px) rotate(-3.5deg); }
 }
 .mc-float.mc-peek { animation: mcPeek 1.35s ease-in-out; }
+/* v3.61.0 动作姿态交叉淡入：切换挥手/战斗/开心等关键帧时平滑过渡，避免硬切闪烁 */
+.mc-img { transition: opacity .18s ease; }
+@keyframes mcPosePop { 0% { opacity: .2; } 100% { opacity: 1; } }
+.mc-img.mc-pose-pop { animation: mcPosePop .3s ease; }
 /* 视线跟随：整身朝光标方向轻微倾斜（气泡随之微倾，像转头看人） */
 .mo-chibi.watching { transform: rotate(var(--mc-lean, 0deg)); transition: transform .4s ease; }
 .mo-chibi.dragging.watching { transform: rotate(-9deg) scale(1.06); }
@@ -1967,7 +1954,7 @@ body.narrow .form-row.three-col { grid-template-columns: 1fr; }
     padding-top: 12px;
 }
 .dw-sub-title { font-size: 12px; color: #7fd4dc; letter-spacing: 1.5px; margin-bottom: 11px; }
-/* v3.55.30 多连接配置（Connection Profiles）列表与编辑区 */
+/* v3.55.30 多连接配置（多连接配置）列表与编辑区 */
 .cp-profile-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
 .cp-profile-item {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -4365,7 +4352,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   padding: 8px 10px;
 }
 
-/* ==================== 📕 咩咩预设面板（v3.47.17） ==================== */
+/* ==================== 📕 某预设预设面板（v3.47.17） ==================== */
 .mm-block-list {
   display: flex;
   flex-direction: column;
@@ -4408,7 +4395,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   resize: vertical;
 }
 
-/* ==================== 咩咩正则卡片（v3.47.18） ==================== */
+/* ==================== 某预设正则卡片（v3.47.18） ==================== */
 /* 预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）渲染成的折叠卡片。
    跟随世界皮肤变量，不内联任何动画样式 —— 与 ST 原版的内联赛博朋克模板区别在此。 */
 .mm-card-area {
@@ -4529,7 +4516,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   letter-spacing: 0;
 }
 
-/* ==================== 咩咩条目面板（v3.47.18） ==================== */
+/* ==================== 某预设条目面板（v3.47.18） ==================== */
 .mm-toolbar { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
 .mm-toolbar input[type=text] { flex: 1; min-width: 160px; }
 .mm-toolbar button { padding: 3px 8px; font-size: 12px; }
