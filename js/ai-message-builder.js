@@ -465,6 +465,16 @@ function buildPlayerIdentityCard(setup, config) {
     const _wb = WorldBook.buildPromptBlock();
     if (_wb) parts.push(_wb);
   }
+  /* v3.63.0 灵宠·妖兽·伙伴：把随行存在写进世界设定，让 AI 始终记得它们 */
+  if (window.BeastSystem) {
+    const _bs = BeastSystem.buildPromptBlock();
+    if (_bs) parts.push(_bs);
+  }
+  /* v3.64.0 小队：把玩家同行者写进世界设定，让 AI 记得小队共同历险 */
+  if (window.SquadSystem) {
+    const _sq = SquadSystem.buildPromptBlock();
+    if (_sq) parts.push(_sq);
+  }
   return parts.join("\n");
 }
 function buildStoryDigest() {
