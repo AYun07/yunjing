@@ -165,7 +165,7 @@
     return c;
   }
 
-  /* ---------- 2. 轻量核心协议块（云心精简版，替代全量咩咩预设，仅 lite 用） ---------- */
+  /* ---------- 2. 轻量核心协议块（云心精简版，替代全量云起预设，仅 lite 用） ---------- */
   function buildLitePreset(playerName) {
     const hero = playerName || '主角';
     return `【云心·执笔人格（轻量版）】

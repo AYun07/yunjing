@@ -65,8 +65,8 @@
       if (role === 'assistant') {
         const H = window.StoryResponseHandler;
         const parser = window.VariableInstructionParser;
-        const raw = (window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.preParse)
-          ? window.MoMiaomiaoRegex.preParse(content) : content;
+        const raw = (window.YunqiPresetRegex && window.YunqiPresetRegex.preParse)
+          ? window.YunqiPresetRegex.preParse(content) : content;
         entry.block = parser && parser.extractUpdateBlock ? parser.extractUpdateBlock(raw) : null;
         entry.options = H && H.extractOptions ? H.extractOptions(raw) : [];
         entry.label = H && H.detectOptionsLabel ? H.detectOptionsLabel(raw) : '情节走向';
