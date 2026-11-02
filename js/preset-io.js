@@ -2,7 +2,7 @@
  * 云境 · 预设导入 / 替换 / 编辑层 preset-io.js（v3.51.0）
  * ------------------------------------------------------------
  * 目标（按玩家要求）：
- *   1) 以后有新的 SillyTavern 预设 → 直接导入，整份替换内置咩咩预设；
+ *   1) 以后有新的 SillyTavern 预设 → 直接导入，整份替换内置云起预设；
  *   2) 每一条预设提示词都能改（默认版永远留着，一键还原）；
  *   3) 导入失败要说清哪一步不对，绝不半途覆盖掉能用的旧预设。
  *
@@ -248,7 +248,7 @@
   function active() {
     var c = custom();
     if (c) return c;
-    return window.YUNQI_PRESET || window.MIAOMIAO_PRESET || null;
+    return window.YUNQI_PRESET || null;
   }
 
   function info() {
@@ -258,7 +258,7 @@
       try { m = JSON.parse(get(K_SRC) || '{}'); } catch (e) { }
       return { source: 'custom', name: c.name, version: c.version, blocks: c.prompts.length, chars: c._yunjing.chars, file: m.file || '', at: m.at || 0 };
     }
-    var b = window.YUNQI_PRESET || window.MIAOMIAO_PRESET;
+    var b = window.YUNQI_PRESET;
     var chars = 0;
     (b && b.prompts ? b.prompts : []).forEach(function (p) { chars += str(p.content).length; });
     return { source: 'builtin', name: (b && b.name) || '内置预设', version: (b && b.version) || '', blocks: (b && b.prompts ? b.prompts.length : 0), chars: chars, file: '', at: 0 };
@@ -286,7 +286,7 @@
     if (!set(K_CUSTOM, payload)) throw new Error('写入本地存储失败（可能空间已满）');
     set(K_SRC, JSON.stringify({ name: p.name, version: p.version, blocks: p.prompts.length, chars: p._yunjing.chars, file: fileName || '', at: Date.now() }));
     del(K_EDITS);                                  // 换预设 → 旧的逐块修改作废（identifier 已变）
-    try { window.MoMiaomiao && window.MoMiaomiao.clearOverrides && window.MoMiaomiao.clearOverrides(); } catch (e) { }
+    try { window.YunqiPreset && window.YunqiPreset.clearOverrides && window.YunqiPreset.clearOverrides(); } catch (e) { }
     _cache = null; _cacheRaw = null;
     /* v3.55.5 配套正则自动适配：ST 预设导出常把正则嵌在 extensions.regex_scripts
        （双人成行/夏瑾/Reborn/Kemini 四套实测皆是）——导入预设时顺手装载，免手工拆包 */
@@ -320,7 +320,7 @@
 
   function useBuiltin() {
     del(K_CUSTOM); del(K_SRC); del(K_EDITS);
-    try { window.MoMiaomiao && window.MoMiaomiao.clearOverrides && window.MoMiaomiao.clearOverrides(); } catch (e) { }
+    try { window.YunqiPreset && window.YunqiPreset.clearOverrides && window.YunqiPreset.clearOverrides(); } catch (e) { }
     _cache = null; _cacheRaw = null;
     return info();
   }

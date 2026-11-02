@@ -1,7 +1,7 @@
 /* ============================================================
- * 云境工坊 · 咩咩预设接入层
+ * 云境工坊 · 云起预设接入层
  * ------------------------------------------------------------
- * 职责：把内嵌预设（preset-miaomiao.js + miaomiao-engine.js）
+ * 职责：把内嵌预设（preset-yunqi.js + yunqi-engine.js）
  *      接到云境的开局设定（config.genreKey / setup.style）上。
  *
  * 只做「对齐」，不改预设任何 prompt 文本：
@@ -76,13 +76,13 @@
   var _indexSrc = null;
   function currentPreset() {
     try {
-      if (window.MoMiaomiao && typeof window.MoMiaomiao.preset === 'function') {
-        var p = window.MoMiaomiao.preset();
+      if (window.YunqiPreset && typeof window.YunqiPreset.preset === 'function') {
+        var p = window.YunqiPreset.preset();
         if (p) return p;
       }
     } catch (e) { }
     /* v3.55.5：内置默认改「云起预设」 */
-    return window.YUNQI_PRESET || window.MIAOMIAO_PRESET || null;
+    return window.YUNQI_PRESET || null;
   }
   function index() {
     /* v3.55.5：跟「当前生效预设」走——玩家导入的预设若也带 📕文风· 块，照样对齐；
@@ -166,7 +166,7 @@
     if (pick) extraOn.push(pick);
 
     // 玩家若在设置面板里手动开了别的文风档，尊重玩家：不再强制关日轻
-    var ov = window.MoMiaomiao && window.MoMiaomiao.getOverrides ? window.MoMiaomiao.getOverrides() : {};
+    var ov = window.YunqiPreset && window.YunqiPreset.getOverrides ? window.YunqiPreset.getOverrides() : {};
     Object.keys(ov).forEach(function (k) {
       if (ov[k] && k.indexOf(PREFIX) === 0) extraOn.push(k);
       // 玩家显式开过的块，取消强制关闭
@@ -181,7 +181,7 @@
    * @param {object} opt { char, user }
    */
   function render(opt) {
-    var M = window.MoMiaomiao;
+    var M = window.YunqiPreset;
     if (!M || typeof M.renderWithOverrides !== 'function') return '';
     if (typeof M.enabled === 'function' && !M.enabled()) return '';
 
@@ -228,7 +228,7 @@
 
   /** 用给定覆盖表调引擎（不改 localStorage） */
   function renderWith(M, ov, opt) {
-    var p = M.preset ? M.preset() : (window.YUNQI_PRESET || window.MIAOMIAO_PRESET || null);
+    var p = M.preset ? M.preset() : (window.YUNQI_PRESET || null);
     if (!p) return { system: '', vars: {}, included: [] };
     var byId = {};
     p.prompts.forEach(function (x) { byId[x.identifier] = x; });
@@ -276,7 +276,7 @@
     return Object.keys(index());
   }
 
-  window.MoMiaomiaoBridge = {
+  window.YunqiPresetBridge = {
     worldName: worldName,
     resolveStyleBlock: resolveStyleBlock,
     buildRenderOpts: buildRenderOpts,

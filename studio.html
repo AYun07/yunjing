@@ -86,7 +86,7 @@
     <div class="top-bar">
         <a href="index.html" class="back-link" title="返回工坊大厅"><span class="ico">←</span><span class="txt">大厅</span></a>
         <span id="gameTitle">加载中…</span>
-        <span class="ver-dot" title="云境 v3.68.0 · 全量审计修复（串档隔离/核心循环/XSS/SW/接线/UI 六类 40+ 项，详见 changelog）">v3.68.0</span>
+        <span class="ver-dot" title="云境 v3.69.0 · 预设品牌去第三化：原咩咩引擎/桥/正则三件套重命名为云起(Yunqi)系、删除第三方兜底引用、全局对象 MoMiaomiao 彻底更名 YunqiPreset（预设内容早已为云境原创，本次仅出清命名品牌）">v3.69.0</span>
         <div class="top-actions">
             <!-- v3.8.3 极简顶栏：功能按钮全部收进 ☰ 工具箱（桌面/移动同构），只留状态面板与工具箱两个常驻入口 -->
             <button class="top-btn" id="panelToggle" onclick="togglePanel()" title="状态面板"><span class="ico">📊</span><span class="txt">状态</span></button>
@@ -372,11 +372,11 @@
     <!-- v3.51.1 预设/正则导入替换层（必须在引擎之前，引擎用它取"当前预设"） -->
     <script type="text/yj-lazy" data-src="js/preset-io.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/regex-io.js?v=3.55.29" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/miaomiao-engine.js?v=3.55.29" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/miaomiao-bridge.js?v=3.55.29" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/yunqi-engine.js?v=3.55.29" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/yunqi-bridge.js?v=3.55.29" data-yj-group="batch"></script>
     <!-- v3.55.5 云起正则（云境原创）：数据 + 引擎（协议块转卡片 / 去 AI 味 / 上下文裁剪） -->
     <script type="text/yj-lazy" data-src="js/yunqi-regex-data.js?v=3.55.29" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/miaomiao-regex.js?v=3.55.29" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/yunqi-regex.js?v=3.55.29" data-yj-group="batch"></script>
     <!-- v3.55.10 云起预设云端同步：从 GitHub 拉最新版，预设更新不用再导入 -->
     <script type="text/yj-lazy" data-src="js/yunqi-sync.js?v=3.55.29" data-yj-group="batch"></script>
     <script defer src="js/ai-message-builder.js?v=3.68.0"></script>
@@ -901,8 +901,8 @@ window.Snapshots = Snapshots;
         /* v3.51.1：回放也先过一遍预设正则（<selection> → 【行动选项】、去 AI 味），
            否则读档后选项按钮会丢、<selection> 标签会裸在正文里。
            实时轮走 handle() 的同一步，两条路径从此同源。 */
-        const raw = window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.preParse
-          ? window.MoMiaomiaoRegex.preParse(msg.content)
+        const raw = window.YunqiPresetRegex && window.YunqiPresetRegex.preParse
+          ? window.YunqiPresetRegex.preParse(msg.content)
           : msg.content;
         const block = parser.extractUpdateBlock(raw);
         const options = handler.extractOptions(raw);

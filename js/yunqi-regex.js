@@ -1,5 +1,5 @@
 /* ============================================================
- * 云境工坊 · 咩咩专用正则引擎（ver 7.2 → 云境适配）
+ * 云境工坊 · 云起专用正则引擎（ver 7.2 → 云境适配）
  * ------------------------------------------------------------
  * 原版 45 条是给 SillyTavern 用的，直接搬会有三处水土不服：
  *   1) 美化模板是几千字节的内联 <style> + 赛博朋克动画，和云境的
@@ -17,8 +17,8 @@
 (function () {
   'use strict';
 
-  var KEY = 'storyUseMiaomiaoRegex';
-  var OV_KEY = 'storyMiaomiaoRegexOverrides';
+  var KEY = 'storyUseYunqiRegex';
+  var OV_KEY = 'storyYunqiRegexOverrides';
 
   function rules() {
     /* v3.51.0：玩家导入的正则整份替换内置（js/regex-io.js）
@@ -28,7 +28,7 @@
       try { a = window.YunjingRegexIO.active(); } catch (e) { a = null; }
       if (a && a.length) return a;
     }
-    return (typeof window !== 'undefined' && (window.YUNQI_REGEX || window.MIAOMIAO_REGEX)) || [];
+    return (typeof window !== 'undefined' && (window.YUNQI_REGEX || window.YUNQI_REGEX)) || [];
   }
 
   /** 规则类别：内置按名字查表；导入的一律当"自定义文本替换" */
@@ -47,7 +47,7 @@
       if (v === '0') return false;
     } catch (e) { return false; }
     try {
-      var M = window.MoMiaomiao;
+      var M = window.YunqiPreset;
       if (M && typeof M.enabled === 'function') return !!M.enabled();
     } catch (e) { }
     return false;
@@ -154,7 +154,7 @@
   };
 
   /** 协议块 → 云境卡片的定义（图标/标题/提取用的容错正则）
-   *  rule：咩咩规则名（导入咩咩预设时，关闭该规则 → 隐藏卡片，兼容原版行为）
+   *  rule：云起规则名（导入云起预设时，关闭该规则 → 隐藏卡片，兼容原版行为）
    *  yqRule：云起专属美化规则名（关闭 → 卡片回退朴素样式，内容照常显示） */
   var CARD_DEFS = [
     { key: 'opening', rule: '开场白美化', yqRule: '云起·开场白美化',    icon: '🎬', title: '开场白',     re: /<opening>\s*([\s\S]*?)\s*<\/opening>/gi },
@@ -452,7 +452,7 @@
     rules().forEach(function (r) { byName[r.scriptName] = on[r.id]; });
 
     return cards.filter(function (c) {
-      // 咩咩规则名被显式关闭 → 不渲染（导入咩咩预设时保持原版行为）；
+      // 云起规则名被显式关闭 → 不渲染（导入云起预设时保持原版行为）；
       // 云起美化规则关闭不隐藏卡片，只回退朴素样式。
       if (c.rule && byName[c.rule] === false) return false;
       // 空内容的块不占位（如无战斗时模型会输出 <combat_driver>无</combat_driver>）
@@ -460,7 +460,7 @@
     }).map(function (c, i) {
       var open = (i === 0 && openFirst) ? ' open' : '';
       /* 云起专属美化开关：规则存在且开着才上皮肤；
-         导入咩咩预设（无云起美化规则）时 byName[yqRule] === undefined → 朴素渲染 */
+         导入云起预设（无云起美化规则）时 byName[yqRule] === undefined → 朴素渲染 */
       var yqOn = !!(c.yqRule && byName[c.yqRule] === true);
       var body = yqOn ? applyYqPolish(c.body, c.yqRule) : String(c.body == null ? '' : c.body);
       var bodyHtml = yqOn ? yqRows(body) : richText(body);
@@ -538,7 +538,7 @@
     });
   }
 
-  window.MoMiaomiaoRegex = {
+  window.YunqiPresetRegex = {
     enabled: enabled,
     setEnabled: setEnabled,
     getOverrides: getOverrides,

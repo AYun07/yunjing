@@ -99,7 +99,7 @@
       try { m = JSON.parse(get(K_SRC) || '{}'); } catch (e) { }
       return { source: 'custom', count: a.length, file: m.file || '', at: m.at || 0 };
     }
-    var b = window.YUNQI_REGEX || window.MIAOMIAO_REGEX || [];
+    var b = window.YUNQI_REGEX || [];
     return { source: 'builtin', count: b.length, file: '', at: 0 };
   }
 
@@ -110,7 +110,7 @@
     var payload = JSON.stringify(list);
     if (!set(K_CUSTOM, payload)) throw new Error('写入本地存储失败（可能空间已满）');
     set(K_SRC, JSON.stringify({ count: list.length, file: fileName || '', at: Date.now() }));
-    try { window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.clearOverrides && window.MoMiaomiaoRegex.clearOverrides(); } catch (e) { }
+    try { window.YunqiPresetRegex && window.YunqiPresetRegex.clearOverrides && window.YunqiPresetRegex.clearOverrides(); } catch (e) { }
     _cache = null; _cacheRaw = null;
     return info();
   }
@@ -131,13 +131,13 @@
 
   function useBuiltin() {
     del(K_CUSTOM); del(K_SRC);
-    try { window.MoMiaomiaoRegex && window.MoMiaomiaoRegex.clearOverrides && window.MoMiaomiaoRegex.clearOverrides(); } catch (e) { }
+    try { window.YunqiPresetRegex && window.YunqiPresetRegex.clearOverrides && window.YunqiPresetRegex.clearOverrides(); } catch (e) { }
     _cache = null; _cacheRaw = null;
     return info();
   }
 
   function exportCurrent() {
-    var a = active() || window.YUNQI_REGEX || window.MIAOMIAO_REGEX || [];
+    var a = active() || window.YUNQI_REGEX || [];
     return JSON.stringify({ regex_scripts: a }, null, 1);
   }
 

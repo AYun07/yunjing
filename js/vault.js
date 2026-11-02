@@ -22,8 +22,8 @@
     /* 预设 / 正则（v3.51.0 起的真实键名，命名以 preset-io.js / regex-io.js 为准） */
     'yunjingPresetCustom', 'yunjingPresetSrc', 'yunjingPresetEdits',
     'yunjingRegexCustom', 'yunjingRegexSrc',
-    'storyMiaomiaoOverrides', 'storyMiaomiaoRegexOverrides',
-    'storyUseMiaomiao', 'storyUseMiaomiaoRegex',
+    'storyYunqiOverrides', 'storyYunqiRegexOverrides',
+    'storyUseYunqi', 'storyUseYunqiRegex',
     'storyKBVectorCfg', 'yunjingOnboardDone', 'storyKBKeyDepth',
     /* v3.53.0：状态栏字段组 / 自定义字段 / 成人向 / 破限 / 原创工坊模板 */
     'yunjingStatusGroupOff', 'yunjingStatusCustom', 'yunjingAdultFields',

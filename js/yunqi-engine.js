@@ -1,5 +1,5 @@
-/* 云境 · 咩咩预设渲染引擎 v1.0.0（v3.47.17）
-   职责：把内嵌的 MIAOMIAO_PRESET 按 order 顺序渲染成一段 system 文本。
+/* 云境 · 云起预设渲染引擎 v1.0.0（v3.47.17）
+   职责：把内嵌的 YUNQI_PRESET 按 order 顺序渲染成一段 system 文本。
    原样照搬其渲染语义：
      · prompts 是"块"，order 是"顺序表"；order 里 enabled:false 的块跳过；
      · 块内容先宏展开，再拼接；
@@ -21,13 +21,13 @@
 
   function preset() {
     /* v3.51.0：玩家导入的预设优先（js/preset-io.js），否则用内置预设
-       v3.55.5：内置改为「云起预设」（云境原创），咩咩数据不再随包分发 */
+       v3.55.5：内置改为「云起预设」（云境原创），云起数据不再随包分发 */
     if (window.YunjingPresetIO && typeof window.YunjingPresetIO.active === 'function') {
       var a = null;
       try { a = window.YunjingPresetIO.active(); } catch (e) { a = null; }
       if (a) return a;
     }
-    if (!P) P = (typeof window !== 'undefined' && (window.YUNQI_PRESET || window.MIAOMIAO_PRESET)) || null;
+    if (!P) P = (typeof window !== 'undefined' && (window.YUNQI_PRESET)) || null;
     return P;
   }
 
@@ -213,7 +213,7 @@
   /**
    * @param {Object} opt
    *   { char, user, styleBlock, extraToggles }
-   *   styleBlock: 追加到末尾的"本世界文风适配"文本（由 preset-miaomiao-styles 生成）
+   *   styleBlock: 追加到末尾的"本世界文风适配"文本（由 preset-yunqi-styles 生成）
    * @returns {{system:String, vars:Object, included:Array, chars:Number}}
    */
   function render(opt) {
@@ -274,7 +274,7 @@
   }
 
   /* ---------------- 开关：整份预设启停 ---------------- */
-  var KEY = 'storyUseMiaomiao';
+  var KEY = 'storyUseYunqi';
   function enabled() {
     /* v3.55.5：云起预设是出厂默认 —— 未做过显式选择时默认开启（'0' 才是玩家关的） */
     try {
@@ -292,7 +292,7 @@
   /* ---------------- 与云境世界对齐的可选项 ---------------- */
   // 预设里"破甲"三档 / 文风档 / 视角等，都靠"只留一个开"来生效。
   // 云境这边提供名字级开关（覆盖 order.enabled），不改进原内容。
-  var OVERRIDE_KEY = 'storyMiaomiaoOverrides';
+  var OVERRIDE_KEY = 'storyYunqiOverrides';
   function getOverrides() {
     try { return JSON.parse(localStorage.getItem(OVERRIDE_KEY) || '{}'); } catch (e) { return {}; }
   }
@@ -379,7 +379,7 @@
     return out;
   }
 
-  window.MoMiaomiao = {
+  window.YunqiPreset = {
     preset: preset,
     render: render,
     renderWithOverrides: renderWithOverrides,
