@@ -1470,12 +1470,12 @@ body.narrow .mo-bubble { max-width: 92%; }
     -webkit-user-select: none;
     user-select: none;
     transition: transform .28s cubic-bezier(.34, 1.4, .5, 1), opacity .25s;
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
+    /* v3.79.0 去掉立绘 drop-shadow：阴影会沿发丝/裙边的半透明像素内部渗色，形成一圈脏边 */
     will-change: left, top, transform;
 }
 .mo-chibi:active { cursor: grabbing; }
 .mo-chibi.hidden { transform: scale(0) rotate(30deg); opacity: 0; pointer-events: none; }
-.mo-chibi.dragging { transform: rotate(-9deg) scale(1.06); transition: transform .15s; filter: drop-shadow(0 20px 30px rgba(0,0,0,.5)); }
+.mo-chibi.dragging { transform: rotate(-9deg) scale(1.06); transition: transform .15s; }
 /* v3.55.3：小云长发双形态立绘 + CSS 动效（漂浮 / 呼吸 / 轻摆）——
    单张静态 PNG 也带活气。动效作用于 .mc-float 包裹层，形象图本身保持稳定。 */
 .mc-float {

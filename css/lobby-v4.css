@@ -28,9 +28,10 @@ html { scroll-behavior: smooth; }
 body.page-index {
   background-color: var(--bg);
   background-image:
-    radial-gradient(ellipse 80% 55% at 18% -5%, rgba(46, 110, 99, .08), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 88% 0%, rgba(185, 141, 63, .07), transparent 55%),
-    linear-gradient(180deg, #f7f8f4 0%, var(--bg) 40%, #f1f3ee 100%);
+    radial-gradient(ellipse 60% 42% at 12% -8%, rgba(46, 110, 99, .16), transparent 62%),
+    radial-gradient(ellipse 55% 40% at 92% -6%, rgba(129, 96, 176, .13), transparent 60%),
+    radial-gradient(ellipse 50% 36% at 55% 108%, rgba(185, 141, 63, .12), transparent 60%),
+    linear-gradient(180deg, #f7f8f5 0%, var(--bg) 42%, #f0f2ee 100%);
   background-attachment: fixed;
   color: var(--tx);
   font-family: var(--kai);
@@ -122,8 +123,20 @@ body.page-index {
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0;
-  color: var(--deep);
   display: flex; align-items: flex-start;
+}
+/* 渐变裁剪必须打在文字自身所在的元素上（flex 子项不继承 clip 背景） */
+.logo-kai .lk-a {
+  background: linear-gradient(115deg, var(--deep) 20%, var(--teal) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.logo-kai .lk-b {
+  background: linear-gradient(115deg, var(--teal) 10%, #6f9159 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 /* 「云」：特大楷字 */
 .logo-kai .lk-a {
@@ -133,7 +146,6 @@ body.page-index {
 /* 「境」：缩小、下沉、青瓷色——错落双色变体 */
 .logo-kai .lk-b {
   font-size: clamp(64px, 8.6vw, 106px);
-  color: var(--teal);
   margin: .34em 0 0 .1em;
   position: relative;
 }
@@ -196,10 +208,12 @@ body.page-index {
 }
 .mh-chips span {
   padding: 7px 16px;
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, .9);
   border-radius: 99px;
-  box-shadow: 0 2px 8px rgba(35, 48, 46, .05);
+  box-shadow: 0 2px 10px rgba(35, 48, 46, .06);
   transition: border-color .25s, color .25s, transform .25s;
 }
 .mh-chips span:hover {
@@ -215,7 +229,6 @@ body.page-index {
   width: 152px;
   height: auto;
   z-index: 3;
-  filter: drop-shadow(0 14px 24px rgba(30, 61, 64, .16));
   pointer-events: none;
   animation: floaty 5.5s ease-in-out infinite;
 }
@@ -258,8 +271,11 @@ body.page-index {
 .container > .workshops > .workshop {
   position: relative;
   display: flex; flex-direction: column;
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, .85);
+  box-shadow: 0 6px 26px rgba(35, 48, 46, .07), inset 0 1px 0 rgba(255, 255, 255, .9);
   border-radius: 18px;
   padding: 26px 22px 22px;
   text-decoration: none;
@@ -323,8 +339,11 @@ body.page-index {
 /* ───────── 分组：手风琴 ───────── */
 .ws-groups-ctl { display: none; }
 .ws-group {
-  border: 1px solid var(--line);
-  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, .85);
+  background: rgba(255, 255, 255, .68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(35, 48, 46, .05);
   border-radius: 16px;
   margin: 0 0 12px;
   overflow: hidden;
@@ -399,8 +418,8 @@ body.page-index {
 /* 界卡 */
 .ws-clip .workshop {
   position: relative;
-  background: var(--bg);
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .55);
+  border: 1px solid rgba(255, 255, 255, .8);
   border-radius: 14px;
   padding: 20px 19px 16px;
   text-decoration: none;
@@ -466,11 +485,13 @@ body.page-index {
   .info-grid { padding-bottom: 16px; }
 }
 .info-card {
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, .85);
   border-radius: 18px;
   padding: 26px 28px 22px;
-  box-shadow: 0 4px 16px rgba(35, 48, 46, .04);
+  box-shadow: 0 6px 22px rgba(35, 48, 46, .06), inset 0 1px 0 rgba(255, 255, 255, .9);
 }
 .info-title {
   font-family: var(--serif-disp);
@@ -518,6 +539,12 @@ body.page-index {
   overflow: hidden;
   border-radius: 26px;
   box-shadow: 0 24px 60px rgba(22, 48, 47, .3);
+}
+.rp-promo::before {
+  content: "";
+  position: absolute; top: 0; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 244, 214, .55), transparent);
 }
 .rp-promo-mark {
   position: absolute;
