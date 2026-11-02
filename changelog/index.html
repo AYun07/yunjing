@@ -282,6 +282,22 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="视觉 UI 主界面 板式 主题 设定台" style="--entry-hue:#e8c97a;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.72.0</span>
+                <span class="entry-date">2026-11-02</span>
+                <span class="entry-title">四套主界面板式可选：水墨卷轴 / 星穹HUD / 鎏金殿阁 / 云白卡片</span>
+            </div>
+            <div class="entry-body">
+                <p><b>主界面不再只有一种长相。新增四套完整板式（各自独立 CSS，作用域 <code>html body.page-studio</code>，默认全部不启用），访问 <code>studio.html?theme=ink|star|gold|cloud</code> 即时切换；另附对照台 <code>style-lab.html</code>，一页之内点选四套实机预览。选定后可将该套设为默认、移除其余。</b></p>
+                <p><b>A 水墨卷轴 ?theme=ink</b>：宣纸暖底、衬线书卷排版、朱砂点睛、横线书写式输入框、虚线断章 + 朱砂印分区。</p>
+                <p><b>B 星穹HUD ?theme=star</b>：深空靛蓝 + 全息网格、青碧→紫辉光、卡片四角准星、发光刻度分区线、青紫渐变主按钮。</p>
+                <p><b>C 鎏金殿阁 ?theme=gold</b>：玄漆暖夜、鎏金双框镶线、金属渐变标题与按钮、金线断章、漆盒侧屏。</p>
+                <p><b>D 云白卡片 ?theme=cloud</b>：唯一「板式级」变化——整块长卡拆成一张张独立小白卡（Bento 布局），靛蓝点睛、大圆角柔阴影、白玻璃顶栏。</p>
+                <p>✅ <b>验收</b>：四套真机截图（1440×900 首屏 + 开局卡片区）均无控制台报错；主题选择器提级为 <code>html body.page-studio</code>，稳压运行时注入的世界皮肤（此前 <code>body.theme-*.top-bar</code> 会抢走顶栏配色导致浅色主题顶栏发黑）。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="视觉 UI 主界面 美化 设定台" style="--entry-hue:#e8c97a;">
             <div class="entry-head">
                 <span class="entry-ver">v3.71.0</span>

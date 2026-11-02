@@ -1,0 +1,373 @@
+/* ============================================================
+   云境 · 板式 A「水墨卷轴」 v3.72.0
+   宣纸暖底 / 墨色文字 / 朱砂点睛 / 竖排书卷气
+   作用域 html body.page-studio，仅在 ?theme=ink 时启用
+   ============================================================ */
+html body.page-studio {
+  --ink: #241f19;
+  --ink-2: #4a4238;
+  --paper: #f2ebdd;
+  --paper-2: #efe6d5;
+  --seal: #a0372b;
+  --seal-soft: rgba(160, 55, 43, .10);
+  --line-ink: rgba(60, 48, 34, .16);
+  --text: #2a2419;
+  --text-muted: #6f6553;
+  --text-faint: #9c917b;
+  --primary: #a0372b;
+  --primary-dim: rgba(160, 55, 43, .10);
+  --primary-glow: rgba(160, 55, 43, .22);
+
+  background:
+    radial-gradient(900px 620px at 12% -8%, rgba(160, 55, 43, .05), transparent 60%),
+    radial-gradient(1100px 780px at 100% 0%, rgba(96, 80, 52, .055), transparent 55%),
+    radial-gradient(760px 760px at 50% 116%, rgba(90, 70, 40, .07), transparent 62%),
+    var(--paper);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--serif);
+}
+
+/* ── 顶栏：宣纸横幅 ── */
+html body.page-studio .top-bar {
+  background: linear-gradient(180deg, #f8f2e6, #efe6d4);
+  border-bottom: 1px solid var(--line-ink);
+  box-shadow: 0 6px 22px rgba(60, 48, 34, .08);
+}
+html body.page-studio .top-bar::after {
+  background: linear-gradient(90deg, transparent, rgba(160, 55, 43, .38), transparent);
+  opacity: .9;
+}
+html body.page-studio #gameTitle {
+  font-family: var(--serif);
+  font-size: 16px;
+  letter-spacing: 4px;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  color: var(--ink);
+  font-weight: 700;
+}
+html body.page-studio .back-link {
+  background: rgba(255, 255, 255, .45);
+  border-color: var(--line-ink);
+  border-radius: 3px;
+  color: var(--ink-2);
+}
+html body.page-studio .back-link:hover {
+  background: var(--seal-soft);
+  border-color: rgba(160, 55, 43, .4);
+  color: var(--seal);
+  box-shadow: none;
+}
+html body.page-studio .ver-dot {
+  background: var(--seal-soft);
+  border-color: rgba(160, 55, 43, .38);
+  color: var(--seal);
+}
+html body.page-studio .top-btn {
+  background: rgba(255, 255, 255, .45);
+  border: 1px solid var(--line-ink);
+  border-radius: 3px;
+  color: var(--ink-2);
+  font-family: var(--serif);
+  letter-spacing: .5px;
+}
+html body.page-studio .top-btn:hover,
+html body.page-studio .top-btn.active {
+  background: rgba(255, 255, 255, .85);
+  border-color: rgba(160, 55, 43, .45);
+  color: var(--seal);
+  transform: none;
+  box-shadow: 0 2px 10px rgba(60, 48, 34, .1);
+}
+
+/* ── 设定台：一张摊开的宣纸 ── */
+html body.page-studio #setupWrap { padding: 38px 24px 92px; }
+html body.page-studio #setupContainer { max-width: 1010px; }
+
+html body.page-studio .wizard-card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 42%),
+    #f8f2e6;
+  border: 1px solid rgba(60, 48, 34, .2);
+  border-radius: 4px;
+  padding: 40px 46px 34px;
+  box-shadow: 0 18px 50px rgba(60, 48, 34, .10), 0 1px 0 rgba(255, 255, 255, .6) inset;
+  overflow: visible;
+}
+html body.page-studio .wizard-card::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(60, 48, 34, .13);
+  border-radius: 2px;
+  background: none;
+  pointer-events: none;
+}
+html body.page-studio .wizard-card::after { display: none; }
+
+html body.page-studio .wizard-title {
+  font-family: var(--serif);
+  font-size: 29px;
+  letter-spacing: 9px;
+  font-weight: 700;
+  color: #1e1912;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+}
+html body.page-studio .wizard-sub {
+  font-family: var(--serif);
+  font-size: 12.5px;
+  line-height: 1.95;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  letter-spacing: .4px;
+}
+
+/* ── 分区：虚线断章 + 朱砂印 ── */
+html body.page-studio .wiz-section { margin-bottom: 20px; padding-bottom: 2px; }
+html body.page-studio .wiz-section + .wiz-section {
+  border-top: 1px dashed rgba(60, 48, 34, .24);
+  padding-top: 20px;
+}
+html body.page-studio .wiz-label {
+  font-family: var(--serif);
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #7a2a20;
+  font-weight: 700;
+  padding-left: 16px;
+}
+html body.page-studio .wiz-label::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--seal);
+  transform: translateY(-50%) rotate(45deg);
+  box-shadow: none;
+}
+html body.page-studio .wiz-hint { color: var(--text-faint); font-weight: 400; letter-spacing: .3px; }
+html body.page-studio .points-remain {
+  background: rgba(160, 55, 43, .07);
+  border: 1px solid rgba(160, 55, 43, .28);
+  border-radius: 2px;
+  color: #7a2a20;
+  padding: 1px 9px;
+}
+
+/* ── 表单：纸上落笔，横线书写 ── */
+html body.page-studio .wiz-input,
+html body.page-studio .wiz-select {
+  height: 42px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(60, 48, 34, .3);
+  border-radius: 0;
+  padding: 0 4px;
+  font-family: var(--serif);
+  font-size: 14.5px;
+  color: var(--ink);
+  transition: border-color .18s ease, background .18s ease;
+}
+html body.page-studio textarea.wiz-input {
+  height: auto;
+  min-height: 66px;
+  padding: 10px 12px;
+  line-height: 1.7;
+  border: 1px solid rgba(60, 48, 34, .22);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .38);
+}
+html body.page-studio .wiz-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #7a2a20 50%),
+    linear-gradient(135deg, #7a2a20 50%, transparent 50%);
+  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 30px;
+}
+html body.page-studio .wiz-input::placeholder { color: rgba(120, 105, 82, .55); }
+html body.page-studio .wiz-input:hover,
+html body.page-studio .wiz-select:hover { border-color: rgba(160, 55, 43, .45); }
+html body.page-studio .wiz-input:focus,
+html body.page-studio .wiz-select:focus {
+  border-color: var(--seal);
+  background: rgba(160, 55, 43, .035);
+  box-shadow: none;
+}
+html body.page-studio .wiz-desc {
+  font-family: var(--serif);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  border-left: 2px solid rgba(160, 55, 43, .3);
+  padding-left: 10px;
+}
+
+/* ── 骰子 / 随缘 ── */
+html body.page-studio .dice-btn {
+  background: rgba(255, 255, 255, .5);
+  border: 1px dashed rgba(60, 48, 34, .3);
+  border-radius: 2px;
+  color: var(--text-muted);
+}
+html body.page-studio .dice-btn:hover {
+  background: var(--seal-soft);
+  border-color: rgba(160, 55, 43, .5);
+  color: var(--seal);
+}
+html body.page-studio .fate-hero {
+  background: rgba(255, 255, 255, .45);
+  border: 1px solid rgba(60, 48, 34, .2);
+  border-radius: 3px;
+  box-shadow: none;
+}
+html body.page-studio .fate-btn {
+  background: linear-gradient(180deg, #b8433a, #9a3227);
+  border-radius: 2px;
+  color: #fdf6ea;
+  box-shadow: 0 4px 14px rgba(160, 55, 43, .25);
+}
+html body.page-studio .fate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(160, 55, 43, .35);
+}
+
+/* ── 开局 / 技法卡片：纸签 ── */
+html body.page-studio .opening-grid,
+html body.page-studio .tech-grid { gap: 11px; }
+html body.page-studio .opening-item,
+html body.page-studio .tech-item {
+  background: #fbf6ec;
+  border: 1px solid rgba(60, 48, 34, .18);
+  border-radius: 3px;
+  transition: all .16s ease;
+}
+html body.page-studio .opening-item:hover,
+html body.page-studio .tech-item:hover {
+  border-color: rgba(160, 55, 43, .42);
+  background: #fffdf8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(60, 48, 34, .08);
+}
+html body.page-studio .opening-item.selected,
+html body.page-studio .tech-item.selected {
+  border-color: var(--seal);
+  background: #fdf2ee;
+  box-shadow: 0 0 0 1px rgba(160, 55, 43, .22), 0 4px 16px rgba(160, 55, 43, .1);
+}
+html body.page-studio .opening-name,
+html body.page-studio .tech-name {
+  color: #7a2a20;
+  font-family: var(--serif);
+  letter-spacing: .8px;
+}
+html body.page-studio .opening-desc,
+html body.page-studio .tech-desc,
+html body.page-studio .opening-effects { color: var(--text-muted); }
+html body.page-studio .pm.plus { color: #7c6a2f; }
+html body.page-studio .pm.minus { color: #a0372b; }
+html body.page-studio .cost { color: #a0372b; }
+
+/* ── 六维 ── */
+html body.page-studio .stats-grid { gap: 10px; }
+html body.page-studio .stat-alloc {
+  background: rgba(255, 255, 255, .5);
+  border: 1px solid rgba(60, 48, 34, .18);
+  border-radius: 3px;
+}
+html body.page-studio .sa-btn {
+  border-radius: 2px;
+  color: var(--ink-2);
+}
+html body.page-studio .sa-btn:hover {
+  background: var(--seal-soft);
+  color: var(--seal);
+  box-shadow: none;
+}
+
+/* ── 底部操作 ── */
+html body.page-studio .wizard-actions {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(60, 48, 34, .18);
+}
+html body.page-studio .btn-solid {
+  background: linear-gradient(180deg, #b8433a, #9a3227);
+  border-radius: 2px;
+  color: #fdf6ea;
+  font-family: var(--serif);
+  letter-spacing: 2px;
+  box-shadow: 0 6px 18px rgba(160, 55, 43, .28);
+}
+html body.page-studio .btn-solid:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(160, 55, 43, .36);
+}
+html body.page-studio .btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(60, 48, 34, .28);
+  border-radius: 2px;
+  color: var(--ink-2);
+  font-family: var(--serif);
+}
+html body.page-studio .btn-ghost:hover {
+  border-color: var(--seal);
+  color: var(--seal);
+  background: rgba(160, 55, 43, .04);
+}
+
+/* ── 右栏：藏书签条 ── */
+html body.page-studio #statusPanel {
+  background: linear-gradient(180deg, #f8f2e6, #efe6d4);
+  border-left: 1px solid var(--line-ink);
+  box-shadow: -12px 0 36px rgba(60, 48, 34, .07);
+}
+html body.page-studio .panel-header {
+  background: rgba(248, 242, 230, .92);
+  border-bottom: 1px solid rgba(60, 48, 34, .14);
+}
+html body.page-studio .panel-title {
+  font-family: var(--serif);
+  letter-spacing: 2px;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  color: var(--ink);
+  font-weight: 700;
+}
+html body.page-studio .panel-section {
+  background: rgba(255, 255, 255, .46);
+  border: 1px solid rgba(60, 48, 34, .1);
+  border-radius: 3px;
+}
+html body.page-studio .section-title { color: #8a6a3a; letter-spacing: 2px; }
+html body.page-studio .section-title::before {
+  background: var(--seal);
+  box-shadow: none;
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+html body.page-studio .empty-hint { color: var(--text-faint); }
+html body.page-studio .empty-hint::before { border-color: rgba(60, 48, 34, .3); }
+html body.page-studio .progress-bar { background: rgba(60, 48, 34, .14); box-shadow: none; }
+html body.page-studio .progress-fill {
+  background: linear-gradient(90deg, #8a2f24, #a0372b);
+  box-shadow: none;
+}
+
+/* ── 移动端 ── */
+@media (max-width: 720px) {
+  html body.page-studio #setupWrap { padding: 18px 10px 76px; }
+  html body.page-studio .wizard-card { padding: 24px 18px 18px; border-radius: 3px; }
+  html body.page-studio .wizard-card::before { inset: 5px; }
+  html body.page-studio .wizard-title { font-size: 22px; letter-spacing: 5px; }
+}
