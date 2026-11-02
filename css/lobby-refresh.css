@@ -1,394 +1,538 @@
 /* ============================================================
-   云境 · 大厅焕新层 v3.73.0「鎏金云海」
+   云境 · 大厅焕新层 v3.74.0「卷首 · 字有千钧」
    作用域 html body.page-index，加载于最末，可整体移除回滚
-   深夜金霞天幕 / 衬线大字门面 / 色相琉璃卡 / 卷首语横幅
+   本版动骨架：左对齐杂志式门面 + 一主四辅非对称工坊栅格
+   字体三件套：思源宋体900(巨标题) / 霞鹜文楷(正文) / Cormorant(西文)
    ============================================================ */
 
-/* ───────── 天幕：深夜 + 金色地平线霞光 ───────── */
-html body.page-index {
-  background-color: #0c101d;
-  background-image:
-    radial-gradient(ellipse 1200px 500px at 50% 114%, rgba(224, 168, 76, .16), transparent 62%),
-    radial-gradient(ellipse 900px 520px at 10% -10%, rgba(126, 150, 214, .10), transparent 60%),
-    radial-gradient(ellipse 820px 500px at 96% -6%, rgba(224, 168, 76, .09), transparent 58%),
-    linear-gradient(180deg, #0b0f1e, #0e1424 46%, #111827);
+/* ───────── 字体体系 ───────── */
+html body.page-index,
+html body.page-index button,
+html body.page-index input,
+html body.page-index textarea,
+html body.page-index select {
+  font-family: 'LXGW WenKai', 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
 }
-/* 流云改暖：一青一金，更淡更远 */
-html body.page-index::before { background: rgba(148, 178, 226, .07); }
-html body.page-index::after { background: rgba(232, 190, 130, .08); }
-/* 星点：暖白金，更亮 */
+html body.page-index .masthead h1,
+html body.page-index .section-title,
+html body.page-index .splash-mark,
+html body.page-index .rp-title {
+  font-family: 'Noto Serif SC', 'LXGW WenKai', 'Songti SC', 'SimSun', serif;
+}
+html body.page-index .masthead::before,
+html body.page-index .container > .workshops > .workshop::before,
+html body.page-index .rp-promo-mark {
+  font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+}
+
+/* ───────── 天幕：更深的墨蓝，让金字与文楷浮出来 ───────── */
+html body.page-index {
+  background-color: #0a0d16;
+  background-image:
+    radial-gradient(ellipse 1100px 460px at 18% -4%, rgba(224, 168, 76, .10), transparent 60%),
+    radial-gradient(ellipse 900px 560px at 92% 12%, rgba(96, 128, 190, .08), transparent 58%),
+    radial-gradient(ellipse 1400px 520px at 50% 118%, rgba(224, 168, 76, .13), transparent 62%),
+    linear-gradient(180deg, #090c15, #0d1220 50%, #0f1524);
+}
 html body.page-index .stars i {
   background: rgba(240, 228, 200, .5);
-  box-shadow: 0 0 6px rgba(240, 220, 170, .5);
+  box-shadow: 0 0 6px rgba(240, 220, 170, .45);
+}
+
+/* ───────── 版心放宽，留白加大 ───────── */
+html body.page-index .container {
+  max-width: 1200px;
+  padding: 0 32px calc(36px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ───────── 开屏 ───────── */
 html body.page-index #splash {
   background:
-    radial-gradient(ellipse 1000px 460px at 50% 108%, rgba(224, 168, 76, .15), transparent 60%),
-    linear-gradient(180deg, #0b0f1e, #0e1424 60%, #131a2b);
+    radial-gradient(ellipse 1000px 460px at 50% 108%, rgba(224, 168, 76, .14), transparent 60%),
+    linear-gradient(180deg, #090c15, #0d1220 60%, #111827);
 }
 html body.page-index .splash-mark {
-  font-family: var(--serif);
+  font-size: clamp(54px, 10vw, 88px);
+  letter-spacing: 30px;
+  text-indent: 30px;
   background: linear-gradient(135deg, #fbeec8, #e8b964 55%, #c8963f);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 30px rgba(224, 168, 76, .35));
+  filter: drop-shadow(0 0 34px rgba(224, 168, 76, .35));
 }
-html body.page-index .splash-line {
-  background: linear-gradient(90deg, transparent, #e8b964 30%, #f0d79c 70%, transparent);
+html body.page-index .splash-sub {
+  font-family: 'LXGW WenKai', serif;
+  font-size: 14px;
+  letter-spacing: 9px;
+  color: #a89d85;
 }
 
-/* ───────── 门面：衬线大字 + 眉线 + 落影 ───────── */
-html body.page-index .masthead { margin-bottom: 40px; }
+/* ───────── 门面：左对齐 · 巨字 · YUNJING 水印 ───────── */
+html body.page-index .masthead {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 84px 0 10px;
+  margin-bottom: 10px;
+}
+/* 西文轮廓水印压在标题后面 */
 html body.page-index .masthead::before {
-  content: "YUNJING · INTERACTIVE FICTION ATELIER";
-  display: block;
-  font-size: 10px;
-  letter-spacing: 7px;
-  color: rgba(214, 190, 140, .55);
-  margin-bottom: 14px;
+  content: "YUNJING";
+  position: absolute;
+  top: 30px;
+  left: -8px;
+  font-weight: 600;
+  font-size: clamp(72px, 12.5vw, 158px);
+  line-height: 1;
+  letter-spacing: .05em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(224, 168, 76, .15);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
 }
 html body.page-index .masthead h1 {
-  font-family: var(--serif);
-  font-size: clamp(52px, 8vw, 84px);
+  position: relative;
+  z-index: 1;
+  font-size: clamp(80px, 11vw, 136px);
+  font-weight: 900;
   letter-spacing: 22px;
-  text-indent: 22px;
-  background: linear-gradient(180deg, #fdf3d0 8%, #f0d79c 38%, #d9a94f 72%, #b8863a);
+  line-height: 1.05;
+  background: linear-gradient(160deg, #f9edc9 8%, #eec274 46%, #cf9a3e 88%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 26px rgba(224, 168, 76, .22));
+  filter: drop-shadow(0 10px 34px rgba(224, 168, 76, .22));
 }
 html body.page-index .masthead .sub {
-  font-size: 14px;
-  letter-spacing: 7px;
-  color: #b8ad92;
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 9px;
+  color: #c4b99f;
 }
-html body.page-index .gold-divider {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(224, 168, 76, .7) 26%, rgba(247, 223, 166, .85) 50%, rgba(224, 168, 76, .7) 74%, transparent);
+html body.page-index .masthead .gold-divider {
+  width: 88px;
+  height: 3px;
+  margin: 28px 0 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #e8b964, rgba(224, 168, 76, 0));
+  position: static;
 }
-html body.page-index .gold-divider::after {
-  background: radial-gradient(circle, #f7dfa6 0 26%, transparent 32%);
-  box-shadow: 0 0 10px rgba(232, 185, 100, .8);
+html body.page-index .masthead .gold-divider::after { content: none; }
+/* 特性词条：从胶囊改成「书眉注」式 */
+html body.page-index .masthead .mh-chips {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px 26px;
 }
-/* 门面标语胶囊：暖金玻璃 */
-html body.page-index .mh-chips { margin-top: 16px; gap: 9px; }
-html body.page-index .mh-chips span {
-  color: #ddcba4;
-  background: rgba(224, 168, 76, .07);
-  border: 1px solid rgba(224, 168, 76, .26);
-  padding: 6px 14px;
-  transition: all .18s ease;
+html body.page-index .masthead .mh-chips span {
+  background: none !important;
+  border: none !important;
+  border-bottom: 1px dashed rgba(224, 168, 76, .32) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 3px 1px 6px !important;
+  font-size: 14px !important;
+  letter-spacing: 3px;
+  color: #b8ae96 !important;
+  transition: color .25s, border-color .25s;
 }
-html body.page-index .mh-chips span:hover {
-  background: rgba(224, 168, 76, .14);
-  border-color: rgba(224, 168, 76, .55);
-  color: #f7dfa6;
-  transform: translateY(-1px);
+html body.page-index .masthead .mh-chips span:hover {
+  color: #f0d79c !important;
+  border-bottom-color: #e8b964 !important;
 }
-/* 小云：收进英雄区右上，脚下加一弯金色落影 */
-html body.page-index .mh-mascot {
-  width: 112px;
-  top: -26px;
-  right: 7%;
-  filter: drop-shadow(0 10px 24px rgba(8, 12, 24, .6));
-}
-html body.page-index .masthead::after {
-  content: "";
+/* 小云：站到门面右上，带落影与呼吸 */
+html body.page-index .masthead .mh-mascot {
   position: absolute;
-  right: calc(7% + 8px);
-  top: 96px;
-  width: 128px;
-  height: 22px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(224, 168, 76, .22), transparent 70%);
-  filter: blur(4px);
-  pointer-events: none;
-  animation: yjMascotFloat 5.2s ease-in-out infinite;
+  right: -14px;
+  top: 6px;
+  width: 232px;
+  height: auto;
+  filter: drop-shadow(0 22px 44px rgba(0, 0, 0, .55)) drop-shadow(0 0 26px rgba(224, 168, 76, .10));
+  animation: mhFloat 5.5s ease-in-out infinite;
+}
+@keyframes mhFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
 }
 
-/* ───────── 分区标题 ───────── */
+/* ───────── 分区标题：从「居中小字」改成「左对齐刊头」 ───────── */
 html body.page-index .section-title {
-  color: #e2cf9f;
-  font-size: 14px;
-  letter-spacing: 6px;
-  margin: 38px 0 20px;
-}
-html body.page-index .section-title::before,
-html body.page-index .section-title::after {
-  color: rgba(224, 168, 76, .75);
-  font-size: 20px;
-}
-
-/* ───────── 五大工坊：门户大卡 ───────── */
-html body.page-index .container > .workshops {
-  grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
-  gap: 16px;
-}
-html body.page-index .container > .workshops .workshop {
-  padding: 32px 18px 24px;
-  border-radius: 18px;
-  background:
-    linear-gradient(172deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 10%, transparent), transparent 46%),
-    linear-gradient(180deg, #171e31, #101625);
-  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 26%, rgba(232, 228, 216, .08));
-  box-shadow: 0 4px 18px rgba(4, 10, 20, .4), inset 0 1px 0 rgba(255, 255, 255, .05);
-  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
-}
-html body.page-index .container > .workshops .workshop:hover {
-  transform: translateY(-6px);
-  border-color: color-mix(in srgb, var(--ws-hue, #e0a84c) 58%, transparent);
-  box-shadow:
-    0 16px 38px rgba(4, 10, 20, .55),
-    0 0 26px color-mix(in srgb, var(--ws-hue, #e0a84c) 20%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, .07);
-}
-html body.page-index .container > .workshops .ws-glyph {
-  width: 62px;
-  height: 62px;
-  font-size: 28px;
-  border-radius: 16px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 24%, transparent), color-mix(in srgb, var(--ws-hue, #e0a84c) 6%, transparent));
-  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 45%, transparent);
-  color: color-mix(in srgb, var(--ws-hue, #e0a84c) 80%, #ffffff);
-  box-shadow: 0 0 26px color-mix(in srgb, var(--ws-hue, #e0a84c) 26%, transparent);
-  margin-bottom: 14px;
-}
-html body.page-index .container > .workshops .workshop:hover .ws-glyph { transform: scale(1.06); }
-html body.page-index .container > .workshops .ws-name { font-size: 17px; letter-spacing: 3.5px; color: #f0e8d6; }
-html body.page-index .container > .workshops .ws-desc { font-size: 12px; line-height: 1.85; color: #9a947f; }
-html body.page-index .container > .workshops .ws-enter {
-  margin-top: 14px;
-  padding: 5px 14px;
-  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 40%, transparent);
-  border-radius: 999px;
-  color: color-mix(in srgb, var(--ws-hue, #e0a84c) 85%, #ffffff);
-  opacity: 1;
-  transition: all .2s ease;
-}
-html body.page-index .container > .workshops .workshop:hover .ws-enter {
-  background: color-mix(in srgb, var(--ws-hue, #e0a84c) 14%, transparent);
-  letter-spacing: 4px;
-}
-
-/* ───────── 世界卡（分组内）：同语言小一号 ───────── */
-html body.page-index .ws-clip .workshops {
-  grid-template-columns: repeat(auto-fit, minmax(184px, 1fr));
-  gap: 12px;
-}
-html body.page-index .ws-clip .workshop {
-  padding: 24px 15px 19px;
-  border-radius: 15px;
-  background:
-    linear-gradient(172deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 8%, transparent), transparent 44%),
-    linear-gradient(180deg, #151b2c, #101524);
-  border: 1px solid rgba(232, 228, 216, .09);
-  box-shadow: 0 3px 14px rgba(4, 10, 20, .35), inset 0 1px 0 rgba(255, 255, 255, .04);
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-}
-html body.page-index .ws-clip .workshop:hover {
-  transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--ws-hue, #e0a84c) 52%, transparent);
-  box-shadow:
-    0 12px 30px rgba(4, 10, 20, .5),
-    0 0 20px color-mix(in srgb, var(--ws-hue, #e0a84c) 17%, transparent);
-}
-html body.page-index .ws-clip .ws-glyph {
-  width: 54px;
-  height: 54px;
-  font-size: 24px;
-  border-radius: 14px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 20%, transparent), color-mix(in srgb, var(--ws-hue, #e0a84c) 5%, transparent));
-  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 40%, transparent);
-  color: color-mix(in srgb, var(--ws-hue, #e0a84c) 82%, #ffffff);
-  box-shadow: 0 0 20px color-mix(in srgb, var(--ws-hue, #e0a84c) 22%, transparent);
-}
-html body.page-index .ws-clip .ws-name { font-size: 15.5px; color: #ece4d0; }
-html body.page-index .ws-clip .ws-desc { font-size: 11.5px; line-height: 1.8; color: #938d79; }
-html body.page-index .ws-clip .ws-enter {
-  margin-top: 12px;
-  padding: 4px 12px;
-  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 36%, transparent);
-  border-radius: 999px;
-  opacity: 1;
-}
-
-/* ───────── 折叠分组 ───────── */
-html body.page-index .ws-groups-ctl { gap: 12px; margin-bottom: 14px; }
-html body.page-index .ws-ctl-btn {
-  border: 1px solid rgba(224, 168, 76, .3);
-  color: #d9c9a6;
-  background: rgba(224, 168, 76, .05);
-  border-radius: 999px;
-  padding: 6px 14px;
-  transition: all .18s ease;
-}
-html body.page-index .ws-ctl-btn:hover {
-  background: rgba(224, 168, 76, .12);
-  border-color: rgba(224, 168, 76, .6);
-  color: #f7dfa6;
-}
-html body.page-index .ws-group {
-  border-radius: 18px;
-  background: linear-gradient(170deg, rgba(22, 28, 46, .55), rgba(13, 18, 31, .72));
-  border: 1px solid rgba(232, 228, 216, .08);
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-html body.page-index .ws-group-head {
-  padding: 16px 18px;
-  transition: background .18s ease;
-}
-html body.page-index .ws-group-head:hover { background: color-mix(in srgb, var(--g-hue, #e0a84c) 6%, transparent); }
-html body.page-index .wg-glyph {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  font-size: 16px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--g-hue, #e0a84c) 22%, transparent), color-mix(in srgb, var(--g-hue, #e0a84c) 6%, transparent));
-  border: 1px solid color-mix(in srgb, var(--g-hue, #e0a84c) 42%, transparent);
-  color: color-mix(in srgb, var(--g-hue, #e0a84c) 82%, #ffffff);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--g-hue, #e0a84c) 20%, transparent);
-}
-html body.page-index .wg-name { font-size: 15.5px; letter-spacing: 3px; color: #efe6d0; }
-html body.page-index .wg-sub { font-size: 11.5px; color: #87816d; }
-html body.page-index .wg-count {
-  border: 1px solid color-mix(in srgb, var(--g-hue, #e0a84c) 34%, transparent);
-  border-radius: 999px;
-  padding: 2px 10px;
-  background: color-mix(in srgb, var(--g-hue, #e0a84c) 8%, transparent);
-}
-html body.page-index .wg-caret {
-  width: 24px;
-  height: 24px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(232, 228, 216, .16);
-  border-radius: 50%;
-  color: #b8ad92;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  text-align: left;
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: #ece5d3;
+  margin: 62px 0 24px;
+}
+html body.page-index .section-title::before {
+  content: "";
+  width: 10px;
+  height: 25px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f0d79c, #c8963f);
+  box-shadow: 0 0 16px rgba(224, 168, 76, .45);
+  flex: none;
+}
+html body.page-index .section-title::after {
+  content: "";
+  flex: 1;
+  min-width: 48px;
+  height: 1px;
+  margin: 0;
+  vertical-align: baseline;
+  background: linear-gradient(90deg, rgba(224, 168, 76, .35), rgba(224, 168, 76, 0));
+  font-size: 0;
 }
 
-/* ───────── 卷首语横幅（rp-promo） ───────── */
-html body.page-index .rp-promo {
-  margin-top: 26px;
-  padding: 42px 38px 34px;
-  border-radius: 22px;
-  background:
-    radial-gradient(ellipse 640px 260px at 88% 0%, rgba(224, 168, 76, .12), transparent 60%),
-    radial-gradient(ellipse 520px 280px at 0% 100%, rgba(126, 150, 214, .10), transparent 58%),
-    linear-gradient(175deg, #18203355, #10162588), #101625;
-  border: 1px solid rgba(224, 168, 76, .28);
-  box-shadow: 0 18px 50px rgba(4, 10, 20, .45), inset 0 1px 0 rgba(255, 255, 255, .05);
+/* ───────── 五大工坊：一主四辅非对称栅格 ───────── */
+html body.page-index .container > .workshops {
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
 }
-html body.page-index .rp-promo-mark { color: rgba(224, 168, 76, .07); font-size: 120px; }
-html body.page-index .rp-kicker { color: #c9a25a; letter-spacing: 6px; }
-html body.page-index .rp-title {
-  font-family: var(--serif);
-  font-size: clamp(26px, 4vw, 38px);
+html body.page-index .container > .workshops > .workshop {
+  position: relative;
+  grid-column: span 4;
+  display: grid;
+  grid-template:
+    "glyph name" auto
+    "glyph desc" 1fr
+    "glyph enter" auto / auto 1fr;
+  column-gap: 15px;
+  align-items: start;
+  text-align: left;
+  padding: 21px 20px 18px;
+  border-radius: 15px;
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--ws-hue, var(--primary)) 11%, transparent), transparent 58%),
+    #141926;
+  border: 1px solid color-mix(in srgb, var(--ws-hue, var(--primary)) 20%, transparent);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+html body.page-index .container > .workshops > .workshop .ws-glyph { grid-area: glyph; }
+html body.page-index .container > .workshops > .workshop .ws-name { grid-area: name; }
+html body.page-index .container > .workshops > .workshop .ws-desc { grid-area: desc; align-self: center; }
+html body.page-index .container > .workshops > .workshop .ws-enter { grid-area: enter; }
+/* 主角卡：悬疑推理，占两行 */
+html body.page-index .container > .workshops > .workshop:first-child {
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 0;
+  padding: 30px 28px 26px;
+  background:
+    radial-gradient(ellipse 130% 90% at 8% 0%, color-mix(in srgb, var(--ws-hue, var(--primary)) 17%, transparent), transparent 62%),
+    #141926;
+}
+/* 辅卡网格竖排改回：辅卡走横向小卡（上面 grid 已处理） */
+html body.page-index .container > .workshops > .workshop .ws-glyph {
+  width: 52px;
+  height: 52px;
+  font-size: 23px;
+  border-radius: 13px;
+  margin: 0;
+  color: var(--ws-hue, var(--primary));
+  background: color-mix(in srgb, var(--ws-hue, var(--primary)) 12%, #0f1320);
+  border: 1px solid color-mix(in srgb, var(--ws-hue, var(--primary)) 32%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--ws-hue, var(--primary)) 22%, transparent);
+}
+html body.page-index .container > .workshops > .workshop:first-child .ws-glyph {
+  width: 74px;
+  height: 74px;
+  font-size: 33px;
+  border-radius: 17px;
+  margin-bottom: 22px;
+}
+html body.page-index .container > .workshops > .workshop .ws-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 17.5px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #f0ead9;
+  margin-bottom: 0;
+  align-self: center;
+}
+html body.page-index .container > .workshops > .workshop:first-child .ws-name {
+  font-size: 25px;
   letter-spacing: 5px;
-  background: linear-gradient(120deg, #fdf3d0, #f0d79c 45%, #d9a94f);
+  margin-bottom: 12px;
+  align-self: flex-start;
+}
+html body.page-index .container > .workshops > .workshop .ws-desc {
+  font-size: 12.5px;
+  line-height: 1.85;
+  letter-spacing: .4px;
+  color: #8f8874;
+  margin-top: 4px;
+}
+html body.page-index .container > .workshops > .workshop:first-child .ws-desc {
+  font-size: 14px;
+  line-height: 2;
+  color: #a89f88;
+  margin: 0 0 18px;
+}
+html body.page-index .container > .workshops > .workshop .ws-enter {
+  font-size: 12px;
+  letter-spacing: 4px;
+  margin-top: 10px;
+  color: var(--ws-hue, var(--primary));
+}
+html body.page-index .container > .workshops > .workshop:first-child .ws-enter {
+  font-size: 13px;
+  letter-spacing: 5px;
+  margin-top: 0;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--ws-hue, var(--primary)) 25%, transparent);
+  width: 100%;
+}
+/* 刊号角标 01-05 */
+html body.page-index .container > .workshops > .workshop::before {
+  counter-increment: wsno;
+  content: "0" counter(wsno);
+  position: absolute;
+  top: 15px;
+  right: 17px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: color-mix(in srgb, var(--ws-hue, var(--primary)) 62%, transparent);
+  opacity: .75;
+  pointer-events: none;
+}
+html body.page-index .container > .workshops > .workshop:first-child::before {
+  top: 22px;
+  right: 26px;
+  font-size: 40px;
+  font-weight: 500;
+  opacity: .30;
+}
+/* 底部光带保留并加色 */
+html body.page-index .container > .workshops > .workshop::after {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ws-hue, var(--primary)), transparent);
+}
+html body.page-index .container > .workshops > .workshop:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--ws-hue, var(--primary)) 52%, transparent);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .48), 0 0 26px color-mix(in srgb, var(--ws-hue, var(--primary)) 16%, transparent);
+}
+
+/* ───────── 33 界分组卡：四列琉璃小卡 ───────── */
+html body.page-index .ws-clip > .workshops {
+  grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+  gap: 13px;
+}
+html body.page-index .ws-clip .workshop {
+  text-align: left;
+  padding: 18px 16px 15px;
+  border-radius: 13px;
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--ws-hue, var(--primary)) 7%, transparent), transparent 52%),
+    #131826;
+  border: 1px solid color-mix(in srgb, var(--ws-hue, var(--primary)) 15%, transparent);
+}
+html body.page-index .ws-clip .workshop .ws-glyph {
+  width: 43px;
+  height: 43px;
+  font-size: 19px;
+  border-radius: 11px;
+  margin: 0 0 12px;
+  color: var(--ws-hue, var(--primary));
+  background: color-mix(in srgb, var(--ws-hue, var(--primary)) 11%, #0f1320);
+  border: 1px solid color-mix(in srgb, var(--ws-hue, var(--primary)) 30%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ws-hue, var(--primary)) 16%, transparent);
+}
+html body.page-index .ws-clip .workshop .ws-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15.5px;
+  letter-spacing: 2.5px;
+  color: #eae3d1;
+}
+html body.page-index .ws-clip .workshop .ws-desc { font-size: 11.5px; color: #847d69; line-height: 1.8; }
+html body.page-index .ws-clip .workshop:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--ws-hue, var(--primary)) 46%, transparent);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .42);
+}
+
+/* ───────── 折叠分组：书卷式组头 ───────── */
+html body.page-index .ws-groups-ctl { margin: -6px 0 14px; }
+html body.page-index .ws-ctl-btn { font-size: 12px; letter-spacing: 3px; color: #97906f; }
+html body.page-index .ws-ctl-btn:hover { color: #f0d79c; }
+html body.page-index .ws-group {
+  border: 1px solid rgba(224, 168, 76, .12);
+  border-radius: 15px;
+  background: linear-gradient(170deg, rgba(224, 168, 76, .035), transparent 40%), #10141f;
+  margin-bottom: 13px;
+}
+html body.page-index .ws-group-head { padding: 15px 18px 14px; gap: 13px; }
+html body.page-index .ws-group-head:hover { background: rgba(224, 168, 76, .05); }
+html body.page-index .wg-glyph {
+  width: 35px;
+  height: 35px;
+  font-size: 15.5px;
+  border-radius: 10px;
+  color: var(--g-hue, var(--primary));
+  background: color-mix(in srgb, var(--g-hue, var(--primary)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--g-hue, var(--primary)) 34%, transparent);
+}
+html body.page-index .wg-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16.5px;
+  letter-spacing: 3px;
+}
+html body.page-index .wg-sub { font-size: 12px; color: #77705c; letter-spacing: .5px; }
+html body.page-index .wg-count {
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
+  padding: 3px 11px;
+  border-radius: 99px;
+}
+html body.page-index .wg-caret { font-size: 12px; color: var(--g-hue, var(--primary)); }
+
+/* ───────── 双栏信息卡 ───────── */
+html body.page-index .info-grid { gap: 16px; margin-top: 16px; }
+html body.page-index .info-card {
+  background: #131826;
+  border: 1px solid rgba(224, 168, 76, .14);
+  border-radius: 15px;
+  padding: 24px 26px 22px;
+}
+html body.page-index .info-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15.5px;
+  letter-spacing: 5px;
+  color: #e8b964;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+html body.page-index .info-list li {
+  font-size: 13.5px;
+  line-height: 2.15;
+  color: #b0a892;
+  padding-left: 18px;
+}
+html body.page-index .info-list li::before { color: #e8b964; }
+
+/* ───────── 卷首语横幅 ───────── */
+html body.page-index .rp-promo {
+  margin-top: 16px;
+  border-radius: 18px;
+  padding: 42px 44px 36px;
+  background:
+    radial-gradient(ellipse 640px 260px at 88% -4%, rgba(224, 168, 76, .13), transparent 60%),
+    radial-gradient(ellipse 520px 280px at 0% 104%, rgba(111, 159, 232, .09), transparent 58%),
+    #141926;
+  border: 1px solid rgba(224, 168, 76, .16);
+}
+html body.page-index .rp-promo-mark {
+  font-size: 130px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1;
+  right: 26px;
+  top: -12px;
+  color: rgba(224, 168, 76, .07);
+}
+html body.page-index .rp-kicker { font-size: 11.5px; letter-spacing: 7px; color: #b08d57; }
+html body.page-index .rp-title {
+  font-size: clamp(26px, 4.6vw, 38px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  margin-top: 12px;
+  background: linear-gradient(135deg, #f9edc9, #e8b964 55%, #cf9a3e);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-html body.page-index .rp-sub { font-size: 13px; color: #9a947f; line-height: 2.1; }
-html body.page-index .rp-feats { gap: 12px; margin-top: 22px; }
+html body.page-index .rp-sub {
+  margin-top: 14px;
+  max-width: 680px;
+  font-size: 14px;
+  line-height: 2.2;
+  letter-spacing: .5px;
+  color: #aaa28c;
+}
+html body.page-index .rp-feats { margin-top: 24px; gap: 12px; }
 html body.page-index .rp-feat {
-  background: rgba(255, 255, 255, .028);
-  border: 1px solid rgba(232, 228, 216, .09);
-  border-radius: 14px;
-  padding: 17px 16px 14px;
-  transition: all .2s ease;
+  background: rgba(232, 228, 216, .03);
+  border: 1px solid rgba(224, 168, 76, .13);
+  border-radius: 13px;
+  padding: 17px 18px 15px;
 }
-html body.page-index .rp-feat:hover {
-  border-color: rgba(224, 168, 76, .45);
-  background: rgba(224, 168, 76, .05);
-  transform: translateY(-3px);
-}
-html body.page-index .rp-feat .fi { font-size: 20px; filter: drop-shadow(0 0 10px rgba(224, 168, 76, .35)); }
-html body.page-index .rp-feat .fn { color: #efe4c8; font-size: 13px; letter-spacing: 2px; }
-html body.page-index .rp-feat .fd { color: #938d79; font-size: 11.5px; }
-html body.page-index .rp-cta { margin-top: 22px; gap: 12px; }
-html body.page-index .rp-cta a {
-  border-radius: 12px;
-  padding: 12px 20px;
-  transition: all .2s ease;
-}
-html body.page-index .rp-cta a:not(.alt) {
-  background: linear-gradient(180deg, #fbe3ac, #d9a94f 52%, #b8863a);
-  color: #2a1c07;
-  font-weight: 700;
+html body.page-index .rp-feat:hover { border-color: rgba(224, 168, 76, .34); transform: translateY(-3px); }
+html body.page-index .rp-feat .fi { font-size: 21px; }
+html body.page-index .rp-feat .fn {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
   letter-spacing: 2px;
-  box-shadow: 0 8px 22px rgba(224, 168, 76, .28), inset 0 1px 0 rgba(255, 255, 255, .5);
+  margin: 9px 0 5px;
+  color: #ece5d3;
 }
-html body.page-index .rp-cta a:not(.alt):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(224, 168, 76, .42);
+html body.page-index .rp-feat .fd { font-size: 12px; line-height: 1.9; color: #847d69; }
+html body.page-index .rp-cta { margin-top: 26px; gap: 12px; }
+html body.page-index .rp-cta a {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 12px 22px;
+  font-size: 13.5px;
+  letter-spacing: 2.5px;
+  border-radius: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }
-html body.page-index .rp-cta a.alt {
-  background: rgba(255, 255, 255, .03);
-  border: 1px solid rgba(224, 168, 76, .3);
-  color: #d9c9a6;
-}
-html body.page-index .rp-cta a.alt:hover {
-  border-color: rgba(224, 168, 76, .6);
-  color: #f7dfa6;
-  background: rgba(224, 168, 76, .07);
-  transform: translateY(-2px);
-}
+html body.page-index .rp-cta a.alt { color: #f0d79c; border-color: rgba(224, 168, 76, .55); }
 
-/* ───────── 初来乍到 · 信息卡 ───────── */
-html body.page-index .info-card {
-  background: linear-gradient(175deg, rgba(23, 29, 48, .6), rgba(14, 19, 33, .75));
-  border: 1px solid rgba(232, 228, 216, .09);
-  border-radius: 16px;
-  padding: 22px 24px;
-}
-html body.page-index .info-title {
-  color: #e2cf9f;
-  border-bottom: 1px solid rgba(224, 168, 76, .18);
-}
-html body.page-index .info-list li { color: #9a947f; }
-html body.page-index .info-list li::before { color: #c9a25a; }
-
-/* ───────── 版本徽标 / 页脚 ───────── */
+/* ───────── 页脚 / 版本徽标 ───────── */
+html body.page-index .footer { font-size: 12.5px; letter-spacing: 2.5px; color: #6e6a5e; }
 html body.page-index .ver-badge {
-  background: rgba(224, 168, 76, .1);
-  border: 1px solid rgba(224, 168, 76, .45);
-  color: #f0d79c;
-  border-radius: 999px;
-  letter-spacing: 1px;
+  font-family: 'LXGW WenKai', serif;
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
 }
-html body.page-index .ver-badge:hover {
-  box-shadow: 0 0 18px rgba(224, 168, 76, .35);
-  border-color: rgba(224, 168, 76, .8);
-}
-html body.page-index .footer { color: #6e6a5e; line-height: 2; }
-html body.page-index .footer-log a { color: #c9a25a; }
 
 /* ───────── 移动端 ───────── */
 @media (max-width: 760px) {
-  html body.page-index .masthead h1 { font-size: clamp(40px, 12vw, 56px); letter-spacing: 12px; text-indent: 12px; }
-  html body.page-index .masthead::before { letter-spacing: 4px; font-size: 9px; }
-  html body.page-index .masthead .sub { font-size: 12px; letter-spacing: 4px; }
-  html body.page-index .masthead::after { display: none; }
-  html body.page-index .mh-mascot { width: 78px; top: -18px; right: 3%; }
-  html body.page-index .container > .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  html body.page-index .container > .workshops .workshop { padding: 20px 12px 16px; border-radius: 14px; }
-  html body.page-index .container > .workshops .ws-glyph { width: 48px; height: 48px; font-size: 22px; border-radius: 12px; }
-  html body.page-index .container > .workshops .ws-name { font-size: 14.5px; letter-spacing: 2px; }
-  html body.page-index .container > .workshops .ws-enter { display: none; }
-  html body.page-index .ws-clip .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  html body.page-index .ws-clip .workshop { padding: 18px 11px 14px; border-radius: 13px; }
-  html body.page-index .ws-clip .ws-glyph { width: 44px; height: 44px; font-size: 19px; border-radius: 11px; }
-  html body.page-index .ws-clip .ws-enter { display: none; }
-  html body.page-index .ws-group { border-radius: 14px; }
-  html body.page-index .ws-group-head { padding: 12px 12px 11px; }
-  html body.page-index .wg-glyph { width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
-  html body.page-index .rp-promo { padding: 26px 18px 22px; border-radius: 18px; }
-  html body.page-index .rp-feats { grid-template-columns: 1fr 1fr; gap: 9px; }
+  html body.page-index .container { padding: 0 16px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  html body.page-index .masthead { padding: 46px 0 6px; }
+  html body.page-index .masthead::before { top: 6px; left: -4px; font-size: 68px; -webkit-text-stroke-color: rgba(224, 168, 76, .12); }
+  html body.page-index .masthead h1 { font-size: 62px; letter-spacing: 12px; }
+  html body.page-index .masthead .sub { font-size: 13.5px; letter-spacing: 5px; margin-top: 14px; }
+  html body.page-index .masthead .gold-divider { margin-top: 20px; width: 64px; }
+  html body.page-index .masthead .mh-chips { margin-top: 20px; gap: 8px 16px; }
+  html body.page-index .masthead .mh-chips span { font-size: 12px !important; letter-spacing: 2px; }
+  html body.page-index .masthead .mh-mascot { width: 112px; right: -8px; top: -4px; }
+  html body.page-index .section-title { font-size: 16.5px; letter-spacing: 3px; margin: 42px 0 16px; gap: 10px; }
+  html body.page-index .section-title::before { height: 19px; width: 8px; }
+  /* 五工坊：主角卡独占一行，其余两列 */
+  html body.page-index .container > .workshops { gap: 11px; }
+  html body.page-index .container > .workshops > .workshop,
+  html body.page-index .container > .workshops > .workshop:first-child { grid-column: span 12; grid-row: auto; }
+  html body.page-index .container > .workshops > .workshop { padding: 18px 16px 15px; }
+  html body.page-index .container > .workshops > .workshop:first-child { padding: 24px 20px 20px; }
+  html body.page-index .container > .workshops > .workshop:first-child .ws-name { font-size: 21px; }
+  html body.page-index .container > .workshops > .workshop:first-child .ws-desc { font-size: 13px; }
+  html body.page-index .rp-promo { padding: 26px 20px 22px; border-radius: 15px; }
+  html body.page-index .rp-promo-mark { font-size: 78px; right: 10px; }
+  html body.page-index .rp-title { letter-spacing: 2px; }
+  html body.page-index .rp-sub { font-size: 12.5px; }
+  html body.page-index .rp-cta a { padding: 13px 16px; font-size: 13.5px; }
+  html body.page-index .info-list li { font-size: 12.5px; }
+}
+@media (max-width: 380px) {
+  html body.page-index .container > .workshops > .workshop { grid-column: span 12; }
+  html body.page-index .ws-clip > .workshops { grid-template-columns: 1fr; }
 }
