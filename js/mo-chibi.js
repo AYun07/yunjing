@@ -451,6 +451,15 @@ const MoChibi = {
     if (window.StoryAtlas) {
       list.push({ ico: "🗺", name: "行旅图鉴 · 世界地图", note: "足迹走到哪 · 点亮到哪", act: () => window.StoryAtlas.toggle(true) });
     }
+    /* v3.63.0 灵宠·妖兽·伙伴 */
+    if (window.BeastSystem) {
+      list.push({ ico: "🐾", name: "灵宠·妖兽·伙伴", note: "契约 / 养成 / 随队出战（" + window.BeastSystem.count() + "）", act: () => window.BeastSystem.openUI() });
+    }
+    /* v3.64.0 小队 */
+    if (window.SquadSystem) {
+      var _sq = window.SquadSystem.list().filter(function (x) { return x.type !== "player"; }).length;
+      list.push({ ico: "🛡", name: "小队编成", note: "邀请同伴 / 灵宠入队 · 协同作战（" + _sq + "）", act: () => window.SquadSystem.openUI() });
+    }
     /* v3.55.20 玩家身份（穿越者 / 土著）与主角关系（同伴 / 敌对 / 陌路） */
     if (window.StoryIdentity) {
       const idn = window.StoryIdentity.infoIdentity();
