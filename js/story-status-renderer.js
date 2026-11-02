@@ -242,18 +242,51 @@ const StoryStatusRenderer = {
     /* v3.55.26 强项标记：值最高的前二（≥55）标 ★，与主笔提示词的强项偏向同源 */
     const sortedKeys = keys.slice().sort((a, b) => (stats[b] || 0) - (stats[a] || 0));
     const strongSet = new Set(sortedKeys.slice(0, 2).filter((k) => (stats[k] || 0) >= 55));
+    const AE = window.AttributeEngine;
+    /* v3.65.0 专长映射：每项数值对应强项领域（肉身/感知/心志/谋算/修学/机缘），
+       与主笔实时块同源；悬停可见该轴的行为偏向说明 */
+    const specMap = {};
+    if (AE && AE.specialtyOf) {
+      keys.forEach((k) => {
+        try { specMap[k] = AE.specialtyOf(k, labels[k] || k); } catch (e) { /* 不阻断 */ }
+      });
+    }
+    /* v3.65.0 即时反馈：与上轮值比对，变动行加闪动 + Δ 浮标（受伤红/恢复绿）；
+       另监听 yj:stat-change（战斗受伤/疗伤即时触发），面板开着就当场重绘补闪 */
+    const last = this._lastStats || {};
     const html = talentHTML + timeHTML + keys.map((k) => {
       const val = Math.max(0, Math.min(100, stats[k]));
       const color = this.statColor(val);
       const star = strongSet.has(k) ? ' <span title="强项：该维度主导的行动天然占优" style="color:#e8b339">★</span>' : "";
-      return `<div class="stat-row">
-                <span class="stat-label">${this.esc(labels[k] || k)}${star}</span>
+      const sp = specMap[k];
+      const spTag = sp ? `<span class="stat-spec" title="${this.esc(sp.bias || "")}">${this.esc(sp.name || "")}轴</span>` : "";
+      const prev = typeof last[k] === "number" ? last[k] : null;
+      const diff = prev != null ? Math.round((val - prev) * 10) / 10 : 0;
+      const flashCls = diff !== 0 ? (diff > 0 ? " stat-flash-up" : " stat-flash-down") : "";
+      const badge = diff !== 0 ? `<span class="stat-delta ${diff > 0 ? "d-up" : "d-down"}">${diff > 0 ? "+" : ""}${diff}</span>` : "";
+      return `<div class="stat-row${flashCls}" data-stat="${this.esc(k)}">
+                <span class="stat-label">${this.esc(labels[k] || k)}${star}${spTag}</span>
                 <div class="stat-bar"><div class="stat-fill" style="width:${val}%;background:${color}"></div></div>
-                <span class="stat-num">${val}</span>
+                <span class="stat-num">${val}</span>${badge}
             </div>`;
     }).join("");
+    this._lastStats = Object.assign({}, stats);
+    this._bindStatChange();
     if (this._same("stats", html)) return;
     area.innerHTML = html;
+  },
+  /** v3.65.0 战斗受伤/疗伤即时反馈：数值引擎派发 yj:stat-change 时面板当场重绘 */
+  _bindStatChange() {
+    if (this._statChangeBound || typeof window === "undefined" || !window.addEventListener) return;
+    this._statChangeBound = true;
+    window.addEventListener("yj:stat-change", () => {
+      try {
+        const fw = window.storyFramework;
+        if (!fw || !fw.storyState || !fw.storyState.variables) return;
+        if (!document.getElementById("statsArea")) return;
+        this.refresh(fw.storyState.variables);
+      } catch (e) { /* 不阻断 */ }
+    });
   },
   /**
    * 六维中文标签映射：statKeys（向导同源，必然存在）→ statLabels → 内置兜底

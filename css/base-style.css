@@ -2265,6 +2265,24 @@ body.mobile .typing-draft { font-size: 12.5px; max-height: 180px; }
 .stat-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
 .stat-num { font-family: var(--mono); font-size: 11px; color: var(--text-muted); width: 22px; text-align: right; }
 
+/* v3.65.0 数值即时反馈：专长标签 / 变动闪动 / Δ 浮标（受伤红、恢复绿，随存档审计账本同源） */
+.stat-spec {
+    font-size: 9px; line-height: 1; padding: 2px 4px; margin-left: 3px;
+    border-radius: 4px; color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.06); white-space: nowrap;
+}
+@keyframes statFlashUp { 0% { background: rgba(122, 220, 152, 0.35); } 100% { background: transparent; } }
+@keyframes statFlashDown { 0% { background: rgba(232, 92, 92, 0.35); } 100% { background: transparent; } }
+.stat-row.stat-flash-up { animation: statFlashUp 1.6s ease-out 1; border-radius: 6px; }
+.stat-row.stat-flash-down { animation: statFlashDown 1.6s ease-out 1; border-radius: 6px; }
+.stat-delta {
+    font-family: var(--mono); font-size: 10px; width: 26px; text-align: left;
+    animation: statDeltaPop 1.6s ease-out 1;
+}
+.stat-delta.d-up { color: #7adc98; }
+.stat-delta.d-down { color: #e85c5c; }
+@keyframes statDeltaPop { 0% { opacity: 0; transform: translateY(-3px); } 15% { opacity: 1; transform: translateY(0); } 80% { opacity: 1; } 100% { opacity: 0; } }
+
 /* v3.30.0 时空坐标与账本（地球等生活模拟界启用：config.spacetimePanel/ledgerPanel） */
 .spacetime-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
 .spacetime-chip {

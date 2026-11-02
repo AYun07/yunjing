@@ -1,10 +1,23 @@
 /* =========================================================================
- * 云境 · 属性引擎 AttributeEngine（v3.55.27）
+ * 云境 · 属性引擎 AttributeEngine（v3.65.0）
  *
  * 用户诉求：「六维属性不能只是个数字——每种属性对应强项偏向，属性数值要随
  *   游玩增长，且要做好数值平衡；只要玩家没要求，不得突然冒出离谱数值」
  *   「天赋社会反响要真的实现效果，不是看说明文档」
  *   「出现时间跨越（几天/几月/几年）时，对应数值增长要合理计算并增加」
+ *   「属性引擎一定要能即时跟上剧情调整数值（受伤减少、疗伤加回），且每项
+ *    数值对应的某项专长要凸显出来」
+ *
+ * v3.65.0 实时事件化补强（全部引擎侧强制，非仅提示词约定）：
+ *   ① 事件驱动显式增减 API applyEvent：战斗受伤扣减 / 疗伤加回 / 修炼增长 /
+ *      剧情事件，可带 reason 与 type，直接落 v.statLog 审计账本（持久化）。
+ *   ② 落表审计 statLog：每一次真实增减都留痕（时间/章/属性/Δ/值/类型/事由），
+ *      面板与提示词可回看「近期身遭与恢复」，刷新不丢。
+ *   ③ 专长映射 specialtyOf：每项数值按语义轴归类（肉身/感知/心志/谋算/修学/
+ *      机缘），实时块与状态面板同步凸显「该项数值对应专长」，弱项受阻、强项
+ *      占优的语义从此每屏可见。
+ *   ④ 即时反馈：数值变动派发 yj:stat-change 事件，状态面板即时闪动 + Δ 浮标
+ *      （受伤红、恢复绿），下一轮重绘自动比对上轮差值补闪。
  *
  * 真实机制（全部引擎侧强制，非仅提示词约定）：
  * 1) 资质定档 classifyAptitude：按资质名/描述关键词自动定档 顶级/稀有/中平/低劣
@@ -107,6 +120,8 @@
         };
       }
       if (v.talent.exposure !== "exposed") v.talent.exposure = "hidden";
+      /* v3.65.0 数值变动审计账本：每一次真实增减都留痕（刷新不丢） */
+      if (!v.statLog || !Array.isArray(v.statLog)) v.statLog = [];
     } catch (e) { /* 种子失败不阻断 */ }
   }
 
@@ -293,9 +308,11 @@
     return { val: val, clipped: clipped, delta: d };
   }
 
-  /** 变量块 stats.* 落表入口：rawValue 为 "+5"/"-3"/"42" */
-  function applyStatDelta(target, key, rawValue) {
+  /** 变量块 stats.* 落表入口：rawValue 为 "+5"/"-3"/"42"
+   *  @param {object} [opts] v3.65.0：{type, reason} —— 落审计账本 + 派发 yj:stat-change */
+  function applyStatDelta(target, key, rawValue, opts) {
     try {
+      opts = opts || {};
       var s = String(rawValue).trim();
       var cur = typeof target[key] === "number" ? target[key] : 0;
       var m = s.match(/^([+-])\s*(\d+(?:\.\d+)?)$/);
@@ -307,7 +324,117 @@
       /* 记录本轮该属性实际落表增量：供 settleTimeGrowth 抵充时间额度，避免重复给 */
       TURN.gain[key] = Math.round(((TURN.gain[key] || 0) + (r.val - cur)) * 10) / 10;
       if (r.clipped && window.YJ_DEBUG) console.log("[AttributeEngine] 数值平衡钳制:", key, "请求Δ" + delta, "→ 实际Δ" + r.delta);
+      /* v3.65.0 真实变动落审计账本 + 派发即时反馈事件（仅当确有增减） */
+      if (r.delta !== 0) {
+        var type = opts.type || (r.delta < 0 ? "injury" : "gain");
+        recordStatLog(key, r.delta, r.val, type, opts.reason || "");
+        dispatchStatChange(key, r.delta, r.val, type, opts.reason || "");
+      }
     } catch (e) { /* 钳制失败退回直写由调用方处理 */ }
+  }
+
+  /* ---------- v3.65.0 实数时事件化：审计账本 + 即时反馈 ---------- */
+
+  /** 落表：每次真实增减都记到 v.statLog（时间/章/属性/Δ/值/类型/事由），上限 80 条滚动 */
+  function recordStatLog(key, delta, value, type, reason) {
+    try {
+      var fw = typeof window !== "undefined" ? window.storyFramework : null;
+      var v = fw && fw.storyState && fw.storyState.variables;
+      if (!v) return;
+      v.statLog = (v.statLog && Array.isArray(v.statLog)) ? v.statLog : [];
+      v.statLog.push({
+        t: Date.now(),
+        chapter: Number(v.chapter) || 0,
+        stat: String(key),
+        delta: Math.round(delta * 10) / 10,
+        value: Math.round(value * 10) / 10,
+        type: type || (delta < 0 ? "injury" : "gain"),
+        reason: String(reason || "")
+      });
+      if (v.statLog.length > 80) v.statLog = v.statLog.slice(-80);
+    } catch (e) { /* 不阻断 */ }
+  }
+
+  /** 派发 yj:stat-change：状态面板据此即时闪动 + 浮 Δ；事件名与面板监听同源 */
+  function dispatchStatChange(key, delta, value, type, reason) {
+    try {
+      if (typeof window === "undefined" || !window.dispatchEvent) return;
+      var Ctor = window.CustomEvent || window.Event;
+      var ev = new Ctor("yj:stat-change", {
+        bubbles: false,
+        detail: { stat: String(key), delta: Math.round(delta * 10) / 10, value: Math.round(value * 10) / 10, type: type, reason: String(reason || "") }
+      });
+      window.dispatchEvent(ev);
+    } catch (e) { /* 环境无 Event（如 node 测试）静默 */ }
+  }
+
+  /** 最近 N 条真实变动（供面板/提示词回看「近期身遭与恢复」） */
+  function recentChanges(n) {
+    try {
+      var fw = typeof window !== "undefined" ? window.storyFramework : null;
+      var v = fw && fw.storyState && fw.storyState.variables;
+      if (!v || !v.statLog) return [];
+      return v.statLog.slice(-(n || 8));
+    } catch (e) { return []; }
+  }
+
+  /** 单项数值对应专长（语义轴）：{id,name,bias} —— 世界自适应归类 */
+  function specialtyOf(key, label) {
+    var ax = axisOf(key, label);
+    return { id: ax.id, name: ax.name, bias: ax.bias };
+  }
+
+  /**
+   * 事件驱动显式增减（v3.65.0）：战斗受伤扣减 / 疗伤加回 / 突破增长 / 剧情事件。
+   * 直接落表（受 [0,100] 值域约束，但放行单次大幅变动——有明确事由，不走每轮预算钳制），
+   * 并落审计账本 + 派发即时反馈事件。
+   * @param {object} opts {stat, amount} 或 {stats:{k:amt}, type, reason}
+   *   type 可显式给 'injury'|'heal'|'train'|'event'，否则按 Δ 正负自动判定（负=受伤）。
+   * @returns {string[]} 实际生效的属性键列表
+   */
+  function applyEvent(opts) {
+    try {
+      opts = opts || {};
+      var fw = typeof window !== "undefined" ? window.storyFramework : null;
+      if (!fw || !fw.storyState || !fw.storyState.variables) return [];
+      seed(fw.storyState);
+      var v = fw.storyState.variables;
+      var stats = v.stats && typeof v.stats === "object" ? v.stats : null;
+      if (!stats) return [];
+      var map = {};
+      if (opts.stats && typeof opts.stats === "object") {
+        Object.keys(opts.stats).forEach(function (k) { map[k] = opts.stats[k]; });
+      } else if (opts.stat) {
+        map[opts.stat] = (typeof opts.amount === "number") ? opts.amount : (parseFloat(opts.amount) || 0);
+      } else {
+        return [];
+      }
+      var fallbackReason = opts.reason || "";
+      var done = [];
+      Object.keys(map).forEach(function (k) {
+        if (typeof stats[k] !== "number") return;
+        var amt = Number(map[k]) || 0;
+        if (!isFinite(amt) || amt === 0) return;
+        var type = opts.type || (amt < 0 ? "injury" : "gain");
+        var reason = fallbackReason;
+        /* 默认事由：受伤→「身遭创伤」，恢复→「疗伤/修养」，修炼→「修行精进」 */
+        if (!reason) {
+          if (type === "injury") reason = "身遭创伤";
+          else if (type === "heal") reason = "疗伤休养";
+          else if (type === "train") reason = "修行精进";
+          else reason = "剧情事件";
+        }
+        var cur = stats[k];
+        var nv = Math.max(0, Math.min(100, Math.round((cur + amt) * 10) / 10));
+        var real = Math.round((nv - cur) * 10) / 10;
+        if (real === 0) return;
+        stats[k] = nv;
+        recordStatLog(k, real, nv, type, reason);
+        dispatchStatChange(k, real, nv, type, reason);
+        done.push(k);
+      });
+      return done;
+    } catch (e) { return []; }
   }
 
   /**
@@ -346,7 +473,13 @@
         need = Math.round(need * bottleneck(cur) * 10) / 10;   /* 越接近满值涨得越慢 */
         var nv = Math.max(0, Math.min(100, Math.round((cur + need) * 10) / 10));
         var real = Math.round((nv - cur) * 10) / 10;
-        if (real > 0) { stats[k] = nv; applied[k] = real; sum = Math.round((sum + real) * 10) / 10; }
+        if (real > 0) {
+          stats[k] = nv; applied[k] = real; sum = Math.round((sum + real) * 10) / 10;
+          /* v3.65.0 时间结算的成长同样落审计账本 + 派发即时反馈（面板绿闪） */
+          var tReason = (tv.spanText || daysText(days)) + "·" + TURN.act.name + "结算";
+          recordStatLog(k, real, nv, "train", tReason);
+          dispatchStatChange(k, real, nv, "train", tReason);
+        }
       });
       /* 时间账本：累计天数 / 本轮跨度 / 期间状态 / 上次结算明细 */
       tv.days = Math.round(((Number(tv.days) || 0) + days) * 10) / 10;
@@ -428,10 +561,16 @@
       if (!keys.length) return "";
       var vals = keys.map(function (k) { return { k: k, label: labelMap[k] || k, v: stats[k] }; });
       var line1 = "属性：" + vals.map(function (x) { return x.label + " " + x.v; }).join(" / ");
+      /* v3.65.0 每项数值对应专长：把六维各自归属的语义轴（强项领域）显式列出 */
+      var specList = vals.map(function (x) {
+        var ax = axisOf(x.k, x.label);
+        return x.label + "→" + ax.name + "轴";
+      });
+      var specLine = "数值专长（每项数值对应的强项领域；弱项场景受阻、强项场景占优）：" + specList.join(" / ");
       /* 强项 = 值最高的前二（并列取靠前） */
       var sorted = vals.slice().sort(function (a, b) { return b.v - a.v; });
       var top = sorted.slice(0, 2).filter(function (x) { return x.v >= 55; });
-      var lines = [line1];
+      var lines = [line1, specLine];
       if (top.length) {
         var seenAxis = {};
         var biases = [];
@@ -459,6 +598,17 @@
           if (gs) segs.push("该次跨越已按公式结算成长：" + gs);
         }
         lines.push("⏳ 世界时间：" + segs.join("；"));
+      }
+      /* v3.65.0 近期数值变动：让主笔知道数值最近因何变动，行文能呼应伤势/康复 */
+      var logArr = (v.statLog && v.statLog.length) ? v.statLog.slice(-6) : [];
+      if (logArr.length) {
+        var lg = logArr.map(function (e) {
+          var nm = labelMap[e.stat] || e.stat;
+          var sign = e.delta > 0 ? "+" : "";
+          var tag = e.type === "injury" ? "受伤" : (e.type === "heal" ? "疗伤" : (e.type === "train" ? "精进" : "事件"));
+          return nm + " " + sign + e.delta + (e.reason ? "(" + tag + "·" + e.reason + ")" : "(" + tag + ")");
+        }).join("；");
+        lines.push("⚕ 近期数值变动：" + lg);
       }
       var capNow = capForTurn();
       var discipline = "属性增长纪律（引擎强制钳制，越界部分会被真实截掉）：本轮全部属性增减合计≤" + capNow + "、单项≤" + capForStat(keys[0] || "") + "；常规修炼每轮 0-2 点；突破/丹药/机缘单项≤6 且正文须有明确缘由；值域 0-100；无正文依据的跳变一律无效。";
@@ -495,6 +645,12 @@
     buildLiveBlock: buildLiveBlock,
     axisOf: axisOf,
     stats: stats,
-    TIER_NAMES: TIER_NAMES
+    TIER_NAMES: TIER_NAMES,
+    /* v3.65.0 实时事件化 */
+    applyEvent: applyEvent,
+    recentChanges: recentChanges,
+    specialtyOf: specialtyOf,
+    recordStatLog: recordStatLog,
+    dispatchStatChange: dispatchStatChange
   };
 })();

@@ -282,6 +282,21 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="属性 数值 专长 受伤 疗伤" style="--entry-hue:#c2e8cf;">
+            <div class="log-head">
+                <span class="ver-chip">v3.65.0</span>
+                <span class="log-title">属性引擎·实时事件化</span>
+            </div>
+            <div class="log-body">
+                <ul>
+                    <li><b>即时跟上剧情</b>：受伤扣减、疗伤加回、突破精进全部事件化——显式 API 直接落表，不受每轮预算钳制（值域 0-100 照旧钳死），下一轮重绘当场闪动 + Δ 浮标（受伤红、恢复绿）。</li>
+                    <li><b>审计账本</b>：每一次真实增减都留痕到 v.statLog（时间/章/属性/Δ/值/类型/事由，滚动 80 条），主笔实时块新增「⚕ 近期数值变动」行，行文能呼应伤势与康复。</li>
+                    <li><b>专长凸显</b>：每项数值按语义轴映射专长（肉身/感知/心志/谋算/修学/机缘，世界自适应），实时块逐项列出「数值专长」，状态面板每条数值条旁挂专长徽标（悬停看偏向说明）。</li>
+                    <li>时间跨越补涨也纳入账本与即时反馈，全链路一处不漏。</li>
+                </ul>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="小队 战斗 协同" style="--entry-hue:#c2d8e8;">
             <div class="log-head">
                 <span class="ver-chip">v3.64.0</span>
