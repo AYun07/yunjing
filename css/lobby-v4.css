@@ -1,18 +1,22 @@
 /* ============================================================
-   云境 v3.75.0 · 大厅全面重设计「纸本」
-   —— 宣纸为底，墨字为骨，朱砂点睛，留白呼吸
+   云境 v3.77.0 · 大厅重设计「晨青」
+   —— 晨光青瓷：明亮干净，柔和现代，无滤镜无做旧
    本文件是 index.html 的唯一样式源；整份替换即整体回滚
    ============================================================ */
 
 :root {
-  --paper: #f4efe4;          /* 宣纸 */
-  --paper-2: #fbf8f0;        /* 卡纸 */
-  --ink: #1c1a16;            /* 浓墨 */
-  --ink-2: #55503f;          /* 淡墨 */
-  --ink-3: #8d8672;          /* 灰墨 */
-  --hair: #d9d2bf;           /* 发丝线 */
-  --cinnabar: #b5382e;       /* 朱砂 */
-  --cinnabar-deep: #93301f;
+  --bg: #f5f6f2;             /* 晨白 */
+  --card: #ffffff;           /* 卡白 */
+  --deep: #1e3d40;           /* 青墨（主深色） */
+  --deep-2: #16302f;         /* 深青 */
+  --teal: #2e6e63;           /* 青瓷 */
+  --teal-soft: #e3efec;      /* 青雾 */
+  --gold: #b98d3f;           /* 暖金 */
+  --gold-soft: #f2e8d5;      /* 淡金 */
+  --tx: #23302e;             /* 正文 */
+  --tx-2: #5c6b66;           /* 次级 */
+  --tx-3: #93a29b;           /* 弱化 */
+  --line: #e3e7e0;           /* 细线 */
   --serif-disp: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
   --kai: 'LXGW WenKai', 'Noto Serif SC', 'Kaiti SC', 'KaiTi', serif;
   --eng: 'Cormorant Garamond', 'Times New Roman', serif;
@@ -22,13 +26,13 @@
 html { scroll-behavior: smooth; }
 
 body.page-index {
-  background-color: var(--paper);
-  /* 纸纹：极淡的横丝 + 边缘旧化 */
+  background-color: var(--bg);
   background-image:
-    radial-gradient(ellipse 120% 90% at 50% 0%, rgba(255, 253, 246, .8), transparent 55%),
-    radial-gradient(ellipse 90% 70% at 50% 115%, rgba(196, 178, 138, .16), transparent 60%),
-    repeating-linear-gradient(0deg, rgba(120, 105, 70, .022) 0 1px, transparent 1px 3px);
-  color: var(--ink);
+    radial-gradient(ellipse 80% 55% at 18% -5%, rgba(46, 110, 99, .08), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 88% 0%, rgba(185, 141, 63, .07), transparent 55%),
+    linear-gradient(180deg, #f7f8f4 0%, var(--bg) 40%, #f1f3ee 100%);
+  background-attachment: fixed;
+  color: var(--tx);
   font-family: var(--kai);
   font-size: 16px;
   min-height: 100vh;
@@ -37,13 +41,12 @@ body.page-index {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* 星点不需要了——纸上是白天 */
 .stars { display: none; }
 
-/* ───────── 开屏：一张请柬 ───────── */
+/* ───────── 开屏 ───────── */
 #splash {
   position: fixed; inset: 0;
-  background: var(--paper);
+  background: linear-gradient(180deg, #f7f8f4, #eef1ec);
   z-index: 100;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -54,321 +57,292 @@ body.page-index {
 #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash-mark {
   font-family: var(--serif-disp);
-  font-size: clamp(50px, 10vw, 84px);
+  font-size: clamp(48px, 9vw, 76px);
   font-weight: 900;
-  letter-spacing: 26px; text-indent: 26px;
-  color: var(--ink);
-  filter: url(#yjInk);
+  letter-spacing: 22px; text-indent: 22px;
+  color: var(--deep);
 }
-/* 开屏落一枚朱砂印 */
 .splash-line {
-  width: 44px; height: 44px;
-  background: var(--cinnabar);
-  border-radius: 4px;
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, var(--teal), var(--deep));
+  border-radius: 12px;
   position: relative;
-  box-shadow: 0 2px 14px rgba(181, 56, 46, .3);
+  box-shadow: 0 6px 18px rgba(30, 61, 64, .25);
 }
 .splash-line::after {
   content: "境";
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--serif-disp);
-  font-size: 24px; font-weight: 700;
-  color: #f6efe0;
+  font-size: 23px; font-weight: 700;
+  color: #f3efe2;
 }
 .splash-sub {
-  font-size: 14px; letter-spacing: 9px; text-indent: 9px;
-  color: var(--ink-2);
+  font-size: 14px; letter-spacing: 8px; text-indent: 8px;
+  color: var(--tx-2);
 }
 .splash-hint {
   position: absolute; bottom: 56px;
-  font-size: 12px; letter-spacing: 6px; text-indent: 6px;
-  color: var(--ink-3);
+  font-size: 12px; letter-spacing: 5px; text-indent: 5px;
+  color: var(--tx-3);
 }
 
 /* ───────── 版心 ───────── */
 .container {
-  max-width: 1120px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 0 36px calc(40px + env(safe-area-inset-bottom, 0px));
   position: relative;
   z-index: 2;
 }
 
-/* ───────── 门面：大留白 · 原创艺术字标 · 竖排副题 ───────── */
+/* ───────── 门面：干净大字 + 金印点缀 ───────── */
 .masthead {
   position: relative;
-  padding: 96px 0 8px;
-  min-height: 380px;
+  padding: 100px 0 10px;
 }
 .sr-only {
   position: absolute; width: 1px; height: 1px;
   margin: -1px; padding: 0; border: 0;
   clip: rect(0 0 0 0); overflow: hidden; white-space: nowrap;
 }
-/* 原创艺术字标：墨色主体带宣纸洇墨边，朱砂底层错位套印（risograph misprint） */
-.logo-art { display: block; }
-.logo-art svg {
-  display: block;
-  width: min(560px, 82vw);
-  height: auto;
-  overflow: visible;
-}
-.logo-art text {
-  font-family: var(--serif-disp);
-  font-size: 192px;
-  font-weight: 900;
-  letter-spacing: 18px;
-}
-.logo-art .la-ghost {
-  fill: var(--cinnabar);
-  opacity: .82;
-  transform: translate(7px, 5px);
-}
-.logo-art .la-main {
-  fill: var(--ink);
-  filter: url(#yjInk);
-}
 /* 英文眉线 */
 .masthead::before {
   content: "YUNJING · INTERACTIVE FICTION ATELIER";
   display: block;
   font-family: var(--eng);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: .42em;
-  color: var(--ink-3);
-  margin-bottom: 30px;
+  color: var(--teal);
+  margin-bottom: 26px;
 }
-/* 竖排副题：挂在标题右侧，止步于词条行之上 */
-.masthead .sub {
-  position: absolute;
-  top: 92px;
-  right: 274px;
-  writing-mode: vertical-rl;
-  font-size: 15px;
-  letter-spacing: 7px;
-  color: var(--ink-2);
-  border-right: 1px solid var(--hair);
-  padding-right: 14px;
-  height: 256px;
+.masthead h1 {
+  font-family: var(--serif-disp);
+  font-size: clamp(72px, 10.5vw, 124px);
+  font-weight: 900;
+  letter-spacing: 12px;
+  line-height: 1.08;
+  color: var(--deep);
+}
+.masthead h1::after {
+  content: "境";
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  vertical-align: .16em;
+  margin-left: 18px;
+  background: linear-gradient(135deg, var(--teal), var(--deep));
+  color: #f3efe2;
+  font-family: var(--serif-disp);
+  font-weight: 700;
+  font-size: clamp(24px, 3.2vw, 38px);
+  width: clamp(48px, 5.6vw, 64px); height: clamp(48px, 5.6vw, 64px);
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(30, 61, 64, .28);
+  letter-spacing: 0; text-indent: 0;
 }
 .masthead .gold-divider { display: none; }
-/* 词条：一行书眉注 */
+/* 副题 */
+.masthead .sub {
+  margin-top: 26px;
+  font-size: 16.5px;
+  letter-spacing: 6px;
+  color: var(--tx-2);
+  padding-left: 16px;
+  border-left: 3px solid var(--gold);
+  line-height: 1.9;
+}
+/* 词条：柔和胶囊 */
 .mh-chips {
-  margin-top: 44px;
-  display: flex; flex-wrap: wrap; align-items: center;
-  gap: 6px 0;
-  font-size: 14px;
-  letter-spacing: 2.5px;
-  color: var(--ink-2);
+  margin-top: 34px;
+  display: flex; flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13.5px;
+  letter-spacing: 2px;
+  color: var(--tx-2);
 }
-.mh-chips span { position: relative; padding: 2px 18px 2px 0; margin-right: 18px; transition: color .25s; }
-.mh-chips span::before {
-  content: "";
-  position: absolute; right: 0; top: 50%;
-  width: 5px; height: 5px;
-  background: var(--cinnabar);
-  transform: translateY(-50%) rotate(45deg);
+.mh-chips span {
+  padding: 7px 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  box-shadow: 0 2px 8px rgba(35, 48, 46, .05);
+  transition: border-color .25s, color .25s, transform .25s;
 }
-.mh-chips span:last-child::before { display: none; }
-.mh-chips span:hover { color: var(--cinnabar); }
-/* 小云：门面右下角，像藏书票 */
+.mh-chips span:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  transform: translateY(-2px);
+}
+/* 小云：门面右上 */
 .mh-mascot {
   position: absolute;
-  right: -34px;
-  bottom: -34px;
-  width: 182px;
+  right: -18px;
+  top: 46px;
+  width: 190px;
   height: auto;
-  filter: drop-shadow(0 14px 26px rgba(60, 50, 30, .18));
+  filter: drop-shadow(0 16px 28px rgba(30, 61, 64, .14));
   pointer-events: none;
+  animation: floaty 5.5s ease-in-out infinite;
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
-/* ───────── 刊头：编号 + 大标题 + 发丝线 ───────── */
+/* ───────── 分区标题 ───────── */
 .section-title {
-  display: flex; align-items: baseline; gap: 20px;
-  margin: 84px 0 8px;
-  counter-increment: chap;
+  display: flex; align-items: baseline; gap: 16px;
+  margin: 78px 0 24px;
+  font-family: var(--serif-disp);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: var(--deep);
 }
 .section-title::before {
-  content: "0" counter(chap);
-  font-family: var(--eng);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: .2em;
-  color: var(--cinnabar);
-  transform: translateY(-4px);
-}
-.section-title::after { content: none; }
-.container { counter-reset: chap; }
-.section-title {
-  font-family: var(--serif-disp);
-  font-size: 27px;
-  font-weight: 900;
-  letter-spacing: 6px;
-  color: var(--ink);
-}
-/* 标题下的发丝线 */
-.section-title + .ws-groups-ctl,
-.section-title + .workshops,
-.section-title + .ws-group,
-.section-title + .info-grid,
-.section-title + .ws-groups-ctl::before { }
-/* 用标题自身的下边框做整宽细线（跟随版心） */
-.section-title {
-  border-bottom: 1px solid var(--ink);
-  padding-bottom: 18px;
+  content: "";
+  align-self: center;
+  width: 5px; height: 24px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--teal), var(--gold));
 }
 
-/* ───────── 五大工坊：目录式行列表（反白 hover） ───────── */
+/* ───────── 五大工坊：精致卡阵 ───────── */
 .container > .workshops {
-  display: block;
-  counter-reset: toc;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+  gap: 16px;
 }
 .container > .workshops > .workshop {
-  display: grid;
-  grid-template-columns: 64px 52px 1fr auto;
-  align-items: center;
-  column-gap: 22px;
-  padding: 25px 14px 25px 4px;
-  border-bottom: 1px solid var(--hair);
+  position: relative;
+  display: flex; flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 26px 22px 22px;
   text-decoration: none;
   color: inherit;
-  position: relative;
-  transition: background .3s ease, color .3s ease, padding .3s ease;
+  overflow: hidden;
+  transition: transform .3s cubic-bezier(.34,1.4,.44,1), box-shadow .3s, border-color .3s;
 }
-/* 明确占位：序号 | 印章 | 名称+描述 | 箭头 */
-.container > .workshops > .workshop::before { grid-column: 1; grid-row: 1; align-self: center; }
-.container > .workshops > .workshop .ws-glyph { grid-column: 2; grid-row: 1 / span 2; }
-.container > .workshops > .workshop .ws-name { grid-column: 3; grid-row: 1; }
-.container > .workshops > .workshop .ws-desc { grid-column: 3; grid-row: 2; }
-.container > .workshops > .workshop::after { grid-column: 4; grid-row: 1 / span 2; }
-.container > .workshops > .workshop:first-child { border-top: none; }
-/* 序号 */
+/* 顶部渐变细条：跟随各坊 --ws-hue */
 .container > .workshops > .workshop::before {
-  counter-increment: toc;
-  content: "0" counter(toc);
-  font-family: var(--eng);
-  font-size: 19px;
-  font-weight: 500;
-  letter-spacing: .12em;
-  color: var(--ink-3);
-  transition: color .3s;
-}
-/* 行尾箭头 */
-.container > .workshops > .workshop::after {
-  content: "→";
-  grid-column: 4;
-  font-family: var(--eng);
-  font-size: 20px;
-  color: var(--ink-3);
-  transition: color .3s, transform .3s;
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    hsl(var(--ws-hue, 168), 42%, 46%),
+    hsl(calc(var(--ws-hue, 168) + 40), 48%, 62%));
+  opacity: .9;
 }
 .container > .workshops > .workshop:hover {
-  background: var(--ink);
-  color: var(--paper);
-  padding-left: 18px;
+  transform: translateY(-6px);
+  border-color: hsl(var(--ws-hue, 168), 38%, 66%);
+  box-shadow: 0 18px 38px hsla(var(--ws-hue, 168), 35%, 30%, .16);
 }
-.container > .workshops > .workshop:hover::before { color: var(--cinnabar); }
-.container > .workshops > .workshop:hover::after { color: var(--paper); transform: translateX(6px); }
-/* 印章字块 */
+/* 徽章 */
 .container > .workshops > .workshop .ws-glyph {
-  width: 48px; height: 48px;
-  font-size: 22px;
+  width: 52px; height: 52px;
+  font-size: 23px;
   font-weight: 700;
   font-family: var(--serif-disp);
   display: flex; align-items: center; justify-content: center;
-  color: var(--ink);
-  border: 1px solid var(--ink);
-  border-radius: 3px;
-  transition: color .3s, border-color .3s, background .3s;
+  color: hsl(var(--ws-hue, 168), 40%, 34%);
+  background: hsl(var(--ws-hue, 168), 45%, 94%);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  transition: transform .3s;
 }
-.container > .workshops > .workshop:hover .ws-glyph {
-  color: var(--cinnabar);
-  border-color: var(--cinnabar);
-  background: transparent;
-}
+.container > .workshops > .workshop:hover .ws-glyph { transform: scale(1.08) rotate(-4deg); }
 .container > .workshops > .workshop .ws-name {
   font-family: var(--serif-disp);
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 4px;
-  margin: 0 0 4px;
-  color: inherit;
+  letter-spacing: 3px;
+  color: var(--deep);
+  margin-bottom: 8px;
 }
 .container > .workshops > .workshop .ws-desc {
-  font-size: 13px;
+  font-size: 12.5px;
   letter-spacing: .5px;
-  color: var(--ink-3);
-  line-height: 1.7;
-  transition: color .3s;
+  color: var(--tx-3);
+  line-height: 1.85;
+  flex: 1;
 }
-.container > .workshops > .workshop:hover .ws-desc { color: #b7b0a0; }
-.container > .workshops > .workshop .ws-enter { display: none; }
+/* 入坊钮 */
+.container > .workshops > .workshop .ws-enter {
+  display: inline-flex; align-items: center;
+  margin-top: 18px;
+  font-size: 12.5px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: hsl(var(--ws-hue, 168), 40%, 36%);
+}
 
-/* ───────── 分组（开放世界扮演）：细线章节 ───────── */
+/* ───────── 分组：手风琴 ───────── */
 .ws-groups-ctl { display: none; }
 .ws-group {
-  border: none;
-  border-top: 1px solid var(--hair);
-  background: transparent;
-  margin: 0;
-  border-radius: 0;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 16px;
+  margin: 0 0 12px;
+  overflow: hidden;
+  transition: box-shadow .3s, border-color .3s;
 }
-.ws-groups-ctl + .ws-group:first-of-type { border-top: none; }
+.ws-group:hover { border-color: #d3dcd6; box-shadow: 0 8px 24px rgba(35, 48, 46, .06); }
 .ws-group-head {
   width: 100%;
   display: grid;
-  grid-template-columns: 40px auto 1fr auto auto;
+  grid-template-columns: 44px auto 1fr auto auto;
   align-items: center;
   gap: 16px;
-  padding: 19px 6px;
+  padding: 18px 22px;
   background: none;
   border: none;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: background .25s;
 }
-.ws-group-head:hover { background: rgba(28, 26, 22, .035); }
 .wg-glyph {
-  width: 38px; height: 38px;
-  font-size: 17px;
+  width: 42px; height: 42px;
+  font-size: 18px;
   font-weight: 700;
   font-family: var(--serif-disp);
-  border-radius: 3px;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  color: var(--paper);
-  background: var(--ink);
-  transition: background .25s;
+  color: #f3efe2;
+  background: linear-gradient(135deg, var(--teal), var(--deep));
+  transition: transform .3s;
 }
-.ws-group-head:hover .wg-glyph { background: var(--cinnabar); }
+.ws-group-head:hover .wg-glyph { transform: rotate(-6deg) scale(1.05); }
 .wg-name {
   font-family: var(--serif-disp);
-  font-size: 18.5px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 3.5px;
-  color: var(--ink);
+  letter-spacing: 3px;
+  color: var(--deep);
   white-space: nowrap;
 }
 .wg-sub {
   font-size: 12.5px;
   letter-spacing: .5px;
-  color: var(--ink-3);
+  color: var(--tx-3);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   padding-left: 8px;
 }
 .wg-count {
   font-family: var(--eng);
-  font-size: 12.5px;
+  font-size: 13px;
   letter-spacing: .15em;
-  color: var(--cinnabar);
-  border: none; background: none; border-radius: 0; padding: 0;
+  color: var(--teal);
+  background: var(--teal-soft);
+  border: none; border-radius: 99px;
+  padding: 5px 13px;
   white-space: nowrap;
 }
-.wg-caret { color: var(--ink-3); font-size: 12px; transition: transform .4s cubic-bezier(.4,0,.2,1); }
+.wg-caret { color: var(--tx-3); font-size: 12px; transition: transform .4s cubic-bezier(.4,0,.2,1); }
 .ws-group.closed .wg-caret { transform: rotate(-90deg); }
-/* 展开体：保持手风琴 */
 .ws-group-body {
   display: grid;
   grid-template-rows: 1fr;
@@ -378,16 +352,16 @@ body.page-index {
 .ws-clip { overflow: hidden; min-height: 0; }
 .ws-clip > .workshops {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
-  gap: 14px;
-  margin: 6px 2px 26px;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 13px;
+  margin: 4px 22px 24px;
 }
-/* 界卡：卡纸 */
+/* 界卡 */
 .ws-clip .workshop {
   position: relative;
-  background: var(--paper-2);
-  border: 1px solid var(--hair);
-  border-radius: 3px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 20px 19px 16px;
   text-decoration: none;
   color: inherit;
@@ -396,14 +370,16 @@ body.page-index {
 }
 .ws-clip .workshop:hover {
   transform: translateY(-4px);
-  border-color: var(--ink);
-  box-shadow: 0 12px 26px rgba(60, 50, 30, .12);
+  border-color: hsl(var(--ws-hue, 168), 35%, 70%);
+  box-shadow: 0 12px 26px hsla(var(--ws-hue, 168), 30%, 30%, .12);
+  background: var(--card);
 }
 .ws-clip .workshop::after {
   content: "";
-  position: absolute; left: 19px; right: auto; bottom: auto; top: 62px;
-  width: 26px; height: 2px;
-  background: var(--cinnabar);
+  position: absolute; left: 19px; top: 66px;
+  width: 26px; height: 2.5px;
+  border-radius: 2px;
+  background: hsl(var(--ws-hue, 168), 45%, 50%);
   opacity: 0;
   transition: opacity .25s;
 }
@@ -413,57 +389,58 @@ body.page-index {
   font-size: 19px;
   font-weight: 700;
   font-family: var(--serif-disp);
-  border-radius: 3px;
+  border-radius: 12px;
   margin: 0 0 14px;
   display: flex; align-items: center; justify-content: center;
-  color: var(--ink);
-  background: transparent;
-  border: 1px solid var(--ink-2);
+  color: hsl(var(--ws-hue, 168), 40%, 34%);
+  background: hsl(var(--ws-hue, 168), 45%, 93%);
+  border: none;
   box-shadow: none;
 }
 .ws-clip .ws-name {
   font-family: var(--serif-disp);
-  font-size: 17px;
+  font-size: 16.5px;
   font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--ink);
+  letter-spacing: 2px;
+  color: var(--deep);
   margin-bottom: 6px;
 }
 .ws-clip .ws-desc {
   font-size: 12px;
   line-height: 1.8;
   letter-spacing: .3px;
-  color: var(--ink-3);
+  color: var(--tx-3);
 }
 .ws-clip .ws-enter {
   display: inline-block;
   margin-top: 10px;
   font-size: 11.5px;
   letter-spacing: 3px;
-  color: var(--cinnabar);
+  color: var(--teal);
 }
 
-/* ───────── 初来乍到：卡纸 ───────── */
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+/* ───────── 初来乍到 ───────── */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
 .info-card {
-  background: var(--paper-2);
-  border: 1px solid var(--hair);
-  border-radius: 3px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
   padding: 26px 28px 22px;
+  box-shadow: 0 4px 16px rgba(35, 48, 46, .04);
 }
 .info-title {
   font-family: var(--serif-disp);
   font-size: 16.5px;
-  letter-spacing: 5px;
-  color: var(--ink);
+  letter-spacing: 4px;
+  color: var(--deep);
   display: flex; align-items: center; gap: 10px;
   padding-bottom: 13px; margin-bottom: 15px;
-  border-bottom: 1px solid var(--hair);
+  border-bottom: 1px solid var(--line);
 }
 .info-title .dot {
-  width: 8px; height: 8px;
-  background: var(--cinnabar);
-  border-radius: 1px;
+  width: 9px; height: 9px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  border-radius: 3px;
   transform: rotate(45deg);
   box-shadow: none;
 }
@@ -471,7 +448,7 @@ body.page-index {
 .info-list li {
   font-size: 13.5px;
   line-height: 2.15;
-  color: var(--ink-2);
+  color: var(--tx-2);
   padding-left: 18px;
   position: relative;
 }
@@ -479,17 +456,19 @@ body.page-index {
   content: "";
   position: absolute; left: 2px; top: .95em;
   width: 5px; height: 5px;
-  background: var(--cinnabar);
+  background: var(--teal);
+  border-radius: 2px;
   transform: rotate(45deg);
 }
 
-/* ───────── 沉浸扮演：墨色反白段（出血） ───────── */
+/* ───────── 沉浸扮演：青墨全宽段 ───────── */
 .rp-promo {
-  margin: 90px -36px 0;
+  margin: 88px -36px 0;
   background:
-    radial-gradient(ellipse 700px 300px at 90% 0%, rgba(181, 56, 46, .16), transparent 55%),
-    #201d18;
-  color: var(--paper);
+    radial-gradient(ellipse 640px 320px at 88% -10%, rgba(185, 141, 63, .2), transparent 60%),
+    radial-gradient(ellipse 520px 300px at 5% 110%, rgba(46, 110, 99, .3), transparent 60%),
+    linear-gradient(135deg, var(--deep) 0%, var(--deep-2) 100%);
+  color: #eef3ef;
   padding: 68px 64px 56px;
   position: relative;
   overflow: hidden;
@@ -501,7 +480,7 @@ body.page-index {
   font-style: italic;
   font-size: 200px;
   font-weight: 500;
-  color: rgba(244, 239, 228, .05);
+  color: rgba(238, 243, 239, .045);
   line-height: 1;
   pointer-events: none;
 }
@@ -510,7 +489,7 @@ body.page-index {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: .45em;
-  color: #b7b0a0;
+  color: #9fc3b4;
 }
 .rp-title {
   font-family: var(--serif-disp);
@@ -518,15 +497,18 @@ body.page-index {
   font-weight: 900;
   letter-spacing: 5px;
   margin-top: 18px;
-  color: var(--paper);
-  background: none;
-  -webkit-text-fill-color: currentColor;
+  color: #f6f4ea;
+  background: linear-gradient(90deg, #f6f4ea 55%, #d9c08a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .rp-title::after {
   content: "";
   display: block;
   width: 56px; height: 3px;
-  background: var(--cinnabar);
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--gold));
   margin-top: 22px;
 }
 .rp-sub {
@@ -535,60 +517,60 @@ body.page-index {
   font-size: 14.5px;
   line-height: 2.2;
   letter-spacing: .5px;
-  color: #c9c2b0;
+  color: #b9c8bf;
 }
 .rp-feats { margin-top: 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .rp-feat {
-  background: rgba(244, 239, 228, .045);
-  border: 1px solid rgba(244, 239, 228, .12);
-  border-radius: 3px;
+  background: rgba(238, 243, 239, .06);
+  border: 1px solid rgba(238, 243, 239, .14);
+  border-radius: 14px;
   padding: 18px 19px 15px;
   transition: border-color .25s, transform .25s, background .25s;
 }
-.rp-feat:hover { border-color: rgba(244, 239, 228, .32); background: rgba(244, 239, 228, .07); transform: translateY(-3px); }
+.rp-feat:hover { border-color: rgba(217, 192, 138, .5); background: rgba(238, 243, 239, .09); transform: translateY(-3px); }
 .rp-feat .fi { font-size: 20px; }
 .rp-feat .fn {
   font-family: var(--serif-disp);
   font-size: 14.5px; font-weight: 700; letter-spacing: 2px;
   margin: 9px 0 5px;
-  color: var(--paper);
+  color: #f0f3ec;
 }
-.rp-feat .fd { font-size: 12px; line-height: 1.9; color: #a29a86; }
+.rp-feat .fd { font-size: 12px; line-height: 1.9; color: #9aab9f; }
 .rp-cta { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 12px; }
 .rp-cta a {
   flex: 0 1 auto; min-width: 0;
   text-align: center; text-decoration: none;
   font-size: 13.5px; font-weight: 700; letter-spacing: 2.5px;
   white-space: nowrap;
-  padding: 13px 24px;
-  border-radius: 3px;
-  background: var(--cinnabar);
-  color: #f6efe0;
-  transition: transform .22s, background .22s, box-shadow .22s;
+  padding: 13px 26px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #cfb26a, #b98d3f);
+  color: #241d0e;
+  transition: transform .22s, box-shadow .22s, filter .22s;
 }
 .rp-cta a:hover {
   transform: translateY(-2px);
-  background: var(--cinnabar-deep);
-  box-shadow: 0 10px 24px rgba(181, 56, 46, .35);
+  filter: brightness(1.07);
+  box-shadow: 0 12px 26px rgba(185, 141, 63, .35);
 }
 .rp-cta a.alt {
   background: transparent;
-  color: var(--paper);
-  border: 1px solid rgba(244, 239, 228, .4);
+  color: #eef3ef;
+  border: 1px solid rgba(238, 243, 239, .4);
 }
-.rp-cta a.alt:hover { background: rgba(244, 239, 228, .1); box-shadow: none; border-color: rgba(244, 239, 228, .7); }
+.rp-cta a.alt:hover { background: rgba(238, 243, 239, .1); box-shadow: none; border-color: rgba(238, 243, 239, .7); }
 
 /* ───────── 页脚 / 版本徽标 ───────── */
 .footer {
   text-align: center;
-  padding: 44px 16px 24px;
+  padding: 48px 16px 26px;
   font-size: 12.5px;
-  color: var(--ink-3);
+  color: var(--tx-3);
   letter-spacing: 2.5px;
   line-height: 2.2;
 }
 .footer .footer-log { margin-top: 6px; }
-.footer .footer-log a { color: var(--cinnabar); text-decoration: none; letter-spacing: 1px; }
+.footer .footer-log a { color: var(--teal); text-decoration: none; letter-spacing: 1px; }
 .footer .footer-log a:hover { text-decoration: underline; }
 .ver-badge {
   position: fixed;
@@ -598,77 +580,60 @@ body.page-index {
   font-size: 11.5px;
   letter-spacing: 1.5px;
   font-family: var(--kai);
-  color: var(--ink);
-  background: var(--paper-2);
-  border: 1px solid var(--ink);
+  color: #f3efe2;
+  background: linear-gradient(135deg, var(--teal), var(--deep));
+  border: none;
   border-radius: 99px;
-  padding: 5px 14px;
+  padding: 6px 15px;
   text-decoration: none;
-  box-shadow: 0 2px 10px rgba(60, 50, 30, .12);
-  transition: transform .2s, background .2s, color .2s;
+  box-shadow: 0 4px 14px rgba(30, 61, 64, .3);
+  transition: transform .2s, box-shadow .2s;
 }
-.ver-badge:hover { transform: translateY(-2px); background: var(--ink); color: var(--paper); }
+.ver-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30, 61, 64, .38); }
 
 /* ───────── 移动端 ───────── */
 @media (max-width: 760px) {
   .container { padding: 0 18px calc(30px + env(safe-area-inset-bottom, 0px)); }
-  .masthead { padding: 56px 0 4px; min-height: 0; }
-  .masthead::before { font-size: 10.5px; letter-spacing: .3em; margin-bottom: 22px; }
-  .logo-art svg { width: 80vw; }
-  .logo-art text { font-size: 192px; }
-  .masthead .sub {
-    position: static;
-    writing-mode: horizontal-tb;
-    height: auto;
-    border-right: none;
-    border-left: 2px solid var(--cinnabar);
-    padding: 2px 0 2px 14px;
-    margin-top: 24px;
-    font-size: 14px;
-    letter-spacing: 5px;
-  }
-  .mh-chips { margin-top: 26px; font-size: 12.5px; gap: 4px 0; }
-  .mh-chips span { padding-right: 12px; margin-right: 12px; }
+  .masthead { padding: 54px 0 6px; }
+  .masthead::before { font-size: 10.5px; letter-spacing: .3em; margin-bottom: 20px; }
+  .masthead h1 { font-size: clamp(58px, 17vw, 84px); letter-spacing: 7px; }
+  .masthead h1::after { margin-left: 12px; }
+  .masthead .sub { margin-top: 20px; font-size: 14px; letter-spacing: 4px; }
+  .mh-chips { margin-top: 24px; font-size: 12px; gap: 8px; }
+  .mh-chips span { padding: 6px 13px; }
   .mh-mascot { display: none; }
-  .section-title { font-size: 20px; letter-spacing: 3px; margin: 54px 0 6px; gap: 14px; padding-bottom: 14px; }
-  .section-title::before { font-size: 13px; }
-  /* 目录行改紧凑双列布局 */
-  .container > .workshops > .workshop {
-    grid-template-columns: 44px 1fr auto;
-    grid-template-areas: "num name arrow" "num desc arrow";
-    row-gap: 3px;
-    column-gap: 16px;
-    padding: 18px 10px 18px 2px;
-  }
-  .container > .workshops > .workshop .ws-glyph { display: none; }
-  .container > .workshops > .workshop .ws-name { grid-area: name; font-size: 17px; letter-spacing: 2.5px; }
-  .container > .workshops > .workshop .ws-desc { grid-area: desc; font-size: 11.5px; }
-  .container > .workshops > .workshop::before { grid-area: num; font-size: 15px; align-self: center; }
-  .container > .workshops > .workshop::after { grid-area: arrow; font-size: 16px; }
-  .container > .workshops > .workshop:hover { padding-left: 10px; }
-  .ws-group-head { grid-template-columns: 34px auto 1fr auto auto; gap: 10px; padding: 15px 4px; }
-  .wg-glyph { width: 32px; height: 32px; font-size: 14.5px; }
+  .section-title { font-size: 20px; letter-spacing: 3px; margin: 50px 0 18px; }
+  .container > .workshops { grid-template-columns: 1fr 1fr; gap: 11px; }
+  .container > .workshops > .workshop { padding: 19px 15px 16px; border-radius: 15px; }
+  .container > .workshops > .workshop .ws-glyph { width: 42px; height: 42px; font-size: 18px; border-radius: 11px; margin-bottom: 12px; }
+  .container > .workshops > .workshop .ws-name { font-size: 15.5px; letter-spacing: 2px; }
+  .container > .workshops > .workshop .ws-desc { font-size: 10.5px; line-height: 1.65; }
+  .container > .workshops > .workshop .ws-enter { font-size: 11px; margin-top: 12px; letter-spacing: 2px; }
+  .ws-group-head { grid-template-columns: 36px auto 1fr auto auto; gap: 10px; padding: 14px 16px; }
+  .wg-glyph { width: 34px; height: 34px; font-size: 15px; border-radius: 10px; }
   .wg-name { font-size: 15.5px; letter-spacing: 2px; }
   .wg-sub { display: none; }
-  .ws-clip > .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 4px 0 20px; }
+  .ws-clip > .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 4px 14px 18px; }
   .ws-clip .workshop { padding: 15px 13px 12px; }
+  .ws-clip .workshop::after { top: 60px; }
   .ws-clip .ws-glyph { width: 36px; height: 36px; font-size: 16px; margin-bottom: 10px; }
-  .ws-clip .ws-name { font-size: 14.5px; }
+  .ws-clip .ws-name { font-size: 14px; }
   .ws-clip .ws-desc { font-size: 10.5px; line-height: 1.65; }
   .ws-clip .ws-enter { display: none; }
   .info-grid { grid-template-columns: 1fr; gap: 12px; }
   .info-card { padding: 20px 18px 16px; }
   .info-list li { font-size: 12.5px; }
-  .rp-promo { margin: 60px -18px 0; padding: 40px 22px 34px; }
+  .rp-promo { margin: 56px -18px 0; padding: 42px 22px 36px; border-radius: 0; }
   .rp-promo-mark { font-size: 110px; right: 8px; }
   .rp-feats { grid-template-columns: repeat(2, 1fr); gap: 9px; }
-  .rp-feat { padding: 13px 13px 11px; }
+  .rp-feat { padding: 13px 13px 11px; border-radius: 11px; }
   .rp-feat .fn { font-size: 12.5px; }
   .rp-feat .fd { font-size: 10.5px; line-height: 1.7; }
-  .rp-cta a { padding: 11px 15px; font-size: 12px; }
-  .footer { font-size: 11px; padding: 32px 14px 20px; }
+  .rp-cta a { padding: 11px 16px; font-size: 12px; }
+  .footer { font-size: 11px; padding: 34px 14px 20px; }
 }
 @media (max-width: 380px) {
+  .container > .workshops { grid-template-columns: 1fr; }
   .ws-clip > .workshops { grid-template-columns: 1fr; }
   .rp-feats { grid-template-columns: 1fr; }
 }
