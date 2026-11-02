@@ -282,6 +282,21 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="视觉 大厅 艺术字 字体 自托管 性能" style="--entry-hue:#b5382e;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.76.0</span>
+                <span class="entry-date">2026-11-02</span>
+                <span class="entry-title">原创艺术字标 + 字体全面自托管：不再依赖境外 CDN，任何网络都渲染</span>
+            </div>
+            <div class="entry-body">
+                <p><b>回应「字体没变」：根因是 Google Fonts / jsdelivr 在部分网络不可达，整页回退系统字体。本版把字体全部搬进项目自托管。</b></p>
+                <p><b>① 字体自托管</b>：霞鹜文楷按页面字符集精选 94 个 woff2 切片（保留 unicode-range 按需加载），思源宋体 700/900 与 Cormorant 500/600 用 fonttools 子集化成单文件（合计约 0.4MB）；新增 <code>css/fonts-local.css</code>，移除全部 CDN 字体链。</p>
+                <p><b>② 原创艺术字标</b>：「云境」改为内联 SVG 字标——思源宋体 900 墨色主体经 feTurbulence 洇墨滤镜做出宣纸毛边，底下叠一层朱砂错位套印（risograph misprint），纯文本+滤镜实现，任意分辨率无损。</p>
+                <p><b>③ 开屏同款</b>：开屏「云境」应用同一洇墨滤镜，与字标呼应。</p>
+                <p><b>④ 细节</b>：竖排副题收短止步于词条行上方，消除遮挡。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="视觉 UI 大厅 重设计 纸本 字体 排版" style="--entry-hue:#b5382e;">
             <div class="entry-head">
                 <span class="entry-ver">v3.75.0</span>
