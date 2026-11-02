@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云境 · 大厅版式对照台（四选一）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'LXGW WenKai', 'Kaiti SC', serif; background: #101216; color: #e8e2d0; min-height: 100vh; display: flex; flex-direction: column; }
+  header { padding: 14px 22px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid #262a34; flex-wrap: wrap; }
+  header h1 { font-size: 17px; letter-spacing: 3px; font-weight: 700; }
+  header .tip { font-size: 12px; color: #8a8574; letter-spacing: 1px; }
+  .tabs { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+  .tab {
+    padding: 8px 18px; border-radius: 10px; cursor: pointer; user-select: none;
+    border: 1px solid #2c313d; background: #171a22; color: #b8b2a0;
+    font-size: 13.5px; letter-spacing: 2px; transition: all .2s; font-family: inherit;
+  }
+  .tab b { color: inherit; margin-right: 6px; }
+  .tab:hover { border-color: #4a5060; color: #e8e2d0; }
+  .tab.on { background: #e8c97a; border-color: #e8c97a; color: #17141b; font-weight: 700; }
+  .stage { flex: 1; position: relative; }
+  iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #0a0e1a; }
+</style>
+</head>
+<body>
+<header>
+  <h1>云境 · 大厅版式对照台</h1>
+  <span class="tip">点页签即时切换（当前线上默认版式为「流光」，即「现版」）</span>
+  <div class="tabs">
+    <button class="tab on" data-theme=""><b>现版</b>流光玻璃</button>
+    <button class="tab" data-theme="a"><b>A</b>暗夜星辉</button>
+    <button class="tab" data-theme="b"><b>B</b>暮金画报</button>
+    <button class="tab" data-theme="c"><b>C</b>薄荷汽水</button>
+    <button class="tab" data-theme="d"><b>D</b>墨线编辑</button>
+  </div>
+</header>
+<div class="stage"><iframe id="frame" src="index.html"></iframe></div>
+<script>
+  const frame = document.getElementById('frame');
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+      t.classList.add('on');
+      const v = t.dataset.theme ? '?lobby=' + t.dataset.theme : '';
+      frame.src = 'index.html' + v;
+    });
+  });
+</script>
+</body>
+</html>
