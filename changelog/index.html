@@ -282,6 +282,15 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="回退 立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.81.0</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">立绘全量回滚：撤销 v3.80 误伤，只定向清两处地面阴影</h3>
+            <p class="entry-text">v3.80 的抠图「清理」是误伤：诊断确认 60 张原图背景本就是透明的，所谓白底残留绝大多数是角色本体的白云头饰/白裙/白袜，半透雾清除与实心白块删除把白发抠成蜂窝、白裙抠成碎块、身体抠成半透明残影。本次将 60 张立绘全部回滚至清理前原图（逐张前后对照核验零缺块），随后仅对确认仅有的两处多余封闭白块——keai-battle 与 kusa-battle 腿间实心地面阴影——做定向删除（测地膨胀吃净渐变晕圈+高斯羽化软边，深浅双底验收腿部袜鞋完好），其余 58 张一字不动。</p>
+        </article>
+
         <article class="log-entry" data-tags="立绘 抠图 修复 视觉 大厅 版式 四选一" style="--entry-hue:#2e6e63;">
             <div class="entry-head">
                 <span class="entry-ver">v3.80.0</span>
