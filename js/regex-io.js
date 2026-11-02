@@ -1,7 +1,7 @@
 /* ============================================================
  * 云境 · 正则导入 / 替换层 regex-io.js（v3.51.0）
  * ------------------------------------------------------------
- * 玩家从 SillyTavern 导出的「正则扩展」可以直接整份导入，替换内置那 45 条；
+ * 玩家从 常见前端工具 导出的「正则扩展」可以直接整份导入，替换内置那 45 条；
  * 也随时能一键回到内置版。逐条开关仍走原有面板（catalog/overrides）。
  *
  * 兼容三种输入：
@@ -47,7 +47,7 @@
     else if (raw.extensions && Array.isArray(raw.extensions.regex_scripts)) list = raw.extensions.regex_scripts;
     else if (raw.extensions && Array.isArray(raw.extensions.regex)) list = raw.extensions.regex;
     else if (raw.findRegex || raw.find) list = [raw];
-    if (!list || !list.length) throw new Error('没找到 regex_scripts 数组（SillyTavern「正则」导出应为该结构）');
+    if (!list || !list.length) throw new Error('没找到 regex_scripts 数组（常见前端工具「正则」导出应为该结构）');
 
     var out = [];
     var seen = {};

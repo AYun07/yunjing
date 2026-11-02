@@ -58,6 +58,7 @@ body.page-index {
   font-weight: 900;
   letter-spacing: 26px; text-indent: 26px;
   color: var(--ink);
+  filter: url(#yjInk);
 }
 /* 开屏落一枚朱砂印 */
 .splash-line {
@@ -94,36 +95,39 @@ body.page-index {
   z-index: 2;
 }
 
-/* ───────── 门面：大留白 · 墨字 · 朱砂印 · 竖排副题 ───────── */
+/* ───────── 门面：大留白 · 原创艺术字标 · 竖排副题 ───────── */
 .masthead {
   position: relative;
   padding: 96px 0 8px;
   min-height: 380px;
 }
-.masthead h1 {
-  font-family: var(--serif-disp);
-  font-size: clamp(88px, 13vw, 150px);
-  font-weight: 900;
-  letter-spacing: 14px;
-  line-height: 1;
-  color: var(--ink);
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip: rect(0 0 0 0); overflow: hidden; white-space: nowrap;
 }
-/* 朱砂方印缀在「云境」之后 */
-.masthead h1::after {
-  content: "境";
-  display: inline-flex;
-  align-items: center; justify-content: center;
-  vertical-align: .14em;
-  margin-left: 14px;
-  background: var(--cinnabar);
-  color: #f6efe0;
+/* 原创艺术字标：墨色主体带宣纸洇墨边，朱砂底层错位套印（risograph misprint） */
+.logo-art { display: block; }
+.logo-art svg {
+  display: block;
+  width: min(560px, 82vw);
+  height: auto;
+  overflow: visible;
+}
+.logo-art text {
   font-family: var(--serif-disp);
-  font-weight: 700;
-  font-size: clamp(26px, 3.6vw, 42px);
-  width: clamp(46px, 6vw, 70px); height: clamp(46px, 6vw, 70px);
-  border-radius: 6px;
-  box-shadow: 0 3px 16px rgba(181, 56, 46, .28);
-  letter-spacing: 0; text-indent: 0;
+  font-size: 192px;
+  font-weight: 900;
+  letter-spacing: 18px;
+}
+.logo-art .la-ghost {
+  fill: var(--cinnabar);
+  opacity: .82;
+  transform: translate(7px, 5px);
+}
+.logo-art .la-main {
+  fill: var(--ink);
+  filter: url(#yjInk);
 }
 /* 英文眉线 */
 .masthead::before {
@@ -136,18 +140,18 @@ body.page-index {
   color: var(--ink-3);
   margin-bottom: 30px;
 }
-/* 竖排副题：挂在标题右侧，与小云各占一边 */
+/* 竖排副题：挂在标题右侧，止步于词条行之上 */
 .masthead .sub {
   position: absolute;
-  top: 104px;
-  right: 268px;
+  top: 92px;
+  right: 274px;
   writing-mode: vertical-rl;
-  font-size: 17px;
-  letter-spacing: 11px;
+  font-size: 15px;
+  letter-spacing: 7px;
   color: var(--ink-2);
   border-right: 1px solid var(--hair);
-  padding-right: 16px;
-  height: 330px;
+  padding-right: 14px;
+  height: 256px;
 }
 .masthead .gold-divider { display: none; }
 /* 词条：一行书眉注 */
@@ -610,8 +614,8 @@ body.page-index {
   .container { padding: 0 18px calc(30px + env(safe-area-inset-bottom, 0px)); }
   .masthead { padding: 56px 0 4px; min-height: 0; }
   .masthead::before { font-size: 10.5px; letter-spacing: .3em; margin-bottom: 22px; }
-  .masthead h1 { font-size: clamp(64px, 18vw, 88px); letter-spacing: 8px; }
-  .masthead h1::after { display: none; }
+  .logo-art svg { width: 80vw; }
+  .logo-art text { font-size: 192px; }
   .masthead .sub {
     position: static;
     writing-mode: horizontal-tb;
