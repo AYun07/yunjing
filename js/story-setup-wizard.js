@@ -335,7 +335,10 @@ const StorySetupWizard = {
        读取已存选择，用于模板里的动态「on」态；取代主角立场下关系失效 */
     const _idCur = (window.StoryIdentity && StoryIdentity.getIdentity()) || "transmigrator";
     const _relCur = (window.StoryIdentity && StoryIdentity.getRelation()) || "stranger";
-    const _relDisabled = !!(window.StoryStance && StoryStance.get() === "replace");
+    const _stanceCur = (window.StoryStance && StoryStance.get()) || "hero";
+    const _relDisabled = _stanceCur === "hero";
+    const _sideChars = (window.StoryStance && StoryStance.getSideChars()) || [];
+    const _sideCur = (window.StoryStance && StoryStance.sideCharId()) || "";
     const container = document.getElementById("setupContainer");
     if (!container) return;
     let _s = 0;
@@ -362,23 +365,33 @@ const StorySetupWizard = {
             <div class="wizard-sub">${subIntro}</div>
 
             <div class="wiz-section wiz-stance-sec">
-                <div class="wiz-label">✦ 叙事立场 <span class="wiz-hint">（你与原著主角的关系——开局后仍可随时切换）</span></div>
-                <div class="wiz-stance">
-                    <button type="button" class="wiz-stance-btn" data-stance="replace" onclick="StorySetupWizard.setStance('replace')">
-                        <b>👑 取代主角</b><i>你就是原著主角本人</i>
+                <div class="wiz-label">✦ 玩家身份 <span class="wiz-hint">（你是谁——开局后仍可随时切换）</span></div>
+                <div class="wiz-stance wiz-stance-3">
+                    <button type="button" class="wiz-stance-btn ${_stanceCur === "hero" ? "on" : ""}" data-stance="hero" onclick="StorySetupWizard.setStance('hero')">
+                        <b>👑 原著主角</b><i>亲历原著主线 · 大势不可改小势可调</i>
                     </button>
-                    <button type="button" class="wiz-stance-btn on" data-stance="cohabit" onclick="StorySetupWizard.setStance('cohabit')">
-                        <b>🧍 同行者</b><i>你是世界的一份子（推荐）</i>
+                    <button type="button" class="wiz-stance-btn ${_stanceCur === "side" ? "on" : ""}" data-stance="side" onclick="StorySetupWizard.setStance('side')">
+                        <b>🎭 原著配角</b><i>按原著定位活出自己的人生</i>
                     </button>
-                    <button type="button" class="wiz-stance-btn" data-stance="freewill" onclick="StorySetupWizard.setStance('freewill')">
-                        <b>🌪 搅局者</b><i>可改写原著大势</i>
+                    <button type="button" class="wiz-stance-btn ${_stanceCur === "original" ? "on" : ""}" data-stance="original" onclick="StorySetupWizard.setStance('original')">
+                        <b>✨ 完全原创</b><i>自创角色 · 路径全由你把控</i>
                     </button>
                 </div>
                 <div class="wiz-desc" id="wiz_stanceHint"></div>
             </div>
 
+            <div class="wiz-section wiz-side-sec ${_stanceCur === "side" ? "" : "wiz-side-hidden"}">
+                <div class="wiz-label">✦ 选一位原著配角 <span class="wiz-hint">（按其在原著的定位展开人生线）</span></div>
+                <div class="wiz-side-chips">
+                    ${_sideChars.map((c) => `<button type="button" class="wiz-side-chip ${_sideCur === c.id ? "on" : ""}" data-side="${c.id}" onclick="StorySetupWizard.setSideChar('${c.id}')">
+                        <b>${c.name}</b><i>${c.role}</i>
+                    </button>`).join("")}
+                </div>
+                <div class="wiz-desc" id="wiz_sideHint"></div>
+            </div>
+
             <div class="wiz-section wiz-id-sec">
-                <div class="wiz-label">✦ 玩家身份 <span class="wiz-hint">（你带着什么记忆降临这个世界）</span></div>
+                <div class="wiz-label">✦ 元认知边界 <span class="wiz-hint">（你带着什么记忆降临这个世界）</span></div>
                 <div class="wiz-stance">
                     <button type="button" class="wiz-stance-btn ${_idCur === "transmigrator" ? "on" : ""}" data-identity="transmigrator" onclick="StorySetupWizard.setIdentity('transmigrator')">
                         <b>🌀 穿越者</b><i>先知先觉，但预知有界</i>
@@ -391,7 +404,7 @@ const StorySetupWizard = {
             </div>
 
             <div class="wiz-section wiz-rel-sec ${_relDisabled ? "wiz-rel-disabled" : ""}">
-                <div class="wiz-label">✦ 与原著主角的关系 <span class="wiz-hint">（取代主角立场下此栏失效——你即主角）</span></div>
+                <div class="wiz-label">✦ 与原著主角的关系 <span class="wiz-hint">（原著主角立场下此栏失效——你即主角）</span></div>
                 <div class="wiz-stance">
                     <button type="button" class="wiz-stance-btn ${!_relDisabled && _relCur === "ally" ? "on" : ""}" data-relation="ally" onclick="StorySetupWizard.setRelation('ally')">
                         <b>🤝 同伴</b><i>与主角同行</i>
@@ -510,6 +523,8 @@ const StorySetupWizard = {
     });
     ["perspective", "identity", "timeline", "region", "aptitude", "scale"].forEach((f) => this.updateDesc(f));
     ["identity", "timeline", "region", "aptitude", "perspective", "scale"].forEach((f) => this.toggleCustomField(f));
+    /* v3.62.0 初始化三态身份 UI（提示词 + 配角区显隐 + 默认选角） */
+    if (window.StoryStance) this.setStance(StoryStance.get());
   },
   /** 扮演模式：任意选择项切「✎ 自定义」时展开亲笔输入框；身份自定义时隐藏身世自述（避免冲突） */
   toggleCustomField(field) {
@@ -668,8 +683,8 @@ const StorySetupWizard = {
   /** v3.55.19 叙事立场：开局即选「取代主角 / 同行者 / 搅局者」——
       旧版没有这一项，想替代原著主角只能在自定义身份里手写，AI 常常认不出来 */
   setStance(id) {
-    if (window.StoryStance && !StoryStance.MODES[id]) id = "cohabit";
-    document.querySelectorAll(".wiz-stance-btn").forEach(function (b) {
+    if (window.StoryStance && !StoryStance.MODES[id]) id = "hero";
+    document.querySelectorAll(".wiz-stance-btn[data-stance]").forEach(function (b) {
       b.classList.toggle("on", b.dataset.stance === id);
     });
     if (!window.StoryStance) return;
@@ -678,13 +693,38 @@ const StorySetupWizard = {
     const canon = StoryStance.canonHeroName();
     const hint = document.getElementById("wiz_stanceHint");
     if (hint) {
-      hint.textContent = id === "replace"
-        ? "你就是" + canon + "本人——原著主线由你亲历，" + canon + "不再作为独立人物登场。"
-        : id === "freewill"
-          ? "你是自创角色，行动可以偏转甚至改写原著大势与" + canon + "的命运。"
-          : "你是这世界里活生生的一份子；" + canon + "有他自己的人生主线，不因你而改道——除非你亲手夺走本属于他的东西。";
+      hint.textContent = id === "hero"
+        ? "你就是" + canon + "本人——原著主线由你亲历，大势不可改、小势可调。"
+        : id === "side"
+          ? "你成为某位原著配角，按其在原著的定位活出属于自己的人生线；" + canon + "照走自己的人生。"
+          : "你是完全原创角色，无任何原著身份与宿命；路径与际遇全由你把控，大模型辅助推演。";
+    }
+    /* 配角态才显示选角区；默认自动选第一个配角，避免空选 */
+    const sideSec = document.querySelector(".wiz-side-sec");
+    if (sideSec) sideSec.classList.toggle("wiz-side-hidden", id !== "side");
+    if (id === "side") {
+      const cur = StoryStance.sideCharId();
+      const list = StoryStance.getSideChars();
+      if (!cur && list.length) this.setSideChar(list[0].id);
+      else this.updateSideHint();
     }
     this.syncIdentityRelation();
+  },
+  /** v3.62.0 原著配角：选定一位配角 */
+  setSideChar(id) {
+    if (!window.StoryStance) return;
+    StoryStance.setSideChar(id);
+    document.querySelectorAll(".wiz-side-chip").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.side === id);
+    });
+    this.updateSideHint();
+  },
+  updateSideHint() {
+    const info = (window.StoryStance && StoryStance.getSideCharInfo()) || null;
+    const hint = document.getElementById("wiz_sideHint");
+    if (!hint) return;
+    if (!info) { hint.textContent = "选择一位原著配角，按其原著定位展开人生线。"; return; }
+    hint.textContent = info.name + " · " + info.role + "（" + info.realm + "）：" + info.fate + " 关系底子——" + info.rel + "。人生钩子：" + info.hook;
   },
   /** v3.55.20 玩家身份：穿越者 / 土著 */
   setIdentity(id) {
@@ -700,7 +740,7 @@ const StorySetupWizard = {
   },
   /** v3.55.20 与原著主角的关系：同伴 / 敌对 / 陌路（取代主角立场下失效） */
   setRelation(id) {
-    if (window.StoryStance && StoryStance.get() === "replace") return; /* 你即主角，无关系可言 */
+    if (window.StoryStance && StoryStance.get() === "hero") return; /* 你即主角，无关系可言 */
     if (window.StoryIdentity && !StoryIdentity.RELATION[id]) id = "stranger";
     document.querySelectorAll(".wiz-stance-btn[data-relation]").forEach(function (b) {
       b.classList.toggle("on", b.dataset.relation === id);
@@ -714,7 +754,7 @@ const StorySetupWizard = {
   /** v3.55.20 立场切换时刷新「关系」栏的可用性与选中态 */
   syncIdentityRelation() {
     const relSec = document.querySelector(".wiz-rel-sec");
-    const disabled = !!(window.StoryStance && StoryStance.get() === "replace");
+    const disabled = !!(window.StoryStance && StoryStance.get() === "hero");
     if (relSec) relSec.classList.toggle("wiz-rel-disabled", disabled);
     const rel = (window.StoryIdentity && StoryIdentity.getRelation()) || "stranger";
     document.querySelectorAll(".wiz-stance-btn[data-relation]").forEach(function (b) {
@@ -743,10 +783,10 @@ const StorySetupWizard = {
       return;
     }
     const meta = config.setupMeta || {};
-    /* v3.55.19 落定叙事立场（取代主角 / 同行者 / 搅局者） */
+    /* v3.62.0 落定身份三态（原著主角 / 原著配角 / 完全原创） */
     {
-      const on = document.querySelector(".wiz-stance-btn.on");
-      const sid = on && on.dataset.stance ? on.dataset.stance : "cohabit";
+      const on = document.querySelector(".wiz-stance-btn[data-stance].on");
+      const sid = on && on.dataset.stance ? on.dataset.stance : "hero";
       if (window.StoryStance) StoryStance.set(sid);
     }
     const selVal = (field) => {

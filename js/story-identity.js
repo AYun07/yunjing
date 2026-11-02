@@ -72,14 +72,14 @@
   }
 
   function stanceId() {
-    return window.StoryStance ? window.StoryStance.get() : "cohabit";
+    return window.StoryStance ? window.StoryStance.get() : "hero";
   }
   function canonName() {
     return window.StoryStance ? window.StoryStance.canonHeroName() : "原著主角";
   }
-  /** 关系是否在当前立场下失效（取代主角 = 你即主角，谈不上关系） */
+  /** 关系是否在当前立场下失效（原著主角 = 你即主角，谈不上关系） */
   function relationDisabled() {
-    return stanceId() === "replace";
+    return stanceId() === "hero";
   }
 
   function getIdentity() {
