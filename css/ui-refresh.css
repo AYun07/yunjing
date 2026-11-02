@@ -1,0 +1,395 @@
+/* ============================================================
+   云境 · 主界面视觉升级层 v3.71.0
+   作用域 .page-studio —— 仅覆盖「设定台 / 顶栏 / 状态面板」
+   纯视觉层：不动 DOM 结构、不动逻辑，随时可整体移除回滚
+   最后加载，使用 .page-studio 前缀提高特异性
+   ============================================================ */
+
+/* ───────── 全局氛围：夜晚的墨底透出微光，不再是死黑 ───────── */
+body.page-studio {
+  background:
+    radial-gradient(1200px 780px at 8% -12%, rgba(224, 168, 76, .075), transparent 58%),
+    radial-gradient(1000px 720px at 104% -6%, rgba(138, 180, 200, .055), transparent 52%),
+    radial-gradient(900px 900px at 50% 120%, rgba(176, 141, 87, .05), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* ───────── 顶栏 ───────── */
+.page-studio .top-bar {
+  background: linear-gradient(180deg, rgba(30, 34, 51, .96), rgba(20, 23, 33, .94));
+  border-bottom: 1px solid rgba(224, 168, 76, .16);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .28);
+}
+.page-studio .top-bar::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(224, 168, 76, .5), transparent);
+  opacity: .6;
+  pointer-events: none;
+}
+.page-studio #gameTitle {
+  font-size: 16px;
+  letter-spacing: 3px;
+  background: linear-gradient(120deg, #f2d99b, #e0a84c 62%, #c99a45);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.page-studio .back-link {
+  background: rgba(28, 32, 48, .6);
+  border-color: rgba(232, 228, 216, .12);
+  border-radius: 9px;
+}
+.page-studio .back-link:hover {
+  background: rgba(224, 168, 76, .08);
+  box-shadow: 0 0 14px rgba(224, 168, 76, .12);
+}
+.page-studio .ver-dot {
+  background: rgba(224, 168, 76, .08);
+  border-color: rgba(224, 168, 76, .5);
+}
+.page-studio .top-btn {
+  background: rgba(28, 32, 48, .7);
+  border: 1px solid rgba(232, 228, 216, .12);
+  border-radius: 9px;
+  padding: 8px 13px;
+  transition: all .18s ease;
+}
+.page-studio .top-btn:hover,
+.page-studio .top-btn.active {
+  background: rgba(224, 168, 76, .1);
+  border-color: rgba(224, 168, 76, .55);
+  color: #f0d090;
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(224, 168, 76, .16), 0 4px 16px rgba(224, 168, 76, .16);
+}
+
+/* ───────── 设定台容器 ───────── */
+.page-studio #setupWrap { padding: 34px 24px 88px; }
+.page-studio #setupContainer { max-width: 1000px; }
+
+/* 主卡：分层玻璃 + 顶部一线流光 */
+.page-studio .wizard-card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(224, 168, 76, .06), transparent 24%),
+    linear-gradient(168deg, rgba(36, 41, 59, .97), rgba(23, 27, 40, .99));
+  border: 1px solid rgba(224, 168, 76, .17);
+  border-radius: 18px;
+  padding: 34px 38px 30px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .045),
+    0 18px 60px rgba(0, 0, 0, .45),
+    0 2px 10px rgba(0, 0, 0, .3);
+  overflow: hidden;
+}
+.page-studio .wizard-card::before {
+  content: "";
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(120% 55% at 50% -12%, rgba(224, 168, 76, .10), transparent 62%);
+}
+.page-studio .wizard-card::after {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(224, 168, 76, .55), transparent);
+}
+
+.page-studio .wizard-title {
+  font-size: 27px;
+  letter-spacing: 5px;
+  display: inline-block;
+  background: linear-gradient(120deg, #f5dda2, #e0a84c 55%, #c9a24e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.page-studio .wizard-sub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 26px;
+  line-height: 1.85;
+}
+
+/* ───────── 分区节奏：细线分隔 + 金色竖条标签 ───────── */
+.page-studio .wiz-section { margin-bottom: 18px; padding-bottom: 4px; }
+.page-studio .wiz-section + .wiz-section {
+  border-top: 1px solid rgba(232, 228, 216, .06);
+  padding-top: 18px;
+}
+.page-studio .wiz-label {
+  font-size: 13px;
+  color: #e0b968;
+  letter-spacing: 1.2px;
+  position: relative;
+  padding-left: 13px;
+}
+.page-studio .wiz-label::before {
+  content: "";
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 13px; border-radius: 2px;
+  background: linear-gradient(180deg, #f0d090, #c08f3e);
+  box-shadow: 0 0 8px rgba(224, 168, 76, .3);
+}
+.page-studio .wiz-hint { color: var(--text-faint); }
+.page-studio .points-remain {
+  background: rgba(176, 141, 87, .1);
+  border: 1px solid rgba(176, 141, 87, .24);
+  border-radius: 99px;
+  padding: 2px 10px;
+}
+
+/* ───────── 表单控件：统一 44 高、内嵌深色、金色聚焦 ───────── */
+.page-studio .wiz-input,
+.page-studio .wiz-select {
+  width: 100%;
+  height: 44px;
+  box-sizing: border-box;
+  background: rgba(9, 11, 18, .55);
+  border: 1px solid rgba(232, 228, 216, .12);
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  color: var(--text);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.page-studio textarea.wiz-input {
+  height: auto;
+  min-height: 68px;
+  padding: 11px 14px;
+  line-height: 1.65;
+}
+.page-studio .wiz-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #c9a25a 50%),
+    linear-gradient(135deg, #c9a25a 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+.page-studio .wiz-input::placeholder { color: rgba(168, 162, 144, .55); }
+.page-studio .wiz-input:hover,
+.page-studio .wiz-select:hover { border-color: rgba(224, 168, 76, .3); }
+.page-studio .wiz-input:focus,
+.page-studio .wiz-select:focus {
+  border-color: rgba(224, 168, 76, .62);
+  background: rgba(9, 11, 18, .68);
+  box-shadow: 0 0 0 3px rgba(224, 168, 76, .14), 0 0 18px rgba(224, 168, 76, .1);
+}
+
+/* 网格间距统一、禁止溢出 */
+.page-studio .wiz-row.two-col,
+.page-studio .wiz-row.three-col { gap: 15px; }
+.page-studio .wiz-row.two-col > *,
+.page-studio .wiz-row.three-col > * { min-width: 0; }
+
+/* 描述文字 */
+.page-studio .wiz-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 9px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(176, 141, 87, .32);
+  line-height: 1.6;
+}
+
+/* ───────── 随缘开局 / 骰子 ───────── */
+.page-studio .fate-hero {
+  background: linear-gradient(135deg, rgba(232, 196, 119, .13), rgba(232, 196, 119, .03));
+  border: 1px solid rgba(232, 196, 119, .3);
+  border-radius: 14px;
+  padding: 15px 18px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .24);
+}
+.page-studio .fate-btn {
+  background: linear-gradient(135deg, #eccb84, #cf9d45);
+  border-radius: 11px;
+  box-shadow: 0 4px 18px rgba(217, 171, 95, .4);
+}
+.page-studio .fate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(217, 171, 95, .55);
+}
+.page-studio .dice-btn {
+  background: rgba(232, 228, 216, .03);
+  border: 1px dashed rgba(232, 228, 216, .24);
+  border-radius: 8px;
+  padding: 4px 11px;
+}
+.page-studio .dice-btn:hover {
+  background: rgba(224, 168, 76, .08);
+  border-color: rgba(224, 168, 76, .5);
+}
+
+/* ───────── 开局模式卡片 ───────── */
+.page-studio .opening-grid { gap: 12px; }
+.page-studio .opening-item {
+  background: rgba(255, 255, 255, .025);
+  border: 1px solid rgba(232, 228, 216, .1);
+  border-radius: 12px;
+  padding: 14px 15px;
+  transition: all .18s ease;
+}
+.page-studio .opening-item:hover {
+  border-color: rgba(224, 168, 76, .42);
+  background: rgba(224, 168, 76, .05);
+  transform: translateY(-2px);
+}
+.page-studio .opening-item.selected {
+  border-color: rgba(224, 168, 76, .68);
+  background: rgba(224, 168, 76, .1);
+  box-shadow: 0 0 0 1px rgba(224, 168, 76, .28), 0 8px 24px rgba(224, 168, 76, .12);
+}
+.page-studio .opening-name { color: #f0d090; font-weight: 700; letter-spacing: 1px; }
+
+/* ───────── 六维分配 ───────── */
+.page-studio .stats-grid { gap: 11px; }
+.page-studio .stat-alloc {
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(232, 228, 216, .1);
+  border-radius: 11px;
+  padding: 9px 13px;
+}
+.page-studio .sa-btn { border-radius: 8px; }
+.page-studio .sa-btn:hover {
+  background: rgba(224, 168, 76, .1);
+  box-shadow: 0 0 12px rgba(224, 168, 76, .16);
+}
+
+/* ───────── 技艺 / 功法卡片 ───────── */
+.page-studio .tech-grid { gap: 11px; }
+.page-studio .tech-item {
+  background: rgba(255, 255, 255, .025);
+  border: 1px solid rgba(232, 228, 216, .1);
+  border-radius: 11px;
+  padding: 12px 14px;
+  transition: all .18s ease;
+}
+.page-studio .tech-item:hover {
+  border-color: rgba(224, 168, 76, .4);
+  background: rgba(224, 168, 76, .05);
+  transform: translateY(-1px);
+}
+.page-studio .tech-item.selected {
+  border-color: rgba(224, 168, 76, .6);
+  background: rgba(224, 168, 76, .1);
+  box-shadow: 0 0 0 1px rgba(224, 168, 76, .24);
+}
+.page-studio .tech-name { color: #f0d090; }
+
+/* ───────── 底部操作 ───────── */
+.page-studio .wizard-actions {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(232, 228, 216, .08);
+}
+.page-studio .btn-solid {
+  background: linear-gradient(135deg, #efd396, #e0a84c 60%, #c99441);
+  border-radius: 11px;
+  padding: 12px 26px;
+  box-shadow: 0 6px 22px rgba(224, 168, 76, .28), inset 0 1px 0 rgba(255, 255, 255, .22);
+  transition: all .18s ease;
+}
+.page-studio .btn-solid:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(224, 168, 76, .4);
+}
+.page-studio .btn-ghost {
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(232, 228, 216, .14);
+  border-radius: 10px;
+}
+.page-studio .btn-ghost:hover {
+  border-color: rgba(224, 168, 76, .4);
+  color: #e8c97a;
+}
+
+/* ───────── 右侧状态面板 ───────── */
+.page-studio #statusPanel {
+  background: linear-gradient(180deg, rgba(24, 27, 40, .97), rgba(17, 19, 28, .99));
+  border-left: 1px solid rgba(224, 168, 76, .14);
+  box-shadow: -14px 0 44px rgba(0, 0, 0, .26);
+}
+.page-studio .panel-header {
+  background: rgba(23, 26, 38, .96);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(224, 168, 76, .12);
+  padding: 15px 18px 12px;
+}
+.page-studio .panel-title {
+  font-size: 13.5px;
+  letter-spacing: 3px;
+  background: linear-gradient(120deg, #f0d090, #e0a84c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.page-studio .panel-section {
+  margin: 9px 12px;
+  padding: 13px 15px 10px;
+  background: linear-gradient(170deg, rgba(255, 255, 255, .028), rgba(255, 255, 255, .008));
+  border: 1px solid rgba(232, 228, 216, .06);
+  border-radius: 12px;
+}
+.page-studio .panel-section + .panel-section { border-top: none; }
+.page-studio .panel-section:first-of-type { margin-top: 12px; }
+.page-studio .section-title {
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: #b9b19c;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.page-studio .section-title::before {
+  content: "";
+  width: 4px; height: 4px; border-radius: 50%;
+  background: #e0a84c;
+  box-shadow: 0 0 8px rgba(224, 168, 76, .6);
+  flex-shrink: 0;
+}
+
+/* 空态：在卡片槽内收敛为一行轻提示，不再是孤零零灰字 */
+.page-studio .empty-hint {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  padding: 5px 1px;
+  margin: 0;
+  background: none;
+  border: none;
+  line-height: 1.55;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.page-studio .empty-hint::before {
+  content: "";
+  width: 5px; height: 5px; border-radius: 50%;
+  border: 1px solid rgba(232, 228, 216, .28);
+  flex-shrink: 0;
+}
+
+/* 进度条更有质感 */
+.page-studio .progress-bar {
+  height: 7px;
+  background: rgba(0, 0, 0, .4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03);
+}
+.page-studio .progress-fill {
+  background: linear-gradient(90deg, #c99441, #e8c97a);
+  box-shadow: 0 0 10px rgba(224, 168, 76, .35);
+}
+
+/* ───────── 移动端适配 ───────── */
+@media (max-width: 720px) {
+  .page-studio #setupWrap { padding: 18px 12px 74px; }
+  .page-studio .wizard-card { padding: 22px 18px 18px; border-radius: 14px; }
+  .page-studio .wizard-title { font-size: 22px; letter-spacing: 3px; }
+  .page-studio .wizard-sub { font-size: 11.5px; margin-bottom: 18px; }
+  .page-studio .wizard-actions { margin-top: 20px; padding-top: 16px; }
+}
