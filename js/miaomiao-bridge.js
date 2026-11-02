@@ -1,7 +1,7 @@
 /* ============================================================
- * 云境工坊 · 咩咩预设接入层
+ * 云境工坊 · 某预设预设接入层
  * ------------------------------------------------------------
- * 职责：把内嵌预设（preset-miaomiao.js + miaomiao-engine.js）
+ * 职责：把内嵌预设（旧预设数据.js + 旧预设引擎.js）
  *      接到云境的开局设定（config.genreKey / setup.style）上。
  *
  * 只做「对齐」，不改预设任何 prompt 文本：
@@ -27,7 +27,7 @@
     // 推理块：要求模型在正文里输出自定义 XML 推理段，云境只剥 <think>，留着变噪音
     '🎭acg角色心理模型(需搭配世界书)',   // 输出 <acg_think>，原文亦标注"需搭配世界书"
     '🧠思维模式-故事(多选一)',            // 输出 <story_driver> 长推理块
-    // SillyTavern「预填充」专属 hack：靠伪造 </story_driver></thinking></think> 让模型跳过思考。
+    // 常见前端工具「预填充」专属 hack：靠伪造 </story_driver></thinking></think> 让模型跳过思考。
     // 云境没有预填充通道，这些串当 system 文本注入只会污染正文。
     '🧷卡原生思维链-预填充-1',
     '🧷卡原生思维链-预填充-2',
@@ -76,13 +76,13 @@
   var _indexSrc = null;
   function currentPreset() {
     try {
-      if (window.MoMiaomiao && typeof window.MoMiaomiao.preset === 'function') {
-        var p = window.MoMiaomiao.preset();
+      if (window.旧预设对象 && typeof window.旧预设对象.preset === 'function') {
+        var p = window.旧预设对象.preset();
         if (p) return p;
       }
     } catch (e) { }
     /* v3.55.5：内置默认改「云起预设」 */
-    return window.YUNQI_PRESET || window.MIAOMIAO_PRESET || null;
+    return window.YUNQI_PRESET || window.旧预设 || null;
   }
   function index() {
     /* v3.55.5：跟「当前生效预设」走——玩家导入的预设若也带 📕文风· 块，照样对齐；
@@ -166,7 +166,7 @@
     if (pick) extraOn.push(pick);
 
     // 玩家若在设置面板里手动开了别的文风档，尊重玩家：不再强制关日轻
-    var ov = window.MoMiaomiao && window.MoMiaomiao.getOverrides ? window.MoMiaomiao.getOverrides() : {};
+    var ov = window.旧预设对象 && window.旧预设对象.getOverrides ? window.旧预设对象.getOverrides() : {};
     Object.keys(ov).forEach(function (k) {
       if (ov[k] && k.indexOf(PREFIX) === 0) extraOn.push(k);
       // 玩家显式开过的块，取消强制关闭
@@ -181,7 +181,7 @@
    * @param {object} opt { char, user }
    */
   function render(opt) {
-    var M = window.MoMiaomiao;
+    var M = window.旧预设对象;
     if (!M || typeof M.renderWithOverrides !== 'function') return '';
     if (typeof M.enabled === 'function' && !M.enabled()) return '';
 
@@ -228,7 +228,7 @@
 
   /** 用给定覆盖表调引擎（不改 localStorage） */
   function renderWith(M, ov, opt) {
-    var p = M.preset ? M.preset() : (window.YUNQI_PRESET || window.MIAOMIAO_PRESET || null);
+    var p = M.preset ? M.preset() : (window.YUNQI_PRESET || window.旧预设 || null);
     if (!p) return { system: '', vars: {}, included: [] };
     var byId = {};
     p.prompts.forEach(function (x) { byId[x.identifier] = x; });
@@ -276,7 +276,7 @@
     return Object.keys(index());
   }
 
-  window.MoMiaomiaoBridge = {
+  window.旧预设桥 = {
     worldName: worldName,
     resolveStyleBlock: resolveStyleBlock,
     buildRenderOpts: buildRenderOpts,

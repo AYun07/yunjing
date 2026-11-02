@@ -808,8 +808,9 @@ const MoChibi = {
     this._setImg(this.chibiSrc() + "?v=3.61.0");
   },
   /** 公开动作 API：玩家/系统调用——做到"像动画一样可以做动作" */
-  playAction(name) {
+  playAction(name, _internal) {
     this.wake();
+    if (!_internal) this._danceSeq = (this._danceSeq || 0) + 1; /* 外部动作打断未完成的连招 */
     if (name === "wave") {
       if (!this.setPose("wave", 1700)) this.playAnim("mc-hop", 700);
       this.setFace("happy", 1800);
@@ -828,9 +829,10 @@ const MoChibi = {
     } else if (name === "bow") {
       this.playAnim("mc-peek", 1400); this.setFace("shy", 2200);
     } else if (name === "dance") {
-      this.playAction("wave");
-      setTimeout(() => this.playAction("spin"), 520);
-      setTimeout(() => this.playAction("happy"), 1120);
+      const my = this._danceSeq;
+      this.playAction("wave", true);
+      setTimeout(() => { if (this._danceSeq === my) this.playAction("spin", true); }, 520);
+      setTimeout(() => { if (this._danceSeq === my) this.playAction("happy", true); }, 1120);
     }
   },
   /* ==================== 亲密度（v3.60.0 · 持久化） ==================== */
