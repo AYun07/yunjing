@@ -1501,23 +1501,6 @@ body.narrow .mo-bubble { max-width: 92%; }
     -webkit-user-drag: none;
     pointer-events: none;
 }
-/* v3.61.0 小云动态引擎：idle 视频循环 + 关键动作帧动画（chibi-anim.js 三层架构） */
-.mc-video {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: contain;
-    object-position: bottom center;
-    pointer-events: none;
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.3));
-}
-.mc-frame {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: contain;
-    object-position: bottom center;
-    pointer-events: none;
-    display: none;
-}
 
 /* v1.9.0 闲置避让：闲置 6s 自动降透明,底下文字透出;指针靠近恢复(见 mo-chibi.js wake) */
 .mo-chibi.dim { opacity: 0.3; }
@@ -1649,6 +1632,10 @@ body.narrow .mo-bubble { max-width: 92%; }
     60%      { transform: translateX(-7px) rotate(-3.5deg); }
 }
 .mc-float.mc-peek { animation: mcPeek 1.35s ease-in-out; }
+/* v3.61.0 动作姿态交叉淡入：切换挥手/战斗/开心等关键帧时平滑过渡，避免硬切闪烁 */
+.mc-img { transition: opacity .18s ease; }
+@keyframes mcPosePop { 0% { opacity: .2; } 100% { opacity: 1; } }
+.mc-img.mc-pose-pop { animation: mcPosePop .3s ease; }
 /* 视线跟随：整身朝光标方向轻微倾斜（气泡随之微倾，像转头看人） */
 .mo-chibi.watching { transform: rotate(var(--mc-lean, 0deg)); transition: transform .4s ease; }
 .mo-chibi.dragging.watching { transform: rotate(-9deg) scale(1.06); }
