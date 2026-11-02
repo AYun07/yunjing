@@ -84,20 +84,25 @@ const StoryKnowledge = {
         this._loadExt(g, v, loadOne);
         return true;
       }
-      /* 该界没有独立文件（或路径 404）→ 回退整包，但先查索引，别为一条都没有的界白下 9MB */
+      /* v3.79.0 体积优化：整包回退（js/preset-knowledge.js）已删除。
+         依据：实测该整包 9.07MB 与 js/kb/ 分界文件内容 100% 重复（凡人/斗罗/武侠/
+         悬疑等界交集全等、仅PK=0），且已过期（缺 v3.67.0 新增条目）；而 33 个界
+         全部有 core+ext 文件，这条回退分支永远走不到，属纯冗余（占工作区 25.6%）。
+         韧性不降级：core 加载失败的真实成因是瞬时 404 / 网络抖动，重试一次即可覆盖。 */
       let ok2 = false;
       try {
-        const idx = await fetch(`js/kb/_index.json?v=${v}`).then((r) => r.ok ? r.json() : null).catch(() => null);
-        if (idx && idx.genres && !idx.genres[g]) {
-          console.warn(`[StoryKnowledge] 整包预置库无「${g}」条目，跳过 9MB 整包下载`);
+        await new Promise((r) => setTimeout(r, 600));
+        ok2 = await loadOne(`js/kb/${g}.core.js?v=${v}`);
+        if (ok2 && window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
+          this._loadExt(g, v, loadOne);
         } else {
-          ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+          ok2 = false;
         }
       } catch (e) {
-        ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+        ok2 = false;
       }
       window.__KB_SPLIT_OK__ = ok2;
-      if (!ok2) console.warn("[StoryKnowledge] 世界书加载失败：本界将只有玩家自建条目");
+      if (!ok2) console.warn("[StoryKnowledge] 世界书加载失败：本界将只有玩家自建条目（刷新页面可重试）");
       return ok2;
     });
     return window.__kbLoading;
@@ -177,7 +182,9 @@ const StoryKnowledge = {
   // v9：全员防八股（套话禁词总库 + 套路替换手册，11 工坊全注入，含 free）；
   // v8：六界新增群像语音库（配角台词模板）；v7：人物语音库
   /**
-   * 进入本工坊时自动写入该工坊的专属预置知识（js/preset-knowledge.js）。
+   * 进入本工坊时自动写入该工坊的专属预置知识（js/kb/<界>.core.js + .ext.js
+   * 按界懒加载；v3.79.0 起不再使用 9MB 整包 js/preset-knowledge.js —— 与分界文件
+   * 内容 100% 重复且已过期，见 _ensureKB 中的说明）。
    * 同名条目跳过（保护用户已录入内容）；注入按版本标记执行——
    * 预置库扩容（版本号变化）时，老存档也会自动补入新增条目；
    * 删除预置条目后不会自动复活，需要找回时用面板的「↺ 预置」按钮（restorePresets）。
