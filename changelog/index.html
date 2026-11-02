@@ -282,6 +282,21 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="视觉 UI 大厅 排版 字体 大改" style="--entry-hue:#e8c97a;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.74.0</span>
+                <span class="entry-date">2026-11-02</span>
+                <span class="entry-title">大厅排版大改「卷首·字有千钧」：换字体三件套 + 左对齐杂志式骨架 + 一主四辅工坊栅格</span>
+            </div>
+            <div class="entry-body">
+                <p><b>这次动的是骨架与字体，不是配色修补。<code>css/lobby-refresh.css</code> 整体重写（仍作用域 <code>html body.page-index</code> 可整体回滚），index 头部接入网络字体。</b></p>
+                <p><b>① 字体三件套</b>：正文换「霞鹜文楷」（jsdelivr），巨标题/刊头用「思源宋体 900」（Google Fonts），西文水印与刊号用 Cormorant Garamond；均带系统回退，断网不破版。</p>
+                <p><b>② 门面</b>：从居中堆叠改为左对齐编辑部式——YUNJING 轮廓水印压底、「云境」巨字最大 136px、金色短划取代居中分隔线、特性词条从胶囊改为书眉注虚线式。</p>
+                <p><b>③ 五大工坊</b>：等宽五卡改为「一主四辅」非对称栅格（12 列网格，主角卡占 2 行、辅卡横向布局），卡加刊号 01-05 角标，全部左对齐。</p>
+                <p><b>④ 刊头/分组/卷首语</b>：分区标题改左对齐刊头（金竖条+延展细线）；33 界分组卡琉璃化靠左；卷首语横幅加大字级、六个「XX·入场」按钮改单排不折行。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="视觉 UI 主界面 大厅 美化" style="--entry-hue:#e8c97a;">
             <div class="entry-head">
                 <span class="entry-ver">v3.73.0</span>
