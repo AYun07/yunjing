@@ -360,14 +360,14 @@ function buildPlayerIdentityCard(setup, config) {
   const parts = [`【玩家身份卡（最高优先级，全程锁定）】`];
   /* v3.55.19 世界描述随叙事立场变化（旧文案只有「玩家主导 / 禁止二创」两档，
      没有「玩家取代原著主角」这一档） */
-  const _stance = window.StoryStance ? StoryStance.get() : free ? "freewill" : "cohabit";
+  const _stance = window.StoryStance ? StoryStance.get() : free ? "original" : "hero";
   const _canon = window.StoryStance ? StoryStance.canonHeroName() : "原著主角";
   parts.push(
-    _stance === "replace"
-      ? `世界：《${config.genreName}》原著世界（玩家取代原著主角${_canon}——${_canon}不再作为独立人物登场，原著主线由玩家亲历）`
-      : _stance === "freewill"
-        ? `世界：《${config.genreName}》原著世界（原著设定为底 · 剧情走向由玩家主导，可改写原著大势）`
-        : `世界：《${config.genreName}》原著世界（严格遵循原著设定；玩家是这世界里活生生的一份子，${_canon}有他自己的一生）`
+    _stance === "hero"
+      ? `世界：《${config.genreName}》原著世界（玩家即原著主角${_canon}——${_canon}不再作为独立人物登场，原著主线由玩家亲历，大势不可改、小势可调）`
+      : _stance === "side"
+        ? `世界：《${config.genreName}》原著世界（玩家是原著配角，按该配角的原著定位展开属于自己的人生线；${_canon}有他自己的一生）`
+        : `世界：《${config.genreName}》原著世界（玩家是完全原创角色，无任何原著身份；路径与际遇全由玩家把控，大模型辅助推演交汇）`
   );
   if (setup.playerName) parts.push(`玩家角色：${setup.playerName}（${setup.gender || "男"}，${setup.age || 18}岁）`);
   /* v3.47.18 玩家亲笔的主角小传：这是「我是这个世界的一份子」最核心的自定义内容。
@@ -430,9 +430,9 @@ function buildPlayerIdentityCard(setup, config) {
     });
     parts.push(`角色资质：${statKeys.map((k) => `${labelMap[k] || k} ${stats[k]}`).join(" / ")}`);
   }
-  /* v3.55.19 立场铁律三选一：取代主角 / 同行者（默认）/ 搅局者。
-     旧逻辑只有「自由 / 原著」两档，且没有「取代主角」这一档——玩家想替代原著主角时
-     只能在自定义身份里手写，AI 常常认不出来。 */
+  /* v3.62.0 身份三态：原著主角 / 原著配角 / 完全原创。
+     旧逻辑只有「取代主角 / 同行者 / 搅局者」三档，且与玩家身份（穿越者/土著）耦合；
+     现收敛为「你是谁」三态，主角态锁定大势节点、配角态按原著定位生成人生、原创态全自由。 */
   if (window.StoryStance) {
     const isRP = config && config.mode === "roleplay";
     parts.push(StoryStance.buildDirective(setup.playerName || "", StoryStance.canonHeroName(), isRP));

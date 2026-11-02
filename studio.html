@@ -16,7 +16,7 @@
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=3.55.29"></script>
     <title>云境 v3.55.29 · AI短篇小说创作室</title>
-    <link rel="stylesheet" href="css/base-style.css?v=3.60.0">
+    <link rel="stylesheet" href="css/base-style.css?v=3.62.0">
     <link rel="stylesheet" href="css/immersive-style.css?v=3.55.29">
     <!-- v3.38.1 错误哨兵：必须最先加载（ES5 写法，任何内核可解析）——
          脚本加载失败/运行异常时屏幕直接显示出错文件，玩家可截图反馈 -->
@@ -29,11 +29,11 @@
     <script src="js/mo-utils.js?v=3.55.29"></script>
     <script src="js/mo-store.js?v=3.55.29"></script>
     <!-- v3.55.20 世界是活的·续：玩家身份(穿越者/土著)与原著主角关系(同伴/敌对/陌路) + 世界自主演化 + 本界资料库；前版(叙事立场三选一/机缘账本/上下文面板)见下 -->
-    <script src="js/story-stance.js?v=3.55.29"></script>
+    <script src="js/story-stance.js?v=3.62.0"></script>
     <script src="js/canon-ledger.js?v=3.55.29"></script>
     <script type="text/yj-lazy" data-src="js/context-panel.js?v=3.55.29" data-yj-group="batch"></script>
     <!-- v3.55.20 玩家身份(穿越者/土著)与原著主角关系(同伴/敌对/陌路) -->
-    <script src="js/story-identity.js?v=3.55.29"></script>
+    <script src="js/story-identity.js?v=3.62.0"></script>
     <!-- v3.55.20 本界资料库：每界一份 lore 库，可增补/从故事抽取/注入主笔 -->
     <script type="text/yj-lazy" data-src="js/world-book.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/canon-timeline.js?v=3.55.29" data-yj-group="batch"></script>
@@ -377,7 +377,7 @@
     <script type="text/yj-lazy" data-src="js/miaomiao-regex.js?v=3.55.29" data-yj-group="batch"></script>
     <!-- v3.55.10 云起预设云端同步：从 GitHub 拉最新版，预设更新不用再导入 -->
     <script type="text/yj-lazy" data-src="js/yunqi-sync.js?v=3.55.29" data-yj-group="batch"></script>
-    <script defer src="js/ai-message-builder.js?v=3.55.29"></script>
+    <script defer src="js/ai-message-builder.js?v=3.62.0"></script>
     <script defer src="js/ai-response-handler.js?v=3.55.30"></script>
     <script defer src="js/story-status-renderer.js?v=3.58.0"></script>
     <script type="text/yj-lazy" data-src="js/atlas-panel.js?v=3.58.0" data-yj-group="demand" data-yj-globals="StoryAtlas"></script>
@@ -388,7 +388,7 @@
     <script type="text/yj-lazy" data-src="js/immersive-suite.js?v=3.55.29" data-yj-group="demand" data-yj-globals="ImmersiveSuite"></script>
     <script type="text/yj-lazy" data-src="js/immersion-plus.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/timeline-branch.js?v=3.55.29" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/story-setup-wizard.js?v=3.55.29" data-yj-group="demand" data-yj-globals="StorySetupWizard"></script>
+    <script type="text/yj-lazy" data-src="js/story-setup-wizard.js?v=3.62.0" data-yj-group="demand" data-yj-globals="StorySetupWizard"></script>
     <script defer src="js/user-input-handler.js?v=3.55.30"></script>
     <script defer src="js/inspiration-engine.js?v=3.55.29"></script>
     <script defer src="js/dynamic-world.js?v=3.55.29"></script>
@@ -645,17 +645,17 @@ const Toolbox = {
         this.syncCelebrState();
         return;
       case "freedomToggle": {
-        /* v3.55.19 三档叙事立场循环：取代主角 → 同行者 → 搅局者 */
+        /* v3.62.0 三态身份循环：原著主角 → 原著配角 → 完全原创 */
         if (window.StoryStance) {
           const id = StoryStance.cycle();
           const info = StoryStance.info();
           this.syncFreedomState();
           const canon = StoryStance.canonHeroName();
-          const tip = id === "replace"
-            ? `👑 取代主角：你就是${canon}本人，原著主线由你亲历，${canon}不再作为独立人物登场`
-            : id === "freewill"
-              ? "🌪 搅局者：你是自创角色，行动可以偏转甚至改写原著大势"
-              : `🧍 同行者：你是这世界里活生生的一份子，${canon}有他自己的人生主线，不因你而改道`;
+          const tip = id === "hero"
+            ? `👑 原著主角：你就是${canon}本人，原著主线由你亲历，大势不可改、小势可调`
+            : id === "side"
+              ? `🎭 原著配角：你成为某位原著配角，按其在原著的定位活出自己的人生线`
+              : `✨ 完全原创：你是完全自创角色，路径与际遇全由你把控，大模型辅助推演`;
           (_t = window.showToast) == null ? void 0 : _t.call(window, tip + "（再点可切换）");
         } else {
           const free = (_s = window.StoryFreedom) == null ? void 0 : _s.toggle();
