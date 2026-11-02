@@ -165,3 +165,154 @@ body.page-index .footer-log a { color: #9dc4e2; }
     .mh-chips span { font-size: 10.5px; padding: 4px 10px; }
     body.page-index::before, body.page-index::after { filter: blur(34px); }
 }
+
+/* ============================================================
+   云境 · 主界面焕新层「天光玻璃」 v3.66.0
+   —— 在晓云天光基调上做一次现代化跃迁：
+   极光天幕 + 玻璃拟态卡片 + 光泽扫过 + 渐入动效。
+   仅追加覆盖，不改任何业务类名与交互结构。
+   ============================================================ */
+
+:root {
+    --glass-bg: linear-gradient(160deg, rgba(28, 48, 76, 0.52), rgba(14, 26, 44, 0.58));
+    --glass-border: rgba(160, 208, 244, 0.16);
+    --glass-hi: rgba(220, 240, 252, 0.09);
+}
+
+/* ---------- 极光天幕：三层极光带 + 星尘 ---------- */
+body.page-index {
+    background-color: #0a1220;
+    background-image:
+        radial-gradient(ellipse 1100px 480px at 50% -12%, rgba(96, 168, 240, 0.16), transparent 64%),
+        radial-gradient(ellipse 900px 420px at 12% 2%, rgba(126, 108, 236, 0.12), transparent 60%),
+        radial-gradient(ellipse 820px 400px at 92% 10%, rgba(240, 150, 110, 0.10), transparent 58%),
+        radial-gradient(ellipse 1400px 700px at 50% 116%, rgba(64, 150, 190, 0.12), transparent 66%);
+}
+body.page-index::before {
+    background: linear-gradient(90deg, rgba(111, 183, 232, 0.10), rgba(126, 140, 236, 0.08), rgba(240, 176, 128, 0.07));
+    width: 62vw; height: 14vh;
+    filter: blur(60px);
+    animation-duration: 70s;
+}
+body.page-index::after {
+    background: linear-gradient(90deg, rgba(122, 200, 192, 0.08), rgba(111, 183, 232, 0.09));
+    width: 54vw; height: 16vh;
+    filter: blur(64px);
+    animation-duration: 95s;
+}
+
+/* ---------- 玻璃工坊卡片：拟态底 + 渐变描边 + 光泽扫过 + 抬升 ---------- */
+body.page-index .workshop {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(14px) saturate(1.35);
+    backdrop-filter: blur(14px) saturate(1.35);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow:
+        inset 0 1px 0 var(--glass-hi),
+        0 10px 32px rgba(4, 10, 20, 0.45);
+    transition: transform .35s cubic-bezier(.22, .9, .3, 1.2), box-shadow .35s ease, border-color .35s ease;
+    overflow: hidden;
+    position: relative;
+}
+body.page-index .workshop::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 32%, rgba(220, 242, 252, 0.13) 48%, transparent 62%);
+    transform: translateX(-120%);
+    transition: transform .8s ease;
+    pointer-events: none;
+}
+body.page-index .workshop:hover {
+    transform: translateY(-6px);
+    border-color: rgba(170, 216, 248, 0.34);
+    box-shadow:
+        inset 0 1px 0 rgba(225, 243, 252, 0.13),
+        0 20px 44px rgba(4, 10, 20, 0.55),
+        0 0 30px rgba(111, 183, 232, 0.16);
+}
+body.page-index .workshop:hover::after { transform: translateX(120%); }
+
+/* 工坊字徽：实色渐变底 + 柔光，替代空心方框 */
+body.page-index .ws-glyph {
+    /* 老内核回退（Chrome<111 无 color-mix）：先给静态底色，支持的浏览器再用混色覆盖 */
+    background: rgba(111, 183, 232, 0.16);
+    border: 1px solid rgba(140, 196, 240, 0.4);
+    color: #cfe6fa;
+    box-shadow: 0 4px 18px rgba(111, 183, 232, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    text-shadow: 0 0 14px rgba(111, 183, 232, 0.55);
+    background: linear-gradient(150deg, color-mix(in srgb, var(--ws-hue) 34%, transparent), color-mix(in srgb, var(--ws-hue) 10%, transparent));
+    border-color: color-mix(in srgb, var(--ws-hue) 45%, transparent);
+    color: color-mix(in srgb, var(--ws-hue) 82%, #ffffff);
+    box-shadow: 0 4px 18px color-mix(in srgb, var(--ws-hue) 22%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    text-shadow: 0 0 14px color-mix(in srgb, var(--ws-hue) 60%, transparent);
+}
+
+/* ---------- 门面 masthead：大标题光晕 + 玻璃 chips ---------- */
+body.page-index .masthead h1 {
+    background: linear-gradient(135deg, #f2f9ff 8%, #a8d4f4 42%, #cfe0ff 64%, #f4c9a2 94%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 30px rgba(120, 190, 245, 0.35)) drop-shadow(0 0 60px rgba(120, 170, 240, 0.15));
+}
+body.page-index .mh-chips span {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 var(--glass-hi);
+}
+body.page-index .gold-divider {
+    background: linear-gradient(90deg, transparent, rgba(122, 200, 192, 0.7) 28%, rgba(111, 183, 232, 0.85) 50%, rgba(240, 176, 128, 0.7) 72%, transparent);
+    height: 1.5px;
+    box-shadow: 0 0 14px rgba(111, 183, 232, 0.35);
+}
+
+/* ---------- 区块标题：渐变光带 + 药丸文字 ---------- */
+body.page-index .section-title {
+    color: #d8e9f7;
+    text-shadow: 0 0 18px rgba(111, 183, 232, 0.3);
+    letter-spacing: 5px;
+}
+body.page-index .ws-group {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(12px) saturate(1.25);
+    backdrop-filter: blur(12px) saturate(1.25);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 var(--glass-hi), 0 8px 26px rgba(4, 10, 20, 0.4);
+}
+body.page-index .ws-ctl-btn {
+    background: rgba(20, 36, 58, 0.5);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+}
+
+/* ---------- 渐入动效：首屏元素依次浮现 ---------- */
+@keyframes yjRise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+body.page-index .masthead { animation: yjRise .7s ease-out both; }
+body.page-index .workshops .workshop { animation: yjRise .6s ease-out both; }
+body.page-index .workshops .workshop:nth-child(1) { animation-delay: .08s; }
+body.page-index .workshops .workshop:nth-child(2) { animation-delay: .16s; }
+body.page-index .workshops .workshop:nth-child(3) { animation-delay: .24s; }
+body.page-index .workshops .workshop:nth-child(4) { animation-delay: .32s; }
+body.page-index .workshops .workshop:nth-child(5) { animation-delay: .40s; }
+@media (prefers-reduced-motion: reduce) {
+    body.page-index .masthead, body.page-index .workshops .workshop { animation: none; }
+    body.page-index .workshop, body.page-index .workshop::after { transition: none; }
+}
+
+/* ---------- 版本徽标 ---------- */
+body.page-index .ver-badge {
+    background: rgba(18, 32, 52, 0.66);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(160, 208, 244, 0.22);
+}
+
+/* ---------- 开屏同步焕新 ---------- */
+body.page-index #splash { background: radial-gradient(ellipse 900px 500px at 50% 30%, #14263f, #0a1220 78%); }
