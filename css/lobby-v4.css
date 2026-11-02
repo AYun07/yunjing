@@ -17,7 +17,7 @@
   --tx-2: #5c6b66;           /* 次级 */
   --tx-3: #93a29b;           /* 弱化 */
   --line: #e3e7e0;           /* 细线 */
-  --serif-disp: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --serif-disp: 'LXGW WenKai', 'Noto Serif SC', 'Kaiti SC', 'KaiTi', serif;
   --kai: 'LXGW WenKai', 'Noto Serif SC', 'Kaiti SC', 'KaiTi', serif;
   --eng: 'Cormorant Garamond', 'Times New Roman', serif;
 }
@@ -117,31 +117,64 @@ body.page-index {
   color: var(--teal);
   margin-bottom: 26px;
 }
-.masthead h1 {
-  font-family: var(--serif-disp);
-  font-size: clamp(72px, 10.5vw, 124px);
-  font-weight: 900;
-  letter-spacing: 12px;
-  line-height: 1.08;
+.logo-kai {
+  font-family: var(--kai);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
   color: var(--deep);
+  display: flex; align-items: flex-start;
 }
-.masthead h1::after {
-  content: "境";
+/* 「云」：特大楷字 */
+.logo-kai .lk-a {
+  font-size: clamp(88px, 12vw, 148px);
+  letter-spacing: 0;
+}
+/* 「境」：缩小、下沉、青瓷色——错落双色变体 */
+.logo-kai .lk-b {
+  font-size: clamp(64px, 8.6vw, 106px);
+  color: var(--teal);
+  margin: .34em 0 0 .1em;
+  position: relative;
+}
+/* 「境」尾一粒金点 */
+.logo-kai .lk-b::after {
+  content: "";
+  position: absolute;
+  right: -.32em; top: .1em;
+  width: .13em; height: .13em;
+  background: var(--gold);
+  border-radius: 50%;
+}
+/* 金圆印：一枚「游」字 */
+.logo-kai::after {
+  content: "游";
   display: inline-flex;
   align-items: center; justify-content: center;
-  vertical-align: .16em;
-  margin-left: 18px;
-  background: linear-gradient(135deg, var(--teal), var(--deep));
-  color: #f3efe2;
-  font-family: var(--serif-disp);
+  margin: .18em 0 0 30px;
+  background: linear-gradient(135deg, #cfb26a, var(--gold));
+  color: #fdfaf2;
+  font-family: var(--kai);
   font-weight: 700;
-  font-size: clamp(24px, 3.2vw, 38px);
-  width: clamp(48px, 5.6vw, 64px); height: clamp(48px, 5.6vw, 64px);
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(30, 61, 64, .28);
-  letter-spacing: 0; text-indent: 0;
+  font-size: clamp(20px, 2.4vw, 30px);
+  width: clamp(44px, 4.8vw, 58px); height: clamp(44px, 4.8vw, 58px);
+  border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(185, 141, 63, .35), inset 0 0 0 2px rgba(253, 250, 242, .5);
 }
 .masthead .gold-divider { display: none; }
+/* 右缘竖排英文水印 */
+.masthead::after {
+  content: "CLOUD REALMS";
+  position: absolute;
+  right: -6px; top: 210px;
+  writing-mode: vertical-rl;
+  font-family: var(--eng);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .55em;
+  color: rgba(46, 110, 99, .18);
+  pointer-events: none;
+}
 /* 副题 */
 .masthead .sub {
   margin-top: 26px;
@@ -177,11 +210,12 @@ body.page-index {
 /* 小云：门面右上 */
 .mh-mascot {
   position: absolute;
-  right: -18px;
-  top: 46px;
-  width: 190px;
+  right: -10px;
+  top: 18px;
+  width: 152px;
   height: auto;
-  filter: drop-shadow(0 16px 28px rgba(30, 61, 64, .14));
+  z-index: 3;
+  filter: drop-shadow(0 14px 24px rgba(30, 61, 64, .16));
   pointer-events: none;
   animation: floaty 5.5s ease-in-out infinite;
 }
@@ -194,10 +228,10 @@ body.page-index {
 .section-title {
   display: flex; align-items: baseline; gap: 16px;
   margin: 78px 0 24px;
-  font-family: var(--serif-disp);
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 5px;
+  font-family: var(--kai);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 6px;
   color: var(--deep);
 }
 .section-title::before {
@@ -212,8 +246,15 @@ body.page-index {
 .container > .workshops {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
-  gap: 16px;
+  gap: 16px 18px;
+  padding-top: 14px;
 }
+/* 波浪错落：奇数卡抬升、偶数卡下沉，破除一排等高的死板感 */
+.container > .workshops > .workshop { transition: transform .3s cubic-bezier(.34,1.4,.44,1), box-shadow .3s, border-color .3s; }
+.container > .workshops > .workshop:nth-child(odd)  { transform: translateY(-10px); }
+.container > .workshops > .workshop:nth-child(even) { transform: translateY(12px); }
+.container > .workshops > .workshop:nth-child(odd):hover  { transform: translateY(-18px); }
+.container > .workshops > .workshop:nth-child(even):hover { transform: translateY(4px); }
 .container > .workshops > .workshop {
   position: relative;
   display: flex; flex-direction: column;
@@ -237,7 +278,6 @@ body.page-index {
   opacity: .9;
 }
 .container > .workshops > .workshop:hover {
-  transform: translateY(-6px);
   border-color: hsl(var(--ws-hue, 168), 38%, 66%);
   box-shadow: 0 18px 38px hsla(var(--ws-hue, 168), 35%, 30%, .16);
 }
@@ -420,7 +460,11 @@ body.page-index {
 }
 
 /* ───────── 初来乍到 ───────── */
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 4px; }
+@media (min-width: 761px) {
+  .info-card:nth-child(even) { transform: translateY(16px); }
+  .info-grid { padding-bottom: 16px; }
+}
 .info-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -463,15 +507,17 @@ body.page-index {
 
 /* ───────── 沉浸扮演：青墨全宽段 ───────── */
 .rp-promo {
-  margin: 88px -36px 0;
+  margin: 96px 0 0;
   background:
     radial-gradient(ellipse 640px 320px at 88% -10%, rgba(185, 141, 63, .2), transparent 60%),
     radial-gradient(ellipse 520px 300px at 5% 110%, rgba(46, 110, 99, .3), transparent 60%),
     linear-gradient(135deg, var(--deep) 0%, var(--deep-2) 100%);
   color: #eef3ef;
-  padding: 68px 64px 56px;
+  padding: 60px 58px 52px;
   position: relative;
   overflow: hidden;
+  border-radius: 26px;
+  box-shadow: 0 24px 60px rgba(22, 48, 47, .3);
 }
 .rp-promo-mark {
   position: absolute;
@@ -492,10 +538,11 @@ body.page-index {
   color: #9fc3b4;
 }
 .rp-title {
-  font-family: var(--serif-disp);
-  font-size: clamp(30px, 5vw, 44px);
-  font-weight: 900;
-  letter-spacing: 5px;
+  font-family: var(--kai);
+  font-size: clamp(27px, 3.6vw, 37px);
+  font-weight: 700;
+  letter-spacing: 4px;
+  white-space: nowrap;
   margin-top: 18px;
   color: #f6f4ea;
   background: linear-gradient(90deg, #f6f4ea 55%, #d9c08a);
@@ -519,7 +566,11 @@ body.page-index {
   letter-spacing: .5px;
   color: #b9c8bf;
 }
-.rp-feats { margin-top: 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (min-width: 961px) {
+  .rp-head { display: grid; grid-template-columns: 1.3fr 1fr; gap: 44px; align-items: start; }
+  .rp-head .rp-cta { grid-column: 1 / -1; }
+}
+.rp-feats { margin-top: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .rp-feat {
   background: rgba(238, 243, 239, .06);
   border: 1px solid rgba(238, 243, 239, .14);
@@ -596,6 +647,7 @@ body.page-index {
   .container { padding: 0 18px calc(30px + env(safe-area-inset-bottom, 0px)); }
   .masthead { padding: 54px 0 6px; }
   .masthead::before { font-size: 10.5px; letter-spacing: .3em; margin-bottom: 20px; }
+  .masthead::after { display: none; }
   .masthead h1 { font-size: clamp(58px, 17vw, 84px); letter-spacing: 7px; }
   .masthead h1::after { margin-left: 12px; }
   .masthead .sub { margin-top: 20px; font-size: 14px; letter-spacing: 4px; }
