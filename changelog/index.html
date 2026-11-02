@@ -282,6 +282,24 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="视觉 UI 主界面 美化 设定台" style="--entry-hue:#e8c97a;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.71.0</span>
+                <span class="entry-date">2026-11-02</span>
+                <span class="entry-title">主界面视觉升级：设定台 / 顶栏 / 状态面板精致化</span>
+            </div>
+            <div class="entry-body">
+                <p><b>把设定台从「开发者原型」提升为成品级界面。全部为视觉层，作用域 <code>.page-studio</code>，新增独立样式 <code>css/ui-refresh.css</code>，可整体移除回滚，不动结构与逻辑。</b></p>
+                <p><b>① 氛围</b>：墨夜底色叠加三处极淡径向光（暖金 / 雾蓝 / 古铜），不再是死黑一片。</p>
+                <p><b>② 顶栏</b>：标题流金渐变、底部一线流光、按钮 hover 上浮发光。</p>
+                <p><b>③ 设定卡</b>：分层玻璃背景 + 顶部流光 + 更柔阴影；标题金色渐变；每个分区加金色竖条标签与细线分隔，形成清晰节奏。</p>
+                <p><b>④ 表单控件</b>：输入框/下拉统一 44px 高、内嵌深色、自定义金箭头、聚焦金色光晕，三列/两列网格间距与等宽对齐统一。</p>
+                <p><b>⑤ 卡片组</b>：开局模式 / 六维分配 / 技艺功法卡片化，hover 抬升、选中态金色描边；主按钮渐变 + 光晕 + 上浮。</p>
+                <p><b>⑥ 状态面板</b>：右栏每区块独立卡片槽（边框 + 圆角 + 微背景），空态从孤零零灰字改为「小圆点 + 轻提示」，不再空荡；进度条加光泽。</p>
+                <p>✅ <b>验收</b>：真机截图（1440×900）设定台首屏/中部/下半三屏均无控制台报错；DOM 实测三列 297px、两列 454px、开局卡与六维卡 222px 全部等宽，无布局溢出。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="性能 优化 缓存 瘦身" style="--entry-hue:#9ad0c0;">
             <div class="entry-head">
                 <span class="entry-ver">v3.70.0</span>
