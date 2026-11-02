@@ -119,6 +119,15 @@
         localStorage.removeItem(`tl_${fw.genre}${suffix}`);
       } catch (e) {
       }
+      // v3.68.0 孤儿数据修复：删槽时灵宠/小队/身份三态/界模块/资料库一并清除
+      try {
+        ['yunjingBeasts', 'yunjingSquad', 'yunjingStoryStance', 'yunjingSideChar', 'yunjingPlayerIdentity', 'yunjingHeroRelation',
+         `worldExt_${fw.genre}`, `yunjingWorldBook:${fw.genre}`].forEach((k) => {
+          localStorage.removeItem(k + suffix);
+          if (!suffix) localStorage.removeItem(k);
+        });
+      } catch (e) {
+      }
       this._write(this.list().filter((x) => x.id !== slotId));
       (_b = window.showToast) == null ? void 0 : _b.call(window, "已删除", "success");
       this.open();
@@ -153,6 +162,13 @@
       const meta = this.list().find((x) => x.id === slotId) || {};
       /* v3.51.0：app 字段改用 yunjing。旧档（app:"moshu"）在导入端仍被接受并就地升级。 */
       const pkg = { app: (window.YunjingID && window.YunjingID.APP) || "yunjing", ver: "3.51.0", genre: fw.genre, slotId, meta, save };
+      /* v3.68.0 存档迁移修复：灵宠/小队随存档导出（跨设备不再丢失） */
+      try {
+        pkg.extras = {
+          beasts: localStorage.getItem(`yunjingBeasts${suffix}`) || "",
+          squad: localStorage.getItem(`yunjingSquad${suffix}`) || ""
+        };
+      } catch (e) { }
       const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -167,6 +183,8 @@
         var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
         try {
           const pkg = JSON.parse(reader.result);
+          /* v3.68.0 导入防护：超大文件直接拒绝，防撑爆配额 */
+          if (String(reader.result || "").length > 20 * 1024 * 1024) throw new Error("存档文件过大（>20MB），疑似损坏文件");
           const okApp = window.YunjingID && window.YunjingID.acceptApp ? window.YunjingID.acceptApp(pkg.app) : (pkg.app === "yunjing" || pkg.app === "moshu");
           if (!okApp || !pkg.save) throw new Error("不是云境存档文件");
           const fw = window.storyFramework;
@@ -174,6 +192,13 @@
           const id = this.create((((_a = pkg.meta) == null ? void 0 : _a.name) || "导入档").slice(0, 24));
           const suffix = `~${id}`;
           localStorage.setItem(`storySave_${fw.genre}${suffix}`, JSON.stringify(pkg.save));
+          /* v3.68.0 存档迁移修复：灵宠/小队随档恢复到新槽位 */
+          try {
+            if (pkg.extras) {
+              if (pkg.extras.beasts) localStorage.setItem(`yunjingBeasts${suffix}`, String(pkg.extras.beasts));
+              if (pkg.extras.squad) localStorage.setItem(`yunjingSquad${suffix}`, String(pkg.extras.squad));
+            }
+          } catch (e) { }
           const arr = this.list();
           const r = arr.find((x) => x.id === id);
           if (r) {

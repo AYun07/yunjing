@@ -8,7 +8,7 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.67.0';  /* v3.67.0 世界书完全丰富（P1）+ 开放大世界设施补齐（P9）：①自由世界(freeworld)补 20 条世界实质——权柄三律/条款效力层级/存在强度/规则漏洞体/法条守卫/悖论造物/未书之野/灰域/另一位创世者/漏洞猎手行会/原住民自治会/创世结晶经济/修宪危机/条款战争/判例库/因果回溯井/立碑远征/立法文风/依法NPC/创世纪元（与既有宪法卡玩法同源）；②自由创作(free)补 10 条运行设施——势力速造器/营生钱袋/声望门路/据点家业/委托差事/行程风物/危机生成器/时间账/恩怨账/规矩红线；③free 界扩展从空槽补为四件配套模块（恩怨账/委托板/据点家业/势力谱，WorldExt 接口全实现：AI 变量上报自动登记+主笔 directive 注入+面板可查可改）。v3.66.0 主界面焕新「天光玻璃」：极光天幕（青紫霞三色极光带+流云）+ 玻璃拟态卡片（毛玻璃+渐变描边+内高光）+ 工坊字徽彩色柔光底 + hover 抬升与光泽扫过 + 首屏渐入动效（stagger，respect prefers-reduced-motion），老内核 color-mix 静态回退。v3.65.0 属性引擎·实时事件化：受伤扣减/疗伤加回/突破精进事件化直接落表（值域0-100仍钳死），落 v.statLog 审计账本并派发 yj:stat-change 即时反馈（面板闪动+Δ浮标：受伤红/恢复绿）；每项数值按语义轴映射专长，实时块与面板同步凸显；主笔实时块新增「数值专长」与「近期数值变动」两行；时间跨越补涨同入账本。v3.64.0 小队系统：邀请同伴/灵宠入队、编队设队长、羁绊驱动协同技、接入主笔与战斗 prompt（与灵宠系统联动）。v3.63.0 灵宠·妖兽·伙伴系统：宠物/灵兽/妖兽/伙伴 四类随行存在，契约→养成→升级→羁绊→随队，按存档持久化，接入主笔 prompt。v3.62.0 身份三态重做：原著主角(大势不可改小势可调)/原著配角(按原著定位生成人生)/完全原创(玩家设定+模型辅助)；开局向导三态卡片+配角选择。v3.61.1 连招健壮性：外部动作打断未完成连招，避免姿态叠加覆盖。v3.61.0 动态小云·全态可交互动画引擎：12 态各 3 个动作姿态关键帧(挥手/战斗/开心)交叉淡入叠加 CSS 动效，待机随机秀动作，菜单「秀一下」编排。v3.60.1 御姐形态重绘：年轻时尚化（香槟金裙+白开衫+云朵耳坠），画风与全 12 态统一。v3.60.0 动态小云：行为引擎(蹦跳/转圈/闲逛/哼歌/真瞌睡)+亲密度+剧情感知+视线跟随+3张半身补全身。v3.59.1 小云十二形态（AI 生图 PNG，删 SVG）。v3.59.0 主界面换肤「晓云天光」+ 小云五形态换装。v3.58.0 世界自活（P6）：原创人物/势力/地点自动繁衍上图 + 自由人生。v3.57.0「让世界活起来」引擎全套（P2-P5）：
+const SW_VER = 'yunjing-v3.68.0';  /* v3.68.0 全项目审计修复：①串档三件套——身份三态/穿越者关系/界专属模块/资料库全部按存档槽隔离(主档裸键零迁移)，清档与删槽一并清灵宠/小队/三态/资料库，灵宠小队随存档导出导入(跨设备不再丢)；②核心循环——driftNotes 类型统一为数组(此前 TypeError 静默吞掉每轮全部场域注记)、JSON 变体路径 wordCount 走增量守卫(+1200 不再清零累计)、未闭合变量块只取协议行段不再把正文当指令、regenerate/rollback 等待期上锁防双击双发、温度 0 不再被 ||0.9 吞掉、章节保底仅在写了块漏 chapter 时推进、补协议请求与闭合自检统一为六类口径、coreContract 变量块改英文固定键协议、场域注记不再静默；③安全——行旅图鉴动态文本(AI 上报地标/大势事件/玩家名)全量转义防存储型 XSS、状态面板 esc 补引号转义、知识库 kb-item 禁用态类名拼接修复(真 bug)、存档导入加 20MB 防护；④SW——缓存命中 ignoreSearch 去参匹配(预缓存此前永不命中白做)、HTML 导航 network-first(版本更新即见新版)、预缓存清单补灵宠/小队/连接配置；⑤接线——灵宠/小队战斗块接入战斗提示词、applyEvent 接战斗受伤/疗伤、主笔灵宠去重(已入队不再重复注入)、立场缺省与新三态对齐(消除双轨矛盾)、灵宠养护/羁绊每轮限次、world-plus 中文数字解析(二十三级不再解析为 null)；⑥UI——studio 版本徽标对齐 v3.68.0 并砍掉 2 万字 title、AI 补记日记字段修正(t.userInput→t.user)、表情面板不再清空已输入文字、小云双 handler 去重、小云隐藏前先告别、队长徽标按队首判定、小队容量口径统一。v3.66.0 主界面焕新「天光玻璃」：极光天幕（青紫霞三色极光带+流云）+ 玻璃拟态卡片（毛玻璃+渐变描边+内高光）+ 工坊字徽彩色柔光底 + hover 抬升与光泽扫过 + 首屏渐入动效（stagger，respect prefers-reduced-motion），老内核 color-mix 静态回退。v3.65.0 属性引擎·实时事件化：受伤扣减/疗伤加回/突破精进事件化直接落表（值域0-100仍钳死），落 v.statLog 审计账本并派发 yj:stat-change 即时反馈（面板闪动+Δ浮标：受伤红/恢复绿）；每项数值按语义轴映射专长，实时块与面板同步凸显；主笔实时块新增「数值专长」与「近期数值变动」两行；时间跨越补涨同入账本。v3.64.0 小队系统：邀请同伴/灵宠入队、编队设队长、羁绊驱动协同技、接入主笔与战斗 prompt（与灵宠系统联动）。v3.63.0 灵宠·妖兽·伙伴系统：宠物/灵兽/妖兽/伙伴 四类随行存在，契约→养成→升级→羁绊→随队，按存档持久化，接入主笔 prompt。v3.62.0 身份三态重做：原著主角(大势不可改小势可调)/原著配角(按原著定位生成人生)/完全原创(玩家设定+模型辅助)；开局向导三态卡片+配角选择。v3.61.1 连招健壮性：外部动作打断未完成连招，避免姿态叠加覆盖。v3.61.0 动态小云·全态可交互动画引擎：12 态各 3 个动作姿态关键帧(挥手/战斗/开心)交叉淡入叠加 CSS 动效，待机随机秀动作，菜单「秀一下」编排。v3.60.1 御姐形态重绘：年轻时尚化（香槟金裙+白开衫+云朵耳坠），画风与全 12 态统一。v3.60.0 动态小云：行为引擎(蹦跳/转圈/闲逛/哼歌/真瞌睡)+亲密度+剧情感知+视线跟随+3张半身补全身。v3.59.1 小云十二形态（AI 生图 PNG，删 SVG）。v3.59.0 主界面换肤「晓云天光」+ 小云五形态换装。v3.58.0 世界自活（P6）：原创人物/势力/地点自动繁衍上图 + 自由人生。v3.57.0「让世界活起来」引擎全套（P2-P5）：
    v3.57.1 修复：EntityStore 单复数归一（list("characters") 曾恒空，关系连线在角色池上静默失效）。
    ① entity-editor.js 统一填表（法宝/势力/地点/关系，schema 驱动）
    ② sim-core.js 推演引擎（规则核心·种子化可复算·what-if 分叉）
@@ -108,7 +108,9 @@ const CORE2 = CORE.concat(GEN, [
   'js/mo-utils.js','js/mo-store.js','js/net-guard.js','js/content-scale.js',
   'js/chat-virtualizer.js','js/transcript-retrieval.js','js/world-book.js',
   'js/story-stance.js','js/story-identity.js','js/canon-ledger.js',
-  'js/canon-timeline.js','js/context-panel.js'
+  'js/canon-timeline.js','js/context-panel.js',
+  /* --- v3.68.0 补齐：灵宠/小队/连接配置此前漏在清单外，离线模式 404 --- */
+  'js/beast-system.js','js/squad-system.js','js/connection-profiles.js'
 ]);
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(SW_VER).then((c) =>
@@ -125,17 +127,31 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return; // AI 接口等跨域请求直连
+  /* v3.68.0 缓存键修复：
+     1. ignoreSearch 命中——页面以 ?v=版本号 请求资源，此前与清单里不带参的
+        预缓存条目永不命中，预缓存全部白做；现去参匹配并命中后回填带参 key。
+     2. HTML 导航改 network-first——版本更新后首屏即见新版，不再要求二次刷新。 */
+  const isHtml = req.mode === 'navigate' || /\.html?$/.test(url.pathname);
   e.respondWith(
-    caches.match(req).then((hit) => {
-      const fetching = fetch(req).then((res) => {
-        if (res && res.ok) {
-          const copy = res.clone();
-          caches.open(SW_VER).then((c) => c.put(req, copy)).catch(() => {});
-        }
-        return res;
-      }).catch(() => hit);
-      return hit || fetching;
-    })
+    (isHtml
+      ? fetch(req).then((res) => {
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(SW_VER).then((c) => c.put(req, copy)).catch(() => {});
+          }
+          return res;
+        }).catch(() => caches.match(req, { ignoreSearch: true }).then((h) => h || caches.match(req)))
+      : caches.match(req, { ignoreSearch: true }).then((hit) => {
+          const fetching = fetch(req).then((res) => {
+            if (res && res.ok) {
+              const copy = res.clone();
+              caches.open(SW_VER).then((c) => c.put(req, copy)).catch(() => {});
+            }
+            return res;
+          }).catch(() => hit);
+          return hit || fetching;
+        })
+    )
   );
 });
 

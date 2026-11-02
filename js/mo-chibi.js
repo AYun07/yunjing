@@ -961,15 +961,20 @@ const MoChibi = {
     }
   },
   hide(silent = false) {
+    /* v3.68.0 顺序修复：先说告别再隐藏——此前容器已加 .hidden 才 say，
+       气泡随容器一起被藏，告别语永远看不见 */
+    if (!silent) this.say("小云先睡啦,想我就点小图标～", 2e3);
     const box = document.getElementById("moChibi");
-    box == null ? void 0 : box.classList.add("hidden");
-    const restore = document.getElementById("moChibiRestore");
-    restore == null ? void 0 : restore.classList.add("show");
+    const doHide = () => {
+      box == null ? void 0 : box.classList.add("hidden");
+      const restore = document.getElementById("moChibiRestore");
+      restore == null ? void 0 : restore.classList.add("show");
+    };
+    if (!silent) setTimeout(doHide, 900); else doHide();
     try {
       localStorage.setItem(this.HIDE_KEY, "1");
     } catch (e) {
     }
-    if (!silent) this.say("小云先睡啦,想我就点小图标～", 2e3);
   },
   show() {
     var _a;

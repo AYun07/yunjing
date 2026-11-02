@@ -25,7 +25,12 @@ function buildEndgamePressure(vars, isRP) {
 const StoryFreedom = {
   KEY: "storyFreedom",
   isFree() {
+    /* v3.68.0 双轨修复：立场三态是唯一权威——original=自由，hero/side=原著轨道。
+       此前旧开关缺省判"自由"，与 hero 态"大势锁死"铁律同时注入，两套矛盾约束并存；
+       三态从未选过时跟随旧开关（老档兼容），选过则一律以三态为准。 */
     try {
+      var stance = window.StoryStance && StoryStance.get ? StoryStance.get() : null;
+      if (stance && window.StoryStance._hasExplicit && StoryStance._hasExplicit()) return stance === "original";
       return localStorage.getItem(this.KEY) !== "canon";
     } catch (e) {
       return true;
@@ -177,7 +182,7 @@ stats.张力: +5
 ⑥【成人】若愿与某人更近一步（中性可选措辞，玩家完全可以忽略）
 六条缺任一类即视为本轮失败；只输出一个 <selection> 块，禁止分两批、禁止另起第二套编号、禁止用 A/B/C 或 1/2/3 编号。
 2｜状态栏——正文与选项之间输出 (status)…(/status)，每行「中文标签：值」，至少包含 时间 / 地点 / 在场 / 心境 / 目标；字段名一律中文，严禁 time/location/health/mood 一类英文 key。
-3｜变量块——正文之后输出 (variable_update)…(/variable_update)，首尾成对闭合，每行 key=value，键名中文（回合/位置/灵石/机缘…）。`;
+3｜变量块——正文之后输出 (variable_update)…(/variable_update)，首尾成对闭合，每行 key=value；固定字段必须用英文键：chapter（章号，整数）与 wordCount（本轮新增字数，报 "+N" 增量形式），其余状态键用中文（位置/灵石/机缘…）。`;
     }
   } catch (e) { coreContract = ''; }
   const system = `${systemPrompt}
@@ -262,7 +267,10 @@ ${intel.map((p) => `· ${p.name}私下透露：${p.text}`).join("\n")}
       if (phoneNote) notes.push(phoneNote);
     } catch (e) {
     }
-    const drift = state.driftNotes;
+    /* v3.68.0 兼容老档：driftNotes 曾被写成字符串，统一归一化为 {text} 数组再消费 */
+    let drift = state.driftNotes;
+    if (typeof drift === "string" && drift.trim()) drift = [{ text: drift }];
+    else if (!Array.isArray(drift)) drift = null;
     if (drift && drift.length) {
       notes.push(`【数值纠偏（上轮正文与状态面板存在矛盾，本轮必须消化，不得无视）】
 ${drift.map((d) => `· ${d.text.split("|").join(" —— ")}`).join("\n")}
@@ -288,6 +296,8 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
     }
     if (notes.length) push({ role: "system", content: notes.join("\n\n") }, "场域注记", 50);
   } catch (e) {
+    /* v3.68.0 不再静默：任一注记子系统抛错至少留痕（此前整段空捕获，出错即无声丢注记） */
+    if (window.YJ_DEBUG) console.warn("[MessageBuilder] 场域注记装配失败:", e);
   }
   const sceneMsg = window.SceneState && window.SceneState.buildInjection ? window.SceneState.buildInjection() : null;
   if (sceneMsg) push(sceneMsg, "舞台现状", 55);
@@ -475,6 +485,15 @@ function buildPlayerIdentityCard(setup, config) {
     const _sq = SquadSystem.buildPromptBlock();
     if (_sq) parts.push(_sq);
   }
+  /* v3.68.0 战斗接线：战斗进行中把灵宠/小队的随战协同块注入主笔——
+     此前 buildCombatBlock 从未被调用，"接入战斗 prompt"只是文件头宣言 */
+  try {
+    const _cst = window.WorldExt && window.WorldExt.modState ? window.WorldExt.modState("wr_combat") : null;
+    if (_cst && _cst.inBattle) {
+      if (window.BeastSystem && BeastSystem.buildCombatBlock) { const _bcb = BeastSystem.buildCombatBlock(); if (_bcb) parts.push(_bcb); }
+      if (window.SquadSystem && SquadSystem.buildCombatBlock) { const _scb = SquadSystem.buildCombatBlock(); if (_scb) parts.push(_scb); }
+    }
+  } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 战斗协同块装配失败:", e); }
   return parts.join("\n");
 }
 function buildStoryDigest() {

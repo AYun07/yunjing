@@ -911,7 +911,9 @@ const StoryStatusRenderer = {
     area.innerHTML = tail.reverse().map((h) => `<div class="history-item">${this.esc(h)}</div>`).join("");
   },
   esc(s) {
-    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    /* v3.68.0 补引号转义：本函数大量用于 HTML 属性上下文（data-name/title/value），
+       角色名含引号时此前会破坏 HTML 结构 */
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 };
 window.StoryStatusRenderer = StoryStatusRenderer;

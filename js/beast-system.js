@@ -99,10 +99,24 @@
     },
 
     /** 养成：喂饲/修行，提升经验与属性（事件驱动，真实落表） */
+    _antiGrind(key, limit) {
+      /* v3.68.0 防刷：每只每轮一次养护/羁绊——按钮可无限连点刷满 999 的失控点封死 */
+      try {
+        var fw = window.storyFramework;
+        var round = (fw && fw.storyState && fw.storyState.turnCount) || 0;
+        this._grind = this._grind || {};
+        var k = key + "@" + round;
+        if (this._grind[k] >= limit) return false;
+        this._grind[k] = (this._grind[k] || 0) + 1;
+        return true;
+      } catch (e) { return true; }
+    },
+
     train(id, opts) {
       opts = opts || {};
       var a = load(); var i = a.findIndex(function (x) { return x.id === id; }); if (i < 0) return null;
       var b = a[i];
+      if (!opts.free && !this._antiGrind("train:" + id, 10)) { if (window.MoChibi) MoChibi.say("「" + b.name + "」这轮已经养护过啦，下轮再来～", 2400); return null; }
       var gain = opts.exp || 12;
       b.exp += gain;
       var grow = opts.statGain || { hp: 2, atk: 1, def: 1, spd: 1 };
@@ -128,7 +142,9 @@
     /** 羁绊增减（0-100） */
     bond(id, delta) {
       var a = load(); var i = a.findIndex(function (x) { return x.id === id; }); if (i < 0) return null;
-      var b = a[i]; b.bond = clamp(b.bond + (delta || 0), 0, 100); a[i] = b; save(a); return b;
+      var b = a[i];
+      if ((delta || 0) > 0 && !this._antiGrind("bond:" + id, 5)) { if (window.MoChibi) MoChibi.say("「" + b.name + "」这轮已经亲近过了，让TA歇歇～", 2400); return null; }
+      b.bond = clamp(b.bond + (delta || 0), 0, 100); a[i] = b; save(a); return b;
     },
 
     /** 设置随队/寄养/镇压状态 */
@@ -149,6 +165,15 @@
      * ===================================================================== */
     buildPromptBlock() {
       var arr = load();
+      /* v3.68.0 去重：已入小队的灵宠由 SquadSystem 块负责呈现，这里跳过，
+         防止同一只每轮被注入两遍（token 浪费且两处数值可能打架） */
+      try {
+        var sqIds = {};
+        if (window.SquadSystem && SquadSystem.list) {
+          SquadSystem.list().forEach(function (m) { if (m && m.beastId) sqIds[m.beastId] = 1; });
+        }
+        if (Object.keys(sqIds).length) arr = arr.filter(function (b) { return !sqIds[b.id]; });
+      } catch (e) { }
       if (!arr.length) return "";
       var lines = ["【玩家随行存在（须始终记得、随剧情合理互动，不得凭空消失或遗忘）】"];
       arr.forEach(function (b) {

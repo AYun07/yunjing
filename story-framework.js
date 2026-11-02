@@ -425,6 +425,15 @@ class StoryFramework {
             if (window.GameLayer && window.GameLayer.resetAll) window.GameLayer.resetAll();
             if (window.ReaderLetters && window.ReaderLetters.resetAll) window.ReaderLetters.resetAll();
             if (window.WorldExt && window.WorldExt._reset) window.WorldExt._reset();
+            // v3.68.0 串档修复：灵宠/小队/身份三态/资料库随清档一并清除（按当前槽位；裸键兜底清老数据）
+            var _sid = this.slotId && this.slotId !== 'main' ? '~' + this.slotId : '';
+            ['yunjingBeasts', 'yunjingSquad', 'yunjingStoryStance', 'yunjingSideChar', 'yunjingPlayerIdentity', 'yunjingHeroRelation'].forEach(function (k) {
+                try { localStorage.removeItem(k + _sid); localStorage.removeItem(k); } catch (e) { }
+            });
+            if (this.config && this.config.genreKey) {
+                try { localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey + _sid); localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey); } catch (e) { }
+                try { localStorage.removeItem('worldExt_' + this.config.genreKey + _sid); localStorage.removeItem('worldExt_' + this.config.genreKey); } catch (e) { }
+            }
             if (this.config && this.config.genreKey) {
                 // 沉浸演出游标（扉页章号 / 回响去重）也是书内状态，一并清
                 ['immTitle_', 'immFlash_'].forEach(p => { try { localStorage.removeItem(p + this.config.genreKey); } catch (e) { } });

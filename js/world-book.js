@@ -30,7 +30,17 @@
       return (c && (c.genreKey || c.genre || c.id)) || "default";
     } catch (e) { return "default"; }
   }
-  function key() { return PREFIX + genreKey(); }
+  function key() { return PREFIX + genreKey() + slotSuffix(); }
+  /* v3.68.0 串档修复：资料库按存档槽隔离（主档裸键零迁移，副档 ~slotId） */
+  function slotSuffix() {
+    try {
+      var fw = window.storyFramework;
+      var sid = (fw && fw.slotId)
+        || localStorage.getItem("storyActiveSlot_" + ((fw && fw.genre) || genreKey()))
+        || "main";
+      return sid && sid !== "main" ? "~" + sid : "";
+    } catch (e) { return ""; }
+  }
   function load() {
     try {
       var raw = localStorage.getItem(key());

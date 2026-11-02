@@ -8,7 +8,17 @@
       return "free";
     }
   })();
-  const STORE = `worldExt_${genre}`;
+  /* v3.68.0 串档修复：界专属模块状态按存档槽隔离（主档裸键零迁移，副档 ~slotId） */
+  const SLOT_SUFFIX = (() => {
+    try {
+      const fw = window.storyFramework;
+      const sid = (fw && fw.slotId)
+        || localStorage.getItem("storyActiveSlot_" + ((fw && fw.genre) || genre))
+        || "main";
+      return sid && sid !== "main" ? "~" + sid : "";
+    } catch (e) { return ""; }
+  })();
+  const STORE = `worldExt_${genre}${SLOT_SUFFIX}`;
   const $id = (i) => document.getElementById(i);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   function asArr(v) {

@@ -44,8 +44,8 @@
       return a;
     },
     /** 不含玩家的可邀请名额 */
-    slotsLeft() { return MAX - load().length; },
-    isFull() { return load().length >= MAX; },
+    slotsLeft() { return MAX - this.list().length; },
+    isFull() { return this.list().length >= MAX; },
 
     /** 邀请一名同伴 / NPC（玩家主动或剧情收入） */
     invite(opts) {
@@ -112,8 +112,21 @@
     },
 
     /* ---------- 主笔 prompt ---------- */
+    /* v3.68.0 数值同步：beast 成员入队时存的是属性快照，灵宠后续升级不回写——
+       呈现时按 beastId 实时回读 BeastSystem，主笔块与灵宠面板不再出现两份数值 */
+    _liveStats(m) {
+      if (m.type === "beast" && m.beastId && window.BeastSystem && BeastSystem.get) {
+        var b = BeastSystem.get(m.beastId);
+        if (b && b.stats) {
+          m.stats = b.stats;
+          m.level = b.level;
+          m.bond = typeof b.bond === "number" ? b.bond : m.bond;
+        }
+      }
+      return m;
+    },
     buildPromptBlock() {
-      var a = load().filter(function (x) { return x.type !== "player"; });
+      var a = load().filter(function (x) { return x.type !== "player"; }).map(function (m) { return SquadSystem._liveStats(m); });
       if (!a.length) return "";
       var lines = ["【玩家小队（须始终记得他们是玩家的同行者，随剧情合理互动、共同历险）】"];
       a.forEach(function (m) {
@@ -127,7 +140,7 @@
       return lines.join("\n");
     },
     buildCombatBlock() {
-      var a = load().filter(function (x) { return x.type !== "player"; });
+      var a = load().filter(function (x) { return x.type !== "player"; }).map(function (m) { return SquadSystem._liveStats(m); });
       if (!a.length) return "";
       var co = this.cooperativeSkills();
       return "【小队协同】本战玩家可携小队成员：" + a.map(function (m) {
@@ -185,7 +198,7 @@
       if (a.length <= 1) { box.innerHTML = '<div class="squad-empty">小队暂时只有你一人。<br>结识同伴、收服灵宠，把空位填满——最多 ' + MAX + ' 人（含你）。</div>'; return; }
       box.innerHTML = a.map(function (m) {
         return '<div class="squad-card">' +
-          '<div class="top"><span class="nm">' + m.name + (m.id === "sq_player" ? " 👑" : "") + '</span><span class="rl">' + (m.role || m.type) + '</span></div>' +
+          '<div class="top"><span class="nm">' + m.name + (list()[0] && list()[0].id === m.id ? " 👑" : "") + '</span><span class="rl">' + (m.role || m.type) + '</span></div>' +
           '<div class="lb">气血' + m.stats.hp + ' · 攻' + m.stats.atk + ' · 防' + m.stats.def + ' · 速' + m.stats.spd + ' · 关系「' + (m.relation || "同伴") + '」 · 羁绊' + (m.bond || 0) + '/100 · 擅长【' + (m.skill || "各展所长") + '】</div>' +
           (m.id === "sq_player" ? "" : '<div class="btns"><button onclick="SquadSystem.setLeader(\'' + m.id + '\')">设为队长</button><button onclick="SquadSystem.bond(\'' + m.id + '\',8)">增进羁绊</button><button onclick="SquadSystem.remove(\'' + m.id + '\')">请离</button></div>') +
           '</div>';
