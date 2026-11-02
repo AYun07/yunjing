@@ -7588,6 +7588,8 @@
     try {
       localStorage.setItem(storeKey(), v);
     } catch (e) {
+      /* v3.68.0 不再静默：足迹落盘失败至少留痕（配额满时玩家应知道足迹可能丢） */
+      if (window.YJ_DEBUG) console.warn("[StoryAtlas] 足迹落盘失败:", e);
     }
     store[storeKey()] = v;
   }
@@ -8296,6 +8298,10 @@
     }
     return h;
   }
+  /* v3.68.0 XSS 修复：AI 上报生成的动态文本（行迹地标/大势事件/玩家名）一律转义后再入 innerHTML */
+  function escA(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  }
   function detailHtml(node, layer, P) {
     const visitedIds = state.visits.map((v) => v.id);
     const isCur = node.id === state.currentId;
@@ -8306,21 +8312,21 @@
     const routes = (layer.roads || []).filter((r) => r.includes(node.id)).map((r) => {
       const other = r[0] === node.id ? r[1] : r[0];
       const n2 = layer.nodes.find((x) => x.id === other);
-      return n2 ? n2.n : "";
+      return n2 ? escA(n2.n) : "";
     }).filter(Boolean);
     return `
         <div class="atlas-detail">
             <div class="ad-head">
-                <div class="ad-title" style="color:${P.primary};">${node.n}</div>
-                <div class="ad-badges">${badge}<span class="ab">${typeTxt(node.t)}</span><span class="ab">${node.rg}</span></div>
+                <div class="ad-title" style="color:${P.primary};">${escA(node.n)}</div>
+                <div class="ad-badges">${badge}<span class="ab">${typeTxt(node.t)}</span><span class="ab">${escA(node.rg)}</span></div>
             </div>
             <div class="ad-row"><span>危险度</span><span class="ad-v">${dangerStars(node.d, P)}</span></div>
-            <div class="ad-desc">${node.dyn && !node.src ? isTraceMode() ? `此处不在预置舆图之上——第 ${node.round} 回合你的行踪落在「${node.raw}」，行旅图鉴随行迹落笔生成此地，坐落于「${node.anchorN}」一带。` : `此处不在原著舆图之上——第 ${node.round} 回合你的行踪落在「${node.raw}」，行旅图鉴随剧情落笔生成此地，坐落于「${node.anchorN}」一带。` : node.desc || ""}</div>
+            <div class="ad-desc">${node.dyn && !node.src ? isTraceMode() ? `此处不在预置舆图之上——第 ${escA(node.round)} 回合你的行踪落在「${escA(node.raw)}」，行旅图鉴随行迹落笔生成此地，坐落于「${escA(node.anchorN)}」一带。` : `此处不在原著舆图之上——第 ${escA(node.round)} 回合你的行踪落在「${escA(node.raw)}」，行旅图鉴随剧情落笔生成此地，坐落于「${escA(node.anchorN)}」一带。` : escA(node.desc || "")}</div>
             ${node.dyn && node.src === "wb" ? `<div class="ad-canon" style="border-left-color:${hexA(P.accent, 0.6)};">📚 资料库地标 · 来自本界资料库的地理条目，随资料库增补自动上图</div>` : ""}
-            ${node.related && node.related.length ? `<div class="ad-canon" style="border-left-color:${hexA(P.primary, 0.5)};">此地相关：${node.related.map((r) => r.cat + "「" + r.n + "」").join(" · ")}</div>` : ""}
+            ${node.related && node.related.length ? `<div class="ad-canon" style="border-left-color:${hexA(P.primary, 0.5)};">此地相关：${node.related.map((r) => escA(r.cat) + "「" + escA(r.n) + "」").join(" · ")}</div>` : ""}
             ${routes.length ? `<div class="ad-route">古道通连 · ${routes.join(" ↔ ")}</div>` : ""}
             ${node.dyn ? `<div class="ad-canon" style="border-left-color:${hexA(P.accent, 0.6)};">${isTraceMode() ? "✦ 行迹地标 · 由 AI 上报行踪实时生成，随经历累积；如系误报可移除" : "✦ 剧情地标 · 由 AI 上报行踪实时生成，随剧情累积；如系误报可移除"}</div>
-                   <button class="ad-del" onclick="StoryAtlas.removeDyn('${node.id}')">✕ 移除此地标</button>` : `<div class="ad-canon" style="border-left-color:${hexA(P.primary, 0.55)};">${isTraceMode() ? "风土地理志" : "原著地理志"} · ${node.c}</div>`}
+                   <button class="ad-del" onclick="StoryAtlas.removeDyn('${escA(node.id)}')">✕ 移除此地标</button>` : `<div class="ad-canon" style="border-left-color:${hexA(P.primary, 0.55)};">${isTraceMode() ? "风土地理志" : "原著地理志"} · ${escA(node.c)}</div>`}
             ${visited ? `<div class="ad-visit">足迹 · 首次到访：第 ${rec && rec.round ? rec.round : "—"} 回合${isCur ? " · 现正身处此地" : ""}</div>` : ""}
         </div>`;
   }
@@ -8343,7 +8349,7 @@
             <div class="atlas-head">
                 <div>
                     <div class="atlas-title" style="color:${P.primary};">${g.name}</div>
-                    <div class="atlas-flavor">「${g.flavor}」${pn ? `<span class="atlas-pn">旅人 · ${pn}</span>` : ""}</div>
+                    <div class="atlas-flavor">「${escA(g.flavor)}」${pn ? `<span class="atlas-pn">旅人 · ${escA(pn)}</span>` : ""}</div>
                 </div>
                 <div class="atlas-hbtns">
                     <button class="atlas-close" title="重置本界足迹" onclick="StoryAtlas.resetFootprint()">↺</button>
@@ -8357,7 +8363,7 @@
             <div class="atlas-progress">
                 <div class="ap-txt"><span>足迹点亮 <b style="color:${P.primary};">${visitedN}</b> / ${totalN} 处${dynN ? ` · <span style="color:${P.accent};">${isTraceMode() ? "行迹" : "剧情"}地标 <b>${dynN}</b></span>` : ""}</span><span style="color:${P.primary};">${pct}%</span></div>
                 <div class="ap-bar"><div class="ap-fill" style="width:${pct}%;background:linear-gradient(90deg,${hexA(P.primary, 0.45)},${P.primary});box-shadow:0 0 8px ${hexA(P.primary, 0.55)};"></div></div>
-                <div class="ap-now">${cur ? cur.standby ? `整装待发 · 起点「${cur.node.n}」——开篇后 AI 上报行踪，足迹自动点亮` : `此刻 · ${cur.node.n}${cur.node.dyn ? '<span style="color:' + P.accent + ';">（' + (isTraceMode() ? "行迹" : "剧情") + "地标）</span>" : ""}` : "尚无位置记录"}</div>
+                <div class="ap-now">${cur ? cur.standby ? `整装待发 · 起点「${escA(cur.node.n)}」——开篇后 AI 上报行踪，足迹自动点亮` : `此刻 · ${escA(cur.node.n)}${cur.node.dyn ? '<span style="color:' + P.accent + ';">（' + (isTraceMode() ? "行迹" : "剧情") + "地标）</span>" : ""}` : "尚无位置记录"}</div>
             </div>
             <div class="atlas-map" style="border-color:${hexA(P.primary, 0.3)};">${layerSvg(layer)}</div>
             <div id="atlasDetail"></div>
@@ -8368,7 +8374,7 @@
                 const ST = CanonTimeline.STATUS;
                 return `<div class="atlas-storm"><div class="as-t">风云 · 大势演化账本</div>` + tl.slice(0, 6).map((x) => {
                   const st = ST[x.status] || ST.pending;
-                  return `<div class="as-row" title="${(x.trigger ? "诱因：" + x.trigger + "　" : "") + (x.now ? "现状：" + x.now : "")}"><span class="as-ico">${st.ico}</span><b>${x.name}</b><i>${st.name}</i>${x.trigger ? `<span class="as-tr">${x.trigger}</span>` : ""}</div>`;
+                  return `<div class="as-row" title="${escA((x.trigger ? "诱因：" + x.trigger + "　" : "") + (x.now ? "现状：" + x.now : ""))}"><span class="as-ico">${st.ico}</span><b>${escA(x.name)}</b><i>${st.name}</i>${x.trigger ? `<span class="as-tr">${escA(x.trigger)}</span>` : ""}</div>`;
                 }).join("") + `</div>`;
               } catch (e) { return ""; }
             })()}

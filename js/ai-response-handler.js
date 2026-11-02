@@ -18,9 +18,14 @@ const StoryResponseHandler = {
       const wroteBlock = /[(【<]\/?variable_update/i.test(reply);
       const newCh = Number(newVariables.chapter) || 0;
       const bodyLen = reply.replace(/\s/g, "").length;
-      if (fw.storyState.isStoryStarted && bodyLen > 400 && newCh === oldCh) {
+      if (fw.storyState.isStoryStarted && wroteBlock && bodyLen > 400 && newCh === oldCh) {
+        /* v3.68.0 收敛：仅当模型写了变量块却漏了 chapter 时才保底推进——
+           此前无块也强推 +1，模型有意"同章跨多轮"或玩家锁章时章节数系统性虚高 */
         newVariables.chapter = oldCh + 1;
-        fw.storyState.driftNotes = (fw.storyState.driftNotes || "") + `[v3.47.8] 第${newVariables.chapter}回章节号由保底逻辑推进（模型未正确上报 chapter）。`;
+        /* v3.68.0 类型契约修复：driftNotes 统一为 {text} 数组（builder 侧 drift.map 期望数组，
+           此前写成字符串拼接导致 TypeError 被吞、场域注记整轮静默丢失） */
+        fw.storyState.driftNotes = (Array.isArray(fw.storyState.driftNotes) ? fw.storyState.driftNotes : [])
+          .concat([{ text: `[v3.47.8] 第${newVariables.chapter}回章节号由保底逻辑推进（模型未正确上报 chapter）。`, at: Date.now() }]);
       }
       if (fw.storyState.isStoryStarted && bodyLen > 0) {
         const oldW = Number(fw.storyState.variables && fw.storyState.variables.wordCount) || 0;

@@ -1357,6 +1357,9 @@ ${notes.map((n) => "· " + n).join("\n")}
     },
     open() {
       var _a, _b, _c;
+      /* v3.68.0 面板互斥：开手机时收起小云抽屉与太虚阁（小屏互相盖死病灶） */
+      try { if (window.MoAssistant && MoAssistant.closePanel) MoAssistant.closePanel(); } catch (e) {}
+      try { if (window.ImmersiveSuite && ImmersiveSuite.toggle && document.getElementById("immDrawer") && document.getElementById("immDrawer").classList.contains("show")) ImmersiveSuite.toggle(false); } catch (e) {}
       this.ensureModule();
       this.syncContacts();
       this.view = window.PhoneApps ? { app: "lock" } : { app: "wechat", tab: "chats", chat: "" };
@@ -1742,7 +1745,13 @@ ${notes.map((n) => "· " + n).join("\n")}
       input.focus();
       this._pushEmojiRecent(e);
       // 若「最近」组已展开，实时刷新列表
-      if (this._emojiGroup === "__recent") this.render();
+      // v3.68.0：重绘前把已输入文字存回视图，整屏 render() 不再清空输入框
+      if (this._emojiGroup === "__recent") {
+        const keep = input.value;
+        this.render();
+        const input2 = document.getElementById("phMsgInput");
+        if (input2 && keep) input2.value = keep;
+      }
     },
     /** 清空单个会话的聊天记录（v3.19.8；v3.23.0 二次确认——手滑不毁回忆） */
     async clearChat(name) {

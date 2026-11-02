@@ -479,7 +479,9 @@ ${report}${fileRep}`;
       const b = document.createElement("button");
       b.className = "mo-suggest";
       b.textContent = "↳ " + s;
-      b.onclick = () => this.send(s);
+      /* v3.68.0 双路径去重：#moMessages 已有 .mo-suggest 事件委托统一调 send()，
+         此处再挂 onclick 会双触发（第二次必弹"正在回复中"toast）——删掉直挂 */
+      b.dataset.q = s;
       wrap.appendChild(b);
     });
     bubbleEl.appendChild(wrap);
@@ -749,6 +751,9 @@ ${report}${fileRep}`;
     this.renderMessages();
     this.bindSuggestClicks();
     this.syncModeTag();
+    /* v3.68.0 面板互斥：开小云抽屉时收起手机与太虚阁 */
+    try { if (window.PhonePanel && document.getElementById("phShell") && document.getElementById("phShell").classList.contains("open")) PhonePanel.close(); } catch (e) {}
+    try { if (window.ImmersiveSuite && ImmersiveSuite.toggle && document.getElementById("immDrawer") && document.getElementById("immDrawer").classList.contains("show")) ImmersiveSuite.toggle(false); } catch (e) {}
     if (drawer) drawer.classList.add("open");
     if (overlay) overlay.classList.add("show");
     this.clearBadge();
