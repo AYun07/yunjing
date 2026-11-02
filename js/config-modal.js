@@ -570,7 +570,7 @@ const ConfigModal = {
                     </div>
                 </div>
 
-                <!-- 🔗 多连接配置（Connection Profiles · v3.55.30） -->
+                <!-- 🔗 多连接配置（多连接配置 · v3.55.30） -->
                 <div class="dw-config api-card">
                     <div class="dw-config-head api-card-head" id="cpSectionHead" onclick="ConfigModal.toggleCPSection()">
                         <span class="api-head-left">
@@ -582,7 +582,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="cpSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            借鉴酒馆 Connection Profiles：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
+                            借鉴酒馆 多连接配置：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
                             主笔只管写正文，机械活（状态登记 / 滚动摘要）交给廉价跟随模型——声线一致、还省钱。
                         </div>
                         <div id="cp_profileList" class="cp-profile-list"></div>
@@ -1009,7 +1009,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="mmSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            云境工坊原创内置预设（SillyTavern 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 SillyTavern 预设整份替换。
+                            云境工坊原创内置预设（常见前端工具 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 常见前端工具 预设整份替换。
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">📦 当前预设 <span class="api-role-chip" id="mmPresetChip"></span></div>
@@ -1021,7 +1021,7 @@ const ConfigModal = {
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
-                                支持 SillyTavern 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
+                                支持 常见前端工具 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
                                 导入后整份替换内置预设，旧的逐条开关会自动清空；随时可一键恢复内置。
                             </div>
                         </div>
@@ -1040,14 +1040,14 @@ const ConfigModal = {
                         </div>
                         <div class="dw-subgroup">
                             <label class="check-row">
-                                <input type="checkbox" id="mm_enabled" onchange="ConfigModal.toggleMiaomiao(this.checked)">
+                                <input type="checkbox" id="mm_enabled" onchange="ConfigModal.toggleYunqi(this.checked)">
                                 <b>启用云起预设</b>
                                 <i>关闭时完全不影响现有流程（零开销）</i>
                             </label>
                         </div>
                         <div class="dw-subgroup">
                             <label class="check-row">
-                                <input type="checkbox" id="mm_regexEnabled" onchange="ConfigModal.toggleMiaomiaoRegexAll(this.checked)">
+                                <input type="checkbox" id="mm_regexEnabled" onchange="ConfigModal.toggleYunqiRegexAll(this.checked)">
                                 <b>启用云起正则</b>
                                 <i>ver 7.2：协议块变卡片 + 去 AI 腔。关掉只停清理，协议块仍会被收口</i>
                             </label>
@@ -1055,7 +1055,7 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🎨 本世界文风（随开局所选档位自动匹配）</div>
                             <div class="form-tip" id="mm_styleInfo"></div>
-                            <select id="mm_stylePick" onchange="ConfigModal.pickMiaomiaoStyle(this.value)"></select>
+                            <select id="mm_stylePick" onchange="ConfigModal.pick旧预设Style(this.value)"></select>
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔧 逐条开关 · 预设条目 <span id="mmBlockCount"></span></div>
@@ -1556,7 +1556,7 @@ const ConfigModal = {
       // v3.27.6
     };
   },
-  /* ==================== 🔗 多连接配置（Connection Profiles · v3.55.30） ==================== */
+  /* ==================== 🔗 多连接配置（多连接配置 · v3.55.30） ==================== */
   toggleCPSection() {
     const body = document.getElementById("cpSectionBody");
     const caret = document.getElementById("cpCaret");
@@ -2404,19 +2404,19 @@ const ConfigModal = {
   },
   /** 渲染云起预设面板 */
   renderMMSection() {
-    const M = window.MoMiaomiao;
-    const B = window.MoMiaomiaoBridge;
+    const M = window.旧预设对象;
+    const B = window.旧预设桥;
     const chip = document.getElementById("mm_stateChip");
     if (!M || !B) {
       const info = document.getElementById("mm_styleInfo");
-      if (info) info.textContent = "预设模块未加载（preset-yunqi / miaomiao-engine / miaomiao-bridge 缺失）。";
+      if (info) info.textContent = "预设模块未加载（preset-yunqi / 旧预设-engine / 旧预设-bridge 缺失）。";
       return;
     }
     const on = M.enabled();
     if (chip) chip.textContent = on ? "已启用" : "已关闭";
     const cb = document.getElementById("mm_enabled");
     if (cb) cb.checked = on;
-    const RX = window.MoMiaomiaoRegex;
+    const RX = window.旧预设正则;
     const rc = document.getElementById("mm_regexEnabled");
     if (rc && RX) rc.checked = RX.enabled();
 
@@ -2496,8 +2496,8 @@ const ConfigModal = {
   },
   /** 渲染「预设条目」逐条开关（全量 352 条，按分组折叠） */
   renderMMBlocks() {
-    const M = window.MoMiaomiao;
-    const B = window.MoMiaomiaoBridge;
+    const M = window.旧预设对象;
+    const B = window.旧预设桥;
     const list = document.getElementById("mm_blockList");
     if (!list || !M) return;
     const all = M.listBlocks().filter((b) => !this.mmIsSkippable(b));
@@ -2549,7 +2549,7 @@ const ConfigModal = {
     const on = ov[b.name] !== undefined ? !!ov[b.name] : b.on;
     const changed = ov[b.name] !== undefined;
     return `<label class="check-row mm-row${changed ? " mm-changed" : ""}">
-        <input type="checkbox"${on ? " checked" : ""} onchange="ConfigModal.toggleMiaomiaoBlock('${this.esc(b.name).replace(/'/g, "\\'")}', this.checked)">
+        <input type="checkbox"${on ? " checked" : ""} onchange="ConfigModal.toggleYunqiBlock('${this.esc(b.name).replace(/'/g, "\\'")}', this.checked)">
         <span>${this.esc(b.name)}${b.edited ? ' <i class="mm-edited">已改</i>' : ""}</span>
         <i>${b.len} 字</i>
         <button type="button" class="mm-edit-btn" title="编辑这条提示词（本机生效，可还原）" onclick="event.preventDefault();event.stopPropagation();ConfigModal.mmEditBlock('${this.esc(b.id)}')">✎</button>
@@ -2557,7 +2557,7 @@ const ConfigModal = {
   },
   /** 渲染「云起正则」逐条开关（30 条，含 14 条云起专属美化） */
   renderMMRegex() {
-    const R = window.MoMiaomiaoRegex;
+    const R = window.旧预设正则;
     const list = document.getElementById("mm_regexList");
     if (!list) return;
     if (!R) {
@@ -2594,7 +2594,7 @@ const ConfigModal = {
   mmRegexRow(c) {
     const changed = c.on !== c.origin;
     return `<label class="check-row mm-row${changed ? " mm-changed" : ""}">
-        <input type="checkbox"${c.on ? " checked" : ""} onchange="ConfigModal.toggleMiaomiaoRegex('${this.esc(c.id)}', this.checked)">
+        <input type="checkbox"${c.on ? " checked" : ""} onchange="ConfigModal.toggleYunqiRegex('${this.esc(c.id)}', this.checked)">
         <span>${this.esc(c.name)}</span>
         <i>${c.kind}${changed ? " · 已改" : ""}</i>
       </label>`;
@@ -2622,9 +2622,9 @@ const ConfigModal = {
   mmFillGroup(groupEl, g) {
     const box = groupEl.querySelector(".mm-group-body");
     if (!box) return;
-    const M = window.MoMiaomiao;
-    const R = window.MoMiaomiaoRegex;
-    const B = window.MoMiaomiaoBridge;
+    const M = window.旧预设对象;
+    const R = window.旧预设正则;
+    const B = window.旧预设桥;
     // 正则列表
     if (R && groupEl.closest && groupEl.closest("#mm_regexList")) {
       const cat = R.catalog().filter((c) => c.kind === g);
@@ -2661,35 +2661,35 @@ const ConfigModal = {
   },
   /** 清除所有手动改动，回到预设出厂状态 */
   mmResetOverrides() {
-    if (window.MoMiaomiao) window.MoMiaomiao.clearOverrides();
-    if (window.MoMiaomiaoRegex) window.MoMiaomiaoRegex.clearOverrides();
+    if (window.旧预设对象) window.旧预设对象.clearOverrides();
+    if (window.旧预设正则) window.旧预设正则.clearOverrides();
     this.renderMMSection();
   },
   /** 正则总开关 */
-  toggleMiaomiaoRegexAll(on) {
-    const R = window.MoMiaomiaoRegex;
+  toggleYunqiRegexAll(on) {
+    const R = window.旧预设正则;
     if (!R) return;
     R.setEnabled(!!on);
     this.renderMMSection();
   },
   /** 单条正则开关 */
-  toggleMiaomiaoRegex(id, on) {
-    const R = window.MoMiaomiaoRegex;
+  toggleYunqiRegex(id, on) {
+    const R = window.旧预设正则;
     if (!R) return;
     R.setOverride(id, !!on);
     this.renderMMRegex();
   },
   /** 整份预设启停 */
-  toggleMiaomiao(on) {
-    const M = window.MoMiaomiao;
+  toggleYunqi(on) {
+    const M = window.旧预设对象;
     if (!M) return;
     M.setEnabled(!!on);
     this.renderMMSection();
   },
   /** 手动改本世界文风档（写入 override，覆盖开局选择） */
-  pickMiaomiaoStyle(pickName) {
-    const M = window.MoMiaomiao;
-    const B = window.MoMiaomiaoBridge;
+  pick旧预设Style(pickName) {
+    const M = window.旧预设对象;
+    const B = window.旧预设桥;
     if (!M || !B || !pickName) return;
     const world = B.worldName();
     if (!world) return;
@@ -2701,8 +2701,8 @@ const ConfigModal = {
     this.renderMMSection();
   },
   /** 单个预设条目开关 */
-  toggleMiaomiaoBlock(name, on) {
-    const M = window.MoMiaomiao;
+  toggleYunqiBlock(name, on) {
+    const M = window.旧预设对象;
     if (!M) return;
     M.setOverride(name, !!on);
     this.renderMMSection();
@@ -2827,7 +2827,7 @@ const ConfigModal = {
   },
   /* ---------- 单条提示词改写 ---------- */
   async mmEditBlock(id) {
-    const M = window.MoMiaomiao;
+    const M = window.旧预设对象;
     const IO = window.YunjingPresetIO;
     if (!M || !IO) return;
     if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
