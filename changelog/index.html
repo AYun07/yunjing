@@ -282,6 +282,15 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.81.1</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">立绘像素级精修：残影清零 + 全员白毛边压暗</h3>
+            <p class="entry-text">①残影清零：keai-battle / kusa-battle 腿间地面阴影除白色核心外尚存深色半透明残迹（kusa 两腿间整片暗影），按「半透明低饱和且不过半贴描边」判定定向清除（7480+9537px），鞋袜描边抗锯齿圈与头发旁弧线动作特效完整保留；②全员去白毛边：60 张立绘轮廓外圈的半透明白晕圈（低alpha近白且贴不透明区，共 11.2 万 px）alpha 压至 1/4，深底不再泛白光；星星特效、发梢碎发、服装细节点全部核验保留。深底大图总览 4 张逐张复核无误伤。</p>
+        </article>
+
         <article class="log-entry" data-tags="回退 立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
             <div class="entry-head">
                 <span class="entry-ver">v3.81.0</span>
