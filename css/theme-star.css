@@ -1,0 +1,358 @@
+/* ============================================================
+   云境 · 板式 B「星穹 HUD」 v3.72.0
+   深空靛蓝 / 青碧辉光 / 全息网格 / 四角准星
+   作用域 html body.page-studio，仅在 ?theme=star 时启用
+   ============================================================ */
+html body.page-studio {
+  --cy: #5fe0e8;
+  --vi: #8f7dff;
+  --text: #dfe7f5;
+  --text-muted: #8a97b4;
+  --text-faint: #5e6a85;
+  --primary: #5fe0e8;
+  --primary-dim: rgba(95, 224, 232, .12);
+  --primary-glow: rgba(95, 224, 232, .3);
+
+  background:
+    linear-gradient(rgba(95, 224, 232, .035) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgba(95, 224, 232, .035) 1px, transparent 1px) 0 0 / 44px 44px,
+    radial-gradient(820px 620px at 14% -4%, rgba(95, 224, 232, .12), transparent 60%),
+    radial-gradient(900px 700px at 96% 8%, rgba(143, 125, 255, .14), transparent 56%),
+    radial-gradient(700px 600px at 50% 118%, rgba(95, 224, 232, .07), transparent 62%),
+    linear-gradient(180deg, #070b18, #0a0f20 60%, #070a15);
+  background-attachment: fixed;
+  color: var(--text);
+}
+
+/* ── 顶栏：舰桥控制条 ── */
+html body.page-studio .top-bar {
+  background: linear-gradient(180deg, rgba(11, 18, 36, .96), rgba(7, 11, 24, .94));
+  border-bottom: 1px solid rgba(95, 224, 232, .22);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .5), 0 0 24px rgba(95, 224, 232, .06);
+}
+html body.page-studio .top-bar::after {
+  background: linear-gradient(90deg, transparent, rgba(95, 224, 232, .7), rgba(143, 125, 255, .7), transparent);
+  opacity: .8;
+  height: 1px;
+}
+html body.page-studio #gameTitle {
+  font-size: 16px;
+  letter-spacing: 3px;
+  background: linear-gradient(120deg, #8ff3f8, #5fe0e8 40%, #a596ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 22px rgba(95, 224, 232, .25);
+}
+html body.page-studio .back-link {
+  background: rgba(11, 18, 36, .7);
+  border-color: rgba(95, 224, 232, .25);
+  border-radius: 8px;
+  color: #bfe9ee;
+}
+html body.page-studio .back-link:hover {
+  background: rgba(95, 224, 232, .1);
+  border-color: rgba(95, 224, 232, .6);
+  color: #eafcff;
+  box-shadow: 0 0 16px rgba(95, 224, 232, .2);
+}
+html body.page-studio .ver-dot {
+  background: rgba(95, 224, 232, .1);
+  border-color: rgba(95, 224, 232, .55);
+  color: #8ff3f8;
+}
+html body.page-studio .top-btn {
+  background: rgba(11, 18, 36, .72);
+  border: 1px solid rgba(95, 224, 232, .22);
+  border-radius: 8px;
+  color: #b9c6e0;
+}
+html body.page-studio .top-btn:hover,
+html body.page-studio .top-btn.active {
+  background: rgba(95, 224, 232, .1);
+  border-color: rgba(95, 224, 232, .62);
+  color: #eafcff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(95, 224, 232, .18), 0 6px 20px rgba(95, 224, 232, .18);
+}
+
+/* ── 设定台：全息面板 ── */
+html body.page-studio #setupWrap { padding: 34px 24px 88px; }
+html body.page-studio #setupContainer { max-width: 1010px; }
+
+html body.page-studio .wizard-card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(95, 224, 232, .06), transparent 26%),
+    linear-gradient(160deg, rgba(17, 25, 47, .94), rgba(8, 12, 24, .97));
+  border: 1px solid rgba(95, 224, 232, .24);
+  border-radius: 12px;
+  padding: 36px 40px 32px;
+  box-shadow:
+    0 0 0 1px rgba(95, 224, 232, .05),
+    0 24px 64px rgba(0, 0, 0, .58),
+    inset 0 1px 0 rgba(255, 255, 255, .05);
+  overflow: visible;
+}
+/* 四角准星（左上 / 右下） */
+html body.page-studio .wizard-card::before {
+  content: "";
+  position: absolute;
+  top: 10px; left: 10px;
+  width: 22px; height: 22px;
+  border-top: 2px solid rgba(95, 224, 232, .65);
+  border-left: 2px solid rgba(95, 224, 232, .65);
+  border-radius: 4px 0 0 0;
+  background: none;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(95, 224, 232, .5));
+}
+html body.page-studio .wizard-card::after {
+  content: "";
+  position: absolute;
+  right: 10px; bottom: 10px;
+  left: auto; top: auto;
+  width: 22px; height: 22px;
+  border-bottom: 2px solid rgba(143, 125, 255, .6);
+  border-right: 2px solid rgba(143, 125, 255, .6);
+  border-radius: 0 0 4px 0;
+  background: none;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(143, 125, 255, .45));
+}
+
+html body.page-studio .wizard-title {
+  font-size: 28px;
+  letter-spacing: 4px;
+  background: linear-gradient(120deg, #a8f6fb, #5fe0e8 45%, #a596ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 26px rgba(95, 224, 232, .2);
+}
+html body.page-studio .wizard-sub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  line-height: 1.85;
+}
+
+/* ── 分区：青色刻度线 ── */
+html body.page-studio .wiz-section { margin-bottom: 20px; padding-bottom: 2px; }
+html body.page-studio .wiz-section + .wiz-section {
+  border-top: 1px solid rgba(95, 224, 232, .12);
+  padding-top: 20px;
+}
+html body.page-studio .wiz-label {
+  font-size: 13px;
+  letter-spacing: 1.6px;
+  color: #7fe9ef;
+  padding-left: 16px;
+}
+html body.page-studio .wiz-label::before {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--cy);
+  box-shadow: 0 0 10px var(--cy), 0 0 20px rgba(95, 224, 232, .5);
+}
+html body.page-studio .wiz-hint { color: var(--text-faint); }
+html body.page-studio .points-remain {
+  background: rgba(95, 224, 232, .08);
+  border: 1px solid rgba(95, 224, 232, .32);
+  border-radius: 99px;
+  color: #9ff2f6;
+}
+
+/* ── 表单：深空玻璃 ── */
+html body.page-studio .wiz-input,
+html body.page-studio .wiz-select {
+  height: 44px;
+  background: rgba(6, 10, 22, .72);
+  border: 1px solid rgba(95, 224, 232, .18);
+  border-radius: 9px;
+  padding: 0 14px;
+  color: var(--text);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+html body.page-studio textarea.wiz-input {
+  height: auto;
+  min-height: 68px;
+  padding: 11px 14px;
+  line-height: 1.65;
+}
+html body.page-studio .wiz-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #5fe0e8 50%),
+    linear-gradient(135deg, #5fe0e8 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+html body.page-studio .wiz-input::placeholder { color: rgba(120, 135, 165, .6); }
+html body.page-studio .wiz-input:hover,
+html body.page-studio .wiz-select:hover { border-color: rgba(95, 224, 232, .38); }
+html body.page-studio .wiz-input:focus,
+html body.page-studio .wiz-select:focus {
+  border-color: rgba(95, 224, 232, .72);
+  background: rgba(6, 10, 22, .85);
+  box-shadow: 0 0 0 3px rgba(95, 224, 232, .14), 0 0 22px rgba(95, 224, 232, .16);
+}
+html body.page-studio .wiz-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  border-left: 2px solid rgba(95, 224, 232, .3);
+  padding-left: 10px;
+}
+
+/* ── 骰子 / 随缘 ── */
+html body.page-studio .dice-btn {
+  background: rgba(95, 224, 232, .05);
+  border: 1px dashed rgba(95, 224, 232, .35);
+  border-radius: 7px;
+  color: #9ff2f6;
+}
+html body.page-studio .dice-btn:hover {
+  background: rgba(95, 224, 232, .12);
+  border-color: rgba(95, 224, 232, .65);
+  box-shadow: 0 0 14px rgba(95, 224, 232, .18);
+}
+html body.page-studio .fate-hero {
+  background: linear-gradient(135deg, rgba(95, 224, 232, .1), rgba(143, 125, 255, .06));
+  border: 1px solid rgba(95, 224, 232, .26);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .4);
+}
+html body.page-studio .fate-btn {
+  background: linear-gradient(135deg, #6be7ee, #8f7dff);
+  border-radius: 9px;
+  color: #06101f;
+  box-shadow: 0 6px 22px rgba(95, 224, 232, .32);
+}
+html body.page-studio .fate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(143, 125, 255, .45);
+}
+
+/* ── 开局 / 技法：数据卡 ── */
+html body.page-studio .opening-grid,
+html body.page-studio .tech-grid { gap: 11px; }
+html body.page-studio .opening-item,
+html body.page-studio .tech-item {
+  background: rgba(12, 19, 37, .62);
+  border: 1px solid rgba(95, 224, 232, .14);
+  border-radius: 10px;
+  transition: all .18s ease;
+}
+html body.page-studio .opening-item:hover,
+html body.page-studio .tech-item:hover {
+  border-color: rgba(95, 224, 232, .5);
+  background: rgba(95, 224, 232, .06);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+html body.page-studio .opening-item.selected,
+html body.page-studio .tech-item.selected {
+  border-color: rgba(95, 224, 232, .75);
+  background: rgba(95, 224, 232, .1);
+  box-shadow: 0 0 0 1px rgba(95, 224, 232, .3), 0 0 26px rgba(95, 224, 232, .16);
+}
+html body.page-studio .opening-name,
+html body.page-studio .tech-name { color: #a8f6fb; letter-spacing: .6px; }
+html body.page-studio .opening-desc,
+html body.page-studio .tech-desc,
+html body.page-studio .opening-effects { color: var(--text-muted); }
+html body.page-studio .pm.plus { color: #7fe9ef; }
+html body.page-studio .pm.minus { color: #ff9d8a; }
+html body.page-studio .cost { color: #c9a0ff; }
+
+/* ── 六维 ── */
+html body.page-studio .stats-grid { gap: 10px; }
+html body.page-studio .stat-alloc {
+  background: rgba(12, 19, 37, .6);
+  border: 1px solid rgba(95, 224, 232, .16);
+  border-radius: 9px;
+}
+html body.page-studio .sa-btn { border-radius: 6px; color: #bfe9ee; }
+html body.page-studio .sa-btn:hover {
+  background: rgba(95, 224, 232, .12);
+  color: #eafcff;
+  box-shadow: 0 0 12px rgba(95, 224, 232, .2);
+}
+
+/* ── 底部操作 ── */
+html body.page-studio .wizard-actions {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(95, 224, 232, .14);
+}
+html body.page-studio .btn-solid {
+  background: linear-gradient(135deg, #6be7ee, #8f7dff);
+  border-radius: 10px;
+  color: #06101f;
+  padding: 12px 26px;
+  box-shadow: 0 8px 26px rgba(95, 224, 232, .3), inset 0 1px 0 rgba(255, 255, 255, .4);
+  transition: all .18s ease;
+}
+html body.page-studio .btn-solid:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px rgba(143, 125, 255, .45);
+}
+html body.page-studio .btn-ghost {
+  background: rgba(12, 19, 37, .55);
+  border: 1px solid rgba(95, 224, 232, .24);
+  border-radius: 9px;
+  color: #b9c6e0;
+}
+html body.page-studio .btn-ghost:hover {
+  border-color: rgba(95, 224, 232, .6);
+  color: #eafcff;
+  background: rgba(95, 224, 232, .08);
+}
+
+/* ── 右栏：副屏控制台 ── */
+html body.page-studio #statusPanel {
+  background: linear-gradient(180deg, rgba(10, 16, 32, .98), rgba(6, 9, 20, .99));
+  border-left: 1px solid rgba(95, 224, 232, .2);
+  box-shadow: -16px 0 50px rgba(0, 0, 0, .45), inset 1px 0 0 rgba(95, 224, 232, .05);
+}
+html body.page-studio .panel-header {
+  background: rgba(9, 14, 28, .94);
+  border-bottom: 1px solid rgba(95, 224, 232, .14);
+}
+html body.page-studio .panel-title {
+  background: linear-gradient(120deg, #8ff3f8, #a596ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+html body.page-studio .panel-section {
+  background: linear-gradient(170deg, rgba(95, 224, 232, .05), rgba(95, 224, 232, .01));
+  border: 1px solid rgba(95, 224, 232, .1);
+  border-radius: 10px;
+}
+html body.page-studio .section-title { color: #8fb4c9; letter-spacing: 1.6px; }
+html body.page-studio .section-title::before {
+  background: var(--cy);
+  box-shadow: 0 0 8px var(--cy);
+}
+html body.page-studio .empty-hint { color: var(--text-faint); }
+html body.page-studio .empty-hint::before { border-color: rgba(95, 224, 232, .3); }
+html body.page-studio .progress-bar {
+  background: rgba(0, 0, 0, .5);
+  box-shadow: inset 0 1px 0 rgba(95, 224, 232, .08);
+}
+html body.page-studio .progress-fill {
+  background: linear-gradient(90deg, #5fe0e8, #8f7dff);
+  box-shadow: 0 0 12px rgba(95, 224, 232, .45);
+}
+
+/* ── 移动端 ── */
+@media (max-width: 720px) {
+  html body.page-studio #setupWrap { padding: 18px 12px 74px; }
+  html body.page-studio .wizard-card { padding: 24px 16px 18px; border-radius: 10px; }
+  html body.page-studio .wizard-title { font-size: 22px; letter-spacing: 2px; }
+}
