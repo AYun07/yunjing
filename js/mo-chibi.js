@@ -58,7 +58,7 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.59.1" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.61.0" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
   /** 手动设定形态（合法 key），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
@@ -85,7 +85,7 @@ const MoChibi = {
     ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(8,14,22,.66);display:flex;align-items:center;justify-content:center;padding:18px;";
     const card = (k) => `
       <button data-style="${k}" style="width:31%;min-width:96px;padding:10px 6px;border:2px solid ${k === cur ? "#7ab8e8" : "rgba(140,180,220,.28)"};border-radius:14px;background:linear-gradient(160deg,rgba(20,32,48,.92),rgba(14,22,34,.92));cursor:pointer;text-align:center;transition:transform .15s;">
-        <img src="${this.IMGS[k]}?v=3.59.1" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
+        <img src="${this.IMGS[k]}?v=3.61.0" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
         <div style="font-size:13.5px;font-weight:700;color:#cfe6f8;margin-top:6px;">${this.STYLE_LABEL[k]}</div>
         <div style="font-size:10.5px;color:#7e9ab4;margin-top:2px;">${this.STYLE_DESC[k] || ""}</div>
       </button>`;
@@ -114,8 +114,12 @@ const MoChibi = {
     const box = document.getElementById("moChibi");
     if (box) box.dataset.style = this.currentStyle();
     const img = document.querySelector("#moChibi .mc-img");
-    if (img) img.src = this.chibiSrc() + "?v=3.59.1";
-    const face = this.faceSrc() + "?v=3.59.1";
+    if (img) {
+      try { clearTimeout(this._poseTimer); this._poseTimer = null; } catch (e) {}
+      img.src = this.chibiSrc() + "?v=3.61.0";
+      img.classList.remove("mc-pose-pop"); void img.offsetWidth; img.classList.add("mc-pose-pop");
+    }
+    const face = this.faceSrc() + "?v=3.61.0";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
@@ -150,6 +154,7 @@ const MoChibi = {
     menu.className = "mc-menu";
     document.body.appendChild(menu);
     this.bindInteractions(box);
+    this._preloadPoses();
     const saved = this._loadPos(this.POS_KEY);
     if (saved) this._applyPos(box, saved);
     if (this.isHidden()) this.hide(true);
@@ -398,6 +403,7 @@ const MoChibi = {
       /* v3.55.19 悬浮球收敛：世界动态 / 手机 / 太虚阁 并入小云的「模块」二级面板。
          不直接摊在扇形菜单里——扇形 radius 110 / spread 150°，项数一多就互相压叠。 */
       { ico: "🧰", label: "模块", act: () => this.openModules() },
+      { ico: "💃", label: "秀一下", act: () => this.playAction("dance") },
       { ico: "🌙", label: "收起", act: () => this.hide() }
     ];
   },
@@ -685,6 +691,10 @@ const MoChibi = {
         if (z) z.classList.add("show");
         return;
       }
+      if (Math.random() < 0.2) {
+        try { this.playAction(Math.random() < 0.5 ? "wave" : "happy"); } catch (e) {}
+        return;
+      }
       const act = ACTS[Math.floor(Math.random() * ACTS.length)];
       try { this["act_" + act](); } catch (e) { /* 单动作失败不影响循环 */ }
     };
@@ -756,6 +766,71 @@ const MoChibi = {
     if (z) {
       z.classList.add("show");
       setTimeout(() => z.classList.remove("show"), 2400);
+    }
+  },
+  /* ==================== 动作姿态系统（v3.61.0 · 全身可交互动画） ====================
+     每种形态 3 个 AI 生图动作关键帧（wave/battle/happy），交叉淡入切换，
+     叠加既有 CSS 动效（hop/twirl…）。图片缺失时自动退回纯 CSS 动作。 */
+  POSES: ["wave", "battle", "happy"],
+  poseSrc(pose) {
+    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=3.61.0`;
+  },
+  _preloadPoses() {
+    this._poseCache = {};
+    this.POSES.forEach((p) => {
+      const img = new Image();
+      img.onload = () => { this._poseCache[p] = true; };
+      img.onerror = () => { this._poseCache[p] = false; };
+      img.src = this.poseSrc(p);
+    });
+  },
+  poseReady(pose) {
+    return !!(this._poseCache && this._poseCache[pose] === true);
+  },
+  _setImg(src) {
+    const img = document.querySelector("#moChibi .mc-img");
+    if (!img) return;
+    img.src = src;
+    img.classList.remove("mc-pose-pop");
+    void img.offsetWidth;
+    img.classList.add("mc-pose-pop");
+  },
+  setPose(pose, holdMs = 1600) {
+    if (!this.poseReady(pose)) return false;
+    this._setImg(this.poseSrc(pose));
+    clearTimeout(this._poseTimer);
+    this._poseTimer = setTimeout(() => this.clearPose(), holdMs);
+    return true;
+  },
+  clearPose() {
+    clearTimeout(this._poseTimer);
+    this._poseTimer = null;
+    this._setImg(this.chibiSrc() + "?v=3.61.0");
+  },
+  /** 公开动作 API：玩家/系统调用——做到"像动画一样可以做动作" */
+  playAction(name) {
+    this.wake();
+    if (name === "wave") {
+      if (!this.setPose("wave", 1700)) this.playAnim("mc-hop", 700);
+      this.setFace("happy", 1800);
+    } else if (name === "battle") {
+      if (!this.setPose("battle", 2200)) this.playAnim("mc-stretch", 1300);
+      this.setFace("think", 2400);
+      if (Math.random() < 0.6) this.say("摆好架势，小云也能陪你打一场！(•̀ᴗ•́)و", 3000);
+    } else if (name === "happy") {
+      if (!this.setPose("happy", 1600)) this.playAnim("mc-hop", 700);
+      this.setFace("happy", 1800);
+      this.spawnHearts(4);
+    } else if (name === "spin") {
+      this.playAnim("mc-twirl", 960); this.setFace("sing", 2200);
+    } else if (name === "jump") {
+      this.playAnim("mc-hop", 700); this.setFace("happy", 1800);
+    } else if (name === "bow") {
+      this.playAnim("mc-peek", 1400); this.setFace("shy", 2200);
+    } else if (name === "dance") {
+      this.playAction("wave");
+      setTimeout(() => this.playAction("spin"), 520);
+      setTimeout(() => this.playAction("happy"), 1120);
     }
   },
   /* ==================== 亲密度（v3.60.0 · 持久化） ==================== */

@@ -8,7 +8,7 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v3.61.0';  /* v3.61.0 小云动态引擎：idle 视频循环 + 关键动作帧动画（chibi-anim.js 三层架构，资源缺失静图兜底）+ assets/chibi/ 动态资源。v3.60.1 御姐形态重绘：年轻时尚化（香槟金裙+白开衫+云朵耳坠），画风与全 12 态统一。v3.60.0 动态小云：行为引擎(蹦跳/转圈/闲逛/哼歌/真瞌睡)+亲密度+剧情感知+视线跟随+3张半身补全身。v3.59.1 小云十二形态（AI 生图 PNG，删 SVG）。v3.59.0 主界面换肤「晓云天光」+ 小云五形态换装。v3.58.0 世界自活（P6）：原创人物/势力/地点自动繁衍上图 + 自由人生。v3.57.0「让世界活起来」引擎全套（P2-P5）：
+const SW_VER = 'yunjing-v3.61.0';  /* v3.61.0 动态小云·全态可交互动画引擎：12 态各 3 个动作姿态关键帧(挥手/战斗/开心)交叉淡入叠加 CSS 动效，待机随机秀动作，菜单「秀一下」编排。v3.60.1 御姐形态重绘：年轻时尚化（香槟金裙+白开衫+云朵耳坠），画风与全 12 态统一。v3.60.0 动态小云：行为引擎(蹦跳/转圈/闲逛/哼歌/真瞌睡)+亲密度+剧情感知+视线跟随+3张半身补全身。v3.59.1 小云十二形态（AI 生图 PNG，删 SVG）。v3.59.0 主界面换肤「晓云天光」+ 小云五形态换装。v3.58.0 世界自活（P6）：原创人物/势力/地点自动繁衍上图 + 自由人生。v3.57.0「让世界活起来」引擎全套（P2-P5）：
    v3.57.1 修复：EntityStore 单复数归一（list("characters") 曾恒空，关系连线在角色池上静默失效）。
    ① entity-editor.js 统一填表（法宝/势力/地点/关系，schema 驱动）
    ② sim-core.js 推演引擎（规则核心·种子化可复算·what-if 分叉）
@@ -62,10 +62,11 @@ const CORE2 = CORE.concat(GEN, [
   /* v3.53.0 新增：原创设计工坊 / 状态栏字段全集 / 文件桥（离线也要能用） */
   'js/creator-forge.js','js/status-schema.js','js/file-bridge.js',
   'js/save-slots.js','js/card-io.js','js/card-hub.js',
-     /* --- 知识库与 DLC ---
-      opt#1 后 js/preset-knowledge.js（9.4MB 整包）已从仓库删除——世界书按界拆成
-      js/kb/<界>.core.js + .ext.js（66 个分包在 GEN 预缓存，覆盖全部工坊），
-      core 加载失败直接报错不再回退整包。预缓存总量 14.3MB → 5.3MB。 */
+  /* --- 知识库与 DLC ---
+     v3.55.3 预缓存瘦身：js/preset-knowledge.js（9MB 整包）撤出预缓存——v3.53.0 起
+     世界书已按界拆成 js/kb/<界>.core.js + .ext.js（66 个分包均在 GEN 预缓存，覆盖全部工坊），
+     整包仅作「分包缺失时的回退」，几乎不会被加载；保留在包内供在线回退，
+     但不再让低配设备一启动就背 9MB 下载与存储。预缓存总量 14.3MB → 5.3MB。 */
   'js/knowledge-manager.js','js/kb-enhance.js','js/kb-vector.js',
   'js/dlc-manager.js','js/st-import.js',
   /* --- 沉浸与展示（v3.46.0 新增，此前缺失） --- */
@@ -107,9 +108,7 @@ const CORE2 = CORE.concat(GEN, [
   'js/mo-utils.js','js/mo-store.js','js/net-guard.js','js/content-scale.js',
   'js/chat-virtualizer.js','js/transcript-retrieval.js','js/world-book.js',
   'js/story-stance.js','js/story-identity.js','js/canon-ledger.js',
-  'js/canon-timeline.js','js/context-panel.js',
-  /* --- v3.61.0 小云动态引擎 --- */
-  'js/chibi-anim.js','assets/chibi/manifest.json'
+  'js/canon-timeline.js','js/context-panel.js'
 ]);
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(SW_VER).then((c) =>
