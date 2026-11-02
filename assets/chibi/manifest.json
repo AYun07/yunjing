@@ -1,0 +1,7 @@
+{
+ "idle": {},
+ "actions": {
+  "jump": "jump.json",
+  "spell": "spell.json"
+ }
+}

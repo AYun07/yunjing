@@ -1501,6 +1501,23 @@ body.narrow .mo-bubble { max-width: 92%; }
     -webkit-user-drag: none;
     pointer-events: none;
 }
+/* v3.61.0 小云动态引擎：idle 视频循环 + 关键动作帧动画（chibi-anim.js 三层架构） */
+.mc-video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    pointer-events: none;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.3));
+}
+.mc-frame {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    pointer-events: none;
+    display: none;
+}
 
 /* v1.9.0 闲置避让：闲置 6s 自动降透明,底下文字透出;指针靠近恢复(见 mo-chibi.js wake) */
 .mo-chibi.dim { opacity: 0.3; }
