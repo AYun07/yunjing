@@ -18,7 +18,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=3.55.29"></script>
-    <title>云境 v3.79.0 · AI创作与开放世界扮演</title>
+    <title>云境 v3.80.0 · AI创作与开放世界扮演</title>
     <style>
         /* v3.75.0 大厅全面重设计「纸本」：样式整体迁移至 css/lobby-v4.css，此处仅留变量兜底 */
         :root {
@@ -30,14 +30,31 @@
 
     <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集，见 css/fonts-local.css -->
     <link rel="stylesheet" href="css/fonts-local.css?v=3.79.0">
+    <!-- v3.80.0 四套大厅版式可选：?lobby=a 暗夜星辉 / b 暮金画报 / c 薄荷汽水 / d 墨线编辑（默认不启用） -->
+    <link rel="stylesheet" href="css/lobby-a-night.css?v=3.80.1" id="lobbyA" disabled>
+    <link rel="stylesheet" href="css/lobby-b-vogue.css?v=3.80.1" id="lobbyB" disabled>
+    <link rel="stylesheet" href="css/lobby-c-mint.css?v=3.80.1" id="lobbyC" disabled>
+    <link rel="stylesheet" href="css/lobby-d-editorial.css?v=3.80.1" id="lobbyD" disabled>
+    <script>
+      (function () {
+        try {
+          var l = (new URLSearchParams(location.search).get('lobby') || '').toLowerCase();
+          var map = { a: 'lobbyA', b: 'lobbyB', c: 'lobbyC', d: 'lobbyD' };
+          if (map[l]) {
+            var el = document.getElementById(map[l]);
+            if (el) { el.disabled = false; el.media = 'all'; }
+          }
+        } catch (e) {}
+      })();
+    </script>
     <!-- v3.78.0「晨青·楷变」：楷体艺术字标题 + 波浪错落工坊 + 卡化沉浸段，整份替换即回滚 -->
-    <link rel="stylesheet" href="css/lobby-v4.css?v=3.79.0">
+    <link rel="stylesheet" href="css/lobby-v4.css?v=3.80.0">
     <script src="js/theme-studio.js?v=3.55.29"></script>
 </head>
 
 <body class="page-index">
     <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.79.0 云境版</a>
+    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.80.0 云境版</a>
 
     <!-- 开屏 -->
     <div id="splash">
