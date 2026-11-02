@@ -187,6 +187,10 @@
         s.chats = {};
         s.temp = {};
       }
+      /* v3.68.0 半写档兜底：三个容器各自独立补齐（旧档/半写状态下 s.chats 可能缺失，
+         此后 ingestFeed/syncContacts 直取 s.chats[name].msgs 会 TypeError） */
+      if (!s.chats) s.chats = {};
+      if (!s.temp) s.temp = {};
       if (s._feedHash == null) s._feedHash = "";
       if (syncContacts(s, vars)) d = true;
       if (ingestFeed(s, vars, round)) d = true;
@@ -565,7 +569,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
 3. 态度必须符合温度：${attitude(t.w)}
 4. ${CFG.tone}${CFG.degrade ? `
 5. ${CFG.degrade}` : ""}
-5. 你只知道角色该知道的事；被问剧情之外的问题，以角色口吻岔开或困惑
+6. 你只知道角色该知道的事；被问剧情之外的问题，以角色口吻岔开或困惑
 6. 绝不提及 AI/模型/设定/档案这些词`;
     const msgs = [{ role: "system", content: sys }];
     for (const m of hist.slice(-14, -1)) msgs.push({ role: m.r === "me" ? "user" : "assistant", content: m.t });

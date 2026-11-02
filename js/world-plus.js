@@ -29,7 +29,23 @@
   function num(v) {
     if (v == null) return null;
     const m = String(v).match(/-?\d+/);
-    return m ? Number(m[0]) : null;
+    if (m) return Number(m[0]);
+    /* v3.68.0 中文数字：契约范例写「二十三级」，AI 照格式上报此前解析为 null——模块状态常年为空 */
+    const cn = String(v).replace(/[零一二两三四五六七八九十百千万]+/g, (t) => {
+      const d = { 零: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+      let total = 0, cur = 0, ten = false;
+      for (const ch of t) {
+        if (d[ch] != null) { cur = d[ch]; ten = false; }
+        else if (ch === "十") { total += (cur || 1) * 10; cur = 0; ten = true; }
+        else if (ch === "百") { total += (cur || 1) * 100; cur = 0; }
+        else if (ch === "千") { total += (cur || 1) * 1000; cur = 0; }
+        else if (ch === "万") { total = (total + cur) * 10000; cur = 0; }
+      }
+      const r = total + cur;
+      return ten && cur === 0 ? String(total) : String(r);
+    });
+    const m2 = cn.match(/-?\d+/);
+    return m2 ? Number(m2[0]) : null;
   }
   function manualEdit(s, modId, title, message, apply) {
     window.UIDialog.prompt({ title, message, defaultValue: "" }).then((input) => {

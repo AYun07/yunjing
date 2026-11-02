@@ -2519,6 +2519,9 @@ ${(() => {
         return;
       }
       state.open = open == null ? !state.open : !!open;
+      /* v3.68.0 面板互斥：开太虚阁时收起手机与小云抽屉 */
+      try { if (state.open && document.getElementById("phShell") && document.getElementById("phShell").classList.contains("open") && window.PhonePanel) PhonePanel.close(); } catch (e) {}
+      try { if (state.open) { const _md = document.getElementById("moDrawer"); if (_md && _md.classList.contains("open") && window.MoAssistant && MoAssistant.closePanel) MoAssistant.closePanel(); } } catch (e) {}
       const d = $("immDrawer");
       if (state.open) {
         try {

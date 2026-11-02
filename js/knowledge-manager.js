@@ -77,18 +77,26 @@ const StoryKnowledge = {
       (document.head || document.documentElement).appendChild(el);
     });
     /* v3.55.28：世界书二次拆分——进界先挂 core（常驻/高优先，最大约 45KB，原整包最大 411KB），
-       其余条目由 ext 在空闲时补齐并自动补注入，玩家感知不到先后，进界不再背整包下载；
-       opt#1 起 core 加载失败不再回退 9.4MB 整包（preset-knowledge.js 已删除） */
+       其余条目由 ext 在空闲时补齐并自动补注入，玩家感知不到先后，进界不再背整包下载 */
     window.__kbLoading = loadOne(`js/kb/${g}.core.js?v=${v}`).then(async (ok) => {
       if (ok && window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
         window.__KB_SPLIT_OK__ = true;
         this._loadExt(g, v, loadOne);
         return true;
       }
-      /* opt#1：core 加载失败不再回退 preset-knowledge.js（9.4MB 整包已删除）。
-       js/kb/ 已完整拆分 33 个 genre core/ext，core 404 直接报错，便于排查 */
-      window.__KB_SPLIT_OK__ = false;
-      console.warn(`[StoryKnowledge] 世界书 core 加载失败（${g}）：本界将只有玩家自建条目`);
+      /* 该界没有独立文件（或路径 404）→ 回退整包，但先查索引，别为一条都没有的界白下 9MB */
+      let ok2 = false;
+      try {
+        const idx = await fetch(`js/kb/_index.json?v=${v}`).then((r) => r.ok ? r.json() : null).catch(() => null);
+        if (idx && idx.genres && !idx.genres[g]) {
+          console.warn(`[StoryKnowledge] 整包预置库无「${g}」条目，跳过 9MB 整包下载`);
+        } else {
+          ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+        }
+      } catch (e) {
+        ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+      }
+      window.__KB_SPLIT_OK__ = ok2;
       if (!ok2) console.warn("[StoryKnowledge] 世界书加载失败：本界将只有玩家自建条目");
       return ok2;
     });
@@ -159,7 +167,7 @@ const StoryKnowledge = {
   /* ==================== 预置知识（四工坊专属，按 genre 完全独立） ==================== */
   /** 预置注入标记（版本化：KB 内容扩容后老存档自动补入新增条目） */
   _presetFlagKey: `storyKBPreset_${KB_GENRE}`,
-  _presetVersion: "v16",
+  _presetVersion: "v15",
   // v15: 全量世界书扩容——33 个工坊全部补至 ≥300 条（共 13193 条）。按原著穷举地点/人物/关系/物品/技能/天赋/体质/血脉/道具/世界观/地图/剧情时间线；每个世界独立存储、进入即自动挂载对应世界书（storyKBPreset_${genre} 版本化，老存档自动补入新增条目）；
   // v14: 新增斩神界知识库（19 条：迷雾降临世界观/精神力六境/禁墟序列/守夜人组织/阳光精神病院诸神/林七夜与赵空城详录/大事时间线/沧南地理/原著文风圣经/神秘遭遇主持法/日常波澜配比/防剧透纪律/原创配角建档/主角替代协议/战斗描写手册，v3.38.0 新世界）；
   // v13: 全员新增「正文篇幅·字数调节」共享条目（v3.37.0 玩家反馈专项：面板顶部 📏 档位条即点即改，条目本身即存储；老档自动补入，误删可一键重建）；
@@ -873,7 +881,7 @@ ${this._contentText(item.content).slice(0, 1200)}
     const tagsHtml = (item.tags || []).length ? item.tags.map((t) => `<span class="kb-tag">${kbEsc(t)}</span>`).join("") : "";
     const globalBtn = `<button class="btn-ghost btn-mini kb-global-toggle${isGlobal ? " on" : ""}" onclick="event.stopPropagation(); StoryKnowledge.toggleGlobal('${kbEsc(item.id)}'); StoryKnowledge.open();" title="${isGlobal ? "点击设为仅本界" : "点击设为全局（所有世界通用）"}">${isGlobal ? "🌐 全局" : "📂 本界"}</button>`;
     return `
-        <div class="kb-item" + (item.enabled === false ? " kb-off" : "") + " onclick="StoryKnowledge.openDetail('${kbEsc(item.id)}')">
+        <div class="kb-item${item.enabled === false ? " kb-off" : ""}" onclick="StoryKnowledge.openDetail('${kbEsc(item.id)}')">
             <div class="kb-item-top">
                 <div class="kb-badges">${badges.join("")}</div>
                 <span class="kb-item-title">${kbEsc(item.title)}</span>

@@ -294,7 +294,7 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
       body: JSON.stringify({
         model: cfg.model,
         messages,
-        temperature: cfg.temperature || 0.9,
+        temperature: Number.isFinite(cfg.temperature) ? cfg.temperature : 0.9, /* v3.68.0 falsy修复：用户明确设 0 不再被吞 */
         // v3.47.10 反狂奔：实测 0.4/0.3 会加剧中文同义词罗列与标点消失，降至 0.15/0.1（cfg 可覆盖，设为 0 即禁用）
         frequency_penalty: (_a = cfg.frequencyPenalty) != null ? _a : 0.15,
         presence_penalty: (_b = cfg.presencePenalty) != null ? _b : 0.1,
@@ -351,7 +351,7 @@ async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts)
     body: JSON.stringify({
       model: cfg.model,
       messages,
-      temperature: cfg.temperature || 0.9,
+      temperature: Number.isFinite(cfg.temperature) ? cfg.temperature : 0.9, /* v3.68.0 falsy修复：用户明确设 0 不再被吞 */
       // v1.11.1 反八股 L1：与流式路径保持一致
       frequency_penalty: (_a = cfg.frequencyPenalty) != null ? _a : 0.15,
       presence_penalty: (_b = cfg.presencePenalty) != null ? _b : 0.1,
@@ -381,7 +381,7 @@ async function callGemini(messages, opts = {}, cfgOverride) {
   }));
   const systemInstruction = messages.filter((m) => m.role === "system" && m.content).map((m) => m.content).join("\n\n");
   const genConfig = {
-    temperature: cfg.temperature || 0.9,
+    temperature: Number.isFinite(cfg.temperature) ? cfg.temperature : 0.9, /* v3.68.0 falsy修复：用户明确设 0 不再被吞 */
     maxOutputTokens: cfg.maxTokens || 16384
   };
   if (/gemini-(2|exp|flash-late)/i.test(cfg.model || "")) {

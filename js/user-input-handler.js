@@ -68,8 +68,12 @@ const StoryInput = {
       return;
     }
     if ((_b = window.VariableAI) == null ? void 0 : _b.pending) {
+      /* v3.68.0 竞态修复：等待变量AI期间锁住处理位——此前守卫在 await 之前，
+         快速双击"重新生成"会双份回退+双份请求 */
+      fw.isProcessing = true;
       await window.VariableAI.pending.catch(() => {
       });
+      fw.isProcessing = false;
     }
     const t = fw.restoreTurn();
     if (!t) return;
@@ -103,8 +107,11 @@ const StoryInput = {
     });
     if (!ok) return;
     if ((_b = window.VariableAI) == null ? void 0 : _b.pending) {
+      /* v3.68.0 竞态修复：同 regenerate，等待期间上锁 */
+      fw.isProcessing = true;
       await window.VariableAI.pending.catch(() => {
       });
+      fw.isProcessing = false;
     }
     const t = fw.restoreTurn();
     if (!t) return;
@@ -226,7 +233,7 @@ const StoryInput = {
       if (!hasVarBlock || !hasOptBlock) {
         const missing = [];
         if (!hasVarBlock) missing.push("(variable_update) 变量更新块");
-        if (!hasOptBlock) missing.push("【行动选项】段（3-4 个选项）");
+        if (!hasOptBlock) missing.push("【行动选项】段（六类各一条）");
         RH.notice(`本轮缺${missing.join("与")}，正在补齐（只补协议，不重写正文）…`, "info", 8000);
         try {
           const tail = String(reply).replace(/\s+$/, "").slice(-1200);
@@ -235,7 +242,7 @@ const StoryInput = {
             + "禁止重复、改写、续写任何正文，禁止输出任何故事内容，只输出这两块：\n"
             + "① 缺失时输出一个完整的变量块：(variable_update) 开头、(/variable_update) 结尾，"
             + "内部逐行键值（chapter: 本轮章节号、wordCount: 本轮字数、characters/items/foreshadowings 按需）；\n"
-            + "② 缺失时输出【行动选项】，3-4 行，每行以 1. 2. 3. 编号。\n"
+            + "② 缺失时输出【行动选项】，六类各一条（快进/交互/整活/慢推/时空/成人），逐行以 ①②③④⑤⑥ 编号。\n"
             + "【正文末段（仅供对齐上下文，不要复述）】\n" + tail;
           const patch = await callStoryAI(patchMsg, false, { maxTokens: 600 });
           const merged = RH.mergeProtocolPatch(reply, patch);

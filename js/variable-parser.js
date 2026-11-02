@@ -109,7 +109,18 @@ const VariableInstructionParser = {
     if (found.length) return found.join("\n");
     const openOnly = reply.match(/(?:\(variable_update\)|【variable_update】|<variable_update>)([\s\S]*)$/i);
     if (openOnly) {
-      const rest = openOnly[1].replace(/```[a-zA-Z]*\r?\n?|```/g, "").replace(/【?\/?variable_update】?/gi, "").trim();
+      const rest0 = openOnly[1].replace(/```[a-zA-Z]*\r?\n?|```/g, "").replace(/【?\/?variable_update】?/gi, "");
+      /* v3.68.0 未闭合块修复：此前取"标记后全部内容"，混入的对白/选项行被当键值指令
+         解析成垃圾变量。现只连续保留「键: 值」形态的协议行段，遇到正文行即截断 */
+      const lines = rest0.split("\n");
+      const kept = [];
+      for (const ln of lines) {
+        const t = ln.trim();
+        if (!t) { if (kept.length) kept.push(""); continue; }
+        if (/^.{1,20}[:：=]/.test(t) || /^>>/.test(t)) { kept.push(ln); continue; }
+        break;
+      }
+      const rest = kept.join("\n").trim();
       if (rest) return rest;
     }
     const fence = reply.match(/```(?:json|variable_update)?\s*\r?\n([\s\S]*?)```/i);
@@ -147,8 +158,13 @@ const VariableInstructionParser = {
     const num = (v) => typeof v === "number" ? v : v && /^[+-]?\d+(\.\d+)?$/.test(String(v).trim()) ? parseFloat(v) : null;
     const chapter = this.applyChapter((_a = obj.chapter) != null ? _a : obj.章节, vars.chapter);
     if (chapter != null && String((_c = (_b = obj.chapter) != null ? _b : obj.章节) != null ? _c : "").trim() !== "") vars.chapter = chapter;
-    const wordCount = this.extractInt((_e = (_d = obj.wordCount) != null ? _d : obj.字数) != null ? _e : obj.totalWords);
-    if (wordCount != null) vars.wordCount = wordCount;
+    /* v3.68.0 增量修复：JSON 路径此前 extractInt 直接落表，模型报 "+1200" 时累计字数被清成 1200——
+       与行式协议同走 applyWordCount（增量优先 + 累计误报守卫） */
+    const wcRaw = (_e = (_d = obj.wordCount) != null ? _d : obj.字数) != null ? _e : obj.totalWords;
+    if (wcRaw != null && String(wcRaw).trim() !== "") {
+      const wc = this.applyWordCount(wcRaw, vars.wordCount);
+      if (wc != null) vars.wordCount = wc;
+    }
     const total = this.applyChapter((_f = obj.totalChapters) != null ? _f : obj.总章数, vars.totalChapters);
     if (total != null && String((_h = (_g = obj.totalChapters) != null ? _g : obj.总章数) != null ? _h : "").trim() !== "") vars.totalChapters = total;
     const dash = this.pickObj(obj, ["dashboard", "gauges", "仪表盘", "仪表"]);

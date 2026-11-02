@@ -3,7 +3,7 @@
   /* ============================================================
    * 云境工坊 · 手机分身 · 墨韵融合社交包 v3.47.0
    * ------------------------------------------------------------
-   * 灵感蓝本：墨韵手机（SillyTavern 扩展）的产品功能形态
+   * 灵感蓝本：墨韵手机（常见前端工具 扩展）的产品功能形态
    * 实现方式：按云境架构原生重写（存档/AI 调用/时代系统全兼容）
    *
    * 新增五 App：
@@ -684,7 +684,9 @@ ${hist || "（刚匹配，还没聊）"}
     buildDiaryPrompt(panel) {
       const fw = window.storyFramework;
       const turns = (fw && fw.storyState.turns || []).slice(-3);
-      const body = turns.map((t) => String(t && t.body || t && t.userInput || "")).join("\n—\n").slice(0, 2200);
+      /* v3.68.0 字段修复：turns 快照的玩家指令字段是 t.user（此前读 t.userInput 恒空，
+         日记永远落"今天又是普通的一天"兜底） */
+      const body = turns.map((t) => String(t && t.body || t && t.user || "")).join("\n—\n").slice(0, 2200);
       const sd = this.storyDate();
       const sys = `你在为玩家手机里的「日记本App」补记今日日记。以玩家第一人称写今天的事。
 

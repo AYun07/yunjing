@@ -21,8 +21,18 @@
 (function () {
   "use strict";
 
-  var KEY = "yunjingStoryStance";
-  var KEY_SIDE = "yunjingSideChar";
+  /* v3.68.0 串档修复：身份三态按存档槽隔离——主档沿用裸键（老档零迁移），副档挂 ~slotId 后缀 */
+  function slotSuffix() {
+    try {
+      var fw = window.storyFramework;
+      var sid = (fw && fw.slotId)
+        || localStorage.getItem("storyActiveSlot_" + ((fw && fw.genre) || (new URLSearchParams(location.search).get("genre") || "")))
+        || "main";
+      return sid && sid !== "main" ? "~" + sid : "";
+    } catch (e) { return ""; }
+  }
+  var KEY = "yunjingStoryStance" + slotSuffix();
+  var KEY_SIDE = "yunjingSideChar" + slotSuffix();
 
   var MODES = {
     hero: {
@@ -159,7 +169,7 @@
     ],
     doupocangqiong: [
       { id: "xun", name: "萧薰儿", role: "古族大小姐", realm: "斗宗→斗圣", disposition: "温婉腹黑、护夫狂魔", fate: "原著里古族天之骄女，与主角青梅竹马", rel: "主角的青梅与挚爱", hook: "古族规矩与一颗凡心，如何替主角挡下族中重重阻力" },
-      { id: "yao", name: "药老", role: "星陨阁创立者 / 骨灵冷火之主", realm: "斗尊→斗圣（残魂起步）", disposition: "亦师亦友、老谋深算", fate: "原著里魂殿追杀、夺舍危机", rel: "主角的引路人", hook: " resurrect 之路上，师徒情谊与各自执念的拉扯" },
+      { id: "yao", name: "药老", role: "星陨阁创立者 / 骨灵冷火之主", realm: "斗尊→斗圣（残魂起步）", disposition: "亦师亦友、老谋深算", fate: "原著里魂殿追杀、夺舍危机", rel: "主角的引路人", hook: "复活之路上，师徒情谊与各自执念的拉扯" },
       { id: "mei", name: "美杜莎女王", role: "蛇人族女王", realm: "斗皇→斗尊", disposition: "高傲冷艳、说一不二", fate: "原著里异火反噬、与主角纠葛", rel: "主角的强敌与羁绊", hook: "族群的存亡与一段被迫的姻缘，女王如何护住蛇人族" }
     ],
     wanmeishijie: [
@@ -210,6 +220,8 @@
   function read() {
     try { return localStorage.getItem(KEY) || ""; } catch (e) { return ""; }
   }
+  /* v3.68.0：玩家是否显式选过立场（没选过时 isFree 跟随旧开关，选过则以三态为准） */
+  function hasExplicit() { return !!read(); }
   function readSide() {
     try { return localStorage.getItem(KEY_SIDE) || ""; } catch (e) { return ""; }
   }
@@ -256,6 +268,7 @@
     },
     is(id) { return this.get() === id; },
     canonHeroName: canonHeroName,
+    _hasExplicit: hasExplicit, /* v3.68.0 暴露给 isFree 判定 */
 
     /* —— side 配角选择 —— */
     sideCharId() { return this.get() === "side" ? readSide() : ""; },
@@ -281,7 +294,9 @@
         var lock = nodes.map(function (n, i) { return (i + 1) + ". " + n; }).join("；");
         return (
           "\n【身份铁律·原著主角（最高优先级）】" +
-          "玩家" + me + "即原著主角" + him + "本人——" + him + "这个名字所指的那条命，此刻由玩家来活；" +
+          (him === "原著主角"
+            ? "玩家即原著主角本人——原著主角这个名字所指的那条命，此刻由玩家来活；"
+            : "玩家" + me + "即原著主角" + him + "本人——" + him + "这个名字所指的那条命，此刻由玩家来活；") +
           him + "不再作为独立人物登场（严禁出现" + him + "与玩家同台、对话或并存）。\n" +
           "①【大势不可改】原著主线由玩家亲历；以下关键大势节点与因果链锁死、不可被改写或跳过：" + lock + "。" +
           "这些节点的「结果」必须发生，玩家不能凭选择让它们凭空消失。\n" +

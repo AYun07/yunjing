@@ -23,8 +23,18 @@
 (function () {
   "use strict";
 
-  var KEY_ID = "yunjingPlayerIdentity";
-  var KEY_REL = "yunjingHeroRelation";
+  /* v3.68.0 串档修复：穿越者/土著与主角关系按存档槽隔离（主档裸键零迁移，副档 ~slotId） */
+  function _slotSuffix() {
+    try {
+      var fw = window.storyFramework;
+      var sid = (fw && fw.slotId)
+        || localStorage.getItem("storyActiveSlot_" + ((fw && fw.genre) || (new URLSearchParams(location.search).get("genre") || "")))
+        || "main";
+      return sid && sid !== "main" ? "~" + sid : "";
+    } catch (e) { return ""; }
+  }
+  var KEY_ID = "yunjingPlayerIdentity" + _slotSuffix();
+  var KEY_REL = "yunjingHeroRelation" + _slotSuffix();
 
   var IDENTITY = {
     transmigrator: {

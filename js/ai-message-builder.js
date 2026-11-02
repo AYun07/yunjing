@@ -25,7 +25,12 @@ function buildEndgamePressure(vars, isRP) {
 const StoryFreedom = {
   KEY: "storyFreedom",
   isFree() {
+    /* v3.68.0 双轨修复：立场三态是唯一权威——original=自由，hero/side=原著轨道。
+       此前旧开关缺省判"自由"，与 hero 态"大势锁死"铁律同时注入，两套矛盾约束并存；
+       三态从未选过时跟随旧开关（老档兼容），选过则一律以三态为准。 */
     try {
+      var stance = window.StoryStance && StoryStance.get ? StoryStance.get() : null;
+      if (stance && window.StoryStance._hasExplicit && StoryStance._hasExplicit()) return stance === "original";
       return localStorage.getItem(this.KEY) !== "canon";
     } catch (e) {
       return true;
@@ -53,7 +58,7 @@ function buildFreedomDirective(isRP) {
 }
 async function buildStoryMessages(userMessage) {
   var _a;
-  /* v3.55.4 咩咩预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
+  /* v3.55.4 某预设预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
   if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
   const fw = window.storyFramework;
   const config = fw.config;
@@ -65,7 +70,7 @@ async function buildStoryMessages(userMessage) {
     messages.push(msg);
   };
   const vaOn = !!(window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()));
-  /* v3.55.10 基础小模型适配：轻量协议块替代全量咩咩预设，知识库背景与
+  /* v3.55.10 基础小模型适配：轻量协议块替代全量某预设预设，知识库背景与
      生图/沉浸指令暂停加载（强模型用户不受影响） */
   const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isLite());
   const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
@@ -138,33 +143,33 @@ stats.张力: +5
        知识库条目在上下文里离得远，实测模型会忽略它写到上万字 */
     lengthRule = '\n【篇幅硬约束】本轮正文严格落在 ' + range + ' 字之间（变量块与行动选项不计）。写到位靠分层推进：场景、动作、对白、心理、感官细节各给一点，严禁复读原文、同义堆砌、注水凑字；一次只需要写出本轮该有的那一段，把后面的留给下一轮。明显超出上限即视为不合格。\n';
   } catch (e) { lengthRule = ''; }
-  // v3.47.17 内嵌咩咩预设：整份预设渲染（含该世界的适配文风）作为第二段 system
+  // v3.47.17 内嵌某预设预设：整份预设渲染（含该世界的适配文风）作为第二段 system
   // 说明：不改预设任何 prompt 文本，只在渲染时按 genreKey 选中文风档、关掉出厂默认的日轻档
-  let miaomiaoBlock = '';
+  let 旧预设Block = '';
   try {
     if (bmmOn && window.BaseModelMode && window.BaseModelMode.buildLitePreset) {
       /* v3.55.10 基础小模型适配：小模型注意力有限，全量预设（数万字协议）
          换成 ~1.4k 字的云心精简核心（实测协议遵从率反而更高） */
-      miaomiaoBlock = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
-    } else if (window.MoMiaomiaoBridge && window.MoMiaomiaoBridge.render) {
-      miaomiaoBlock = window.MoMiaomiaoBridge.render({
+      旧预设Block = window.BaseModelMode.buildLitePreset((state.setup && state.setup.playerName) || '主角');
+    } else if (window.旧预设桥 && window.旧预设桥.render) {
+      旧预设Block = window.旧预设桥.render({
         char: (state.setup && state.setup.playerName) || '主角',
         user: '你'
       }) || '';
     }
   } catch (e) {
-    console.warn('[咩咩预设] 渲染失败，已跳过:', e);
-    miaomiaoBlock = '';
+    console.warn('[某预设预设] 渲染失败，已跳过:', e);
+    旧预设Block = '';
   }
   /* v3.55.17 云境核心契约 · 预设解耦注入
-     问题：玩家用「导入 SillyTavern 预设」整份替换内置预设后，那份预设里没有云境的
+     问题：玩家用「导入 常见前端工具 预设」整份替换内置预设后，那份预设里没有云境的
      六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
      六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
      对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
-     才补（云起预设 / 小模型精简核心 / 内置咩咩预设均自带上文，不会重复注入）。 */
+     才补（云起预设 / 小模型精简核心 / 内置某预设预设均自带上文，不会重复注入）。 */
   let coreContract = '';
   try {
-    const hasCoreOpts = /【快进】/.test(miaomiaoBlock) && /【成人】/.test(miaomiaoBlock);
+    const hasCoreOpts = /【快进】/.test(旧预设Block) && /【成人】/.test(旧预设Block);
     if (!hasCoreOpts) {
       coreContract = `
 【云境核心契约（优先级高于上方一切预设；与之冲突时，一律以本节为准）】
@@ -177,11 +182,11 @@ stats.张力: +5
 ⑥【成人】若愿与某人更近一步（中性可选措辞，玩家完全可以忽略）
 六条缺任一类即视为本轮失败；只输出一个 <selection> 块，禁止分两批、禁止另起第二套编号、禁止用 A/B/C 或 1/2/3 编号。
 2｜状态栏——正文与选项之间输出 (status)…(/status)，每行「中文标签：值」，至少包含 时间 / 地点 / 在场 / 心境 / 目标；字段名一律中文，严禁 time/location/health/mood 一类英文 key。
-3｜变量块——正文之后输出 (variable_update)…(/variable_update)，首尾成对闭合，每行 key=value，键名中文（回合/位置/灵石/机缘…）。`;
+3｜变量块——正文之后输出 (variable_update)…(/variable_update)，首尾成对闭合，每行 key=value；固定字段必须用英文键：chapter（章号，整数）与 wordCount（本轮新增字数，报 "+N" 增量形式），其余状态键用中文（位置/灵石/机缘…）。`;
     }
   } catch (e) { coreContract = ''; }
   const system = `${systemPrompt}
-${miaomiaoBlock ? '\n' + miaomiaoBlock + '\n' : ''}${coreContract}
+${旧预设Block ? '\n' + 旧预设Block + '\n' : ''}${coreContract}
 ${fictionPreamble}
 ${scaleDirective ? '\n' + scaleDirective + '\n' : ''}
 ${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
@@ -262,7 +267,10 @@ ${intel.map((p) => `· ${p.name}私下透露：${p.text}`).join("\n")}
       if (phoneNote) notes.push(phoneNote);
     } catch (e) {
     }
-    const drift = state.driftNotes;
+    /* v3.68.0 兼容老档：driftNotes 曾被写成字符串，统一归一化为 {text} 数组再消费 */
+    let drift = state.driftNotes;
+    if (typeof drift === "string" && drift.trim()) drift = [{ text: drift }];
+    else if (!Array.isArray(drift)) drift = null;
     if (drift && drift.length) {
       notes.push(`【数值纠偏（上轮正文与状态面板存在矛盾，本轮必须消化，不得无视）】
 ${drift.map((d) => `· ${d.text.split("|").join(" —— ")}`).join("\n")}
@@ -288,6 +296,8 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
     }
     if (notes.length) push({ role: "system", content: notes.join("\n\n") }, "场域注记", 50);
   } catch (e) {
+    /* v3.68.0 不再静默：任一注记子系统抛错至少留痕（此前整段空捕获，出错即无声丢注记） */
+    if (window.YJ_DEBUG) console.warn("[MessageBuilder] 场域注记装配失败:", e);
   }
   const sceneMsg = window.SceneState && window.SceneState.buildInjection ? window.SceneState.buildInjection() : null;
   if (sceneMsg) push(sceneMsg, "舞台现状", 55);
@@ -403,7 +413,7 @@ function buildPlayerIdentityCard(setup, config) {
   if (setup.customScale) parts.push(`游玩规模：自定义规模——玩家亲笔设定（节奏与长度按此把握）：${setup.customScale}`);
   else if (setup.scale) parts.push(`游玩规模：${setup.scale}${setup.scaleDesc ? `（${setup.scaleDesc}）` : ""}`);
   if (setup.background) parts.push(`身世自述：${setup.background}`);
-  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌咩咩预设开启时由预设的本土文风块承载
+  /* v3.47.18 文风基调：扮演模式此前也漏了。内嵌某预设预设开启时由预设的本土文风块承载
      （更细），这里作为兜底——预设关闭时玩家选的文风仍要生效。 */
   if (setup.customStyle) parts.push(`文风基调：自定义文风——玩家亲笔设定（严格执行，正文全程贯彻）：${setup.customStyle}`);
   else if (setup.style) parts.push(`文风基调：${setup.style}${setup.styleDesc ? `（${setup.styleDesc}）` : ""}`);
@@ -475,6 +485,15 @@ function buildPlayerIdentityCard(setup, config) {
     const _sq = SquadSystem.buildPromptBlock();
     if (_sq) parts.push(_sq);
   }
+  /* v3.68.0 战斗接线：战斗进行中把灵宠/小队的随战协同块注入主笔——
+     此前 buildCombatBlock 从未被调用，"接入战斗 prompt"只是文件头宣言 */
+  try {
+    const _cst = window.WorldExt && window.WorldExt.modState ? window.WorldExt.modState("wr_combat") : null;
+    if (_cst && _cst.inBattle) {
+      if (window.BeastSystem && BeastSystem.buildCombatBlock) { const _bcb = BeastSystem.buildCombatBlock(); if (_bcb) parts.push(_bcb); }
+      if (window.SquadSystem && SquadSystem.buildCombatBlock) { const _scb = SquadSystem.buildCombatBlock(); if (_scb) parts.push(_scb); }
+    }
+  } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 战斗协同块装配失败:", e); }
   return parts.join("\n");
 }
 function buildStoryDigest() {
