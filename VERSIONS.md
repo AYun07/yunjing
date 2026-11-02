@@ -2,9 +2,15 @@
 
 > 每个版本都已打 **git 标签**。点击「📂 该版文件」可查看那一版的**完整文件树**（等于该版本发布时的全部源码）；点击「🔍 与上一版差异」可在 GitHub 直接对比两个版本改了什么。
 
-> 共 **45** 个版本，从 `v3.55.7` 到 `v3.69.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **46** 个版本，从 `v3.55.7` 到 `v3.69.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 ---
+
+## v3.81.0 · 2026-11-03
+
+立绘全量回滚：撤销 v3.80 误伤清理(60张恢复原图,逐张核验零缺块)，仅定向清除 keai-battle/kusa-battle 腿间地面阴影白块(测地膨胀+羽化,深浅双底验收)，大厅四套版式对照台保留待选
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.0)  [🔍 与 v3.80.0 差异](https://github.com/AYun07/yunjing/compare/v3.80.0...v3.81.0)
 
 ## v3.80.0 · 2026-11-03
 
@@ -184,25 +190,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 世界基座：统一实体模型 Entity + 变量模板 Schema + 校验器 SchemaValidator（P1 地基）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.1)  [🔍 与 v3.55.9 差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.56.1)
-
-## v3.55.9 · 2026-10-30
-
-云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令）
-
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.9)  [🔍 与 v3.55.8 差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
-
-## v3.55.8 · 2026-10-30
-
-云起预设重构（内容加深 + 文风按类型整合）
-
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.8)  [🔍 与 v3.55.7 差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
-
-## v3.55.7 · 2026-10-29
-
-云端同步与开源
-
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.7)  [🔍 与 v3.55.30 差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.55.7)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.1)  [🔍 与 v3.55.30 差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.56.1)
 
 ## v3.55.30 · 2026-11-01
 
@@ -274,7 +262,25 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 基础小模型适配：参数安全锁/轻量协议块/辅助AI静默/复读自检
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.10)  （最早有记录的版本，无上一版可比）
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.10)  [🔍 与 v3.55.9 差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.55.10)
+
+## v3.55.9 · 2026-10-30
+
+云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.9)  [🔍 与 v3.55.8 差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
+
+## v3.55.8 · 2026-10-30
+
+云起预设重构（内容加深 + 文风按类型整合）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.8)  [🔍 与 v3.55.7 差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
+
+## v3.55.7 · 2026-10-29
+
+云端同步与开源
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.7)  （最早有记录的版本，无上一版可比）
 
 ---
 
