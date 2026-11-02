@@ -485,6 +485,12 @@ function buildPlayerIdentityCard(setup, config) {
     const _sq = SquadSystem.buildPromptBlock();
     if (_sq) parts.push(_sq);
   }
+  /* v3.78.0 世界演化：把势力格局/区域态势/事件链/人物弧写进世界设定，
+     并附《演化回报契约》——世界因此记得自己，并随剧情真实演化 */
+  if (window.WorldEvolution) {
+    const _wev = WorldEvolution.buildPromptBlock();
+    if (_wev) parts.push(_wev);
+  }
   /* v3.68.0 战斗接线：战斗进行中把灵宠/小队的随战协同块注入主笔——
      此前 buildCombatBlock 从未被调用，"接入战斗 prompt"只是文件头宣言 */
   try {

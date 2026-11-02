@@ -460,6 +460,15 @@ const MoChibi = {
       var _sq = window.SquadSystem.list().filter(function (x) { return x.type !== "player"; }).length;
       list.push({ ico: "🛡", name: "小队编成", note: "邀请同伴 / 灵宠入队 · 协同作战（" + _sq + "）", act: () => window.SquadSystem.openUI() });
     }
+    /* v3.78.0 世界演化：势力/区域/事件/人物弧随剧情真实变动 */
+    if (window.WorldEvolution) {
+      var _weS = window.WorldEvolution.state();
+      list.push({
+        ico: "🌏", name: "世界演化",
+        note: window.WorldEvolution.stageLabel(window.WorldEvolution.stageNow()) + " · 演化度 " + window.WorldEvolution.evolution() + "/100 · 势力 " + _weS.factions.length + " · 区域 " + _weS.regions.length,
+        act: () => window.WorldEvolutionUI.open()
+      });
+    }
     /* v3.55.20 玩家身份（穿越者 / 土著）与主角关系（同伴 / 敌对 / 陌路） */
     if (window.StoryIdentity) {
       const idn = window.StoryIdentity.infoIdentity();

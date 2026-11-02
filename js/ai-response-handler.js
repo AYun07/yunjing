@@ -10,6 +10,16 @@ const StoryResponseHandler = {
     reply = window.YunqiPresetRegex && window.YunqiPresetRegex.enabled()
       ? window.YunqiPresetRegex.preParse(reply)
       : reply;
+    /* v3.78.0 世界演化：主笔按《演化回报契约》回报的【世界演化】块在此抽取并落库，
+       随后从 reply 中剥离——既推进世界（势力/区域/事件/人物弧），又不进入读者可见正文。
+       剥离由 WorldEvolution.stripBlock 负责：未闭合且无平衡 JSON 时原样返回，绝不吃正文。 */
+    try {
+      if (window.WorldEvolution && WorldEvolution.stripBlock) {
+        const _weRaw = WorldEvolution.parseBlock(reply);
+        if (_weRaw) WorldEvolution.applyAI(_weRaw);
+        reply = WorldEvolution.stripBlock(reply);
+      }
+    } catch (e) { /* 演化失败不得影响主流程 */ }
     const oldCh = Number(fw.storyState.variables && fw.storyState.variables.chapter) || 0;
     const { newVariables, updateBlock } = parser.parse(reply, fw.storyState.variables, { storyRegistration: true });
     /* v3.47.8 章节保底推进：模型输出了变量块却没让 chapter 进位（写坏块/漏 chapter 字段），

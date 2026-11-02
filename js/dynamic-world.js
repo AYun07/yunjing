@@ -369,6 +369,7 @@ ${tl.era ? `- 时代铁律：所有远方事件必须严格处于上述时代（
 - ${isRP ? "严格遵循《" + fw.config.genreName + "》原著设定（原著人物与势力按其性格与处境行动，不剧透未发生的关键转折）；但原著大势不是铁轨——《大势演化账本》已登记的走向具有约束力：诱因已断的大事不得发生，已改变的大事按新形态推演，新生事件须推演其连锁后果" : "贴合故事题材与既有伏笔，不剧透主线真相"}
 ${isRP && window.StoryStance ? window.StoryStance.buildWorldClause(window.StoryStance.canonHeroName()) : ""}
 ${isRP && window.StoryIdentity ? window.StoryIdentity.buildWorldClause() : ""}
+${window.WorldEvolution ? window.WorldEvolution.buildWorldClause() : ""}
 ${window.CanonLedger ? window.CanonLedger.buildPromptBlock() : ""}
 ${isRP && window.CanonTimeline ? window.CanonTimeline.buildPromptBlock() : ""}
 - 字数要求：正文至少${s.minWords || 200}字`;

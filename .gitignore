@@ -1,4 +1,8 @@
-﻿# dev temp scripts (not part of the web app)
+# dev temp scripts (not part of the web app)
+_*.js
+_*.py
+_*.txt
+_*.json
 check_video_in_project.py
 find_v15.py
 fix_missing*.py
