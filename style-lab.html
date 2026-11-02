@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>云境 · 主界面板式对照台 v3.72.0</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #0b0d14;
+    color: #e8e4d8;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .lab-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 18px;
+    background: linear-gradient(180deg, #14171f, #0e1017);
+    border-bottom: 1px solid rgba(232, 228, 216, .1);
+    flex-shrink: 0;
+  }
+  .lab-brand {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #b9b19c;
+    white-space: nowrap;
+  }
+  .lab-brand b { color: #e8c97a; font-weight: 700; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tab {
+    border: 1px solid rgba(232, 228, 216, .14);
+    background: rgba(255, 255, 255, .03);
+    color: #cfc8b6;
+    padding: 8px 16px;
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .16s ease;
+    white-space: nowrap;
+  }
+  .tab:hover { border-color: rgba(232, 201, 122, .45); color: #f0d79c; }
+  .tab.on {
+    background: linear-gradient(135deg, rgba(232, 201, 122, .18), rgba(232, 201, 122, .06));
+    border-color: rgba(232, 201, 122, .7);
+    color: #f7dfa6;
+    box-shadow: 0 0 0 1px rgba(232, 201, 122, .2), 0 4px 16px rgba(232, 201, 122, .12);
+  }
+  .tab .no { opacity: .55; margin-right: 5px; font-variant-numeric: tabular-nums; }
+  .lab-note {
+    margin-left: auto;
+    font-size: 12px;
+    color: #7c7666;
+    white-space: nowrap;
+  }
+  .lab-note a { color: #9fb6d0; text-decoration: none; }
+  .lab-note a:hover { text-decoration: underline; }
+  .stage { flex: 1; position: relative; background: #0b0d14; }
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: #12141d;
+  }
+  @media (max-width: 760px) {
+    .lab-note { display: none; }
+    .lab-head { padding: 8px 10px; gap: 8px; }
+    .lab-brand { display: none; }
+    .tab { padding: 7px 11px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+  <div class="lab-head">
+    <div class="lab-brand">云境 · <b>主界面板式</b> v3.72.0</div>
+    <div class="tabs" id="tabs">
+      <button class="tab" data-theme="ink"><span class="no">A</span>水墨卷轴</button>
+      <button class="tab" data-theme="star"><span class="no">B</span>星穹 HUD</button>
+      <button class="tab" data-theme="gold"><span class="no">C</span>鎏金殿阁</button>
+      <button class="tab" data-theme="cloud"><span class="no">D</span>云白卡片</button>
+      <button class="tab" data-theme=""><span class="no">·</span>当前默认</button>
+    </div>
+    <div class="lab-note">选中后告诉我编号即可 · <a id="openNew" href="#" target="_blank">新窗口打开</a></div>
+  </div>
+  <div class="stage">
+    <iframe id="frame" src="studio.html?theme=ink" title="云境设定台预览"></iframe>
+  </div>
+  <script>
+    (function () {
+      var frame = document.getElementById('frame');
+      var openNew = document.getElementById('openNew');
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+
+      function activate(theme) {
+        tabs.forEach(function (b) { b.classList.toggle('on', b.dataset.theme === theme); });
+        var url = theme ? 'studio.html?theme=' + encodeURIComponent(theme) : 'studio.html';
+        frame.src = url;
+        openNew.href = url;
+      }
+
+      tabs.forEach(function (b) {
+        b.addEventListener('click', function () { activate(b.dataset.theme); });
+      });
+
+      // 初始：第一套
+      activate('ink');
+    })();
+  </script>
+</body>
+</html>
