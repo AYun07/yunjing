@@ -1,0 +1,394 @@
+/* ============================================================
+   云境 · 大厅焕新层 v3.73.0「鎏金云海」
+   作用域 html body.page-index，加载于最末，可整体移除回滚
+   深夜金霞天幕 / 衬线大字门面 / 色相琉璃卡 / 卷首语横幅
+   ============================================================ */
+
+/* ───────── 天幕：深夜 + 金色地平线霞光 ───────── */
+html body.page-index {
+  background-color: #0c101d;
+  background-image:
+    radial-gradient(ellipse 1200px 500px at 50% 114%, rgba(224, 168, 76, .16), transparent 62%),
+    radial-gradient(ellipse 900px 520px at 10% -10%, rgba(126, 150, 214, .10), transparent 60%),
+    radial-gradient(ellipse 820px 500px at 96% -6%, rgba(224, 168, 76, .09), transparent 58%),
+    linear-gradient(180deg, #0b0f1e, #0e1424 46%, #111827);
+}
+/* 流云改暖：一青一金，更淡更远 */
+html body.page-index::before { background: rgba(148, 178, 226, .07); }
+html body.page-index::after { background: rgba(232, 190, 130, .08); }
+/* 星点：暖白金，更亮 */
+html body.page-index .stars i {
+  background: rgba(240, 228, 200, .5);
+  box-shadow: 0 0 6px rgba(240, 220, 170, .5);
+}
+
+/* ───────── 开屏 ───────── */
+html body.page-index #splash {
+  background:
+    radial-gradient(ellipse 1000px 460px at 50% 108%, rgba(224, 168, 76, .15), transparent 60%),
+    linear-gradient(180deg, #0b0f1e, #0e1424 60%, #131a2b);
+}
+html body.page-index .splash-mark {
+  font-family: var(--serif);
+  background: linear-gradient(135deg, #fbeec8, #e8b964 55%, #c8963f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(224, 168, 76, .35));
+}
+html body.page-index .splash-line {
+  background: linear-gradient(90deg, transparent, #e8b964 30%, #f0d79c 70%, transparent);
+}
+
+/* ───────── 门面：衬线大字 + 眉线 + 落影 ───────── */
+html body.page-index .masthead { margin-bottom: 40px; }
+html body.page-index .masthead::before {
+  content: "YUNJING · INTERACTIVE FICTION ATELIER";
+  display: block;
+  font-size: 10px;
+  letter-spacing: 7px;
+  color: rgba(214, 190, 140, .55);
+  margin-bottom: 14px;
+}
+html body.page-index .masthead h1 {
+  font-family: var(--serif);
+  font-size: clamp(52px, 8vw, 84px);
+  letter-spacing: 22px;
+  text-indent: 22px;
+  background: linear-gradient(180deg, #fdf3d0 8%, #f0d79c 38%, #d9a94f 72%, #b8863a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 26px rgba(224, 168, 76, .22));
+}
+html body.page-index .masthead .sub {
+  font-size: 14px;
+  letter-spacing: 7px;
+  color: #b8ad92;
+}
+html body.page-index .gold-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(224, 168, 76, .7) 26%, rgba(247, 223, 166, .85) 50%, rgba(224, 168, 76, .7) 74%, transparent);
+}
+html body.page-index .gold-divider::after {
+  background: radial-gradient(circle, #f7dfa6 0 26%, transparent 32%);
+  box-shadow: 0 0 10px rgba(232, 185, 100, .8);
+}
+/* 门面标语胶囊：暖金玻璃 */
+html body.page-index .mh-chips { margin-top: 16px; gap: 9px; }
+html body.page-index .mh-chips span {
+  color: #ddcba4;
+  background: rgba(224, 168, 76, .07);
+  border: 1px solid rgba(224, 168, 76, .26);
+  padding: 6px 14px;
+  transition: all .18s ease;
+}
+html body.page-index .mh-chips span:hover {
+  background: rgba(224, 168, 76, .14);
+  border-color: rgba(224, 168, 76, .55);
+  color: #f7dfa6;
+  transform: translateY(-1px);
+}
+/* 小云：收进英雄区右上，脚下加一弯金色落影 */
+html body.page-index .mh-mascot {
+  width: 112px;
+  top: -26px;
+  right: 7%;
+  filter: drop-shadow(0 10px 24px rgba(8, 12, 24, .6));
+}
+html body.page-index .masthead::after {
+  content: "";
+  position: absolute;
+  right: calc(7% + 8px);
+  top: 96px;
+  width: 128px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(224, 168, 76, .22), transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
+  animation: yjMascotFloat 5.2s ease-in-out infinite;
+}
+
+/* ───────── 分区标题 ───────── */
+html body.page-index .section-title {
+  color: #e2cf9f;
+  font-size: 14px;
+  letter-spacing: 6px;
+  margin: 38px 0 20px;
+}
+html body.page-index .section-title::before,
+html body.page-index .section-title::after {
+  color: rgba(224, 168, 76, .75);
+  font-size: 20px;
+}
+
+/* ───────── 五大工坊：门户大卡 ───────── */
+html body.page-index .container > .workshops {
+  grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+  gap: 16px;
+}
+html body.page-index .container > .workshops .workshop {
+  padding: 32px 18px 24px;
+  border-radius: 18px;
+  background:
+    linear-gradient(172deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 10%, transparent), transparent 46%),
+    linear-gradient(180deg, #171e31, #101625);
+  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 26%, rgba(232, 228, 216, .08));
+  box-shadow: 0 4px 18px rgba(4, 10, 20, .4), inset 0 1px 0 rgba(255, 255, 255, .05);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+html body.page-index .container > .workshops .workshop:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--ws-hue, #e0a84c) 58%, transparent);
+  box-shadow:
+    0 16px 38px rgba(4, 10, 20, .55),
+    0 0 26px color-mix(in srgb, var(--ws-hue, #e0a84c) 20%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, .07);
+}
+html body.page-index .container > .workshops .ws-glyph {
+  width: 62px;
+  height: 62px;
+  font-size: 28px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 24%, transparent), color-mix(in srgb, var(--ws-hue, #e0a84c) 6%, transparent));
+  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 45%, transparent);
+  color: color-mix(in srgb, var(--ws-hue, #e0a84c) 80%, #ffffff);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--ws-hue, #e0a84c) 26%, transparent);
+  margin-bottom: 14px;
+}
+html body.page-index .container > .workshops .workshop:hover .ws-glyph { transform: scale(1.06); }
+html body.page-index .container > .workshops .ws-name { font-size: 17px; letter-spacing: 3.5px; color: #f0e8d6; }
+html body.page-index .container > .workshops .ws-desc { font-size: 12px; line-height: 1.85; color: #9a947f; }
+html body.page-index .container > .workshops .ws-enter {
+  margin-top: 14px;
+  padding: 5px 14px;
+  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 40%, transparent);
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--ws-hue, #e0a84c) 85%, #ffffff);
+  opacity: 1;
+  transition: all .2s ease;
+}
+html body.page-index .container > .workshops .workshop:hover .ws-enter {
+  background: color-mix(in srgb, var(--ws-hue, #e0a84c) 14%, transparent);
+  letter-spacing: 4px;
+}
+
+/* ───────── 世界卡（分组内）：同语言小一号 ───────── */
+html body.page-index .ws-clip .workshops {
+  grid-template-columns: repeat(auto-fit, minmax(184px, 1fr));
+  gap: 12px;
+}
+html body.page-index .ws-clip .workshop {
+  padding: 24px 15px 19px;
+  border-radius: 15px;
+  background:
+    linear-gradient(172deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 8%, transparent), transparent 44%),
+    linear-gradient(180deg, #151b2c, #101524);
+  border: 1px solid rgba(232, 228, 216, .09);
+  box-shadow: 0 3px 14px rgba(4, 10, 20, .35), inset 0 1px 0 rgba(255, 255, 255, .04);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+html body.page-index .ws-clip .workshop:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--ws-hue, #e0a84c) 52%, transparent);
+  box-shadow:
+    0 12px 30px rgba(4, 10, 20, .5),
+    0 0 20px color-mix(in srgb, var(--ws-hue, #e0a84c) 17%, transparent);
+}
+html body.page-index .ws-clip .ws-glyph {
+  width: 54px;
+  height: 54px;
+  font-size: 24px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--ws-hue, #e0a84c) 20%, transparent), color-mix(in srgb, var(--ws-hue, #e0a84c) 5%, transparent));
+  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 40%, transparent);
+  color: color-mix(in srgb, var(--ws-hue, #e0a84c) 82%, #ffffff);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--ws-hue, #e0a84c) 22%, transparent);
+}
+html body.page-index .ws-clip .ws-name { font-size: 15.5px; color: #ece4d0; }
+html body.page-index .ws-clip .ws-desc { font-size: 11.5px; line-height: 1.8; color: #938d79; }
+html body.page-index .ws-clip .ws-enter {
+  margin-top: 12px;
+  padding: 4px 12px;
+  border: 1px solid color-mix(in srgb, var(--ws-hue, #e0a84c) 36%, transparent);
+  border-radius: 999px;
+  opacity: 1;
+}
+
+/* ───────── 折叠分组 ───────── */
+html body.page-index .ws-groups-ctl { gap: 12px; margin-bottom: 14px; }
+html body.page-index .ws-ctl-btn {
+  border: 1px solid rgba(224, 168, 76, .3);
+  color: #d9c9a6;
+  background: rgba(224, 168, 76, .05);
+  border-radius: 999px;
+  padding: 6px 14px;
+  transition: all .18s ease;
+}
+html body.page-index .ws-ctl-btn:hover {
+  background: rgba(224, 168, 76, .12);
+  border-color: rgba(224, 168, 76, .6);
+  color: #f7dfa6;
+}
+html body.page-index .ws-group {
+  border-radius: 18px;
+  background: linear-gradient(170deg, rgba(22, 28, 46, .55), rgba(13, 18, 31, .72));
+  border: 1px solid rgba(232, 228, 216, .08);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+html body.page-index .ws-group-head {
+  padding: 16px 18px;
+  transition: background .18s ease;
+}
+html body.page-index .ws-group-head:hover { background: color-mix(in srgb, var(--g-hue, #e0a84c) 6%, transparent); }
+html body.page-index .wg-glyph {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 16px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--g-hue, #e0a84c) 22%, transparent), color-mix(in srgb, var(--g-hue, #e0a84c) 6%, transparent));
+  border: 1px solid color-mix(in srgb, var(--g-hue, #e0a84c) 42%, transparent);
+  color: color-mix(in srgb, var(--g-hue, #e0a84c) 82%, #ffffff);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--g-hue, #e0a84c) 20%, transparent);
+}
+html body.page-index .wg-name { font-size: 15.5px; letter-spacing: 3px; color: #efe6d0; }
+html body.page-index .wg-sub { font-size: 11.5px; color: #87816d; }
+html body.page-index .wg-count {
+  border: 1px solid color-mix(in srgb, var(--g-hue, #e0a84c) 34%, transparent);
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: color-mix(in srgb, var(--g-hue, #e0a84c) 8%, transparent);
+}
+html body.page-index .wg-caret {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(232, 228, 216, .16);
+  border-radius: 50%;
+  color: #b8ad92;
+}
+
+/* ───────── 卷首语横幅（rp-promo） ───────── */
+html body.page-index .rp-promo {
+  margin-top: 26px;
+  padding: 42px 38px 34px;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 640px 260px at 88% 0%, rgba(224, 168, 76, .12), transparent 60%),
+    radial-gradient(ellipse 520px 280px at 0% 100%, rgba(126, 150, 214, .10), transparent 58%),
+    linear-gradient(175deg, #18203355, #10162588), #101625;
+  border: 1px solid rgba(224, 168, 76, .28);
+  box-shadow: 0 18px 50px rgba(4, 10, 20, .45), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+html body.page-index .rp-promo-mark { color: rgba(224, 168, 76, .07); font-size: 120px; }
+html body.page-index .rp-kicker { color: #c9a25a; letter-spacing: 6px; }
+html body.page-index .rp-title {
+  font-family: var(--serif);
+  font-size: clamp(26px, 4vw, 38px);
+  letter-spacing: 5px;
+  background: linear-gradient(120deg, #fdf3d0, #f0d79c 45%, #d9a94f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+html body.page-index .rp-sub { font-size: 13px; color: #9a947f; line-height: 2.1; }
+html body.page-index .rp-feats { gap: 12px; margin-top: 22px; }
+html body.page-index .rp-feat {
+  background: rgba(255, 255, 255, .028);
+  border: 1px solid rgba(232, 228, 216, .09);
+  border-radius: 14px;
+  padding: 17px 16px 14px;
+  transition: all .2s ease;
+}
+html body.page-index .rp-feat:hover {
+  border-color: rgba(224, 168, 76, .45);
+  background: rgba(224, 168, 76, .05);
+  transform: translateY(-3px);
+}
+html body.page-index .rp-feat .fi { font-size: 20px; filter: drop-shadow(0 0 10px rgba(224, 168, 76, .35)); }
+html body.page-index .rp-feat .fn { color: #efe4c8; font-size: 13px; letter-spacing: 2px; }
+html body.page-index .rp-feat .fd { color: #938d79; font-size: 11.5px; }
+html body.page-index .rp-cta { margin-top: 22px; gap: 12px; }
+html body.page-index .rp-cta a {
+  border-radius: 12px;
+  padding: 12px 20px;
+  transition: all .2s ease;
+}
+html body.page-index .rp-cta a:not(.alt) {
+  background: linear-gradient(180deg, #fbe3ac, #d9a94f 52%, #b8863a);
+  color: #2a1c07;
+  font-weight: 700;
+  letter-spacing: 2px;
+  box-shadow: 0 8px 22px rgba(224, 168, 76, .28), inset 0 1px 0 rgba(255, 255, 255, .5);
+}
+html body.page-index .rp-cta a:not(.alt):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(224, 168, 76, .42);
+}
+html body.page-index .rp-cta a.alt {
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(224, 168, 76, .3);
+  color: #d9c9a6;
+}
+html body.page-index .rp-cta a.alt:hover {
+  border-color: rgba(224, 168, 76, .6);
+  color: #f7dfa6;
+  background: rgba(224, 168, 76, .07);
+  transform: translateY(-2px);
+}
+
+/* ───────── 初来乍到 · 信息卡 ───────── */
+html body.page-index .info-card {
+  background: linear-gradient(175deg, rgba(23, 29, 48, .6), rgba(14, 19, 33, .75));
+  border: 1px solid rgba(232, 228, 216, .09);
+  border-radius: 16px;
+  padding: 22px 24px;
+}
+html body.page-index .info-title {
+  color: #e2cf9f;
+  border-bottom: 1px solid rgba(224, 168, 76, .18);
+}
+html body.page-index .info-list li { color: #9a947f; }
+html body.page-index .info-list li::before { color: #c9a25a; }
+
+/* ───────── 版本徽标 / 页脚 ───────── */
+html body.page-index .ver-badge {
+  background: rgba(224, 168, 76, .1);
+  border: 1px solid rgba(224, 168, 76, .45);
+  color: #f0d79c;
+  border-radius: 999px;
+  letter-spacing: 1px;
+}
+html body.page-index .ver-badge:hover {
+  box-shadow: 0 0 18px rgba(224, 168, 76, .35);
+  border-color: rgba(224, 168, 76, .8);
+}
+html body.page-index .footer { color: #6e6a5e; line-height: 2; }
+html body.page-index .footer-log a { color: #c9a25a; }
+
+/* ───────── 移动端 ───────── */
+@media (max-width: 760px) {
+  html body.page-index .masthead h1 { font-size: clamp(40px, 12vw, 56px); letter-spacing: 12px; text-indent: 12px; }
+  html body.page-index .masthead::before { letter-spacing: 4px; font-size: 9px; }
+  html body.page-index .masthead .sub { font-size: 12px; letter-spacing: 4px; }
+  html body.page-index .masthead::after { display: none; }
+  html body.page-index .mh-mascot { width: 78px; top: -18px; right: 3%; }
+  html body.page-index .container > .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  html body.page-index .container > .workshops .workshop { padding: 20px 12px 16px; border-radius: 14px; }
+  html body.page-index .container > .workshops .ws-glyph { width: 48px; height: 48px; font-size: 22px; border-radius: 12px; }
+  html body.page-index .container > .workshops .ws-name { font-size: 14.5px; letter-spacing: 2px; }
+  html body.page-index .container > .workshops .ws-enter { display: none; }
+  html body.page-index .ws-clip .workshops { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  html body.page-index .ws-clip .workshop { padding: 18px 11px 14px; border-radius: 13px; }
+  html body.page-index .ws-clip .ws-glyph { width: 44px; height: 44px; font-size: 19px; border-radius: 11px; }
+  html body.page-index .ws-clip .ws-enter { display: none; }
+  html body.page-index .ws-group { border-radius: 14px; }
+  html body.page-index .ws-group-head { padding: 12px 12px 11px; }
+  html body.page-index .wg-glyph { width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
+  html body.page-index .rp-promo { padding: 26px 18px 22px; border-radius: 18px; }
+  html body.page-index .rp-feats { grid-template-columns: 1fr 1fr; gap: 9px; }
+}
