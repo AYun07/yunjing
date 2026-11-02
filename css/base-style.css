@@ -1954,7 +1954,7 @@ body.narrow .form-row.three-col { grid-template-columns: 1fr; }
     padding-top: 12px;
 }
 .dw-sub-title { font-size: 12px; color: #7fd4dc; letter-spacing: 1.5px; margin-bottom: 11px; }
-/* v3.55.30 多连接配置（Connection Profiles）列表与编辑区 */
+/* v3.55.30 多连接配置（多连接配置）列表与编辑区 */
 .cp-profile-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
 .cp-profile-item {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -2264,6 +2264,24 @@ body.mobile .typing-draft { font-size: 12.5px; max-height: 180px; }
 .stat-bar { flex: 1; height: 6px; background: rgba(0, 0, 0, 0.35); border-radius: 99px; overflow: hidden; }
 .stat-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
 .stat-num { font-family: var(--mono); font-size: 11px; color: var(--text-muted); width: 22px; text-align: right; }
+
+/* v3.65.0 数值即时反馈：专长标签 / 变动闪动 / Δ 浮标（受伤红、恢复绿，随存档审计账本同源） */
+.stat-spec {
+    font-size: 9px; line-height: 1; padding: 2px 4px; margin-left: 3px;
+    border-radius: 4px; color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.06); white-space: nowrap;
+}
+@keyframes statFlashUp { 0% { background: rgba(122, 220, 152, 0.35); } 100% { background: transparent; } }
+@keyframes statFlashDown { 0% { background: rgba(232, 92, 92, 0.35); } 100% { background: transparent; } }
+.stat-row.stat-flash-up { animation: statFlashUp 1.6s ease-out 1; border-radius: 6px; }
+.stat-row.stat-flash-down { animation: statFlashDown 1.6s ease-out 1; border-radius: 6px; }
+.stat-delta {
+    font-family: var(--mono); font-size: 10px; width: 26px; text-align: left;
+    animation: statDeltaPop 1.6s ease-out 1;
+}
+.stat-delta.d-up { color: #7adc98; }
+.stat-delta.d-down { color: #e85c5c; }
+@keyframes statDeltaPop { 0% { opacity: 0; transform: translateY(-3px); } 15% { opacity: 1; transform: translateY(0); } 80% { opacity: 1; } 100% { opacity: 0; } }
 
 /* v3.30.0 时空坐标与账本（地球等生活模拟界启用：config.spacetimePanel/ledgerPanel） */
 .spacetime-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
@@ -4352,7 +4370,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   padding: 8px 10px;
 }
 
-/* ==================== 📕 咩咩预设面板（v3.47.17） ==================== */
+/* ==================== 📕 某预设预设面板（v3.47.17） ==================== */
 .mm-block-list {
   display: flex;
   flex-direction: column;
@@ -4395,7 +4413,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   resize: vertical;
 }
 
-/* ==================== 咩咩正则卡片（v3.47.18） ==================== */
+/* ==================== 某预设正则卡片（v3.47.18） ==================== */
 /* 预设协议块（<status>/<wlog>/<memory_log>/<npc_log>…）渲染成的折叠卡片。
    跟随世界皮肤变量，不内联任何动画样式 —— 与 ST 原版的内联赛博朋克模板区别在此。 */
 .mm-card-area {
@@ -4516,7 +4534,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
   letter-spacing: 0;
 }
 
-/* ==================== 咩咩条目面板（v3.47.18） ==================== */
+/* ==================== 某预设条目面板（v3.47.18） ==================== */
 .mm-toolbar { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
 .mm-toolbar input[type=text] { flex: 1; min-width: 160px; }
 .mm-toolbar button { padding: 3px 8px; font-size: 12px; }
