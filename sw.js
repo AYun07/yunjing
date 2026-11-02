@@ -62,11 +62,10 @@ const CORE2 = CORE.concat(GEN, [
   /* v3.53.0 新增：原创设计工坊 / 状态栏字段全集 / 文件桥（离线也要能用） */
   'js/creator-forge.js','js/status-schema.js','js/file-bridge.js',
   'js/save-slots.js','js/card-io.js','js/card-hub.js',
-  /* --- 知识库与 DLC ---
-     v3.55.3 预缓存瘦身：js/preset-knowledge.js（9MB 整包）撤出预缓存——v3.53.0 起
-     世界书已按界拆成 js/kb/<界>.core.js + .ext.js（66 个分包均在 GEN 预缓存，覆盖全部工坊），
-     整包仅作「分包缺失时的回退」，几乎不会被加载；保留在包内供在线回退，
-     但不再让低配设备一启动就背 9MB 下载与存储。预缓存总量 14.3MB → 5.3MB。 */
+     /* --- 知识库与 DLC ---
+      opt#1 后 js/preset-knowledge.js（9.4MB 整包）已从仓库删除——世界书按界拆成
+      js/kb/<界>.core.js + .ext.js（66 个分包在 GEN 预缓存，覆盖全部工坊），
+      core 加载失败直接报错不再回退整包。预缓存总量 14.3MB → 5.3MB。 */
   'js/knowledge-manager.js','js/kb-enhance.js','js/kb-vector.js',
   'js/dlc-manager.js','js/st-import.js',
   /* --- 沉浸与展示（v3.46.0 新增，此前缺失） --- */
