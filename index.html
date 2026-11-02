@@ -18,7 +18,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=3.55.29"></script>
-    <title>云境 v3.77.0 · AI创作与开放世界扮演</title>
+    <title>云境 v3.78.0 · AI创作与开放世界扮演</title>
     <style>
         /* v3.75.0 大厅全面重设计「纸本」：样式整体迁移至 css/lobby-v4.css，此处仅留变量兜底 */
         :root {
@@ -29,15 +29,15 @@
     </style>
 
     <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集，见 css/fonts-local.css -->
-    <link rel="stylesheet" href="css/fonts-local.css?v=3.77.0">
-    <!-- v3.77.0「晨青」：大厅唯一样式源，明亮现代雅致风，整份替换即回滚 -->
-    <link rel="stylesheet" href="css/lobby-v4.css?v=3.77.0">
+    <link rel="stylesheet" href="css/fonts-local.css?v=3.78.0">
+    <!-- v3.78.0「晨青·楷变」：楷体艺术字标题 + 波浪错落工坊 + 卡化沉浸段，整份替换即回滚 -->
+    <link rel="stylesheet" href="css/lobby-v4.css?v=3.78.0">
     <script src="js/theme-studio.js?v=3.55.29"></script>
 </head>
 
 <body class="page-index">
     <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.77.0 云境版</a>
+    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.78.0 云境版</a>
 
     <!-- 开屏 -->
     <div id="splash">
@@ -50,7 +50,7 @@
     <div class="container">
         <div class="masthead">
             <img class="mh-mascot" src="assets/xiaoyun-chibi-luo.png?v=3.59.0" alt="小云">
-            <h1>云境</h1>
+            <h1 class="logo-kai"><span class="lk-a">云</span><span class="lk-b">境</span></h1>
             <div class="sub">万象入云 · 一念一世界</div>
             <div class="gold-divider"></div>
             <div class="mh-chips">
@@ -448,12 +448,15 @@
         <!-- 沉浸扮演 · 平台宣传（v1.6.6：原日志区腾出，创作日志已独立成册 changelog/） -->
         <div class="rp-promo">
             <div class="rp-promo-mark">卷</div>
-            <div class="rp-kicker">OPEN WORLD ROLE-PLAY · 沉浸扮演</div>
-            <div class="rp-title">你不是读者 · 你是主角</div>
-            <div class="rp-sub">
-                捏一个身份，踏进原著世界。书里的风会记得你的名字，你视线之外的山河正自行运转——这不是读故事，是活进故事。脚下每一步，世界都随之改变。
-            </div>
-            <div class="rp-feats">
+            <div class="rp-head">
+                <div class="rp-left">
+                    <div class="rp-kicker">OPEN WORLD ROLE-PLAY · 沉浸扮演</div>
+                    <div class="rp-title">你不是读者 · 你是主角</div>
+                    <div class="rp-sub">
+                        捏一个身份，踏进原著世界。书里的风会记得你的名字，你视线之外的山河正自行运转——这不是读故事，是活进故事。脚下每一步，世界都随之改变。
+                    </div>
+                </div>
+                <div class="rp-feats">
                 <div class="rp-feat">
                     <div class="fi">🪪</div>
                     <div class="fn">身份卡入场</div>
@@ -484,6 +487,7 @@
                     <div class="fn">逐字登场</div>
                     <div class="fd">流式打字机演出，正文如墨迹在纸面洇开，看它落笔即是享受</div>
                 </div>
+            </div>
             </div>
             <div class="rp-cta">
                 <a href="studio.html?genre=swallowedstar&v=1.6.9">吞噬星空 · 入场</a>
