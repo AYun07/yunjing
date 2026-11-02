@@ -284,6 +284,15 @@
 
         <article class="log-entry" data-tags="立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
             <div class="entry-head">
+                <span class="entry-ver">v3.81.4</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">全员轮廓晕圈衰减：浅底灰边清零</h3>
+            <p class="entry-text">补上最后一类浅底可见残留：AI 生图自带的「背景软阴影晕圈」——紧贴轮廓 3px 内的浅灰带（RGB 185-235 低饱和，共 18.3 万 px / 60 张），在浅色页面呈灰扑扑的脏边。处理为 alpha 衰减至 35%（保留抗锯齿核心，轮廓不破碎）。全量浅色底总览 4 张逐张复核：轮廓干净、发丝裙褶零损伤。至此立绘浅底可见残留三类（发间/腿间死灰空隙、轮廓晕圈、深灰残条）全部清零，验收流程改为深底+浅底双底对照。</p>
+        </article>
+
+        <article class="log-entry" data-tags="立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
                 <span class="entry-ver">v3.81.3</span>
                 <span class="entry-date">2026-11-03</span>
             </div>
