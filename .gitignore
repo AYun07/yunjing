@@ -1,14 +1,17 @@
-# 系统与编辑器
-.DS_Store
-Thumbs.db
-desktop.ini
-*.swp
-*~
-
-# 日志与临时产物
-*.log
-_test_presets/
-node_modules/
-__pycache__/
-
-# 注意：releases/ 必须提交（云境「☁ 云端同步」与酒馆直链下载都读这里的固定路径）
+﻿# dev temp scripts (not part of the web app)
+check_video_in_project.py
+find_v15.py
+fix_missing*.py
+get_v15.py
+km-final.b64
+make_b64.py
+payload.json
+rebuild_v16.py
+repair_js.py
+repair_km.py
+run_selftest_local.py
+scan_js.py
+setup_git_path.ps1
+sync_repo*.py
+update_km.py
+update_payload*.json
