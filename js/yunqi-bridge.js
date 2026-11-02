@@ -180,6 +180,14 @@
    * 渲染预设正文。返回 '' 表示未启用或无内容。
    * @param {object} opt { char, user }
    */
+  // v3.70.0 性能：预设渲染结果按「覆盖表+角色+用户+世界+预设指纹」缓存，
+  // 同一局内预设基本不变，避免每轮请求重建上万字 system 片段。
+  var _renderCache = null;
+  function presetFingerprint() {
+    var p = window.YunqiPreset && (window.YunqiPreset.preset ? window.YunqiPreset.preset() : (window.YUNQI_PRESET || null));
+    if (!p || !p.prompts || !p.prompts.length) return 'none';
+    return p.prompts.length + ':' + (p.prompts[0].identifier || '');
+  }
   function render(opt) {
     var M = window.YunqiPreset;
     if (!M || typeof M.renderWithOverrides !== 'function') return '';
@@ -195,6 +203,9 @@
     plan.off.forEach(function (n) { merged[n] = false; });
     plan.on.forEach(function (n) { if (merged[n] === undefined) merged[n] = true; });
 
+    var key = JSON.stringify(merged) + '|' + (o.char || '') + '|' + (o.user || '') + '|' + worldName() + '|' + presetFingerprint();
+    if (_renderCache && _renderCache.key === key) return _renderCache.val;
+
     var r;
     try {
       // 直接给引擎一份合并后的覆盖表：复用它的匹配逻辑
@@ -203,7 +214,9 @@
       return '';
     }
     var txt = (r && r.system) || '';
-    return txt ? tidy(txt) : '';
+    txt = txt ? tidy(txt) : '';
+    _renderCache = { key: key, val: txt };
+    return txt;
   }
 
   /**
@@ -281,6 +294,7 @@
     resolveStyleBlock: resolveStyleBlock,
     buildRenderOpts: buildRenderOpts,
     render: render,
+    invalidate: function () { _renderCache = null; },
     listStyles: listStyles,
     listWorlds: listWorlds,
     DEFAULT_OFF: DEFAULT_OFF,

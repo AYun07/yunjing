@@ -1397,6 +1397,17 @@ ${notes.map((n) => "· " + n).join("\n")}
       this.updateDock();
     },
     render() {
+      // v3.70.0 性能：同一帧内的多次 render() 合并为一次真实重绘（手机面板整屏 innerHTML 重建较重）
+      if (this._renderRaf != null) return;
+      var self = this;
+      var run = function () { self._renderRaf = null; self._renderNow(); };
+      if (typeof requestAnimationFrame === "function") {
+        this._renderRaf = requestAnimationFrame(run);
+      } else {
+        run();
+      }
+    },
+    _renderNow() {
       var _a, _b;
       this.ensureModule();
       const t = this.tierInfo() || this.TIERS.sms;
