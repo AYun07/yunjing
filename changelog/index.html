@@ -282,6 +282,23 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="性能 优化 缓存 瘦身" style="--entry-hue:#9ad0c0;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.70.0</span>
+                <span class="entry-date">2026-11-02</span>
+                <span class="entry-title">性能与瘦身专项：预设渲染缓存 · 正文/去味去重 · 手机面板合帧</span>
+            </div>
+            <div class="entry-body">
+                <p><b>针对审计报告 P2 批次的「性能 + 瘦身」集中优化（功能性 bug 已在 v3.68.0 清零，本批只动性能与体积）。</b></p>
+                <p><b>① 云起预设渲染缓存</b>：<code>YunqiPresetBridge.render</code> 每轮请求都会重建上万字 system 片段；现按「覆盖表 + 角色 + 用户 + 世界 + 预设指纹」做结果缓存，同一局内预设不变即命中，免重复重建。附 <code>invalidate()</code> 供覆盖表变更时清缓存。</p>
+                <p><b>② 去 AI 味去重</b>：<code>stripAIThink</code> 同一段文本只跑一次正则（8 条 LRU 记忆）。</p>
+                <p><b>③ 正文提取去重</b>：<code>StoryResponseHandler.extractBody</code> 无 options 的跨模块重复调用（草稿/质检/场景态复用同一回复）直接命中缓存（上限 4 条）。</p>
+                <p><b>④ 手机面板合帧</b>：<code>PhonePanel.render</code> 整屏 innerHTML 重建较重，现合并同一帧内的多次调用为一次真实重绘（rAF 合帧，带同步兜底）。</p>
+                <p><b>⑤ 体积（已确认此前已缓解，本批未动以免破坏功能）</b>：<code>preset-knowledge.js</code>（9.4MB）自 v3.55.3 已撤出 SW 预缓存、仅首次进入按需加载一次落 IDB；<code>atlas-panel.js</code>（406KB）已是 <code>text/yj-lazy</code> 按需懒加载。彻底移出发布包需外部托管，列为后续项。</p>
+                <p>✅ <b>验收</b>：4 个改动文件 <code>node --check</code> 全过；真机冒烟（<code>?genre=earth</code>）确认预设渲染二次调用命中缓存（17400 字）、去味/提取去重生效、手机面板合帧调度成功且帧后屏幕已渲染、控制台 0 报错。BM25 检索经核查在 <code>knowledge-manager</code> 已有按文档 TF 缓存，未重复造轮。</p>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="原创 品牌 预设 版权" style="--entry-hue:#e0a84c;">
             <div class="entry-head">
                 <span class="entry-ver">v3.69.0</span>

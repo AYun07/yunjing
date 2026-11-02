@@ -86,7 +86,7 @@
     <div class="top-bar">
         <a href="index.html" class="back-link" title="返回工坊大厅"><span class="ico">←</span><span class="txt">大厅</span></a>
         <span id="gameTitle">加载中…</span>
-        <span class="ver-dot" title="云境 v3.69.0 · 预设品牌去第三化：原咩咩引擎/桥/正则三件套重命名为云起(Yunqi)系、删除第三方兜底引用、全局对象 MoMiaomiao 彻底更名 YunqiPreset（预设内容早已为云境原创，本次仅出清命名品牌）">v3.69.0</span>
+        <span class="ver-dot" title="云境 v3.70.0 · 性能与瘦身专项：云起预设渲染结果按覆盖表缓存（免每轮重建上万字 system）、去 AI 味与正文提取同轮去重、手机面板整屏重绘合并为每帧一次；preset-knowledge 已不预缓存、atlas 已懒加载">v3.70.0</span>
         <div class="top-actions">
             <!-- v3.8.3 极简顶栏：功能按钮全部收进 ☰ 工具箱（桌面/移动同构），只留状态面板与工具箱两个常驻入口 -->
             <button class="top-btn" id="panelToggle" onclick="togglePanel()" title="状态面板"><span class="ico">📊</span><span class="txt">状态</span></button>
@@ -333,7 +333,7 @@
     <script defer src="js/ui-dialog.js?v=3.55.29"></script>
     <script defer src="js/net-guard.js?v=3.55.29"></script>
     <script defer src="js/content-scale.js?v=3.55.29"></script>
-    <script defer src="js/api-calling-functions.js?v=3.68.0"></script>
+    <script defer src="js/api-calling-functions.js?v=3.70.0"></script>
     <script defer src="js/attribute-engine.js?v=3.65.0"></script>
     <script defer src="js/world-schema.js?v=3.57.1"></script>
     <script defer src="js/entity-editor.js?v=3.58.0"></script>
@@ -373,14 +373,14 @@
     <script type="text/yj-lazy" data-src="js/preset-io.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/regex-io.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/yunqi-engine.js?v=3.55.29" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/yunqi-bridge.js?v=3.55.29" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/yunqi-bridge.js?v=3.70.0" data-yj-group="batch"></script>
     <!-- v3.55.5 云起正则（云境原创）：数据 + 引擎（协议块转卡片 / 去 AI 味 / 上下文裁剪） -->
     <script type="text/yj-lazy" data-src="js/yunqi-regex-data.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/yunqi-regex.js?v=3.55.29" data-yj-group="batch"></script>
     <!-- v3.55.10 云起预设云端同步：从 GitHub 拉最新版，预设更新不用再导入 -->
     <script type="text/yj-lazy" data-src="js/yunqi-sync.js?v=3.55.29" data-yj-group="batch"></script>
     <script defer src="js/ai-message-builder.js?v=3.68.0"></script>
-    <script defer src="js/ai-response-handler.js?v=3.68.0"></script>
+    <script defer src="js/ai-response-handler.js?v=3.70.0"></script>
     <script defer src="js/story-status-renderer.js?v=3.68.0"></script>
     <script type="text/yj-lazy" data-src="js/atlas-panel.js?v=3.68.0" data-yj-group="demand" data-yj-globals="StoryAtlas"></script>
     <script type="text/yj-lazy" data-src="js/ambience-layer.js?v=3.55.29" data-yj-group="batch"></script>
@@ -802,7 +802,7 @@ window.Snapshots = Snapshots;
   document.head.appendChild(configScript);
   if (genre === "earth") {
     const phScript = document.createElement("script");
-    phScript.src = "js/phone-panel.js?v=3.68.0";
+    phScript.src = "js/phone-panel.js?v=3.70.0";
     phScript.onerror = () => console.warn("[PhonePanel] 手机分身模块加载失败（不影响主流程）");
     document.head.appendChild(phScript);
   }
