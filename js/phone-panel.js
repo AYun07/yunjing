@@ -1223,7 +1223,7 @@ ${notes.map((n) => "· " + n).join("\n")}
       }
     },
     /* ==================== v3.31.0 手机容器：拖拽 / 缩放 / 位置记忆 ====================
-     * 借鉴 st-yuzi-phone 的 window 模块体验：手机不钉死在右侧——
+     * 借鉴 某手机前端 的 window 模块体验：手机不钉死在右侧——
      * 按住状态栏可拖到屏幕任意角落（localStorage 记忆，跨会话还原）；
      * ⤢ 钮三档宽度循环（紧凑/标准/宽屏）；拖拽中禁用过渡动画保证跟手。 */
     SHELL_LAYOUT_KEY: "storyPhoneShellLayout",
@@ -1397,6 +1397,17 @@ ${notes.map((n) => "· " + n).join("\n")}
       this.updateDock();
     },
     render() {
+      // v3.70.0 性能：同一帧内的多次 render() 合并为一次真实重绘（手机面板整屏 innerHTML 重建较重）
+      if (this._renderRaf != null) return;
+      var self = this;
+      var run = function () { self._renderRaf = null; self._renderNow(); };
+      if (typeof requestAnimationFrame === "function") {
+        this._renderRaf = requestAnimationFrame(run);
+      } else {
+        run();
+      }
+    },
+    _renderNow() {
       var _a, _b;
       this.ensureModule();
       const t = this.tierInfo() || this.TIERS.sms;

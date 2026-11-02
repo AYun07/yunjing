@@ -76,6 +76,12 @@ const StoryResponseHandler = {
    *  - 常规剥离意外清空正文时，启动 _rescueProse 本地打捞兜底（老存档同样受益）。 */
   extractBody(reply, options) {
     if (!reply) return "";
+    // v3.70.0 性能：无 options 的跨模块重复调用（草稿/质检/场景态复用同一回复）直接命中缓存
+    if (!options) {
+      if (!this._bodyCacheNoOpt) this._bodyCacheNoOpt = new Map();
+      const _hit = this._bodyCacheNoOpt.get(reply);
+      if (_hit !== undefined) return _hit;
+    }
     let body = reply;
     /* v3.55.19 机缘归属账本：先把 (claimed) 块吸收进世界账本（幂等），再从正文剥离——
        这块是给世界看的登记簿，不是给读者看的正文 */
@@ -155,6 +161,10 @@ const StoryResponseHandler = {
     if (out.replace(/\s/g, "").length < 15) {
       const rescued = this._rescueProse(reply);
       if (rescued) return rescued;
+    }
+    if (!options) {
+      if (this._bodyCacheNoOpt.size > 4) this._bodyCacheNoOpt.clear();
+      this._bodyCacheNoOpt.set(reply, out);
     }
     return out;
   },

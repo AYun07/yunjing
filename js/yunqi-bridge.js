@@ -27,7 +27,7 @@
     // 推理块：要求模型在正文里输出自定义 XML 推理段，云境只剥 <think>，留着变噪音
     '🎭acg角色心理模型(需搭配世界书)',   // 输出 <acg_think>，原文亦标注"需搭配世界书"
     '🧠思维模式-故事(多选一)',            // 输出 <story_driver> 长推理块
-    // SillyTavern「预填充」专属 hack：靠伪造 </story_driver></thinking></think> 让模型跳过思考。
+    // 常见前端工具「预填充」专属 hack：靠伪造 </story_driver></thinking></think> 让模型跳过思考。
     // 云境没有预填充通道，这些串当 system 文本注入只会污染正文。
     '🧷卡原生思维链-预填充-1',
     '🧷卡原生思维链-预填充-2',
@@ -180,6 +180,14 @@
    * 渲染预设正文。返回 '' 表示未启用或无内容。
    * @param {object} opt { char, user }
    */
+  // v3.70.0 性能：预设渲染结果按「覆盖表+角色+用户+世界+预设指纹」缓存，
+  // 同一局内预设基本不变，避免每轮请求重建上万字 system 片段。
+  var _renderCache = null;
+  function presetFingerprint() {
+    var p = window.YunqiPreset && (window.YunqiPreset.preset ? window.YunqiPreset.preset() : (window.YUNQI_PRESET || null));
+    if (!p || !p.prompts || !p.prompts.length) return 'none';
+    return p.prompts.length + ':' + (p.prompts[0].identifier || '');
+  }
   function render(opt) {
     var M = window.YunqiPreset;
     if (!M || typeof M.renderWithOverrides !== 'function') return '';
@@ -195,6 +203,9 @@
     plan.off.forEach(function (n) { merged[n] = false; });
     plan.on.forEach(function (n) { if (merged[n] === undefined) merged[n] = true; });
 
+    var key = JSON.stringify(merged) + '|' + (o.char || '') + '|' + (o.user || '') + '|' + worldName() + '|' + presetFingerprint();
+    if (_renderCache && _renderCache.key === key) return _renderCache.val;
+
     var r;
     try {
       // 直接给引擎一份合并后的覆盖表：复用它的匹配逻辑
@@ -203,7 +214,9 @@
       return '';
     }
     var txt = (r && r.system) || '';
-    return txt ? tidy(txt) : '';
+    txt = txt ? tidy(txt) : '';
+    _renderCache = { key: key, val: txt };
+    return txt;
   }
 
   /**
@@ -281,6 +294,7 @@
     resolveStyleBlock: resolveStyleBlock,
     buildRenderOpts: buildRenderOpts,
     render: render,
+    invalidate: function () { _renderCache = null; },
     listStyles: listStyles,
     listWorlds: listWorlds,
     DEFAULT_OFF: DEFAULT_OFF,

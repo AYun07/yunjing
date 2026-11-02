@@ -119,13 +119,19 @@ function withTimeoutMs(promise, ms) {
 function readErrBody(response, ms = 15e3) {
   return withTimeoutMs(response.text(), ms).catch(() => "");
 }
+// v3.70.0 性能：同段文本去 AI 味只算一次（一轮内多处复用同一回复时省去重复正则）
+var _thinkCacheKeys = [];
+var _thinkCacheMap = Object.create(null);
 window.stripAIThink = function(text) {
   let s = String(text == null ? "" : text);
   if (!s) return s;
-  s = s.replace(/<think(?:\s[^>]*)?>[\s\S]*?<\/think\s*>/gi, "");
-  s = s.replace(/<think(?:\s[^>]*)?>[\s\S]*$/i, "");
-  s = s.replace(/<\/think\s*>/gi, "");
-  return s;
+  if (_thinkCacheMap[s] !== undefined) return _thinkCacheMap[s];
+  var out = s.replace(/<think(?:\s[^>]*)?>[\s\S]*?<\/think\s*>/gi, "");
+  out = out.replace(/<think(?:\s[^>]*)?>[\s\S]*$/i, "");
+  out = out.replace(/<\/think\s*>/gi, "");
+  if (_thinkCacheKeys.length > 8) { var _old = _thinkCacheKeys.shift(); delete _thinkCacheMap[_old]; }
+  _thinkCacheKeys.push(s); _thinkCacheMap[s] = out;
+  return out;
 };
 async function readSSEStream(response, opts = {}) {
   const { onDelta, extract, idleMs = 3e5, firstIdleMs } = opts;
