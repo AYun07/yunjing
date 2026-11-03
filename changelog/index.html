@@ -282,6 +282,15 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="活世界 验收 整改" style="--entry-hue:#7a4ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.85.0</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">活世界双向桥 WorldAlive · 世界真正「活」起来（整改工作单 P0-1/P0-3/P0-4/P1-1/P1-3/P2-5）</h3>
+            <p class="entry-text">按《云境「活世界」验收审计报告 + 整改工作单》逐条整改，根因是「叙事层与机械层零通信、选择改变不了世界」：①新增 WorldAlive 双向桥（world-alive.js）——上行把机械世界状态（自转日数/时代阶段/势力消长↑↓/活跃事件/对玩家恩怨/近期自治事件/NPC 目标情绪）结构化注入主笔提示词；下行解析主笔回报的 (world_update) 块，回写势力影响力、恩怨、关系、阶段、NPC 情绪目标、张力——「选择→世界→叙事」第一次闭环，玩家不点面板、只在正文里行动也能改变大势。②世界时钟默认开启并加可视开关（静置即自转），每 tick 调用 SimCore.advance 对真实状态演化（势力消长/关系衰减/张力有方向性）。③WorldBus 恩怨账本落盘+按槽隔离，被丢弃的阈值信号队列接通上行并给玩家可见提示。④四处串档键（world-runtime/world-clock/canon-ledger/world-legacy）全部改存档槽隔离+旧档迁移；传承银行「已发放」按槽隔离。验收：静置自转数值变化、正文选择影响恩怨、刷新持久化、双存档不串档均已实测。</p>
+        </article>
+
         <article class="log-entry" data-tags="世界书 小云 预设 功能" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
                 <span class="entry-ver">v3.84.0</span>

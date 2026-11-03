@@ -32,13 +32,24 @@
     }
   }
 
+  function slotId() {
+    try { return (window.storyFramework && window.storyFramework.slotId) || "main"; } catch (e) { return "main"; }
+  }
+
   function key() {
-    return PREFIX + genreKey();
+    return PREFIX + slotId() + ":" + genreKey();
   }
 
   function load() {
     try {
-      var raw = localStorage.getItem(key());
+      var k = key();
+      var raw = localStorage.getItem(k);
+      if (!raw) {
+        /* v3.85.0 槽隔离迁移：旧档按「界」不按「槽」，首次迁移一次 */
+        var old = PREFIX + genreKey();
+        var oldRaw = localStorage.getItem(old);
+        if (oldRaw) { localStorage.setItem(k, oldRaw); localStorage.removeItem(old); raw = oldRaw; }
+      }
       var o = raw ? JSON.parse(raw) : {};
       return o && typeof o === "object" ? o : {};
     } catch (e) {

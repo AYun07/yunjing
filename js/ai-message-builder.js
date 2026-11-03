@@ -485,6 +485,13 @@ function buildPlayerIdentityCard(setup, config) {
     const _sq = SquadSystem.buildPromptBlock();
     if (_sq) parts.push(_sq);
   }
+  /* v3.85.0 活世界双向桥 WorldAlive：把机械层世界状态（自转/阶段/势力消长/活跃事件/
+     对玩家恩怨/近期自治事件/NPC 目标情绪）结构化注入主笔——此前叙事层与机械层零通信（整改工作单 P0-1）。 */
+  if (window.WorldAlive) {
+    try { WorldAlive.seedFactions(); } catch (e) {}
+    const _wa = WorldAlive.buildPromptBlock();
+    if (_wa) parts.push(_wa);
+  }
   /* v3.68.0 战斗接线：战斗进行中把灵宠/小队的随战协同块注入主笔——
      此前 buildCombatBlock 从未被调用，"接入战斗 prompt"只是文件头宣言 */
   try {

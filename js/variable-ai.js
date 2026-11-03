@@ -333,6 +333,12 @@ const VariableAI = {
     if (!fw.storyState.isStoryStarted) return Promise.resolve();
     this.maybeSummarize().catch((e) => console.warn("[前情提要] 触发失败:", e));
     const parser = window.VariableInstructionParser;
+    /* v3.85.0 活世界下行（P0-1）：解析主笔回报的 (world_update) 块，回写势力/恩怨/关系/阶段/NPC/张力。
+       与 variable_update 并行、互不依赖，故在此无条件先行消费。 */
+    try {
+      const wblock = parser && parser.extractWorldBlock ? parser.extractWorldBlock(reply) : null;
+      if (wblock && window.WorldAlive) window.WorldAlive.applyAI(wblock);
+    } catch (e) { if (window.YJ_DEBUG) console.warn("[变量AI] world_update 应用失败:", e); }
     const block = parser ? parser.extractUpdateBlock(reply) : null;
     if (block) {
       const CHAR_FIELD_RE = /(?:^|\n)[^\n]{0,14}[.．]\s*(?:role|age|appearance|personality|speechPattern|mannerism|motivation|goal|secret|status|location|occupation|income|assets|realm|impression|relationship|trust|favor|firstAppearance|arc|note|isCanon|isCulprit|isPlayer|history|身份|年龄|外貌|性格|言谈|口癖|动机|目标|秘密|状态|位置|所在|信任|好感|关系|印象|轨迹|境遇|行当|收入|家当|首次出场|初登场)\s*[:：]/i;
