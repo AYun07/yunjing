@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>云境 · 概念大厅</title>
+<link rel="stylesheet" href="css/fonts-local.css?v=3.79.0">
+<style>@font-face{font-family:'kai';src:local('LXGW WenKai');} *{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'kai','LXGW WenKai','Source Han Serif SC','Noto Serif SC',serif;background:#15131a;color:#eee}
+img{display:block}.tag{position:fixed;top:14px;left:16px;z-index:99;font:12px/1.4 system-ui;color:#fff8;background:#0008;padding:6px 10px;border-radius:8px;border:1px solid #fff2}
+a{text-decoration:none;color:inherit}
+</style>
+<style>
+body{background:radial-gradient(70% 70% at 50% 45%,#1a1530,#0a0810);overflow:hidden}
+.wrap{height:100vh;display:grid;place-items:center;position:relative}
+.rings{position:absolute;width:720px;height:720px;border-radius:50%;border:1px solid #ffffff14}
+.rings.r2{width:980px;height:980px;border-style:dashed;border-color:#ffffff0f}
+.core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,#2a2350,#15102e);border:2px solid #b9a7ff66;display:grid;place-items:center;z-index:5;box-shadow:0 0 60px #7fd6c855}
+.core img{width:120px;filter:drop-shadow(0 0 20px #b9a7ff88)}
+.core .ct{position:absolute;bottom:-26px;font-size:15px;letter-spacing:.3em;color:#cfc6e6}
+.node{position:absolute;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-size:30px;color:#fff;background:radial-gradient(circle at 30% 30%,color-mix(in srgb,var(--h),#fff 28%),var(--h));box-shadow:0 10px 30px -8px var(--h);cursor:pointer;border:0;font-family:inherit;transition:.25s}
+.node:hover{transform:translate(-50%,-50%) scale(1.12)}
+.node.outer{width:60px;height:60px;font-size:24px;opacity:.9}
+.panel{position:fixed;right:0;top:0;height:100vh;width:340px;background:linear-gradient(180deg,#16122a,#0e0b1c);border-left:1px solid #ffffff1a;padding:80px 26px;transform:translateX(100%);transition:.4s;z-index:20;overflow:auto}
+.panel.on{transform:translateX(0)}
+.panel h3{font-size:26px;display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.panel h3 .gg{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;color:#fff;background:var(--h)}
+.panel a{display:block;padding:13px 16px;margin-bottom:10px;background:#ffffff0a;border:1px solid #ffffff10;border-radius:12px;color:#dfe3ea;transition:.2s}
+.panel a:hover{border-color:var(--h);background:#ffffff12;transform:translateX(6px)}
+.panel .pd{color:#9aa3b5;font-size:14px;line-height:1.6;margin-bottom:18px}
+.hint{position:absolute;bottom:5vh;left:50%;transform:translateX(-50%);color:#fff6;letter-spacing:.2em;font-size:14px}
+</style><body class="page-index">
+<div class="tag">概念 D · 罗盘中心式</div>
+<div class="wrap">
+  <div class="rings"></div><div class="rings r2"></div>
+  <div class="core"><img src="assets/xiaoyun-chibi-luo.png?v=3.59.0" alt="小云"><div class="ct">云境</div></div>
+  <a class="node inner" href="studio.html?genre=mystery&v=1.6.9" style="left:360px;top:210px;--h:#8ab4c8" data-kind="ws" data-name="悬疑推理" data-desc="迷雾重重，抽丝剥茧，每一处细节皆是证词"><span>悬</span></a>
+<a class="node inner" href="studio.html?genre=scifi&v=1.6.9" style="left:502px;top:313px;--h:#6fc2b4" data-kind="ws" data-name="科幻未来" data-desc="星辰为幕，文明作注，写尽想象的边界"><span>科</span></a>
+<a class="node inner" href="studio.html?genre=wuxia&v=1.6.9" style="left:448px;top:481px;--h:#9fbf8f" data-kind="ws" data-name="武侠仙侠" data-desc="江湖夜雨，快意恩仇，一剑光寒十九州"><span>侠</span></a>
+<a class="node inner" href="studio.html?genre=cthulhu&v=1.6.9" style="left:271px;top:481px;--h:#b7a8e8" data-kind="ws" data-name="克苏鲁恐怖" data-desc="不可名状之物低语，理智在真相前碎裂"><span>异</span></a>
+<a class="node inner" href="studio.html?genre=free&v=1.6.9" style="left:217px;top:313px;--h:#e0a84c" data-kind="ws" data-name="自由创作" data-desc="不设藩篱，任意题材，随心落笔成书"><span>笔</span></a>
+<button class="node outer" style="left:360px;top:60px;--h:#c9a86a" data-kind="group" data-gk="玄" data-name="东方玄幻"><span>玄</span></button>
+<button class="node outer" style="left:552px;top:130px;--h:#6fc9b0" data-kind="group" data-gk="仙" data-name="仙侠修真"><span>仙</span></button>
+<button class="node outer" style="left:655px;top:307px;--h:#5fc9d8" data-kind="group" data-gk="都" data-name="都市现代"><span>都</span></button>
+<button class="node outer" style="left:619px;top:510px;--h:#c9584a" data-kind="group" data-gk="幽" data-name="诡秘无限"><span>幽</span></button>
+<button class="node outer" style="left:462px;top:641px;--h:#5fb8d8" data-kind="group" data-gk="冰" data-name="末世寒潮"><span>冰</span></button>
+<button class="node outer" style="left:257px;top:641px;--h:#6f9fe8" data-kind="group" data-gk="星" data-name="科幻星海"><span>星</span></button>
+<button class="node outer" style="left:100px;top:510px;--h:#d8a04c" data-kind="group" data-gk="魔" data-name="西幻魔导"><span>魔</span></button>
+<button class="node outer" style="left:64px;top:307px;--h:#5a9e7f" data-kind="group" data-gk="寰" data-name="现实寰宇"><span>寰</span></button>
+<button class="node outer" style="left:167px;top:130px;--h:#b98fd8" data-kind="group" data-gk="凿" data-name="无界创世"><span>凿</span></button>
+  <div class="hint">点击外环题材，展开 28 界</div>
+</div>
+<div class="panel" id="panel"><div id="pbody"></div></div>
+<script>
+var def='<h3 style="--h:#b9a7ff"><span class="gg">卷</span>开放世界 · 28 界</h3><div class="pd">点击外环任一题材，展开其下世界。</div><div class="pg" data-gk="玄"><b style="color:#c9a86a">东方玄幻</b><a href="studio.html?genre=shrouding&v=1.6.9" style="--h:#c9a86a">遮天</a><a href="studio.html?genre=doupocangqiong&v=1.6.9" style="--h:#c9a86a">斗破苍穹</a><a href="studio.html?genre=wanmeishijie&v=1.6.9" style="--h:#c9a86a">完美世界</a><a href="studio.html?genre=douluodalu&v=1.6.9" style="--h:#c9a86a">斗罗大陆</a><a href="studio.html?genre=dibao&v=1.6.9" style="--h:#c9a86a">帝霸</a><a href="studio.html?genre=wulianfengdian&v=1.6.9" style="--h:#c9a86a">武炼巅峰</a><a href="studio.html?genre=shengxu&v=1.6.9" style="--h:#c9a86a">圣墟</a></div><div class="pg" data-gk="仙"><b style="color:#6fc9b0">仙侠修真</b><a href="studio.html?genre=fanrenxiuxian&v=1.6.9" style="--h:#6fc9b0">凡人修仙传</a><a href="studio.html?genre=xianni&v=1.6.9" style="--h:#6fc9b0">仙逆</a><a href="studio.html?genre=jianlai&v=1.6.9" style="--h:#6fc9b0">剑来</a><a href="studio.html?genre=guzhenren&v=1.6.9" style="--h:#6fc9b0">蛊真人</a><a href="studio.html?genre=xuanjianxianzu&v=1.6.9" style="--h:#6fc9b0">玄鉴仙族</a></div><div class="pg" data-gk="都"><b style="color:#5fc9d8">都市现代</b><a href="studio.html?genre=quanzhigaoshou&v=1.6.9" style="--h:#5fc9d8">全职高手</a><a href="studio.html?genre=zhongshengdushi&v=1.6.9" style="--h:#5fc9d8">重生之都市修仙</a><a href="studio.html?genre=longzu&v=1.6.9" style="--h:#5fc9d8">龙族</a><a href="studio.html?genre=quanzhifashi&v=1.6.9" style="--h:#5fc9d8">全职法师</a><a href="studio.html?genre=ditandali&v=1.6.9" style="--h:#5fc9d8">开局地摊卖大力</a><a href="studio.html?genre=zhanhen&v=1.6.9" style="--h:#5fc9d8">我在精神病院学斩神</a></div><div class="pg" data-gk="幽"><b style="color:#c9584a">诡秘无限</b><a href="studio.html?genre=daoguiyixian&v=1.6.9" style="--h:#c9584a">道诡异仙</a><a href="studio.html?genre=lunhuileyuan&v=1.6.9" style="--h:#c9584a">轮回乐园</a><a href="studio.html?genre=shenmifusu&v=1.6.9" style="--h:#c9584a">神秘复苏</a><a href="studio.html?genre=guimi&v=1.6.9" style="--h:#c9584a">诡秘之主</a></div><div class="pg" data-gk="冰"><b style="color:#5fb8d8">末世寒潮</b><a href="studio.html?genre=quanqiubingfeng&v=1.6.9" style="--h:#5fb8d8">全球冰封</a></div><div class="pg" data-gk="星"><b style="color:#6f9fe8">科幻星海</b><a href="studio.html?genre=swallowedstar&v=1.6.9" style="--h:#6f9fe8">吞噬星空</a><a href="studio.html?genre=chaoshenxueyuan&v=1.6.9" style="--h:#6f9fe8">超神学院</a></div><div class="pg" data-gk="魔"><b style="color:#d8a04c">西幻魔导</b><a href="studio.html?genre=limingzhijian&v=1.6.9" style="--h:#d8a04c">黎明之剑</a></div><div class="pg" data-gk="寰"><b style="color:#5a9e7f">现实寰宇</b><a href="studio.html?genre=earth&v=1.6.9" style="--h:#5a9e7f">地球开放世界</a></div><div class="pg" data-gk="凿"><b style="color:#b98fd8">无界创世</b><a href="studio.html?genre=freeworld&v=1.6.9" style="--h:#b98fd8">自由世界</a></div>';
+document.getElementById('pbody').innerHTML=def;
+document.querySelectorAll('.node.outer').forEach(function(b){b.onclick=function(){
+ var gk=b.dataset.gk,gn=b.dataset.name;
+ var html='<h3 style="--h:'+getComputedStyle(b).getPropertyValue('--h')+'"><span class="gg">'+b.textContent+'</span>'+gn+'</h3>';
+ var links=[].slice.call(document.querySelectorAll('.pg[data-gk="'+gk+'"] a'));
+ html+=links.map(function(a){return a.outerHTML}).join('');
+ var p=document.getElementById('panel');document.getElementById('pbody').innerHTML=html;p.classList.add('on');
+}});
+document.querySelectorAll('.node.inner').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var p=document.getElementById('panel');document.getElementById('pbody').innerHTML='<h3 style="--h:'+getComputedStyle(a).getPropertyValue('--h')+'"><span class="gg">'+a.querySelector('span').textContent+'</span>'+a.dataset.name+'</h3><div class="pd">'+a.dataset.desc+'</div><a href="'+a.getAttribute('href')+'" style="--h:'+getComputedStyle(a).getPropertyValue('--h')+'">入坊 →</a>';p.classList.add('on')})});
+document.querySelector('.wrap').addEventListener('click',function(e){if(e.target.classList.contains('wrap'))document.getElementById('panel').classList.remove('on')});
+</script>
+<div style="display:none"><div class="pg" data-gk="玄"><b style="color:#c9a86a">东方玄幻</b><a href="studio.html?genre=shrouding&v=1.6.9" style="--h:#c9a86a">遮天</a><a href="studio.html?genre=doupocangqiong&v=1.6.9" style="--h:#c9a86a">斗破苍穹</a><a href="studio.html?genre=wanmeishijie&v=1.6.9" style="--h:#c9a86a">完美世界</a><a href="studio.html?genre=douluodalu&v=1.6.9" style="--h:#c9a86a">斗罗大陆</a><a href="studio.html?genre=dibao&v=1.6.9" style="--h:#c9a86a">帝霸</a><a href="studio.html?genre=wulianfengdian&v=1.6.9" style="--h:#c9a86a">武炼巅峰</a><a href="studio.html?genre=shengxu&v=1.6.9" style="--h:#c9a86a">圣墟</a></div><div class="pg" data-gk="仙"><b style="color:#6fc9b0">仙侠修真</b><a href="studio.html?genre=fanrenxiuxian&v=1.6.9" style="--h:#6fc9b0">凡人修仙传</a><a href="studio.html?genre=xianni&v=1.6.9" style="--h:#6fc9b0">仙逆</a><a href="studio.html?genre=jianlai&v=1.6.9" style="--h:#6fc9b0">剑来</a><a href="studio.html?genre=guzhenren&v=1.6.9" style="--h:#6fc9b0">蛊真人</a><a href="studio.html?genre=xuanjianxianzu&v=1.6.9" style="--h:#6fc9b0">玄鉴仙族</a></div><div class="pg" data-gk="都"><b style="color:#5fc9d8">都市现代</b><a href="studio.html?genre=quanzhigaoshou&v=1.6.9" style="--h:#5fc9d8">全职高手</a><a href="studio.html?genre=zhongshengdushi&v=1.6.9" style="--h:#5fc9d8">重生之都市修仙</a><a href="studio.html?genre=longzu&v=1.6.9" style="--h:#5fc9d8">龙族</a><a href="studio.html?genre=quanzhifashi&v=1.6.9" style="--h:#5fc9d8">全职法师</a><a href="studio.html?genre=ditandali&v=1.6.9" style="--h:#5fc9d8">开局地摊卖大力</a><a href="studio.html?genre=zhanhen&v=1.6.9" style="--h:#5fc9d8">我在精神病院学斩神</a></div><div class="pg" data-gk="幽"><b style="color:#c9584a">诡秘无限</b><a href="studio.html?genre=daoguiyixian&v=1.6.9" style="--h:#c9584a">道诡异仙</a><a href="studio.html?genre=lunhuileyuan&v=1.6.9" style="--h:#c9584a">轮回乐园</a><a href="studio.html?genre=shenmifusu&v=1.6.9" style="--h:#c9584a">神秘复苏</a><a href="studio.html?genre=guimi&v=1.6.9" style="--h:#c9584a">诡秘之主</a></div><div class="pg" data-gk="冰"><b style="color:#5fb8d8">末世寒潮</b><a href="studio.html?genre=quanqiubingfeng&v=1.6.9" style="--h:#5fb8d8">全球冰封</a></div><div class="pg" data-gk="星"><b style="color:#6f9fe8">科幻星海</b><a href="studio.html?genre=swallowedstar&v=1.6.9" style="--h:#6f9fe8">吞噬星空</a><a href="studio.html?genre=chaoshenxueyuan&v=1.6.9" style="--h:#6f9fe8">超神学院</a></div><div class="pg" data-gk="魔"><b style="color:#d8a04c">西幻魔导</b><a href="studio.html?genre=limingzhijian&v=1.6.9" style="--h:#d8a04c">黎明之剑</a></div><div class="pg" data-gk="寰"><b style="color:#5a9e7f">现实寰宇</b><a href="studio.html?genre=earth&v=1.6.9" style="--h:#5a9e7f">地球开放世界</a></div><div class="pg" data-gk="凿"><b style="color:#b98fd8">无界创世</b><a href="studio.html?genre=freeworld&v=1.6.9" style="--h:#b98fd8">自由世界</a></div></div>

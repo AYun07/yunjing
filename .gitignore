@@ -15,3 +15,7 @@ setup_git_path.ps1
 sync_repo*.py
 update_km.py
 update_payload*.json
+
+# 玩家本地造物模块（小云生成）——仅存本地，禁止提交到仓库/GitHub
+modules/
+xy-local-*.html

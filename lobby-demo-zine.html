@@ -1,0 +1,65 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>云境 · 手帐</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f4ecdc;
+  background-image:repeating-linear-gradient(0deg,rgba(190,170,130,.07) 0 1px,transparent 1px 26px),
+  repeating-linear-gradient(90deg,rgba(190,170,130,.07) 0 1px,transparent 1px 26px);
+  font-family:'Noto Sans SC',sans-serif;color:#4a3f33;min-height:100vh;overflow-x:hidden;padding:34px 20px 60px}
+.board{max-width:1140px;margin:0 auto;position:relative}
+.head{position:relative;text-align:center;padding:14px 0 30px}
+.title{font-family:'Ma Shan Zheng',cursive;font-size:88px;font-weight:400;color:#3d3428;letter-spacing:.06em;display:inline-block;position:relative}
+.title .wave{color:#e8896b;font-size:.5em;vertical-align:middle}
+.title::after{content:"";position:absolute;left:-6%;right:-6%;bottom:14px;height:16px;background:rgba(255,214,102,.55);z-index:-1;transform:rotate(-1.2deg)}
+.sub{font-size:11px;letter-spacing:.34em;color:#9a8a72;margin-top:8px;font-family:Georgia,serif}
+.highlight{display:inline-block;margin-top:16px;font-family:'Ma Shan Zheng',cursive;font-size:24px;color:#4a3f33;
+  background:linear-gradient(transparent 52%,rgba(126,217,255,.65) 52%,rgba(126,217,255,.65) 88%,transparent 88%);padding:2px 8px;transform:rotate(-1deg)}
+.sticker{position:absolute;color:#e8896b;font-size:30px;animation:none}
+.star1{left:16%;top:8px}.star2{right:14%;top:40px;color:#7ec98f;font-size:22px}
+.wall{display:flex;flex-wrap:wrap;justify-content:center;gap:26px;padding:20px 0 8px}
+.polaroid{width:196px;background:#fff;padding:11px 11px 14px;box-shadow:0 10px 22px rgba(90,70,40,.22);position:relative;transition:transform .3s}
+.polaroid:nth-child(odd){transform:rotate(-2.6deg)}
+.polaroid:nth-child(even){transform:rotate(2.2deg) translateY(10px)}
+.polaroid:nth-child(2n){transform:rotate(2.4deg)}
+.polaroid:hover{transform:rotate(0) scale(1.05);z-index:5}
+.polaroid .tape{position:absolute;top:-13px;left:50%;width:86px;height:26px;margin-left:-43px;transform:rotate(-3deg);opacity:.85;border-radius:2px}
+.polaroid:nth-child(1) .tape{background:rgba(255,205,110,.8)}
+.polaroid:nth-child(2) .tape{background:rgba(140,205,250,.8)}
+.polaroid:nth-child(3) .tape{background:rgba(250,150,170,.8)}
+.polaroid:nth-child(4) .tape{background:rgba(160,225,170,.8)}
+.polaroid:nth-child(5) .tape{background:rgba(220,180,250,.8)}
+.polaroid .ph{height:210px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--pc) 34%,#fff),color-mix(in srgb,var(--pc) 12%,#fff))}
+.polaroid .ph .dots1{position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--pc) 55%,transparent) 1.5px,transparent 1.5px);background-size:16px 16px;opacity:.5}
+.polaroid .bigc{font-family:'Ma Shan Zheng',cursive;font-size:118px;color:color-mix(in srgb,var(--pc) 62%,#4a3f33);text-shadow:3px 3px 0 rgba(255,255,255,.65);position:relative;z-index:1}
+.polaroid .cap{margin-top:10px;text-align:center;font-family:'Ma Shan Zheng',cursive;font-size:23px;color:#3d3428}
+.polaroid .ds{font-size:11px;line-height:1.6;color:#8a7a64;text-align:center;margin-top:5px;min-height:34px}
+.polaroid .pen{position:absolute;top:182px;right:-14px;bottom:auto;font-family:'Ma Shan Zheng',cursive;font-size:15px;color:#d05a6e;transform:rotate(6deg);white-space:nowrap;text-shadow:0 1px 3px #fff}
+.note-row{display:flex;gap:24px;justify-content:center;align-items:flex-start;margin-top:40px;flex-wrap:wrap}
+.sticky{font-family:'Ma Shan Zheng',cursive;font-size:19px;line-height:1.7;padding:18px 20px;width:180px;box-shadow:0 8px 16px rgba(90,70,40,.18)}
+.sticky.yellow{background:#ffef9e;transform:rotate(-2deg)}
+.sticky.pink{background:#ffd7e0;transform:rotate(2.4deg)}
+.tag-strip{align-self:center;background:#fff;padding:14px 22px;box-shadow:0 8px 16px rgba(90,70,40,.15);transform:rotate(-.6deg);max-width:520px}
+.tag-strip a{display:inline-block;margin:4px 6px;font-size:14px;color:#4a3f33;text-decoration:none;border-bottom:2px dotted #c9b58f;padding-bottom:2px}
+.tag-strip a:hover{color:#d05a6e}
+.tag-strip.special{border:2px dashed #c9a227;background:#fffdf2;max-width:420px}
+.tag-strip.special a{font-weight:700;color:#8a6d1a;border-bottom-color:#c9a227}
+</style></head><body>
+<div class="board">
+  <div class="head">
+    <span class="sticker star1">✦</span><span class="sticker star2">✦</span>
+    <h1 class="title">云境<span class="wave">〜</span>手帐</h1>
+    <p class="sub">YUNJING SCRAPBOOK · 我的创作手帐本</p>
+    <div class="highlight">在这里，你不是读者，你是主角！</div>
+  </div>
+  <div class="wall"><div class="polaroid"><span class="tape"></span><div class="ph" style="--pc:#8ab4c8"><span class="bigc">自</span><span class="dots1"></span></div><div class="cap">自由创作工坊</div><div class="ds">任意题材随心落笔——进坊后再细分，支持多类型混搭</div><span class="pen">超好逛！ →</span></div><div class="polaroid"><span class="tape"></span><div class="ph" style="--pc:#6fc2b4"><span class="bigc">题</span><span class="dots1"></span></div><div class="cap">题材即选即混</div><div class="ds">悬疑 · 科幻 · 武侠 · 克苏鲁 · 都市 · 历史 · 奇幻 · 言情…单选或多搭</div><span class="pen">未来感十足 →</span></div></div>
+  <div class="note-row">
+    <div class="sticky yellow">📌 廿八界已开！<br>点下面进入 ↓</div>
+    <div class="tag-strip"><a href="studio.html?genre=shrouding&v=1.6.9">遮天</a><a href="studio.html?genre=doupocangqiong&v=1.6.9">斗破苍穹</a><a href="studio.html?genre=wanmeishijie&v=1.6.9">完美世界</a><a href="studio.html?genre=douluodalu&v=1.6.9">斗罗大陆</a><a href="studio.html?genre=dibao&v=1.6.9">帝霸</a><a href="studio.html?genre=wulianfengdian&v=1.6.9">武炼巅峰</a><a href="studio.html?genre=shengxu&v=1.6.9">圣墟</a><a href="studio.html?genre=fanrenxiuxian&v=1.6.9">凡人修仙传</a><a href="studio.html?genre=xianni&v=1.6.9">仙逆</a><a href="studio.html?genre=jianlai&v=1.6.9">剑来</a><a href="studio.html?genre=guzhenren&v=1.6.9">蛊真人</a><a href="studio.html?genre=xuanjianxianzu&v=1.6.9">玄鉴仙族</a><a href="studio.html?genre=quanzhigaoshou&v=1.6.9">全职高手</a><a href="studio.html?genre=zhongshengdushi&v=1.6.9">重生之都市修仙</a><a href="studio.html?genre=longzu&v=1.6.9">龙族</a><a href="studio.html?genre=quanzhifashi&v=1.6.9">全职法师</a><a href="studio.html?genre=ditandali&v=1.6.9">开局地摊卖大力</a><a href="studio.html?genre=zhanhen&v=1.6.9">我在精神病院学斩神</a><a href="studio.html?genre=daoguiyixian&v=1.6.9">道诡异仙</a><a href="studio.html?genre=lunhuileyuan&v=1.6.9">轮回乐园</a><a href="studio.html?genre=shenmifusu&v=1.6.9">神秘复苏</a><a href="studio.html?genre=guimi&v=1.6.9">诡秘之主</a><a href="studio.html?genre=quanqiubingfeng&v=1.6.9">全球冰封</a><a href="studio.html?genre=swallowedstar&v=1.6.9">吞噬星空</a><a href="studio.html?genre=chaoshenxueyuan&v=1.6.9">超神学院</a><a href="studio.html?genre=limingzhijian&v=1.6.9">黎明之剑</a></div>
+    <div class="tag-strip special"><a href="studio.html?genre=earth&v=1.6.9">🌍 现实世界 · 地球开放世界</a><a href="studio.html?genre=freeworld&v=1.6.9">✨ 自由世界 · 纯开放世界</a></div>
+    <div class="sticky pink">新来的？<br>先逛「自由创作坊」～</div>
+  </div>
+</div>
+<link rel="stylesheet" href="css/xiaoyun-buddy.css"><script src="js/worldbook-seeds.js"></script><script src="js/world-book.js"></script><script src="js/xiaoyun-ops.js"></script><script src="js/xiaoyun-buddy.js"></script><link rel="stylesheet" href="css/lobby-switcher.css"><script src="js/lobby-switcher.js"></script>
+</body></html>
