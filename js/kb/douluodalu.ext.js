@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["douluodalu"] || (KB["douluodalu"] = []);
+  var add = [{"title": "《斗罗大陆》文风：热血成长与武魂体系", "content": "行文明快热血，战斗描写重“魂技—魂环—策略”的层次感，成长线清晰。对白直率，重伙伴情谊。忌拖沓抒情。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

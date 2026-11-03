@@ -121,6 +121,9 @@
           m.stats = b.stats;
           m.level = b.level;
           m.bond = typeof b.bond === "number" ? b.bond : m.bond;
+          if (b.stance) m.stance = b.stance;
+          if (b.goal) m.goal = b.goal;
+          if (b.mood) m.mood = b.mood;
         }
       }
       return m;
@@ -131,12 +134,12 @@
       var lines = ["【玩家小队（须始终记得他们是玩家的同行者，随剧情合理互动、共同历险）】"];
       a.forEach(function (m) {
         lines.push(
-          "· " + m.name + "（" + (m.role || m.type) + "，关系：" + (m.relation || "同伴") + "，羁绊" + (m.bond || 0) + "/100）：" +
+          "· " + m.name + "（" + (m.role || m.type) + "，关系：" + (m.relation || "同伴") + "，羁绊" + (m.bond || 0) + "/100" + (m.stance ? ("，立场" + m.stance + "｜情绪" + (m.mood || "平静")) : "") + "）：" +
           "战力 气血" + m.stats.hp + "/攻" + m.stats.atk + "/防" + m.stats.def + "/速" + m.stats.spd +
           "，擅长【" + (m.skill || "各展所长") + "】" + (m.note ? "——" + m.note : "")
         );
       });
-      lines.push("小队成员是玩家世界的一部分：会与玩家一同进退、各有性格与命运；不得让他们的行动脱离其性格，也不得无故让队员凭空消失。");
+      lines.push("小队成员是玩家世界的一部分：会与玩家一同进退、各有性格与命运；其行动须贴合其性格与当前立场/情绪。队员可以离开、甚至背叛——但离开必须有正文因果（如羁绊破裂、利益冲突、被俘、遭重创后心灰意冷），不得无故消失，也不得无因由地强行留下。");
       return lines.join("\n");
     },
     buildCombatBlock() {

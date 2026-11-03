@@ -18,3 +18,13 @@
   } catch (e) { /* 扩充失败不阻断 */ }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["freeworld"] || (KB["freeworld"] = []);
+  var add = [{"title": "宪法庭首席", "content": "执掌世界法则的解释权。", "category": "人物", "tags": ["权柄"], "alwaysInclude": false, "priority": ""}, {"title": "边境领主", "content": "割据一方，阳奉阴违。", "category": "人物", "tags": ["领主"], "alwaysInclude": false, "priority": ""}, {"title": "原住民长老", "content": "记得世界初开的模样。", "category": "人物", "tags": ["原住民"], "alwaysInclude": false, "priority": ""}, {"title": "对立创世者", "content": "与你理念相左的另一位造物主。", "category": "人物", "tags": ["创世者"], "alwaysInclude": false, "priority": ""}, {"title": "世界意志化身", "content": "偶尔显形，言语晦涩。", "category": "人物", "tags": ["世界意志"], "alwaysInclude": false, "priority": ""}, {"title": "规则破坏者", "content": "专钻法则漏洞的投机者。", "category": "人物", "tags": ["投机"], "alwaysInclude": false, "priority": ""}, {"title": "商路大亨", "content": "掌控跨界贸易。", "category": "人物", "tags": ["商贾"], "alwaysInclude": false, "priority": ""}, {"title": "隐修者", "content": "不问世事，却洞悉规则。", "category": "人物", "tags": ["隐修"], "alwaysInclude": false, "priority": ""}, {"title": "失落文明遗民", "content": "上一个纪元的幸存者。", "category": "人物", "tags": ["遗民"], "alwaysInclude": false, "priority": ""}, {"title": "法则裂隙", "content": "两条法则深夜打架，露出规则漏洞。", "category": "机缘", "tags": ["法则"], "alwaysInclude": false, "priority": ""}, {"title": "世界边缘", "content": "走到世界尽头，看见“未完成”的空白。", "category": "机缘", "tags": ["边缘"], "alwaysInclude": false, "priority": ""}, {"title": "原住民的祈祷", "content": "有人向“创世者”祈求，愿力凝成实体。", "category": "机缘", "tags": ["愿力"], "alwaysInclude": false, "priority": ""}, {"title": "对立者的信", "content": "另一位创世者递来一封挑衅的信。", "category": "机缘", "tags": ["挑衅"], "alwaysInclude": false, "priority": ""}, {"title": "失落的碑文", "content": "上一个纪元留下的法则碑文。", "category": "机缘", "tags": ["碑文"], "alwaysInclude": false, "priority": ""}, {"title": "世界意志的提问", "content": "世界意志第一次直接对你说话。", "category": "机缘", "tags": ["对话"], "alwaysInclude": false, "priority": ""}, {"title": "规则之种", "content": "一枚能自行生长出新法则的种子。", "category": "机缘", "tags": ["种子"], "alwaysInclude": false, "priority": ""}, {"title": "时间褶皱", "content": "某处时间流速异常，藏着旧日投影。", "category": "机缘", "tags": ["时间"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

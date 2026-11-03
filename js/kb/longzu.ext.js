@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["longzu"] || (KB["longzu"] = []);
+  var add = [{"title": "《龙族》文风：青春感与宿命感交织", "content": "语言轻快、调侃中藏着孤独，善用比喻与流行文化梗；热血与悲凉并置，写少年在庞大宿命前的无力与倔强。忌油腻。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

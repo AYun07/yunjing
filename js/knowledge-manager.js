@@ -84,21 +84,17 @@ const StoryKnowledge = {
         this._loadExt(g, v, loadOne);
         return true;
       }
-      /* 该界没有独立文件（或路径 404）→ 回退整包，但先查索引，别为一条都没有的界白下 9MB */
-      let ok2 = false;
-      try {
-        const idx = await fetch(`js/kb/_index.json?v=${v}`).then((r) => r.ok ? r.json() : null).catch(() => null);
-        if (idx && idx.genres && !idx.genres[g]) {
-          console.warn(`[StoryKnowledge] 整包预置库无「${g}」条目，跳过 9MB 整包下载`);
-        } else {
-          ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
-        }
-      } catch (e) {
-        ok2 = await loadOne(`js/preset-knowledge.js?v=${v}`);
+      /* v3.86.0 P3-4：core 失败后 600ms 重试一次（不再回退 9MB 整包——整包已作为 100% 冗余副本删除） */
+      await new Promise(function (res) { setTimeout(res, 600); });
+      const ok2 = await loadOne(`js/kb/${g}.core.js?v=${v}&retry=1`);
+      if (ok2 && window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
+        window.__KB_SPLIT_OK__ = true;
+        this._loadExt(g, v, loadOne);
+        return true;
       }
-      window.__KB_SPLIT_OK__ = ok2;
-      if (!ok2) console.warn("[StoryKnowledge] 世界书加载失败：本界将只有玩家自建条目");
-      return ok2;
+      window.__KB_SPLIT_OK__ = false;
+      console.warn("[StoryKnowledge] 世界书 core 重试仍失败：本界将只有玩家自建条目（已不再回退 9MB 整包）");
+      return false;
     });
     return window.__kbLoading;
   },
@@ -177,7 +173,7 @@ const StoryKnowledge = {
   // v9：全员防八股（套话禁词总库 + 套路替换手册，11 工坊全注入，含 free）；
   // v8：六界新增群像语音库（配角台词模板）；v7：人物语音库
   /**
-   * 进入本工坊时自动写入该工坊的专属预置知识（js/preset-knowledge.js）。
+   * 进入本工坊时自动写入该工坊的专属预置知识（来自 js/kb/<genre>.core.js 与 .ext.js，不再有 9MB 整包）。
    * 同名条目跳过（保护用户已录入内容）；注入按版本标记执行——
    * 预置库扩容（版本号变化）时，老存档也会自动补入新增条目；
    * 删除预置条目后不会自动复活，需要找回时用面板的「↺ 预置」按钮（restorePresets）。

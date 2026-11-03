@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["wulianfengdian"] || (KB["wulianfengdian"] = []);
+  var add = [{"title": "《武炼巅峰》文风：宗门争锋与武道进阶", "content": "重宗门规矩、资源争夺与境界突破的细节；语言直白，爽点来自步步登阶。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}, {"title": "《武炼巅峰》文风：器物与炼丹的烟火气", "content": "把炼器、炼丹写成有烟火气的手艺活，增强世界可信度。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

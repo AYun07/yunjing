@@ -9,3 +9,22 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["zhongshengdushi"] || (KB["zhongshengdushi"] = []);
+  var add = [{"title": "《重生之都市修仙》文风：重生先知与都市爽感", "content": "以“前世记忆”的信息差制造爽点，节奏快、打脸利落；都市与修仙并置，语言直白。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();
+
+/* KB-AUGMENT v3.86.0 (style-2) */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["zhongshengdushi"] || (KB["zhongshengdushi"] = []);
+  var add = [{"title":"《重生之都市修仙》文风：商战与修真的双线节奏","content":"商战线讲信息、资本与人心的博弈，修真线讲境界与杀伐；两条线交替推进，用“前世记忆”作钩子串联。语言直白，爽点要快要准，忌把商战写成流水账。","category":"文风","tags":["文风"],"alwaysInclude":false,"priority":""}];
+  var have={}; a.forEach(function(x){ have[String(x&&x.title||'').trim()]=1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){have[t]=1;a.push(x);} });
+})();

@@ -25,6 +25,14 @@
   /* 位阶（成长上限随位阶提升） */
   var REALMS = ["稚童", "入门", "小成", "通达", "登堂", "入微", "化境", "通神", "超凡", "问道"];
 
+  /* v3.86.0 P2-4：伙伴的立场/目的/情绪（有意志，不再只是数值挂件） */
+  var STANCES = ["忠诚", "敬慕", "依赖", "疏离", "动摇", "桀骜", "野心", "背弃"];
+  var GOALS = ["守护主人", "追求力量", "寻回家园", "复仇雪恨", "求道问心", "攒钱赎身", "扬名立万", "只求温饱"];
+  var MOODS = ["平静", "雀跃", "疲惫", "戒备", "不满", "愤懑", "亲近", "怅惘"];
+  function pick(arr, k) { return arr[Math.abs(k) % arr.length]; }
+  function defaultStance(kind) { return kind === "demon" ? "桀骜" : kind === "companion" ? "疏离" : "忠诚"; }
+  function defaultGoal(kind) { return kind === "demon" ? "追求力量" : kind === "companion" ? "扬名立万" : "守护主人"; }
+
   function slotId() {
     try { return (window.storyFramework && window.storyFramework.slotId) || "main"; } catch (e) { return "main"; }
   }
@@ -78,7 +86,12 @@
         stats: st,
         skills: opts.skills || (kind === "pet" ? ["伴护"] : ["扑击"]),
         bond: opts.bond || 10,
-        status: "active",          /* active 随队 / stable 寄养 / sealed 镇压 */
+        status: "active",          /* active 随队 / stable 寄养 / sealed 镇压 / left 已离队 */
+        /* v3.86.0 P2-4：意志层——忠诚/立场/目的/情绪，会随世界状态与羁绊自发变化 */
+        loyalty: opts.loyalty != null ? clamp(opts.loyalty, 0, 100) : clamp((opts.bond || 10) + 25, 0, 100),
+        stance: opts.stance || defaultStance(kind),
+        goal: opts.goal || defaultGoal(kind),
+        mood: opts.mood || "平静",
         trait: opts.trait || "忠诚",
         note: opts.note || "",
         born: Date.now()
@@ -153,6 +166,48 @@
       a[i].status = status; save(a); return true;
     },
 
+    /** v3.86.0 P2-4：世界自转/事件驱动的意志漂移——羁绊低+危机 → 动摇/离队/叛变；否则情绪/立场缓慢回归 */
+    driftAll(ctx) {
+      ctx = ctx || {};
+      var arr = load(); if (!arr.length) return [];
+      var changes = [];
+      var crisis = !!ctx.crisis;
+      for (var i = 0; i < arr.length; i++) {
+        var b = arr[i];
+        if (!b || b.status === "left") continue;
+        var bond = Number(b.bond) || 0;
+        var mood = b.mood || "平静";
+        if (bond >= 60) mood = crisis ? "戒备" : "亲近";
+        else if (bond <= 20) mood = crisis ? "愤懑" : "不满";
+        else if (crisis) mood = "戒备";
+        else if (mood === "平静" && Math.random() < 0.3) mood = "疲惫";
+        b.mood = mood;
+        if (bond >= 70) b.stance = "敬慕";
+        else if (bond <= 15) b.stance = "动摇";
+        b.loyalty = clamp((Number(b.loyalty) || 0) + (bond >= 50 ? 1 : -2) + (crisis ? -3 : 0), 0, 100);
+        var defected = false, left = false;
+        if (b.kind === "companion" || b.kind === "demon") {
+          var p = (bond <= 12 ? 0.55 : bond <= 22 ? 0.32 : bond <= 32 ? 0.14 : 0) + (crisis ? 0.25 : 0) + ((b.loyalty || 0) <= 20 ? 0.15 : 0);
+          if (p > 0 && Math.random() < p) {
+            if (bond <= 12 && (b.kind === "demon" || b.stance === "野心" || (b.loyalty || 0) <= 15) && Math.random() < 0.5) defected = true;
+            else left = true;
+          }
+        }
+        if (defected || left) {
+          b.status = "left";
+          if (defected) { b.stance = "背弃"; b.goal = "反噬旧主"; }
+          changes.push({ name: b.name, kind: b.kind, mode: defected ? "叛变" : "离队" });
+          var txt = "「" + b.name + "」" + (defected ? "背弃了玩家，反目成仇" : "心生去意，悄然离队") + "。";
+          try { if (window.CanonTimeline && CanonTimeline.event) CanonTimeline.event("伙伴" + (defected ? "叛变" : "离队") + "·" + b.name, "changed", { kind: "companion", now: txt, round: this._round() }); } catch (e) {}
+          try { if (window.WorldBus) { WorldBus.fact(txt); if (defected) WorldBus.grudge(b.name, -25); WorldBus.emit({ type: "beast." + (defected ? "defect" : "leave"), name: b.name }); } } catch (e) {}
+          try { if (window.showToast) window.showToast("💔 " + txt, "warn"); } catch (e) {}
+        }
+      }
+      save(arr);
+      return changes;
+    },
+    _round() { try { var fw = window.storyFramework; return (fw && fw.storyState && Number(fw.storyState.turnCount)) || 0; } catch (e) { return 0; } },
+
     realmName(b) { return REALMS[b.realmIdx] || REALMS[0]; },
 
     /** 当前随队（active）的战力摘要，供战斗/小队调用 */
@@ -175,12 +230,15 @@
         if (Object.keys(sqIds).length) arr = arr.filter(function (b) { return !sqIds[b.id]; });
       } catch (e) { }
       if (!arr.length) return "";
+      arr = arr.filter(function (b) { return b.status !== "left"; });
+      if (!arr.length) return "";
       var lines = ["【玩家随行存在（须始终记得、随剧情合理互动，不得凭空消失或遗忘）】"];
       arr.forEach(function (b) {
         var k = KINDS[b.kind];
         lines.push(
           "· " + b.name + "（" + k.name + "·" + b.species + "，位阶" + REALMS[b.realmIdx] + " Lv" + b.level +
-          "，羁绊" + b.bond + "/100，状态：" + ({ active: "随队", stable: "寄养", sealed: "镇压" }[b.status] || b.status) +
+          "，羁绊" + b.bond + "/100，状态：" + ({ active: "随队", stable: "寄养", sealed: "镇压", left: "已离队" }[b.status] || b.status) +
+          "，立场" + (b.stance || "忠诚") + "｜目的" + (b.goal || "守护主人") + "｜情绪" + (b.mood || "平静") + "｜忠诚" + (b.loyalty != null ? b.loyalty : 50) +
           "）：属性 气血" + b.stats.hp + "/攻" + b.stats.atk + "/防" + b.stats.def + "/速" + b.stats.spd +
           "，技能【" + b.skills.join("、") + "】，特性「" + b.trait + "」" + (b.note ? "——" + b.note : "")
         );
