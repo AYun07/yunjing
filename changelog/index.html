@@ -248,7 +248,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=3.50.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=3.87.0">
 </head>
 
 <body class="page-changelog">
@@ -281,6 +281,24 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="稳定 模块 治理" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.87.0</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">仓库瘦身 92M→41M · 缓存版本号全量归一 · 版本序列规范化（整改工作单 P3-1/P3-3）</h3>
+            <p class="entry-text">收尾三项工程治理债：①P3-1 历史清理——用 filter-repo 把已删除的 9.5MB 旧知识库整包（js/preset-knowledge.js，两个历史版本共 18.1MB）从全部 86 个提交中一并剥离，.git 从 92MB 降到 41MB，克隆与拉取明显变快；清理前已打全量 bundle 备份（44MB）留存，可随时回滚。②P3-3 版本号归一——此前缓存击穿参数散落在 3.55.29（81 处）/3.68.0（16 处）/3.72.0/3.84.0/3.86.0 共五个世代，等于近半静态资源长期没被正确击穿；本次把 189 处 ?v= 参数全部对齐到 3.87.0，YJ_VER / SW_VER / 页面标题 / git tag 四处同源，从此「一个版本一个号、一个号管全部资源」。③P3-2 提交粒度——自本次起恢复「一批次一提交、提交信息写明对应整改条目」的惯例，历史提交不可回溯拆分，故只对新提交生效。验收：filter-repo 后工作区零差异、A–H 验收 29/29 通过、e2e 全流程 0 报错。</p>
+        </article>
+
+        <article class="log-entry" data-tags="活世界 验收 整改" style="--entry-hue:#7a4ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.86.0</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">活世界第二轮整改：机缘涌现 · 势力兴衰 · 伙伴意志 · 关系有向（整改工作单 P0-2/P1-2/P1-4/P1-5/P2-1~P2-4/P2-6/P3-4）</h3>
+            <p class="entry-text">承接 v3.85.0 的双向桥，把「活」从通道做成机制：①P0-2 新增机缘涌现系统（opportunity-system.js）——以世界状态生成确定性种子，每回合从知识库奇遇类与当前局势（仇恨/声望/紧张度/舞台）里滚 3 条候选，有代价、有时限、可作废，落实后写入正史账本；主线按「本幕形态」改变分支走向。②P1-2 人物补情绪/记忆/当前目标三字段，NPC 目标随世界状态漂移。③P1-4 恩怨情仇收敛为单一真源——WorldBus 的仇恨账本改为关系表的活视图，写入即穿透、带历史轨迹，旧档一次性迁移。④P1-5 关系图重做为有向图（a→b 不再排序合并），边粗细映射好感度，箭头表方向，副标题标「有向·实时」，涨跌箭头由历史差值算出。⑤P2-1 势力生命周期——每 tick 按与最强者的落差侵蚀最弱者，声望见底即覆灭并写入编年史，场上不足三势时从知识库补生新势力。⑥P2-2 导演输出冲突焦点与起承转合节拍建议。⑦P2-3 AI 自创装备自动登记入实体表，新槽位自动纳入装备栏。⑧P2-4 伙伴拥有立场/目的/情绪/忠诚，羁绊低遇危机可离队乃至叛变（写编年史与恩怨账本），契约文案由「禁止离开」改为「离开必须有因果」。⑨P2-6 四十余个知识库文件补齐厚度。⑩P3-4 删除 9.5MB 冗余整包，知识库改为按题材懒加载失败重试。验收：A–H 29 项全过、玩家旅程 e2e 0 报错、实体镜像契约完整。</p>
+        </article>
 
         <article class="log-entry" data-tags="活世界 验收 整改" style="--entry-hue:#7a4ac0;">
             <div class="entry-head">

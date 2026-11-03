@@ -58,7 +58,7 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.61.0" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.87.0" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
   /** 手动设定形态（合法 key），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
@@ -85,7 +85,7 @@ const MoChibi = {
     ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(8,14,22,.66);display:flex;align-items:center;justify-content:center;padding:18px;";
     const card = (k) => `
       <button data-style="${k}" style="width:31%;min-width:96px;padding:10px 6px;border:2px solid ${k === cur ? "#7ab8e8" : "rgba(140,180,220,.28)"};border-radius:14px;background:linear-gradient(160deg,rgba(20,32,48,.92),rgba(14,22,34,.92));cursor:pointer;text-align:center;transition:transform .15s;">
-        <img src="${this.IMGS[k]}?v=3.61.0" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
+        <img src="${this.IMGS[k]}?v=3.87.0" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
         <div style="font-size:13.5px;font-weight:700;color:#cfe6f8;margin-top:6px;">${this.STYLE_LABEL[k]}</div>
         <div style="font-size:10.5px;color:#7e9ab4;margin-top:2px;">${this.STYLE_DESC[k] || ""}</div>
       </button>`;
@@ -116,10 +116,10 @@ const MoChibi = {
     const img = document.querySelector("#moChibi .mc-img");
     if (img) {
       try { clearTimeout(this._poseTimer); this._poseTimer = null; } catch (e) {}
-      img.src = this.chibiSrc() + "?v=3.61.0";
+      img.src = this.chibiSrc() + "?v=3.87.0";
       img.classList.remove("mc-pose-pop"); void img.offsetWidth; img.classList.add("mc-pose-pop");
     }
-    const face = this.faceSrc() + "?v=3.61.0";
+    const face = this.faceSrc() + "?v=3.87.0";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
@@ -782,7 +782,7 @@ const MoChibi = {
      叠加既有 CSS 动效（hop/twirl…）。图片缺失时自动退回纯 CSS 动作。 */
   POSES: ["wave", "battle", "happy"],
   poseSrc(pose) {
-    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=3.61.0`;
+    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=3.87.0`;
   },
   _preloadPoses() {
     this._poseCache = {};
@@ -814,7 +814,7 @@ const MoChibi = {
   clearPose() {
     clearTimeout(this._poseTimer);
     this._poseTimer = null;
-    this._setImg(this.chibiSrc() + "?v=3.61.0");
+    this._setImg(this.chibiSrc() + "?v=3.87.0");
   },
   /** 公开动作 API：玩家/系统调用——做到"像动画一样可以做动作" */
   playAction(name, _internal) {
