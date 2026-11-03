@@ -662,7 +662,7 @@
     if(location.protocol!=='file:')return;try{if(localStorage.getItem('yunjingFileBannerOff'))return;}catch(e){}
     var d=document.createElement('div');d.id='yunjing-file-banner';
     d.style.cssText='position:fixed;left:12px;right:12px;bottom:12px;z-index:99999;background:#2a2320;color:#f0d9ad;border:1px solid #e0a84c55;border-radius:10px;padding:12px 14px;font:14px/1.6 "Microsoft YaHei",sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5)';
-    d.innerHTML=`<b>当前是受限模式(直接打开文件)。</b>关闭本页,双击文件夹里的「启动-Windows.bat」可获得完整体验。<span style="float:right;cursor:pointer;margin-left:10px" onclick="try{localStorage.setItem('yunjingFileBannerOff',1)}catch(e){}this.parentNode.remove()">知道了✕</span>`;
+    d.innerHTML=`<b>当前是受限模式(直接打开文件)。</b>关闭本页,双击文件夹里的「start-windows.bat」可获得完整体验。<span style="float:right;cursor:pointer;margin-left:10px" onclick="try{localStorage.setItem('yunjingFileBannerOff',1)}catch(e){}this.parentNode.remove()">知道了✕</span>`;
     document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(d)});
   }catch(e){}
 })();
