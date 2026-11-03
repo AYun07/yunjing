@@ -16,10 +16,13 @@
     try { return window.WorldExt && WorldExt.genre ? WorldExt.genre : (new URLSearchParams(location.search).get("genre") || "free"); }
     catch (e) { return "free"; }
   }
-  function lsKey() { return "yunjing.clock." + genre(); }
+  function slotId() { try { return (window.storyFramework && window.storyFramework.slotId) || "main"; } catch (e) { return "main"; } }
+  function lsKey() { return "yunjing.clock." + slotId() + "~" + genre(); }
+  /* v3.85.0 默认开启：世界脱离玩家操作自行演化（整改工作单 P0-4）。
+     此前 enabled 恒为 false，玩家不手动开启则世界完全静止。 */
   function loadCfg() {
-    try { return Object.assign({ enabled: false, intervalSec: TICK_DEFAULT_SEC }, JSON.parse(localStorage.getItem(lsKey()) || "{}")); }
-    catch (e) { return { enabled: false, intervalSec: TICK_DEFAULT_SEC }; }
+    try { return Object.assign({ enabled: true, intervalSec: TICK_DEFAULT_SEC }, JSON.parse(localStorage.getItem(lsKey()) || "{}")); }
+    catch (e) { return { enabled: true, intervalSec: TICK_DEFAULT_SEC }; }
   }
   function saveCfg() { try { localStorage.setItem(lsKey(), JSON.stringify(cfg)); } catch (e) {} }
 
@@ -86,6 +89,8 @@
       let spawnEvents = [];
       try { if (window.NpcSpawn) spawnEvents = NpcSpawn.daily(v, day, rnd) || []; } catch (e) {}
       try { if (window.LifeMode) LifeMode.daily(v, day, rnd); } catch (e) {}
+      /* v3.85.0 确保真实势力实体存在（首轮从世界阶段静态表初始化），供 SimCore 演化（P0-1/P1-3） */
+      try { if (window.WorldAlive && WorldAlive.seedFactions) WorldAlive.seedFactions(); } catch (e) {}
       /* 张力自然回落 */
       if (v.tension != null) v.tension = clamp(Math.round(Number(v.tension)) - (rnd() < 0.5 ? 1 : 0), 0, 100);
       /* 关系淡忘：|强度|>20 每日衰减 1（世界推进，非玩家回合） */
@@ -101,10 +106,13 @@
       if (v.history.length > MAX_HISTORY) v.history.splice(0, v.history.length - MAX_HISTORY);
       /* v3.58.0 新实体（人物/势力/地点）自动上图并随发展更新标注 */
       try { window.StoryAtlas && StoryAtlas.syncEntities && StoryAtlas.syncEntities(v); } catch (e) {}
+      /* v3.85.0 大势推演：调用 SimCore.advance 对真实状态演化（势力影响力消长 / 关系衰减 / 张力），使自转有方向性（P1-3） */
+      try { if (window.SimCore && SimCore.advance) SimCore.advance(v, 1, rnd); } catch (e) {}
       /* 待注入事件（供导演/规划在下一轮提示词引用） */
       v.时间.pendingEvents = [ev].concat(Array.isArray(v.时间.pendingEvents) ? v.时间.pendingEvents : []).slice(0, 3);
       v.时间.lastClockAt = Date.now();
       save();
+      try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
       toast(`⏱ 世界第${day}日：${ev}`, "info");
       try { window.StoryStatusRenderer && StoryStatusRenderer.renderHistory && StoryStatusRenderer.renderHistory(v.history); } catch (e) {}
       try { window.MoChibi && MoChibi.react && MoChibi.react("day", { day, ev }); } catch (e) {}
@@ -118,6 +126,7 @@
     const sec = clamp(Math.round(Number(cfg.intervalSec) || TICK_DEFAULT_SEC), 30, 3600);
     timer = setInterval(tick, sec * 1000);
     cfg.enabled = true; saveCfg();
+    try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
     return true;
   }
   function stop() {
@@ -146,5 +155,42 @@
     setTimeout(waitBoot, 2000);
   })();
 
-  window.WorldClock = { start, stop, toggle, tick, status, setIntervalSec, _pickEvent: pickEvent };
+  /* v3.85.0 可视开关：世界时钟默认开启后，给玩家一个显眼且随时可暂停/恢复的入口（P0-4）。
+     固定悬浮药丸，落在左上角避开水云伙伴（右下）与切换坞（左下）。 */
+  function mountToggle() {
+    if (document.getElementById("worldClockPill")) return;
+    const pill = document.createElement("div");
+    pill.id = "worldClockPill";
+    pill.title = "世界时钟：脱离玩家操作，世界自行演化";
+    pill.style.cssText = "position:fixed;left:10px;top:10px;z-index:9000;display:none;align-items:center;gap:6px;" +
+      "padding:5px 9px;border-radius:18px;cursor:pointer;font-size:12px;color:#e8dcc0;" +
+      "background:rgba(20,16,30,.82);border:1px solid color-mix(in srut #c9a86a 22%,transparent);" +
+      "box-shadow:0 2px 10px rgba(0,0,0,.4);user-select:none;backdrop-filter:blur(6px)";
+    const dot = document.createElement("span");
+    dot.style.cssText = "width:8px;height:8px;border-radius:50%;background:#8fd9a8;box-shadow:0 0 6px #8fd9a8";
+    const label = document.createElement("span");
+    pill.appendChild(dot); pill.appendChild(label);
+    pill.onclick = function () {
+      const st = toggle();
+      if (!st.enabled) toast("⏱ 世界时钟已暂停（世界随你的回合推进）", "info");
+      else toast("⏱ 世界时钟已恢复：每 " + st.intervalSec + "s = 世界 1 日，世界自行演化", "success");
+    };
+    function update() {
+      const st = status();
+      pill.style.display = "flex";
+      const on = st.enabled && timer != null;
+      dot.style.background = on ? "#8fd9a8" : "#9a8c6e";
+      dot.style.boxShadow = on ? "0 0 6px #8fd9a8" : "none";
+      label.textContent = (on ? "⏱ 世界自转 第" : "⏸ 世界静止 第") + st.day + "日";
+    }
+    window.WorldClock && (window.WorldClock._syncPill = update);
+    document.body.appendChild(pill);
+    update();
+    try { const fw = window.storyFramework; if (fw && fw.storyState) { (fw.storyState._clockPillSync = update); } } catch (e) {}
+    if (window.StoryStatusRenderer) { const _r = window.StoryStatusRenderer.renderHistory; }
+  }
+  function tryMount() { try { if (document.body) mountToggle(); else setTimeout(tryMount, 300); } catch (e) {} }
+
+  window.WorldClock = { start, stop, toggle, tick, status, setIntervalSec, mountToggle, _pickEvent: pickEvent };
+  tryMount();
 })();

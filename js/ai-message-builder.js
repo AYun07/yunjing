@@ -162,7 +162,7 @@ stats.张力: +5
     yunqiBlock = '';
   }
   /* v3.55.17 云境核心契约 · 预设解耦注入
-     问题：玩家用「导入 SillyTavern 预设」整份替换内置预设后，那份预设里没有云境的
+     问题：玩家用「导入 常见前端工具 预设」整份替换内置预设后，那份预设里没有云境的
      六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
      六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
      对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
@@ -484,6 +484,13 @@ function buildPlayerIdentityCard(setup, config) {
   if (window.SquadSystem) {
     const _sq = SquadSystem.buildPromptBlock();
     if (_sq) parts.push(_sq);
+  }
+  /* v3.85.0 活世界双向桥 WorldAlive：把机械层世界状态（自转/阶段/势力消长/活跃事件/
+     对玩家恩怨/近期自治事件/NPC 目标情绪）结构化注入主笔——此前叙事层与机械层零通信（整改工作单 P0-1）。 */
+  if (window.WorldAlive) {
+    try { WorldAlive.seedFactions(); } catch (e) {}
+    const _wa = WorldAlive.buildPromptBlock();
+    if (_wa) parts.push(_wa);
   }
   /* v3.68.0 战斗接线：战斗进行中把灵宠/小队的随战协同块注入主笔——
      此前 buildCombatBlock 从未被调用，"接入战斗 prompt"只是文件头宣言 */

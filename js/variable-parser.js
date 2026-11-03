@@ -131,6 +131,31 @@ const VariableInstructionParser = {
     }
     return null;
   },
+  /** 提取 (world_update) ... (/world_update) 块（活世界下行协议，P0-1）：主笔回报的世界状态变化 */
+  extractWorldBlock(reply) {
+    if (!reply) return null;
+    const paired = [
+      /\(world_update\)([\s\S]*?)\(\/world_update\)/gi,
+      /【world_update】([\s\S]*?)【\/world_update】/gi,
+      /<world_update>([\s\S]*?)<\/world_update>/gi
+    ];
+    const found = [];
+    for (const p of paired) {
+      let m;
+      p.lastIndex = 0;
+      while ((m = p.exec(reply)) !== null) {
+        const t = m[1] && m[1].trim();
+        if (t) found.push(t);
+      }
+    }
+    if (found.length) return found.join("\n");
+    const openOnly = reply.match(/(?:\(world_update\)|【world_update】|<world_update>)([\s\S]*)$/i);
+    if (openOnly) {
+      const rest = openOnly[1].replace(/```[a-zA-Z]*\r?\n?|```/g, "").replace(/【?\/?world_update】?/gi, "").trim();
+      if (rest) return rest;
+    }
+    return null;
+  },
   /** 尝试把块内容解析为 JSON 对象（含宽松修正：全角标点/尾逗号） */
   tryParseJson(text) {
     if (!text) return null;

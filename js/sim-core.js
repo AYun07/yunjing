@@ -122,6 +122,47 @@
     return events;
   }
 
+  /* ---------- 真实状态前向演化（v3.85.0 / P1-3）：对真实 vars 演化并回写 ----------
+   * 与 project 不同：project 只读投影（预言），advance 真正改变世界：
+   * 势力成员/影响力小步消长、关系强度衰减、张力演化。每个世界 tick 调用 advance(1)。 */
+  function advance(vars, steps, seedRnd) {
+    const v = vars || {};
+    if (!v.entities) v.entities = {};
+    if (!v.entities.factions) v.entities.factions = {};
+    if (!v.entities.relations) v.entities.relations = [];
+    const facCount = Object.keys(v.entities.factions).length;
+    if (facCount === 0) return { ok: false, reason: "no-factions", events: [] };
+    const st = snapshot(v);
+    if (!seedRnd) {
+      const base = hashStr(JSON.stringify(Object.keys(st.factions)) + (v.time ? v.time.clockDay : 0));
+      seedRnd = mulberry32(base);
+    }
+    const allEvents = [];
+    const n = steps || 1;
+    for (let i = 0; i < n; i++) {
+      const ev = stepOnce(st, seedRnd);
+      allEvents.push(...ev);
+    }
+    /* 回写：势力（按 id/name 匹配真实对象） */
+    Object.values(st.factions).forEach((sf) => {
+      const real = Object.values(v.entities.factions).find((f) => (f.id || f.name) === (sf.id || sf.name));
+      if (real) {
+        real.members = Math.max(0, Math.round(Number(sf.members) || 0));
+        real.influence = clamp(Math.round(Number(sf.influence) || 0), 0, 100);
+        if (sf.origin) real.origin = sf.origin;
+      }
+    });
+    /* 回写：关系强度（按 a/b 双向匹配） */
+    st.relations.forEach((sr) => {
+      const rr = v.entities.relations.find((r) =>
+        (r.a === sr.a && r.b === sr.b) || (r.a === sr.b && r.b === sr.a));
+      if (rr) { rr.strength = sr.strength; if (sr.kind) rr.kind = sr.kind; }
+    });
+    /* 回写：张力 */
+    v.tension = st.tension;
+    return { ok: true, events: allEvents, tension: st.tension };
+  }
+
   /* ---------- 投影 N 步 ---------- */
   function project(vars, steps, seed) {
     const st = snapshot(vars);
@@ -208,5 +249,5 @@
     return lines.join("\n");
   }
 
-  window.SimCore = { project, whatIf, narrate, snapshot, _mulberry32: mulberry32, _hashStr: hashStr };
+  window.SimCore = { project, whatIf, narrate, snapshot, advance, _mulberry32: mulberry32, _hashStr: hashStr };
 })();
