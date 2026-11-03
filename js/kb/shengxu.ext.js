@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["shengxu"] || (KB["shengxu"] = []);
+  var add = [{"title": "《圣墟》文风：灵气复苏的狂想与热血", "content": "以“异变—进化—禁区”的递进制造奇观，语言张扬，善用夸张比喻与热血独白；爽点密集。忌逻辑崩坏。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}, {"title": "《圣墟》文风：群像与时代洪流", "content": "写大时代里各色人物的抉择，主角之外亦有鲜活群像。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

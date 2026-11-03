@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["limingzhijian"] || (KB["limingzhijian"] = []);
+  var add = [{"title": "《黎明之剑》文风：魔导工业与理性启蒙", "content": "以“技术—制度—文明”的推演为骨，写工业化落地时的阻力与代价；语言冷静、带科普式的清晰，幽默藏在学者式的吐槽里。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}, {"title": "《黎明之剑》文风：宏大叙事下的个体", "content": "在文明存亡的大背景下写普通人的选择，克制煽情，以细节见重量。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

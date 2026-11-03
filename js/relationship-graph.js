@@ -1,115 +1,86 @@
 (function() {
   "use strict";
   const LIB = "libs/cytoscape.min.js?v=3.30.2";
-  const SENTIMENT = [
-    { re: /仇|敌|恨|杀|背叛|反目|对峙|怨/, c: "#d9706a", n: "敌对" },
-    { re: /爱|恋|情|婚|妻|夫|心属|倾心/, c: "#e58fb1", n: "情缘" },
-    { re: /友|盟|助|救|义|同门|同窗|并肩/, c: "#8fb89a", n: "盟友" },
-    { re: /父|母|兄|弟|姐|妹|子|女|亲|血/, c: "#e0a84c", n: "亲缘" },
-    { re: /师|徒|尊|弟子|门下|授业/, c: "#b28dff", n: "师徒" },
-    { re: /主|仆|属|麾下|效忠/, c: "#6fb0d8", n: "从属" }
-  ];
   const RelationGraph = {
     esc(s) {
       return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     },
-    ready() {
-      return !!window.cytoscape;
+    ready() { return !!window.cytoscape; },
+    async _ensureLib() { return window.loadLibOnce ? window.loadLibOnce(LIB, "cytoscape") : false; },
+    _vars() {
+      try { var fw = window.storyFramework; return (fw && fw.storyState && fw.storyState.variables) || null; } catch (e) { return null; }
     },
-    async _ensureLib() {
-      return window.loadLibOnce ? window.loadLibOnce(LIB, "cytoscape") : false;
-    },
-    /* ==================== 数据构建 ==================== */
-    /** 主角名（与 immersive-suite.playerName 同源逻辑的轻量版） */
+    /** 主角名（与 WorldBus / ImmersiveSuite 同源） */
     _player() {
-      var _a, _b;
-      const st = (_a = window.storyFramework) == null ? void 0 : _a.storyState;
-      const pn = (_b = st == null ? void 0 : st.setup) == null ? void 0 : _b.playerName;
+      var v = this._vars();
+      var pn = (v && v.setup && v.setup.playerName);
       if (pn) return pn;
-      const vars = (st == null ? void 0 : st.storyVariables) || {};
-      for (const k of Object.keys(vars.characters || {})) {
-        const v = vars.characters[k];
-        if (v && (v.isPlayer || k === "玩家" || k === "主角")) return k;
-      }
+      var chars = (v && v.characters) || {};
+      for (const k of Object.keys(chars)) { const c = chars[k]; if (c && (c.isPlayer || k === "玩家" || k === "主角")) return k; }
       return "主角";
     },
-    /** 全部节点（众生相 gallery + 主角） */
+    _clamp(v, lo, hi) { var n = Number(v); if (!isFinite(n)) n = 0; return Math.max(lo, Math.min(hi, n)); },
+    /** 由强度推断情感色与名（关系真源已带 kind，优先用 kind） */
+    _sentOf(kind, strength) {
+      const s = this._clamp(strength, -100, 100);
+      var n = kind || (s < -10 ? "敌对" : s > 10 ? "盟友" : "中立");
+      var c = "#9a8c6e";
+      if (/仇|敌|恨|杀|背叛|反目|对峙|怨/.test(n)) c = "#d9706a";
+      else if (/爱|恋|情|婚|妻|夫|心属|倾心/.test(n)) c = "#e58fb1";
+      else if (/友|盟|助|救|义|同门|同窗|并肩/.test(n)) c = "#8fb89a";
+      else if (/父|母|兄|弟|姐|妹|子|女|亲|血/.test(n)) c = "#e0a84c";
+      else if (/师|徒|尊|弟子|门下|授业/.test(n)) c = "#b28dff";
+      else if (/主|仆|属|麾下|效忠/.test(n)) c = "#6fb0d8";
+      else if (s <= -10) c = "#d9706a"; else if (s >= 10) c = "#8fb89a";
+      return { c, n };
+    },
+    /** 历史轨迹：取最近一次「变化」与当前值的差，用于 ↑↓ 趋势 */
+    _trend(r) {
+      if (!r.hist || !r.hist.length) return { delta: 0, last: 0 };
+      const last = r.hist[r.hist.length - 1];
+      if (r.hist.length >= 2) { const prev = r.hist[r.hist.length - 2]; return { delta: Math.round((Number(r.strength) || 0) - (Number(prev.v) || 0)), last: last.t || 0 }; }
+      return { delta: 0, last: last.t || 0 };
+    },
+    /** 全部节点（主角 + 众生相 gallery + 关系网涉及者） */
     _nodes() {
       var _a, _b;
+      const me = this._player();
       const gal = ((_b = (_a = window.ImmersiveSuite) == null ? void 0 : _a._state) == null ? void 0 : _b.gallery) || {};
-      const player = this._player();
-      const nodes = [{ name: player, role: "主角", favor: 100, player: true }];
+      const nodes = [{ name: me, role: "主角", favor: 100, player: true }];
+      const known = new Set([me]);
       for (const g of Object.values(gal)) {
-        if (!(g == null ? void 0 : g.name) || g.name === player) continue;
+        if (!(g == null ? void 0 : g.name) || g.name === me || known.has(g.name)) continue;
+        known.add(g.name);
         nodes.push({ name: g.name, role: g.role || "", favor: g.favor == null ? 50 : g.favor, player: false });
       }
-      return nodes;
+      return { nodes, known };
     },
-    /** 拆「甲↔乙 / 甲与乙 / 甲和乙」为 [甲, 乙]（拆不动返回 null） */
-    _splitPair(who) {
-      const s = String(who || "").trim();
-      if (!s) return null;
-      const m = s.match(/^(.{1,10}?)(?:↔|⇄|×|✕|与|和|、)(.{1,10})$/);
-      if (!m) return null;
-      const a = m[1].trim(), b = m[2].trim();
-      if (!a || !b || a === b) return null;
-      return [a, b];
-    },
-    _sentimentOf(text) {
-      const s = String(text || "");
-      for (const { re, c, n } of SENTIMENT) {
-        if (re.test(s)) return { c, n };
-      }
-      return { c: "#9a8c6e", n: "" };
-    },
-    /** 三路数据源合并成节点+边（edges 以「a⇄b」归并去重） */
+    /** 唯一真源：v.entities.relations（有向边，带强度与历史） */
     buildData() {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
-      const nodes = this._nodes();
-      const known = new Set(nodes.map((n) => n.name));
-      const edgeMap = /* @__PURE__ */ new Map();
-      const addEdge = (a, b, label, color, weight) => {
-        if (!a || !b || a === b) return;
-        const key = [a, b].sort().join("⇄");
-        const old = edgeMap.get(key);
-        if (old) {
-          if (label && !old.labels.includes(label)) old.labels.push(label);
-          if (color && !old.colors.includes(color)) old.colors.push(color);
-          old.weight += weight;
-        } else {
-          for (const n of [a, b]) {
-            if (!known.has(n)) {
-              known.add(n);
-              nodes.push({ name: n, role: "", favor: 30, player: false });
-            }
-          }
-          edgeMap.set(key, { a, b, labels: label ? [label] : [], colors: color ? [color] : [], weight });
-        }
-      };
-      const rel = ((_c = (_b = (_a = window.MemoryLayers) == null ? void 0 : _a.layers) == null ? void 0 : _b.call(_a)) == null ? void 0 : _c.relations) || [];
-      for (const r of rel) {
-        const pair = this._splitPair(r == null ? void 0 : r.who);
-        if (!pair) continue;
-        const sent = this._sentimentOf(r.what);
-        addEdge(pair[0], pair[1], String(r.what || "").slice(0, 40), sent.c, 3);
+      const me = this._player();
+      const v = this._vars();
+      const rels = (v && v.entities && Array.isArray(v.entities.relations)) ? v.entities.relations : [];
+      const { nodes, known } = this._nodes();
+      const ensure = (n) => { if (n && !known.has(n)) { known.add(n); nodes.push({ name: n, role: "", favor: 30, player: n === me }); } };
+      const edgeMap = new Map();
+      for (const r of rels) {
+        if (!r || !r.a || !r.b || r.a === r.b) continue;
+        ensure(r.a); ensure(r.b);
+        const strength = this._clamp(r.strength, -100, 100);
+        const key = r.a + "→" + r.b;                 // 有向：a→b 与 b→a 各自独立
+        const sent = this._sentOf(r.kind, strength);
+        const tr = this._trend(r);
+        edgeMap.set(key, { a: r.a, b: r.b, kind: sent.n, color: sent.c, weight: strength, at: r.at || 0, hist: r.hist || [], delta: tr.delta, label: sent.n + " " + strength + (tr.delta ? (tr.delta > 0 ? "↑" : "↓") : "") });
       }
-      const gal = ((_e = (_d = window.ImmersiveSuite) == null ? void 0 : _d._state) == null ? void 0 : _e.gallery) || {};
-      const player = this._player();
+      /* 众生相里对玩家的关系文案，补一条有向边（若 relations 尚未覆盖） */
+      const gal = ((v0 => { var _a, _b; return ((_b = (_a = window.ImmersiveSuite) == null ? void 0 : _a._state) == null ? void 0 : _b.gallery) || {}; })());
       for (const g of Object.values(gal)) {
-        if (!(g == null ? void 0 : g.name) || !g.relation || g.name === player) continue;
-        const sent = this._sentimentOf(g.relation);
-        addEdge(player, g.name, String(g.relation).slice(0, 40), sent.c, 2);
-      }
-      const scenes = [...((_g = (_f = window.SceneState) == null ? void 0 : _f.history) == null ? void 0 : _g.call(_f)) || []];
-      const cur = (_i = (_h = window.SceneState) == null ? void 0 : _h.snap) == null ? void 0 : _i.call(_h);
-      if ((_j = cur == null ? void 0 : cur.cast) == null ? void 0 : _j.length) scenes.push(cur);
-      for (const sc of scenes) {
-        const names = (sc.cast || []).map((c) => c == null ? void 0 : c.name).filter(Boolean);
-        for (let i = 0; i < names.length; i++) {
-          for (let j = i + 1; j < names.length; j++) {
-            addEdge(names[i], names[j], "", "", 1);
-          }
-        }
+        if (!(g == null ? void 0 : g.name) || !g.relation || g.name === me) continue;
+        const key = me + "→" + g.name;
+        if (edgeMap.has(key)) continue;
+        const sent = this._sentOf(g.relation, (g.favor == null ? 50 : g.favor) - 50);
+        ensure(g.name);
+        edgeMap.set(key, { a: me, b: g.name, kind: sent.n, color: sent.c, weight: this._clamp((g.favor == null ? 50 : g.favor) - 50, -100, 100), at: 0, hist: [], delta: 0, label: sent.n });
       }
       return { nodes, edges: [...edgeMap.values()] };
     },
@@ -119,7 +90,7 @@
       (_a = document.getElementById("graphPanel")) == null ? void 0 : _a.remove();
       const data = this.buildData();
       if (data.nodes.length < 2) {
-        (_b = window.showToast) == null ? void 0 : _b.call(window, "🕸 还没有可成网的人物（先写几轮让众生相登场）", "info");
+        (_b = window.showToast) == null ? void 0 : _b.call(window, "🕸 还没有可成网的关系（先写几轮让众生相与势力登场）", "info");
         return;
       }
       const w = document.createElement("div");
@@ -127,13 +98,19 @@
       w.innerHTML = `
             <div class="rg-overlay" onclick="if(event.target===this)RelationGraph.close()">
                 <div class="rg-modal">
-                    <div class="rg-top"><b>🕸 人物关系网</b><span class="rg-sub">${data.nodes.length} 人 · ${data.edges.length} 缘</span>
+                    <div class="rg-top"><b>🕸 人物关系网</b><span class="rg-sub">${data.nodes.length} 人 · ${data.edges.length} 缘（有向 · 实时）</span>
                         <button class="rg-btn" id="rgLayoutBtn" onclick="RelationGraph.relayout()">布局切换</button>
                         <button class="rg-x" onclick="RelationGraph.close()">✕</button></div>
                     <div class="rg-canvas" id="rgCanvas"></div>
                     <div class="rg-legend">
-                        ${SENTIMENT.map((s) => `<span><i style="background:${s.c}"></i>${s.n}</span>`).join("")}
-                        <span class="rg-legend-note">节点大小=好感 · 点击节点看一度关系 · 拖拽自由摆放</span>
+                        <span><i style="background:#d9706a"></i>敌对</span>
+                        <span><i style="background:#8fb89a"></i>盟友</span>
+                        <span><i style="background:#e58fb1"></i>情缘</span>
+                        <span><i style="background:#e0a84c"></i>亲族</span>
+                        <span><i style="background:#b28dff"></i>师徒</span>
+                        <span><i style="background:#6fb0d8"></i>从属</span>
+                        <span><i style="background:#9a8c6e"></i>中立</span>
+                        <span class="rg-legend-note">箭头指「对谁」；线宽=强度；↑↓=最近变化；点击节点看一度关系</span>
                     </div>
                 </div>
             </div>`;
@@ -155,12 +132,12 @@
           ...data.nodes.map((n) => ({ data: { id: n.name, label: n.name, favor: n.favor, player: !!n.player } })),
           ...data.edges.map((e) => ({
             data: {
-              id: e.a + "⇄" + e.b,
+              id: e.a + "→" + e.b,
               source: e.a,
               target: e.b,
-              label: e.labels[0] || "",
-              tip: e.labels.join("；"),
-              color: e.colors[0] || "#9a8c6e",
+              label: e.label || "",
+              tip: (e.kind || "") + " 强度 " + e.weight + (e.delta ? "（近变 " + (e.delta > 0 ? "+" : "") + e.delta + "）" : "") + (e.hist && e.hist.length ? " · 变化 " + e.hist.length + " 次" : ""),
+              color: e.color || "#9a8c6e",
               weight: e.weight
             }
           }))
@@ -168,46 +145,23 @@
         style: [
           { selector: "node", style: {
             "background-color": "#2a2419",
-            "border-color": "#c9a86a",
-            "border-width": 2,
-            "border-opacity": 0.8,
-            "label": "data(label)",
-            "color": "#e8dcc0",
-            "font-size": 11,
-            "text-valign": "bottom",
-            "text-margin-y": 7,
-            "font-family": "inherit",
-            "width": "mapData(favor, 0, 100, 26, 52)",
-            "height": "mapData(favor, 0, 100, 26, 52)"
+            "border-color": "#c9a86a", "border-width": 2, "border-opacity": 0.8,
+            "label": "data(label)", "color": "#e8dcc0", "font-size": 11, "text-valign": "bottom", "text-margin-y": 7,
+            "font-family": "inherit", "width": "mapData(favor, 0, 100, 26, 52)", "height": "mapData(favor, 0, 100, 26, 52)"
           } },
           { selector: "node[player = true]", style: {
-            "background-color": "#3a2f1a",
-            "border-color": "#e0a84c",
-            "border-width": 3,
-            "font-size": 12,
-            "width": 56,
-            "height": 56,
-            "z-index": 10
+            "background-color": "#3a2f1a", "border-color": "#e0a84c", "border-width": 3, "font-size": 12, "width": 56, "height": 56, "z-index": 10
           } },
           { selector: "edge", style: {
-            "width": "mapData(weight, 1, 6, 1.5, 4)",
-            "line-color": "data(color)",
-            "line-opacity": 0.55,
-            "curve-style": "haystack",
-            "haystack-radius": 0.4
+            "width": "mapData(weight, -100, 100, 2, 7)",
+            "line-color": "data(color)", "line-opacity": 0.85,
+            "curve-style": "bezier", "control-point-step-size": 40,
+            "target-arrow-color": "data(color)", "target-arrow-shape": "triangle", "arrow-scale": 1.1
           } },
-          { selector: 'edge[label != ""]', style: { "label": "data(label)", "font-size": 9, "color": "#9a8c6e", "text-rotation": "autorotate", "text-margin-y": -8, "text-opacity": 0.85 } },
-          { selector: ":selected", style: { "border-color": "#e0a84c", "border-width": 3, "line-color": "#e0a84c", "line-opacity": 1 } }
+          { selector: 'edge[label != ""]', style: { "label": "data(label)", "font-size": 9, "color": "#9a8c6e", "text-rotation": "autorotate", "text-margin-y": -8, "text-opacity": 0.9, "text-background-color": "#14110c", "text-background-opacity": 0.7, "text-background-padding": 2 } },
+          { selector: ":selected", style: { "border-color": "#e0a84c", "border-width": 3, "line-color": "#e0a84c", "line-opacity": 1, "target-arrow-color": "#e0a84c" } }
         ],
-        layout: {
-          name: layout,
-          animate: true,
-          animationDuration: 480,
-          nodeRepulsion: () => 6800,
-          idealEdgeLength: 96,
-          padding: 34,
-          fit: true
-        }
+        layout: { name: layout, animate: true, animationDuration: 480, nodeRepulsion: () => 6800, idealEdgeLength: 110, padding: 34, fit: true }
       });
       cy.on("tap", "node", (evt) => {
         const node = evt.target;
@@ -216,29 +170,20 @@
         if (node.data("player")) return;
         cy.elements().difference(nb.union(node)).addClass("dim");
       });
-      cy.on("tap", (evt) => {
-        if (evt.target === cy) cy.elements().removeClass("dim");
-      });
+      cy.on("tap", (evt) => { if (evt.target === cy) cy.elements().removeClass("dim"); });
       cy.style().selector(".dim").style({ "opacity": 0.18, "text-opacity": 0.1 }).update();
       this._cy = cy;
     },
-    /** 力导 ↔ 环形切换 */
     relayout() {
       var _a;
       this._layout = this._layout === "cose" ? "circle" : "cose";
-      if (this._cy) {
-        this._cy.layout({ name: this._layout, animate: true, animationDuration: 480, padding: 34, fit: true }).run();
-        (_a = window.showToast) == null ? void 0 : _a.call(window, `🕸 已切换为${this._layout === "cose" ? "力导" : "环形"}布局`, "info");
-      } else {
-        this.open(this._layout);
-      }
+      if (this._cy) { this._cy.layout({ name: this._layout, animate: true, animationDuration: 480, padding: 34, fit: true }).run();
+        (_a = window.showToast) == null ? void 0 : _a.call(window, `🕸 已切换为${this._layout === "cose" ? "力导" : "环形"}布局`, "info"); }
+      else { this.open(this._layout); }
     },
     close() {
       var _a, _b;
-      try {
-        (_a = this._cy) == null ? void 0 : _a.destroy();
-      } catch (e) {
-      }
+      try { (_a = this._cy) == null ? void 0 : _a.destroy(); } catch (e) {}
       this._cy = null;
       (_b = document.getElementById("graphPanel")) == null ? void 0 : _b.remove();
     },

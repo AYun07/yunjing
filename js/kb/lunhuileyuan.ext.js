@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["lunhuileyuan"] || (KB["lunhuileyuan"] = []);
+  var add = [{"title": "《轮回乐园》文风：无限流的冷硬与算计", "content": "规则冷酷、生存第一，叙事重“信息差—布局—反杀”；语言干脆，少煽情，配角随时可能死。忌主角光环无脑开挂。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}, {"title": "《轮回乐园》文风：乐园的规则感", "content": "每个衍生世界有独立规则，写作先立规则再破规则，爽点来自对规则的极致利用。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

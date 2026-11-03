@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["shrouding"] || (KB["shrouding"] = []);
+  var add = [{"title": "《遮天》文风：洪荒气象与悲壮史诗", "content": "以“苦海—彼岸—大帝”的宏大尺度铺陈，语言雄浑，善用苍凉意象；热血中带宿命的悲壮。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["daoguiyixian"] || (KB["daoguiyixian"] = []);
+  var add = [{"title": "《道诡异仙》文风：疯癫与清醒的夹缝", "content": "叙事在疯与醒之间游走：叙述者的认知本身不可靠，读者常分不清哪一界为真。语言用冷峻白描打底，偶以荒诞突兀的意象刺破现实，恐怖来自“逻辑错位”而非血浆。忌用网络流行语与过度抒情。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}, {"title": "《道诡异仙》文风：双界对照与留白", "content": "大梁与修仙界两套规则互为镜像，写作时以细节差异暗示“世界不对劲”，点到即止，不解释原理。留白比解释更瘆人。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

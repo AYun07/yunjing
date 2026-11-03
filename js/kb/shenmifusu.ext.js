@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["shenmifusu"] || (KB["shenmifusu"] = []);
+  var add = [{"title": "《神秘复苏》文风：规则怪谈与冷恐怖", "content": "灵异以“规则”呈现，恐怖来自规则的诡异与无解；语言冷静克制，少直白血腥，重氛围与心理压迫。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

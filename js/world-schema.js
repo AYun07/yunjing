@@ -61,7 +61,11 @@
           /* v3.58.0 档案完善：全员人物志所需字段（NpcSpawn.enrich 只补空缺） */
           appearance: { type: "string", max: 60, label: "外貌" },
           personality: { type: "string", max: 40, label: "性格" },
-          ambition:   { type: "string", max: 60, label: "志向" }
+          ambition:   { type: "string", max: 60, label: "志向" },
+          /* v3.86.0 活世界 P1-2：人格可改写层——情绪/记忆/当前目标，随剧情与世界状态演化（L3 有因果链） */
+          emotion:    { type: "string", max: 30, label: "当前情绪" },
+          memory:     { type: "string", max: 220, label: "近期记忆" },
+          goal:       { type: "string", max: 60, label: "当前目的" }
         }
       },
       item: {
@@ -211,15 +215,22 @@
       }
       return ok;
     },
-    /** 统一关系网：aId -[kind,strength]- bId */
+    /** 统一关系网：aId -[kind,strength]- bId（有向；每次变化记录 hist 轨迹，支撑关系图 ↑↓ 趋势） */
     link(aId, kind, bId, strength, vars) {
       vars = vars || (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables);
       if (!vars) return null;
       this.ensure(vars);
-      const rel = { id: "rel_" + aId + "_" + bId, type: "relation", a: aId, b: bId, kind: kind || "陌路", strength: clampNum(strength, -100, 100) || 0, at: Date.now() };
       const arr = vars.entities.relations;
       const i = arr.findIndex((r) => r.a === aId && r.b === bId);
-      if (i >= 0) arr[i] = rel; else arr.push(rel);
+      const s = clampNum(strength, -100, 100) || 0;
+      if (i >= 0) {
+        const old = arr[i];
+        old.kind = kind || old.kind || "陌路";
+        if (old.strength !== s) { old.hist = old.hist || []; old.hist.push({ t: Date.now(), v: s, why: (kind || "关系变动") }); if (old.hist.length > 12) old.hist.shift(); old.strength = s; old.at = Date.now(); }
+        return old;
+      }
+      const rel = { id: "rel_" + aId + "_" + bId, type: "relation", a: aId, b: bId, kind: kind || "陌路", strength: s, at: Date.now(), hist: [{ t: Date.now(), v: s, why: (kind || "关系建立") }] };
+      arr.push(rel);
       return rel;
     }
   };

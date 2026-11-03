@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["guimi"] || (KB["guimi"] = []);
+  var add = [{"title": "灰雾之上", "content": "梦境边缘的一片灰雾，似有高位存在凝视。", "category": "机缘", "tags": ["灰雾"], "alwaysInclude": false, "priority": ""}, {"title": "序列配方残页", "content": "黑市流出的半页序列配方，代价不明。", "category": "机缘", "tags": ["配方"], "alwaysInclude": false, "priority": ""}, {"title": "值夜者密报", "content": "码头仓库丢了“不该丢”的货。", "category": "机缘", "tags": ["密报"], "alwaysInclude": false, "priority": ""}, {"title": "告解室自白", "content": "匿名自白书，字里行间透着疯狂。", "category": "机缘", "tags": ["自白"], "alwaysInclude": false, "priority": ""}, {"title": "红月异象", "content": "红月连悬，灵界之墙变薄。", "category": "机缘", "tags": ["异象"], "alwaysInclude": false, "priority": ""}, {"title": "古老徽记", "content": "一枚来历不明的徽记，触碰时耳边有低语。", "category": "机缘", "tags": ["徽记"], "alwaysInclude": false, "priority": ""}, {"title": "失控者的遗物", "content": "一位失控非凡者留下的遗物，仍带污染。", "category": "机缘", "tags": ["遗物"], "alwaysInclude": false, "priority": ""}, {"title": "隐秘组织的邀约", "content": "一封没有落款的邀请函。", "category": "机缘", "tags": ["邀约"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

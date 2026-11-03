@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["doupocangqiong"] || (KB["doupocangqiong"] = []);
+  var add = [{"title": "《斗破苍穹》文风：逆袭热血与异火奇观", "content": "节奏快、爽点密，善用“打脸—升级—更强敌人”的循环；异火、斗技的描写重画面冲击。语言直白有力，少迂回。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}, {"title": "《斗破苍穹》文风：师承与少年意气", "content": "药老式的亦师亦友是情感支点，写师徒互动要有机锋与温度，别写成工具人。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

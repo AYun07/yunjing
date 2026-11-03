@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["jianlai"] || (KB["jianlai"] = []);
+  var add = [{"title": "《剑来》文风：道理与江湖并重", "content": "叙事常在“讲道理”与“走江湖”之间切换，重人物风骨与世道人心；语言文白相间、有书卷气，善用留白与闲笔。忌空喊口号。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

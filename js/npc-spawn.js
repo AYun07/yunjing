@@ -24,6 +24,9 @@
   const APPEARANCES = ["身形清瘦，目光如炬", "面容普通，唯双目有神", "剑眉星目，气度沉静", "鬓发斑白，步履沉稳", "风尘仆仆，腰间悬一柄旧刀", "眉眼含笑，袖口绣着暗纹", "青衫落拓，指节有厚茧", "身量高大，嗓音洪亮"];
   const PERSONALITIES = ["外冷内热，重诺守义", "圆滑世故，八面玲珑", "执拗认真，认死理", "散漫不羁，心却透亮", "谨慎多疑，凡事先留三分", "豪爽仗义，一诺千金", "沉默寡言，出手果断", "温文尔雅，藏而不露"];
   const AMBITIONS = ["攒够盘缠回一趟故乡", "寻访失传的半卷残谱", "为亡友讨一个公道", "在坊市盘下一间小铺", "练成祖传的那一式刀法", "查清当年灭门一夜的真相", "护住家族仅存的一点香火", "走出这片山，去看看传说中的大城", "找到二十年前失散的妹妹", "赚一笔大的，从此归隐"];
+  /* v3.86.0 活世界 P1-2：人物当下目标池——与 ambition（长期志向）区分，是可被剧情/世界状态改写的短期目的 */
+  const GOALS = ["求一份安稳的差事糊口", "攒够盘缠回乡探亲", "把欠的债还清", "寻一门手艺傍身", "护住身边的人", "查清一桩旧事", "熬过这个难关", "替恩人寻一味药", "守住祖传的一点基业", "等一个下落不明的亲人消息", "在乱世里保全名节", "替亡友完成未竟之事"];
+  const EMOTIONS = ["平静", "警惕", "隐忍", "焦灼", "惶惑", "欣慰", "愤懑", "倦怠", "期盼"];
   const FAC_PREFIX = ["青岚", "黑水", "赤霄", "百兽", "万宝", "天工", "流云", "铁衣", "幽篁", "沧澜", "断岳", "白鹭"];
   const FAC_SUFFIX = ["盟", "宗", "阁", "坊", "会", "帮", "寨", "商行"];
   const PLACE_PREFIX = ["落霞", "孤鹜", "断剑", "残碑", "迷雾", "赤石", "寒泉", "古藤", "青石", "野渡"];
@@ -68,6 +71,9 @@
       appearance: pick(APPEARANCES, rnd),
       personality: pick(PERSONALITIES, rnd),
       ambition: pick(AMBITIONS, rnd),
+      emotion: pick(EMOTIONS, rnd),
+      goal: pick(GOALS, rnd),
+      memory: "",
       location: places.length ? pick(places, rnd).name : (v.人生 && v.人生.location) || "行踪不定",
       faction: factions.length && rnd() < 0.5 ? pick(factions, rnd).name : "",
       trust: 30 + Math.floor(rnd() * 41),
@@ -179,6 +185,9 @@
         if (!c.appearance) { c.appearance = pick(APPEARANCES, rnd); filled++; }
         if (!c.personality) { c.personality = pick(PERSONALITIES, rnd); filled++; }
         if (!c.ambition) { c.ambition = pick(AMBITIONS, rnd); filled++; }
+        if (!c.emotion) { c.emotion = "平静"; filled++; }
+        if (!c.goal) { c.goal = pick(GOALS, rnd); filled++; }
+        if (c.memory === undefined) c.memory = "";
         if (!c.role) { c.role = pick(ROLES, rnd); filled++; }
         if (c.origin === undefined) c.origin = "原著";
       }
@@ -192,6 +201,40 @@
       });
     }
     return filled;
+  }
+
+  /* ---------- 人格漂移（v3.86.0 活世界 P1-2）：NPC 的目标/情绪随世界状态演化 ---------- */
+  /* 条件读真实关系与势力状态：被高敌意势力盯上、所属势力覆灭、或久历世事，都会改写其当下目标与情绪。
+     这是"性格活着"（L3 有因果链）的关键——不是随机乱跳，而是被世界推着走。 */
+  function driftPersonalities(v, rnd, day) {
+    const chars = v.characters && typeof v.characters === "object" ? Object.values(v.characters) : [];
+    if (!chars.length) return;
+    const rels = (v.entities && Array.isArray(v.entities.relations) && v.entities.relations) || [];
+    const factions = (v.entities && v.entities.factions) || {};
+    const playerName = (function () { try { var s = window.storyFramework && window.storyFramework.storyState; return (s && s.setup && s.setup.playerName) || (v.主角 && String(v.主角)) || "主角"; } catch (e) { return "主角"; } })();
+    chars.forEach((c) => {
+      if (!c || typeof c !== "object" || c.origin === "玩家") return;
+      /* 1) 所属势力覆灭 → 目标改写（失去靠山，重新谋生） */
+      if (c.faction && factions) {
+        const f = Object.values(factions).find((x) => x && x.name === c.faction);
+        if (f && f.collapsed) {
+          if (rnd() < 0.7) c.goal = pick(["在乱局里自保", "寻一条新的出路", "替旧主了却未竟之事", "找个能容身的新势力"], rnd);
+          if (rnd() < 0.5) c.emotion = pick(["惶惑", "愤懑", "隐忍"], rnd);
+          if (!c.memory || c.memory.indexOf("旧主") < 0) c.memory = ("旧主「" + c.faction + "」覆灭，天地变色。" + (c.memory || "")).slice(0, 220);
+        }
+      }
+      /* 2) 与玩家高敌意 → 目标转向针对玩家 */
+      const gr = rels.find((r) => (r.a === c.name && r.b === playerName) || (r.b === c.name && r.a === playerName));
+      if (gr && Number(gr.strength) <= -40 && rnd() < 0.5) {
+        c.goal = pick(["向「" + playerName + "」讨还血债", "躲开「" + playerName + "」的视线", "拉拢人手对付「" + playerName + "」"], rnd);
+        c.emotion = pick(["愤懑", "警惕"], rnd);
+      }
+      /* 3) 久历世事（世界自转够久）→ 偶尔重燃一个短期目标 */
+      if (day > 2 && rnd() < 0.18) {
+        c.goal = pick(GOALS, rnd);
+        if (rnd() < 0.4) c.emotion = pick(EMOTIONS, rnd);
+      }
+    });
   }
 
   /* ---------- 世界时钟日结算入口（有界，返回事件文案数组） ---------- */
@@ -211,6 +254,7 @@
         const p = spawnPlace(v, rnd);
         if (p) events.push(`「${p.name}」出现在行旅的传闻里（${p.region}）`);
       }
+      driftPersonalities(v, rnd, day);
       enrich(v);
     } catch (e) {}
     return events;

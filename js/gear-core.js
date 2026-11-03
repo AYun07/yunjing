@@ -418,7 +418,24 @@
                 return false;
               }
             });
+            if (!target) {
+              /* v3.86.0 P2-3：AI 引入了槽位表里没有的新槽位——自动纳入（有上限），实现「AI 注册新槽位」 */
+              const nk = String(slotKey).trim();
+              if (nk && (s.custom || []).length < 8) {
+                target = { key: nk.slice(0, 8), icon: "✨", fit: "." };
+                s.custom = s.custom || [];
+                if (!s.custom.some((x) => x.key === target.key)) s.custom.push(target);
+              }
+            }
             if (!target) continue;
+            /* v3.86.0 P2-3：AI 命名的物品登记进 v.entities.items（世界书/图鉴可见，随存档持久化） */
+            try {
+              const vv = vars();
+              if (vv) {
+                vv.entities = vv.entities || {}; vv.entities.items = vv.entities.items || {};
+                if (!vv.entities.items[nm]) vv.entities.items[nm] = { id: "item_" + nm, name: nm, slot: target.key, count: 1, source: "ai" };
+              }
+            } catch (e) {}
             const cur = s.equipped[target.key];
             if (!cur || cur.name !== nm) {
               s.equipped[target.key] = { name: nm, src: "ai", round };

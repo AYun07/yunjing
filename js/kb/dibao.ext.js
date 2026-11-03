@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["dibao"] || (KB["dibao"] = []);
+  var add = [{"title": "《地宝》文风：万古沧桑与寒门逆袭", "content": "叙事带史书般的厚重感，善用“纪元”“争渡”等宏大时间尺度对照个体渺小；爽点来自寒门以智与韧破局，而非天降金手指。语言凝练，少堆砌。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}, {"title": "《地宝》文风：道与势的对峙", "content": "讲道场面重“理”不重“力”，以论道、问道推动冲突，胜负常在一句话的机锋之间。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

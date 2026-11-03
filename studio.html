@@ -15,7 +15,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=3.55.29"></script>
-    <title>云境 v3.85.0 · AI短篇小说创作室</title>
+    <title>云境 v3.86.0 · AI短篇小说创作室</title>
     <link rel="stylesheet" href="css/base-style.css?v=3.62.0">
     <link rel="stylesheet" href="css/immersive-style.css?v=3.55.29">
     <!-- v3.38.1 错误哨兵：必须最先加载（ES5 写法，任何内核可解析）——
@@ -30,8 +30,8 @@
     <script src="js/mo-store.js?v=3.55.29"></script>
     <!-- v3.55.20 世界是活的·续：玩家身份(穿越者/土著)与原著主角关系(同伴/敌对/陌路) + 世界自主演化 + 本界资料库；前版(叙事立场三选一/机缘账本/上下文面板)见下 -->
     <script src="js/story-stance.js?v=3.68.0"></script>
-    <script src="js/beast-system.js?v=3.68.0"></script>
-    <script src="js/squad-system.js?v=3.68.0"></script>
+    <script src="js/beast-system.js?v=3.86.0"></script>
+    <script src="js/squad-system.js?v=3.86.0"></script>
     <script src="js/canon-ledger.js?v=3.55.29"></script>
     <script type="text/yj-lazy" data-src="js/context-panel.js?v=3.55.29" data-yj-group="batch"></script>
     <!-- v3.55.20 玩家身份(穿越者/土著)与原著主角关系(同伴/敌对/陌路) -->
@@ -359,16 +359,16 @@
     <script defer src="js/content-scale.js?v=3.55.29"></script>
     <script defer src="js/api-calling-functions.js?v=3.70.0"></script>
     <script defer src="js/attribute-engine.js?v=3.65.0"></script>
-    <script defer src="js/world-schema.js?v=3.57.1"></script>
+    <script defer src="js/world-schema.js?v=3.86.0"></script>
     <script defer src="js/entity-editor.js?v=3.58.0"></script>
-    <script defer src="js/sim-core.js?v=3.85.0"></script>
-    <script defer src="js/world-clock.js?v=3.85.0"></script>
-    <script defer src="js/world-alive.js?v=3.85.0"></script>
+    <script defer src="js/sim-core.js?v=3.86.0"></script>
+    <script defer src="js/world-clock.js?v=3.86.0"></script>
+    <script defer src="js/world-alive.js?v=3.86.0"></script>
     <script defer src="js/planner.js?v=3.58.0"></script>
     <script defer src="js/mo-tools.js?v=3.58.0"></script>
-    <script defer src="js/npc-spawn.js?v=3.58.0"></script>
+    <script defer src="js/npc-spawn.js?v=3.86.0"></script>
     <script defer src="js/life-mode.js?v=3.58.0"></script>
-    <script defer src="js/variable-parser.js?v=3.68.0"></script>
+    <script defer src="js/variable-parser.js?v=3.86.0"></script>
     <!-- v3.55.10 基础小模型适配：参数安全锁 / 轻量协议块 / 辅助AI静默 / 复读自检 -->
     <script defer src="js/base-model-mode.js?v=3.55.29"></script>
     <!-- v3.55.5 内置「云起预设」（云境原创）：数据 + 渲染引擎 + 世界对齐桥 -->
@@ -438,7 +438,7 @@
          旧版在这里用 document.write 抢解析期装载，实测两个内联块之间没有执行屏障——
          第二个块检查 __KB_SPLIT_OK__ 时第一个块写入的脚本还没跑，于是"分界"与"整包"双双被加载，
          每次进世界白拉 9.4MB（实测首屏 12.7MB JS）。现在只留一个版本号给动态加载用。 -->
-    <script>window.YJ_VER = '3.55.29';</script>
+    <script>window.YJ_VER = '3.86.0';</script>
     <script defer src="js/antibagu-guard.js?v=3.55.29"></script>
     <script type="text/yj-lazy" data-src="js/knowledge-manager.js?v=3.68.0" data-yj-group="batch"></script>
     <script defer src="js/kb-vector.js?v=3.55.29"></script>
@@ -481,7 +481,7 @@
     <script type="text/yj-lazy" data-src="js/module-settings.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/comm-configs.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/comm-core.js?v=3.68.0" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/gear-core.js?v=3.55.29" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/gear-core.js?v=3.86.0" data-yj-group="batch"></script>
     <!-- v3.34.0→v3.36.1 界专属玩法深化 · 第二扩展槽：焚决融合/猎魂小队/武者量化/灵植园/凶兽猎录/淬炼台/
          天逆珠/掌天瓶/主线面板 + 符箓画案/复仇清单/学院任务板/黄金市场/摊位经营/荣耀角色卡/弟子名册/
          猎者任务板/领地建设/异果采摘录/镖局账本/星图航程/调查员档案（22 界玩法器官全配齐） -->
@@ -502,17 +502,18 @@
     <script type="text/yj-lazy" data-src="js/lunar-stamp.js?v=3.55.29" data-yj-group="demand" data-yj-globals="LunarStamp"></script>
     <script type="text/yj-lazy" data-src="js/inspiration-dice.js?v=3.55.29" data-yj-group="demand" data-yj-globals="InspirationDice"></script>
     <script type="text/yj-lazy" data-src="js/celebration.js?v=3.55.29" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/relationship-graph.js?v=3.55.29" data-yj-group="demand" data-yj-globals="RelationGraph"></script>
+    <script type="text/yj-lazy" data-src="js/relationship-graph.js?v=3.86.0" data-yj-group="demand" data-yj-globals="RelationGraph"></script>
     <!-- v3.39.0-3.44.0 World Runtime 全家桶 -->
     <link rel="stylesheet" href="css/world-runtime.css?v=3.55.29">
-    <script type="text/yj-lazy" data-src="js/world-runtime.js?v=3.85.0" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/world-bus.js?v=3.85.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-runtime.js?v=3.86.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-bus.js?v=3.86.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/opportunity-system.js?v=3.86.0" data-yj-group="batch" data-yj-globals="OpportunitySystem"></script>
     <script type="text/yj-lazy" data-src="js/module-forge.js?v=3.55.29" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/combat-core.js?v=3.68.0" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/quest-chain.js?v=3.55.29" data-yj-group="batch"></script>
-    <script type="text/yj-lazy" data-src="js/world-stage.js?v=3.55.29" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/quest-chain.js?v=3.86.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-stage.js?v=3.86.0" data-yj-group="batch"></script>
     <script defer src="js/story-hooks.js?v=3.55.29"></script>
-    <script type="text/yj-lazy" data-src="js/world-director.js?v=3.55.29" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-director.js?v=3.86.0" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/world-legacy.js?v=3.55.29" data-yj-group="batch"></script>
 
     <script>function togglePanel() {

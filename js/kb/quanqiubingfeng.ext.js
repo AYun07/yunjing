@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["quanqiubingfeng"] || (KB["quanqiubingfeng"] = []);
+  var add = [{"title": "《全球冰封》文风：末世求生的压迫感", "content": "以严寒、匮乏、人性考验营造持续压迫；资源清单、温度数字等硬细节增强真实感，爽点是“苟住—反杀”。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

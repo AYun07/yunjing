@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["fanrenxiuxian"] || (KB["fanrenxiuxian"] = []);
+  var add = [{"title": "《凡人修仙传》文风：凡人流与步步为营", "content": "主角以谨慎、隐忍、算计立身，写作重“资源—风险—后手”的理性推演，爽点来自长期布局的兑现而非一时爆发。语言平实克制，忌浮夸。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();

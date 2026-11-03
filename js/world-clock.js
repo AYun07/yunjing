@@ -108,6 +108,18 @@
       try { window.StoryAtlas && StoryAtlas.syncEntities && StoryAtlas.syncEntities(v); } catch (e) {}
       /* v3.85.0 大势推演：调用 SimCore.advance 对真实状态演化（势力影响力消长 / 关系衰减 / 张力），使自转有方向性（P1-3） */
       try { if (window.SimCore && SimCore.advance) SimCore.advance(v, 1, rnd); } catch (e) {}
+      /* v3.86.0 涌现式机缘：世界自转时按当前世界状态滚动机缘候选（P0-2，有代价有时限） */
+      try { if (window.OpportunitySystem && OpportunitySystem.roll) OpportunitySystem.roll(day); } catch (e) {}
+      /* v3.86.0 势力生命周期：弱者愈弱→覆灭、新势力崛起，并写入大势账本（P2-1） */
+      try { if (window.WorldAlive && WorldAlive.lifecycle) WorldAlive.lifecycle(); } catch (e) {}
+      /* v3.86.0 伙伴意志：羁绊低 + 队伍重创 → 动摇/离队/叛变，写入大势与恩怨账本（P2-4） */
+      try {
+        if (window.BeastSystem && BeastSystem.driftAll) {
+          var _crisis = false;
+          try { var _c = (window.WorldBus && WorldBus.counters) || {}; _crisis = (_c.lossStreak || 0) >= 2 || /重创|失守|告急|溃败|覆灭|洗劫|劫/.test(ev); } catch (e2) {}
+          BeastSystem.driftAll({ crisis: _crisis, day: day });
+        }
+      } catch (e) {}
       /* 待注入事件（供导演/规划在下一轮提示词引用） */
       v.时间.pendingEvents = [ev].concat(Array.isArray(v.时间.pendingEvents) ? v.时间.pendingEvents : []).slice(0, 3);
       v.时间.lastClockAt = Date.now();

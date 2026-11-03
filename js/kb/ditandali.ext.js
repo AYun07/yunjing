@@ -9,3 +9,13 @@
   }
   window.__KB_EXT_OK__ = true;
 })();
+
+/* KB-AUGMENT v3.86.0 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["ditandali"] || (KB["ditandali"] = []);
+  var add = [{"title": "《地摊大力》文风：市井烟火与草根幽默", "content": "以摊位、讨价还价、街坊邻里为舞台，语言鲜活接地气，幽默来自小人物的机灵与窘迫。爽点是“以小博大”，忌写成高冷仙侠。", "category": "文风", "tags": ["文风"], "alwaysInclude": false, "priority": ""}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_AUG_OK__ = true;
+})();
