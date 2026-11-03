@@ -110,7 +110,7 @@
     <div class="top-bar">
         <a href="index.html" class="back-link" title="返回工坊大厅"><span class="ico">←</span><span class="txt">大厅</span></a>
         <span id="gameTitle">加载中…</span>
-        <span class="ver-dot" title="云境 v3.72.0 · 四套主界面板式可切换（?theme=ink 水墨卷轴 / star 星穹HUD / gold 鎏金殿阁 / cloud 云白卡片），默认沿用 v3.71.0 外观">v3.72.0</span>
+        <span class="ver-dot" id="verDot" title="云境版本号">v3.87.0</span>
         <div class="top-actions">
             <!-- v3.8.3 极简顶栏：功能按钮全部收进 ☰ 工具箱（桌面/移动同构），只留状态面板与工具箱两个常驻入口 -->
             <button class="top-btn" id="panelToggle" onclick="togglePanel()" title="状态面板"><span class="ico">📊</span><span class="txt">状态</span></button>
@@ -438,7 +438,13 @@
          旧版在这里用 document.write 抢解析期装载，实测两个内联块之间没有执行屏障——
          第二个块检查 __KB_SPLIT_OK__ 时第一个块写入的脚本还没跑，于是"分界"与"整包"双双被加载，
          每次进世界白拉 9.4MB（实测首屏 12.7MB JS）。现在只留一个版本号给动态加载用。 -->
-    <script>window.YJ_VER = '3.87.0';</script>
+    <script>window.YJ_VER = '3.87.0';
+      /* v3.87.0 P3-3：顶栏版本徽标改为与 YJ_VER 同源，杜绝「界面显示旧号、实际是新版」 */
+      document.addEventListener('DOMContentLoaded', function () {
+        var d = document.getElementById('verDot');
+        if (d) { d.textContent = 'v' + window.YJ_VER; d.title = '云境 v' + window.YJ_VER + ' · 版本号与 git tag / SW_VER 同源'; }
+      });
+    </script>
     <script defer src="js/antibagu-guard.js?v=3.87.0"></script>
     <script type="text/yj-lazy" data-src="js/knowledge-manager.js?v=3.87.0" data-yj-group="batch"></script>
     <script defer src="js/kb-vector.js?v=3.87.0"></script>

@@ -86,7 +86,7 @@
 
 <body class="page-index">
     <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.84.0 云境版</a>
+    <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v3.87.0 云境版</a>
     <div class="skin-toggle" role="group" aria-label="时段切换">
         <button type="button" data-skin="night" class="on">云夜</button>
         <button type="button" data-skin="day">云昼</button>
@@ -673,6 +673,14 @@
 <script src="js/world-book.js?v=3.87.0"></script>
 <script src="js/xiaoyun-ops.js?v=3.87.0"></script>
 <script src="js/xiaoyun-buddy.js?v=3.87.0"></script>
+<script>
+  /* v3.87.0 P3-3：首页版本徽标与 YJ_VER 同源（此前写死 v3.84.0，与实际版本长期不符） */
+  window.YJ_VER = '3.87.0';
+  (function () {
+    var b = document.getElementById('verBadge');
+    if (b) b.textContent = 'v' + window.YJ_VER + ' 云境版';
+  })();
+</script>
 </body>
 
 </html>
