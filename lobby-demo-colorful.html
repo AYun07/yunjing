@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>云境 · 彩云主演</title>
+<link rel="stylesheet" href="css/lobby-xiaoyun.css?v=3.83.1">
+<style>
+.demo-wrap{max-width:1120px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
+.gallery{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin:10px 0}
+.stage{position:relative;flex:1 1 320px;max-width:344px;height:438px;border-radius:26px;overflow:hidden;
+  background:linear-gradient(150deg,var(--bg1),var(--bg2));
+  box-shadow:0 18px 46px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.3);
+  border:1px solid rgba(255,255,255,.22);transition:transform .4s,box-shadow .4s}
+.stage:hover{transform:translateY(-8px);box-shadow:0 26px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.38)}
+.stage::after{content:"";position:absolute;inset:0;background:radial-gradient(75% 60% at 72% 82%, var(--glow), transparent 70%);opacity:.55;pointer-events:none}
+.stage .scrim{position:absolute;left:0;right:0;bottom:0;height:52%;background:linear-gradient(0deg,rgba(0,0,0,.5),transparent);z-index:2;pointer-events:none}
+.stage .char{position:absolute;right:-2%;bottom:0;height:94%;width:auto;transform-origin:bottom right;filter:drop-shadow(0 12px 26px rgba(0,0,0,.45));transition:transform .45s;z-index:1}
+.stage:hover .char{transform:translateY(-12px) scale(1.04)}
+.stage .spark{position:absolute;color:#fff;opacity:.9;font-size:16px;text-shadow:0 0 8px rgba(255,255,255,.8);animation:tw 3s ease-in-out infinite;z-index:3}
+@keyframes tw{0%,100%{transform:scale(.8);opacity:.5}50%{transform:scale(1.2);opacity:1}}
+.stage .go{position:absolute;left:18px;top:16px;z-index:4;font-size:12px;font-weight:600;color:#fff;background:rgba(255,255,255,.22);padding:6px 13px;border-radius:999px;backdrop-filter:blur(5px);border:1px solid rgba(255,255,255,.32)}
+.stage .label{position:absolute;left:16px;bottom:18px;z-index:4;max-width:62%;background:rgba(10,8,20,.46);backdrop-filter:blur(4px);padding:12px 15px;border-radius:15px;border:1px solid rgba(255,255,255,.16)}
+.stage .label .nm{font-size:22px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5);letter-spacing:.04em}
+.stage .label .ds{font-size:13px;font-weight:500;color:rgba(255,255,255,.96);margin-top:6px;line-height:1.55}
+</style>
+</head>
+<body class="page-index" data-skin="night">
+<div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="demo-wrap">
+<header class="masthead">
+  <div class="logo-kai"><span class="lk-a">云</span><span class="lk-b">境</span></div>
+  <div class="sub">万象入云 · 一念一世界</div>
+</header>
+<section style="margin-top:18px"><h2 class="section-title">五大创作工坊</h2><div class="gallery"><div class="stage" style="--bg1:#283a8f;--bg2:#5b6fce;--glow:#7f9bff"><span class="spark" style="left:16%;top:28%;animation-delay:0.0s">✦</span><span class="spark" style="left:72%;top:16%;animation-delay:0.4s">✦</span><span class="spark" style="left:44%;top:58%;animation-delay:0.8s">✦</span><span class="spark" style="left:84%;top:44%;animation-delay:1.2000000000000002s">✦</span><span class="spark" style="left:58%;top:22%;animation-delay:1.6s">✦</span><span class="go">进入创作 →</span><img class="char" src="assets/xiaoyun-jiaohua-battle.png" alt="悬疑推理坊"><div class="scrim"></div><div class="label"><div class="nm">悬疑推理坊</div><div class="ds">迷雾中的每一处线索，都通向真相。</div></div></div><div class="stage" style="--bg1:#6a2f9e;--bg2:#c06fd0;--glow:#b07bff"><span class="spark" style="left:16%;top:28%;animation-delay:0.0s">✦</span><span class="spark" style="left:72%;top:16%;animation-delay:0.4s">✦</span><span class="spark" style="left:44%;top:58%;animation-delay:0.8s">✦</span><span class="spark" style="left:84%;top:44%;animation-delay:1.2000000000000002s">✦</span><span class="spark" style="left:58%;top:22%;animation-delay:1.6s">✦</span><span class="go">进入创作 →</span><img class="char" src="assets/xiaoyun-qingchun-happy.png" alt="科幻星舰坊"><div class="scrim"></div><div class="label"><div class="nm">科幻星舰坊</div><div class="ds">跃迁到光年之外，构筑你的未来宇宙。</div></div></div><div class="stage" style="--bg1:#b03a6e;--bg2:#f0795f;--glow:#ff8aa0"><span class="spark" style="left:16%;top:28%;animation-delay:0.0s">✦</span><span class="spark" style="left:72%;top:16%;animation-delay:0.4s">✦</span><span class="spark" style="left:44%;top:58%;animation-delay:0.8s">✦</span><span class="spark" style="left:84%;top:44%;animation-delay:1.2000000000000002s">✦</span><span class="spark" style="left:58%;top:22%;animation-delay:1.6s">✦</span><span class="go">进入创作 →</span><img class="char" src="assets/xiaoyun-aojiao-wave.png" alt="武侠江湖坊"><div class="scrim"></div><div class="label"><div class="nm">武侠江湖坊</div><div class="ds">刀光剑影里，写一段快意恩仇。</div></div></div><div class="stage" style="--bg1:#0e3a44;--bg2:#08161a;--glow:#2fd6c0"><span class="spark" style="left:16%;top:28%;animation-delay:0.0s">✦</span><span class="spark" style="left:72%;top:16%;animation-delay:0.4s">✦</span><span class="spark" style="left:44%;top:58%;animation-delay:0.8s">✦</span><span class="spark" style="left:84%;top:44%;animation-delay:1.2000000000000002s">✦</span><span class="spark" style="left:58%;top:22%;animation-delay:1.6s">✦</span><span class="go">进入创作 →</span><img class="char" src="assets/xiaoyun-kusa-battle.png" alt="克苏鲁秘坊"><div class="scrim"></div><div class="label"><div class="nm">克苏鲁秘坊</div><div class="ds">在不可名状的低语中，触碰认知边界。</div></div></div><div class="stage" style="--bg1:#c98a2e;--bg2:#f3c46b;--glow:#ffe0a0"><span class="spark" style="left:16%;top:28%;animation-delay:0.0s">✦</span><span class="spark" style="left:72%;top:16%;animation-delay:0.4s">✦</span><span class="spark" style="left:44%;top:58%;animation-delay:0.8s">✦</span><span class="spark" style="left:84%;top:44%;animation-delay:1.2000000000000002s">✦</span><span class="spark" style="left:58%;top:22%;animation-delay:1.6s">✦</span><span class="go">进入创作 →</span><img class="char" src="assets/xiaoyun-yu-happy.png" alt="自由创作坊"><div class="scrim"></div><div class="label"><div class="nm">自由创作坊</div><div class="ds">没有规则，只有你的想象。</div></div></div></div></section>
+<section style="margin-top:34px"><h2 class="section-title">开放世界 · 28 界</h2>
+  <p style="text-align:center;color:var(--ink-dim);max-width:640px;margin:0 auto;line-height:1.9">从悬疑到科幻，从武侠到异神——踏入由你与他人共创的原著世界，每一步都是新的故事。</p></section>
+</div>
+</body></html>

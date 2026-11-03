@@ -265,6 +265,33 @@
   }
 
   /* ---------------- 导入 / 还原 ---------------- */
+  /* ---------------- 导入适配自检（v3.83.0：第三方预设不掉格式保障） ----------------
+   * 导入成功即体检：把可能导致「掉格式」的隐患提前暴露给玩家，而不是让它混进正文。 */
+  var KNOWN_MACROS = /^(char|user|time|date|datetime|setvar|getvar|addvar|random|pick|choose|select|roll|dice|random_string|random_number|\/\/)/i;
+  function selfCheck(p) {
+    var warns = [];
+    var enabled = (p.prompts || []).filter(function (b) { return b.enabled !== false; });
+    var empty = enabled.filter(function (b) { return !b.marker && !String(b.content || '').trim(); });
+    if (empty.length) warns.push(empty.length + ' 个启用块内容为空（已自动跳过，不影响运行）');
+    var nosys = !enabled.some(function (b) { return b.role === 'system' && !b.marker; });
+    if (nosys) warns.push('没有 system 角色的启用块——预设可能整体偏弱，建议确认导出来源');
+    var unknown = {};
+    enabled.forEach(function (b) {
+      String(b.content || '').replace(/\{\{\s*([^}\s][^}]*?)\s*\}\}/g, function (_, m) {
+        var name = String(m).replace(/::[\s\S]*$/, '').trim();
+        if (!KNOWN_MACROS.test(name)) unknown[name] = 1;
+        return _;
+      });
+    });
+    var ukeys = Object.keys(unknown);
+    if (ukeys.length) warns.push('未知宏 ' + ukeys.slice(0, 4).join('/') + (ukeys.length > 4 ? ' 等 ' + ukeys.length + ' 个' : '') + '——引擎会自动清零不泄漏进正文');
+    var longBlocks = enabled.filter(function (b) { return String(b.content || '').length > 8000; });
+    if (longBlocks.length) warns.push(longBlocks.length + ' 个块超过 8000 字，注意上下文预算');
+    var fences = enabled.filter(function (b) { return /```/.test(String(b.content || '')); });
+    if (fences.length) warns.push(fences.length + ' 个块含代码围栏，若正文出现围栏残留可在「逐条编辑」里清理');
+    return { warns: warns };
+  }
+
   function importText(text, fileName) {
     var rawStr = String(text == null ? '' : text);
     /* v3.55.5：JSON 先宽容解析；整份失败再试"纯文本预设"兜底 */
@@ -301,6 +328,7 @@
     } catch (e) { console.warn('[PresetIO] 配套正则装载失败（预设本体不受影响）:', e.message); }
     var out = info();
     out.regexes = rxCount;
+    out.check = selfCheck(p);
     return out;
   }
 
@@ -351,6 +379,7 @@
 
   window.YunjingPresetIO = {
     normalize: normalize,
+    selfCheck: selfCheck,
     active: active,
     info: info,
     importText: importText,

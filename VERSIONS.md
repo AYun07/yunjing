@@ -2,9 +2,51 @@
 
 > 每个版本都已打 **git 标签**。点击「📂 该版文件」可查看那一版的**完整文件树**（等于该版本发布时的全部源码）；点击「🔍 与上一版差异」可在 GitHub 直接对比两个版本改了什么。
 
-> 共 **45** 个版本，从 `v3.55.7` 到 `v3.69.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **51** 个版本，从 `v3.55.7` 到 `v3.69.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 ---
+
+## v3.84.0 · 2026-11-03
+
+世界书全量扩充+小云全能化：①世界书种子库外置 worldbook-seeds.js——29 界 418 条（26 个小说世界按原著公认设定还原，修复 guzhenren 错装诡秘之主条目并归正为蛊真人；earth 真实地球 30 条覆盖天文/地理/历史/文明/文化/社会/科技；freeworld 14 条「让世界活过来」；free 工坊 6 条创作锚点），种子标记升 v3 老档自动补落；②小云技能中枢 xiaoyun-ops.js——世界书增删查/一键归档、预设导入还原、正则、存档槽、变量体检、正文格式修复、工坊体检等全部云境能力注册为可调用工具；③小云伙伴升级——快捷面板 8 项直达，接入大模型 API 后支持 ⟦tool⟧ 工具循环（最多2轮），可自主补世界书条目/修格式/查变量/管存档/换预设；④第三方预设适配自检——导入即体检（空块/未知宏/代码围栏/超长块），引擎宏零泄漏层兜底，不掉格式；⑤修复造物工坊预览 iframe 从未挂载的旧 bug。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.84.0)  [🔍 与 v3.83.1 差异](https://github.com/AYun07/yunjing/compare/v3.83.1...v3.84.0)
+
+## v3.82.0 · 2026-11-03
+
+大厅版式 E「千字云海」(暗夜极光+超大字浮动+跑马灯字带+霓虹顶条) / F「云格Bento」(浅暖Bento主次格+彩墨晕染+彩色字徽)；修复 --ws-hue 十六进制不可入 hsl() 致色相 accent 静默失效，对照台增至 7 版式
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.82.0)  [🔍 与 v3.81.4 差异](https://github.com/AYun07/yunjing/compare/v3.81.4...v3.82.0)
+
+## v3.81.4 · 2026-11-03
+
+全员轮廓晕圈衰减：贴边浅灰带(18.3万px/60张)alpha降至35%，浅底灰边清零，双底验收流程确立
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.4)  [🔍 与 v3.81.3 差异](https://github.com/AYun07/yunjing/compare/v3.81.3...v3.81.4)
+
+## v3.81.3 · 2026-11-03
+
+浅底验收补盲：发间/腿间死灰空隙残留清零(20处约1.69万px,含chibi-luo腿间竖条)，发丝暗面正常画法甄别保留
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.3)  [🔍 与 v3.81.2 差异](https://github.com/AYun07/yunjing/compare/v3.81.2...v3.81.3)
+
+## v3.81.2 · 2026-11-03
+
+立绘全量逐张精修：60张90处游离像素逐处定性，13处深灰残条清零(约1432px)，动作线/星星/发丝零损伤
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.2)  [🔍 与 v3.81.1 差异](https://github.com/AYun07/yunjing/compare/v3.81.1...v3.81.2)
+
+## v3.81.1 · 2026-11-03
+
+立绘像素级精修：keai/kusa-battle残余半透明阴影清零+60张全员白毛边压暗(11.2万px)，特效发梢描边AA全保留
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.1)  [🔍 与 v3.81.0 差异](https://github.com/AYun07/yunjing/compare/v3.81.0...v3.81.1)
+
+## v3.81.0 · 2026-11-03
+
+立绘全量回滚：撤销 v3.80 误伤清理(60张恢复原图,逐张核验零缺块)，仅定向清除 keai-battle/kusa-battle 腿间地面阴影白块(测地膨胀+羽化,深浅双底验收)，大厅四套版式对照台保留待选
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.0)  [🔍 与 v3.80.0 差异](https://github.com/AYun07/yunjing/compare/v3.80.0...v3.81.0)
 
 ## v3.80.0 · 2026-11-03
 
@@ -184,25 +226,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 世界基座：统一实体模型 Entity + 变量模板 Schema + 校验器 SchemaValidator（P1 地基）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.1)  [🔍 与 v3.55.9 差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.56.1)
-
-## v3.55.9 · 2026-10-30
-
-云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令）
-
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.9)  [🔍 与 v3.55.8 差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
-
-## v3.55.8 · 2026-10-30
-
-云起预设重构（内容加深 + 文风按类型整合）
-
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.8)  [🔍 与 v3.55.7 差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
-
-## v3.55.7 · 2026-10-29
-
-云端同步与开源
-
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.7)  [🔍 与 v3.55.30 差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.55.7)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.1)  [🔍 与 v3.55.30 差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.56.1)
 
 ## v3.55.30 · 2026-11-01
 
@@ -274,7 +298,25 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 基础小模型适配：参数安全锁/轻量协议块/辅助AI静默/复读自检
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.10)  （最早有记录的版本，无上一版可比）
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.10)  [🔍 与 v3.55.9 差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.55.10)
+
+## v3.55.9 · 2026-10-30
+
+云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.9)  [🔍 与 v3.55.8 差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
+
+## v3.55.8 · 2026-10-30
+
+云起预设重构（内容加深 + 文风按类型整合）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.8)  [🔍 与 v3.55.7 差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
+
+## v3.55.7 · 2026-10-29
+
+云端同步与开源
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.7)  （最早有记录的版本，无上一版可比）
 
 ---
 

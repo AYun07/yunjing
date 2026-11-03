@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>雲境 · 志</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0e14;color:#f2efe6;font-family:'Noto Serif SC','Songti SC','STSong',serif;min-height:100vh;overflow-x:hidden}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(242,239,230,.5);animation:tw 4s ease-in-out infinite}
+.stars i:nth-child(1){top:14%;left:12%}.stars i:nth-child(2){top:30%;left:78%;width:4px;height:4px}
+.stars i:nth-child(3){top:62%;left:8%}.stars i:nth-child(4){top:74%;left:88%}.stars i:nth-child(5){top:44%;left:56%}
+@keyframes tw{0%,100%{opacity:.3}50%{opacity:1}}
+.page{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 40px 70px}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;padding:76px 0 56px;min-height:460px}
+.hero-vr{position:absolute;right:0;top:86px;writing-mode:vertical-rl;letter-spacing:.42em;font-size:15px;color:#9a97a8;border-right:1px solid rgba(242,239,230,.25);padding-right:14px;height:230px}
+.hero-vol{font-size:11px;letter-spacing:.5em;color:#8a8798;font-family:Georgia,serif;margin-bottom:26px}
+.hero-big{font-size:158px;font-weight:900;line-height:1.02;letter-spacing:.04em;color:#f2efe6}
+.hero-big em{font-style:normal;color:#e0455a}
+.hero-en{font-size:11px;letter-spacing:.46em;color:#77748a;font-family:Georgia,serif;margin-top:22px}
+.hero-lead{margin-top:34px;font-size:16px;line-height:2.1;color:#c9c6d4;font-weight:400}
+.hero-mark{position:absolute;right:56px;top:30px;font-size:320px;font-weight:900;line-height:1;color:transparent;
+  -webkit-text-stroke:1.5px rgba(242,239,230,.13);pointer-events:none;user-select:none}
+.rule{height:1px;background:linear-gradient(90deg,rgba(242,239,230,.34),rgba(242,239,230,.06));margin:6px 0 0}
+
+/* ---------- SECTION HEAD ---------- */
+.sec-head{display:flex;align-items:baseline;gap:22px;margin:44px 0 8px}
+.sec-cn{font-size:30px;font-weight:700;letter-spacing:.14em}
+.sec-en{font-size:10px;letter-spacing:.4em;color:#77748a;font-family:Georgia,serif}
+
+/* ---------- WORKSHOPS：不对称编辑网格 ---------- */
+.wsgrid{display:grid;grid-template-columns:repeat(12,1fr)}
+.unit{display:block;text-decoration:none;color:inherit;position:relative;border-top:1px solid rgba(242,239,230,.18);padding:30px 26px 26px 0;min-height:300px}
+.unit:nth-child(1){grid-column:1/13;min-height:300px}
+.mixrow{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:2;max-width:70%}
+.mix{font-size:11px;letter-spacing:.14em;color:#c9c6d4;border:1px solid rgba(242,239,230,.22);border-radius:999px;padding:5px 13px}
+.mix:hover{border-color:var(--ac);color:var(--ac)}
+.unit:nth-child(2){grid-column:7/13;min-height:360px;border-left:1px solid rgba(242,239,230,.12);padding-left:30px}
+.unit:nth-child(3){grid-column:1/5}
+.unit:nth-child(4){grid-column:5/9;border-left:1px solid rgba(242,239,230,.12);padding-left:30px}
+.unit:nth-child(5){grid-column:9/13;border-left:1px solid rgba(242,239,230,.12);padding-left:30px}
+.unit .idx{font-family:Georgia,serif;font-size:13px;letter-spacing:.3em;color:var(--ac)}
+.unit .idx b{color:#f2efe6;font-weight:400}
+.unit .en{font-size:9px;letter-spacing:.42em;color:#5f5c70;font-family:Georgia,serif;margin-top:4px}
+.unit h3{font-size:38px;font-weight:700;letter-spacing:.08em;margin-top:18px;position:relative;z-index:2}
+.unit p{font-size:13.5px;line-height:1.95;color:#a5a2b4;margin-top:12px;max-width:58%;position:relative;z-index:2}
+.unit .go{display:inline-block;margin-top:18px;font-size:11px;letter-spacing:.3em;color:var(--ac);border-bottom:1px solid var(--ac);padding-bottom:4px;position:relative;z-index:2}
+.unit .wm{position:absolute;right:-6px;bottom:-26px;font-size:168px;font-weight:900;line-height:1;z-index:1;pointer-events:none;
+  color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--ac) 52%, transparent)}
+.unit:nth-child(1) img{height:96%;right:12px}
+.unit:nth-child(2) img{height:88%}
+
+/* ---------- INDEX / TOC ---------- */
+.idx-sec{position:relative;padding:10px 0 30px}
+.idx-vr{position:absolute;left:-8px;top:70px;writing-mode:vertical-rl;font-size:74px;font-weight:900;letter-spacing:.3em;color:transparent;-webkit-text-stroke:1px rgba(242,239,230,.28)}
+.idx-body{margin-left:130px}
+.idx-note{font-size:12px;letter-spacing:.18em;color:#9a97a8;margin:0 0 22px;padding-bottom:14px;border-bottom:1px solid rgba(242,239,230,.14)}
+.toc{list-style:none;columns:2;column-gap:70px;max-width:860px}
+.toc a{text-decoration:none;color:inherit}
+.toc li{display:flex;align-items:baseline;gap:14px;padding:13px 0;border-bottom:1px dotted rgba(242,239,230,.22);break-inside:avoid}
+.toc .no{font-family:Georgia,serif;font-size:12px;color:#e0455a;letter-spacing:.2em}
+.toc .nm{font-size:19px;font-weight:600;letter-spacing:.1em}
+.toc .ld{flex:1}
+.toc .pg{font-family:Georgia,serif;font-size:11px;color:#77748a}
+
+.special-sec{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:44px;max-width:860px}
+.sp-block{display:flex;gap:20px;border-top:2px solid var(--sc);padding-top:20px}
+.sp-no{font-size:40px;font-weight:900;color:transparent;-webkit-text-stroke:1.2px var(--sc);line-height:1}
+.sp-body h3{font-size:24px;font-weight:700;letter-spacing:.12em;color:var(--sc)}
+.sp-body p{font-size:13px;line-height:1.9;color:#a5a2b4;margin:10px 0 14px}
+.sp-body a{font-size:11px;letter-spacing:.3em;color:var(--sc);text-decoration:none;border-bottom:1px solid var(--sc);padding-bottom:4px}
+
+.foot{margin-top:60px;text-align:center;font-size:11px;letter-spacing:.4em;color:#6b6878}
+</style>
+</head><body>
+<div class="stars"><i></i><i></i><i></i><i></i><i></i></div>
+<div class="page">
+
+<header class="hero">
+  <div class="hero-vr">万象入云 · 一念一世界</div>
+  <div class="hero-main">
+    <div class="hero-vol">YUNJING MAGAZINE — VOL.03</div>
+    <h1 class="hero-big">雲<em>境</em></h1>
+    <div class="hero-en">AN ANTHOLOGY OF TWENTY-EIGHT WORLDS</div>
+    <p class="hero-lead">在这里，你不是读者，你是主角。<br>自由创作落笔成书，廿八界任你踏入。</p>
+  </div>
+  <img class="hero-char" src="assets/xiaoyun-keai-happy.png" alt="" style="display:none">
+  <div class="hero-mark">雲</div>
+</header>
+
+<div class="rule"></div>
+
+<section class="ws-sec">
+  <div class="sec-head">
+    <h2 class="sec-cn">自由创作工坊</h2>
+    <span class="sec-en">WRITING WORKSHOP — FREE GENRE MIX</span>
+  </div>
+  <div class="wsgrid"><a class="unit" style="--ac:#ffcf6b" href="studio.html?genre=free&v=1.6.9"><div class="idx">01 <b>/</b> 01</div><div class="en">FREE WRITING WORKSHOP</div><h3>自由创作工坊</h3><p>不设藩篱，任意题材随心落笔。进入工坊后再细分创作类别，支持多种类型混搭。</p><div class="mixrow">题材即选即混（单选或多搭）：<span class="mix">悬疑推理</span><span class="mix">科幻未来</span><span class="mix">武侠仙侠</span><span class="mix">克苏鲁恐怖</span><span class="mix">都市现实</span><span class="mix">历史传奇</span><span class="mix">东方奇幻</span><span class="mix">西方奇幻</span><span class="mix">言情</span><span class="mix">无限流</span><span class="mix">末世废土</span><span class="mix">童话寓言</span></div><span class="go">进入工坊 →</span><span class="wm">自</span></a></div>
+</section>
+
+<div class="rule"></div>
+
+<section class="idx-sec">
+  <div class="idx-vr">廿八界</div>
+  <div class="idx-body">
+    <div class="sec-head" style="margin-bottom:26px">
+      <h2 class="sec-cn">开放世界目录</h2>
+      <span class="sec-en">OPEN WORLDS — TABLE OF CONTENTS</span>
+    </div>
+    <div class="idx-note">扮演界三类分列 — 小说世界 26（按题材七类） ｜ 现实世界 1 ｜ 自由世界 1 ｜ 另有自由创作工坊</div>
+    <ul class="toc"><li><span class="no">01</span><span class="nm">遮天</span><span class="ld"></span><span class="pg" style="color:#c9a86a">东方玄幻</span></li><li><span class="no">02</span><span class="nm">斗破苍穹</span><span class="ld"></span><span class="pg" style="color:#c9a86a">东方玄幻</span></li><li><span class="no">03</span><span class="nm">完美世界</span><span class="ld"></span><span class="pg" style="color:#c9a86a">东方玄幻</span></li><li><span class="no">04</span><span class="nm">斗罗大陆</span><span class="ld"></span><span class="pg" style="color:#c9a86a">东方玄幻</span></li><li><span class="no">05</span><span class="nm">帝霸</span><span class="ld"></span><span class="pg" style="color:#c9a86a">东方玄幻</span></li><li><span class="no">06</span><span class="nm">武炼巅峰</span><span class="ld"></span><span class="pg" style="color:#c9a86a">东方玄幻</span></li><li><span class="no">07</span><span class="nm">圣墟</span><span class="ld"></span><span class="pg" style="color:#c9a86a">东方玄幻</span></li><li><span class="no">08</span><span class="nm">凡人修仙传</span><span class="ld"></span><span class="pg" style="color:#9fbf8f">仙侠修真</span></li><li><span class="no">09</span><span class="nm">仙逆</span><span class="ld"></span><span class="pg" style="color:#9fbf8f">仙侠修真</span></li><li><span class="no">10</span><span class="nm">剑来</span><span class="ld"></span><span class="pg" style="color:#9fbf8f">仙侠修真</span></li><li><span class="no">11</span><span class="nm">蛊真人</span><span class="ld"></span><span class="pg" style="color:#9fbf8f">仙侠修真</span></li><li><span class="no">12</span><span class="nm">玄鉴仙族</span><span class="ld"></span><span class="pg" style="color:#9fbf8f">仙侠修真</span></li><li><span class="no">13</span><span class="nm">全职高手</span><span class="ld"></span><span class="pg" style="color:#8ab4c8">都市现代</span></li><li><span class="no">14</span><span class="nm">重生之都市修仙</span><span class="ld"></span><span class="pg" style="color:#8ab4c8">都市现代</span></li><li><span class="no">15</span><span class="nm">龙族</span><span class="ld"></span><span class="pg" style="color:#8ab4c8">都市现代</span></li><li><span class="no">16</span><span class="nm">全职法师</span><span class="ld"></span><span class="pg" style="color:#8ab4c8">都市现代</span></li><li><span class="no">17</span><span class="nm">开局地摊卖大力</span><span class="ld"></span><span class="pg" style="color:#8ab4c8">都市现代</span></li><li><span class="no">18</span><span class="nm">我在精神病院学斩神</span><span class="ld"></span><span class="pg" style="color:#8ab4c8">都市现代</span></li><li><span class="no">19</span><span class="nm">道诡异仙</span><span class="ld"></span><span class="pg" style="color:#b7a8e8">诡秘无限</span></li><li><span class="no">20</span><span class="nm">轮回乐园</span><span class="ld"></span><span class="pg" style="color:#b7a8e8">诡秘无限</span></li><li><span class="no">21</span><span class="nm">神秘复苏</span><span class="ld"></span><span class="pg" style="color:#b7a8e8">诡秘无限</span></li><li><span class="no">22</span><span class="nm">诡秘之主</span><span class="ld"></span><span class="pg" style="color:#b7a8e8">诡秘无限</span></li><li><span class="no">23</span><span class="nm">全球冰封</span><span class="ld"></span><span class="pg" style="color:#7fb8d8">末世寒潮</span></li><li><span class="no">24</span><span class="nm">吞噬星空</span><span class="ld"></span><span class="pg" style="color:#6fc2b4">科幻星海</span></li><li><span class="no">25</span><span class="nm">超神学院</span><span class="ld"></span><span class="pg" style="color:#6fc2b4">科幻星海</span></li><li><span class="no">26</span><span class="nm">黎明之剑</span><span class="ld"></span><span class="pg" style="color:#d8a87f">西幻魔导</span></li></ul>
+
+    <div class="special-sec">
+      <div class="sp-block" style="--sc:#c8c8c8">
+        <span class="sp-no">叁</span>
+        <div class="sp-body">
+          <h3>现实世界</h3>
+          <p>真实地球 · 真实开放世界——从地球诞生至今的全部真实世界史，一切按现实发生。任选时代，以普通人身份活一段人生。</p>
+          <a href="studio.html?genre=earth&v=1.6.9">进入地球 →</a>
+        </div>
+      </div>
+      <div class="sp-block" style="--sc:#e0a84c">
+        <span class="sp-no">肆</span>
+        <div class="sp-body">
+          <h3>自由世界</h3>
+          <p>纯开放世界 · 全自定义——世界宪法、法则、势力、尺度全部你说了算，系统不加限；唯一的规则是你亲手写下的宪法。</p>
+          <a href="studio.html?genre=freeworld&v=1.6.9">进入自由世界 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">雲境 · 万象入云 — 每一步，都是新的故事。</footer>
+</div>
+<link rel="stylesheet" href="css/xiaoyun-buddy.css"><script src="js/worldbook-seeds.js"></script><script src="js/world-book.js"></script><script src="js/xiaoyun-ops.js"></script><script src="js/xiaoyun-buddy.js"></script><link rel="stylesheet" href="css/lobby-switcher.css"><script src="js/lobby-switcher.js"></script>
+</body></html>

@@ -1,0 +1,74 @@
+/* 小云伙伴 · 大厅唯一交互角色（自包含，随版式注入） */
+.xy-buddy{position:fixed;right:26px;bottom:26px;z-index:9990;font-family:'Noto Sans SC','PingFang SC',sans-serif}
+.xy-orb{position:relative;width:96px;height:120px;cursor:pointer;transition:transform .3s;transform-origin:bottom center}
+.xy-orb:hover{transform:translateY(-6px) scale(1.04)}
+.xy-orb img{height:100%;width:auto;filter:drop-shadow(0 10px 24px rgba(10,10,30,.45));animation:xyFloat 3.2s ease-in-out infinite}
+@keyframes xyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.xy-tip{position:absolute;right:104px;top:8px;white-space:nowrap;background:#fff;color:#4a3f5c;font-size:13px;font-weight:600;
+  padding:9px 14px;border-radius:14px 14px 3px 14px;box-shadow:0 8px 22px rgba(20,15,50,.25);opacity:0;transform:translateX(6px);transition:.35s;pointer-events:none}
+.xy-tip.on{opacity:1;transform:none}
+.xy-tip::after{content:"";position:absolute;right:-5px;top:14px;border:5px solid transparent;border-left-color:#fff;border-top-color:#fff}
+/* 开发模式：造物工坊 */
+.xy-dev{position:fixed;inset:0;z-index:9995;background:rgba(8,7,20,.62);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif}
+.xy-dev.on{display:flex}
+.xy-dev-box{width:min(660px,92vw);max-height:88vh;overflow-y:auto;background:linear-gradient(170deg,rgba(30,26,54,.98),rgba(18,16,34,.99));
+  border:1px solid rgba(200,180,255,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.12);color:#efedfa;padding:22px 24px}
+.xy-dev h3{display:flex;align-items:center;gap:10px;font-size:17px;margin:0 0 4px;letter-spacing:.06em}
+.xy-dev h3 .x{margin-left:auto;cursor:pointer;color:#9a94c0;font-size:20px;padding:0 4px}
+.xy-dev h3 .x:hover{color:#fff}
+.xy-dev .sub{font-size:11px;color:#9a94c0;letter-spacing:.12em;margin-bottom:14px}
+.xy-dev fieldset{border:1px solid rgba(170,160,255,.22);border-radius:13px;padding:12px 14px;margin-bottom:13px}
+.xy-dev legend{font-size:12px;color:#cfc8f0;padding:0 8px;letter-spacing:.14em}
+.xy-dev .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.xy-dev select,.xy-dev input,.xy-dev textarea{background:rgba(255,255,255,.07);border:1px solid rgba(170,160,255,.3);border-radius:10px;
+  color:#fff;font-size:13px;padding:8px 11px;outline:none;font-family:inherit;width:100%;box-sizing:border-box}
+.xy-dev select{width:auto;flex:1}
+.xy-dev .row input{flex:1;min-width:150px}
+.xy-dev textarea{min-height:74px;resize:vertical;line-height:1.7}
+.xy-dev .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.xy-dev .chip{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.3);border-radius:999px;padding:4px 11px;cursor:pointer}
+.xy-dev .chip:hover{background:rgba(140,130,255,.3);color:#fff}
+.xy-dev .go{width:100%;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;
+  background:linear-gradient(120deg,#7e8cff,#b78cff,#ff8cc8);background-size:200% 100%;transition:.3s;letter-spacing:.1em}
+.xy-dev .go:hover{background-position:100% 0}
+.xy-dev .go:disabled{opacity:.5;cursor:wait}
+.xy-dev .status{font-size:12px;color:#9fe0c0;margin-top:9px;min-height:17px}
+.xy-dev .status.err{color:#ff9aa8}
+.xy-dev .prev{margin-top:12px;border:1px solid rgba(170,160,255,.3);border-radius:13px;overflow:hidden;display:none}
+.xy-dev .prev.on{display:block}
+.xy-dev .prev iframe{width:100%;height:320px;border:none;background:#fff;display:block}
+.xy-dev .prev .bar{display:flex;gap:8px;padding:9px 11px;background:rgba(140,130,255,.12);border-bottom:1px solid rgba(170,160,255,.22)}
+.xy-dev .prev .bar b{font-size:12px;align-self:center;margin-right:auto}
+.xy-dev .pbtn{font-size:12px;font-weight:600;color:#e6e2ff;background:rgba(140,130,255,.22);border:1px solid rgba(170,160,255,.4);border-radius:9px;padding:7px 13px;cursor:pointer}
+.xy-dev .pbtn:hover{background:rgba(140,130,255,.42)}
+.xy-dev .installed{list-style:none;margin:6px 0 0;padding:0}
+.xy-dev .installed li{display:flex;align-items:center;gap:9px;font-size:13px;padding:8px 10px;border-bottom:1px solid rgba(170,160,255,.14)}
+.xy-dev .installed li b{flex:1}
+.xy-dev .installed .pbtn{padding:5px 11px}
+.xy-dev .hint{font-size:11px;color:#8a84b0;line-height:1.8;margin-top:8px}
+
+.xy-panel{position:absolute;right:0;bottom:132px;width:340px;max-height:70vh;display:flex;flex-direction:column;
+  background:linear-gradient(170deg,rgba(28,24,48,.96),rgba(18,16,34,.97));border:1px solid rgba(200,180,255,.28);
+  border-radius:20px;box-shadow:0 24px 60px rgba(5,5,20,.6),inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden;
+  opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;transition:.32s;color:#efedfa}
+.xy-panel.on{opacity:1;transform:none;pointer-events:auto}
+.xy-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(90deg,rgba(126,140,255,.22),rgba(255,140,190,.14));border-bottom:1px solid rgba(200,180,255,.18)}
+.xy-head img{width:34px;height:34px;border-radius:50%;object-fit:cover;object-position:top;background:#fff}
+.xy-head b{font-size:15px;letter-spacing:.06em}
+.xy-mood{margin-left:auto;font-size:11px;color:#cfc8f0;background:rgba(150,140,255,.18);padding:3px 10px;border-radius:999px}
+.xy-chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:130px;max-height:250px}
+.xy-msg{max-width:86%;font-size:13px;line-height:1.7;padding:9px 13px;border-radius:14px}
+.xy-msg.bot{align-self:flex-start;background:rgba(130,120,220,.2);border:1px solid rgba(170,160,255,.22);border-bottom-left-radius:4px}
+.xy-msg.me{align-self:flex-end;background:linear-gradient(120deg,#7e8cff,#b78cff);border-bottom-right-radius:4px;color:#fff}
+.xy-quick{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 14px 10px}
+.xy-q{font-size:12px;font-weight:600;color:#e6e2ff;background:rgba(140,130,255,.14);border:1px solid rgba(170,160,255,.3);
+  border-radius:11px;padding:8px 6px;cursor:pointer;text-align:center;transition:.2s}
+.xy-q:hover{background:rgba(140,130,255,.32);transform:translateY(-1px)}
+.xy-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(200,180,255,.16)}
+.xy-form input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(170,160,255,.3);border-radius:11px;color:#fff;font-size:13px;padding:9px 12px;outline:none}
+.xy-form input::placeholder{color:#9a94c0}
+.xy-form button{background:linear-gradient(120deg,#7e8cff,#b78cff);border:none;border-radius:11px;color:#fff;font-weight:700;font-size:13px;padding:0 16px;cursor:pointer}
+.xy-forms{display:flex;gap:6px;padding:0 14px 13px;flex-wrap:wrap}
+.xy-f{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.28);background:transparent;border-radius:999px;padding:4px 11px;cursor:pointer;transition:.2s}
+.xy-f.on,.xy-f:hover{color:#fff;background:rgba(140,130,255,.35)}
+@media(max-width:640px){.xy-panel{width:calc(100vw - 40px)}.xy-orb{width:78px;height:98px}}

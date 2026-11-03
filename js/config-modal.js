@@ -2760,7 +2760,9 @@ const ConfigModal = {
     if (!IO) { done(); return this.mmSay("预设导入模块未加载", "error"); }
     IO.importFile(f).then((info) => {
       const rx = info && info.regexes ? `，配套正则 ${info.regexes} 条已一并装载` : "";
-      this.mmSay(`✅ 已导入「${info.name}」：${info.blocks} 块 / ${info.chars} 字${rx}。旧预设的逐条开关已清空，可重新逐条调整。`, "success");
+      const ck = info && info.check && info.check.warns && info.check.warns.length
+        ? `\n⚠ 适配自检：\n· ` + info.check.warns.join("\n· ") + "\n（引擎宏适配层已兜底，以上为预防性提示）" : "\n✓ 适配自检通过：宏零泄漏、顺序完整，可放心用。";
+      this.mmSay(`✅ 已导入「${info.name}」：${info.blocks} 块 / ${info.chars} 字${rx}。旧预设的逐条开关已清空，可重新逐条调整。${ck}`, "success");
       this._mmOpenAll = false;
       this.renderMMSection();
       done();

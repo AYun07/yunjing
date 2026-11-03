@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>云境 · 概念大厅</title>
+<link rel="stylesheet" href="css/fonts-local.css?v=3.79.0">
+<style>@font-face{font-family:'kai';src:local('LXGW WenKai');} *{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'kai','LXGW WenKai','Source Han Serif SC','Noto Serif SC',serif;background:#15131a;color:#eee}
+img{display:block}.tag{position:fixed;top:14px;left:16px;z-index:99;font:12px/1.4 system-ui;color:#fff8;background:#0008;padding:6px 10px;border-radius:8px;border:1px solid #fff2}
+a{text-decoration:none;color:inherit}
+</style>
+<style>
+body{background:#0f1115;color:#dfe3ea}
+.app{display:flex;min-height:100vh}
+.side{position:fixed;width:248px;height:100vh;overflow:auto;background:linear-gradient(180deg,#171b22,#11141a);border-right:1px solid #ffffff14;padding:26px 16px}
+.side .logo{font-size:30px;letter-spacing:.2em;color:#fff;margin-bottom:4px}
+.side .tag2{font-size:12px;color:#7f8aa0;letter-spacing:.2em;margin-bottom:24px}
+.nv{display:block;width:100%;text-align:left;background:none;border:0;color:#aeb6c6;font:15px/1 'kai',serif;padding:11px 14px;border-radius:10px;cursor:pointer;margin-bottom:4px;font-family:inherit}
+.nv:hover{background:#ffffff0d;color:#fff}
+.nv.on{background:linear-gradient(90deg,#2a3340,#1c222c);color:#fff;border-left:3px solid #7fd6c8}
+.main{margin-left:248px;flex:1;padding:6vh 5vw}
+.view{display:none}.view.on{display:block;animation:fade .3s}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+.vtitle{font-size:34px;letter-spacing:.08em;margin-bottom:4vh;display:flex;align-items:center;gap:14px}
+.vtitle span{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:28px;color:#fff;background:var(--h)}
+.home-hero{display:flex;gap:40px;align-items:center;margin-bottom:5vh}
+.home-hero img{width:200px;filter:drop-shadow(0 16px 40px #000a)}
+.home-hero h2{font-size:42px;letter-spacing:.1em}
+.home-hero p{margin-top:14px;color:#9aa3b5;max-width:440px;line-height:1.7}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.wcell{display:flex;flex-direction:column;gap:8px;padding:20px;background:#ffffff08;border:1px solid #ffffff10;border-radius:16px;transition:.2s}
+.wcell:hover{transform:translateY(-4px);border-color:var(--h);background:#ffffff0f}
+.wcell .wg{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;color:#fff;background:var(--h)}
+.wcell .wn{font-size:19px;color:#fff}
+.wcell .wd{font-size:13px;color:#9aa3b5;line-height:1.5}
+.help{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px}
+.help .hc{background:#ffffff08;border:1px solid #ffffff10;border-radius:16px;padding:22px}
+.help h4{color:#7fd6c8;margin-bottom:12px;font-size:18px}
+.help li{color:#aeb6c6;line-height:1.8;margin-left:18px}
+</style><body class="page-index">
+<div class="tag">概念 B · 侧栏导航式</div>
+<div class="app">
+  <aside class="side">
+    <div class="logo">云境</div><div class="tag2">万象入云 · 一念一世界</div>
+    <button class="nv" data-v="home">⌂ 首页</button>
+<button class="nv" data-v="ws">✦ 五大工坊</button>
+<button class="nv" data-v="g-玄">玄 东方玄幻</button>
+<button class="nv" data-v="g-仙">仙 仙侠修真</button>
+<button class="nv" data-v="g-都">都 都市现代</button>
+<button class="nv" data-v="g-幽">幽 诡秘无限</button>
+<button class="nv" data-v="g-冰">冰 末世寒潮</button>
+<button class="nv" data-v="g-星">星 科幻星海</button>
+<button class="nv" data-v="g-魔">魔 西幻魔导</button>
+<button class="nv" data-v="g-寰">寰 现实寰宇</button>
+<button class="nv" data-v="g-凿">凿 无界创世</button>
+<button class="nv" data-v="help">? 初来乍到</button>
+  </aside>
+  <main class="main">
+    <div class="view on" id="v-home">
+      <div class="home-hero"><img src="assets/xiaoyun-chibi-luo.png?v=3.59.0" alt="小云">
+        <div><h2>你不是读者<br>你是主角</h2><p>五大工坊落笔成书，28 界踏入原著。从左侧选择，开启你的世界。</p></div>
+      </div>
+      <div class="wgrid"><a class="ws" href="studio.html?genre=mystery&v=1.6.9" style="--h:#8ab4c8"><span class="g">悬</span><span class="n">悬疑推理</span><span class="d">迷雾重重，抽丝剥茧，每一处细节皆是证词</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=scifi&v=1.6.9" style="--h:#6fc2b4"><span class="g">科</span><span class="n">科幻未来</span><span class="d">星辰为幕，文明作注，写尽想象的边界</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=wuxia&v=1.6.9" style="--h:#9fbf8f"><span class="g">侠</span><span class="n">武侠仙侠</span><span class="d">江湖夜雨，快意恩仇，一剑光寒十九州</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=cthulhu&v=1.6.9" style="--h:#b7a8e8"><span class="g">异</span><span class="n">克苏鲁恐怖</span><span class="d">不可名状之物低语，理智在真相前碎裂</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=free&v=1.6.9" style="--h:#e0a84c"><span class="g">笔</span><span class="n">自由创作</span><span class="d">不设藩篱，任意题材，随心落笔成书</span><span class="e">入坊 →</span></a></div>
+    </div>
+    <div class="view" id="v-ws"><h2 class="vtitle">✦ 五大工坊</h2><div class="wgrid"><a class="ws" href="studio.html?genre=mystery&v=1.6.9" style="--h:#8ab4c8"><span class="g">悬</span><span class="n">悬疑推理</span><span class="d">迷雾重重，抽丝剥茧，每一处细节皆是证词</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=scifi&v=1.6.9" style="--h:#6fc2b4"><span class="g">科</span><span class="n">科幻未来</span><span class="d">星辰为幕，文明作注，写尽想象的边界</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=wuxia&v=1.6.9" style="--h:#9fbf8f"><span class="g">侠</span><span class="n">武侠仙侠</span><span class="d">江湖夜雨，快意恩仇，一剑光寒十九州</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=cthulhu&v=1.6.9" style="--h:#b7a8e8"><span class="g">异</span><span class="n">克苏鲁恐怖</span><span class="d">不可名状之物低语，理智在真相前碎裂</span><span class="e">入坊 →</span></a>
+<a class="ws" href="studio.html?genre=free&v=1.6.9" style="--h:#e0a84c"><span class="g">笔</span><span class="n">自由创作</span><span class="d">不设藩篱，任意题材，随心落笔成书</span><span class="e">入坊 →</span></a></div></div>
+    <div class="view" id="v-g-玄"><h2 class="vtitle" style="--h:#c9a86a"><span>玄</span>东方玄幻</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=shrouding&v=1.6.9" style="--h:#c9a86a"><span class="wg">遮</span><span class="wn">遮天</span><span class="wd">九龙拉棺之后再入北斗：凡人之躯，行万古求道之路</span></a>
+<a class="wcell" href="studio.html?genre=doupocangqiong&v=1.6.9" style="--h:#c9a86a"><span class="wg">斗</span><span class="wn">斗破苍穹</span><span class="wd">替代萧炎立下三年之约：戒中药老、异火之途与斗帝之路，皆由你亲历</span></a>
+<a class="wcell" href="studio.html?genre=wanmeishijie&v=1.6.9" style="--h:#c9a86a"><span class="wg">完</span><span class="wn">完美世界</span><span class="wd">替代石昊自石村而出：至尊骨被夺的少年就是你，一路打到万古之巅独断万古</span></a>
+<a class="wcell" href="studio.html?genre=douluodalu&v=1.6.9" style="--h:#c9a86a"><span class="wg">罗</span><span class="wn">斗罗大陆</span><span class="wd">替代唐三觉醒双生武魂：史莱克七怪、海神九考与嘉陵关决战，皆由你亲历</span></a>
+<a class="wcell" href="studio.html?genre=dibao&v=1.6.9" style="--h:#c9a86a"><span class="wg">帝</span><span class="wn">帝霸</span><span class="wd">踏入万古棋局的时代：命宫十二重与真命之路，大教禁区之间活出你自己的万古</span></a>
+<a class="wcell" href="studio.html?genre=wulianfengdian&v=1.6.9" style="--h:#c9a86a"><span class="wg">武</span><span class="wn">武炼巅峰</span><span class="wd">从淬体到开天的十六境长征：递出你的第一封战书，挑战台上无父子</span></a>
+<a class="wcell" href="studio.html?genre=shengxu&v=1.6.9" style="--h:#c9a86a"><span class="wg">墟</span><span class="wn">圣墟</span><span class="wd">大劫之后灵气复苏，一部呼吸法一门神通，山海经的神话睁开了眼</span></a></div></div>
+<div class="view" id="v-g-仙"><h2 class="vtitle" style="--h:#6fc9b0"><span>仙</span>仙侠修真</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=fanrenxiuxian&v=1.6.9" style="--h:#6fc9b0"><span class="wg">凡</span><span class="wn">凡人修仙传</span><span class="wd">青衫修士的凡人流长跑：炼气十三层数着走，掌天瓶催熟灵药</span></a>
+<a class="wcell" href="studio.html?genre=xianni&v=1.6.9" style="--h:#6fc9b0"><span class="wg">逆</span><span class="wn">仙逆</span><span class="wd">顺为凡，逆则仙：平庸少年得天逆珠，从赵国山村的冷眼一路杀到踏天之巅</span></a>
+<a class="wcell" href="studio.html?genre=jianlai&v=1.6.9" style="--h:#6fc9b0"><span class="wg">剑</span><span class="wn">剑来</span><span class="wd">骊珠洞天坠落人间：泥瓶巷的草鞋少年、齐先生的三问与摔碗酒</span></a>
+<a class="wcell" href="studio.html?genre=guzhenren&v=1.6.9" style="--h:#6fc9b0"><span class="wg">蛊</span><span class="wn">蛊真人</span><span class="wd">五百年魔道大能重生回青茅山古月家族——这一世步步算计</span></a>
+<a class="wcell" href="studio.html?genre=xuanjianxianzu&v=1.6.9" style="--h:#6fc9b0"><span class="wg">玄</span><span class="wn">玄鉴仙族</span><span class="wd">修仙家族经营：灵田、炼丹、坊市、护卫——家族兴衰与个人道途同行</span></a></div></div>
+<div class="view" id="v-g-都"><h2 class="vtitle" style="--h:#5fc9d8"><span>都</span>都市现代</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=quanzhigaoshou&v=1.6.9" style="--h:#5fc9d8"><span class="wg">全</span><span class="wn">全职高手</span><span class="wd">替代叶修踏上荣耀之巅：被逼退役的教科书就是你，从网吧夜班重返总决赛</span></a>
+<a class="wcell" href="studio.html?genre=zhongshengdushi&v=1.6.9" style="--h:#5fc9d8"><span class="wg">重</span><span class="wn">重生之都市修仙</span><span class="wd">替代陈凡重回十七岁：五百年北玄仙尊的记忆，从高三晚自习开始的都市问仙路</span></a>
+<a class="wcell" href="studio.html?genre=longzu&v=1.6.9" style="--h:#5fc9d8"><span class="wg">龙</span><span class="wn">龙族</span><span class="wd">一封烫金邀请函寄到你手里：卡塞尔学院的血统测试、言灵觉醒与屠龙者的黎明</span></a>
+<a class="wcell" href="studio.html?genre=quanzhifashi&v=1.6.9" style="--h:#5fc9d8"><span class="wg">法</span><span class="wn">全职法师</span><span class="wd">魔法取代科学的现代都市：觉醒考核亮起你的元素，城墙之外魔物环伺</span></a>
+<a class="wcell" href="studio.html?genre=ditandali&v=1.6.9" style="--h:#5fc9d8"><span class="wg">摊</span><span class="wn">开局地摊卖大力</span><span class="wd">灵气复苏二十年，你在夜市支起小摊：破布下压着最强地摊系统</span></a>
+<a class="wcell" href="studio.html?genre=zhanhen&v=1.6.9" style="--h:#5fc9d8"><span class="wg">斩</span><span class="wn">我在精神病院学斩神</span><span class="wd">迷雾笼罩的都市：守夜人在暗处巡逻，阳光精神病院里住着诸神</span></a></div></div>
+<div class="view" id="v-g-幽"><h2 class="vtitle" style="--h:#c9584a"><span>幽</span>诡秘无限</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=daoguiyixian&v=1.6.9" style="--h:#c9584a"><span class="wg">诡</span><span class="wn">道诡异仙</span><span class="wd">替代李火旺踏入双世界：白塔医院的消毒水与大傩清风观的苦药，哪个才是真的</span></a>
+<a class="wcell" href="studio.html?genre=lunhuileyuan&v=1.6.9" style="--h:#c9584a"><span class="wg">轮</span><span class="wn">轮回乐园</span><span class="wd">濒死之际契约递到面前：乐园把你投入一个个衍生世界执行任务</span></a>
+<a class="wcell" href="studio.html?genre=shenmifusu&v=1.6.9" style="--h:#c9584a"><span class="wg">复</span><span class="wn">神秘复苏</span><span class="wd">深夜的敲门声、镜子里慢半拍的倒影——厉鬼杀人有规律，剥清它</span></a>
+<a class="wcell" href="studio.html?genre=guimi&v=1.6.9" style="--h:#c9584a"><span class="wg">雾</span><span class="wn">诡秘之主</span><span class="wd">灰雾之上的愚者先生、二十二条途径的序列魔药——每一步晋升都要付代价</span></a></div></div>
+<div class="view" id="v-g-冰"><h2 class="vtitle" style="--h:#5fb8d8"><span>冰</span>末世寒潮</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=quanqiubingfeng&v=1.6.9" style="--h:#5fb8d8"><span class="wg">封</span><span class="wn">全球冰封</span><span class="wd">重生回寒潮降临前三十天：空间异能囤空仓库，打造末日安全屋</span></a></div></div>
+<div class="view" id="v-g-星"><h2 class="vtitle" style="--h:#6f9fe8"><span>星</span>科幻星海</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=swallowedstar&v=1.6.9" style="--h:#6f9fe8"><span class="wg">吞</span><span class="wn">吞噬星空</span><span class="wd">自定义身份踏入原著世界：基地市与星海之间，活出你自己的传奇</span></a>
+<a class="wcell" href="studio.html?genre=chaoshenxueyuan&v=1.6.9" style="--h:#6f9fe8"><span class="wg">神</span><span class="wn">超神学院</span><span class="wd">诸神注视下的地球：饕餮舰队压境，雄兵连集结，超级基因觉醒</span></a></div></div>
+<div class="view" id="v-g-魔"><h2 class="vtitle" style="--h:#d8a04c"><span>魔</span>西幻魔导</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=limingzhijian&v=1.6.9" style="--h:#d8a04c"><span class="wg">黎</span><span class="wn">黎明之剑</span><span class="wd">魔潮倒计时的洛伦大陆：高文揭棺而起掀动魔导革命</span></a></div></div>
+<div class="view" id="v-g-寰"><h2 class="vtitle" style="--h:#5a9e7f"><span>寰</span>现实寰宇</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=earth&v=1.6.9" style="--h:#5a9e7f"><span class="wg">地</span><span class="wn">地球开放世界</span><span class="wd">无剧情·全现实：任选时代的真实地球，以普通人身份活一段人生</span></a></div></div>
+<div class="view" id="v-g-凿"><h2 class="vtitle" style="--h:#b98fd8"><span>凿</span>无界创世</h2><div class="wgrid"><a class="wcell" href="studio.html?genre=freeworld&v=1.6.9" style="--h:#b98fd8"><span class="wg">凿</span><span class="wn">自由世界</span><span class="wd">全自由·防八股：什么世界、什么法则、什么势力全部你说了算</span></a></div></div>
+    <div class="view" id="v-help"><h2 class="vtitle">? 初来乍到</h2>
+      <div class="help"><div class="hc"><h4>使用指引</h4><ul><li>创作工坊：完成故事设定，逐章共创</li><li>扮演世界：捏身份，踏入原著漫游</li><li>首次请配置 AI 接口</li><li>导出 TXT / Markdown 存稿</li></ul></div>
+      <div class="hc"><h4>框架特性</h4><ul><li>配置驱动一个世界</li><li>设定台 60+ 选项</li><li>原著铁律 + 身份卡</li><li>变量系统全程追踪</li></ul></div></div>
+    </div>
+  </main>
+</div>
+<script>
+document.querySelectorAll('.nv').forEach(function(b){b.onclick=function(){document.querySelectorAll('.nv').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('v-'+b.dataset.v).classList.add('on')}});
+</script>

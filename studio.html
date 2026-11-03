@@ -37,7 +37,11 @@
     <!-- v3.55.20 玩家身份(穿越者/土著)与原著主角关系(同伴/敌对/陌路) -->
     <script src="js/story-identity.js?v=3.68.0"></script>
     <!-- v3.55.20 本界资料库：每界一份 lore 库，可增补/从故事抽取/注入主笔 -->
-    <script type="text/yj-lazy" data-src="js/world-book.js?v=3.68.0" data-yj-group="batch"></script>
+    <!-- v3.84.0 世界书种子库外置（29 界 418 条，需先于 world-book.js 载入） -->
+    <script type="text/yj-lazy" data-src="js/worldbook-seeds.js?v=3.84.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-book.js?v=3.84.0" data-yj-group="batch"></script>
+    <!-- v3.84.0 小云技能中枢：云境有的小云都会做（伙伴组件挂 body 尾） -->
+    <script type="text/yj-lazy" data-src="js/xiaoyun-ops.js?v=3.84.0" data-yj-group="batch"></script>
     <script type="text/yj-lazy" data-src="js/canon-timeline.js?v=3.55.29" data-yj-group="batch"></script>
     <script defer src="js/chat-virtualizer.js?v=3.55.29"></script>
     <!-- v3.55.3 流畅模式：非 defer 抢在首帧前自举，低配机不先渲染重特效再降级 -->
@@ -958,6 +962,9 @@ window.Snapshots = Snapshots;
         });
     }
 </script>
+<!-- v3.84.0 小云伙伴：大厅与创作室通用，全技能可用 -->
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=3.84.0">
+<script src="js/xiaoyun-buddy.js?v=3.84.0"></script>
 </body>
 
 </html>

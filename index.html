@@ -13,12 +13,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="云境">
-    <meta name="theme-color" content="#1a1512">
+    <meta name="theme-color" content="#13111e">
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=3.55.29"></script>
-    <title>云境 v3.80.0 · AI创作与开放世界扮演</title>
+    <title>云境 v3.84.0 · AI创作与开放世界扮演</title>
     <style>
         /* v3.75.0 大厅全面重设计「纸本」：样式整体迁移至 css/lobby-v4.css，此处仅留变量兜底 */
         :root {
@@ -35,11 +35,18 @@
     <link rel="stylesheet" href="css/lobby-b-vogue.css?v=3.80.1" id="lobbyB" disabled>
     <link rel="stylesheet" href="css/lobby-c-mint.css?v=3.80.1" id="lobbyC" disabled>
     <link rel="stylesheet" href="css/lobby-d-editorial.css?v=3.80.1" id="lobbyD" disabled>
+    <!-- v3.82.0 新增两套：E 千字云海（超大字+跑马灯）/ F 云格Bento -->
+    <link rel="stylesheet" href="css/lobby-e-mega.css?v=3.82.0" id="lobbyE" disabled>
+    <link rel="stylesheet" href="css/lobby-f-bento.css?v=3.82.0" id="lobbyF" disabled>
+    <!-- v3.83.0 概念三套：G 暗夜液态玻璃 / H 新中式宣纸 / I 二次元场景沉浸 -->
+    <link rel="stylesheet" href="css/lobby-g-glass.css?v=3.84.0" id="lobbyG" disabled>
+    <link rel="stylesheet" href="css/lobby-h-paper.css?v=3.84.0" id="lobbyH" disabled>
+    <link rel="stylesheet" href="css/lobby-i-anime.css?v=3.84.0" id="lobbyI" disabled>
     <script>
       (function () {
         try {
           var l = (new URLSearchParams(location.search).get('lobby') || '').toLowerCase();
-          var map = { a: 'lobbyA', b: 'lobbyB', c: 'lobbyC', d: 'lobbyD' };
+          var map = { a: 'lobbyA', b: 'lobbyB', c: 'lobbyC', d: 'lobbyD', e: 'lobbyE', f: 'lobbyF', g: 'lobbyG', h: 'lobbyH', i: 'lobbyI' };
           if (map[l]) {
             var el = document.getElementById(map[l]);
             if (el) { el.disabled = false; el.media = 'all'; }
@@ -47,14 +54,43 @@
         } catch (e) {}
       })();
     </script>
-    <!-- v3.78.0「晨青·楷变」：楷体艺术字标题 + 波浪错落工坊 + 卡化沉浸段，整份替换即回滚 -->
-    <link rel="stylesheet" href="css/lobby-v4.css?v=3.80.0">
+    <!-- v3.83.1 小云主题时段切换：默认云夜，?skin=day 切云昼 -->
+    <script>
+      function applySkin() {
+        try {
+          var s = (new URLSearchParams(location.search).get('skin') || 'night').toLowerCase();
+          if (s !== 'day') s = 'night';
+          document.body.dataset.skin = s;
+          var btns = Array.prototype.slice.call(document.querySelectorAll('.skin-toggle button'));
+          btns.forEach(function (b) {
+            b.classList.toggle('on', b.dataset.skin === s);
+            b.addEventListener('click', function () {
+              document.body.dataset.skin = b.dataset.skin;
+              btns.forEach(function (x) { x.classList.toggle('on', x === b); });
+              var u = new URL(location.href);
+              u.searchParams.set('skin', b.dataset.skin);
+              history.replaceState(null, '', u);
+            });
+          });
+        } catch (e) {}
+      }
+      if (document.body) applySkin();
+      else document.addEventListener('DOMContentLoaded', applySkin);
+    </script>
+    <!-- v3.78.0「晨青·楷变」底座（保留作回滚底，默认禁用；以下 v3.83.1 小云主题为唯一活动皮肤） -->
+    <link rel="stylesheet" href="css/lobby-v4.css?v=3.82.0" disabled>
+    <!-- v3.83.1 小云主题大厅：配色自小云 12 形象立绘实提取，云夜/云昼双时段，卡片逐张取形象柔彩 -->
+    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=3.83.2">
     <script src="js/theme-studio.js?v=3.55.29"></script>
 </head>
 
 <body class="page-index">
     <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.80.0 云境版</a>
+    <a class="ver-badge" href="changelog/" title="查看创作日志 · 独立成册">v3.84.0 云境版</a>
+    <div class="skin-toggle" role="group" aria-label="时段切换">
+        <button type="button" data-skin="night" class="on">云夜</button>
+        <button type="button" data-skin="day">云昼</button>
+    </div>
 
     <!-- 开屏 -->
     <div id="splash">
@@ -66,7 +102,7 @@
 
     <div class="container">
         <div class="masthead">
-            <img class="mh-mascot" src="assets/xiaoyun-chibi-luo.png?v=3.59.0" alt="小云">
+            <img class="mh-mascot" src="assets/xiaoyun-keai-happy.png?v=3.83.1" alt="小云">
             <h1 class="logo-kai"><span class="lk-a">云</span><span class="lk-b">境</span></h1>
             <div class="sub">万象入云 · 一念一世界</div>
             <div class="gold-divider"></div>
@@ -78,31 +114,31 @@
         <!-- 五大创作工坊 -->
         <div class="section-title">五大类型工坊</div>
         <div class="workshops">
-            <a class="workshop" href="studio.html?genre=mystery&v=1.6.9" style="--ws-hue:#8ab4c8;">
+            <a class="workshop" href="studio.html?genre=mystery&v=1.6.9" style="--ws-hue:#8e9fd8;">
                 <div class="ws-glyph">悬</div>
                 <div class="ws-name">悬疑推理</div>
                 <div class="ws-desc">迷雾重重，抽丝剥茧，每一处细节皆是证词</div>
                 <span class="ws-enter">入坊 →</span>
             </a>
-            <a class="workshop" href="studio.html?genre=scifi&v=1.6.9" style="--ws-hue:#6fc2b4;">
+            <a class="workshop" href="studio.html?genre=scifi&v=1.6.9" style="--ws-hue:#9ec6e8;">
                 <div class="ws-glyph">科</div>
                 <div class="ws-name">科幻未来</div>
                 <div class="ws-desc">星辰为幕，文明作注，写尽想象的边界</div>
                 <span class="ws-enter">入坊 →</span>
             </a>
-            <a class="workshop" href="studio.html?genre=wuxia&v=1.6.9" style="--ws-hue:#9fbf8f;">
+            <a class="workshop" href="studio.html?genre=wuxia&v=1.6.9" style="--ws-hue:#d8b878;">
                 <div class="ws-glyph">侠</div>
                 <div class="ws-name">武侠仙侠</div>
                 <div class="ws-desc">江湖夜雨，快意恩仇，一剑光寒十九州</div>
                 <span class="ws-enter">入坊 →</span>
             </a>
-            <a class="workshop" href="studio.html?genre=cthulhu&v=1.6.9" style="--ws-hue:#b7a8e8;">
+            <a class="workshop" href="studio.html?genre=cthulhu&v=1.6.9" style="--ws-hue:#4a6a86;">
                 <div class="ws-glyph">异</div>
                 <div class="ws-name">克苏鲁恐怖</div>
                 <div class="ws-desc">不可名状之物低语，理智在真相前碎裂</div>
                 <span class="ws-enter">入坊 →</span>
             </a>
-            <a class="workshop" href="studio.html?genre=free&v=1.6.9" style="--ws-hue:#e0a84c;">
+            <a class="workshop" href="studio.html?genre=free&v=1.6.9" style="--ws-hue:#e3a9c2;">
                 <div class="ws-glyph">笔</div>
                 <div class="ws-name">自由创作</div>
                 <div class="ws-desc">不设藩篱，任意题材，随心落笔成书</div>
@@ -630,6 +666,13 @@
     document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(d)});
   }catch(e){}
 })();
-</script></body>
+</script>
+<!-- v3.84.0 小云：大厅即全功能可用（世界书/存档/预设/正文急救/造物工坊） -->
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=3.84.0">
+<script src="js/worldbook-seeds.js?v=3.84.0"></script>
+<script src="js/world-book.js?v=3.84.0"></script>
+<script src="js/xiaoyun-ops.js?v=3.84.0"></script>
+<script src="js/xiaoyun-buddy.js?v=3.84.0"></script>
+</body>
 
 </html>

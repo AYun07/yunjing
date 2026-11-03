@@ -282,6 +282,69 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="世界书 小云 预设 功能" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.84.0</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">世界书全量 418 条 · 小云全能化 · 第三方预设适配自检</h3>
+            <p class="entry-text">三大件：①世界书种子库外置（worldbook-seeds.js，29 界 418 条）——26 个小说世界按原著公认设定逐界还原（12~16 条/界），修复 guzhenren 错装《诡秘之主》条目并归正为《蛊真人》；真实地球 30 条覆盖天文/地理/历史/文明/文化/社会/科技全维度；自由世界 14 条「让世界活过来」（众生自主/因果存续/时间流逝/五感质感等，不干扰创作）；种子标记升 v3，老档打开自动补落。②小云全能化——新增技能中枢 xiaoyun-ops.js，把世界书增删查/一键归档、预设导入还原、正则、存档槽、变量体检、正文格式修复、工坊体检等全部云境能力注册为工具；伙伴面板 8 项快捷直达；接入大模型 API 后支持 ⟦tool⟧ 工具循环（最多 2 轮），小云可自主补条目、修格式、查变量、管存档、换预设——云境有的小云都会做，云境没有的小云来造。③第三方酒馆预设导入即适配自检（空块/未知宏/代码围栏/超长块预警），引擎宏零泄漏层兜底，保证不掉格式；顺手修复造物工坊预览 iframe 从未挂载的旧 bug。</p>
+        </article>
+
+        <article class="log-entry" data-tags="大厅 版式 设计 趋势" style="--entry-hue:#3f7d6a;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.82.0</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">大厅再添两套异构版式：E「千字云海」/ F「云格Bento」</h3>
+            <p class="entry-text">调研 2025 网页设计趋势（超大字动态排版 / 跑马灯字带 / Bento 模块格 / color-mix 色彩运算）后新增两套可选版式（?lobby=e / f）。E 千字云海：暗夜极光底、超大字「云境」一实一虚错位咬合+浮动动效、副题改为全宽滚动跑马灯字带、工坊卡霓虹顶条；F 云格Bento：浅暖底、五坊改 Bento 主次格（首格 2×2 彩墨晕染）、全圆角 26px 大卡、彩色渐变字徽。修复两处关键问题：v4 基础样式 display:none 未解锁致跑马灯不显、内联 --ws-hue 为十六进制色值不能入 hsl() 致全部色相 accent 静默失效（改用 color-mix 与直引）。桌面/移动双端实测 0 报错。对照台 lobby-lab.html 增至 7 版式（现版流光 + A-F）。</p>
+        </article>
+
+        <article class="log-entry" data-tags="立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.81.4</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">全员轮廓晕圈衰减：浅底灰边清零</h3>
+            <p class="entry-text">补上最后一类浅底可见残留：AI 生图自带的「背景软阴影晕圈」——紧贴轮廓 3px 内的浅灰带（RGB 185-235 低饱和，共 18.3 万 px / 60 张），在浅色页面呈灰扑扑的脏边。处理为 alpha 衰减至 35%（保留抗锯齿核心，轮廓不破碎）。全量浅色底总览 4 张逐张复核：轮廓干净、发丝裙褶零损伤。至此立绘浅底可见残留三类（发间/腿间死灰空隙、轮廓晕圈、深灰残条）全部清零，验收流程改为深底+浅底双底对照。</p>
+        </article>
+
+        <article class="log-entry" data-tags="立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.81.3</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">浅底验收补盲：发间/腿间死灰空隙残留清零</h3>
+            <p class="entry-text">用户指出大厅小云（chibi-luo）头发脏灰、腿部有灰色竖条——根因是历次验收都用深底，而「发束间空隙被死灰填充」这类残留只在浅底可见，属验收盲区。建立浅色底验收流程后全量重查：扫描 60 张的中性/灰紫均匀实心块共 196 处，逐处放大定性——绝大多数为发丝暗面正常画法（浅灰紫 150-165，浅底不显脏，保留）；确认 20 处死灰残留空隙（RGB 88-140 均匀死色，chibi-luo×7 含腿间竖条 / chibi-gaoguai×7 / chibi-yu / face-luo / gaoguai-happy 裤脚旁 / kusa-wave 裤间 std=0 竖条 / chibi-aojiao），带半透软边共清除约 1.69 万 px。黑夹克褶皱、帽内面、运动鞋灰紫鞋面、裙面等 15 处同色邻居经放大甄别后全部保留。6 张涉及图浅底复验：残留清零、本体零损伤。</p>
+        </article>
+
+        <article class="log-entry" data-tags="立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.81.2</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">立绘全量逐张精修：60 张游离像素全检，13 处深灰残条清零</h3>
+            <p class="entry-text">对全部 60 张立绘做像素级全检：扫描每张「不贴本体的游离半透明像素块」共 90 处，逐处放大 6 倍人工定性——绝大多数为原画动作弧线组、星星闪光与发梢碎丝（全部保留），其中 13 处确认为贴在裙摆/发廓外的孤立深灰阴影残线（浅色页面呈脏边），按坐标外科手术式清除共约 1432px（keai-battle×3 / zhixing-wave×3 / gaoguai-happy×3 / kusa-happy、gaoguai-battle、face-kusa×2），处理前后对照与整图深底复验：特效、发丝、描边零损伤。</p>
+        </article>
+
+        <article class="log-entry" data-tags="立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.81.1</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">立绘像素级精修：残影清零 + 全员白毛边压暗</h3>
+            <p class="entry-text">①残影清零：keai-battle / kusa-battle 腿间地面阴影除白色核心外尚存深色半透明残迹（kusa 两腿间整片暗影），按「半透明低饱和且不过半贴描边」判定定向清除（7480+9537px），鞋袜描边抗锯齿圈与头发旁弧线动作特效完整保留；②全员去白毛边：60 张立绘轮廓外圈的半透明白晕圈（低alpha近白且贴不透明区，共 11.2 万 px）alpha 压至 1/4，深底不再泛白光；星星特效、发梢碎发、服装细节点全部核验保留。深底大图总览 4 张逐张复核无误伤。</p>
+        </article>
+
+        <article class="log-entry" data-tags="回退 立绘 修复 稳定" style="--entry-hue:#8a3b3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.81.0</span>
+                <span class="entry-date">2026-11-03</span>
+            </div>
+            <h3 class="entry-title">立绘全量回滚：撤销 v3.80 误伤，只定向清两处地面阴影</h3>
+            <p class="entry-text">v3.80 的抠图「清理」是误伤：诊断确认 60 张原图背景本就是透明的，所谓白底残留绝大多数是角色本体的白云头饰/白裙/白袜，半透雾清除与实心白块删除把白发抠成蜂窝、白裙抠成碎块、身体抠成半透明残影。本次将 60 张立绘全部回滚至清理前原图（逐张前后对照核验零缺块），随后仅对确认仅有的两处多余封闭白块——keai-battle 与 kusa-battle 腿间实心地面阴影——做定向删除（测地膨胀吃净渐变晕圈+高斯羽化软边，深浅双底验收腿部袜鞋完好），其余 58 张一字不动。</p>
+        </article>
+
         <article class="log-entry" data-tags="立绘 抠图 修复 视觉 大厅 版式 四选一" style="--entry-hue:#2e6e63;">
             <div class="entry-head">
                 <span class="entry-ver">v3.80.0</span>
