@@ -152,6 +152,30 @@ document.body.appendChild(s);
 - 已有存档：自动发送「继续创作」测试续写链路
 - 页面本身不会加载该文件，不影响正常使用
 
+## 版本归档（每一版的完整包）
+
+从 `v3.55.7` 到当前版本，每个版本都有**独立发布页 + 完整内容包**，按时间顺序排在 [Releases](https://github.com/AYun07/yunjing/releases)：
+
+| 你要什么 | 去哪里 |
+|---|---|
+| 看所有版本一览（新→旧，含日期与下载） | [VERSIONS.md](VERSIONS.md) 顶部的「版本速查」表 |
+| 下载某一版的完整内容 | `https://github.com/AYun07/yunjing/archive/refs/tags/<版本号>.zip`，例：`/archive/refs/tags/v3.87.0.zip` |
+| 看某一版改了什么 | 该版发布页，或 `https://github.com/AYun07/yunjing/compare/<上一版>...<该版>` |
+
+包是 GitHub 按标签自动生成的，**内容 = 该版本的整个工程**（`index.html` `studio.html` `js/` `css/` `assets/` `libs/` 全在里面），解压即可运行，不需要再去别处找配套文件。仓库里**不存 zip**——同一份内容存两份只会让仓库无限变大。
+
+发下一版只要一条命令（自动改版本号、对齐全部资源参数、写更新日志、写版本登记、提交打标签推送、建发布页）：
+
+```bash
+GITHUB_TOKEN=<你的 token> node scripts/release.mjs 3.88.0 "一句话标题" "第一段说明 | 第二段说明"
+```
+
+补建/修复历史发布页（幂等，可反复跑）：
+
+```bash
+GITHUB_TOKEN=<你的 token> node scripts/sync-releases.mjs
+```
+
 ## 快速开始
 
 1. **启动**：任选其一

@@ -1,6 +1,6 @@
 # 云境 · 版本总览（VERSIONS）
 
-> 每个版本都已打 **git 标签**。点击「📂 该版文件」可查看那一版的**完整文件树**（等于该版本发布时的全部源码）；点击「🔍 与上一版差异」可在 GitHub 直接对比两个版本改了什么。
+> 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
 > 共 **55** 个版本，从 `v3.55.7` 到 `v3.87.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
@@ -8,335 +8,397 @@
 
 ---
 
+## 版本速查（新→旧）
+
+| 版本 | 日期 | 完整包（zip） | 发布页 |
+|---|---|---|---|
+| **v3.87.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
+| **v3.86.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
+| **v3.85.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.85.0) |
+| **v3.84.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.84.0) |
+| **v3.82.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.82.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.82.0) |
+| **v3.81.4** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.4) |
+| **v3.81.3** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.3) |
+| **v3.81.2** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.2) |
+| **v3.81.1** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.1) |
+| **v3.81.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.0) |
+| **v3.80.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.80.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.80.0) |
+| **v3.79.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.79.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.79.0) |
+| **v3.78.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.78.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.78.0) |
+| **v3.77.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.77.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.77.0) |
+| **v3.76.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.76.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.76.0) |
+| **v3.75.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.75.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.75.0) |
+| **v3.74.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.74.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.74.0) |
+| **v3.73.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.73.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.73.0) |
+| **v3.72.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.72.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.72.0) |
+| **v3.71.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.71.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.71.0) |
+| **v3.70.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.70.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.70.0) |
+| **v3.69.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.69.0) |
+| **v3.68.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.68.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.68.0) |
+| **v3.67.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.67.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.67.0) |
+| **v3.66.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.66.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.66.0) |
+| **v3.65.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.65.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.65.0) |
+| **v3.64.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.64.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.64.0) |
+| **v3.63.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.63.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.63.0) |
+| **v3.62.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.62.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.62.0) |
+| **v3.61.1** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.61.1) |
+| **v3.61.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.61.0) |
+| **v3.60.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.60.1) |
+| **v3.60.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.60.0) |
+| **v3.59.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.59.1) |
+| **v3.59.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.59.0) |
+| **v3.58.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.58.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.58.0) |
+| **v3.57.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.57.1) |
+| **v3.57.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.57.0) |
+| **v3.56.2** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.56.2) |
+| **v3.56.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.56.1) |
+| **v3.55.30** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.30) |
+| **v3.55.29** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.29.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.29) |
+| **v3.55.28** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.28.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.28) |
+| **v3.55.23** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.23.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.23) |
+| **v3.55.22** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.22.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.22) |
+| **v3.55.21** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.21.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.21) |
+| **v3.55.19** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.19.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.19) |
+| **v3.55.18** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.18.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.18) |
+| **v3.55.17** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.17.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.17) |
+| **v3.55.12** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.12.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.12) |
+| **v3.55.11** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.11.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.11) |
+| **v3.55.10** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.10.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.10) |
+| **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
+| **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
+| **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
 ## v3.87.0 · 2026-11-03
 
 仓库瘦身 92M→41M（filter-repo 剥离 9.5MB 旧知识库整包的两个历史版本，共 18.1MB）+ 缓存版本号归一（189 处 `?v=` 从 3.55.29/3.68.0/3.72.0/3.84.0/3.86.0 五个世代统一到 3.87.0）+ 版本序列规范化（补齐 v3.85.0/v3.86.0/v3.87.0 标签与登记，本文件自此与 tag 同步）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.87.0)  [🔍 与 v3.86.0 差异](https://github.com/AYun07/yunjing/compare/v3.86.0...v3.87.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.87.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip)  [🔍 与 v3.86.0 差异](https://github.com/AYun07/yunjing/compare/v3.86.0...v3.87.0)
 
 ## v3.86.0 · 2026-11-03
 
 活世界第二轮整改：机缘涌现（按世界状态滚动候选，有代价有时限，落实入正史）/ 人物情绪·记忆·目标 / 恩怨单一真源 / 关系图有向带趋势 / 势力兴衰生命周期 / 导演冲突焦点与节拍 / AI 自创装备登记 / 伙伴立场与叛变 / 知识库补厚 / 删 9.5MB 冗余整包改懒加载
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.86.0)  [🔍 与 v3.85.0 差异](https://github.com/AYun07/yunjing/compare/v3.85.0...v3.86.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.86.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip)  [🔍 与 v3.85.0 差异](https://github.com/AYun07/yunjing/compare/v3.85.0...v3.86.0)
 
 ## v3.85.0 · 2026-11-03
 
 活世界双向桥 WorldAlive：世界状态上行注入主笔、AI 回报下行回写势力/恩怨/关系/阶段/张力，选择真正改变世界；世界时钟默认自转；恩怨账本落盘；四类串档键按存档槽隔离
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.85.0)  [🔍 与 v3.84.0 差异](https://github.com/AYun07/yunjing/compare/v3.84.0...v3.85.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.85.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip)  [🔍 与 v3.84.0 差异](https://github.com/AYun07/yunjing/compare/v3.84.0...v3.85.0)
 
 ## v3.84.0 · 2026-11-03
 
 世界书全量扩充+小云全能化：①世界书种子库外置 worldbook-seeds.js——29 界 418 条（26 个小说世界按原著公认设定还原，修复 guzhenren 错装诡秘之主条目并归正为蛊真人；earth 真实地球 30 条覆盖天文/地理/历史/文明/文化/社会/科技；freeworld 14 条「让世界活过来」；free 工坊 6 条创作锚点），种子标记升 v3 老档自动补落；②小云技能中枢 xiaoyun-ops.js——世界书增删查/一键归档、预设导入还原、正则、存档槽、变量体检、正文格式修复、工坊体检等全部云境能力注册为可调用工具；③小云伙伴升级——快捷面板 8 项直达，接入大模型 API 后支持 ⟦tool⟧ 工具循环（最多2轮），可自主补世界书条目/修格式/查变量/管存档/换预设；④第三方预设适配自检——导入即体检（空块/未知宏/代码围栏/超长块），引擎宏零泄漏层兜底，不掉格式；⑤修复造物工坊预览 iframe 从未挂载的旧 bug。
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.84.0)  [🔍 与 v3.83.1 差异](https://github.com/AYun07/yunjing/compare/v3.83.1...v3.84.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.84.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip)  [🔍 与 v3.83.1 差异](https://github.com/AYun07/yunjing/compare/v3.83.1...v3.84.0)
 
 ## v3.82.0 · 2026-11-03
 
 大厅版式 E「千字云海」(暗夜极光+超大字浮动+跑马灯字带+霓虹顶条) / F「云格Bento」(浅暖Bento主次格+彩墨晕染+彩色字徽)；修复 --ws-hue 十六进制不可入 hsl() 致色相 accent 静默失效，对照台增至 7 版式
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.82.0)  [🔍 与 v3.81.4 差异](https://github.com/AYun07/yunjing/compare/v3.81.4...v3.82.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.82.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.82.0.zip)  [🔍 与 v3.81.4 差异](https://github.com/AYun07/yunjing/compare/v3.81.4...v3.82.0)
 
 ## v3.81.4 · 2026-11-03
 
 全员轮廓晕圈衰减：贴边浅灰带(18.3万px/60张)alpha降至35%，浅底灰边清零，双底验收流程确立
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.4)  [🔍 与 v3.81.3 差异](https://github.com/AYun07/yunjing/compare/v3.81.3...v3.81.4)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.4)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.4.zip)  [🔍 与 v3.81.3 差异](https://github.com/AYun07/yunjing/compare/v3.81.3...v3.81.4)
 
 ## v3.81.3 · 2026-11-03
 
 浅底验收补盲：发间/腿间死灰空隙残留清零(20处约1.69万px,含chibi-luo腿间竖条)，发丝暗面正常画法甄别保留
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.3)  [🔍 与 v3.81.2 差异](https://github.com/AYun07/yunjing/compare/v3.81.2...v3.81.3)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.3)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.3.zip)  [🔍 与 v3.81.2 差异](https://github.com/AYun07/yunjing/compare/v3.81.2...v3.81.3)
 
 ## v3.81.2 · 2026-11-03
 
 立绘全量逐张精修：60张90处游离像素逐处定性，13处深灰残条清零(约1432px)，动作线/星星/发丝零损伤
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.2)  [🔍 与 v3.81.1 差异](https://github.com/AYun07/yunjing/compare/v3.81.1...v3.81.2)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.2)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.2.zip)  [🔍 与 v3.81.1 差异](https://github.com/AYun07/yunjing/compare/v3.81.1...v3.81.2)
 
 ## v3.81.1 · 2026-11-03
 
 立绘像素级精修：keai/kusa-battle残余半透明阴影清零+60张全员白毛边压暗(11.2万px)，特效发梢描边AA全保留
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.1)  [🔍 与 v3.81.0 差异](https://github.com/AYun07/yunjing/compare/v3.81.0...v3.81.1)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.1.zip)  [🔍 与 v3.81.0 差异](https://github.com/AYun07/yunjing/compare/v3.81.0...v3.81.1)
 
 ## v3.81.0 · 2026-11-03
 
 立绘全量回滚：撤销 v3.80 误伤清理(60张恢复原图,逐张核验零缺块)，仅定向清除 keai-battle/kusa-battle 腿间地面阴影白块(测地膨胀+羽化,深浅双底验收)，大厅四套版式对照台保留待选
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.0)  [🔍 与 v3.80.0 差异](https://github.com/AYun07/yunjing/compare/v3.80.0...v3.81.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.0.zip)  [🔍 与 v3.80.0 差异](https://github.com/AYun07/yunjing/compare/v3.80.0...v3.81.0)
 
 ## v3.80.0 · 2026-11-03
 
 小云12形态抠图残留全量根修(60余张)+大厅四套原创版式对照台(暗夜星辉/暮金画报/薄荷汽水/墨线编辑)
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.80.0)  [🔍 与 v3.79.0 差异](https://github.com/AYun07/yunjing/compare/v3.79.0...v3.80.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.80.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.80.0.zip)  [🔍 与 v3.79.0 差异](https://github.com/AYun07/yunjing/compare/v3.79.0...v3.80.0)
 
 ## v3.79.0 · 2026-11-02
 
 立绘脏阴影根修(去drop-shadow)+流光玻璃质感：三色光斑背景/渐变云境字/玻璃卡片
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.79.0)  [🔍 与 v3.78.0 差异](https://github.com/AYun07/yunjing/compare/v3.78.0...v3.79.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.79.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.79.0.zip)  [🔍 与 v3.78.0 差异](https://github.com/AYun07/yunjing/compare/v3.78.0...v3.79.0)
 
 ## v3.78.0 · 2026-11-02
 
 晨青·楷变：楷体艺术字标题(错落双色+金圆印)+工坊波浪错落+沉浸段两栏卡化+修小云白色色块
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.78.0)  [🔍 与 v3.77.0 差异](https://github.com/AYun07/yunjing/compare/v3.77.0...v3.78.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.78.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.78.0.zip)  [🔍 与 v3.77.0 差异](https://github.com/AYun07/yunjing/compare/v3.77.0...v3.78.0)
 
 ## v3.77.0 · 2026-11-02
 
 大厅重设计「晨青」：晨白+青瓷+暖金，去滤镜去做旧，干净大字门面+精致卡阵+青墨金沉浸段
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.77.0)  [🔍 与 v3.76.0 差异](https://github.com/AYun07/yunjing/compare/v3.76.0...v3.77.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.77.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.77.0.zip)  [🔍 与 v3.76.0 差异](https://github.com/AYun07/yunjing/compare/v3.76.0...v3.77.0)
 
 ## v3.76.0 · 2026-11-02
 
 原创SVG艺术字标(洇墨滤镜+朱砂错版套印)+字体全面自托管(文楷切片/宋体Cormorant子集)，移除境外CDN字体链
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.76.0)  [🔍 与 v3.75.0 差异](https://github.com/AYun07/yunjing/compare/v3.75.0...v3.76.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.76.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.76.0.zip)  [🔍 与 v3.75.0 差异](https://github.com/AYun07/yunjing/compare/v3.75.0...v3.76.0)
 
 ## v3.75.0 · 2026-11-02
 
 大厅全面重设计「纸本」：宣纸墨字朱砂三色系统/目录式工坊行列表(hover反白)/墨色巨字+朱砂方印+竖排副题/沉浸段墨色反白出血，告别深夜蓝金
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.75.0)  [🔍 与 v3.74.0 差异](https://github.com/AYun07/yunjing/compare/v3.74.0...v3.75.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.75.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.75.0.zip)  [🔍 与 v3.74.0 差异](https://github.com/AYun07/yunjing/compare/v3.74.0...v3.75.0)
 
 ## v3.74.0 · 2026-11-02
 
 大厅排版大改「卷首·字有千钧」：字体三件套(霞鹜文楷/思源宋体900/Cormorant)+门面左对齐杂志式+五大工坊一主四辅非对称栅格
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.74.0)  [🔍 与 v3.73.0 差异](https://github.com/AYun07/yunjing/compare/v3.73.0...v3.74.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.74.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.74.0.zip)  [🔍 与 v3.73.0 差异](https://github.com/AYun07/yunjing/compare/v3.73.0...v3.74.0)
 
 ## v3.73.0 · 2026-11-02
 
 大厅焕新「鎏金云海」：金霞天幕/衬线大字门面/工坊卡与33界卡按--ws-hue琉璃化/分组暖金化/卷首语横幅电影化，css/lobby-refresh.css 可整体回滚
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.73.0)  [🔍 与 v3.72.0 差异](https://github.com/AYun07/yunjing/compare/v3.72.0...v3.73.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.73.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.73.0.zip)  [🔍 与 v3.72.0 差异](https://github.com/AYun07/yunjing/compare/v3.72.0...v3.73.0)
 
 ## v3.72.0 · 2026-11-02
 
 四套主界面板式可选：水墨卷轴(?theme=ink)/星穹HUD(star)/鎏金殿阁(gold)/云白卡片Bento(cloud)+对照台style-lab.html，默认不启用
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.72.0)  [🔍 与 v3.71.0 差异](https://github.com/AYun07/yunjing/compare/v3.71.0...v3.72.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.72.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.72.0.zip)  [🔍 与 v3.71.0 差异](https://github.com/AYun07/yunjing/compare/v3.71.0...v3.72.0)
 
 ## v3.71.0 · 2026-11-02
 
 主界面视觉升级：设定台/顶栏/状态面板精致化（作用域 .page-studio，可整体回滚）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.71.0)  [🔍 与 v3.70.0 差异](https://github.com/AYun07/yunjing/compare/v3.70.0...v3.71.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.71.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.71.0.zip)  [🔍 与 v3.70.0 差异](https://github.com/AYun07/yunjing/compare/v3.70.0...v3.71.0)
 
 ## v3.70.0 · 2026-11-02
 
 性能与瘦身专项：云起预设渲染缓存/去AI味与正文提取去重/手机面板整屏重绘合并为每帧一次
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.70.0)  [🔍 与 v3.69.0 差异](https://github.com/AYun07/yunjing/compare/v3.69.0...v3.70.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.70.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.70.0.zip)  [🔍 与 v3.69.0 差异](https://github.com/AYun07/yunjing/compare/v3.69.0...v3.70.0)
 
 ## v3.69.0 · 2026-11-02
 
 预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
 ## v3.68.0 · 2026-11-02
 
 全项目审计修复：串档槽位隔离/清档删槽补灵宠小队/存档迁移、driftNotes与wordCount与竞态与温度0等核心循环修复、图鉴XSS转义、SW预缓存修复+HTML网络优先、灵宠小队战斗接线+applyEvent接战斗、面板互斥+版本徽标+日记字段等UI修缮（40+项）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.68.0)  [🔍 与 v3.67.0 差异](https://github.com/AYun07/yunjing/compare/v3.67.0...v3.68.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.68.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.68.0.zip)  [🔍 与 v3.67.0 差异](https://github.com/AYun07/yunjing/compare/v3.67.0...v3.68.0)
 
 ## v3.67.0 · 2026-11-02
 
 世界书完全丰富(P1)：freeworld+20条世界实质/free+10条运行设施；开放界设施补齐(P9)：free界恩怨账/委托板/据点/势力谱四模块
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.67.0)  [🔍 与 v3.66.0 差异](https://github.com/AYun07/yunjing/compare/v3.66.0...v3.67.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.67.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.67.0.zip)  [🔍 与 v3.66.0 差异](https://github.com/AYun07/yunjing/compare/v3.66.0...v3.67.0)
 
 ## v3.66.0 · 2026-11-02
 
 主界面焕新·天光玻璃：极光天幕+玻璃拟态卡片+字徽发光+hover光泽扫过+渐入动效，老内核回退
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.66.0)  [🔍 与 v3.65.0 差异](https://github.com/AYun07/yunjing/compare/v3.65.0...v3.66.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.66.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.66.0.zip)  [🔍 与 v3.65.0 差异](https://github.com/AYun07/yunjing/compare/v3.65.0...v3.66.0)
 
 ## v3.65.0 · 2026-11-02
 
 属性引擎实时事件化：受伤扣减/疗伤加回事件化直接落表+审计账本statLog+专长映射凸显+即时闪动反馈
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.65.0)  [🔍 与 v3.64.0 差异](https://github.com/AYun07/yunjing/compare/v3.64.0...v3.65.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.65.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.65.0.zip)  [🔍 与 v3.64.0 差异](https://github.com/AYun07/yunjing/compare/v3.64.0...v3.65.0)
 
 ## v3.64.0 · 2026-11-02
 
 小队系统 + v3.63.0 灵宠妖兽伙伴系统：契约/养成/随队/编队/协同技，接入主笔与战斗prompt
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.64.0)  [🔍 与 v3.63.0 差异](https://github.com/AYun07/yunjing/compare/v3.63.0...v3.64.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.64.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.64.0.zip)  [🔍 与 v3.63.0 差异](https://github.com/AYun07/yunjing/compare/v3.63.0...v3.64.0)
 
 ## v3.63.0 `*` · 2026-11-02
 
 灵宠·妖兽·伙伴系统（与 v3.64.0 同批发布）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.63.0)  [🔍 与 v3.62.0 差异](https://github.com/AYun07/yunjing/compare/v3.62.0...v3.63.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.63.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.63.0.zip)  [🔍 与 v3.62.0 差异](https://github.com/AYun07/yunjing/compare/v3.62.0...v3.63.0)
 
 ## v3.62.0 · 2026-11-02
 
 玩家身份三态重做：原著主角(大势不可改小势可调)/原著配角/完全原创 + 开局向导三态卡片+配角速选
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.62.0)  [🔍 与 v3.61.1 差异](https://github.com/AYun07/yunjing/compare/v3.61.1...v3.62.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.62.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.62.0.zip)  [🔍 与 v3.61.1 差异](https://github.com/AYun07/yunjing/compare/v3.61.1...v3.62.0)
 
 ## v3.61.1 · 2026-11-02
 
 小云连招健壮性：外部动作打断未完成连招
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.61.1)  [🔍 与 v3.61.0 差异](https://github.com/AYun07/yunjing/compare/v3.61.0...v3.61.1)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.61.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.1.zip)  [🔍 与 v3.61.0 差异](https://github.com/AYun07/yunjing/compare/v3.61.0...v3.61.1)
 
 ## v3.61.0 · 2026-11-02
 
 动态小云·全态可交互动画引擎：12态×3动作姿态关键帧+交叉淡入+CSS动效+playAction API
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.61.0)  [🔍 与 v3.60.1 差异](https://github.com/AYun07/yunjing/compare/v3.60.1...v3.61.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.61.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.0.zip)  [🔍 与 v3.60.1 差异](https://github.com/AYun07/yunjing/compare/v3.60.1...v3.61.0)
 
 ## v3.60.1 · 2026-11-01
 
 chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.60.1)  [🔍 与 v3.60.0 差异](https://github.com/AYun07/yunjing/compare/v3.60.0...v3.60.1)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.60.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.1.zip)  [🔍 与 v3.60.0 差异](https://github.com/AYun07/yunjing/compare/v3.60.0...v3.60.1)
 
 ## v3.60.0 · 2026-11-01
 
 动态小云：行为引擎+亲密度+剧情感知+视线跟随；3张半身立绘补全身
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.60.0)  [🔍 与 v3.59.1 差异](https://github.com/AYun07/yunjing/compare/v3.59.1...v3.60.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.60.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.0.zip)  [🔍 与 v3.59.1 差异](https://github.com/AYun07/yunjing/compare/v3.59.1...v3.60.0)
 
 ## v3.59.1 · 2026-11-01
 
 小云十二形态：AI 生图全线换装(萝莉/御姐/校花/清纯/邻家/酷飒/温柔/傲娇/可爱/搞怪/幼态/知性)，移除SVG手绘
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.1)  [🔍 与 v3.59.0 差异](https://github.com/AYun07/yunjing/compare/v3.59.0...v3.59.1)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.1.zip)  [🔍 与 v3.59.0 差异](https://github.com/AYun07/yunjing/compare/v3.59.0...v3.59.1)
 
 ## v3.59.0 · 2026-11-01
 
 晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
 ## v3.58.0 · 2026-11-01
 
 世界自活：众生谱(原创人物/势力/地点繁衍上图) + 势力动态演化 + 档案完善 + 自由人生
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.58.0)  [🔍 与 v3.57.1 差异](https://github.com/AYun07/yunjing/compare/v3.57.1...v3.58.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.58.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.58.0.zip)  [🔍 与 v3.57.1 差异](https://github.com/AYun07/yunjing/compare/v3.57.1...v3.58.0)
 
 ## v3.57.1 · 2026-11-01
 
 E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关系连线角色池失效）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.57.1)  [🔍 与 v3.57.0 差异](https://github.com/AYun07/yunjing/compare/v3.57.0...v3.57.1)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.57.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.1.zip)  [🔍 与 v3.57.0 差异](https://github.com/AYun07/yunjing/compare/v3.57.0...v3.57.1)
 
 ## v3.57.0 · 2026-11-01
 
 让世界活起来引擎全套：统一填表 + 推演引擎 + 自主世界时钟 + 剧情规划 + 小云工具箱（P2-P5）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.57.0)  [🔍 与 v3.56.2 差异](https://github.com/AYun07/yunjing/compare/v3.56.2...v3.57.0)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.57.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.0.zip)  [🔍 与 v3.56.2 差异](https://github.com/AYun07/yunjing/compare/v3.56.2...v3.57.0)
 
 ## v3.56.2 · 2026-11-01
 
 世界基座自测修复：upsert/link 解耦全局 + remove 级联清关系边（23 项断言全过）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.2)  [🔍 与 v3.56.1 差异](https://github.com/AYun07/yunjing/compare/v3.56.1...v3.56.2)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.2)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.2.zip)  [🔍 与 v3.56.1 差异](https://github.com/AYun07/yunjing/compare/v3.56.1...v3.56.2)
 
 ## v3.56.1 · 2026-11-01
 
 世界基座：统一实体模型 Entity + 变量模板 Schema + 校验器 SchemaValidator（P1 地基）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.1)  [🔍 与 v3.55.30 差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.56.1)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.1.zip)  [🔍 与 v3.55.30 差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.56.1)
 
 ## v3.55.30 · 2026-11-01
 
 多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 
 ## v3.55.29 · 2026-11-01
 
 定时器炸弹拆除 + 界专属模块复活
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.29)  [🔍 与 v3.55.28 差异](https://github.com/AYun07/yunjing/compare/v3.55.28...v3.55.29)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.29)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.29.zip)  [🔍 与 v3.55.28 差异](https://github.com/AYun07/yunjing/compare/v3.55.28...v3.55.29)
 
 ## v3.55.28 · 2026-10-31
 
 分层加载与世界书瘦身
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.28)  [🔍 与 v3.55.23 差异](https://github.com/AYun07/yunjing/compare/v3.55.23...v3.55.28)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.28)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.28.zip)  [🔍 与 v3.55.23 差异](https://github.com/AYun07/yunjing/compare/v3.55.23...v3.55.28)
 
 ## v3.55.23 · 2026-10-31
 
 大势可改+地图落实：大势演化账本+行旅图鉴动态化
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.23)  [🔍 与 v3.55.22 差异](https://github.com/AYun07/yunjing/compare/v3.55.22...v3.55.23)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.23)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.23.zip)  [🔍 与 v3.55.22 差异](https://github.com/AYun07/yunjing/compare/v3.55.22...v3.55.23)
 
 ## v3.55.22 · 2026-10-31
 
 千楼长卷：虚拟化渲染+全量transcript落IDB+分层记忆+双通道召回+格式契约
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.22)  [🔍 与 v3.55.21 差异](https://github.com/AYun07/yunjing/compare/v3.55.21...v3.55.22)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.22)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.22.zip)  [🔍 与 v3.55.21 差异](https://github.com/AYun07/yunjing/compare/v3.55.21...v3.55.22)
 
 ## v3.55.21 · 2026-10-31
 
 玩家身份(穿越者/土著)+主角关系(同伴/敌对/陌路)+本界资料库（修复注入）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.21)  [🔍 与 v3.55.19 差异](https://github.com/AYun07/yunjing/compare/v3.55.19...v3.55.21)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.21)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.21.zip)  [🔍 与 v3.55.19 差异](https://github.com/AYun07/yunjing/compare/v3.55.19...v3.55.21)
 
 ## v3.55.19 · 2026-10-30
 
 世界是活的：叙事立场三选一 + 机缘归属账本 + 剧情上下文面板
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.19)  [🔍 与 v3.55.18 差异](https://github.com/AYun07/yunjing/compare/v3.55.18...v3.55.19)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.19)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.19.zip)  [🔍 与 v3.55.18 差异](https://github.com/AYun07/yunjing/compare/v3.55.18...v3.55.19)
 
 ## v3.55.18 · 2026-10-30
 
 酒馆正则导入防护（清空全文类规则不再误伤正文）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.18)  [🔍 与 v3.55.17 差异](https://github.com/AYun07/yunjing/compare/v3.55.17...v3.55.18)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.18)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.18.zip)  [🔍 与 v3.55.17 差异](https://github.com/AYun07/yunjing/compare/v3.55.17...v3.55.18)
 
 ## v3.55.17 · 2026-10-30
 
 稳固三修：核心契约与预设解耦 / 上下文预算按模型自适应 / 存储配额兜底
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.17)  [🔍 与 v3.55.12 差异](https://github.com/AYun07/yunjing/compare/v3.55.12...v3.55.17)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.17)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.17.zip)  [🔍 与 v3.55.12 差异](https://github.com/AYun07/yunjing/compare/v3.55.12...v3.55.17)
 
 ## v3.55.12 · 2026-10-30
 
 补丁 · 修正 UI 版本号显示残留
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.12)  [🔍 与 v3.55.11 差异](https://github.com/AYun07/yunjing/compare/v3.55.11...v3.55.12)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.12)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.12.zip)  [🔍 与 v3.55.11 差异](https://github.com/AYun07/yunjing/compare/v3.55.11...v3.55.12)
 
 ## v3.55.11 · 2026-10-30
 
 三档自适应：低端自动稳，高端全功能
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.11)  [🔍 与 v3.55.10 差异](https://github.com/AYun07/yunjing/compare/v3.55.10...v3.55.11)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.11)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.11.zip)  [🔍 与 v3.55.10 差异](https://github.com/AYun07/yunjing/compare/v3.55.10...v3.55.11)
 
 ## v3.55.10 · 2026-10-30
 
 基础小模型适配：参数安全锁/轻量协议块/辅助AI静默/复读自检
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.10)  [🔍 与 v3.55.9 差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.55.10)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.10)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.10.zip)  [🔍 与 v3.55.9 差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.55.10)
 
 ## v3.55.9 · 2026-10-30
 
 云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.9)  [🔍 与 v3.55.8 差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.9)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip)  [🔍 与 v3.55.8 差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
 
 ## v3.55.8 · 2026-10-30
 
 云起预设重构（内容加深 + 文风按类型整合）
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.8)  [🔍 与 v3.55.7 差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.8)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip)  [🔍 与 v3.55.7 差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
 
 ## v3.55.7 · 2026-10-29
 
 云端同步与开源
 
-- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.7)  （最早有记录的版本，无上一版可比）
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.7)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip)  （最早有记录的版本，无上一版可比）
 
 ---
 
