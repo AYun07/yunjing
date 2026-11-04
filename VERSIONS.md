@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **55** 个版本，从 `v3.55.7` 到 `v3.87.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **56** 个版本，从 `v3.55.7` 到 `v3.88.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -69,6 +69,20 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.88.0 · 2026-11-04
+
+世界自转因果化：修掉'只打最弱者、最强永不衰减、与玩家零耦合'；改为兴衰势能/强者受制/弱者颓势/玩家恩怨/势力间关系/活跃事件/张力冲突多因子驱动
+
+势力名取自本界真实知识库，去掉 33 界共用的静态 3 名表
+
+人物自治：玩家不推剧情时 NPC 也会自己行动（情绪/目标/信任/记忆四维漂移）
+
+补齐 earth/guimi/freeworld 事件类目与 cthulhu/mystery/scifi/wuxia 四界世界书种子
+
+新增端到端验收测试，全仓 224 个 js 文件语法通过
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.88.0)  [🔍 与 v3.87.0 差异](https://github.com/AYun07/yunjing/compare/v3.87.0...v3.88.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip)
 
 ## v3.87.0 · 2026-11-03
 
