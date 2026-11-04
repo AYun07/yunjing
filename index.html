@@ -7,7 +7,7 @@
     <!-- PWA / iOS 主屏安装（v3.27.1）：Safari「加入主屏幕」后全屏独立运行，HTTPS 部署时离线可玩 -->
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="assets/yj-icon-apple.png">
-    <!-- v3.89.0：图标换为云境自有素材（移除墨枢遗留 icon-192/512/apple-touch/favicon） -->
+    <!-- v3.90.0：图标换为云境自有素材（移除墨枢遗留 icon-192/512/apple-touch/favicon） -->
     <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
     <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,10 +17,10 @@
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
-    <script src="js/id-migrate.js?v=3.89.0"></script>
-    <title>云境 v3.89.0 · AI创作与开放世界扮演</title>
+    <script src="js/id-migrate.js?v=3.90.0"></script>
+    <title>云境 v3.90.0 · AI创作与开放世界扮演</title>
     <style>
-        /* v3.89.0 大厅版式与 8 套新主题见 css/lobby-xiaoyun.css / css/lobby-themes.css（旧 lobby-a~i / v4 回滚底已移除） */
+        /* v3.90.0 大厅版式与 8 套新主题见 css/lobby-xiaoyun.css / css/lobby-themes.css（旧 lobby-a~i / v4 回滚底已移除） */
         :root {
             --primary: #b5382e;
             --ink: #1c1a16;
@@ -29,18 +29,20 @@
     </style>
 
     <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集 -->
-    <link rel="stylesheet" href="css/fonts-local.css?v=3.89.0">
-    <!-- v3.89.0 大厅基础版式 + 8 套新主题皮肤（旧 9 套 disabled 版式与 v4 回滚底已移除） -->
-    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=3.89.0">
-    <link rel="stylesheet" href="css/lobby-themes.css?v=3.89.0">
+    <link rel="stylesheet" href="css/fonts-local.css?v=3.90.0">
+    <!-- v3.90.0 大厅：基础版式 + 8 套主题配色 + 8 套异构版式骨架（旧 9 套 disabled 版式已移除） -->
+    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=3.90.0">
+    <link rel="stylesheet" href="css/lobby-themes.css?v=3.90.0">
+    <!-- v3.90.0 版式层必须在配色层之后：把「换配色」升级为「换骨架」，8 套主题真正不同 -->
+    <link rel="stylesheet" href="css/lobby-layouts.css?v=3.90.0">
     <!-- 主题切换器：同步挂 html[data-theme]，首屏不闪色；8 套主题可见可切可记忆 -->
-    <script src="js/lobby-themes.js?v=3.89.0"></script>
-    <script src="js/theme-studio.js?v=3.89.0"></script>
+    <script src="js/lobby-themes.js?v=3.90.0"></script>
+    <script src="js/theme-studio.js?v=3.90.0"></script>
 </head>
 
 <body class="page-index">
     <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v3.89.0 云境版</a>
+    <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v3.90.0 云境版</a>
 
     <!-- 开屏 -->
     <div id="splash">
@@ -52,7 +54,7 @@
 
     <div class="container">
         <div class="masthead">
-            <img class="mh-mascot" src="assets/xiaoyun-keai-happy.png?v=3.89.0" alt="小云">
+            <img class="mh-mascot" src="assets/xiaoyun-keai-happy.png?v=3.90.0" alt="小云">
             <h1 class="logo-kai"><span class="lk-a">云</span><span class="lk-b">境</span></h1>
             <div class="sub">万象入云 · 一念一世界</div>
             <div class="gold-divider"></div>
@@ -510,7 +512,7 @@
     </div>
 
     <!-- v3.38.1 错误哨兵：脚本加载失败/运行异常时屏幕直接显示出错文件 -->
-    <script defer src="js/boot-error-guard.js?v=3.89.0"></script>
+    <script defer src="js/boot-error-guard.js?v=3.90.0"></script>
     <script>
         // 响应式模式类（与 studio.html 同策略；判空防异常，媒体查询兜底已内置）
         (function () {
@@ -618,14 +620,14 @@
 })();
 </script>
 <!-- v3.84.0 小云：大厅即全功能可用（世界书/存档/预设/正文急救/造物工坊） -->
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=3.89.0">
-<script src="js/worldbook-seeds.js?v=3.89.0"></script>
-<script src="js/world-book.js?v=3.89.0"></script>
-<script src="js/xiaoyun-ops.js?v=3.89.0"></script>
-<script src="js/xiaoyun-buddy.js?v=3.89.0"></script>
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=3.90.0">
+<script src="js/worldbook-seeds.js?v=3.90.0"></script>
+<script src="js/world-book.js?v=3.90.0"></script>
+<script src="js/xiaoyun-ops.js?v=3.90.0"></script>
+<script src="js/xiaoyun-buddy.js?v=3.90.0"></script>
 <script>
   /* v3.87.0 P3-3：首页版本徽标与 YJ_VER 同源（此前写死 v3.84.0，与实际版本长期不符） */
-  window.YJ_VER = '3.89.0';
+  window.YJ_VER = '3.90.0';
   (function () {
     var b = document.getElementById('verBadge');
     if (b) b.textContent = 'v' + window.YJ_VER + ' 云境版';

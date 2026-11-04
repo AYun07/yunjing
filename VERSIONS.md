@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **57** 个版本，从 `v3.55.7` 到 `v3.89.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **58** 个版本，从 `v3.55.7` 到 `v3.90.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.90.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
 | **v3.89.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
 | **v3.88.0** | 2026-11-04 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
 | **v3.87.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
@@ -71,6 +72,22 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.90.0 · 2026-11-05
+
+大厅版式整改：只认实际视觉生效，把「8 套主题 = 8 套配色」升级为「8 套主题 = 8 种版式骨架」
+
+根因取证：从 git 恢复 v3.55.7 / v3.84.0 / v3.89.0 三方对照，确认主界面骨架自项目首个版本起从未变过（吉祥物 + 标题 + 胶囊 + 5 张等大卡片），只换过配色；v3.84.0 起的 14 套异构概念稿一直只躺在 demo 页，v3.89.0 还把它们当散页删掉。结论是换皮没换版式。
+
+恢复 11-04 八套新稿的真实布局骨架，新增 css/lobby-layouts.css，用 html[data-theme] body.page-index .container > .workshops 严格限定（不影响 9 个 33 界分组与跳转）：彩云主演 3 大形象卡 + 2 小卡、幻海罗盘环形 5 节点、星轨轮播横向 scroll-snap 大画幅、胶片映画胶片条 + 齿孔、巨幕主角 1 巨幕 + 4 行列表、卷轴长廊纵向逐屏左右交替、侧栏书页固定 248px 侧栏 + 3+2 网格、形象馆竖长人物卡；8 套骨架指纹两两不同
+
+按视觉合理性口径（V1–V8：焦点/辨识度/留白密度/层级/形态比例/对齐遮挡/可读性/可发现性）对 8 套 × 桌面 1440×900 + 手机 390×844 共 16 张真实首屏逐张审查，修正 P0 共通问题 2 项与逐套问题 10 项：大厅不再自动轮播小云气泡（消除跨 8 套的卡片遮挡）、入坊按钮归位、carousel 标题不再竖排断行、scroll 首屏露出完整入口并加向下展卷提示、compass 罗盘缩小上移使 5 节点全可见、hero 巨幕填充空白、colorful 大卡改大形象位、sidebar 消掉 4+1 孤卡并移开切换器、横滑区补提示与滚动条、手机端孤卡跨列与侧栏回退 2 列
+
+离线缓存加入 css/lobby-layouts.css，SW_VER 递增；全仓 195 处 3.89.0 → 3.90.0，?v= / YJ_VER / SW_VER / 标题 / 徽标同源
+
+验收：8 套骨架 8/8 不同、33 界跳转各 33/33、?theme= 记忆、自检 63/63、4 页零 404 零错误、JS 语法 263/263、离线 0 缺失；视觉审查修正后气泡遮挡 0 / 竖排断行 0 / 孤卡 0 / 首屏无完整入口 0 套。详见 test/VISUAL-REVIEW-v3.90.0.md 与 test/LIVE-TEST-v3.90.0.md
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.90.0)  [🔍 与 v3.89.0 差异](https://github.com/AYun07/yunjing/compare/v3.89.0...v3.90.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip)
 
 ## v3.89.0 · 2026-11-05
 
