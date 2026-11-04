@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **56** 个版本，从 `v3.55.7` 到 `v3.88.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **57** 个版本，从 `v3.55.7` 到 `v3.89.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,8 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.89.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
+| **v3.88.0** | 2026-11-04 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
 | **v3.87.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
 | **v3.86.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
 | **v3.85.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.85.0) |
@@ -69,6 +71,28 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.89.0 · 2026-11-05
+
+v3.88 全量整改：只认实际运行生效的代码，收束主界面、单一全功能小云、只留新主题、换云境图标、修自检与离线缓存
+
+大厅主题收束：删 9 套 disabled 旧版式、14 个 demo 散页与 ?lobby= 死参数，新增 8 套新主题（css/lobby-themes.css + js/lobby-themes.js），可见可切可记忆、两两真实不同
+
+单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
+
+图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+
+一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
+
+启动方式收束为唯一 8080 本地服务：删 start-lan.bat 与两个旧版式对照台散页，README/QUICKSTART 去掉互相矛盾的「任选其一 / 直接双击也能跑」
+
+离线缓存完整性：补齐大厅基础/新主题 CSS 与切换器、首屏吉祥物图及 6 个创作室脚本，CORE/CORE2 静态 153 条 + 派生 166 条路径全部 200，页面静态引用零缺失
+
+版本号全仓统一：168 处 ?v= 与 YJ_VER / SW_VER / 页面标题 / 徽标同源到 3.89.0，修掉徽标写死与 YJ_VER 相互覆盖导致显示旧号
+
+验收：结构 33/33、真实 API 生成 33/33（50,276 字，变量块与世界状态变化各 33/33）、自检 63/63、活世界逻辑 29/29、灵宠 14/14、小队 18/18、身份 19/19、唯一小云 9/9、8 主题两两不同、4 页零 404；详见 test/LIVE-TEST-v3.89.0.md
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.89.0)  [🔍 与 v3.88.0 差异](https://github.com/AYun07/yunjing/compare/v3.88.0...v3.89.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip)
 
 ## v3.88.0 · 2026-11-04
 

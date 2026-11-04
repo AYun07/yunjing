@@ -32,10 +32,11 @@
   var head = el('div', 'xy-head');
   var chat = el('div', 'xy-chat'); var quick = el('div', 'xy-quick');
   var form = el('div', 'xy-form'); var forms = el('div', 'xy-forms');
+  var modules = el('div', 'xy-modules');
   var input = el('input'); input.placeholder = '和小云说点什么…（可让我加世界书条目 / 修格式 / 管存档）';
   var send = el('button', null, '发送');
   form.appendChild(input); form.appendChild(send);
-  panel.appendChild(head); panel.appendChild(chat); panel.appendChild(quick); panel.appendChild(form); panel.appendChild(forms);
+  panel.appendChild(head); panel.appendChild(chat); panel.appendChild(quick); panel.appendChild(modules); panel.appendChild(form); panel.appendChild(forms);
   root.appendChild(panel); root.appendChild(orb);
   document.body.appendChild(root);
 
@@ -188,17 +189,69 @@
      ['🧩 预设/正则', function () { var p = runTool('preset.info'); var g = runTool('regex.info'); bot((p && p.msg || '') + '\n' + (g && g.msg || '')); }],
      ['🏥 工坊体检', function () { var r = runTool('system.status'); bot(r ? r.msg : '工坊体检：排版 ✅ · 存档 ✅ · 灵感库 ✅ · 主笔通道 ✅'); }],
      ['🛠 造物工坊', function () { window.XYDev && window.XYDev.open(); }],
+     ['💬 AI 管家', function () { if (window.MoAssistant) window.MoAssistant.openPanel(); }],
      ['✍️ 进入工坊', function () { location.href = 'studio.html'; }]
     ].forEach(function (q) {
       var b = el('button', 'xy-q', q[0]); b.onclick = function () { me(q[0].replace(/^\S+\s/, '')); q[1](); };
       quick.appendChild(b);
     });
   }
+  /* v3.89.0：统一对话出口——MoChibi.say 也路由到这里，保证全站只有一只云灵在说话 */
+  function say(text, ms) {
+    text = String(text == null ? "" : text);
+    bot(text);
+    flashTip(text, ms);
+  }
+  function flashTip(text, ms) {
+    if (!tip) return;
+    tip.textContent = String(text).slice(0, 60);
+    tip.classList.add("on");
+    clearTimeout(say._t);
+    say._t = setTimeout(function () { tip.classList.remove("on"); }, ms || 4000);
+  }
+  function openPanel() {
+    /* v3.89.0：已打开时也重建模块区，补齐懒加载完成后新出现的入口 */
+    if (panelOn) { buildModules(); return; }
+    panelOn = true; panel.classList.add("on"); tip.classList.remove("on");
+    if (!chat.children.length) bot(face().hi);
+    buildModules();
+  }
+  function closePanel() {
+    if (!panelOn) return;
+    panelOn = false; panel.classList.remove("on");
+  }
+  /* 模块区：复用 MoChibi.moduleEntries()（世界动态/手机/太虚阁/上下文/资料库/大势账本/
+     行旅图鉴/灵宠/小队/身份/立场），让单只云灵也是「全功能」云灵 */
+  function buildModules() {
+    if (!modules) return;
+    modules.innerHTML = '';
+    var list = [];
+    try {
+      if (/studio\.html/.test(location.pathname) && window.MoChibi && typeof window.MoChibi.moduleEntries === "function") {
+        list = window.MoChibi.moduleEntries() || [];
+      }
+    } catch (e) {}
+    if (!list.length) { modules.style.display = "none"; return; }
+    modules.style.display = "";
+    modules.appendChild(el('div', 'xy-sec-title', '🧰 模块'));
+    var grid = el('div', 'xy-mod-grid');
+    list.forEach(function (it) {
+      var b = el('button', 'xy-mod');
+      b.innerHTML = '<span class="xy-mod-ico">' + it.ico + '</span>' +
+        '<span class="xy-mod-name">' + it.name + '</span>' +
+        '<span class="xy-mod-note">' + it.note + '</span>';
+      /* v3.89.0 按钮紧凑化后说明文字不占位，改由悬浮提示承载，信息不丢 */
+      b.title = it.name + (it.note ? ' · ' + it.note : '');
+      b.onclick = function () { try { if (it.act) it.act(); } catch (e) {} };
+      grid.appendChild(b);
+    });
+    modules.appendChild(grid);
+  }
   send.onclick = function () { var v = input.value; if (!v) return; me(v); input.value = ''; reply(v); };
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send.onclick(); });
+  /* v3.89.0：打开面板时按需重建「模块」区，反映当前题材已加载的子系统 */
   orb.addEventListener('click', function () {
-    panelOn = !panelOn; panel.classList.toggle('on', panelOn); tip.classList.toggle('on', false);
-    if (panelOn && !chat.children.length) bot(face().hi);
+    if (panelOn) closePanel(); else openPanel();
   });
   function rotateTips() {
     if (panelOn) return;
@@ -207,6 +260,28 @@
     setTimeout(function () { tip.classList.remove('on'); }, 3200);
   }
   setForm(0); buildQuick();
+  if (modules) modules.style.display = "none";
+  /* v3.89.0：创作室 demand 懒加载组约 8s 后才就绪；玩家若提前点开小云，模块入口会缺且
+     此前永不回补。此处在懒加载落地后自动补齐（仅当模块区已渲染过才刷，不打扰未打开状态）。 */
+  function refreshModulesWhenReady() {
+    try {
+      if (!modules || !/studio\.html/.test(location.pathname)) return;
+      /* 主动拉起 demand 组：玩家提前打开时 window.MoChibi 仍是懒加载桩，模块区会是空的。
+         不能用「已渲染过 grid」当门槛，否则空区永远补不回来。 */
+      if (window.YJLazy && window.YJLazy.ensure) { try { window.YJLazy.ensure('MoChibi'); } catch (e) {} }
+      if (!window.MoChibi || typeof window.MoChibi.moduleEntries !== "function") return;
+      var n = (window.MoChibi.moduleEntries() || []).length;
+      var cur = modules.querySelectorAll('.xy-mod').length;
+      if (n > cur) buildModules();
+    } catch (e) {}
+  }
+  if (/studio\.html/.test(location.pathname)) {
+    setTimeout(refreshModulesWhenReady, 3000);
+    setTimeout(refreshModulesWhenReady, 9000);
+    setTimeout(refreshModulesWhenReady, 15000);
+  }
+  /* v3.89.0：暴露给 MoChibi 兼容层路由 say()，以及外部触发开关面板 */
+  window.XYBuddy = { say: say, open: openPanel, close: closePanel };
   img.src = face().img;
   setTimeout(rotateTips, 900); setInterval(rotateTips, 7000);
 })();

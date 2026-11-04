@@ -167,7 +167,7 @@ document.body.appendChild(s);
 发下一版只要一条命令（自动改版本号、对齐全部资源参数、写更新日志、写版本登记、提交打标签推送、建发布页）：
 
 ```bash
-GITHUB_TOKEN=<你的 token> node scripts/release.mjs 3.88.0 "一句话标题" "第一段说明 | 第二段说明"
+GITHUB_TOKEN=<你的 token> node scripts/release.mjs 3.89.0 "一句话标题" "第一段说明 | 第二段说明"
 ```
 
 补建/修复历史发布页（幂等，可反复跑）：
@@ -178,9 +178,9 @@ GITHUB_TOKEN=<你的 token> node scripts/sync-releases.mjs
 
 ## 快速开始
 
-1. **启动**：任选其一
-   - 本地 HTTP 服务：`python3 -m http.server 8080`，浏览器打开 `http://localhost:8080`
-   - 或直接双击 `index.html`（现代浏览器 file:// 协议下动态脚本加载可用；若样式异常请改用 HTTP 服务）
+1. **启动（唯一方式）**：在项目根目录执行 `python3 -m http.server 8080`，浏览器打开 `http://localhost:8080`。
+   - Windows 双击 `start-windows.bat`、Mac/Linux 双击 `start-mac.command`，二者启动的都是同一个 8080 本地服务。
+   - 不要直接双击 `index.html`：`file://` 下浏览器会拦截本地文件读取，一致性自检、离线 PWA 与部分存档功能会失效。
 2. **配置接口**：进入任一工坊 → 右上角 `⚙ 接口设置`
    - 接口类型：OpenAI 兼容格式（DeepSeek / Kimi / 通义 / one-api 等）或 Gemini 格式
    - 填入 Endpoint / API Key / 模型名，先「测试连接」再保存

@@ -1,0 +1,145 @@
+/* 云境大厅主题皮肤 · v3.89.0
+   - 只作用于 index.html 的真实 DOM（33 界卡片 / 工坊跳转全部保留，不造假链接）
+   - 8 套主题均从 11-04 新设计稿提炼，由 js/lobby-themes.js 切换 html[data-theme]
+   - 变量挂在 html(:root)，head 内即可生效，首屏不闪色；基础版式仍由 css/lobby-xiaoyun.css 提供 */
+html[data-theme] { --card-bd2: rgba(255,255,255,.06); }
+
+/* ① 彩云主演（默认）：深幕紫 + 每坊一色渐变大卡 */
+html[data-theme="colorful"]{
+  --bg0:#0d0b1c; --bg1:#171231; --bg2:#241a3e;
+  --ink:#fbfaff; --ink-dim:#d8d2f5; --ink-faint:#a49bcb;
+  --cloud:#ffe6f4; --accent:#ff9ecb; --accent2:#9fb8ff; --gold:#ffd58a;
+  --line:rgba(210,190,255,.20); --card-bg:rgba(30,22,58,.62);
+  --card-bd:rgba(220,190,255,.26); --panel:rgba(42,28,72,.62);
+  --glow:0 16px 52px rgba(180,110,255,.24);
+}
+html[data-theme="colorful"] .workshops{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px}
+html[data-theme="colorful"] .workshop{border-radius:24px;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--ws-hue) 34%,var(--card-bg)),var(--card-bg));
+  border-color:color-mix(in srgb,var(--ws-hue) 40%,transparent)}
+html[data-theme="colorful"] .workshop::after{color:#fff;opacity:.9;font-size:16px}
+html[data-theme="colorful"] .masthead::before{
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 34%,transparent),transparent 70%)}
+
+/* ② 幻海罗盘：深靛紫 + 藕荷/青绿双强调 + 环状泛光 */
+html[data-theme="compass"]{
+  --bg0:#0a0810; --bg1:#1a1530; --bg2:#15102e;
+  --ink:#f4f0ff; --ink-dim:#cfc6e6; --ink-faint:#8e86ad;
+  --cloud:#d9ccff; --accent:#b9a7ff; --accent2:#7fd6c8; --gold:#e8c98a;
+  --line:rgba(185,167,255,.22); --card-bg:rgba(36,28,72,.60);
+  --card-bd:rgba(185,167,255,.28); --panel:rgba(30,24,58,.62);
+  --glow:0 18px 56px rgba(150,120,255,.26);
+}
+html[data-theme="compass"] .workshop{border-radius:20px;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ws-hue) 22%,transparent)}
+html[data-theme="compass"] .masthead::before{
+  background:conic-gradient(from 0deg,color-mix(in srgb,var(--accent) 22%,transparent),transparent 30%,
+    color-mix(in srgb,var(--accent2) 20%,transparent),transparent 65%);filter:blur(40px)}
+
+/* ③ 星轨轮播：近黑 + 青绿强调，横向滚动卡片带 */
+html[data-theme="carousel"]{
+  --bg0:#0c0a12; --bg1:#15131a; --bg2:#1a1726;
+  --ink:#f6f7fb; --ink-dim:#c9c1dd; --ink-faint:#8b849f;
+  --cloud:#d8f5ef; --accent:#7fd6c8; --accent2:#b9a7ff; --gold:#e3c98d;
+  --line:rgba(180,220,215,.18); --card-bg:rgba(26,24,36,.72);
+  --card-bd:rgba(127,214,200,.24); --panel:rgba(20,18,30,.70);
+  --glow:0 16px 48px rgba(80,190,175,.18);
+}
+html[data-theme="carousel"] .workshop{border-radius:16px}
+html[data-theme="carousel"] .workshops{grid-auto-flow:column;grid-auto-columns:minmax(200px,1fr);
+  grid-template-columns:none;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory}
+html[data-theme="carousel"] .workshop{scroll-snap-align:start}
+
+/* ④ 胶片映画：深紫黑 + 齿孔装饰 + 每坊独立色 */
+html[data-theme="film"]{
+  --bg0:#100d18; --bg1:#14111f; --bg2:#1c1730;
+  --ink:#faf7ff; --ink-dim:#cfcbe8; --ink-faint:#9189ac;
+  --cloud:#e8dcff; --accent:#8ab4c8; --accent2:#e0a84c; --gold:#e0a84c;
+  --line:rgba(210,195,255,.16); --card-bg:rgba(24,20,38,.72);
+  --card-bd:rgba(210,195,255,.20); --panel:rgba(26,21,42,.68);
+  --glow:0 14px 42px rgba(120,100,190,.20);
+}
+html[data-theme="film"] .workshop{border-radius:8px;
+  border-top:8px solid color-mix(in srgb,var(--ws-hue) 60%,#000);
+  border-bottom:8px solid color-mix(in srgb,var(--ws-hue) 60%,#000);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ws-hue) 16%,var(--card-bg)),var(--card-bg))}
+
+/* ⑤ 巨幕主角：暗紫 + 首屏大标题 */
+html[data-theme="hero"]{
+  --bg0:#0e0b16; --bg1:#14111f; --bg2:#1a1530;
+  --ink:#ffffff; --ink-dim:#d6cff0; --ink-faint:#948caf;
+  --cloud:#eae2ff; --accent:#8ab4c8; --accent2:#c9a7ff; --gold:#f0c987;
+  --line:rgba(190,175,255,.18); --card-bg:rgba(26,21,44,.66);
+  --card-bd:rgba(190,175,255,.22); --panel:rgba(28,22,48,.66);
+  --glow:0 20px 60px rgba(140,110,230,.24);
+}
+html[data-theme="hero"] .logo-kai{font-size:72px;letter-spacing:.24em}
+html[data-theme="hero"] .workshop{border-radius:22px}
+
+/* ⑥ 卷轴长廊：墨紫 + 白紫渐变字，纵向长卷 */
+html[data-theme="scroll"]{
+  --bg0:#15131a; --bg1:#1b1824; --bg2:#23202e;
+  --ink:#f7f4ff; --ink-dim:#cfc6e6; --ink-faint:#918aa6;
+  --cloud:#f0e9ff; --accent:#b9a7ff; --accent2:#7fd6c8; --gold:#e6c98f;
+  --line:rgba(200,190,230,.16); --card-bg:rgba(34,30,46,.60);
+  --card-bd:rgba(200,190,230,.20); --panel:rgba(28,25,38,.66);
+  --glow:0 12px 40px rgba(120,110,170,.18);
+}
+html[data-theme="scroll"] .container{max-width:940px}
+html[data-theme="scroll"] .logo-kai .lk-a,
+html[data-theme="scroll"] .logo-kai .lk-b{
+  background:linear-gradient(120deg,#fff,var(--accent) 60%,var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-theme="scroll"] .workshop{border-radius:14px}
+
+/* ⑦ 侧栏书页：蓝灰纸感 + 浅字 */
+html[data-theme="sidebar"]{
+  --bg0:#11141a; --bg1:#171b22; --bg2:#1c222c;
+  --ink:#dfe3ea; --ink-dim:#aeb6c6; --ink-faint:#7f8aa0;
+  --cloud:#e8eef7; --accent:#7fd6c8; --accent2:#9aa3b5; --gold:#d9b877;
+  --line:rgba(160,180,205,.20); --card-bg:rgba(28,34,44,.66);
+  --card-bd:rgba(160,180,205,.22); --panel:rgba(24,30,40,.72);
+  --glow:0 12px 38px rgba(70,110,140,.18);
+}
+html[data-theme="sidebar"] .container{max-width:1000px}
+html[data-theme="sidebar"] .workshop{border-radius:10px;
+  border-left:3px solid color-mix(in srgb,var(--ws-hue) 70%,transparent)}
+
+/* ⑧ 形象馆：深莓紫 + 冰蓝，卡片突出形象 */
+html[data-theme="avatar"]{
+  --bg0:#100d18; --bg1:#16121f; --bg2:#2a2540;
+  --ink:#fbf9ff; --ink-dim:#cfcbe8; --ink-faint:#948caf;
+  --cloud:#dff0f8; --accent:#8ab4c8; --accent2:#e0a84c; --gold:#e0a84c;
+  --line:rgba(190,205,225,.18); --card-bg:rgba(32,27,52,.66);
+  --card-bd:rgba(190,205,225,.22); --panel:rgba(30,25,48,.68);
+  --glow:0 16px 48px rgba(110,160,190,.20);
+}
+html[data-theme="avatar"] .workshop{border-radius:26px;min-height:196px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--ws-hue) 26%,var(--card-bg)),var(--card-bg))}
+html[data-theme="avatar"] .workshop::after{font-size:18px;opacity:.85}
+
+/* 主题切换器（可见、可记忆、不遮挡） */
+.theme-switcher{position:fixed;left:14px;top:14px;z-index:40;display:flex;align-items:center;gap:8px}
+.theme-switcher .ts-btn{font:inherit;font-size:12.5px;font-weight:600;color:var(--ink,#eee);cursor:pointer;
+  padding:8px 14px;border-radius:999px;border:1px solid var(--line,rgba(255,255,255,.2));
+  background:var(--panel,rgba(28,24,48,.7));backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:7px;transition:.2s}
+.theme-switcher .ts-btn:hover{border-color:var(--accent,#9fd4e8);transform:translateY(-1px)}
+.theme-switcher .ts-dot{width:10px;height:10px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent,#9fd4e8),var(--accent2,#b9a7ff))}
+.theme-switcher .ts-panel{position:absolute;left:0;top:44px;width:250px;max-height:70vh;overflow-y:auto;
+  background:var(--panel,rgba(28,24,48,.92));border:1px solid var(--line,rgba(255,255,255,.2));
+  border-radius:16px;padding:10px;backdrop-filter:blur(14px);
+  box-shadow:0 20px 50px rgba(0,0,0,.45);display:none}
+.theme-switcher .ts-panel.on{display:block}
+.theme-switcher .ts-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;
+  font:inherit;font-size:13px;color:var(--ink-dim,#ccc);background:none;border:0;border-radius:11px;
+  padding:9px 10px;transition:.18s}
+.theme-switcher .ts-item:hover{background:color-mix(in srgb,var(--accent,#9fd4e8) 14%,transparent);color:var(--ink,#fff)}
+.theme-switcher .ts-item.on{background:color-mix(in srgb,var(--accent,#9fd4e8) 22%,transparent);
+  color:var(--ink,#fff);font-weight:700}
+.theme-switcher .ts-sw{width:22px;height:22px;border-radius:7px;flex:0 0 auto;border:1px solid rgba(255,255,255,.2)}
+.theme-switcher .ts-name{flex:1}
+.theme-switcher .ts-tick{opacity:0;font-size:12px}
+.theme-switcher .ts-item.on .ts-tick{opacity:1}
+@media(max-width:640px){.theme-switcher{left:10px;top:10px}.theme-switcher .ts-panel{width:min(250px,calc(100vw - 20px))}}

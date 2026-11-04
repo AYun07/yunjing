@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>云境 · 创作日志（独立成册）</title>
+    <link rel="icon" href="../assets/yj-favicon.ico" sizes="48x48">
+    <link rel="icon" href="../assets/yj-icon-192.png" sizes="192x192" type="image/png">
     <style>
         :root {
             --primary: #e0a84c;
@@ -281,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布 整改" style="--entry-hue:#7a4ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.89.0</span>
+                <span class="entry-date">2026-11-05</span>
+            </div>
+            <h3 class="entry-title">v3.88 全量整改：主界面收束 · 单一全功能小云 · 8 套新主题 · 云境图标 · 自检与离线修复</h3>
+            <p class="entry-text">以实际运行为准逐项整改：①大厅只保留基础版式与 8 套新主题，删除 9 套 disabled 旧版式、14 个 demo 散页、旧皮肤切换器与 ?lobby= 死参数，新主题可见可切可记忆且两两真实不同；②MoChibi 降为纯 API 兼容层，不再渲染第二只小云，say() 与全部模块入口统一收进唯一 #xyBuddy，面板改为 2 列规整网格、按钮紧凑单行零重叠，并修复懒加载落地后模块入口不回补的问题；③删除墨枢遗留图标与 chibi-preview.html，换成云境自有 assets/yj-*，manifest / sw.js / 各页 link 同步并补齐 icon link 消除 404；④一致性自检在 file:// 下给出明确 HTTP 启动引导而非抛 TypeError 全挂，HTTP 下 63/63 通过；⑤启动方式收束为唯一 8080 本地服务，删除冗余启动器与旧版式对照台，修正说明文档互相矛盾之处；⑥离线缓存补齐新主题 CSS/JS、首屏吉祥物图与 6 个创作室脚本，静态与派生路径全部可达；⑦全仓 ?v= 与 YJ_VER / SW_VER / 标题 / 徽标同源到 3.89.0。验收：结构 33/33、真实 API 生成 33/33、自检 63/63、活世界逻辑 29/29、专项模块全过、4 页零 404。</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">

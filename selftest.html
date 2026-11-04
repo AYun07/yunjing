@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>云境 · 一致性自检</title>
+<link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
+<link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
 <style>
 body{background:#12141d;color:#e8e4d8;font:14px/1.7 "Microsoft YaHei",sans-serif;padding:20px;max-width:860px;margin:0 auto}
 h1{color:#e0a84c;font-size:20px}
@@ -15,21 +17,30 @@ button{padding:10px 22px;background:#e0a84c;color:#16181f;border:none;border-rad
 </style>
 </head>
 <body class="page-selftest">
-<h1>🩺 云境 · 一致性自检(v1)</h1>
+<h1>🩺 云境 · 一致性自检</h1>
 <button onclick="runAll()">▶ 运行全部检查</button>
 <div id="sum"></div><div id="out"></div>
 <script>
-const V = '3.46';
+const ENGINE_VER = '3.89.0';
 const ENGINES = ['js/world-runtime.js','js/world-bus.js','js/module-forge.js','js/combat-core.js','js/quest-chain.js','js/world-stage.js','js/story-hooks.js','js/world-director.js','js/world-legacy.js','js/world-ext/world-ext-core.js','js/player-kit.js','js/knowledge-manager.js','js/kb-vector.js','js/st-import.js','js/store-guard.js','js/mobile-fit.js','js/id-migrate.js','js/preset-io.js','js/regex-io.js','js/ai-message-builder.js','js/ai-response-handler.js','js/opportunity-system.js','js/world-alive.js'];
 const GENRES = ["mystery","scifi","wuxia","cthulhu","free","swallowedstar","shrouding","quanzhigaoshou","doupocangqiong","wanmeishijie","douluodalu","daoguiyixian","zhongshengdushi","dibao","longzu","quanzhifashi","limingzhijian","lunhuileyuan","wulianfengdian","shengxu","shenmifusu","ditandali","fanrenxiuxian","xianni","earth","freeworld","quanqiubingfeng","chaoshenxueyuan","zhanhen","jianlai","guimi","guzhenren","xuanjianxianzu"];
 function item(cls, name, detail){ const d=document.getElementById('out'); d.insertAdjacentHTML('beforeend', `<div class="item ${cls}">${cls==='ok'?'✅':cls==='fail'?'❌':'⚠️'} <b>${name}</b> — ${detail}</div>`); return cls==='ok'?1:cls==='fail'?0:1; }
 let pass=0,total=0;
+async function getText(f){
+  try{ const r=await fetch(f+'?t='+Date.now()); if(!r.ok) throw new Error('HTTP '+r.status); return {ok:true,text:await r.text()}; }
+  catch(e){ return {ok:false,err:String(e&&e.message||e)}; }
+}
 async function runAll(){
-  document.getElementById('out').innerHTML=''; pass=0; total=0;
+  const out=document.getElementById('out'); out.innerHTML=''; pass=0; total=0;
+  if(location.protocol==='file:'){
+    document.getElementById('sum').innerHTML='<b style="color:#e0a84c">⚠️ 当前以 file:// 方式打开，浏览器禁止本地 fetch，自检无法读取项目文件。</b><br>请用本地服务器打开：在项目根目录执行 <code>python3 -m http.server 8080</code>，再访问 <b>http://localhost:8080/selftest.html</b>';
+    return;
+  }
   // ① 引擎语法
   for (const f of ENGINES){
-    try{ const src=await (await fetch(f+'?t='+Date.now())).text(); try{ new Function(src); total++; pass+=item('ok','语法 '+f,'解析通过'); }catch(e){ total++; pass+=item('fail','语法 '+f,e.message); } }
-    catch(e){ total++; pass+=item('fail','获取 '+f,'HTTP 加载失败'); }
+    const g=await getText(f);
+    if(!g.ok){ total++; pass+=item('fail','语法 '+f,'获取失败：'+g.err); continue; }
+    try{ new Function(g.text); total++; pass+=item('ok','语法 '+f,'解析通过'); }catch(e){ total++; pass+=item('fail','语法 '+f,e.message); }
   }
   // ② 每界四件套存在性(config/ext/css + 引擎注册)
   for (const g of GENRES){
@@ -39,31 +50,35 @@ async function runAll(){
     total++; pass+=miss.length?item('fail','资源四件套 '+g,'缺 '+miss.join(',')):item('ok','资源四件套 '+g,'config/ext/css 齐全');
   }
   // ③ 引擎 33 界注册
-  const srcC=await (await fetch('js/combat-core.js?t='+Date.now())).text();
-  const missC=GENRES.filter(g=>!srcC.includes(g+':{'));
-  total++; pass+=missC.length?item('fail','战斗注册',`缺 ${missC.join(',')}`):item('ok','战斗注册','33 界阵容齐全');
-  const srcQ=await (await fetch('js/quest-chain.js?t='+Date.now())).text();
-  const missQ=GENRES.filter(g=>!srcQ.includes(g+':{'));
-  total++; pass+=missQ.length?item('fail','主线注册',`缺 ${missQ.join(',')}`):item('ok','主线注册','33 界章节齐全');
-  const srcS=await (await fetch('js/world-stage.js?t='+Date.now())).text();
-  const missS=GENRES.filter(g=>!srcS.includes(g+':{'));
-  total++; pass+=missS.length?item('fail','阶段注册',`缺 ${missS.join(',')}`):item('ok','阶段注册','33 界时代齐全');
+  const c=await getText('js/combat-core.js');
+  const missC=c.ok?GENRES.filter(g=>!c.text.includes(g+':{')):GENRES;
+  total++; pass+=missC.length?item('fail','战斗注册',c.ok?`缺 ${missC.join(',')}`:'文件获取失败'):item('ok','战斗注册','33 界阵容齐全');
+  const q=await getText('js/quest-chain.js');
+  const missQ=q.ok?GENRES.filter(g=>!q.text.includes(g+':{')):GENRES;
+  total++; pass+=missQ.length?item('fail','主线注册',q.ok?`缺 ${missQ.join(',')}`:'文件获取失败'):item('ok','主线注册','33 界章节齐全');
+  const s=await getText('js/world-stage.js');
+  const missS=s.ok?GENRES.filter(g=>!s.text.includes(g+':{')):GENRES;
+  total++; pass+=missS.length?item('fail','阶段注册',s.ok?`缺 ${missS.join(',')}`:'文件获取失败'):item('ok','阶段注册','33 界时代齐全');
   // ④ 大厅卡=validGenres=标题计数
-  const idx=await (await fetch('index.html?t='+Date.now())).text();
-  const stu=await (await fetch('studio.html?t='+Date.now())).text();
-  const cardIds=[...new Set([...idx.matchAll(/genre=([a-z]+)/g)].map(m=>m[1]))];
-  const vgM=stu.match(/validGenres\s*=\s*\[([^\]]+)\]/);
-  const vg=vgM?[...new Set([...vgM[1].matchAll(/"([a-z]+)"/g)].map(m=>m[1]))]:[];
-  const onlyCard=cardIds.filter(g=>!vg.includes(g)), onlyVg=vg.filter(g=>!cardIds.includes(g));
-  total++; pass+=(onlyCard.length||onlyVg.length)?item('fail','大厅卡 vs validGenres',`卡多:${onlyCard} 表多:${onlyVg}`):item('ok','大厅卡 vs validGenres',`${cardIds.length}=${vg.length} 完全一致`);
-  const headM=idx.match(/全站\s*([0-9]+)\s*界/)||idx.match(/开放世界扮演\s*·\s*([0-9]+)\s*界/);
-  total++; pass+=headM&&parseInt(headM[1])===GENRES.length?item('ok','大厅计数文案',`标题 ${headM[1]} 界 = 实际 ${GENRES.length}`):item('fail','大厅计数文案',`标题「${headM?headM[1]:'未找到'}」≠ 实际 ${GENRES.length} 界`);
-  const needInStu=['store-guard.js','st-import.js','ui-polish.css','sw.js'];
-  const missW=needInStu.filter(n=>!stu.includes(n));
-  total++; pass+=missW.length?item('fail','studio 挂载',`未引用 ${missW}`):item('ok','studio 挂载','防线/导入/优化/离线均已接线');
+  const idx=await getText('index.html');
+  const stu=await getText('studio.html');
+  if(idx.ok && stu.ok){
+    const cardIds=[...new Set([...idx.text.matchAll(/genre=([a-z]+)/g)].map(m=>m[1]))];
+    const vgM=stu.text.match(/validGenres\s*=\s*\[([^\]]+)\]/);
+    const vg=vgM?[...new Set([...vgM[1].matchAll(/"([a-z]+)"/g)].map(m=>m[1]))]:[];
+    const onlyCard=cardIds.filter(g=>!vg.includes(g)), onlyVg=vg.filter(g=>!cardIds.includes(g));
+    total++; pass+=(onlyCard.length||onlyVg.length)?item('fail','大厅卡 vs validGenres',`卡多:${onlyCard} 表多:${onlyVg}`):item('ok','大厅卡 vs validGenres',`${cardIds.length}=${vg.length} 完全一致`);
+    const headM=idx.text.match(/全站\s*([0-9]+)\s*界/)||idx.text.match(/开放世界扮演\s*·\s*([0-9]+)\s*界/);
+    total++; pass+=headM&&parseInt(headM[1])===GENRES.length?item('ok','大厅计数文案',`标题 ${headM[1]} 界 = 实际 ${GENRES.length}`):item('fail','大厅计数文案',`标题「${headM?headM[1]:'未找到'}」≠ 实际 ${GENRES.length} 界`);
+    const needInStu=['store-guard.js','st-import.js','ui-polish.css','sw.js'];
+    const missW=needInStu.filter(n=>!stu.text.includes(n));
+    total++; pass+=missW.length?item('fail','studio 挂载',`未引用 ${missW}`):item('ok','studio 挂载','防线/导入/优化/离线均已接线');
+  } else {
+    total+=2; pass+=item('fail','大厅对比','index/studio 获取失败：'+((!idx.ok)?idx.err:'')+((!stu.ok)?stu.err:''));
+  }
   // ⑤ 跨界泄漏嗅探:新界 forge 段必须是惰性工厂
-  const srcF=await (await fetch('js/module-forge.js?t='+Date.now())).text();
-  const eager=GENRES.filter(g=>new RegExp(g+':\\[').test(srcF));
+  const f=await getText('js/module-forge.js');
+  const eager=f.ok?GENRES.filter(g=>new RegExp(g+':\\[').test(f.text)):[];
   total++; pass+=eager.length?item('fail','forge 惰性构造',`急切键:${eager}`):item('ok','forge 惰性构造','全部为 function(){return} 工厂');
   // 总结
   document.getElementById('sum').innerHTML=`<b style="color:${pass===total?'#6fbf73':'#e05c5c'}">${pass}/${total} 项通过${pass===total?' · 全部健康':' · 有问题需修'}</b>`;

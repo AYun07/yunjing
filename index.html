@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <!-- PWA / iOS 主屏安装（v3.27.1）：Safari「加入主屏幕」后全屏独立运行，HTTPS 部署时离线可玩 -->
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- v3.27.4：补齐图标资源（此前引用但文件缺失，WebView 控制台 404 噪音） -->
-    <link rel="icon" href="favicon.ico" sizes="48x48">
-    <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="assets/yj-icon-apple.png">
+    <!-- v3.89.0：图标换为云境自有素材（移除墨枢遗留 icon-192/512/apple-touch/favicon） -->
+    <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
+    <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="云境">
@@ -17,10 +17,10 @@
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
-    <script src="js/id-migrate.js?v=3.88.0"></script>
-    <title>云境 v3.88.0 · AI创作与开放世界扮演</title>
+    <script src="js/id-migrate.js?v=3.89.0"></script>
+    <title>云境 v3.89.0 · AI创作与开放世界扮演</title>
     <style>
-        /* v3.75.0 大厅全面重设计「纸本」：样式整体迁移至 css/lobby-v4.css，此处仅留变量兜底 */
+        /* v3.89.0 大厅版式与 8 套新主题见 css/lobby-xiaoyun.css / css/lobby-themes.css（旧 lobby-a~i / v4 回滚底已移除） */
         :root {
             --primary: #b5382e;
             --ink: #1c1a16;
@@ -28,69 +28,19 @@
         }
     </style>
 
-    <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集，见 css/fonts-local.css -->
-    <link rel="stylesheet" href="css/fonts-local.css?v=3.88.0">
-    <!-- v3.80.0 四套大厅版式可选：?lobby=a 暗夜星辉 / b 暮金画报 / c 薄荷汽水 / d 墨线编辑（默认不启用） -->
-    <link rel="stylesheet" href="css/lobby-a-night.css?v=3.88.0" id="lobbyA" disabled>
-    <link rel="stylesheet" href="css/lobby-b-vogue.css?v=3.88.0" id="lobbyB" disabled>
-    <link rel="stylesheet" href="css/lobby-c-mint.css?v=3.88.0" id="lobbyC" disabled>
-    <link rel="stylesheet" href="css/lobby-d-editorial.css?v=3.88.0" id="lobbyD" disabled>
-    <!-- v3.82.0 新增两套：E 千字云海（超大字+跑马灯）/ F 云格Bento -->
-    <link rel="stylesheet" href="css/lobby-e-mega.css?v=3.88.0" id="lobbyE" disabled>
-    <link rel="stylesheet" href="css/lobby-f-bento.css?v=3.88.0" id="lobbyF" disabled>
-    <!-- v3.83.0 概念三套：G 暗夜液态玻璃 / H 新中式宣纸 / I 二次元场景沉浸 -->
-    <link rel="stylesheet" href="css/lobby-g-glass.css?v=3.88.0" id="lobbyG" disabled>
-    <link rel="stylesheet" href="css/lobby-h-paper.css?v=3.88.0" id="lobbyH" disabled>
-    <link rel="stylesheet" href="css/lobby-i-anime.css?v=3.88.0" id="lobbyI" disabled>
-    <script>
-      (function () {
-        try {
-          var l = (new URLSearchParams(location.search).get('lobby') || '').toLowerCase();
-          var map = { a: 'lobbyA', b: 'lobbyB', c: 'lobbyC', d: 'lobbyD', e: 'lobbyE', f: 'lobbyF', g: 'lobbyG', h: 'lobbyH', i: 'lobbyI' };
-          if (map[l]) {
-            var el = document.getElementById(map[l]);
-            if (el) { el.disabled = false; el.media = 'all'; }
-          }
-        } catch (e) {}
-      })();
-    </script>
-    <!-- v3.83.1 小云主题时段切换：默认云夜，?skin=day 切云昼 -->
-    <script>
-      function applySkin() {
-        try {
-          var s = (new URLSearchParams(location.search).get('skin') || 'night').toLowerCase();
-          if (s !== 'day') s = 'night';
-          document.body.dataset.skin = s;
-          var btns = Array.prototype.slice.call(document.querySelectorAll('.skin-toggle button'));
-          btns.forEach(function (b) {
-            b.classList.toggle('on', b.dataset.skin === s);
-            b.addEventListener('click', function () {
-              document.body.dataset.skin = b.dataset.skin;
-              btns.forEach(function (x) { x.classList.toggle('on', x === b); });
-              var u = new URL(location.href);
-              u.searchParams.set('skin', b.dataset.skin);
-              history.replaceState(null, '', u);
-            });
-          });
-        } catch (e) {}
-      }
-      if (document.body) applySkin();
-      else document.addEventListener('DOMContentLoaded', applySkin);
-    </script>
-    <!-- v3.78.0「晨青·楷变」底座（保留作回滚底，默认禁用；以下 v3.83.1 小云主题为唯一活动皮肤） -->
-    <link rel="stylesheet" href="css/lobby-v4.css?v=3.88.0" disabled>
-    <!-- v3.83.1 小云主题大厅：配色自小云 12 形象立绘实提取，云夜/云昼双时段，卡片逐张取形象柔彩 -->
-    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=3.88.0">
-    <script src="js/theme-studio.js?v=3.88.0"></script>
+    <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集 -->
+    <link rel="stylesheet" href="css/fonts-local.css?v=3.89.0">
+    <!-- v3.89.0 大厅基础版式 + 8 套新主题皮肤（旧 9 套 disabled 版式与 v4 回滚底已移除） -->
+    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=3.89.0">
+    <link rel="stylesheet" href="css/lobby-themes.css?v=3.89.0">
+    <!-- 主题切换器：同步挂 html[data-theme]，首屏不闪色；8 套主题可见可切可记忆 -->
+    <script src="js/lobby-themes.js?v=3.89.0"></script>
+    <script src="js/theme-studio.js?v=3.89.0"></script>
 </head>
 
 <body class="page-index">
     <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v3.87.0 云境版</a>
-    <div class="skin-toggle" role="group" aria-label="时段切换">
-        <button type="button" data-skin="night" class="on">云夜</button>
-        <button type="button" data-skin="day">云昼</button>
-    </div>
+    <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v3.89.0 云境版</a>
 
     <!-- 开屏 -->
     <div id="splash">
@@ -102,7 +52,7 @@
 
     <div class="container">
         <div class="masthead">
-            <img class="mh-mascot" src="assets/xiaoyun-keai-happy.png?v=3.88.0" alt="小云">
+            <img class="mh-mascot" src="assets/xiaoyun-keai-happy.png?v=3.89.0" alt="小云">
             <h1 class="logo-kai"><span class="lk-a">云</span><span class="lk-b">境</span></h1>
             <div class="sub">万象入云 · 一念一世界</div>
             <div class="gold-divider"></div>
@@ -560,7 +510,7 @@
     </div>
 
     <!-- v3.38.1 错误哨兵：脚本加载失败/运行异常时屏幕直接显示出错文件 -->
-    <script defer src="js/boot-error-guard.js?v=3.88.0"></script>
+    <script defer src="js/boot-error-guard.js?v=3.89.0"></script>
     <script>
         // 响应式模式类（与 studio.html 同策略；判空防异常，媒体查询兜底已内置）
         (function () {
@@ -668,14 +618,14 @@
 })();
 </script>
 <!-- v3.84.0 小云：大厅即全功能可用（世界书/存档/预设/正文急救/造物工坊） -->
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=3.88.0">
-<script src="js/worldbook-seeds.js?v=3.88.0"></script>
-<script src="js/world-book.js?v=3.88.0"></script>
-<script src="js/xiaoyun-ops.js?v=3.88.0"></script>
-<script src="js/xiaoyun-buddy.js?v=3.88.0"></script>
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=3.89.0">
+<script src="js/worldbook-seeds.js?v=3.89.0"></script>
+<script src="js/world-book.js?v=3.89.0"></script>
+<script src="js/xiaoyun-ops.js?v=3.89.0"></script>
+<script src="js/xiaoyun-buddy.js?v=3.89.0"></script>
 <script>
   /* v3.87.0 P3-3：首页版本徽标与 YJ_VER 同源（此前写死 v3.84.0，与实际版本长期不符） */
-  window.YJ_VER = '3.88.0';
+  window.YJ_VER = '3.89.0';
   (function () {
     var b = document.getElementById('verBadge');
     if (b) b.textContent = 'v' + window.YJ_VER + ' 云境版';
