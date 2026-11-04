@@ -196,7 +196,7 @@
       quick.appendChild(b);
     });
   }
-  /* v3.89.0：统一对话出口——MoChibi.say 也路由到这里，保证全站只有一只云灵在说话 */
+  /* v3.90.0：统一对话出口——MoChibi.say 也路由到这里，保证全站只有一只云灵在说话 */
   function say(text, ms) {
     text = String(text == null ? "" : text);
     bot(text);
@@ -210,7 +210,7 @@
     say._t = setTimeout(function () { tip.classList.remove("on"); }, ms || 4000);
   }
   function openPanel() {
-    /* v3.89.0：已打开时也重建模块区，补齐懒加载完成后新出现的入口 */
+    /* v3.90.0：已打开时也重建模块区，补齐懒加载完成后新出现的入口 */
     if (panelOn) { buildModules(); return; }
     panelOn = true; panel.classList.add("on"); tip.classList.remove("on");
     if (!chat.children.length) bot(face().hi);
@@ -240,7 +240,7 @@
       b.innerHTML = '<span class="xy-mod-ico">' + it.ico + '</span>' +
         '<span class="xy-mod-name">' + it.name + '</span>' +
         '<span class="xy-mod-note">' + it.note + '</span>';
-      /* v3.89.0 按钮紧凑化后说明文字不占位，改由悬浮提示承载，信息不丢 */
+      /* v3.90.0 按钮紧凑化后说明文字不占位，改由悬浮提示承载，信息不丢 */
       b.title = it.name + (it.note ? ' · ' + it.note : '');
       b.onclick = function () { try { if (it.act) it.act(); } catch (e) {} };
       grid.appendChild(b);
@@ -249,19 +249,23 @@
   }
   send.onclick = function () { var v = input.value; if (!v) return; me(v); input.value = ''; reply(v); };
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send.onclick(); });
-  /* v3.89.0：打开面板时按需重建「模块」区，反映当前题材已加载的子系统 */
+  /* v3.90.0：打开面板时按需重建「模块」区，反映当前题材已加载的子系统 */
   orb.addEventListener('click', function () {
     if (panelOn) closePanel(); else openPanel();
   });
   function rotateTips() {
     if (panelOn) return;
+    /* v3.90.0 视觉合理性：大厅首屏已有吉祥物与标题，右下角再自动轮播气泡会压住
+       主题卡片（8 套版式 × 桌面/手机实测全部被遮挡）。大厅不自动弹，玩家点小云才出现；
+       创作室保留轮播，那边是浮动助手、不承载版式构图。 */
+    if (document.body && document.body.classList.contains('page-index')) return;
     var f = face(); tip.textContent = f.tips[Math.floor(Math.random() * f.tips.length)];
     tip.classList.add('on');
     setTimeout(function () { tip.classList.remove('on'); }, 3200);
   }
   setForm(0); buildQuick();
   if (modules) modules.style.display = "none";
-  /* v3.89.0：创作室 demand 懒加载组约 8s 后才就绪；玩家若提前点开小云，模块入口会缺且
+  /* v3.90.0：创作室 demand 懒加载组约 8s 后才就绪；玩家若提前点开小云，模块入口会缺且
      此前永不回补。此处在懒加载落地后自动补齐（仅当模块区已渲染过才刷，不打扰未打开状态）。 */
   function refreshModulesWhenReady() {
     try {
@@ -280,7 +284,7 @@
     setTimeout(refreshModulesWhenReady, 9000);
     setTimeout(refreshModulesWhenReady, 15000);
   }
-  /* v3.89.0：暴露给 MoChibi 兼容层路由 say()，以及外部触发开关面板 */
+  /* v3.90.0：暴露给 MoChibi 兼容层路由 say()，以及外部触发开关面板 */
   window.XYBuddy = { say: say, open: openPanel, close: closePanel };
   img.src = face().img;
   setTimeout(rotateTips, 900); setInterval(rotateTips, 7000);

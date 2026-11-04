@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **57** 个版本，从 `v3.55.7` 到 `v3.89.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **58** 个版本，从 `v3.55.7` 到 `v3.90.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.90.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
 | **v3.89.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
 | **v3.88.0** | 2026-11-04 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
 | **v3.87.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
@@ -72,6 +73,22 @@
 
 ---
 
+## v3.90.0 · 2026-11-05
+
+大厅版式整改：只认实际视觉生效，把「8 套主题 = 8 套配色」升级为「8 套主题 = 8 种版式骨架」
+
+根因取证：从 git 恢复 v3.55.7 / v3.84.0 / v3.89.0 三方对照，确认主界面骨架自项目首个版本起从未变过（吉祥物 + 标题 + 胶囊 + 5 张等大卡片），只换过配色；v3.84.0 起的 14 套异构概念稿一直只躺在 demo 页，v3.89.0 还把它们当散页删掉。结论是换皮没换版式。
+
+恢复 11-04 八套新稿的真实布局骨架，新增 css/lobby-layouts.css，用 html[data-theme] body.page-index .container > .workshops 严格限定（不影响 9 个 33 界分组与跳转）：彩云主演 3 大形象卡 + 2 小卡、幻海罗盘环形 5 节点、星轨轮播横向 scroll-snap 大画幅、胶片映画胶片条 + 齿孔、巨幕主角 1 巨幕 + 4 行列表、卷轴长廊纵向逐屏左右交替、侧栏书页固定 248px 侧栏 + 3+2 网格、形象馆竖长人物卡；8 套骨架指纹两两不同
+
+按视觉合理性口径（V1–V8：焦点/辨识度/留白密度/层级/形态比例/对齐遮挡/可读性/可发现性）对 8 套 × 桌面 1440×900 + 手机 390×844 共 16 张真实首屏逐张审查，修正 P0 共通问题 2 项与逐套问题 10 项：大厅不再自动轮播小云气泡（消除跨 8 套的卡片遮挡）、入坊按钮归位、carousel 标题不再竖排断行、scroll 首屏露出完整入口并加向下展卷提示、compass 罗盘缩小上移使 5 节点全可见、hero 巨幕填充空白、colorful 大卡改大形象位、sidebar 消掉 4+1 孤卡并移开切换器、横滑区补提示与滚动条、手机端孤卡跨列与侧栏回退 2 列
+
+离线缓存加入 css/lobby-layouts.css，SW_VER 递增；全仓 195 处 3.89.0 → 3.90.0，?v= / YJ_VER / SW_VER / 标题 / 徽标同源
+
+验收：8 套骨架 8/8 不同、33 界跳转各 33/33、?theme= 记忆、自检 63/63、4 页零 404 零错误、JS 语法 263/263、离线 0 缺失；视觉审查修正后气泡遮挡 0 / 竖排断行 0 / 孤卡 0 / 首屏无完整入口 0 套。详见 test/VISUAL-REVIEW-v3.90.0.md 与 test/LIVE-TEST-v3.90.0.md
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.90.0)  [🔍 与 v3.89.0 差异](https://github.com/AYun07/yunjing/compare/v3.89.0...v3.90.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip)
+
 ## v3.89.0 · 2026-11-05
 
 v3.88 全量整改：只认实际运行生效的代码，收束主界面、单一全功能小云、只留新主题、换云境图标、修自检与离线缓存
@@ -80,7 +97,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
 
-图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
 
 一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
 
@@ -236,7 +253,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 ## v3.69.0 · 2026-11-02
 
-预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
@@ -314,7 +331,7 @@ chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
 ## v3.59.0 · 2026-11-01
 
-晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
@@ -350,7 +367,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 ## v3.55.30 · 2026-11-01
 
-多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 
