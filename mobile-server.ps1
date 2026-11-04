@@ -1,5 +1,5 @@
 ﻿$root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$port = 8777
+$port = 8080
 $enc = [Text.Encoding]::UTF8
 $mimeMap = @{
     '.html' = 'text/html; charset=utf-8'; '.js' = 'application/javascript; charset=utf-8';
@@ -8,7 +8,7 @@ $mimeMap = @{
     '.webmanifest' = 'application/manifest+json'; '.txt' = 'text/plain; charset=utf-8'
 }
 $listener = $null
-foreach ($p in @($port, 8778, 8779, 8780)) {
+foreach ($p in @($port, 8081, 8082, 8083)) {
     try {
         $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Any, $p)
         $listener.Start()

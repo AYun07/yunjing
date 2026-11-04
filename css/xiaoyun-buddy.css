@@ -47,28 +47,41 @@
 .xy-dev .installed .pbtn{padding:5px 11px}
 .xy-dev .hint{font-size:11px;color:#8a84b0;line-height:1.8;margin-top:8px}
 
-.xy-panel{position:absolute;right:0;bottom:132px;width:340px;max-height:70vh;display:flex;flex-direction:column;
+.xy-panel{position:absolute;right:0;bottom:132px;width:340px;max-height:80vh;display:flex;flex-direction:column;
   background:linear-gradient(170deg,rgba(28,24,48,.96),rgba(18,16,34,.97));border:1px solid rgba(200,180,255,.28);
   border-radius:20px;box-shadow:0 24px 60px rgba(5,5,20,.6),inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden;
   opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;transition:.32s;color:#efedfa}
 .xy-panel.on{opacity:1;transform:none;pointer-events:auto}
-.xy-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(90deg,rgba(126,140,255,.22),rgba(255,140,190,.14));border-bottom:1px solid rgba(200,180,255,.18)}
+.xy-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(90deg,rgba(126,140,255,.22),rgba(255,140,190,.14));border-bottom:1px solid rgba(200,180,255,.18)}
 .xy-head img{width:34px;height:34px;border-radius:50%;object-fit:cover;object-position:top;background:#fff}
 .xy-head b{font-size:15px;letter-spacing:.06em}
 .xy-mood{margin-left:auto;font-size:11px;color:#cfc8f0;background:rgba(150,140,255,.18);padding:3px 10px;border-radius:999px}
-.xy-chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:130px;max-height:250px}
+.xy-chat{flex:0 0 auto;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:80px;max-height:130px}
 .xy-msg{max-width:86%;font-size:13px;line-height:1.7;padding:9px 13px;border-radius:14px}
 .xy-msg.bot{align-self:flex-start;background:rgba(130,120,220,.2);border:1px solid rgba(170,160,255,.22);border-bottom-left-radius:4px}
 .xy-msg.me{align-self:flex-end;background:linear-gradient(120deg,#7e8cff,#b78cff);border-bottom-right-radius:4px;color:#fff}
-.xy-quick{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 14px 10px}
+.xy-quick{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 14px 10px}
 .xy-q{font-size:12px;font-weight:600;color:#e6e2ff;background:rgba(140,130,255,.14);border:1px solid rgba(170,160,255,.3);
   border-radius:11px;padding:8px 6px;cursor:pointer;text-align:center;transition:.2s}
 .xy-q:hover{background:rgba(140,130,255,.32);transform:translateY(-1px)}
-.xy-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(200,180,255,.16)}
+.xy-form{flex:0 0 auto;display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(200,180,255,.16)}
 .xy-form input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(170,160,255,.3);border-radius:11px;color:#fff;font-size:13px;padding:9px 12px;outline:none}
 .xy-form input::placeholder{color:#9a94c0}
 .xy-form button{background:linear-gradient(120deg,#7e8cff,#b78cff);border:none;border-radius:11px;color:#fff;font-weight:700;font-size:13px;padding:0 16px;cursor:pointer}
-.xy-forms{display:flex;gap:6px;padding:0 14px 13px;flex-wrap:wrap}
+.xy-forms{flex:0 0 auto;display:flex;gap:6px;padding:0 14px 13px;flex-wrap:wrap}
 .xy-f{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.28);background:transparent;border-radius:999px;padding:4px 11px;cursor:pointer;transition:.2s}
 .xy-f.on,.xy-f:hover{color:#fff;background:rgba(140,130,255,.35)}
-@media(max-width:640px){.xy-panel{width:calc(100vw - 40px)}.xy-orb{width:78px;height:98px}}
+/* v3.89.0 模块区：让单只云灵也是全功能云灵（世界动态/手机/太虚阁/上下文/资料库/大势账本/行旅图鉴/灵宠/小队/身份/立场…） */
+/* v3.89.0 修正：此前模块区未声明 flex 收缩规则，在 70vh 面板里被压到接近 0（10 个按钮只剩一条）。
+   现固定其它分区不收缩，模块区独占剩余空间并保证最小可视高度，内部滚动可看全部入口。 */
+.xy-modules{flex:1 1 auto;min-height:160px;max-height:34vh;border-top:1px solid rgba(200,180,255,.16);padding:10px 14px 6px;overflow-y:auto}
+.xy-sec-title{font-size:12px;color:#cfc8f0;letter-spacing:.14em;margin-bottom:8px;font-weight:700}
+.xy-mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+/* v3.89.0 模块按钮紧凑化为单行：图标 + 名称，说明移到 title 悬浮提示，10 个入口首屏尽量全可见 */
+.xy-mod{display:flex;flex-direction:row;align-items:center;gap:7px;text-align:left;background:rgba(140,130,255,.12);border:1px solid rgba(170,160,255,.26);border-radius:10px;padding:7px 9px;cursor:pointer;transition:.2s;color:#efedfa;min-width:0}
+.xy-mod:hover{background:rgba(140,130,255,.3);transform:translateY(-1px)}
+.xy-mod-ico{font-size:15px;line-height:1;flex:0 0 auto}
+.xy-mod-name{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.xy-mod-note{display:none}
+@media(max-width:640px){.xy-panel{width:calc(100vw - 40px)}.xy-orb{width:78px;height:98px}
+  .xy-mod-grid{grid-template-columns:1fr}}
