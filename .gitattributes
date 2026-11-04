@@ -1,0 +1,37 @@
+# 云境 · 行尾与文本规范化
+#
+# 背景：仓库历史提交一律按 LF 存储，但开发机的 core.autocrlf=true 会在检出时把
+# 文本文件转成 CRLF；一旦有脚本「读文件 → 改字符串 → 写回」（例如 scripts/release.mjs
+# 改版本号），写回的 CRLF 会被原样提交，于是出现「真实只改 1 行、diff 却整文件翻红」
+# 的假 diff（v3.88.0 发版曾因此把 19 个文件由 LF 翻成 CRLF）。
+#
+# 本文件把行尾策略固定在仓库侧，使其不再依赖各机器/各工具的 autocrlf 设置：
+#   - 所有文本文件在仓库中一律以 LF 存储（eol=lf），检出时也保持 LF；
+#   - 二进制文件由 git 自动识别，不做任何转换。
+# 以后新增文件同样受此约束，不会再出现整文件假 diff。
+
+* text=auto eol=lf
+
+# 明确标记二进制，避免任何转换损坏资源
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.bmp   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.mp3   binary
+*.mp4   binary
+*.webm  binary
+*.pdf   binary
+*.zip   binary
+
+# 脚本/配置在 Windows 上也不应被转成 CRLF
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
