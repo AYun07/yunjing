@@ -120,6 +120,15 @@
           BeastSystem.driftAll({ crisis: _crisis, day: day });
         }
       } catch (e) {}
+      /* v3.88.0 人物意志（P1）：不依赖 AI 上报——NPC 的情绪/目标/信任/记忆随世界自转自行演化；
+         显著变化以「【众生】」入史，从而进入主笔提示词的「近期世界自行发生」（有界：每 tick ≤3 人） */
+      try {
+        if (window.NpcSpawn && NpcSpawn.driftWills) {
+          var _wEv = NpcSpawn.driftWills(v, day, rnd) || [];
+          _wEv.forEach(function (t) { v.history.push("【众生】第" + day + "日 · " + t); });
+          if (v.history.length > MAX_HISTORY) v.history.splice(0, v.history.length - MAX_HISTORY);
+        }
+      } catch (e) {}
       /* 待注入事件（供导演/规划在下一轮提示词引用） */
       v.时间.pendingEvents = [ev].concat(Array.isArray(v.时间.pendingEvents) ? v.时间.pendingEvents : []).slice(0, 3);
       v.时间.lastClockAt = Date.now();

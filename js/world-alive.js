@@ -29,39 +29,116 @@
   function STORE() { return "yunjingWorldAlive~" + slotId() + "~" + genre(); }
 
   /* 持久化：活跃事件 + 上轮影响力快照（用于 ↑↓ 显示）+ 事件连锁/AI 事件/生命周期记账 */
-  var mem = { events: [], prevInf: {}, chain: [], aiEvents: [], lastLifeDay: -1 };
+  var mem = { events: [], prevInf: {}, chain: [], aiEvents: [], lastLifeDay: -1, facts: [], stageFallback: 0, facSeed: "" };
   function loadMem() {
-    try { var raw = localStorage.getItem(STORE()); if (raw) { var d = JSON.parse(raw); if (d && typeof d === "object") { mem.events = Array.isArray(d.events) ? d.events : []; mem.prevInf = d.prevInf && typeof d.prevInf === "object" ? d.prevInf : {}; mem.chain = Array.isArray(d.chain) ? d.chain : []; mem.aiEvents = Array.isArray(d.aiEvents) ? d.aiEvents : []; mem.lastLifeDay = d.lastLifeDay != null ? Number(d.lastLifeDay) : -1; } } } catch (e) {}
+    try { var raw = localStorage.getItem(STORE()); if (raw) { var d = JSON.parse(raw); if (d && typeof d === "object") { mem.events = Array.isArray(d.events) ? d.events : []; mem.prevInf = d.prevInf && typeof d.prevInf === "object" ? d.prevInf : {}; mem.chain = Array.isArray(d.chain) ? d.chain : []; mem.aiEvents = Array.isArray(d.aiEvents) ? d.aiEvents : []; mem.lastLifeDay = d.lastLifeDay != null ? Number(d.lastLifeDay) : -1; mem.facts = Array.isArray(d.facts) ? d.facts : []; mem.stageFallback = d.stageFallback != null ? Number(d.stageFallback) : 0; mem.facSeed = typeof d.facSeed === "string" ? d.facSeed : ""; } } } catch (e) {}
   }
-  function saveMem() { try { localStorage.setItem(STORE(), JSON.stringify({ events: mem.events, prevInf: mem.prevInf, chain: mem.chain, aiEvents: mem.aiEvents, lastLifeDay: mem.lastLifeDay })); } catch (e) {} }
+  function saveMem() { try { localStorage.setItem(STORE(), JSON.stringify({ events: mem.events, prevInf: mem.prevInf, chain: mem.chain, aiEvents: mem.aiEvents, lastLifeDay: mem.lastLifeDay, facts: mem.facts, stageFallback: mem.stageFallback, facSeed: mem.facSeed })); } catch (e) {} }
   loadMem();
 
   /* ---------- 真实势力实体初始化（首轮从世界阶段静态表播种） ---------- */
+  function hashStr(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; } return h; }
+
+  /* v3.88.0 修正 P2-1：势力名改从「本界真实知识库」取（33 界各不相同），静态 fa 表降为兜底。
+     原先 33 界共用同一张固定 3 名表，导致每个世界开局都是同样三个势力，不满足"每个世界对应的势力" */
+  /* 从知识库条目标题中抽取「专名」当势力名。
+     知识库里 category 命中"势力"的条目常常是技法/分析文（如「门规的三种功能」「门派经济与产业经营学」），
+     直接拿 title 会得到一堆不是势力的名字，故此处做专名还原 + 技法词剔除。 */
+  var FAC_BAD = /写作|伏笔|三幕|节奏|读者|视角|对白|爽点|描写|结构|弧光|塑造|运营|定稿|开篇|节拍|经济|经营|财政|产业|态度|困境|征兆|功能|布局|空间|划分|显性|隐性|传承|门规|仪轨|分野|读法|悟性|关系|互动|分析|研究|指南|手册|速造|原则|方法|技巧|如何|怎么|为何|浅析|漫谈|杂谈|考据|设定|时间线|世界观|生态|格局|体系|概况|简介|介绍|档案|名录|考|辨析|演变|流变|分类|种类|类型|特点|特征|意义|影响|作用|价值|逻辑|机制|原理|规律|现象|问题|误区|清单|盘点|汇总|整理|漕运|盐政|军政|军务|吏治|乡绅|宗族|大赦|逃犯|官场|朝堂|学$|论$|法$|志$|史$|的|者$/;
+  /* 通名：这些词本身不是某个势力的名字，抽到就丢 */
+  var FAC_GENERIC = /^(江湖|天下|武林|世界|势力|组织|门派|宗门|家族|阵营|朝廷|官府|帝国|联盟|军队|学院|庙堂|边关|人间|红尘|庙宇|修行界|修真界|修仙界|江湖势力|各方势力)$/;
+  function facNameFrom(title) {
+    var s = String(title || "");
+    s = s.replace(/[（(][^）)]*[）)]/g, "");              /* 去括号注释 */
+    s = s.replace(/^[^·：:]{1,14}[·：:]/, "");             /* 去系列/书名前缀（如「斗罗大陆·」「凡人·」） */
+    s = s.replace(/[、，,。；;！!].*$/, "");              /* 去并列尾串 */
+    /* 并列结构「A与B」「A和B」：取主体 A（仅当 A 足够长才切） */
+    var i, CJ = ["与", "和", "及"];
+    for (i = 0; i < CJ.length; i++) { var idx = s.indexOf(CJ[i]); if (idx >= 3) { s = s.slice(0, idx); break; } }
+    /* 去尾部的体裁后缀 */
+    s = s.replace(/(详录|详解|详述|实录|总纲|往事|秘史|纪事|纪要|概况|简介|档案|名录|兴衰|之乱|崛起|覆灭|总体战爆发|总动员|战争|战争与和平|纪年|编年)$/, "");
+    s = s.replace(/^[\s·、,，.。:：\-—]+|[\s·、,，.。:：\-—]+$/g, "");
+    return s.slice(0, 14);
+  }
+  function kbFactionNames() {
+    var out = [], seen = {}, scored = [];
+    try {
+      var list = (window.KB_PRESETS && window.KB_PRESETS[genre()]) || [];
+      var RE = /势力|组织|门派|宗门|家族|阵营|帮会|商会|镖局|集团|军团|教会|公司|机构|王朝|帝国|联盟|部落|学院|议会|军队|门派组织|江湖与庙堂/;
+      list.forEach(function (it) {
+        if (!it || !it.title) return;
+        var cat = String(it.category || "");
+        var tagstr = Array.isArray(it.tags) ? it.tags.join(" ") : "";
+        var hitCat = RE.test(cat), hitTag = RE.test(tagstr);
+        if (!hitCat && !hitTag) return;
+        var n = facNameFrom(String(it.title));
+        if (!n || n.length < 2 || n.length > 14) return;
+        if (FAC_BAD.test(n) || FAC_GENERIC.test(n)) return;
+        /* 注意：JS 的 \w 只含 [A-Za-z0-9_]，汉字属于 \W，故必须显式判定"含汉字或字母" */
+        if (!/[A-Za-z\u4e00-\u9fa5]/.test(n)) return;
+        if (seen[n]) return;
+        seen[n] = 1;
+        scored.push({ n: n, s: hitCat ? 2 : 1 });
+      });
+      /* 类目直接命中（更可信）优先，其次按 哈希 稳定排序 */
+      var g = genre();
+      scored.sort(function (a, b) { return (b.s - a.s) || (hashStr(g + a.n) - hashStr(g + b.n)); });
+      out = scored.map(function (x) { return x.n; });
+    } catch (e) {}
+    return out.slice(0, 6);
+  }
+
+  /* 势力是否已被 AI/玩家/涌现改写（若已改写则不再换名，避免抹掉剧情成果） */
+  function factionsUntouched(v) {
+    var fs = v.entities.factions || {};
+    var ks = Object.keys(fs);
+    if (!ks.length) return true;
+    return ks.every(function (k) { return (fs[k] || {}).origin === "world"; });
+  }
+
   function seedFactions() {
     var v = vars(); if (!v) return;
     v.entities = v.entities || {};
     v.entities.factions = v.entities.factions || {};
     v.entities.relations = v.entities.relations || [];
     if (v.tension == null) v.tension = 20;
-    var names = [];
-    try { var D = window.WorldStage && window.WorldStage.data; var c = D && D[genre()]; if (c && c.fa) names = c.fa.slice(); } catch (e) {}
-    if (!names.length) names = ["主角阵营", "对立阵营", "中立势力"];
+
+    var kbNames = kbFactionNames();
+    var src = kbNames.length ? "kb" : "fallback";
+
+    /* 已播种过：只有"上次用兜底名、本界真实知识库现已就绪、且势力尚未被剧情改写"时才升级换名 */
+    if (Object.keys(v.entities.factions).length) {
+      if (mem.facSeed === "fallback" && src === "kb" && factionsUntouched(v)) {
+        Object.keys(v.entities.factions).forEach(function (k) { if ((v.entities.factions[k] || {}).origin === "world") delete v.entities.factions[k]; });
+      } else {
+        return v.entities.factions;
+      }
+    }
+
+    /* KB 专名不足 3 个时用世界阶段静态表补齐：保证每界至少 3 方势力，不会因 KB 只抽到 1 个而只剩 1 方 */
+    var names = kbNames.slice();
+    try { var D = window.WorldStage && window.WorldStage.data; var c = D && D[genre()]; if (c && c.fa) c.fa.forEach(function (x) { if (x && names.indexOf(x) < 0) names.push(x); }); } catch (e) {}
+    var GEN = ["主角阵营", "对立阵营", "中立势力"];
+    for (var gi = 0; names.length < 3 && gi < GEN.length; gi++) { if (names.indexOf(GEN[gi]) < 0) names.push(GEN[gi]); }
+    names = names.slice(0, 6);
+
+    var GEAR = ["守序", "扩张", "中立", "隐世", "逐利", "激进"];
     var seeded = false;
     names.forEach(function (n, i) {
       var key = "fac_" + i + "_" + n;
       if (v.entities.factions[key]) return;
-      var h = 0; for (var k = 0; k < n.length; k++) h = (h * 31 + n.charCodeAt(k)) >>> 0;
+      var h = hashStr(genre() + n);
       v.entities.factions[key] = {
         id: key, name: n,
-        members: 8 + (h % 10),
-        territory: 2 + (h % 3),
-        influence: clamp(48 + (h % 15) - 7, 30, 70),
-        ideology: (i === 0 ? "守序" : i === 1 ? "扩张" : "中立"),
+        members: 8 + (h % 18),
+        territory: 1 + (h % 4),
+        influence: clamp(38 + (h % 25) - 8, 26, 72),
+        ideology: GEAR[i % GEAR.length],
         origin: "world"
       };
       seeded = true;
     });
-    if (seeded) saveMem();
+    if (seeded) { mem.facSeed = src; saveMem(); }
     return v.entities.factions;
   }
 
@@ -74,7 +151,8 @@
   }
   function stageInfo() {
     var m = null; try { m = window.WorldExt && WorldExt.modState ? WorldExt.modState("wr_stage") : null; } catch (e) {}
-    var st = m ? (Number(m.state.stage) || 1) : 1;
+    /* v3.88.0 修正：模块未就绪时不再静默丢阶段，回落到 applyAI 留档的 mem.stageFallback */
+    var st = m ? (Number(m.state.stage) || 1) : (Number(mem.stageFallback) || 1);
     var name = "";
     try { var D = window.WorldStage && window.WorldStage.data; var c = D && D[genre()]; if (c && c.st) name = c.st[st - 1] || ""; } catch (e) {}
     return { stage: st, name: name };
@@ -86,7 +164,24 @@
     return out;
   }
   function recentSignals() {
-    try { return (window.WorldBus && window.WorldBus.recent && window.WorldBus.recent()) || []; } catch (e) { return []; }
+    var out = [];
+    /* v3.88.0 修正 P2：drainFacts() 原先全仓零调用（死 API）。此处收干残留 facts 队列并沉淀到 mem，
+       使其真正进入上行注入，而不是堆在内存里没人读。 */
+    try {
+      if (window.WorldBus && typeof WorldBus.drainFacts === "function") {
+        var drained = WorldBus.drainFacts();
+        if (drained && drained.length) {
+          mem.facts = (mem.facts || []).concat(drained.map(function (x) {
+            return typeof x === "string" ? x : ((x && (x.text || x.msg)) || "");
+          }).filter(Boolean)).slice(-8);
+          saveMem();
+        }
+      }
+    } catch (e) {}
+    try { if (window.WorldBus && WorldBus.recent) out = out.concat(WorldBus.recent() || []); } catch (e) {}
+    out = out.concat(mem.facts || []);
+    var seen = {};
+    return out.filter(function (s) { if (!s || seen[s]) return false; seen[s] = 1; return true; });
   }
   function recentAutoEvents() {
     var v = vars(); if (!v) return [];
@@ -248,7 +343,10 @@
       try {
         if (key === "stage") {
           var m = null; try { m = window.WorldExt && WorldExt.modState ? WorldExt.modState("wr_stage") : null; } catch (e2) {}
-          if (m) { m.state.stage = clamp(parseInt(val, 10) || 1, 1, 3); }
+          var wantStage = clamp(parseInt(val, 10) || 1, 1, 3);
+          /* v3.88.0 修正：模块未注册时不再静默无操作，改为留档到 mem，下一轮注入仍能看到阶段推进 */
+          if (m) { m.state.stage = wantStage; }
+          else { mem.stageFallback = wantStage; saveMem(); }
         } else if (key.indexOf("faction.") === 0) {
           var rest = key.slice(8);
           var dot = rest.lastIndexOf(".");
@@ -397,23 +495,95 @@
     if (nxt) { mem.chain = (mem.chain || []).concat([nxt]).slice(-8); saveMem(); }
   }
 
-  /* 势力生命周期：弱者愈弱→覆灭；势力不足→从知识库/城市派生新兴势力（写入大势账本） */
+  /* 势力生命周期：因果化演化 → 覆灭 → 新生（写入大势账本）
+     v3.88.0 修正 P0：原实现「每次只侵蚀当前最弱者、最强永不衰减、与玩家零耦合」，
+     世界会动但动的方向与剧情无关。现改为多因子共同驱动：
+       ① 势力自身兴衰势能  ② 强者受制平衡  ③ 弱者颓势 / 太平回补
+       ④ 与玩家的恩怨传导  ⑤ 势力间关系传导  ⑥ 活跃事件与近期大事点名
+       ⑦ 阶段放大 + 张力冲突
+     使「玩家选择 / 恩怨 / 事件 / 阶段」真正改变世界大势走向。 */
   function lifecycle() {
     var v = vars(); if (!v || !v.entities || !v.entities.factions) return;
     var facs = v.entities.factions;
     var keys = Object.keys(facs);
     var alive = keys.filter(function (k) { return facs[k] && !facs[k].collapsed; });
     if (!alive.length) return;
-    /* 弱者愈弱：以最强势力为参照持续侵蚀最弱者（强者愈强，真实演化 L3） */
-    if (alive.length >= 2) {
-      var infs = alive.map(function (k) { return Number(facs[k].influence) || 0; });
-      var maxI = Math.max.apply(null, infs);
-      var weakest = alive.slice().sort(function (a, b) { return (Number(facs[a].influence) || 0) - (Number(facs[b].influence) || 0); })[0];
-      var wi = Number(facs[weakest].influence) || 0;
-      var gap = maxI - wi;
-      var loss = 1 + Math.floor(gap / 12);
-      facs[weakest].influence = Math.max(0, wi - loss);
+
+    var st = stageInfo();
+    var amp = 1 + ((clamp(Number(st.stage) || 1, 1, 3) - 1) * 0.45);   /* 阶段越高，变局越剧烈 */
+    var tension = clamp(Number(v.tension) || 20, 0, 100);
+    var conflict = tension / 100;
+    var deltas = {};
+    function bump(k, d) { if (k == null || !isFinite(d) || !d) return; deltas[k] = (deltas[k] || 0) + d; }
+    var byName = {}; alive.forEach(function (k) { byName[facs[k].name] = k; });
+
+    /* ① 势力自身的兴衰势能：每方有一条长期趋势线（持久化），使世界拥有自己的宏观动态，
+       而不是"永远只打当前最弱者"（那既失真又会让强弱格局退化成一潭死水）。 */
+    alive.forEach(function (k) {
+      var f = facs[k], cur = Number(f.influence) || 0;
+      if (f.trend == null) f.trend = ((hashStr(genre() + f.name) % 120) / 100) - 0.6;   /* -0.60 ~ +0.59 */
+      f.trend = clamp(Number(f.trend) + (Math.random() - 0.5) * 0.06, -0.9, 0.9);       /* 趋势本身缓慢演变 */
+      bump(k, f.trend);
+      /* ② 强者受制：独大者被各方制衡（修掉"最强恒不衰减"的失真） */
+      if (cur > 68) bump(k, -(cur - 68) * 0.10);
+      /* ③ 弱者颓势 / 太平回补：衰败会自我强化；太平年月各方休养生息，但高张力下无人能喘息 */
+      if (cur < 40) bump(k, -((40 - cur) * 0.18) - 0.5);
+      else if (cur < 62 && tension < 60) bump(k, 0.35);
+    });
+
+    /* ④ 与玩家的恩怨传导：玩家的敌友真实影响其消长 */
+    var gm = {}; grudgePairs().forEach(function (p) { gm[p.name] = p.v; });
+    alive.forEach(function (k) {
+      var gv = gm[facs[k].name];
+      if (gv == null) return;
+      if (gv <= -25) bump(k, -(0.6 + conflict * 1.8) * amp);
+      else if (gv <= -8) bump(k, -0.45 * amp);
+      else if (gv >= 25) bump(k, (0.5 + conflict * 0.6) * amp);
+      else if (gv >= 8) bump(k, 0.3);
+    });
+
+    /* ⑤ 势力间关系传导：盟友共振、敌对互耗 */
+    var rels = Array.isArray(v.entities.relations) ? v.entities.relations : [];
+    rels.forEach(function (r) {
+      if (!r) return;
+      var ka = byName[r.a], kb2 = byName[r.b];
+      if (!ka || !kb2 || ka === kb2) return;
+      var w = Number(r.strength) || 0, kind = String(r.kind || "");
+      if (/盟|友|亲|合作|依附|联姻/.test(kind)) { bump(ka, w / 150); bump(kb2, w / 150); }
+      else if (/敌|仇|对立|宿怨|死仇|竞争/.test(kind)) { var d = -(Math.abs(w) / 180) * amp; bump(ka, d); bump(kb2, d); }
+    });
+
+    /* ⑥ 活跃事件牵涉的势力获得张力红利 */
+    (mem.events || []).forEach(function (e) {
+      if (!e || e.status === "over") return;
+      if (byName[e.name]) bump(byName[e.name], 1.1 * amp);
+    });
+    /* ⑥b 近期世界大事中点名的势力：恶化类受损、其余受益 */
+    recentAutoEvents().forEach(function (txt) {
+      if (!txt) return;
+      alive.forEach(function (k) {
+        if (txt.indexOf(facs[k].name) < 0) return;
+        bump(k, /覆灭|枯竭|失守|洗劫|告急|恶化|摩擦|冲突/.test(txt) ? -2.2 * amp : 1.4 * amp);
+      });
+    });
+
+    /* ⑦ 张力驱动冲突：高张力时两方因资源/地盘互耗（有因果，不是纯噪声） */
+    if (alive.length >= 2 && Math.random() < conflict * 0.55) {
+      var a = alive[Math.floor(Math.random() * alive.length)];
+      var b = alive[Math.floor(Math.random() * alive.length)];
+      if (a !== b) {
+        var loss2 = (1.5 + conflict * 3) * amp;
+        bump(a, -loss2); bump(b, -loss2 * 0.6);
+        try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: "「" + facs[a].name + "」与「" + facs[b].name + "」因地盘与资源起了冲突，双方各有损耗。" }); } catch (e) {}
+      }
     }
+
+    /* 应用增量（保留一位小数，使跨 tick 的真实累积可见） */
+    alive.forEach(function (k) {
+      var cur = Number(facs[k].influence) || 0;
+      var next = cur + (deltas[k] || 0);
+      facs[k].influence = clamp(Math.round(next * 10) / 10, 0, 100);
+    });
     /* 覆灭判定：影响力枯竭 */
     keys.forEach(function (k) {
       var f = facs[k]; if (!f || f.collapsed) return;
@@ -460,6 +630,7 @@
     lifecycle: lifecycle,
     pickDynamicEvent: pickDynamicEvent,
     scheduleFollowUp: scheduleFollowUp,
-    _mem: mem
+    _mem: mem,
+    _factionSeeds: kbFactionNames
   };
 })();

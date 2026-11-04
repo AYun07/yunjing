@@ -4,6 +4,8 @@
  *  - 原创势力/地点：命名模板生成，落实体库并自动上图（StoryAtlas.syncEntities）
  *  - 势力动态：世界时钟每日结算驱动成员/影响力消长（玩家自创势力 origin:"player" 同样演化）
  *  - enrich()：给所有角色/物品补全档案缺项（只补空缺，绝不覆盖 AI/玩家已写内容）
+ *  - 人物意志（v3.88.0 P1）：driftWills() 由世界时钟每日驱动——情绪回归 / 目标推进 / 信任漂移 / 记忆沉淀，
+ *    不依赖 AI 上报；每 tick ≤3 人、每人冷却 2 日、显著变化以「【众生】」入史。
  * 有界性：人物 ≤24、原创势力 ≤8、原创地点 ≤10，绝不无限膨胀；全部确定性种子可复算。
  */
 (function () {
@@ -140,7 +142,7 @@
     const ES = window.EntityStore;
     if (!ES || !v || spawnedCount(v, "places") >= CAPS.places) return null;
     const taken = {};
-    Object.values((v.entities && v.entities.places) || {}).forEach((p) => { taken[p.name] = 1; });
+    Object.values((v.entities && v.entities.places) || []).forEach((p) => { taken[p.name] = 1; });
     const name = _spawnName(rnd, taken, PLACE_PREFIX, PLACE_SUFFIX);
     if (!name) return null;
     const regions = Object.values((v.entities && v.entities.places) || {}).map((p) => p.region).filter(Boolean);
@@ -189,7 +191,7 @@
         if (!c.goal) { c.goal = pick(GOALS, rnd); filled++; }
         if (c.memory === undefined) c.memory = "";
         if (!c.role) { c.role = pick(ROLES, rnd); filled++; }
-        if (c.origin === undefined) c.origin = "原著";
+        if (c.origin === undefined) c.origin = "原著"; filled++;
       }
     }
     if (Array.isArray(v.items)) {
@@ -203,38 +205,121 @@
     return filled;
   }
 
-  /* ---------- 人格漂移（v3.86.0 活世界 P1-2）：NPC 的目标/情绪随世界状态演化 ---------- */
-  /* 条件读真实关系与势力状态：被高敌意势力盯上、所属势力覆灭、或久历世事，都会改写其当下目标与情绪。
-     这是"性格活着"（L3 有因果链）的关键——不是随机乱跳，而是被世界推着走。 */
-  function driftPersonalities(v, rnd, day) {
-    const chars = v.characters && typeof v.characters === "object" ? Object.values(v.characters) : [];
-    if (!chars.length) return;
+  /* ---------- 人物意志漂移 v3.88.0（P1）：不依赖 AI 上报，人物自己也会行动 ---------- */
+  /* 世界自转每天驱动一次（world-clock 的 tick 显式调用；daily() 内保留兜底调用，按世界日幂等）。
+     四个维度全部只读真实状态、有界、可复算：
+       ① 情绪回归：极端态（暴怒/狂喜/绝望…）按概率回到 平静/警惕/隐忍；常态小概率轻微波动
+       ② 目标推进：结合 ambition（长期志向）、所在地 location、所属势力 faction、与玩家的恩怨值改写 goal
+       ③ 信任漂移：向 v.entities.relations 中「该人物 ↔ 主角」关系强度推导的目标值靠拢（关系恶化 → 信任下降）
+       ④ 记忆沉淀：把 v.history 里最新【世界】/【众生】大事按概率写入 memory，硬截断 220 字
+     节流：每 tick 最多处理 WILL_PER_TICK=3 人（按世界日轮转，长期公平覆盖每个人），
+           每人每 WILL_COOLDOWN=2 日才可能再发生一次显著改写；每 tick 最多回传 WILL_SIGNAL_MAX=3 条信号。 */
+  const WILL_PER_TICK = 3, WILL_COOLDOWN = 2, WILL_SIGNAL_MAX = 3, WILL_MEM_MAX = 220;
+  const EXTREME_MOODS = ["暴怒", "狂喜", "绝望", "癫狂", "嗜血", "暴戾", "大怒", "大喜", "崩溃", "疯狂", "亢奋", "惊惧", "悲恸"];
+  const CALM_MOODS = ["平静", "警惕", "隐忍"];
+
+  function _playerName(v) {
+    try {
+      const s = window.storyFramework && window.storyFramework.storyState;
+      return (s && s.setup && s.setup.playerName) || (v.主角 && String(v.主角)) || "主角";
+    } catch (e) { return "主角"; }
+  }
+  function _setMood(c, m) { c.emotion = m; if (c.mood !== undefined) c.mood = m; }
+  function driftWills(v, day, rnd) {
+    const events = [];
+    if (!v || typeof v !== "object") return events;
+    const d = Number(day) || 0;
+    if (!v.众生 || typeof v.众生 !== "object") v.众生 = {};
+    const ctr = v.众生;
+    if (d > 0 && Number(ctr.willDay) === d) return events;  /* 幂等：同一世界日只漂移一次 */
+    ctr.willDay = d;
+    const chars = (v.characters && typeof v.characters === "object") ? Object.values(v.characters) : [];
+    if (!chars.length) return events;
+    const rnd2 = rnd || mulberry32(hashStr("will:" + d));
     const rels = (v.entities && Array.isArray(v.entities.relations) && v.entities.relations) || [];
     const factions = (v.entities && v.entities.factions) || {};
-    const playerName = (function () { try { var s = window.storyFramework && window.storyFramework.storyState; return (s && s.setup && s.setup.playerName) || (v.主角 && String(v.主角)) || "主角"; } catch (e) { return "主角"; } })();
-    chars.forEach((c) => {
-      if (!c || typeof c !== "object" || c.origin === "玩家") return;
-      /* 1) 所属势力覆灭 → 目标改写（失去靠山，重新谋生） */
-      if (c.faction && factions) {
-        const f = Object.values(factions).find((x) => x && x.name === c.faction);
-        if (f && f.collapsed) {
-          if (rnd() < 0.7) c.goal = pick(["在乱局里自保", "寻一条新的出路", "替旧主了却未竟之事", "找个能容身的新势力"], rnd);
-          if (rnd() < 0.5) c.emotion = pick(["惶惑", "愤懑", "隐忍"], rnd);
-          if (!c.memory || c.memory.indexOf("旧主") < 0) c.memory = ("旧主「" + c.faction + "」覆灭，天地变色。" + (c.memory || "")).slice(0, 220);
+    const me = _playerName(v);
+    /* 轮转节流：以世界日为步长取连续 N 人，单 tick 有界、长期人人有份 */
+    const n = Math.min(WILL_PER_TICK, chars.length);
+    const start = chars.length ? (d * (WILL_PER_TICK + 1)) % chars.length : 0;
+    for (let i = 0; i < n && events.length < WILL_SIGNAL_MAX; i++) {
+      const c = chars[(start + i) % chars.length];
+      if (!c || typeof c !== "object" || c.origin === "玩家" || c.isPlayer) continue;
+      if (d - (Number(c._willDay) || -999) < WILL_COOLDOWN) continue;  /* 每人每 2 日才显著改写一次 */
+      const rel = rels.find((r) => r && ((r.a === c.name && r.b === me) || (r.b === c.name && r.a === me)));
+      const bond = rel ? clamp(Math.round(Number(rel.strength) || 0), -100, 100) : null;
+      const sig = [];
+      let changed = false;
+
+      /* ① 情绪回归 */
+      const mood = String(c.emotion || c.mood || "平静");
+      if (EXTREME_MOODS.indexOf(mood) >= 0) {
+        if (rnd2() < 0.6) {
+          const base = (bond != null && bond <= -20) ? "警惕" : pick(CALM_MOODS, rnd2);
+          _setMood(c, base);
+          sig.push(`「${c.name}」的${mood}渐渐平息，转为${base}。`);
+          changed = true;
+        }
+      } else if (rnd2() < 0.12) {
+        const nx = pick(EMOTIONS, rnd2);
+        if (nx !== mood) { _setMood(c, nx); changed = true; }
+      }
+
+      /* ② 信任漂移：关系恶化 → 目标信任下降 */
+      const target = bond != null ? clamp(Math.round(50 + bond / 2), 0, 100) : 50;
+      const cur = clamp(Math.round(Number(c.trust != null ? c.trust : 50)), 0, 100);
+      if (cur !== target) {
+        const step = Math.abs(target - cur) >= 20 ? 2 : 1;
+        c.trust = clamp(cur + (target > cur ? step : -step), 0, 100);
+        changed = true;
+        if (bond != null && bond <= -30 && c.trust <= 35 && !c._wary) { c._wary = 1; sig.push(`「${c.name}」对你心存芥蒂，信任降到 ${c.trust}。`); }
+        if (bond != null && bond >= 30 && c.trust >= 65 && !c._close) { c._close = 1; sig.push(`「${c.name}」渐渐信重你，信任升到 ${c.trust}。`); }
+      }
+
+      /* ③ 目标推进（因果优先：与玩家恩怨 → 所属势力覆灭 → 所在地 → 长期志向）。
+         有强因果的改写一定上报「【众生】」；纯长期志向/所在地的自然推进多数静默，避免刷屏。 */
+      const fac = c.faction ? Object.values(factions).find((x) => x && x.name === c.faction) : null;
+      let ng = null, sigGoal = false;
+      if (bond != null && bond <= -25) {
+        if (rnd2() < 0.7) { ng = pick([`向「${me}」讨还旧账`, `躲开「${me}」的眼线`, `联络人手提防「${me}」`], rnd2); sigGoal = true; }
+      } else if (fac && fac.collapsed) {
+        if (rnd2() < 0.5) { ng = pick(["在乱局里自保", "寻一条新的出路", "替旧主了却未竟之事", "另投一个能容身的势力"], rnd2); sigGoal = true; }
+      } else if (bond != null && bond >= 25) {
+        if (rnd2() < 0.5) { ng = pick([`替「${me}」办妥一件难事`, `为「${me}」打探一处消息`, `把「${me}」的托付放在心上`], rnd2); sigGoal = true; }
+      } else if (rnd2() < 0.4) {
+        if (c.location && rnd2() < 0.5) ng = pick([`在${c.location}谋一条出路`, `打点行装离开${c.location}`, `守住${c.location}的一亩三分地`, `打听${c.location}近日的风声`], rnd2);
+        else if (c.ambition) ng = pick([`继续${c.ambition}`, `为「${c.ambition}」攒下第一笔本钱`, `打听与「${c.ambition}」有关的消息`], rnd2);
+        else ng = pick(GOALS, rnd2);
+        sigGoal = rnd2() < 0.3;
+      }
+      if (ng && ng !== String(c.goal || "")) { c.goal = ng; if (sigGoal) sig.push(`「${c.name}」改了主意：${ng}。`); changed = true; }
+
+      /* ④ 记忆沉淀：最新世界大事写进 memory（硬截断 220）；排除他人意志噪声，只沉淀世界真事 */
+      if (Array.isArray(v.history) && v.history.length && rnd2() < 0.4) {
+        const recent = v.history.slice(-8).filter((t) => typeof t === "string" &&
+          (t.indexOf("【世界】") >= 0 || t.indexOf("【众生】") >= 0) &&
+          !/改了主意|渐渐平息|信任(降|升)到/.test(t));
+        if (recent.length) {
+          const line = String(pick(recent, rnd2)).replace(/【(?:世界|众生)】/, "").trim();
+          const cur2 = String(c.memory || "");
+          if (line && cur2.indexOf(line.slice(0, 12)) < 0) {
+            c.memory = (line + (cur2 ? "；" + cur2 : "")).slice(0, WILL_MEM_MAX);
+            changed = true;
+          }
         }
       }
-      /* 2) 与玩家高敌意 → 目标转向针对玩家 */
-      const gr = rels.find((r) => (r.a === c.name && r.b === playerName) || (r.b === c.name && r.a === playerName));
-      if (gr && Number(gr.strength) <= -40 && rnd() < 0.5) {
-        c.goal = pick(["向「" + playerName + "」讨还血债", "躲开「" + playerName + "」的视线", "拉拢人手对付「" + playerName + "」"], rnd);
-        c.emotion = pick(["愤懑", "警惕"], rnd);
+
+      if (changed) {
+        c._willDay = d;
+        /* 镜像到 WorldRuntime.NPC，保持 NPC 面板与主笔人物真源一致 */
+        try {
+          if (window.WorldRuntime && WorldRuntime.NPC && WorldRuntime.NPC.upsert)
+            WorldRuntime.NPC.upsert({ name: c.name, emotion: c.emotion, goals: c.goal, trust: c.trust, memory: c.memory });
+        } catch (e) {}
       }
-      /* 3) 久历世事（世界自转够久）→ 偶尔重燃一个短期目标 */
-      if (day > 2 && rnd() < 0.18) {
-        c.goal = pick(GOALS, rnd);
-        if (rnd() < 0.4) c.emotion = pick(EMOTIONS, rnd);
-      }
-    });
+      for (let s = 0; s < sig.length && events.length < WILL_SIGNAL_MAX; s++) events.push(sig[s]);
+    }
+    return events;
   }
 
   /* ---------- 世界时钟日结算入口（有界，返回事件文案数组） ---------- */
@@ -254,7 +339,7 @@
         const p = spawnPlace(v, rnd);
         if (p) events.push(`「${p.name}」出现在行旅的传闻里（${p.region}）`);
       }
-      driftPersonalities(v, rnd, day);
+      /* 人物意志漂移由 world-clock 的 tick 显式调用 NpcSpawn.driftWills()（v3.88.0 P1），此处不重复 */
       enrich(v);
     } catch (e) {}
     return events;
@@ -313,5 +398,5 @@
     });
   }
 
-  window.NpcSpawn = { spawnOne, spawnFaction, spawnPlace, daily, enrich, roster, rosterPanel, CAPS, _driftFactions: driftFactions };
+  window.NpcSpawn = { spawnOne, spawnFaction, spawnPlace, daily, enrich, roster, rosterPanel, CAPS, driftWills, WILL_PER_TICK, WILL_COOLDOWN, _driftFactions: driftFactions };
 })();
