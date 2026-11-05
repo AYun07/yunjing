@@ -8368,13 +8368,20 @@
                 </g></g>`;
     }
     const label = (() => {
-      if (lp === false) return "";
+      /* v3.95.0：补录后节点变密，避让算法会把放不下的标签判为 lp===false。
+         关键状态（覆灭 / 当前 / 起点）必须始终可见，强制保留标签并回落到默认偏移；
+         其余补录节点只留圆点，悬停或点开详情看名称，既不丢详尽度也不挤爆画面。 */
+      const keyNode = fallen || isCur || isStd;
+      /* 补录节点（v3.95.0 共 814 条）默认只留圆点，标签悬停才显示，避免密集标签糊成一片；
+         关键状态（覆灭 / 当前 / 起点）始终常显。点开节点详情同样可看完整名称与出处。 */
+      const suppHidden = !!n.supp && !keyNode;
+      if (lp === false && !keyNode && !suppHidden) return "";
       const fs = isCur || isStd ? 2.9 : 2.4;
-      const c = lp || { dx: n.x <= 72 ? 4.4 : -4.4, dy: 0.85, anchor: n.x <= 72 ? "start" : "end" };
+      const c = (lp && lp !== false) ? lp : { dx: n.x <= 72 ? 4.4 : -4.4, dy: 0.85, anchor: n.x <= 72 ? "start" : "end" };
       const lx = c.dx, ly = c.dy, anchor = c.anchor;
       const lf = fallen ? hexA(P.muted, 0.72) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.muted, 0.85);
       const lname = fallen ? `${n.n}（已覆灭）` : n.n;
-      return `<text x="${lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label"${fallen ? ' text-decoration="line-through"' : ""} opacity="${fallen ? 0.72 : mode === "fog" ? 0.6 : 1}">${lname}</text>`;
+      return `<text x="${lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label${suppHidden ? ' atlas-label-supp' : ''}"${fallen ? ' text-decoration="line-through"' : ""} opacity="${fallen ? 0.72 : mode === "fog" ? 0.6 : 1}">${lname}</text>`;
     })();
     const fallenMark = fallen ? `<g transform="translate(2.4,-2.6)" opacity=".92">
                 <circle r="1.6" fill="${hexA(P.deep, 0.94)}" stroke="${hexA(P.muted, 0.75)}" stroke-width=".22"/>
@@ -8912,6 +8919,9 @@
         .atlas-zbtn:active{transform:scale(.9);}
         .atlas-zbtn:disabled{opacity:.3;cursor:default;}
         .atlas-label{font-family:'Noto Serif SC',serif;paint-order:stroke;stroke:rgba(4,4,9,.78);stroke-width:.66;}
+        /* v3.95.0：补录地标数量大，标签默认收起、悬停显现；常显标签只留给原有节点与关键状态 */
+        .atlas-label-supp{opacity:0;transition:opacity .16s ease;pointer-events:none;}
+        .atlas-node:hover .atlas-label-supp{opacity:1;}
         .atlas-pulse{animation:atlasPulse 2.6s ease-out infinite;transform-box:fill-box;transform-origin:center;}
         .atlas-pulse.d2{animation-delay:1.3s;}
         @keyframes atlasPulse{0%{opacity:.95;transform:scale(.5);}72%{opacity:.07;transform:scale(1.45);}100%{opacity:0;transform:scale(1.45);}}
@@ -8986,6 +8996,9 @@
             if (n.n === it.anchor || (it.anchor && n.n.includes(it.anchor)) || (it.anchor && it.anchor.includes(n.n))) { anchor = n; layer = l; }
           }
         }
+        /* 无锚点补录统一挂到含 start 节点的层：v3.95 曾试过按层轮转均摊，
+           但会改变「覆灭势力 → 地图节点」的匹配层，导致废墟态在当前层不出现（势力链路 10→8）。
+           核心动态链路优先，故保留原逻辑；标签密度改由 atlas-label-supp 悬停机制解决。 */
         if (!anchor) for (const l of cfg.layers) {
           const s = (l.nodes || []).find((n) => n.t === "start");
           if (s) { anchor = s; layer = l; break; }

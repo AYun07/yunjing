@@ -283,6 +283,18 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+        <article class="log-entry" data-tags="版本 资料库 地图 README 优化" style="--entry-hue:#5a7fc0;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.95.0</span>
+                <span class="entry-date">2026-11-05</span>
+            </div>
+            <h3 class="entry-title">资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复</h3>
+            <p class="entry-text">📚 <b>资料库完备化（给用便宜小模型的玩家）</b>：从 33 份 <code>configs</code> 逐行抽出 <b>4,739 条</b>「原著设定速查」（境界／势力／地理／人物／事件／铁律）追加到各 <code>js/kb/&lt;界&gt;.ext.js</code>；新增 <b>59 条</b>跨题材通用常识 <code>js/kb/_common.js</code>（神话／历史／地理／修真／西幻／科幻／都市／叙事），接入世界书加载与离线预缓存。知识库总量 <b>18,048 条</b>，<code>_index.json</code> 由过时的 1410 修正。模型记不住背景时按剧情检索注入，不再依赖模型自身记忆。</p>
+            <p class="entry-text">🗺 <b>地图准确、详尽、动态</b>：第三批严格审定补录 <b>625 条</b>（章节限定抽取＋词干虚词过滤＋原著出处行校验＋每界上限 50），补录总量 <b>814 条</b>；earth 另加 <b>41 座真实城市经纬度</b>落点（共 47 座）。全 33 界口径覆盖率 <b>20% → 61%</b>（925/1510），原著 26 界口径 <b>72%</b>，双口径并列披露、不偷偷改分母。补录标签默认收起悬停显现、关键状态强制常显，修掉覆灭标签被避让隐藏的回归；按层轮转均摊曾试过但会破坏「覆灭势力 ↔ 节点」匹配，已回滚，核心动态链路优先。</p>
+            <p class="entry-text">📋 <b>README 每版更新一眼可见</b>：顶部新增「当前版本＋逐版更新记录」，64 版每版一句话并附完整包／发布页／差异链接，最近 12 版展开、其余折叠；由 <code>scripts/update-readme.mjs</code> 从 <code>VERSIONS.md</code> 自动生成，发版跑一次即同步。</p>
+            <p class="entry-text">💰 <b>继续省 token</b>：补协议辅助请求走极简上下文，system 从约 26,000 字符压到 <b>43 字符</b>；势力上报协议改「照抄一行」极简格式。验收：<code>unit-v394</code> 23/23、势力舆图 10/10、真实浏览器 7/7、控制台 0 错误、版本同源 3.95.0。</p>
+        </article>
+
         <article class="log-entry" data-tags="版本 修复 测试 体验 模型" style="--entry-hue:#3f8f74;">
             <div class="entry-head">
                 <span class="entry-ver">v3.94.0</span>

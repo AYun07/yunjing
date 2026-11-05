@@ -253,7 +253,8 @@ const StoryInput = {
             + "内部逐行键值（chapter: 本轮章节号、wordCount: 本轮字数、characters/items/foreshadowings 按需）；\n"
             + "② 缺失时输出【行动选项】，六类各一条（快进/交互/整活/慢推/时空/成人），逐行以 ①②③④⑤⑥ 编号。\n"
             + "【正文末段（仅供对齐上下文，不要复述）】\n" + tail;
-          const patch = await callStoryAI(patchMsg, false, { maxTokens: 600 });
+          /* v3.95.0：补协议只输出格式片段，走极简上下文，不再重发整份 system */
+          const patch = await callStoryAI(patchMsg, false, { maxTokens: 600, lightContext: true });
           const merged = RH.mergeProtocolPatch(reply, patch);
           const gained = (RH.extractOptions(merged).length > RH.extractOptions(reply).length)
             || (!hasVarBlock && /\(?\/?variable_update/i.test(merged));

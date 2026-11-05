@@ -1,5 +1,112 @@
 # 云境 · AI 短篇小说生成器
 
+<!-- YJ_CHANGELOG_START -->
+
+## 🆕 当前版本：v3.95.0（2026-11-05）
+
+> **资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复**
+
+**这一版做了什么**
+
+- **README 每版更新一眼可见**：顶部新增「当前版本 + 逐版更新记录」，64 版每版一句话、完整包 / 发布页 / 差异链接，最近 12 版展开、其余折叠；由 `scripts/update-readme.mjs` 从 `VERSIONS.md` 自动生成，发版跑一次即同步，不再出现「主页还是老内容」。
+- **资料库完备化（面向小参数模型）**：从 33 份 `configs` 逐行抽出 **4,739 条**「原著设定速查」（境界 / 势力 / 地理 / 人物 / 事件 / 铁律），追加到各 `js/kb/<界>.ext.js`；新增 **59 条**跨题材通用常识（`js/kb/_common.js`：神话 / 历史 / 地理 / 修真 / 西幻 / 科幻 / 都市 / 叙事），接入世界书加载与 SW 离线预缓存。知识库总量 **18,048 条**，`_index.json` 统计由过时的 1410 修正。小模型记不住背景时按剧情检索注入，不依赖模型自身记忆。
+- **地图准确与详尽**：第三批严格审定补录 **625 条**（章节限定抽取 + 词干虚词过滤 + 原著出处行校验 + 每界上限 50），补录总量 **814 条**；earth 另加 **41 座真实城市经纬度**落点（共 47 座）。全 33 界口径覆盖率 **20% → 61%**（925/1510），原著 26 界口径 **72%**；两个口径并列披露，6 个抽象 / 类型世界与 earth 标为「不适用」，未从分母偷偷剔除。
+- **地图体验不打折**：补录节点标签默认收起、悬停显现，覆灭 / 当前 / 起点等关键状态强制常显；覆灭节点标签被避让隐藏的回归已修复。曾尝试把补录按层轮转均摊，但会改变「覆灭势力 ↔ 地图节点」的匹配层、导致废墟态在当前层不出现（势力链路 10→8），已回滚，核心动态链路优先。
+- **已知限制**：无锚点的第三批补录集中在含起点节点的层，个别界该层节点较密（圆点悬停看名称），其余层较疏；跨层均摊留待下一批在不破坏势力链路的前提下重做。
+- **继续省 token**：补协议辅助请求改走极简上下文（`lightContext`），system 从约 26,000 字符压到 **43 字符**；势力变更上报协议改成「照抄一行」的极简格式，降低小模型遵从成本。
+- 验收：`unit-v394` 23/23、势力舆图 10/10、真实浏览器 7/7（地图渲染 / 知识库每界 508-617 条 / 通用 59 条 / 覆灭标签 / 精简请求 / 控制台 0 错误）、改动 JS 语法全过、版本同源 3.95.0。
+
+**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) · [🔍 与 v3.94.0 的差异](https://github.com/AYun07/yunjing/compare/v3.94.0...v3.95.0) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
+
+> 本仓库是完整源码，下载 zip 解压即可运行，无需构建、无需后端。
+> 玩家用便宜的小参数模型也能玩：云境自带 33 界完整资料库（世界观 / 地理 / 势力 / 人物 / 境界 / 器物 / 年表 + 跨题材通用常识），按剧情检索注入，不依赖模型自身记忆。
+
+## 📋 逐版更新记录（新 → 旧，共 64 版）
+
+<details open>
+<summary><b>最近 12 版</b>（默认展开，完整历史见下方折叠区）</summary>
+
+| 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
+|---|---|---|---|
+| **v3.95.0** | 2026-11-05 | 资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
+| **v3.94.0** | 2026-11-05 | 玩家主导 · 势力真实演化 · 选项鲁棒化 · 省请求 · 测试模型边界对齐 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.94.0) |
+| **v3.93.0** | 2026-11-05 | 33 界势力动态舆图 · 原著地图补录 · 真实玩家实测（33 界 × 3 轮） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.93.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.93.0) |
+| **v3.92.1** | 2026-11-05 | 图鉴层级修复：手机端「世界自转 · 第 X 日」状态条压在图鉴标题上 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.92.1) |
+| **v3.92.0** | 2026-11-05 | 33 界全量体检 + 地球界换成真实世界地图 + 图鉴视觉修复 + Token 抓包实测 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.92.0) |
+| **v3.91.0** | 2026-11-05 | 大厅收束为六套原创风格：只保留同一批做出来的六种设计稿，删掉其余八套深紫玻璃版式；大厅吉祥物删除、全站唯一小云；三轮实拍视觉复验 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.91.0) |
+| **v3.90.0** | 2026-11-05 | 大厅版式整改：只认实际视觉生效，把「8 套主题 = 8 套配色」升级为「8 套主题 = 8 种版式骨架」 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
+| **v3.89.0** | 2026-11-05 | v3.88 全量整改：只认实际运行生效的代码，收束主界面、单一全功能小云、只留新主题、换云境图标、修自检与离线缓存 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
+| **v3.88.0** | 2026-11-04 | 世界自转因果化：修掉'只打最弱者、最强永不衰减、与玩家零耦合'；改为兴衰势能/强者受制/弱者颓势/玩家恩怨/势力间关系/活跃事件/张力冲突多因子驱动 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
+| **v3.87.0** | 2026-11-03 | 仓库瘦身 92M→41M（filter-repo 剥离 9.5MB 旧知识库整包的两个历史版本，共 18.1MB）+ 缓存版本号归一（189 处 `?v=` 从 3.55.29/3.68.0/3.72.0/3.84.0/… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
+| **v3.86.0** | 2026-11-03 | 活世界第二轮整改：机缘涌现（按世界状态滚动候选，有代价有时限，落实入正史）/ 人物情绪·记忆·目标 / 恩怨单一真源 / 关系图有向带趋势 / 势力兴衰生命周期 / 导演冲突焦点与节拍 / AI 自创装备登记 / 伙伴立… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
+| **v3.85.0** | 2026-11-03 | 活世界双向桥 WorldAlive：世界状态上行注入主笔、AI 回报下行回写势力/恩怨/关系/阶段/张力，选择真正改变世界；世界时钟默认自转；恩怨账本落盘；四类串档键按存档槽隔离 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.85.0) |
+
+</details>
+
+<details>
+<summary><b>全部历史版本（v3.55.7 → v3.84.0，共 52 版）</b></summary>
+
+| 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
+|---|---|---|---|
+| **v3.84.0** | 2026-11-03 | 世界书全量扩充+小云全能化：①世界书种子库外置 worldbook-seeds.js——29 界 418 条（26 个小说世界按原著公认设定还原，修复 guzhenren 错装诡秘之主条目并归正为蛊真人；earth 真实… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.84.0) |
+| **v3.82.0** | 2026-11-03 | 大厅版式 E「千字云海」(暗夜极光+超大字浮动+跑马灯字带+霓虹顶条) / F「云格Bento」(浅暖Bento主次格+彩墨晕染+彩色字徽)；修复 --ws-hue 十六进制不可入 hsl() 致色相 accent 静默… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.82.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.82.0) |
+| **v3.81.4** | 2026-11-03 | 全员轮廓晕圈衰减：贴边浅灰带(18.3万px/60张)alpha降至35%，浅底灰边清零，双底验收流程确立 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.4.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.4) |
+| **v3.81.3** | 2026-11-03 | 浅底验收补盲：发间/腿间死灰空隙残留清零(20处约1.69万px,含chibi-luo腿间竖条)，发丝暗面正常画法甄别保留 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.3.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.3) |
+| **v3.81.2** | 2026-11-03 | 立绘全量逐张精修：60张90处游离像素逐处定性，13处深灰残条清零(约1432px)，动作线/星星/发丝零损伤 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.2.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.2) |
+| **v3.81.1** | 2026-11-03 | 立绘像素级精修：keai/kusa-battle残余半透明阴影清零+60张全员白毛边压暗(11.2万px)，特效发梢描边AA全保留 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.1) |
+| **v3.81.0** | 2026-11-03 | 立绘全量回滚：撤销 v3.80 误伤清理(60张恢复原图,逐张核验零缺块)，仅定向清除 keai-battle/kusa-battle 腿间地面阴影白块(测地膨胀+羽化,深浅双底验收)，大厅四套版式对照台保留待选 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.0) |
+| **v3.80.0** | 2026-11-03 | 小云12形态抠图残留全量根修(60余张)+大厅四套原创版式对照台(暗夜星辉/暮金画报/薄荷汽水/墨线编辑) | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.80.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.80.0) |
+| **v3.79.0** | 2026-11-02 | 立绘脏阴影根修(去drop-shadow)+流光玻璃质感：三色光斑背景/渐变云境字/玻璃卡片 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.79.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.79.0) |
+| **v3.78.0** | 2026-11-02 | 晨青·楷变：楷体艺术字标题(错落双色+金圆印)+工坊波浪错落+沉浸段两栏卡化+修小云白色色块 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.78.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.78.0) |
+| **v3.77.0** | 2026-11-02 | 大厅重设计「晨青」：晨白+青瓷+暖金，去滤镜去做旧，干净大字门面+精致卡阵+青墨金沉浸段 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.77.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.77.0) |
+| **v3.76.0** | 2026-11-02 | 原创SVG艺术字标(洇墨滤镜+朱砂错版套印)+字体全面自托管(文楷切片/宋体Cormorant子集)，移除境外CDN字体链 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.76.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.76.0) |
+| **v3.75.0** | 2026-11-02 | 大厅全面重设计「纸本」：宣纸墨字朱砂三色系统/目录式工坊行列表(hover反白)/墨色巨字+朱砂方印+竖排副题/沉浸段墨色反白出血，告别深夜蓝金 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.75.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.75.0) |
+| **v3.74.0** | 2026-11-02 | 大厅排版大改「卷首·字有千钧」：字体三件套(霞鹜文楷/思源宋体900/Cormorant)+门面左对齐杂志式+五大工坊一主四辅非对称栅格 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.74.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.74.0) |
+| **v3.73.0** | 2026-11-02 | 大厅焕新「鎏金云海」：金霞天幕/衬线大字门面/工坊卡与33界卡按--ws-hue琉璃化/分组暖金化/卷首语横幅电影化，css/lobby-refresh.css 可整体回滚 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.73.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.73.0) |
+| **v3.72.0** | 2026-11-02 | 四套主界面板式可选：水墨卷轴(?theme=ink)/星穹HUD(star)/鎏金殿阁(gold)/云白卡片Bento(cloud)+对照台style-lab.html，默认不启用 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.72.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.72.0) |
+| **v3.71.0** | 2026-11-02 | 主界面视觉升级：设定台/顶栏/状态面板精致化（作用域 .page-studio，可整体回滚） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.71.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.71.0) |
+| **v3.70.0** | 2026-11-02 | 性能与瘦身专项：云起预设渲染缓存/去AI味与正文提取去重/手机面板整屏重绘合并为每帧一次 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.70.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.70.0) |
+| **v3.69.0** | 2026-11-02 | 预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.69.0) |
+| **v3.68.0** | 2026-11-02 | 全项目审计修复：串档槽位隔离/清档删槽补灵宠小队/存档迁移、driftNotes与wordCount与竞态与温度0等核心循环修复、图鉴XSS转义、SW预缓存修复+HTML网络优先、灵宠小队战斗接线+applyEvent接… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.68.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.68.0) |
+| **v3.67.0** | 2026-11-02 | 世界书完全丰富(P1)：freeworld+20条世界实质/free+10条运行设施；开放界设施补齐(P9)：free界恩怨账/委托板/据点/势力谱四模块 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.67.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.67.0) |
+| **v3.66.0** | 2026-11-02 | 主界面焕新·天光玻璃：极光天幕+玻璃拟态卡片+字徽发光+hover光泽扫过+渐入动效，老内核回退 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.66.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.66.0) |
+| **v3.65.0** | 2026-11-02 | 属性引擎实时事件化：受伤扣减/疗伤加回事件化直接落表+审计账本statLog+专长映射凸显+即时闪动反馈 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.65.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.65.0) |
+| **v3.64.0** | 2026-11-02 | 小队系统 + v3.63.0 灵宠妖兽伙伴系统：契约/养成/随队/编队/协同技，接入主笔与战斗prompt | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.64.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.64.0) |
+| **v3.63.0** | 2026-11-02 | 灵宠·妖兽·伙伴系统（与 v3.64.0 同批发布） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.63.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.63.0) |
+| **v3.62.0** | 2026-11-02 | 玩家身份三态重做：原著主角(大势不可改小势可调)/原著配角/完全原创 + 开局向导三态卡片+配角速选 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.62.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.62.0) |
+| **v3.61.1** | 2026-11-02 | 小云连招健壮性：外部动作打断未完成连招 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.61.1) |
+| **v3.61.0** | 2026-11-02 | 动态小云·全态可交互动画引擎：12态×3动作姿态关键帧+交叉淡入+CSS动效+playAction API | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.61.0) |
+| **v3.60.1** | 2026-11-01 | chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2) | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.60.1) |
+| **v3.60.0** | 2026-11-01 | 动态小云：行为引擎+亲密度+剧情感知+视线跟随；3张半身立绘补全身 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.60.0) |
+| **v3.59.1** | 2026-11-01 | 小云十二形态：AI 生图全线换装(萝莉/御姐/校花/清纯/邻家/酷飒/温柔/傲娇/可爱/搞怪/幼态/知性)，移除SVG手绘 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.59.1) |
+| **v3.59.0** | 2026-11-01 | 晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.59.0) |
+| **v3.58.0** | 2026-11-01 | 世界自活：众生谱(原创人物/势力/地点繁衍上图) + 势力动态演化 + 档案完善 + 自由人生 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.58.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.58.0) |
+| **v3.57.1** | 2026-11-01 | E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关系连线角色池失效） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.57.1) |
+| **v3.57.0** | 2026-11-01 | 让世界活起来引擎全套：统一填表 + 推演引擎 + 自主世界时钟 + 剧情规划 + 小云工具箱（P2-P5） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.57.0) |
+| **v3.56.2** | 2026-11-01 | 世界基座自测修复：upsert/link 解耦全局 + remove 级联清关系边（23 项断言全过） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.2.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.56.2) |
+| **v3.56.1** | 2026-11-01 | 世界基座：统一实体模型 Entity + 变量模板 Schema + 校验器 SchemaValidator（P1 地基） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.56.1) |
+| **v3.55.30** | 2026-11-01 | 多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.30) |
+| **v3.55.29** | 2026-11-01 | 定时器炸弹拆除 + 界专属模块复活 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.29.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.29) |
+| **v3.55.28** | 2026-10-31 | 分层加载与世界书瘦身 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.28.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.28) |
+| **v3.55.23** | 2026-10-31 | 大势可改+地图落实：大势演化账本+行旅图鉴动态化 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.23.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.23) |
+| **v3.55.22** | 2026-10-31 | 千楼长卷：虚拟化渲染+全量transcript落IDB+分层记忆+双通道召回+格式契约 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.22.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.22) |
+| **v3.55.21** | 2026-10-31 | 玩家身份(穿越者/土著)+主角关系(同伴/敌对/陌路)+本界资料库（修复注入） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.21.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.21) |
+| **v3.55.19** | 2026-10-30 | 世界是活的：叙事立场三选一 + 机缘归属账本 + 剧情上下文面板 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.19.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.19) |
+| **v3.55.18** | 2026-10-30 | 酒馆正则导入防护（清空全文类规则不再误伤正文） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.18.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.18) |
+| **v3.55.17** | 2026-10-30 | 稳固三修：核心契约与预设解耦 / 上下文预算按模型自适应 / 存储配额兜底 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.17.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.17) |
+| **v3.55.12** | 2026-10-30 | 补丁 · 修正 UI 版本号显示残留 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.12.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.12) |
+| **v3.55.11** | 2026-10-30 | 三档自适应：低端自动稳，高端全功能 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.11.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.11) |
+| **v3.55.10** | 2026-10-30 | 基础小模型适配：参数安全锁/轻量协议块/辅助AI静默/复读自检 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.10.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.10) |
+| **v3.55.9** | 2026-10-30 | 云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
+| **v3.55.8** | 2026-10-30 | 云起预设重构（内容加深 + 文风按类型整合） | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
+| **v3.55.7** | 2026-10-29 | 云端同步与开源 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+</details>
+
+> 每版的完整说明、验收数据与差异对比见 [VERSIONS.md](VERSIONS.md)；本板块由 `scripts/update-readme.mjs` 从 VERSIONS.md 自动生成，发版跑一次即同步。
+
+<!-- YJ_CHANGELOG_END -->
+
 > **本仓库是云境的完整源码**（纯前端，浏览器打开 `index.html` 即用，无需构建、无需后端）。
 > 云起预设与云起正则随仓库发布在 [`releases/`](releases/)，见文末「云起预设」一节。
 >
