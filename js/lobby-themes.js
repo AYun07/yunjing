@@ -1,19 +1,20 @@
-/* 云境大厅主题切换器 · v3.90.0
-   8 套主题全部从 11-04 新设计稿提炼，真实作用于 index.html 的 33 界卡片 DOM。
-   选择记忆在 localStorage，支持 ?theme=<id> 直达。无任何假链接、不跳新页面。 */
+/* 云境大厅主题切换器 · v3.91.0
+   只保留同一批原创的六种美术风格（原稿 v3.84.0 的 lobby-demo-*.html）：
+   杂志·雲境志 / 拼贴手帐 / Y2K / 国风水墨 / 瑞士极简 / 终端 Code。
+   旧 8 套深紫玻璃版式（colorful/compass/carousel/film/hero/scroll/sidebar/avatar）
+   已全部删除——旧 localStorage / ?theme= 值若命中旧 id，一律回退到默认主题。
+   选择记忆在 localStorage，支持 ?theme=<id> 直达。不跳新页面、不造假链接。 */
 (function () {
   var THEMES = [
-    { id: 'colorful',  name: '彩云主演', sw: 'linear-gradient(135deg,#283a8f,#c06fd0)' },
-    { id: 'compass',   name: '幻海罗盘', sw: 'linear-gradient(135deg,#1a1530,#b9a7ff)' },
-    { id: 'carousel',  name: '星轨轮播', sw: 'linear-gradient(135deg,#0c0a12,#7fd6c8)' },
-    { id: 'film',      name: '胶片映画', sw: 'linear-gradient(135deg,#14111f,#e0a84c)' },
-    { id: 'hero',      name: '巨幕主角', sw: 'linear-gradient(135deg,#14111f,#c9a7ff)' },
-    { id: 'scroll',    name: '卷轴长廊', sw: 'linear-gradient(135deg,#23202e,#b9a7ff)' },
-    { id: 'sidebar',   name: '侧栏书页', sw: 'linear-gradient(135deg,#171b22,#7fd6c8)' },
-    { id: 'avatar',    name: '形象馆',   sw: 'linear-gradient(135deg,#16121f,#8ab4c8)' }
+    { id: 'editorial', name: '壹 · 雲境志', sw: 'linear-gradient(135deg,#0d0e14,#e0455a)' },
+    { id: 'zine',      name: '贰 · 拼贴手帐', sw: 'linear-gradient(135deg,#f4ecdc,#7ec98f)' },
+    { id: 'y2k',       name: '叁 · Y2K 未来', sw: 'linear-gradient(135deg,#080828,#66d9ff)' },
+    { id: 'ink',       name: '肆 · 国风水墨', sw: 'linear-gradient(135deg,#f7f3e9,#a83232)' },
+    { id: 'swiss',     name: '伍 · 瑞士极简', sw: 'linear-gradient(135deg,#fbfbf9,#e63312)' },
+    { id: 'term',      name: '陆 · 终端 Code', sw: 'linear-gradient(135deg,#040a05,#7dff9b)' }
   ];
   var KEY = 'yunjingLobbyTheme';
-  var DEFAULT = 'colorful';
+  var DEFAULT = 'zine';
 
   function valid(id) { return THEMES.some(function (t) { return t.id === id; }); }
   function read() {

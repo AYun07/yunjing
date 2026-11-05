@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **58** 个版本，从 `v3.55.7` 到 `v3.90.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **59** 个版本，从 `v3.55.7` 到 `v3.91.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.91.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.91.0) |
 | **v3.90.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
 | **v3.89.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
 | **v3.88.0** | 2026-11-04 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
@@ -72,6 +73,24 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.91.0 · 2026-11-05
+
+大厅收束为六套原创风格：只保留同一批做出来的六种设计稿，删掉其余八套深紫玻璃版式；大厅吉祥物删除、全站唯一小云；三轮实拍视觉复验
+
+保留清单（用户口径「就是最后同一时间创造出来的手账那几个风格」）：壹·雲境志（杂志编辑）/ 贰·拼贴手帐 / 叁·Y2K 未来 / 肆·国风水墨 / 伍·瑞士极简 / 陆·终端 Code，从 v3.84.0 的原稿恢复落地；v3.90.0 的 colorful / compass / carousel / film / hero / scroll / sidebar / avatar 八套全部移除，切换坞只剩 6 项，旧 localStorage 与 ?theme= 旧 id 自动回退到默认手帐
+
+六套各有真实骨架而非换配色：12 列不对称编辑网格 + 点线目录 / 米黄方格纸拍立得墙 + 胶带荧光笔 / 铬金属字 + 复古窗口 + 网格地平线跑马灯 / 宣纸竖排墨字 + 朱印 + 细线卷轴条目 / 纯白 4px 黑规则线 + 120px 特粗字 + 编号规则行 / CRT 扫描线 + ASCII banner + 命令行菜单。皮肤层覆盖 33 界分组、初来乍到、沉浸扮演、页脚、切换坞与小云面板，整页风格统一
+
+删除大厅顶部吉祥物立绘；面板头第二张小云头像换成 ☁ 符号。唯一小云严格验收 13 个场景（六套首屏 / 点开面板 / 切性格 / 旧 id 回退 / 创作室首屏 / 创作室交互后 demand 懒加载 / 手机面板）13/13：mascot=0、小云立绘=1、面板头头像=0、MoChibi DOM=0
+
+视觉测试按「实拍 → 找违和 → 优化 → 再实拍」走了三轮（6 套 × 桌面 1440 + 手机 390 + 切换坞 + 创作室 = 每轮 15 张）：第一轮记下 12 项违和（版本徽标压正文、小云压入坊文字、手机胶囊换行、杂志描边水印被裁压字、手帐 4+1 孤卡与批注被切、水墨竖排胶囊碎字、瑞士入坊两行、终端对比不足等）；第二轮修后复拍发现杂志水印仍像残字、手帐手机仍单列（卡片未 box-sizing 致 46% 撑成 185px）、水墨水印穿过入场文字；第三轮再修并复拍收敛。详见 test/VISUAL-REVIEW-v3.91.0.md
+
+版本徽标移入页脚不再 fixed 悬浮；手机端六套统一收起胶囊；小云缩到 76×96（手机 scale .68）减少遮挡；全仓 178 处 3.90.0 → 3.91.0，?v= / YJ_VER / SW_VER / 标题 / 徽标同源
+
+验收：功能 50/50、唯一小云 13/13、自检 63/63、4 页零 404 零错误、六套骨架 6/6 两两不同、33 界跳转各 33/33、JS 语法 263/263、离线清单 158 路径零缺失
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.91.0)  [🔍 与 v3.90.0 差异](https://github.com/AYun07/yunjing/compare/v3.90.0...v3.91.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip)
 
 ## v3.90.0 · 2026-11-05
 
