@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **65** 个版本，从 `v3.55.7` 到 `v3.96.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **66** 个版本，从 `v3.55.7` 到 `v3.96.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.96.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
 | **v3.96.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) |
 | **v3.95.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
 | **v3.94.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.94.0) |
@@ -79,6 +80,17 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.96.1 · 2026-11-06
+
+版本同源根因修复 · 静态文案与缓存参数不再漏网
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.96.1)  [🔍 与 v3.96.0 差异](https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip)
+
+- **静态残留清零**：`index.html` 页脚徽标仍写死 v3.93.0、`studio.html` 顶栏徽标写死 v3.87.0（平时靠内联 JS 覆盖成当前号，JS 未执行就会显示旧号）、`QUICKSTART.txt` 标题停在 v3.96.0、`changelog/index.html` 的 CSS 缓存参数停在 v3.91.0（长期没被击穿）。本版四处全部对齐 3.96.1。
+- **防复发（根因）**：`scripts/release.mjs` 新增四条同源替换规则（两处静态徽标、说明页标题、changelog 页资源参数），并把**版本速查表**纳入自动发版；日期改按北京时间记，避免 UTC 让当天凌晨发的版比上一版早一天。以后每次发版自动同步，不再靠人工记得改。
+- **全量同源**：170 处 `?v=` 参数、`YJ_VER` / `SW_VER` / 页面标题 / 版本徽标 / `README.md` / `VERSIONS.md` / `changelog/index.html` 统一到 3.96.1；第三方库自有版本号（0.1.18 / 1.7.3）与历史文档里的旧号引用原样保留，不误改。
+- **本版只收口版本同源缺陷，不含功能改动**；v3.96.0 的地图焕新、标签零重叠、缩放分级、33 界资料库布满与真实地球事实库成果原样保留。
 
 ## v3.96.0 · 2026-11-06
 
@@ -197,7 +209,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
 
-图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
 
 一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
 
@@ -353,7 +365,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 ## v3.69.0 · 2026-11-02
 
-预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
@@ -431,7 +443,7 @@ chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
 ## v3.59.0 · 2026-11-01
 
-晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
@@ -467,7 +479,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 ## v3.55.30 · 2026-11-01
 
-多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 
