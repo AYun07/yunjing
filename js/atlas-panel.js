@@ -8214,8 +8214,8 @@
         });
       }
       return `<g>
-                <ellipse cx="70" cy="28" rx="26" ry="12" fill="${hexA(P.accent, 0.07)}" filter="url(#agBlur2)"/>
-                <ellipse cx="24" cy="74" rx="20" ry="9" fill="${hexA(P.primary, 0.06)}" filter="url(#agBlur2)"/>
+                <ellipse cx="70" cy="28" rx="26" ry="12" fill="${hexA(P.accent, 0.07)}" filter="url(#agBlur2)" class="atlas-soft"/>
+                <ellipse cx="24" cy="74" rx="20" ry="9" fill="${hexA(P.primary, 0.06)}" filter="url(#agBlur2)" class="atlas-soft"/>
                 ${stars}${constel}</g>`;
     }
     if (decor === "city") {
@@ -8247,46 +8247,58 @@
       m += `<path d="${d}" fill="${hexA(P.primary, r.o)}"/>`;
     });
     return `<g>${m}
-            <ellipse cx="30" cy="16" rx="24" ry="5" fill="${hexA(P.text, 0.05)}" filter="url(#agBlur2)"/>
-            <ellipse cx="74" cy="72" rx="20" ry="4.5" fill="${hexA(P.text, 0.04)}" filter="url(#agBlur2)"/></g>`;
+            <ellipse cx="30" cy="16" rx="24" ry="5" fill="${hexA(P.text, 0.05)}" filter="url(#agBlur2)" class="atlas-soft"/>
+            <ellipse cx="74" cy="72" rx="20" ry="4.5" fill="${hexA(P.text, 0.04)}" filter="url(#agBlur2)" class="atlas-soft"/></g>`;
   }
-  /* 标签避让：同屏节点名互相压字，是地图最常见的廉价感来源。
-     排序 = 当前位置 > 已到访 > 其余（同档按纬度北→南），逐个试 右/左/上/下 四个位，
-     四投都不中就只留圆点不画名字——点开详情照样有全名。 */
-  function layoutLabels(items) {
-    const boxes = [];
+  /* v3.96.0 标签排布
+     旧问题：814 个补录节点虽被 CSS 设成透明，却仍全部参与避让，把可用位置占满，
+     关键标签被挤到默认位互相压字 —— 这就是「名字挤在一起」的根因。
+     现在分两组排：常显组只含原有节点，补录组另排且带分级 LOD（放大才逐级显现）；
+     8 个候选位 + 最小留白 PAD，放不下就只留圆点，点开详情照样有全名。 */
+  function labelWidth(t, fs) {
+    let w = 0;
+    for (const ch of String(t)) w += /[\u3400-\u9fa5\uff00-\uffef]/.test(ch) ? fs : fs * 0.56;
+    return w + 1.6;
+  }
+  function layoutLabels(items, seedBoxes) {
+    /* 判定盒与 glyph() 的 pill rect 完全一致，任何放宽都会带来真实压字，故一律严格避让。
+       想显示更多地名只能靠更多候选位 + 放大分级，不靠缩小判定盒。 */
+    const boxes = (seedBoxes || []).slice();
     const out = {};
-    const wOf = (t, fs) => {
-      let w = 0;
-      for (const ch of String(t)) w += /[\u3400-\u9fa5\uff00-\uffef]/.test(ch) ? fs : fs * 0.56;
-      return w + 0.8;
-    };
-    const hit = (b) => boxes.some((o) => !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2));
+    const PAD = 0.85;
+    const hit = (b) => boxes.some((o) => !(b.x2 + PAD < o.x1 || b.x1 - PAD > o.x2 || b.y2 + PAD < o.y1 || b.y1 - PAD > o.y2));
     /* 当前位置头顶那面「你在这里 / 整装待发」小旗也占地方，先替它把位子留出来 */
     const bnr = items.find((it) => it.banner);
     if (bnr) {
       const bw = bnr.n.length * 2.7 + 3.2;
       boxes.push({ x1: bnr.x - bw / 2, x2: bnr.x + bw / 2, y1: bnr.y - 9.0, y2: bnr.y - 2.8 });
     }
+    const cands = [
+      { dx: 4.6, dy: 0.9, anchor: "start" }, { dx: -4.6, dy: 0.9, anchor: "end" },
+      { dx: 0, dy: -3.8, anchor: "middle" }, { dx: 0, dy: 5.6, anchor: "middle" },
+      { dx: 4.4, dy: -3.4, anchor: "start" }, { dx: -4.4, dy: -3.4, anchor: "end" },
+      { dx: 4.4, dy: 5.2, anchor: "start" }, { dx: -4.4, dy: 5.2, anchor: "end" },
+      { dx: 7.6, dy: -2.4, anchor: "start" }, { dx: -7.6, dy: -2.4, anchor: "end" },
+      { dx: 7.6, dy: 4.2, anchor: "start" }, { dx: -7.6, dy: 4.2, anchor: "end" }
+    ];
     items.forEach((it) => {
-      const fs = it.fs, w = wOf(it.n, fs), h = fs * 1.05;
-      const cands = [
-        { dx: 4.4, dy: 0.85, anchor: "start" },
-        { dx: -4.4, dy: 0.85, anchor: "end" },
-        { dx: 0, dy: -3.4, anchor: "middle" },
-        { dx: 0, dy: 5.2, anchor: "middle" }
-      ];
+      /* 盒模型必须与 glyph() 里 pill rect 完全一致，否则避让会漏判（首测仍有 1 处压字） */
+      const fs = it.fs, w = labelWidth(it.n, fs), th = fs * 1.46;
       let placed = null;
       for (const c of cands) {
-        const x1 = c.anchor === "start" ? it.x + c.dx : c.anchor === "end" ? it.x + c.dx - w : it.x - w / 2;
-        const b = { x1, x2: x1 + w, y1: it.y + c.dy - h, y2: it.y + c.dy + h * 0.22 };
+        const lx = it.x + c.dx, ly = it.y + c.dy;
+        const x1 = c.anchor === "start" ? lx - 0.8 : c.anchor === "end" ? lx - w + 0.8 : lx - w / 2;
+        const y1 = ly - fs * 0.94;
+        const b = { x1, x2: x1 + w, y1, y2: y1 + th };
+        /* 越界候选位弃用，标签不会被 viewBox 裁掉半截 */
+        if (b.x1 < 2.5 || b.x2 > 97.5 || b.y1 < 2.5 || b.y2 > 97.5) continue;
         if (!hit(b)) { boxes.push(b); placed = c; break; }
       }
       out[it.id] = placed || false;
     });
-    return out;
+    return { placements: out, boxes };
   }
-  function glyph(n, mode, P, lp, geo) {
+  function glyph(n, mode, P, lp, geo, lodNeed) {
     const isCur = mode === "cur", isStd = mode === "standby";
     const visited = mode === "vis" || isCur;
     /* v3.93.0 势力覆灭：预置原著势力节点查状态表，动态实体节点自带 fallen */
@@ -8368,20 +8380,27 @@
                 </g></g>`;
     }
     const label = (() => {
-      /* v3.95.0：补录后节点变密，避让算法会把放不下的标签判为 lp===false。
-         关键状态（覆灭 / 当前 / 起点）必须始终可见，强制保留标签并回落到默认偏移；
-         其余补录节点只留圆点，悬停或点开详情看名称，既不丢详尽度也不挤爆画面。 */
+      /* v3.96.0 标签：pill 底衬 + LOD 分级 + 常显避让。
+         补录节点按 lodNeed 分级：缩小时不生成（不再用透明文字占位），放大到 1.8×/3× 逐级显现；
+         所有标签包在 .atlas-lab 里，缩放时由 applyZoom 反向 scale(1/k) 保持屏幕字号恒定。
+         关键状态（覆灭 / 当前 / 起点）始终常显，避让放不下也回落默认位。 */
       const keyNode = fallen || isCur || isStd;
-      /* 补录节点（v3.95.0 共 814 条）默认只留圆点，标签悬停才显示，避免密集标签糊成一片；
-         关键状态（覆灭 / 当前 / 起点）始终常显。点开节点详情同样可看完整名称与出处。 */
-      const suppHidden = !!n.supp && !keyNode;
-      if (lp === false && !keyNode && !suppHidden) return "";
+      const need = n.supp ? (lodNeed || 1) : 0;
+      if (lp === false && !keyNode) return "";
       const fs = isCur || isStd ? 2.9 : 2.4;
-      const c = (lp && lp !== false) ? lp : { dx: n.x <= 72 ? 4.4 : -4.4, dy: 0.85, anchor: n.x <= 72 ? "start" : "end" };
+      const c = (lp && lp !== false) ? lp : { dx: n.x <= 72 ? 4.6 : -4.6, dy: 0.9, anchor: n.x <= 72 ? "start" : "end" };
       const lx = c.dx, ly = c.dy, anchor = c.anchor;
-      const lf = fallen ? hexA(P.muted, 0.72) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.muted, 0.85);
+      const lf = fallen ? hexA(P.muted, 0.9) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.text, 0.84);
       const lname = fallen ? `${n.n}（已覆灭）` : n.n;
-      return `<text x="${lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label${suppHidden ? ' atlas-label-supp' : ''}"${fallen ? ' text-decoration="line-through"' : ""} opacity="${fallen ? 0.72 : mode === "fog" ? 0.6 : 1}">${lname}</text>`;
+      const tw = labelWidth(lname, fs), th = fs * 1.46;
+      const bx = anchor === "start" ? lx - 0.8 : anchor === "end" ? lx - tw + 0.8 : lx - tw / 2;
+      const by = ly - fs * 0.94;
+      const bdr = fallen ? hexA(P.muted, 0.42) : isCur ? hexA(P.primary, 0.85) : isStd ? hexA(P.accent, 0.7) : hexA(P.primary, 0.26);
+      const bgc = isCur ? hexA(P.deep, 0.95) : "rgba(7,11,18,.88)";
+      return `<g class="atlas-lab" data-lod="${need}"${keyNode ? ' data-key="1"' : ""}${fallen ? ' data-fallen="1"' : ""}>
+                <rect x="${bx.toFixed(2)}" y="${by.toFixed(2)}" width="${tw.toFixed(2)}" height="${th.toFixed(2)}" rx="${(th / 2).toFixed(2)}" fill="${bgc}" stroke="${bdr}" stroke-width=".24"/>
+                <text x="${lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label"${fallen ? ' text-decoration="line-through"' : ""}>${lname}</text>
+              </g>`;
     })();
     const fallenMark = fallen ? `<g transform="translate(2.4,-2.6)" opacity=".92">
                 <circle r="1.6" fill="${hexA(P.deep, 0.94)}" stroke="${hexA(P.muted, 0.75)}" stroke-width=".22"/>
@@ -8389,9 +8408,10 @@
             </g>` : "";
     return `<g class="atlas-node${mode === "fog" ? " atlas-fogged" : ""}${fallen ? " atlas-fallen" : ""}" data-node="${n.id}" data-mode="${mode}" data-fallen="${fallen ? 1 : 0}" style="cursor:pointer;">
             <g transform="translate(${n.x},${n.y})">
-                ${mark}
+                <g class="atlas-mark">${mark}
                 <g transform="scale(${k})"${fogAttr}>${ring}${body}</g>
-                ${fallenMark}${badge}${banner}${label}
+                ${fallenMark}${badge}${banner}</g>
+                ${label}
             </g></g>`;
   }
   function layerSvg(layer) {
@@ -8441,10 +8461,23 @@
       modes[n.id] = mode;
     });
     const rank = (id) => (modes[id] === "cur" || modes[id] === "standby" ? 0 : modes[id] === "vis" ? 1 : 2);
-    const lps = layoutLabels(layerNodes.slice()
-      .sort((a, b) => rank(a.id) - rank(b.id) || a.y - b.y)
-      .map((n) => ({ id: n.id, x: n.x, y: n.y, n: n.n, fs: rank(n.id) === 0 ? 2.9 : 2.4})));
-    const nodes = layerNodes.map((n) => glyph(n, modes[n.id], P, lps[n.id], layer.geo === "world")).join("");
+    /* v3.96.0：常显组与补录组分开避让。补录节点不再挤占常显标签的位置；
+       补录按 lod 分两级（1.8× 显示约 1/3，3× 全部显示），放大越多地名越全，缩小时清爽。 */
+    const mk = (n) => ({ id: n.id, x: n.x, y: n.y, n: n.n, fs: rank(n.id) === 0 ? 2.9 : 2.4, banner: rank(n.id) === 0 });
+    const base = layerNodes.filter((n) => !n.supp);
+    const supp = layerNodes.filter((n) => n.supp);
+    const main = layoutLabels(base.slice().sort((a, b) => rank(a.id) - rank(b.id) || a.y - b.y).map(mk));
+    /* 用名称+坐标哈希打散，避免同一层的补录标签扎堆 */
+    const suppSorted = supp.slice().sort((a, b) => strHash(a.n + "|" + a.x) - strHash(b.n + "|" + b.x));
+    const s1 = suppSorted.filter((_, i) => i % 3 === 0);
+    const s2 = suppSorted.filter((_, i) => i % 3 !== 0);
+    const r1 = layoutLabels(s1.map(mk), main.boxes);
+    const r2 = layoutLabels(s2.map(mk), r1.boxes);
+    const lps = Object.assign({}, main.placements, r1.placements, r2.placements);
+    const lodOf = {};
+    s1.forEach((n) => { lodOf[n.id] = 1; });
+    s2.forEach((n) => { lodOf[n.id] = 2; });
+    const nodes = layerNodes.map((n) => glyph(n, modes[n.id], P, lps[n.id], layer.geo === "world", lodOf[n.id] || 0)).join("");
     const compass = `<g transform="translate(90.5,10.5)" opacity=".92">
             <circle r="5.2" fill="${hexA(P.deep, 0.55)}" stroke="${hexA(P.primary, 0.45)}" stroke-width=".3"/>
             <circle r="4" fill="none" stroke="${hexA(P.primary, 0.25)}" stroke-width=".18"/>
@@ -8469,6 +8502,12 @@
             <line x1="86" y1="95" x2="86" y2="96.2" stroke="${hexA(P.primary, 0.6)}" stroke-width=".25"/>
             <line x1="94" y1="94.6" x2="94" y2="96.6" stroke="${hexA(P.primary, 0.6)}" stroke-width=".3"/>
             <text x="86" y="93.4" font-size="1.75" fill="${hexA(P.muted, 0.85)}" text-anchor="middle" class="atlas-label">${layer.geo === "world" ? "公里" : "千里"}</text></g>`;
+    /* v3.96.0 规整底格：极淡等距网格，让画面有秩序感、不显杂乱 */
+    const grid = `<g pointer-events="none">${Array.from({ length: 9 }, (_, i) => {
+      const v = (i + 1) * 10;
+      return `<line x1="${v}" y1="2.2" x2="${v}" y2="97.8" stroke="${hexA(P.primary, 0.055)}" stroke-width=".12"/>
+              <line x1="2.2" y1="${v}" x2="97.8" y2="${v}" stroke="${hexA(P.primary, 0.055)}" stroke-width=".12"/>`;
+    }).join("")}</g>`;
     const sealPos = (layer.geo === "world") ? "50,88" : "50,84";
     const seal = state.visits.length === 0 ? `<g transform="translate(${sealPos}) rotate(-5)" opacity=".55">
             <circle r="8.6" fill="none" stroke="${hexA(P.primary, 0.4)}" stroke-width=".35" stroke-dasharray="1.6 1.2"/>
@@ -8501,7 +8540,8 @@
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agBg)"/>
             ${layer.geo === "world" ? geoWorldSvg(P) : bgSvg(layer.decor, P)}
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agVig)" pointer-events="none"/>
-            <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" filter="url(#agPaper)" opacity=".5" pointer-events="none"/>
+            <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" filter="url(#agPaper)" opacity=".22" pointer-events="none" class="atlas-soft"/>
+            ${grid}
             ${regions}
             ${layer.geo === "world" ? "" : seal}
             ${roads}
@@ -8529,7 +8569,7 @@
             <rect x="0" y="22" width="100" height="56" fill="${hexA(P.deep, 0.46)}"/>
             ${grat}
             <line x1="0" y1="50" x2="100" y2="50" stroke="${hexA(P.accent, 0.20)}" stroke-width=".2" stroke-dasharray="2.2 1.8"/>
-            <path d="${WORLD_LAND}" fill="none" stroke="${hexA(P.accent, 0.45)}" stroke-width="1.1" opacity=".55" filter="url(#agBlur)"/>
+            <path d="${WORLD_LAND}" fill="none" stroke="${hexA(P.accent, 0.45)}" stroke-width="1.1" opacity=".55" filter="url(#agBlur)" class="atlas-soft"/>
             <path d="${WORLD_LAND}" fill="${hexA(P.primary, 0.30)}" stroke="${hexA(P.primary, 0.80)}" stroke-width=".3" stroke-linejoin="round"/>
         </g>`;
   }
@@ -8668,7 +8708,7 @@
     bindZoomGestures();
     resetZoom(false);
   }
-  const zoom = { k: 1, tx: 0, ty: 0, maxK: 4 };
+  const zoom = { k: 1, tx: 0, ty: 0, maxK: 6 };
   function mapDom() {
     const p = $("atlasPanel");
     return p ? p.querySelector(".atlas-map") : null;
@@ -8682,10 +8722,63 @@
     svg.style.transform = `translate(${zoom.tx}px, ${zoom.ty}px) scale(${zoom.k})`;
     map.style.touchAction = zoom.k > 1.001 ? "none" : "pan-y";
     map.classList.toggle("canpan", zoom.k > 1.001);
+    /* v3.96.0：标签反向缩放，屏幕字号恒定 —— 放大后文字不糊、不跟着变大，
+       节点在屏幕上散开，标签间距同步变大，永不新添重叠。 */
+    const inv = 1 / zoom.k;
+    svg.querySelectorAll(".atlas-lab, .atlas-mark").forEach((g) => g.setAttribute("transform", `scale(${inv.toFixed(4)})`));
+    /* LOD：1× 只显示常显地名，1.8× 加一级补录，3× 显示全部，逐级放大逐级变全 */
+    const lod = zoom.k >= 3 - 1e-3 ? 2 : zoom.k >= 1.8 - 1e-3 ? 1 : 0;
+    map.dataset.lod = String(lod);
+    const lv = map.querySelector(".atlas-zlevel");
+    if (lv) lv.textContent = Math.round(zoom.k * 100) + "%";
+    const hint = map.querySelector(".atlas-lodhint");
+    if (hint) hint.textContent = lod === 0 ? "放大可查看更多地名" : lod === 1 ? "继续放大显示全部地名" : "已显示全部地名";
     const zin = map.querySelector(".atlas-zbtn[data-zin]");
     const zout = map.querySelector(".atlas-zbtn[data-zout]");
     if (zin) zin.disabled = zoom.k >= zoom.maxK - 1e-3;
     if (zout) zout.disabled = zoom.k <= 1.001;
+    toggleDecorFilters(lod === 0);
+    dedupeVisibleLabels();
+  }
+  /* v3.96.0 缩放滤镜治理：feGaussianBlur 的 stdDeviation 是 SVG 用户单位，
+     整体 scale(k) 会把模糊半径一起放大，节点发光/雾态在高倍率糊成一团白斑。
+     放大时摘掉 [filter] 属性（存到 data-f），回到 1× 原样恢复，幂等可反复调用。 */
+  function toggleDecorFilters(enable) {
+    const map = mapDom(); if (!map) return;
+    const svg = map.querySelector(".atlas-svg"); if (!svg) return;
+    svg.querySelectorAll("[filter]").forEach((e) => {
+      if (enable) {
+        const f = e.getAttribute("data-f");
+        if (f) { e.setAttribute("filter", f); e.removeAttribute("data-f"); }
+      } else {
+        const f = e.getAttribute("filter");
+        if (f && !e.hasAttribute("data-f")) { e.setAttribute("data-f", f); e.removeAttribute("filter"); }
+      }
+    });
+  }
+  /* v3.96.0 运行时兜底：标签避让在 1× 用户坐标里算一次，遇到关键节点回落默认位、
+     跨组补录等边缘情况仍可能残余压字。这里按真实屏幕像素再筛一遍，
+     冲突的补录/次要标签自动收起（只留圆点，点开详情仍有全名），保证「可见标签零重叠」。
+     优先级：关键状态 > 常显组 > 补录组。 */
+  function dedupeVisibleLabels() {
+    const map = mapDom(); if (!map) return;
+    const svg = map.querySelector(".atlas-svg"); if (!svg) return;
+    const labs = Array.from(svg.querySelectorAll(".atlas-lab"));
+    labs.forEach((e) => { e.style.display = ""; });   // 先清 inline，交回 CSS 的 LOD 规则
+    const vis = labs.filter((e) => getComputedStyle(e).display !== "none");
+    vis.sort((a, b) => (Number(b.dataset.key || 0) - Number(a.dataset.key || 0))
+      || (Number(a.dataset.lod || 0) - Number(b.dataset.lod || 0))
+      || (Number(b.dataset.fallen || 0) - Number(a.dataset.fallen || 0)));
+    const kept = [];
+    vis.forEach((e) => {
+      const r = e.querySelector("rect");
+      if (!r) return;
+      const b = r.getBoundingClientRect();
+      const box = { x1: b.left, x2: b.right, y1: b.top, y2: b.bottom };
+      const clash = kept.some((o) => !(box.x2 <= o.x1 + 0.5 || box.x1 >= o.x2 - 0.5 || box.y2 <= o.y1 + 0.5 || box.y1 >= o.y2 - 0.5));
+      if (clash) e.style.display = "none";
+      else kept.push(box);
+    });
   }
   function clampPan() {
     const map = mapDom();
@@ -8729,7 +8822,8 @@
     const ctl = document.createElement("div");
     ctl.className = "atlas-zoom";
     ctl.innerHTML = `
-            <button type="button" class="atlas-zbtn" data-zin title="放大">＋</button>
+            <span class="atlas-zlevel">100%</span>
+            <button type="button" class="atlas-zbtn" data-zin title="放大（双击 / Ctrl+滚轮 / ＋）">＋</button>
             <button type="button" class="atlas-zbtn" data-zout title="缩小">－</button>
             <button type="button" class="atlas-zbtn" data-zreset title="复位视图" style="font-size:13px;">⤢</button>`;
     ctl.addEventListener("click", (e) => {
@@ -8741,6 +8835,22 @@
       else resetZoom();
     });
     map.appendChild(ctl);
+    /* v3.96.0 滚轮 / 双击缩放。k=1 时普通滚轮让给面板滚动（避免吞掉页面滚动），
+       Ctrl+滚轮、双击或点 ＋ 进入放大；放大后滚轮直接连续缩放，体验顺手。 */
+    map.addEventListener("wheel", (e) => {
+      if (zoom.k <= 1.001 && !e.ctrlKey) return;
+      e.preventDefault();
+      zoomBy(e.deltaY < 0 ? 1.22 : 1 / 1.22, e.clientX, e.clientY, false);
+    }, { passive: false });
+    map.addEventListener("dblclick", (e) => {
+      if (e.target.closest && e.target.closest(".atlas-zoom")) return;
+      e.preventDefault();
+      zoomBy(1.6, e.clientX, e.clientY, true);
+    });
+    const lodhint = document.createElement("div");
+    lodhint.className = "atlas-lodhint";
+    lodhint.textContent = "放大可查看更多地名";
+    map.appendChild(lodhint);
     const pts = /* @__PURE__ */ new Map();
     let lastDist = 0, moved = false;
     map.addEventListener("pointerdown", (e) => {
@@ -8904,10 +9014,10 @@
         .ap-now{font-size:11.5px;color:var(--primary,#c9a86a);margin-top:5px;letter-spacing:.5px;}
         .atlas-map{flex:1;min-height:320px;display:flex;align-items:center;justify-content:center;border:1px solid var(--panel-border,rgba(200,170,110,.25));
             border-radius:16px;padding:7px;overflow:hidden;position:relative;
-            background:radial-gradient(130% 100% at 30% 16%,color-mix(in srgb,var(--primary,#c9a86a) 6%,transparent),transparent 62%),rgba(0,0,0,.24);
-            box-shadow:inset 0 0 34px rgba(0,0,0,.4);
+            background:radial-gradient(130% 100% at 30% 16%,color-mix(in srgb,var(--primary,#c9a86a) 7%,transparent),transparent 62%),rgba(0,0,0,.17);
+            box-shadow:inset 0 0 28px rgba(0,0,0,.28);
             touch-action:pan-y;   /* v3.27.4：纵向滚动让给面板，横向拖拽/双指捏合留给缩放 */}
-        .atlas-svg{width:100%;height:100%;max-height:56vh;min-height:320px;transition:transform .22s ease;will-change:transform;}
+        .atlas-svg{width:100%;height:100%;max-height:56vh;min-height:320px;will-change:transform;}
         /* ---- v3.27.4 地图缩放（手机端 1.85 单位标签≈7px，无缩放不可读）---- */
         .atlas-map.canpan .atlas-svg{cursor:grab;}
         .atlas-map.dragging .atlas-svg{transition:none;cursor:grabbing;}
@@ -8918,10 +9028,24 @@
         .atlas-zbtn:hover{background:color-mix(in srgb,var(--primary,#c9a86a) 20%,transparent);}
         .atlas-zbtn:active{transform:scale(.9);}
         .atlas-zbtn:disabled{opacity:.3;cursor:default;}
-        .atlas-label{font-family:'Noto Serif SC',serif;paint-order:stroke;stroke:rgba(4,4,9,.78);stroke-width:.66;}
-        /* v3.95.0：补录地标数量大，标签默认收起、悬停显现；常显标签只留给原有节点与关键状态 */
-        .atlas-label-supp{opacity:0;transition:opacity .16s ease;pointer-events:none;}
-        .atlas-node:hover .atlas-label-supp{opacity:1;}
+        .atlas-label{font-family:'Noto Serif SC',serif;paint-order:stroke;stroke:rgba(4,4,9,.5);stroke-width:.38;letter-spacing:.2px;}
+        /* v3.96.0 标签 pill 化 + LOD 分级：底衬让文字清晰不糊，缩放时字号恒定；
+           补录地名按缩放级别逐级显现，缩小时画面清爽、放大时详尽。 */
+        .atlas-lab{pointer-events:none;}
+        .atlas-lab[data-fallen="1"]{opacity:.8;}
+        /* v3.96.0：云雾/纸纹/海岸辉光是位图化滤镜，放大后会被拉成糊块。
+           高倍率时淡出装饰层，只留矢量轮廓与网格，放大看依然干净不费眼。 */
+        .atlas-map[data-lod="1"] .atlas-soft{opacity:.09;}
+        .atlas-map[data-lod="2"] .atlas-soft{opacity:.04;}
+        .atlas-map[data-lod="0"] .atlas-lab[data-lod="1"],
+        .atlas-map[data-lod="0"] .atlas-lab[data-lod="2"],
+        .atlas-map[data-lod="1"] .atlas-lab[data-lod="2"]{display:none;}
+        .atlas-zlevel{font-size:10px;letter-spacing:.5px;color:var(--primary,#c9a86a);text-align:center;
+            background:rgba(10,12,20,.87);border:1px solid color-mix(in srgb,var(--primary,#c9a86a) 32%,transparent);
+            border-radius:8px;padding:3px 0;line-height:1.2;}
+        .atlas-lodhint{position:absolute;top:9px;left:50%;transform:translateX(-50%);z-index:4;font-size:10px;letter-spacing:.5px;
+            color:var(--text-muted,#a8a290);background:rgba(8,11,18,.72);border:1px solid rgba(127,127,127,.16);
+            border-radius:8px;padding:3px 9px;pointer-events:none;white-space:nowrap;}
         .atlas-pulse{animation:atlasPulse 2.6s ease-out infinite;transform-box:fill-box;transform-origin:center;}
         .atlas-pulse.d2{animation-delay:1.3s;}
         @keyframes atlasPulse{0%{opacity:.95;transform:scale(.5);}72%{opacity:.07;transform:scale(1.45);}100%{opacity:0;transform:scale(1.45);}}

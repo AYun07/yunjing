@@ -283,6 +283,19 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+        <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.96.0</span>
+                <span class="entry-date">2026-11-06</span>
+            </div>
+            <h3 class="entry-title">地图焕新 · 标签零重叠 · 缩放分级 · 33 界资料库布满 · 真实地球事实库</h3>
+            <p class="entry-text">🗺 <b>地图美化、名字不再挤在一起</b>：常显组与 814 条补录地标分组避让（旧版补录节点虽透明却占满避让位置，是压字根因），12 候选位、越界弃用、pill 圆角底衬与统一字号、规整底格、噪声下调、底色提亮；再加运行时像素级去重兜底。8 界 × 双视口 × 三档缩放实测<b>可见标签重叠 0</b>。</p>
+            <p class="entry-text">🔍 <b>比例放大缩小</b>：按钮 / Ctrl+滚轮 / 双击 / 双指 / 复位全通道，倍率实时显示（最大 6×）；标签与节点符号按 1/k 反向缩放，<b>字号三档恒定 17px</b>；LOD 分级 1× 常显、1.8× 加补录、3× 全部；高倍率自动摘除会被拉成糊块的模糊滤镜，回到 1× 恢复。</p>
+            <p class="entry-text">📚 <b>资料库布满</b>：<code>build-codex.mjs</code> 升级为 <code>##</code> 与 <code>【】</code> 双分节、章节级跳过提示词工程、幂等累加净化；新增 <code>build-genre-index.mjs</code> 生成<b>章节速查卡 + 专名索引卡</b>。索引统计总量 <b>21,281 条</b>，抽样专名命中 <b>99/99</b>。</p>
+            <p class="entry-text">🌍 <b>真实地球事实库</b>：<code>build-earth-facts.mjs</code> 生成 <b>503 条</b>真实世界事实——七大洲、150 国与首都、90 座城市经纬度、山川河海、历史纪年、时代科技、语言文化；earth 运行时知识库 <b>1,360 条</b>。<code>build-common-facts.mjs</code> 把跨题材通识从 59 条扩到 <b>194 条</b>，并入全部 33 界，各世界 <b>704–1,360 条</b>。</p>
+            <p class="entry-text">✅ 验收：<code>unit-v394</code> 23/23、势力舆图 10/10、真实浏览器 16 用例零重叠 / 字号恒定 / LOD 0→1→2 / 控制台 0 错误、33 界知识库 0 错误、全量 JS 语法全过、版本同源 3.96.0。<b>未验证项</b>：真实模型主动写 <code>(world_update)</code>、玩家主导对抗性复测、全量 33 界真实 API 评测仍未跑。</p>
+        </article>
+
         <article class="log-entry" data-tags="版本 资料库 地图 README 优化" style="--entry-hue:#5a7fc0;">
             <div class="entry-head">
                 <span class="entry-ver">v3.95.0</span>

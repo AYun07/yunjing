@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  const LIB = "libs/cytoscape.min.js?v=3.95.0";
+  const LIB = "libs/cytoscape.min.js?v=3.96.0";
   const RelationGraph = {
     esc(s) {
       return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
