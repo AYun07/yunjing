@@ -104,13 +104,17 @@ const StoryKnowledge = {
     window.__kbExtLoaded = g;
     const self = this;
     const go = function () {
+      /* v3.95.0：先挂跨题材通用常识库（小参数模型的背景兜底），失败也不阻断本界扩展包 */
+      const commonReady = window.KB_COMMON ? Promise.resolve(true) : loadOne(`js/kb/_common.js?v=${v}`);
+      commonReady.then(function () {
       loadOne(`js/kb/${g}.ext.js?v=${v}`).then(function (ok) {
-        if (!ok) return;
-        const presets = (window.KB_PRESETS && window.KB_PRESETS[g]) || [];
+        if (!ok && !window.KB_COMMON) return;
+        const presets = ((window.KB_PRESETS && window.KB_PRESETS[g]) || []).concat(window.KB_COMMON || []);
         const added = self._mergePresets(presets);
         if (added) self.save({ silent: true });
         try { document.dispatchEvent(new CustomEvent("story:kb-ext-ready", { detail: { genre: g, added } })); } catch (e) { }
         if (added) console.log(`[StoryKnowledge] 世界书扩展包已补齐 ${added} 条（${g}）`);
+      });
       });
     };
     if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 3000 });

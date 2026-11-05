@@ -473,9 +473,21 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
   if (!fw.apiConfig.endpoint || !fw.apiConfig.apiKey || !fw.apiConfig.model) {
     throw new Error("请先配置并保存 AI 接口（右上角「接口设置」）");
   }
+  /* v3.95.0 省 token：补协议这类「只输出几十字格式片段」的辅助请求，
+     不需要再背一份两三万字的完整 system（旧版第 4 次请求约占总 prompt 四分之一）。
+     lightContext 走极简双消息，其余路径完全不变。 */
+  const lightContext = !!opts.lightContext;
+  if (lightContext) { const clean = { ...opts }; delete clean.lightContext; opts = clean; }
   let messages = [];
   if (!isTest) {
-    messages = await buildStoryMessages(userMessage);
+    if (lightContext) {
+      messages = [
+        { role: "system", content: "【格式补丁器】只输出用户指定的协议片段，禁止输出任何故事正文、解释或复述，输出尽量短。" },
+        { role: "user", content: userMessage }
+      ];
+    } else {
+      messages = await buildStoryMessages(userMessage);
+    }
     (_a = window.TokenUsage) == null ? void 0 : _a.recordRequest(messages, "主笔");
   } else {
     messages = [{ role: "user", content: '你好，请回复"连接成功"四个字。' }];

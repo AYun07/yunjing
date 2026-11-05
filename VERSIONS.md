@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **63** 个版本，从 `v3.55.7` 到 `v3.94.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **64** 个版本，从 `v3.55.7` 到 `v3.95.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.95.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
 | **v3.94.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.94.0) |
 | **v3.93.0** * | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.93.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.93.0) |
 | **v3.92.1** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.1) |
@@ -77,6 +78,21 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.95.0 · 2026-11-05
+
+资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.95.0)  [🔍 与 v3.94.0 差异](https://github.com/AYun07/yunjing/compare/v3.94.0...v3.95.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip)
+
+- **README 每版更新一眼可见**：顶部新增「当前版本 + 逐版更新记录」，64 版每版一句话、完整包 / 发布页 / 差异链接，最近 12 版展开、其余折叠；由 `scripts/update-readme.mjs` 从 `VERSIONS.md` 自动生成，发版跑一次即同步，不再出现「主页还是老内容」。
+- **资料库完备化（面向小参数模型）**：从 33 份 `configs` 逐行抽出 **4,739 条**「原著设定速查」（境界 / 势力 / 地理 / 人物 / 事件 / 铁律），追加到各 `js/kb/<界>.ext.js`；新增 **59 条**跨题材通用常识（`js/kb/_common.js`：神话 / 历史 / 地理 / 修真 / 西幻 / 科幻 / 都市 / 叙事），接入世界书加载与 SW 离线预缓存。知识库总量 **18,048 条**，`_index.json` 统计由过时的 1410 修正。小模型记不住背景时按剧情检索注入，不依赖模型自身记忆。
+- **地图准确与详尽**：第三批严格审定补录 **625 条**（章节限定抽取 + 词干虚词过滤 + 原著出处行校验 + 每界上限 50），补录总量 **814 条**；earth 另加 **41 座真实城市经纬度**落点（共 47 座）。全 33 界口径覆盖率 **20% → 61%**（925/1510），原著 26 界口径 **72%**；两个口径并列披露，6 个抽象 / 类型世界与 earth 标为「不适用」，未从分母偷偷剔除。
+- **地图体验不打折**：补录节点标签默认收起、悬停显现，覆灭 / 当前 / 起点等关键状态强制常显；覆灭节点标签被避让隐藏的回归已修复。曾尝试把补录按层轮转均摊，但会改变「覆灭势力 ↔ 地图节点」的匹配层、导致废墟态在当前层不出现（势力链路 10→8），已回滚，核心动态链路优先。
+- **已知限制**：无锚点的第三批补录集中在含起点节点的层，个别界该层节点较密（圆点悬停看名称），其余层较疏；跨层均摊留待下一批在不破坏势力链路的前提下重做。
+- **继续省 token**：补协议辅助请求改走极简上下文（`lightContext`），system 从约 26,000 字符压到 **43 字符**；势力变更上报协议改成「照抄一行」的极简格式，降低小模型遵从成本。
+- 验收：`unit-v394` 23/23、势力舆图 10/10、真实浏览器 7/7（地图渲染 / 知识库每界 508-617 条 / 通用 59 条 / 覆灭标签 / 精简请求 / 控制台 0 错误）、改动 JS 语法全过、版本同源 3.95.0。
+- **未验证项（单列）**：真实模型主动写 `(world_update)` 的完整链路仍未跑通；玩家主导硬约束缺真实对抗性复测；未重跑全量 33 界真实 API 评测（按「别再花钱」约束只做本地桩与最小探针）。
 
 ## v3.94.0 · 2026-11-05
 
@@ -166,7 +182,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
 
-图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
 
 一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
 
@@ -322,7 +338,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 ## v3.69.0 · 2026-11-02
 
-预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
@@ -400,7 +416,7 @@ chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
 ## v3.59.0 · 2026-11-01
 
-晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
@@ -436,7 +452,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 ## v3.55.30 · 2026-11-01
 
-多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 
