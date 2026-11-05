@@ -167,7 +167,7 @@ document.body.appendChild(s);
 发下一版只要一条命令（自动改版本号、对齐全部资源参数、写更新日志、写版本登记、提交打标签推送、建发布页）：
 
 ```bash
-GITHUB_TOKEN=<你的 token> node scripts/release.mjs 3.91.0 "一句话标题" "第一段说明 | 第二段说明"
+GITHUB_TOKEN=<你的 token> node scripts/release.mjs 3.92.0 "一句话标题" "第一段说明 | 第二段说明"
 ```
 
 补建/修复历史发布页（幂等，可反复跑）：

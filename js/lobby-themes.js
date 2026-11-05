@@ -1,4 +1,4 @@
-/* 云境大厅主题切换器 · v3.91.0
+/* 云境大厅主题切换器 · v3.92.0
    只保留同一批原创的六种美术风格（原稿 v3.84.0 的 lobby-demo-*.html）：
    杂志·雲境志 / 拼贴手帐 / Y2K / 国风水墨 / 瑞士极简 / 终端 Code。
    旧 8 套深紫玻璃版式（colorful/compass/carousel/film/hero/scroll/sidebar/avatar）

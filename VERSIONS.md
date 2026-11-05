@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **59** 个版本，从 `v3.55.7` 到 `v3.91.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **60** 个版本，从 `v3.55.7` 到 `v3.92.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.92.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.0) |
 | **v3.91.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.91.0) |
 | **v3.90.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
 | **v3.89.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
@@ -73,6 +74,16 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.92.0 · 2026-11-05
+
+33 界全量体检 + 地球界换成真实世界地图 + 图鉴视觉修复 + Token 抓包实测
+
+- **33 界全量体检**（真实浏览器逐界开图）：配置齐备、知识库 13,309 条、图鉴 491 节点、道路端点闭合、坐标合规、控制台零错误，并逐界验证「AI 报位置 → 定位到节点 → 小场所自动落图 → 跨层切换」，33/33 通过
+- **地球界真实世界地图**：弃用抽象椭圆色块，改用 Natural Earth 1:110m 真实陆地轮廓（1606 点 / 16KB 内嵌）、等距圆柱投影、24 座城市按真实经纬度落点，合成一张「世界 · 七洲四洋」；保留缩放/拖拽/足迹/动态落图
+- **图鉴视觉修复**：开图时小云退场（此前招呼气泡压住详情）、节点标签四向避让（此前欧洲与中国区叠成一片）、资料库小节标题不再当节点上图、迷雾印章移位降透明度、起点旗标糊块移除、斩神界补起点并加兜底
+- **Token 实测与省流**：抓包确认每轮 1 次请求、系统提示词 26,466 字符、稳定前缀 68.7%；按回合裁掉「入场指令」「档案 18 字段示范」，系统提示词降到 25,983（第 2 轮起）
+- 回归：功能 50/50、唯一小云 13/13、自检 63/63、33 界 33/33、JS 语法 263/263、离线清单 158 路径零缺失、版本同源 3.92.0
 
 ## v3.91.0 · 2026-11-05
 

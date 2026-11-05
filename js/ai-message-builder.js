@@ -1,3 +1,14 @@
+/* v3.92.0 省流：只在开篇有用的整段，过了开篇就不再随每轮发送。
+   做法是按标题切段（段首到下一个「【…】」或「## 」前），切不到就原样返回——
+   宁可少省，也不能把正文规则切掉半截。 */
+function stripSection(text, head) {
+  const i = text.indexOf(head);
+  if (i < 0) return text;
+  const rest = text.slice(i + head.length);
+  const m = rest.match(/\n(?=【|#{1,3} )/);
+  const end = m ? i + head.length + m.index : text.length;
+  return (text.slice(0, i) + text.slice(end)).replace(/\n{3,}/g, "\n\n");
+}
 function stripOpeningTemplate(text) {
   if (!text) return text;
   const stripped = String(text).replace(
@@ -190,7 +201,13 @@ ${yunqiBlock ? '\n' + yunqiBlock + '\n' : ''}${coreContract}
 ${fictionPreamble}
 ${scaleDirective ? '\n' + scaleDirective + '\n' : ''}
 ${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
-  push({ role: "system", content: system });
+  /* v3.92.0 省流：入场指令只在开篇有效，档案示范只在前几轮有用；
+     之后每轮仍带着它们，只是给账单加长。按回合数裁掉，规则一条不少。 */
+  const turnNo = Number((state && (state.turnCount ?? (state.variables && state.variables.chapter))) || 0);
+  let sysOut = system;
+  if (turnNo >= 1) sysOut = stripSection(sysOut, "【入场指令");
+  if (turnNo >= 5) sysOut = stripSection(sysOut, "【档案示例");
+  push({ role: "system", content: sysOut });
   if (state.setup) {
     push({ role: "system", content: buildSetupCard(state.setup, config) });
   }

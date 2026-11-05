@@ -116,7 +116,7 @@ html body.page-index .stars i:nth-child(7){top:46%;left:54%;animation-delay:1.4s
 .masthead{position:relative;text-align:center;padding:30px 0 14px;}
 .masthead::before{content:"";position:absolute;top:6px;left:50%;transform:translateX(-50%);width:320px;height:300px;border-radius:50%;
   background:radial-gradient(circle, color-mix(in srgb,var(--accent) 30%,transparent), transparent 70%);filter:blur(34px);z-index:-1;opacity:.7;}
-/* v3.91.0：大厅吉祥物立绘已删除，全站唯一小云为右下角 #xyBuddy 全功能助手 */
+/* v3.92.0：大厅吉祥物立绘已删除，全站唯一小云为右下角 #xyBuddy 全功能助手 */
 .logo-kai{margin:6px 0 2px;font-size:52px;font-weight:700;letter-spacing:.18em;line-height:1;}
 .logo-kai .lk-a{background:linear-gradient(180deg,#fff,var(--cloud));-webkit-background-clip:text;background-clip:text;color:transparent;}
 .logo-kai .lk-b{background:linear-gradient(180deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
