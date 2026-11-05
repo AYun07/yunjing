@@ -1,5 +1,5 @@
 /* ==========================================================================
-   云境 · 大厅六套风格皮肤  v3.92.0
+   云境 · 大厅六套风格皮肤  v3.92.1
    --------------------------------------------------------------------------
    保留同一批原创的六种美术风格（原稿见 v3.84.0 的 lobby-demo-*.html）：
      ① editorial 壹·雲境志   ② zine 贰·拼贴手帐   ③ y2k 叁·Y2K 未来
@@ -525,7 +525,7 @@ html[data-theme="editorial"] .splash-line,html[data-theme="y2k"] .splash-line,ht
 .theme-switcher .ts-item.on .ts-tick{opacity:1}
 @media(max-width:640px){.theme-switcher{left:10px;top:10px}.theme-switcher .ts-panel{width:min(250px,calc(100vw - 20px))}}
 
-/* v3.92.0 视觉复验修正：手机端胶囊统一收起，首屏还给内容（第一轮实拍 7 枚标签换行吃掉 2–3 行） */
+/* v3.92.1 视觉复验修正：手机端胶囊统一收起，首屏还给内容（第一轮实拍 7 枚标签换行吃掉 2–3 行） */
 @media(max-width:760px){
   html[data-theme] body.page-index .mh-chips{display:none!important}
   html[data-theme] #xyBuddy{transform:scale(.68)}

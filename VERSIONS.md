@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **60** 个版本，从 `v3.55.7` 到 `v3.92.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **61** 个版本，从 `v3.55.7` 到 `v3.92.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.92.1** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.1) |
 | **v3.92.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.0) |
 | **v3.91.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.91.0) |
 | **v3.90.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
@@ -74,6 +75,13 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.92.1 · 2026-11-05
+
+图鉴层级修复：手机端「世界自转 · 第 X 日」状态条压在图鉴标题上
+
+- 图鉴遮罩 / 面板 z-index 88/89 → 9100/9101，盖过世界时钟条（9000），不再两条标题叠在一起
+- 全站 208 处版本号同步 3.92.1；回归 50/50
 
 ## v3.92.0 · 2026-11-05
 

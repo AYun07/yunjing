@@ -58,7 +58,7 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.92.0" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=3.92.1" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
   /** 手动设定形态（合法 key），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
@@ -85,7 +85,7 @@ const MoChibi = {
     ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(8,14,22,.66);display:flex;align-items:center;justify-content:center;padding:18px;";
     const card = (k) => `
       <button data-style="${k}" style="width:31%;min-width:96px;padding:10px 6px;border:2px solid ${k === cur ? "#7ab8e8" : "rgba(140,180,220,.28)"};border-radius:14px;background:linear-gradient(160deg,rgba(20,32,48,.92),rgba(14,22,34,.92));cursor:pointer;text-align:center;transition:transform .15s;">
-        <img src="${this.IMGS[k]}?v=3.92.0" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
+        <img src="${this.IMGS[k]}?v=3.92.1" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
         <div style="font-size:13.5px;font-weight:700;color:#cfe6f8;margin-top:6px;">${this.STYLE_LABEL[k]}</div>
         <div style="font-size:10.5px;color:#7e9ab4;margin-top:2px;">${this.STYLE_DESC[k] || ""}</div>
       </button>`;
@@ -116,17 +116,17 @@ const MoChibi = {
     const img = document.querySelector("#moChibi .mc-img");
     if (img) {
       try { clearTimeout(this._poseTimer); this._poseTimer = null; } catch (e) {}
-      img.src = this.chibiSrc() + "?v=3.92.0";
+      img.src = this.chibiSrc() + "?v=3.92.1";
       img.classList.remove("mc-pose-pop"); void img.offsetWidth; img.classList.add("mc-pose-pop");
     }
-    const face = this.faceSrc() + "?v=3.92.0";
+    const face = this.faceSrc() + "?v=3.92.1";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
   },
   /* ==================== DOM 自举 ==================== */
   ensureDOM() {
-    /* v3.92.0 单一云灵收束：本云境只保留 xiaoyun-buddy（#xyBuddy）一只全功能小云。
+    /* v3.92.1 单一云灵收束：本云境只保留 xiaoyun-buddy（#xyBuddy）一只全功能小云。
        MoChibi 退化为 API 兼容层，仅保留 say / moduleEntries / react 等被 20+ 业务模块
        依赖的方法，不再渲染第二只可见小云（#moChibi / 还原按钮 / 扇形菜单）。 */
     if (document.getElementById("moChibi")) return;
@@ -271,7 +271,7 @@ const MoChibi = {
     return String(str != null ? str : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   },
   say(text, ms = 5e3) {
-    /* v3.92.0 单一云灵：say 统一路由到 xiaoyun-buddy（#xyBuddy），不再自行渲染气泡 */
+    /* v3.92.1 单一云灵：say 统一路由到 xiaoyun-buddy（#xyBuddy），不再自行渲染气泡 */
     try {
       if (window.XYBuddy && typeof window.XYBuddy.say === "function") {
         window.XYBuddy.say(String(text == null ? "" : text), ms);
@@ -751,7 +751,7 @@ const MoChibi = {
      叠加既有 CSS 动效（hop/twirl…）。图片缺失时自动退回纯 CSS 动作。 */
   POSES: ["wave", "battle", "happy"],
   poseSrc(pose) {
-    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=3.92.0`;
+    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=3.92.1`;
   },
   _preloadPoses() {
     this._poseCache = {};
@@ -783,7 +783,7 @@ const MoChibi = {
   clearPose() {
     clearTimeout(this._poseTimer);
     this._poseTimer = null;
-    this._setImg(this.chibiSrc() + "?v=3.92.0");
+    this._setImg(this.chibiSrc() + "?v=3.92.1");
   },
   /** 公开动作 API：玩家/系统调用——做到"像动画一样可以做动作" */
   playAction(name, _internal) {
@@ -1156,7 +1156,7 @@ const MoChibi = {
     }
   },
   _boot() {
-    this.ensureDOM(); // v3.92.0：不再渲染第二只小云，MoChibi 仅作 API 兼容层
+    this.ensureDOM(); // v3.92.1：不再渲染第二只小云，MoChibi 仅作 API 兼容层
     console.log("[小云] 旧墨枢小云已并入 xiaoyun-buddy（单一云灵）；MoChibi 仅保留 API 兼容层");
   }
 };

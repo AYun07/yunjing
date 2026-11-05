@@ -8734,9 +8734,9 @@
     const st = document.createElement("style");
     st.id = "atlasStyle";
     st.textContent = `
-        #atlasOverlay{position:fixed;inset:0;background:rgba(4,4,10,.62);backdrop-filter:blur(4px);z-index:88;opacity:0;visibility:hidden;transition:.3s;}
+        #atlasOverlay{position:fixed;inset:0;background:rgba(4,4,10,.62);backdrop-filter:blur(4px);z-index:9100;opacity:0;visibility:hidden;transition:.3s;}
         #atlasOverlay.on{opacity:1;visibility:visible;}
-        #atlasPanel{position:fixed;top:0;right:0;height:100%;width:min(620px,100vw);z-index:89;
+        #atlasPanel{position:fixed;top:0;right:0;height:100%;width:min(620px,100vw);z-index:9101;
             background:linear-gradient(168deg,var(--panel,#141a2a),color-mix(in srgb,var(--panel,#141a2a) 82%,#000));
             border-left:1px solid color-mix(in srgb,var(--primary,#c9a86a) 30%,transparent);
             transform:translateX(103%);transition:transform .38s cubic-bezier(.2,.9,.28,1);

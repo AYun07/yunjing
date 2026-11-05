@@ -284,6 +284,16 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="修复 地图" style="--entry-hue:#3f8f74;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.92.1</span>
+                <span class="entry-date">2026-11-05</span>
+            </div>
+            <h3 class="entry-title">图鉴层级修复：手机端世界时钟条压在图鉴标题上</h3>
+            <p class="entry-text">📱 手机端开图鉴时，「世界自转 · 第 0 日」状态条 fixed 在 z-index 9000，正好压在图鉴标题「地球开放世界 · 行旅图鉴」上，两行字叠成一团。图鉴遮罩与面板原本只有 88/89，本版提到 9100/9101——盖过世界时钟条，仍低于 UI 对话框（99999），不影响弹窗层级。桌面端因为面板只占右侧，此前看不出问题，属手机端专属。</p>
+        </article>
+
+
         <article class="log-entry" data-tags="版本 地图 测试 性能" style="--entry-hue:#3f8f74;">
             <div class="entry-head">
                 <span class="entry-ver">v3.92.0</span>

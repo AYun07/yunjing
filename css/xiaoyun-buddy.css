@@ -53,7 +53,7 @@
   opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;transition:.32s;color:#efedfa}
 .xy-panel.on{opacity:1;transform:none;pointer-events:auto}
 .xy-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(90deg,rgba(126,140,255,.22),rgba(255,140,190,.14));border-bottom:1px solid rgba(200,180,255,.18)}
-/* v3.92.0：面板头改用云朵符号，不再放第二张小云头像——全站只有右下角一只立绘 */
+/* v3.92.1：面板头改用云朵符号，不再放第二张小云头像——全站只有右下角一只立绘 */
 .xy-head .xy-cloud-mark{width:34px;height:34px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
   font-size:20px;line-height:1;background:rgba(255,255,255,.16);color:#dcd2ff}
 .xy-head b{font-size:15px;letter-spacing:.06em}
@@ -73,13 +73,13 @@
 .xy-forms{flex:0 0 auto;display:flex;gap:6px;padding:0 14px 13px;flex-wrap:wrap}
 .xy-f{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.28);background:transparent;border-radius:999px;padding:4px 11px;cursor:pointer;transition:.2s}
 .xy-f.on,.xy-f:hover{color:#fff;background:rgba(140,130,255,.35)}
-/* v3.92.0 模块区：让单只云灵也是全功能云灵（世界动态/手机/太虚阁/上下文/资料库/大势账本/行旅图鉴/灵宠/小队/身份/立场…） */
-/* v3.92.0 修正：此前模块区未声明 flex 收缩规则，在 70vh 面板里被压到接近 0（10 个按钮只剩一条）。
+/* v3.92.1 模块区：让单只云灵也是全功能云灵（世界动态/手机/太虚阁/上下文/资料库/大势账本/行旅图鉴/灵宠/小队/身份/立场…） */
+/* v3.92.1 修正：此前模块区未声明 flex 收缩规则，在 70vh 面板里被压到接近 0（10 个按钮只剩一条）。
    现固定其它分区不收缩，模块区独占剩余空间并保证最小可视高度，内部滚动可看全部入口。 */
 .xy-modules{flex:1 1 auto;min-height:160px;max-height:34vh;border-top:1px solid rgba(200,180,255,.16);padding:10px 14px 6px;overflow-y:auto}
 .xy-sec-title{font-size:12px;color:#cfc8f0;letter-spacing:.14em;margin-bottom:8px;font-weight:700}
 .xy-mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-/* v3.92.0 模块按钮紧凑化为单行：图标 + 名称，说明移到 title 悬浮提示，10 个入口首屏尽量全可见 */
+/* v3.92.1 模块按钮紧凑化为单行：图标 + 名称，说明移到 title 悬浮提示，10 个入口首屏尽量全可见 */
 .xy-mod{display:flex;flex-direction:row;align-items:center;gap:7px;text-align:left;background:rgba(140,130,255,.12);border:1px solid rgba(170,160,255,.26);border-radius:10px;padding:7px 9px;cursor:pointer;transition:.2s;color:#efedfa;min-width:0}
 .xy-mod:hover{background:rgba(140,130,255,.3);transform:translateY(-1px)}
 .xy-mod-ico{font-size:15px;line-height:1;flex:0 0 auto}
@@ -89,7 +89,7 @@
   .xy-mod-grid{grid-template-columns:1fr}}
 
 /* ==========================================================================
-   v3.92.0 · 纸本三套（手帐 / 水墨 / 瑞士）的小云面板适配
+   v3.92.1 · 纸本三套（手帐 / 水墨 / 瑞士）的小云面板适配
    深紫玻璃面板放在米黄纸 / 宣纸 / 纯白底上是明显的风格断裂，这里换成纸本面板。
    立绘仍只有右下角一只，面板头是云朵符号，不出现第二只小云。
    ========================================================================== */
@@ -164,5 +164,5 @@ html[data-theme="ink"] #xyBuddy .xy-tip,
 html[data-theme="swiss"] #xyBuddy .xy-tip{
   background:var(--card-paper);color:var(--ink-strong);border:1px solid var(--rule);border-radius:4px}
 
-/* v3.92.0 · 图鉴打开时小云退场：面板占满右侧，招呼气泡会压住地图详情与节点说明 */
+/* v3.92.1 · 图鉴打开时小云退场：面板占满右侧，招呼气泡会压住地图详情与节点说明 */
 body.atlas-open #xyBuddy{opacity:0;pointer-events:none;transform:translateY(10px) scale(.9);transition:opacity .18s ease,transform .18s ease}
