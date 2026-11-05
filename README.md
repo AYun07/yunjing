@@ -2,32 +2,30 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v3.96.0（2026-11-06）
+## 🆕 当前版本：v3.96.1（2026-11-06）
 
-> **地图焕新 · 标签零重叠 · 缩放分级 · 33 界资料库布满 · 真实地球事实库**
+> **版本同源根因修复 · 静态文案与缓存参数不再漏网**
 
 **这一版做了什么**
 
-- **地图焕新 · 名字不再挤在一起**：重做标签排布——常显组与 814 条补录地标分组避让（旧版补录节点虽透明却占满避让位置，是压字根因）、12 个候选位、越界候选弃用、pill 圆角底衬与统一字号、规整等距底格、纸纹与云雾噪声下调、地图底色提亮减费眼；再加一道运行时像素级去重兜底，冲突标签自动收起（只留圆点、点开详情有全名）。8 界 × 桌面/移动双视口 × 三档缩放实测**可见标签重叠 0**。
-- **比例放大缩小做完整**：按钮 / Ctrl+滚轮 / 双击 / 双指捏合 / 复位全通道，倍率实时显示（最大 6×）；标签与节点符号按 1/k 反向缩放，**字号三档恒定 17px**不随放大发虚；LOD 分级 1× 只显常显地名、1.8× 加一级补录、3× 全部，放大地名逐级变多；高倍率自动摘除会被拉成糊块的 feGaussianBlur 滤镜，回到 1× 原样恢复。
-- **资料库布满（不依赖小模型自身记忆）**：`build-codex.mjs` 升级为 `##` 与 `【】` 双分节、章节级跳过提示词工程（257 个输出规范/指令/检查清单章节不入库）、行级去噪、幂等累加净化；新增 `build-genre-index.mjs` 为 33 界生成**章节速查卡 + 专名索引卡**（提到一个名字就能检索到设定）。索引统计总量 **21,281 条**，抽样专名命中 **99/99**，标题无重复。
-- **真实地球资料库**：新增 `build-earth-facts.mjs` 生成 **503 条**真实世界事实——七大洲、150 国与首都、90 座主要城市经纬度、山川河海湖岛海峡沙漠雨林、历史纪年与文明、时代科技（通讯/交通/医疗/物价按年代）、语言宗教与地理常识；中国香港/中国澳门/中国台湾按中国领土表述。earth 运行时知识库 **1,360 条**。
-- **跨题材通用常识**：`build-common-facts.mjs` 把 `_common.js` 从 59 条扩到 **194 条**（古代官制科举、世界史、地理科学、题材通识、叙事写作、经济日常、小模型兜底），并入全部 33 界。33 界运行时知识库 **704–1,360 条/界**。
-- 验收：`unit-v394` 23/23、势力舆图动态链路 10/10、真实浏览器 16 用例（8 界 × 双视口 × 三档）零重叠 / 字号恒定 / LOD 0→1→2 / 控制台 0 错误、33 界知识库加载 0 错误、全量 JS 语法 0 错误、版本同源 3.96.0。
-- **未验证项（单列）**：真实模型主动写 `(world_update)` 的完整链路、玩家主导硬约束对抗性复测、全量 33 界真实 API 评测仍未跑（按「别再花钱」约束，本版全部本地桩与浏览器验收）；放大后放不下的补录地名只留圆点、点开详情看全名，未强行显示以免压字。
+- **静态残留清零**：`index.html` 页脚徽标仍写死 v3.93.0、`studio.html` 顶栏徽标写死 v3.87.0（平时靠内联 JS 覆盖成当前号，JS 未执行就会显示旧号）、`QUICKSTART.txt` 标题停在 v3.96.0、`changelog/index.html` 的 CSS 缓存参数停在 v3.91.0（长期没被击穿）。本版四处全部对齐 3.96.1。
+- **防复发（根因）**：`scripts/release.mjs` 新增四条同源替换规则（两处静态徽标、说明页标题、changelog 页资源参数），并把**版本速查表**纳入自动发版；日期改按北京时间记，避免 UTC 让当天凌晨发的版比上一版早一天。以后每次发版自动同步，不再靠人工记得改。
+- **全量同源**：170 处 `?v=` 参数、`YJ_VER` / `SW_VER` / 页面标题 / 版本徽标 / `README.md` / `VERSIONS.md` / `changelog/index.html` 统一到 3.96.1；第三方库自有版本号（0.1.18 / 1.7.3）与历史文档里的旧号引用原样保留，不误改。
+- **本版只收口版本同源缺陷，不含功能改动**；v3.96.0 的地图焕新、标签零重叠、缩放分级、33 界资料库布满与真实地球事实库成果原样保留。
 
-**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) · [🔍 与 v3.95.0 的差异](https://github.com/AYun07/yunjing/compare/v3.95.0...v3.96.0) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
+**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) · [🔍 与 v3.96.0 的差异](https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
 
 > 本仓库是完整源码，下载 zip 解压即可运行，无需构建、无需后端。
 > 玩家用便宜的小参数模型也能玩：云境自带 33 界完整资料库（世界观 / 地理 / 势力 / 人物 / 境界 / 器物 / 年表 + 跨题材通用常识），按剧情检索注入，不依赖模型自身记忆。
 
-## 📋 逐版更新记录（新 → 旧，共 65 版）
+## 📋 逐版更新记录（新 → 旧，共 66 版）
 
 <details open>
 <summary><b>最近 12 版</b>（默认展开，完整历史见下方折叠区）</summary>
 
 | 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|
+| **v3.96.1** | 2026-11-06 | 版本同源根因修复 · 静态文案与缓存参数不再漏网 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
 | **v3.96.0** | 2026-11-06 | 地图焕新 · 标签零重叠 · 缩放分级 · 33 界资料库布满 · 真实地球事实库 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) |
 | **v3.95.0** | 2026-11-05 | 资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
 | **v3.94.0** | 2026-11-05 | 玩家主导 · 势力真实演化 · 选项鲁棒化 · 省请求 · 测试模型边界对齐 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.94.0) |
@@ -39,15 +37,15 @@
 | **v3.89.0** | 2026-11-05 | v3.88 全量整改：只认实际运行生效的代码，收束主界面、单一全功能小云、只留新主题、换云境图标、修自检与离线缓存 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
 | **v3.88.0** | 2026-11-04 | 世界自转因果化：修掉'只打最弱者、最强永不衰减、与玩家零耦合'；改为兴衰势能/强者受制/弱者颓势/玩家恩怨/势力间关系/活跃事件/张力冲突多因子驱动 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
 | **v3.87.0** | 2026-11-03 | 仓库瘦身 92M→41M（filter-repo 剥离 9.5MB 旧知识库整包的两个历史版本，共 18.1MB）+ 缓存版本号归一（189 处 `?v=` 从 3.55.29/3.68.0/3.72.0/3.84.0/… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
-| **v3.86.0** | 2026-11-03 | 活世界第二轮整改：机缘涌现（按世界状态滚动候选，有代价有时限，落实入正史）/ 人物情绪·记忆·目标 / 恩怨单一真源 / 关系图有向带趋势 / 势力兴衰生命周期 / 导演冲突焦点与节拍 / AI 自创装备登记 / 伙伴立… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
 
 </details>
 
 <details>
-<summary><b>全部历史版本（v3.55.7 → v3.85.0，共 53 版）</b></summary>
+<summary><b>全部历史版本（v3.55.7 → v3.86.0，共 54 版）</b></summary>
 
 | 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|
+| **v3.86.0** | 2026-11-03 | 活世界第二轮整改：机缘涌现（按世界状态滚动候选，有代价有时限，落实入正史）/ 人物情绪·记忆·目标 / 恩怨单一真源 / 关系图有向带趋势 / 势力兴衰生命周期 / 导演冲突焦点与节拍 / AI 自创装备登记 / 伙伴立… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
 | **v3.85.0** | 2026-11-03 | 活世界双向桥 WorldAlive：世界状态上行注入主笔、AI 回报下行回写势力/恩怨/关系/阶段/张力，选择真正改变世界；世界时钟默认自转；恩怨账本落盘；四类串档键按存档槽隔离 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.85.0) |
 | **v3.84.0** | 2026-11-03 | 世界书全量扩充+小云全能化：①世界书种子库外置 worldbook-seeds.js——29 界 418 条（26 个小说世界按原著公认设定还原，修复 guzhenren 错装诡秘之主条目并归正为蛊真人；earth 真实… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.84.0) |
 | **v3.82.0** | 2026-11-03 | 大厅版式 E「千字云海」(暗夜极光+超大字浮动+跑马灯字带+霓虹顶条) / F「云格Bento」(浅暖Bento主次格+彩墨晕染+彩色字徽)；修复 --ws-hue 十六进制不可入 hsl() 致色相 accent 静默… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.82.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.82.0) |

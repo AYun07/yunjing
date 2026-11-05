@@ -30,7 +30,8 @@ const sh = (c, opts = {}) => execSync(c, { cwd: ROOT, stdio: 'inherit', ...opts 
 const shq = (c) => execSync(c, { cwd: ROOT, encoding: 'utf8' }).trim();
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const write = (p, s) => fs.writeFileSync(path.join(ROOT, p), s);
-const today = new Date().toISOString().slice(0, 10);
+/* 按北京时间（UTC+8）记版本日期：用 UTC 会让当天凌晨发的版比上一版早一天 */
+const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 
 /* ---------- 0. 环境检查 ---------- */
 if (!DRY && shq('git status --porcelain')) {
@@ -72,6 +73,11 @@ for (const f of fs.readdirSync(path.join(ROOT, 'js')).filter((f) => f.endsWith('
 sub('studio.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
 sub('index.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
 sub('sw.js', /const SW_VER = 'yunjing-v[\d.]+'/g, `const SW_VER = 'yunjing-v${nextVer}'`);
+/* v3.96.1 根因修复：这四处以前没进同源规则，导致「JS 覆盖前静态文案仍是旧号」反复复发 */
+sub('index.html', /(id="verBadge"[^>]*>)v[\d.]+( 云境版<\/a>)/g, `$1v${nextVer}$2`);
+sub('studio.html', /(id="verDot"[^>]*>)v[\d.]+(<\/span>)/g, `$1v${nextVer}$2`);
+sub('QUICKSTART.txt', /云境工坊 v[\d.]+ · 使用说明/g, `云境工坊 v${nextVer} · 使用说明`);
+sub(path.join('changelog', 'index.html'), /\?v=[\d.]+/g, `?v=${nextVer}`);
 
 /* ---------- 2. 更新日志（changelog/index.html） ---------- */
 const cl = read('changelog/index.html');
@@ -103,6 +109,11 @@ ${detail.join('\n\n') || title || ''}
   let head = vs.slice(0, firstH2);
   head = head.replace(/从 `v[\d.]+` 到 `v[\d.]+`/, (m) => m.replace(/到 `v[\d.]+`/, `到 \`${tag}\``));
   head = head.replace(/共 \*\*\d+\*\* 个版本/, (m) => m.replace(/\d+/, String(Number(m.match(/\d+/)[0]) + 1)));
+  /* v3.96.1：速查表以前靠手工补，漏一次就少一行；纳入自动发版 */
+  head = head.replace(
+    /(\| 版本 \| 日期 \| 完整包（zip） \| 发布页 \|\n\|[-| ]+\|\n)/m,
+    `$1| **${tag}** | ${today} | [下载](https://github.com/${REPO}/archive/refs/tags/${tag}.zip) | [查看](https://github.com/${REPO}/releases/tag/${tag}) |\n`
+  );
   write('VERSIONS.md', head + block + vs.slice(firstH2));
   touched.push('VERSIONS.md');
 }
