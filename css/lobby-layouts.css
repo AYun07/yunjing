@@ -1,385 +1,473 @@
 /* ==========================================================================
-   云境 · 大厅异构版式层  v3.90.0
+   云境 · 大厅六套异构版式骨架  v3.91.0
    --------------------------------------------------------------------------
-   设计来源：11-04 八套概念稿（从 v3.88 归档 lobby-demo-*.html 恢复），
-   把「8 套主题 = 8 套配色」升级为「8 套主题 = 8 种版式骨架」。
+   同一份 index.html DOM，六种真实不同的排版骨架（不是换配色）：
+     ① editorial 超大宋体 + 12 列不对称编辑网格 + 点线目录 + 描边水印
+     ② zine     米黄方格纸 + 拍立得墙 + 彩色胶带 + 荧光笔 + 便利贴
+     ③ y2k      铬金属字 + 复古窗口卡 + 网格地平线 + 跑马灯
+     ④ ink      宣纸留白 + 竖排墨字 + 朱印 + 细墨线卷轴条目
+     ⑤ swiss    纯白 + 4px 黑规则线 + 120px 特粗字 + 红色方点 + 规则行
+     ⑥ term     CRT 扫描线 + ASCII banner + `cat /workshops` 命令行菜单
 
-   约束：
-   1) 只用 html[data-theme="x"] body.page-index .container > .workshops 这类
-      子元素限定选择器，绝不命中 .ws-clip > .workshops（9 个 33 界分组），
-      折叠交互与 studio.html?genre= 跳转全部保持原样。
-   2) 不新增 HTML 散页，仍只有 index.html 一个大厅入口。
-   3) 装饰（罗盘环/中心、胶片齿孔、轮播轨道）用伪元素实现，不插 DOM。
-   4) 每套都保证文字可读、链接可点、层级清楚、无遮挡；窄屏有兜底。
+   严格约束：骨架只命中 .container > .workshops（顶部五大工坊），
+   绝不碰 .ws-clip > .workshops（33 界分组），折叠与跳转全部保持原样。
    ========================================================================== */
 
-/* —— 通用：把"焦点被拆成三份"收回来，压掉首屏过大的空白 —— */
+/* —— 六套通用节奏：删掉吉祥物后 masthead 不再空一大块 —— */
 html[data-theme] body.page-index .container{max-width:1180px}
-html[data-theme] body.page-index .container > .section-title{letter-spacing:.14em}
+html[data-theme] body.page-index .masthead{padding:20px 0 6px}
+html[data-theme] body.page-index .container > .section-title{margin:26px 0 14px}
 
 /* ==========================================================================
-   ① 彩云主演 colorful —— 3 张人物大卡 + 2 张横向小卡（非对称，打破 5 等大）
+   ① 壹 · 雲境志（杂志编辑）
    ========================================================================== */
-html[data-theme="colorful"] body.page-index .masthead{padding:16px 0 4px}
-html[data-theme="colorful"] body.page-index .mh-mascot{width:94px}
-html[data-theme="colorful"] body.page-index .logo-kai{font-size:46px}
-html[data-theme="colorful"] body.page-index .mh-chips{margin-top:12px}
-html[data-theme="colorful"] body.page-index .container > .workshops{
-  display:grid;grid-template-columns:repeat(6,1fr);gap:16px;align-items:stretch}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(-n+3){
-  grid-column:span 2;min-height:292px;justify-content:flex-end;border-radius:26px;padding:22px}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(n+4){
-  grid-column:span 3;min-height:120px;flex-direction:row;align-items:center;gap:16px;
-  border-radius:20px;padding:16px 20px}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(-n+3) .ws-glyph{
-  width:78px;height:78px;border-radius:24px;font-size:38px}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(-n+3) .ws-name{font-size:23px}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(n+4) .ws-glyph{
-  width:52px;height:52px;flex:0 0 auto;font-size:26px}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(n+4) .ws-desc{display:none}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(n+4) .ws-enter{margin-left:auto}
+html[data-theme="editorial"] body.page-index .container{max-width:1180px}
+html[data-theme="editorial"] body.page-index .masthead{
+  text-align:left;padding:38px 0 14px;min-height:220px;position:relative}
+html[data-theme="editorial"] body.page-index .masthead::after{
+  content:"雲";position:absolute;right:2%;top:-10px;font-size:300px;font-weight:900;line-height:1;
+  color:transparent;-webkit-text-stroke:1.5px rgba(242,239,230,.10);pointer-events:none;user-select:none}
+html[data-theme="editorial"] body.page-index .logo-kai{
+  font-size:clamp(88px,11vw,158px);font-weight:900;letter-spacing:.04em;line-height:1.02;margin:0}
+html[data-theme="editorial"] body.page-index .logo-kai .lk-b{color:#e0455a}
+html[data-theme="editorial"] body.page-index .sub{
+  font-size:11px;letter-spacing:.46em;margin-top:20px;font-family:Georgia,serif;text-transform:uppercase}
+html[data-theme="editorial"] body.page-index .mh-chips{
+  justify-content:flex-start;margin:22px 0 0;max-width:70%;flex-wrap:wrap;overflow:visible}
+html[data-theme="editorial"] body.page-index .mh-chips span{
+  font-size:10.5px;letter-spacing:.14em;border-radius:999px;padding:5px 13px}
+html[data-theme="editorial"] body.page-index .container > .section-title{
+  flex-direction:row;align-items:baseline;text-align:left;gap:22px;letter-spacing:.14em;
+  font-size:30px;margin:26px 0 8px}
+html[data-theme="editorial"] body.page-index .container > .section-title::after{display:none}
+html[data-theme="editorial"] body.page-index .container > .section-title::before{
+  content:"SECTION / 01";font:10px Georgia,serif;letter-spacing:.4em;color:#77748a;order:2}
+html[data-theme="editorial"] body.page-index .container > .workshops{
+  display:grid;grid-template-columns:repeat(12,1fr);gap:0;counter-reset:ed}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop{
+  counter-increment:ed;position:relative;display:flex;flex-direction:column;gap:10px;
+  border:0;border-top:1px solid rgba(242,239,230,.18);border-radius:0;
+  background:transparent;box-shadow:none;padding:26px 22px 26px 0;min-height:210px;overflow:hidden}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(1){grid-column:1/13;min-height:250px}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(2){grid-column:1/8;border-right:1px solid rgba(242,239,230,.12)}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(3){grid-column:8/13;padding-left:26px}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(4){grid-column:1/6;border-right:1px solid rgba(242,239,230,.12)}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(5){grid-column:6/13;padding-left:26px}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop::before{
+  content:"0" counter(ed);font:13px Georgia,serif;letter-spacing:.3em;color:#e0455a;order:-1;height:auto;width:auto;
+  border-radius:0;background:none;box-shadow:none;opacity:1}
+/* 第三轮修正：逐卡描边字在实拍里始终像被裁的残字并压住入坊链接，整套去掉；
+   杂志感由 masthead 的巨型「雲」描边水印 + 编号 + 细线 + 点线目录承担。 */
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop::after{display:none}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop .ws-glyph{
+  width:auto;height:auto;border-radius:0;background:none;box-shadow:none;
+  font-size:0;color:transparent}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop .ws-name{
+  font-size:34px;font-weight:700;letter-spacing:.08em;position:relative;z-index:2}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(1) .ws-name{font-size:48px}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop .ws-desc{
+  font-size:13px;line-height:1.9;max-width:52%;flex:0 0 auto;position:relative;z-index:2}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop .ws-enter{
+  font-size:11px;letter-spacing:.3em;border-bottom:1px solid #e0455a;padding-bottom:4px;
+  align-self:flex-start;margin-top:8px;position:relative;z-index:2}
+html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:hover{
+  transform:none;background:rgba(242,239,230,.03);border-top-color:#e0455a}
+html[data-theme="editorial"] .ws-group .workshops{columns:2;column-gap:56px;display:block}
+html[data-theme="editorial"] .ws-group .workshops .workshop{
+  break-inside:avoid;display:flex;flex-direction:row;align-items:baseline;gap:12px;
+  border:0;border-bottom:1px dotted rgba(242,239,230,.22);border-radius:0;background:none;
+  padding:12px 0;min-height:0;box-shadow:none}
+html[data-theme="editorial"] .ws-group .workshops .workshop .ws-glyph{display:none}
+html[data-theme="editorial"] .ws-group .workshops .workshop .ws-name{font-size:17px}
+html[data-theme="editorial"] .ws-group .workshops .workshop .ws-desc{display:none}
+html[data-theme="editorial"] .ws-group .workshops .workshop .ws-enter{margin-left:auto;white-space:nowrap}
 
 /* ==========================================================================
-   ② 幻海罗盘 compass —— 环形节点 + 双环轨道 + 中央核心（绝对定位，非网格）
+   ② 贰 · 拼贴手帐
    ========================================================================== */
-html[data-theme="compass"] body.page-index .masthead{padding:12px 0 0}
-html[data-theme="compass"] body.page-index .mh-mascot{width:78px}
-html[data-theme="compass"] body.page-index .logo-kai{font-size:40px}
-html[data-theme="compass"] body.page-index .mh-chips{display:none}
-html[data-theme="compass"] body.page-index .container > .section-title:first-of-type{margin:22px 0 6px;font-size:13px;opacity:.7}
-html[data-theme="compass"] body.page-index .container > .workshops{
-  position:relative;display:block;width:min(660px,86vw);height:min(660px,86vw);
-  margin:22px auto 8px;border-radius:50%;border:1px solid rgba(185,167,255,.24);
-  background:radial-gradient(circle,rgba(185,167,255,.09),transparent 62%);
-  box-shadow:inset 0 0 0 54px rgba(185,167,255,.025),inset 0 0 0 55px rgba(185,167,255,.10),
-             0 0 90px rgba(150,120,255,.10)}
-/* 中央核心 */
-html[data-theme="compass"] body.page-index .container > .workshops::before{
-  content:"云 境\A33 界";white-space:pre;position:absolute;left:50%;top:50%;
-  transform:translate(-50%,-50%);width:158px;height:158px;border-radius:50%;
-  display:grid;place-items:center;text-align:center;font-size:17px;font-weight:700;
-  letter-spacing:.24em;line-height:2;color:#fff;z-index:2;
-  background:radial-gradient(circle,rgba(185,167,255,.34),rgba(36,28,72,.94));
-  border:1px solid rgba(185,167,255,.55);box-shadow:0 0 64px rgba(150,120,255,.38)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop{
-  position:absolute;left:50%;top:50%;width:116px;height:116px;border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  padding:8px;background:rgba(36,28,72,.94);z-index:3;
-  border:1px solid color-mix(in srgb,var(--ws-hue) 55%,transparent)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop::before,
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop::after{display:none}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop .ws-glyph{
-  width:46px;height:46px;border-radius:15px;font-size:23px}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop .ws-name{font-size:12px;letter-spacing:0}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop .ws-desc,
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop .ws-enter{display:none}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:hover{transform:none;scale:1.09}
-/* 5 等分 72°，卡片保持正向 */
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(1){transform:translate(-50%,-50%) rotate(-90deg) translateY(-228px) rotate(90deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(2){transform:translate(-50%,-50%) rotate(-18deg) translateY(-228px) rotate(18deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(3){transform:translate(-50%,-50%) rotate(54deg)  translateY(-228px) rotate(-54deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(4){transform:translate(-50%,-50%) rotate(126deg) translateY(-228px) rotate(-126deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(5){transform:translate(-50%,-50%) rotate(198deg) translateY(-228px) rotate(-198deg)}
+html[data-theme="zine"] body.page-index .masthead{padding:26px 0 10px;text-align:center}
+html[data-theme="zine"] body.page-index .logo-kai{
+  font-family:"Ma Shan Zheng","LXGW WenKai",cursive;font-size:clamp(52px,7vw,88px);
+  font-weight:400;letter-spacing:.06em;position:relative;display:inline-block;margin:0}
+html[data-theme="zine"] body.page-index .logo-kai::after{
+  content:"";position:absolute;left:-6%;right:-6%;bottom:8px;height:16px;
+  background:rgba(255,214,102,.55);z-index:-1;transform:rotate(-1.2deg)}
+html[data-theme="zine"] body.page-index .sub{
+  font-size:11px;letter-spacing:.34em;margin-top:10px;font-family:Georgia,serif}
+html[data-theme="zine"] body.page-index .mh-chips{justify-content:center;margin:18px auto 0;overflow:visible;flex-wrap:wrap}
+html[data-theme="zine"] body.page-index .mh-chips span{
+  font-size:12px;padding:6px 12px;background:#fffdf7;border:1px dashed var(--rule);
+  box-shadow:0 4px 10px rgba(90,70,40,.12);border-radius:2px}
+html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n+1){transform:rotate(-2deg);background:#fff2c9}
+html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n+2){transform:rotate(1.6deg);background:#dff2e6}
+html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n){transform:rotate(-1deg);background:#ffe2e9}
+html[data-theme="zine"] body.page-index .container > .section-title{
+  font-family:"Ma Shan Zheng","LXGW WenKai",cursive;font-weight:400;font-size:26px;letter-spacing:.06em}
+/* 第二轮修正：196px 五张会 4+1 孤卡，收窄到 170px 让五张成一行，消掉下方大片空白 */
+html[data-theme="zine"] body.page-index .container > .workshops{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:22px 18px;padding:12px 0 8px}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop{
+  flex:0 0 170px;width:170px;box-sizing:border-box;min-height:0;background:#fff;border:0;border-radius:0;
+  padding:11px 11px 14px;box-shadow:0 10px 22px rgba(90,70,40,.22);
+  display:flex;flex-direction:column;gap:0;overflow:visible;position:relative}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(odd){transform:rotate(-2.6deg)}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(even){transform:rotate(2.2deg) translateY(10px)}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop::before{
+  content:"";position:absolute;top:-13px;left:50%;width:86px;height:26px;margin-left:-43px;
+  transform:rotate(-3deg);opacity:.85;border-radius:2px;
+  background:rgba(255,205,110,.8)}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(2)::before{background:rgba(140,205,250,.8)}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(3)::before{background:rgba(250,150,170,.8)}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(4)::before{background:rgba(160,225,170,.8)}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(5)::before{background:rgba(220,180,250,.8)}
+/* 第二轮修正：批注原先压在照片区与名字交界被切半截，移进照片区右下角并加浅底 */
+/* 第三轮修正：白底斜条在照片区里像贴歪的胶带、还压住红字，改为纯手写红字 */
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop::after{
+  content:"超好逛！ →";position:absolute;top:116px;right:8px;font-size:12.5px;color:#d05a6e;
+  transform:rotate(-6deg);white-space:nowrap;opacity:1;z-index:3;
+  text-shadow:0 1px 2px rgba(255,255,255,.9);
+  font-family:"Ma Shan Zheng","LXGW WenKai",cursive}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-glyph{
+  width:100%;height:158px;border-radius:0;flex:0 0 auto;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--ws-hue) 30%,#fff),color-mix(in srgb,var(--ws-hue) 10%,#fff));
+  box-shadow:none;color:color-mix(in srgb,var(--ws-hue) 62%,#4a3f33);
+  font-family:"Ma Shan Zheng","LXGW WenKai",cursive;font-size:92px;font-weight:400;
+  position:relative;overflow:hidden}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-glyph::after{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(color-mix(in srgb,var(--ws-hue) 55%,transparent) 1.5px,transparent 1.5px);
+  background-size:16px 16px;opacity:.45}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-name{
+  font-family:"Ma Shan Zheng","LXGW WenKai",cursive;font-size:20px;font-weight:400;
+  text-align:center;margin-top:10px;letter-spacing:.02em}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-desc{
+  font-size:11px;line-height:1.6;text-align:center;margin-top:5px;min-height:36px;flex:0 0 auto}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-enter{
+  align-self:center;margin-top:6px;font-size:11px;color:#d05a6e}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:hover{
+  transform:rotate(0) scale(1.04);z-index:5;box-shadow:0 18px 34px rgba(90,70,40,.28)}
+html[data-theme="zine"] .ws-group{border:1px dashed #c9b58f;background:#fffdf7}
+html[data-theme="zine"] .ws-group .workshops{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+html[data-theme="zine"] .ws-group .workshops .workshop{
+  background:#fffdf7;border:1px solid var(--rule);border-radius:2px;min-height:0;padding:14px}
+html[data-theme="zine"] .ws-group .workshops .workshop .ws-glyph{width:38px;height:38px;font-size:19px;border-radius:3px}
+html[data-theme="zine"] .ws-group .workshops .workshop .ws-name{font-size:15px}
+html[data-theme="zine"] .ws-group .workshops .workshop .ws-desc{display:none}
 
 /* ==========================================================================
-   ③ 星轨轮播 carousel —— 100% 横向滚动舞台，大画幅卡片，scroll-snap
+   ③ 叁 · Y2K 复古未来
    ========================================================================== */
-html[data-theme="carousel"] body.page-index .masthead{padding:12px 0 2px}
-html[data-theme="carousel"] body.page-index .mh-mascot{width:72px}
-html[data-theme="carousel"] body.page-index .logo-kai{font-size:38px}
-html[data-theme="carousel"] body.page-index .mh-chips{display:none}
-html[data-theme="carousel"] body.page-index .container{max-width:none;padding-left:0;padding-right:0}
-html[data-theme="carousel"] body.page-index .container > .section-title{margin:20px 5vw 6px;align-items:flex-start}
-html[data-theme="carousel"] body.page-index .container > .workshops{
-  display:flex;gap:26px;overflow-x:auto;overflow-y:hidden;padding:14px 5vw 32px;
-  grid-template-columns:none;grid-auto-flow:row;scroll-snap-type:x mandatory}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop{
-  flex:0 0 min(76vw,780px);min-height:52vh;scroll-snap-align:center;
-  flex-direction:row;align-items:center;gap:4vw;padding:5vh 4vw;border-radius:24px}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-glyph{
-  width:clamp(96px,13vw,168px);height:clamp(96px,13vw,168px);flex:0 0 auto;
-  border-radius:34px;font-size:clamp(46px,6vw,82px)}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-name{font-size:clamp(26px,3.4vw,42px)}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-desc{font-size:15px;max-width:30ch;flex:0 0 auto}
+html[data-theme="y2k"] body.page-index .masthead{padding:34px 0 16px;text-align:center;position:relative;overflow:hidden}
+html[data-theme="y2k"] body.page-index .logo-kai{
+  font-family:Arial Black,Impact,sans-serif;font-weight:900;letter-spacing:.04em;
+  font-size:clamp(48px,7vw,86px);line-height:1;margin:0;
+  display:flex;align-items:baseline;justify-content:center;gap:16px}
+html[data-theme="y2k"] body.page-index .logo-kai .lk-a,
+html[data-theme="y2k"] body.page-index .logo-kai .lk-b{
+  background:linear-gradient(180deg,#fff 0%,#a9d8ff 38%,#5b7fd8 52%,#e8f4ff 66%,#8a63c8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-stroke:1px rgba(255,255,255,.5);
+  filter:drop-shadow(0 3px 0 #3a3a8a) drop-shadow(0 6px 12px rgba(102,217,255,.45))}
+html[data-theme="y2k"] body.page-index .logo-kai::before{
+  content:"YUNJING";display:block;position:absolute;left:0;right:0;top:2px;
+  font:900 12px/1 Arial,sans-serif;letter-spacing:.62em;color:#66d9ff}
+html[data-theme="y2k"] body.page-index .sub{
+  font:11px/1.6 Arial,sans-serif;letter-spacing:.3em;color:#7f8fd8;margin-top:12px}
+html[data-theme="y2k"] body.page-index .masthead::after{
+  content:"★ WELCOME TO THE CLOUD ★  CREATE YOUR WORLD ★  33 WORLDS ONLINE ★  ★ WELCOME TO THE CLOUD ★  CREATE YOUR WORLD ★  33 WORLDS ONLINE ★";
+  display:block;position:relative;margin:20px -20vw 0;padding:6px 0;white-space:nowrap;overflow:hidden;
+  font:700 10px/1.4 Arial,sans-serif;letter-spacing:.24em;color:#080828;
+  background:linear-gradient(90deg,#66d9ff,#ff66c4,#ffd86b,#66d9ff);
+  border-top:1px solid #a9d8ff;border-bottom:1px solid #a9d8ff}
+html[data-theme="y2k"] body.page-index .mh-chips{justify-content:center;margin:16px auto 0;overflow:visible;flex-wrap:wrap}
+html[data-theme="y2k"] body.page-index .mh-chips span{
+  font:11px Arial,sans-serif;letter-spacing:.08em;color:#a9b8e8;background:rgba(18,22,74,.8);
+  border:1px solid rgba(120,170,255,.5);border-radius:0;box-shadow:2px 2px 0 rgba(102,217,255,.25)}
+html[data-theme="y2k"] body.page-index .container > .section-title{
+  font-family:Arial Black,Arial,sans-serif;font-size:20px;letter-spacing:.18em;text-transform:uppercase}
+html[data-theme="y2k"] body.page-index .container > .workshops{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop{
+  min-height:0;padding:0;border:2px solid #7aa8ff;border-radius:0;overflow:hidden;
+  background:rgba(12,16,60,.92);box-shadow:4px 4px 0 rgba(102,217,255,.28);display:flex;flex-direction:column;gap:0}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop::before{
+  content:"◉ ◉ ◉   workshop.exe";display:block;height:24px;line-height:24px;padding:0 8px;
+  font:10px/24px Arial,sans-serif;letter-spacing:.1em;color:#080828;
+  background:linear-gradient(90deg,#7aa8ff,#5b7fd8);border-bottom:2px solid #7aa8ff;
+  border-radius:0;box-shadow:none;opacity:1;width:auto;position:relative;order:-1}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop::after{content:"CLICK START ▶";position:absolute;
+  right:8px;bottom:8px;font:9px Arial,sans-serif;letter-spacing:.1em;color:#ffd86b;opacity:1;top:auto;left:auto}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop .ws-glyph{
+  width:44px;height:44px;border-radius:0;margin:14px 14px 0;font-size:22px;
+  background:linear-gradient(150deg,#66d9ff,#5b7fd8);color:#080828;
+  box-shadow:2px 2px 0 #ff66c4}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop .ws-name{
+  font-size:17px;margin:10px 14px 0;letter-spacing:.04em}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop .ws-desc{
+  font-size:11.5px;line-height:1.7;margin:6px 14px 0;flex:1}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop .ws-enter{
+  margin:8px 14px 22px;font-size:11px;color:#66d9ff}
+html[data-theme="y2k"] body.page-index .container > .workshops > .workshop:hover{
+  transform:translateY(-4px);border-color:#ff66c4;box-shadow:6px 6px 0 rgba(255,102,196,.35)}
+html[data-theme="y2k"] .ws-group .workshops{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+html[data-theme="y2k"] .ws-group .workshops .workshop{min-height:0;padding:12px}
+html[data-theme="y2k"] .ws-group .workshops .workshop .ws-glyph{width:32px;height:32px;font-size:16px;border-radius:0}
+html[data-theme="y2k"] .ws-group .workshops .workshop .ws-name{font-size:14px}
+html[data-theme="y2k"] .ws-group .workshops .workshop .ws-desc{display:none}
 
 /* ==========================================================================
-   ④ 胶片映画 film —— 横向胶片条 + 上下齿孔 + 4:3 画格
+   ④ 肆 · 国风水墨
    ========================================================================== */
-html[data-theme="film"] body.page-index .container{max-width:none;padding-left:0;padding-right:0}
-html[data-theme="film"] body.page-index .container > .section-title{margin:26px 5vw 10px}
-html[data-theme="film"] body.page-index .container > .workshops{
-  position:relative;display:flex;gap:14px;overflow-x:auto;padding:36px 5vw;
-  grid-template-columns:none;background:#08070e;
-  border-top:1px solid rgba(210,195,255,.12);border-bottom:1px solid rgba(210,195,255,.12)}
-html[data-theme="film"] body.page-index .container > .workshops::before,
-html[data-theme="film"] body.page-index .container > .workshops::after{
-  content:"";position:absolute;left:0;right:0;height:12px;
-  background:repeating-linear-gradient(90deg,transparent 0 16px,rgba(255,255,255,.18) 16px 28px,transparent 28px 44px)}
-html[data-theme="film"] body.page-index .container > .workshops::before{top:6px}
-html[data-theme="film"] body.page-index .container > .workshops::after{bottom:6px}
-html[data-theme="film"] body.page-index .container > .workshops > .workshop{
-  flex:0 0 min(54vw,410px);aspect-ratio:4/3;align-items:center;justify-content:center;
-  text-align:center;gap:10px;border-radius:3px;padding:22px}
-html[data-theme="film"] body.page-index .container > .workshops > .workshop .ws-glyph{width:66px;height:66px;font-size:32px}
-html[data-theme="film"] body.page-index .container > .workshops > .workshop .ws-desc{max-width:32ch}
+html[data-theme="ink"] body.page-index .container{max-width:1000px}
+html[data-theme="ink"] body.page-index .masthead{
+  padding:54px 0 34px;text-align:left;display:flex;align-items:flex-start;gap:36px;position:relative}
+html[data-theme="ink"] body.page-index .logo-kai{
+  writing-mode:vertical-rl;font-size:clamp(58px,8vw,86px);font-weight:400;letter-spacing:.18em;
+  line-height:1.2;margin:0;height:230px;display:block}
+html[data-theme="ink"] body.page-index .masthead::after{
+  content:"雲";position:absolute;left:96px;top:196px;width:38px;height:38px;
+  display:grid;place-items:center;font-size:22px;color:#fff;background:#a83232;
+  border:2px solid #a83232;opacity:.9}
+html[data-theme="ink"] body.page-index .sub{
+  writing-mode:vertical-rl;font-size:13px;letter-spacing:.4em;margin:24px 0 0;
+  color:var(--ink-mid);height:190px}
+/* 第二轮修正：7 枚胶囊竖排挤成一团碎字且被裁，读不出来——整套收起，留白交给宣纸 */
+html[data-theme="ink"] body.page-index .mh-chips{display:none}
+html[data-theme="ink"] body.page-index .container > .section-title{
+  flex-direction:row;align-items:center;justify-content:flex-start;text-align:left;gap:14px;
+  font-size:20px;letter-spacing:.3em;font-weight:400}
+html[data-theme="ink"] body.page-index .container > .section-title::before{
+  content:"○";font-size:14px;color:#a83232}
+html[data-theme="ink"] body.page-index .container > .section-title::after{
+  flex:1;width:auto;height:1px;background:var(--rule)}
+/* 第二轮修正：删掉逐行叠加的水印列，改为整块一个极低透明度的「雲」，不再与入场文字重叠 */
+html[data-theme="ink"] body.page-index .container > .workshops{
+  display:block;position:relative;border-top:1px solid var(--rule)}
+/* 第三轮修正：整块「雲」水印笔画仍穿过前两行的入场文字，去掉；留白与竖排标题已足够表达水墨 */
+html[data-theme="ink"] body.page-index .container > .workshops::before{display:none}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop{
+  display:grid;grid-template-columns:86px 1fr 180px 92px;grid-template-rows:auto auto;
+  align-items:center;gap:6px 20px;min-height:0;padding:22px 8px;
+  background:none;border:0;border-bottom:1px solid var(--rule);border-radius:0;box-shadow:none;overflow:visible}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop::before{display:none}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop::after{display:none}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-glyph{
+  grid-column:1;grid-row:1/3;justify-self:center;width:66px;height:66px;border-radius:50%;
+  font-size:30px;font-weight:400;color:var(--ink-strong);background:rgba(43,40,37,.05);box-shadow:none}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-name{
+  grid-column:2;grid-row:1;font-size:27px;font-weight:400;letter-spacing:.14em}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-desc{
+  grid-column:2;grid-row:2;font-size:12.5px;line-height:1.7;max-width:none;flex:0 0 auto}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-enter{
+  grid-column:4;grid-row:1/3;justify-self:start;align-self:center;font-size:12px;
+  white-space:nowrap;letter-spacing:.1em;color:#a83232}
+html[data-theme="ink"] body.page-index .container > .workshops > .workshop:hover{
+  transform:none;background:rgba(43,40,37,.035)}
+html[data-theme="ink"] .section-title{letter-spacing:.3em}
+html[data-theme="ink"] .ws-group{background:transparent;border:0;border-top:1px solid var(--rule)}
+html[data-theme="ink"] .ws-group-head{border-bottom:1px dotted var(--rule)}
+html[data-theme="ink"] .ws-group .workshops{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+html[data-theme="ink"] .ws-group .workshops .workshop{
+  background:none;border:0;border-bottom:1px dotted var(--rule);border-radius:0;
+  box-shadow:none;min-height:0;padding:12px 4px;display:flex;flex-direction:row;align-items:center;gap:10px}
+html[data-theme="ink"] .ws-group .workshops .workshop .ws-glyph{width:34px;height:34px;border-radius:50%;font-size:16px}
+html[data-theme="ink"] .ws-group .workshops .workshop .ws-name{font-size:15px}
+html[data-theme="ink"] .ws-group .workshops .workshop .ws-desc{display:none}
 
 /* ==========================================================================
-   ⑤ 巨幕主角 hero —— 1 张全高巨幕 + 右侧 4 行列表
+   ⑤ 伍 · 瑞士极简
    ========================================================================== */
-html[data-theme="hero"] body.page-index .container{max-width:1200px}
-html[data-theme="hero"] body.page-index .masthead{padding:14px 0 6px}
-html[data-theme="hero"] body.page-index .mh-mascot{width:76px}
-html[data-theme="hero"] body.page-index .mh-chips{display:none}
-html[data-theme="hero"] body.page-index .container > .workshops{
-  display:grid;grid-template-columns:1.9fr 1fr;grid-template-rows:repeat(4,1fr);
-  gap:14px;min-height:60vh}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child{
-  grid-column:1;grid-row:1/5;min-height:60vh;justify-content:flex-end;
-  padding:38px;border-radius:26px}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child .ws-glyph{
-  width:112px;height:112px;border-radius:30px;font-size:56px}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child .ws-name{
-  font-size:clamp(30px,4vw,52px);letter-spacing:.06em}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child .ws-desc{font-size:16px;max-width:42ch}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child){
-  grid-column:2;min-height:0;flex-direction:row;align-items:center;gap:14px;
-  padding:14px 18px;border-radius:16px}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child) .ws-glyph{
-  width:46px;height:46px;flex:0 0 auto;font-size:22px}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child) .ws-name{font-size:17px}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child) .ws-desc{display:none}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child) .ws-enter{margin-left:auto}
+html[data-theme="swiss"] body.page-index .container{max-width:1180px}
+html[data-theme="swiss"] body.page-index .masthead{
+  text-align:left;padding:0 0 34px;border-bottom:4px solid #111;position:relative}
+html[data-theme="swiss"] body.page-index .masthead::after{
+  content:"";position:absolute;right:0;top:-30px;width:16px;height:16px;background:#e63312}
+html[data-theme="swiss"] body.page-index .logo-kai{
+  font-family:"Helvetica Neue",Arial,sans-serif;font-size:clamp(64px,10vw,120px);
+  font-weight:900;letter-spacing:-.015em;line-height:1.06;margin:8px 0 0}
+html[data-theme="swiss"] body.page-index .logo-kai .lk-b{color:#e63312}
+html[data-theme="swiss"] body.page-index .sub{
+  font-size:clamp(18px,2.6vw,30px);font-weight:900;letter-spacing:0;color:#111;
+  margin-top:20px;line-height:1.4}
+html[data-theme="swiss"] body.page-index .mh-chips{display:none}
+html[data-theme="swiss"] body.page-index .container > .section-title{
+  flex-direction:row;align-items:center;text-align:left;gap:14px;
+  font-size:12px;font-weight:700;letter-spacing:.2em;margin:36px 0 12px}
+html[data-theme="swiss"] body.page-index .container > .section-title::after{
+  flex:1;width:auto;height:2px;background:#111}
+html[data-theme="swiss"] body.page-index .container > .workshops{display:block;counter-reset:sws}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop{
+  counter-increment:sws;display:grid;grid-template-columns:110px 1fr 280px 96px;align-items:center;gap:24px;
+  min-height:0;padding:26px 0;border:0;border-bottom:2px solid #111;border-radius:0;
+  background:none;box-shadow:none;overflow:visible}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop::before,
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop::after{display:none}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-glyph{
+  width:auto;height:auto;border-radius:0;background:none;box-shadow:none;font-size:0}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-glyph::before{
+  content:"0" counter(sws);font:900 52px/1 Georgia,serif;color:#e63312}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-name{
+  font-size:clamp(26px,3vw,36px);font-weight:900;letter-spacing:.02em}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-desc{
+  font-size:13px;line-height:1.9;color:#555;font-weight:300;flex:0 0 auto;max-width:none}
+/* 第二轮修正：「入坊 →」原先被 60px 列挤成上下两行，加宽列 + nowrap + 左对齐避开右下小云 */
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-enter{
+  font-size:21px;font-weight:300;justify-self:start;align-self:center;color:#111;white-space:nowrap}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop:hover{
+  transform:none;background:#f0f0ec;border-bottom-color:#e63312}
+html[data-theme="swiss"] body.page-index .container > .workshops > .workshop:hover .ws-enter{transform:translateX(6px)}
+html[data-theme="swiss"] .ws-group{background:none;border:0;border-top:2px solid #111}
+html[data-theme="swiss"] .ws-group-head{border-bottom:1px solid #ccc}
+html[data-theme="swiss"] .ws-group .workshops{grid-template-columns:repeat(3,1fr);gap:0 36px}
+html[data-theme="swiss"] .ws-group .workshops .workshop{
+  background:none;border:0;border-top:1px solid #ccc;border-radius:0;box-shadow:none;
+  min-height:0;padding:12px 2px;display:flex;flex-direction:row;align-items:center;gap:10px}
+html[data-theme="swiss"] .ws-group .workshops .workshop .ws-glyph{width:auto;height:auto;background:none;box-shadow:none;
+  border-radius:0;font-size:14px;color:#999}
+html[data-theme="swiss"] .ws-group .workshops .workshop .ws-name{font-size:16px;font-weight:500}
+html[data-theme="swiss"] .ws-group .workshops .workshop .ws-desc{display:none}
+html[data-theme="swiss"] .rp-promo{border-top:4px solid #111}
 
 /* ==========================================================================
-   ⑥ 卷轴长廊 scroll —— 首屏只有标题，往下逐屏左右交替的长卷
+   ⑥ 陆 · 终端 Code
    ========================================================================== */
-html[data-theme="scroll"] body.page-index .container{max-width:1000px}
-html[data-theme="scroll"] body.page-index .masthead{
-  min-height:62vh;display:flex;flex-direction:column;justify-content:center;padding:0}
-html[data-theme="scroll"] body.page-index .mh-mascot{width:108px}
-html[data-theme="scroll"] body.page-index .logo-kai{font-size:64px}
-html[data-theme="scroll"] body.page-index .mh-chips{display:none}
-html[data-theme="scroll"] body.page-index .container > .section-title{margin:34px 0 12px;align-items:flex-start}
-html[data-theme="scroll"] body.page-index .container > .workshops{display:block}
-/* v3.90.0 长卷里基础 .workshop::before 光晕会溢出成右侧模糊方块，清掉 */
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop::before,
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop::after{display:none}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop{
-  min-height:46vh;display:grid;grid-template-columns:1fr 1fr;
-  grid-template-rows:auto auto auto;align-content:center;gap:10px 6vw;
-  padding:5vh 3vw;border:0;border-bottom:1px solid var(--line);
-  border-radius:0;background:none;box-shadow:none}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:hover{transform:none}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop .ws-glyph{
-  grid-column:1;grid-row:1/4;justify-self:center;width:min(176px,20vw);height:min(176px,20vw);
-  border-radius:50%;font-size:64px}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop .ws-name{grid-column:2;grid-row:1;align-self:end;font-size:30px}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop .ws-desc{grid-column:2;grid-row:2;font-size:15px;max-width:34ch}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop .ws-enter{grid-column:2;grid-row:3;align-self:start}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:nth-child(even) .ws-glyph{grid-column:2}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:nth-child(even) .ws-name,
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:nth-child(even) .ws-desc,
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:nth-child(even) .ws-enter{
-  grid-column:1;justify-self:end;text-align:right}
+html[data-theme="term"] body.page-index .masthead{text-align:left;padding:36px 0 20px}
+html[data-theme="term"] body.page-index .logo-kai{font-size:0;margin:0;letter-spacing:0;line-height:1}
+html[data-theme="term"] body.page-index .logo-kai::before{
+  content:"YUNJING";display:block;font:700 clamp(34px,6vw,64px)/1.05 ui-monospace,Consolas,monospace;
+  letter-spacing:.14em;color:#7dff9b;text-shadow:0 0 18px rgba(125,255,155,.55)}
+html[data-theme="term"] body.page-index .logo-kai::after{
+  content:"█";display:inline-block;font-size:22px;color:#7dff9b;animation:yjBlink 1s steps(1) infinite;margin-left:6px}
+@keyframes yjBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+html[data-theme="term"] body.page-index .sub{
+  font:13px/1.8 ui-monospace,Consolas,monospace;letter-spacing:.06em;margin-top:12px;color:#4fbd6a}
+html[data-theme="term"] body.page-index .sub::before{content:"> cat /welcome.txt  ·  "}
+html[data-theme="term"] body.page-index .mh-chips{margin:14px 0 0;overflow:visible;flex-wrap:wrap}
+html[data-theme="term"] body.page-index .mh-chips span{
+  font:11px ui-monospace,Consolas,monospace;letter-spacing:0;padding:4px 8px;
+  border:1px solid rgba(125,255,155,.28);border-radius:0;color:#4fbd6a;background:rgba(6,20,8,.6)}
+html[data-theme="term"] body.page-index .container > .section-title{
+  flex-direction:row;align-items:center;text-align:left;gap:10px;justify-content:flex-start;
+  font:700 15px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.08em;color:#7dff9b}
+html[data-theme="term"] body.page-index .container > .section-title::before{content:"##";color:#2f7a44}
+html[data-theme="term"] body.page-index .container > .section-title::after{
+  flex:1;width:auto;height:1px;background:rgba(125,255,155,.25)}
+html[data-theme="term"] body.page-index .container > .workshops{
+  display:block;border:1px solid rgba(125,255,155,.38);border-radius:0;padding:16px 22px;
+  background:rgba(6,20,8,.72);counter-reset:tm}
+/* 第二轮修正：绿框右上原先纯黑无内容，补一行终端注释撑起构图 */
+html[data-theme="term"] body.page-index .container > .workshops::before{
+  content:"# 5 workshops loaded · type ENTER to open";display:block;
+  font:11px/1.6 ui-monospace,Consolas,monospace;color:#2f7a44;
+  padding-bottom:8px;margin-bottom:4px;border-bottom:1px dotted rgba(125,255,155,.16)}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop{
+  counter-increment:tm;display:flex;flex-direction:row;align-items:baseline;gap:14px;flex-wrap:wrap;
+  min-height:0;padding:9px 0;border:0;border-bottom:1px dotted rgba(125,255,155,.16);
+  border-radius:0;background:none;box-shadow:none;overflow:visible}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop::before{
+  content:"[0" counter(tm) "]";font:12px ui-monospace,Consolas,monospace;color:#2f7a44;
+  order:-1;height:auto;width:auto;border-radius:0;background:none;box-shadow:none;opacity:1}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop::after{display:none}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-glyph{
+  width:auto;height:auto;border-radius:0;background:none;box-shadow:none;font-size:0;order:0}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-glyph::before{
+  content:"▸";font:14px ui-monospace,Consolas,monospace;color:#c8ff6b}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-name{
+  font:700 16px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.04em;order:1}
+/* 第二轮修正：#2f7a44 在黑底上对比不足，提亮一档；重复的「入场 →」换成终端语汇 [ENTER] */
+html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-desc{
+  font:12px/1.6 ui-monospace,Consolas,monospace;color:#4a9e62;flex:1 1 240px;max-width:none;order:2}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-enter{
+  font-size:0;color:#c8ff6b;order:3;align-self:center}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-enter::after{
+  content:"[ENTER]";font:11px ui-monospace,Consolas,monospace;color:#c8ff6b}
+html[data-theme="term"] body.page-index .container > .workshops > .workshop:hover{
+  transform:none;background:rgba(125,255,155,.06);border-bottom-color:#7dff9b}
+html[data-theme="term"] .ws-group{background:rgba(6,20,8,.55);border:1px solid rgba(125,255,155,.22)}
+html[data-theme="term"] .ws-group-head{border-bottom:1px dotted rgba(125,255,155,.2)}
+html[data-theme="term"] .ws-group-head .wg-name,
+html[data-theme="term"] .ws-group-head .wg-count,
+html[data-theme="term"] .ws-group-head .wg-sub{font-family:ui-monospace,Consolas,monospace}
+html[data-theme="term"] .ws-group .workshops{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+html[data-theme="term"] .ws-group .workshops .workshop{
+  background:none;border:0;border-bottom:1px dotted rgba(125,255,155,.14);border-radius:0;
+  box-shadow:none;min-height:0;padding:9px 4px;display:flex;flex-direction:row;align-items:center;gap:10px}
+html[data-theme="term"] .ws-group .workshops .workshop .ws-glyph{width:auto;height:auto;background:none;box-shadow:none;
+  border-radius:0;font-size:13px;color:#2f7a44}
+html[data-theme="term"] .ws-group .workshops .workshop .ws-name{font:14px ui-monospace,Consolas,monospace}
+html[data-theme="term"] .ws-group .workshops .workshop .ws-desc{display:none}
 
 /* ==========================================================================
-   ⑦ 侧栏书页 sidebar —— 固定 248px 侧栏 + 右侧内容区，胶囊变导航项
+   窄屏兜底：六套都退回可读版式，不硬撑桌面骨架
    ========================================================================== */
-html[data-theme="sidebar"] body.page-index .container{max-width:none;margin:0;padding:0 4vw 60px 268px}
-html[data-theme="sidebar"] body.page-index .masthead{
-  position:fixed;left:0;top:0;width:248px;height:100vh;z-index:6;
-  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px;
-  padding:28px 22px;text-align:left;
-  background:linear-gradient(180deg,#171b22,#11141a);
-  border-right:1px solid rgba(160,180,205,.18)}
-html[data-theme="sidebar"] body.page-index .masthead::before{display:none}
-html[data-theme="sidebar"] body.page-index .mh-mascot{width:86px}
-html[data-theme="sidebar"] body.page-index .logo-kai{font-size:40px;letter-spacing:.1em}
-html[data-theme="sidebar"] body.page-index .sub{font-size:12px}
-html[data-theme="sidebar"] body.page-index .gold-divider{width:42px;margin:0}
-html[data-theme="sidebar"] body.page-index .mh-chips{
-  flex-direction:column;flex-wrap:nowrap;gap:2px;margin:10px 0 0;max-width:none;width:100%}
-html[data-theme="sidebar"] body.page-index .mh-chips span{
-  width:100%;text-align:left;font-size:12.5px;padding:8px 10px;border-radius:8px;
-  border-left:2px solid transparent}
-html[data-theme="sidebar"] body.page-index .mh-chips span:hover{border-left-color:var(--accent);background:rgba(255,255,255,.06)}
-html[data-theme="sidebar"] body.page-index .container > .section-title{align-items:flex-start;margin:30px 0 14px}
-html[data-theme="sidebar"] .theme-switcher{left:262px}
-html[data-theme="sidebar"] body.page-index .container > .workshops{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
-
-/* ==========================================================================
-   ⑧ 形象馆 avatar —— 竖长人物卡，上半为大幅形象位
-   ========================================================================== */
-html[data-theme="avatar"] body.page-index .masthead{padding:16px 0 6px}
-html[data-theme="avatar"] body.page-index .mh-mascot{width:84px}
-html[data-theme="avatar"] body.page-index .logo-kai{font-size:44px}
-html[data-theme="avatar"] body.page-index .container > .workshops{
-  grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:16px}
-html[data-theme="avatar"] body.page-index .container > .workshops > .workshop{
-  min-height:326px;justify-content:flex-end;border-radius:22px;overflow:hidden}
-html[data-theme="avatar"] body.page-index .container > .workshops > .workshop .ws-glyph{
-  width:100%;height:176px;border-radius:16px;font-size:72px;flex:0 0 auto;
-  background:linear-gradient(160deg,color-mix(in srgb,var(--ws-hue) 44%,transparent),transparent)}
-html[data-theme="avatar"] body.page-index .container > .workshops > .workshop .ws-name{font-size:20px}
-
-/* ==========================================================================
-   窄屏兜底：异构版式在手机宽度下退回可读的常规流，不硬撑
-   ========================================================================== */
-
-/* ==========================================================================
-   v3.90.0 视觉审查修正（按 8 套 × 桌面/窄屏实拍逐条修，不用"零报错"代替视觉结论）
-   ========================================================================== */
-
-/* —— 整页节奏：masthead 不再吃掉近半个首屏 —— */
-html[data-theme] body.page-index .masthead{padding:12px 0 4px}
-html[data-theme] body.page-index .mh-mascot{width:82px}
-html[data-theme] body.page-index .logo-kai{font-size:44px}
-html[data-theme] body.page-index .mh-chips{margin-top:10px;gap:6px}
-html[data-theme] body.page-index .container > .section-title{margin:22px 0 12px}
-
-/* —— P0：横向卡片里「入坊 →」不再因 align-self:flex-start 跑到右上角 —— */
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(n+4) .ws-enter,
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child) .ws-enter{align-self:center}
-
-/* —— ① colorful：3 张大卡改为「上部大形象位 + 下部文案」，消掉中间空洞 —— */
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(-n+3){
-  justify-content:flex-start;gap:14px;padding:18px}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(-n+3) .ws-glyph{
-  width:100%;height:148px;border-radius:18px;font-size:64px;flex:0 0 auto;
-  background:linear-gradient(160deg,color-mix(in srgb,var(--ws-hue) 46%,transparent),transparent)}
-html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(-n+3) .ws-enter{margin-top:auto}
-
-/* —— ② compass：罗盘缩小并上移，5 个节点在首屏完整可见；节点字号放大 —— */
-html[data-theme="compass"] body.page-index .container > .workshops{
-  width:min(520px,72vw);height:min(520px,72vw);margin:12px auto 6px}
-html[data-theme="compass"] body.page-index .container > .workshops::before{width:132px;height:132px;font-size:15px}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop{width:106px;height:106px}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop .ws-name{font-size:13px}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(1){transform:translate(-50%,-50%) rotate(-90deg) translateY(-176px) rotate(90deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(2){transform:translate(-50%,-50%) rotate(-18deg) translateY(-176px) rotate(18deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(3){transform:translate(-50%,-50%) rotate(54deg)  translateY(-176px) rotate(-54deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(4){transform:translate(-50%,-50%) rotate(126deg) translateY(-176px) rotate(-126deg)}
-html[data-theme="compass"] body.page-index .container > .workshops > .workshop:nth-child(5){transform:translate(-50%,-50%) rotate(198deg) translateY(-176px) rotate(-198deg)}
-
-/* —— ③ carousel：卡片改上下分区，标题不再被挤成竖排两行；补横滑提示 —— */
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop{
-  flex-direction:column;align-items:flex-start;justify-content:center;gap:16px;
-  min-height:46vh;padding:4vh 4vw}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-glyph{
-  width:112px;height:112px;border-radius:28px;font-size:56px}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-name{white-space:nowrap}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-desc{max-width:40ch;flex:0 0 auto}
-html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-enter{align-self:flex-start}
-html[data-theme="carousel"] body.page-index .container > .workshops::-webkit-scrollbar{height:6px}
-html[data-theme="carousel"] body.page-index .container > .workshops::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
-html[data-theme="carousel"] body.page-index .container > .section-title:nth-of-type(2)::after,
-html[data-theme="film"] body.page-index .container > .section-title:nth-of-type(2)::after{
-  content:"← 左右滑动查看全部 →";width:auto;height:auto;background:none;border-radius:0;
-  font-size:11px;letter-spacing:.14em;color:var(--ink-faint)}
-
-/* —— ④ film：同样补常驻细滚动条，横滑可感知 —— */
-html[data-theme="film"] body.page-index .container > .workshops::-webkit-scrollbar{height:6px}
-html[data-theme="film"] body.page-index .container > .workshops::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px}
-
-/* —— ⑤ hero：巨幕内容垂直居中 + 大形象位填充空白；整体降高让第 4 张进首屏 —— */
-html[data-theme="hero"] body.page-index .container > .workshops{min-height:52vh}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child{
-  min-height:52vh;justify-content:center;gap:18px}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child .ws-glyph{
-  width:100%;height:186px;border-radius:24px;font-size:86px;flex:0 0 auto;
-  background:linear-gradient(160deg,color-mix(in srgb,var(--ws-hue) 42%,transparent),transparent)}
-html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child .ws-desc{flex:0 0 auto}
-
-/* —— ⑥ scroll：首屏从 62vh 空标题压到 34vh，第一张卡完整露出并给滚动提示 —— */
-html[data-theme="scroll"] body.page-index .masthead{min-height:34vh;padding:0}
-html[data-theme="scroll"] body.page-index .masthead::after{
-  content:"↓ 向下展卷";position:absolute;left:50%;bottom:10px;transform:translateX(-50%);
-  font-size:12px;letter-spacing:.22em;color:var(--ink-faint);white-space:nowrap}
-html[data-theme="scroll"] body.page-index .container > .section-title{margin:16px 0 8px}
-html[data-theme="scroll"] body.page-index .container > .workshops > .workshop{min-height:34vh;padding:3vh 3vw}
-
-/* —— ⑦ sidebar：5 张卡改 3+2 网格消掉孤卡；切换器移到右上避开侧栏 —— */
-html[data-theme="sidebar"] body.page-index .container > .workshops{
-  grid-template-columns:repeat(6,1fr);gap:12px}
-html[data-theme="sidebar"] body.page-index .container > .workshops > .workshop{grid-column:span 2;min-height:152px}
-html[data-theme="sidebar"] body.page-index .container > .workshops > .workshop:nth-child(4),
-html[data-theme="sidebar"] body.page-index .container > .workshops > .workshop:nth-child(5){grid-column:span 3}
-html[data-theme="sidebar"] body.page-index .masthead{justify-content:flex-start;padding:34px 22px}
-html[data-theme="sidebar"] .theme-switcher{left:auto;right:16px;top:12px}
-
 @media(max-width:760px){
   html[data-theme] body.page-index .container{padding:20px 16px 50px}
-  /* colorful */
-  html[data-theme="colorful"] body.page-index .container > .workshops{grid-template-columns:repeat(2,1fr);gap:12px}
-  html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(-n+3),
-  html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(n+4){
-    grid-column:span 1;min-height:180px;flex-direction:column;align-items:flex-start;padding:16px}
-  html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:nth-child(n+4) .ws-enter{margin-left:0}
-  /* compass 环形 → 2 列网格 */
-  html[data-theme="compass"] body.page-index .container > .workshops{
-    width:auto;height:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
-    margin:16px 0;border:0;border-radius:0;background:none;box-shadow:none}
-  html[data-theme="compass"] body.page-index .container > .workshops::before{display:none}
-  html[data-theme="compass"] body.page-index .container > .workshops > .workshop{
-    position:static;transform:none!important;width:auto;height:auto;min-height:148px;
-    border-radius:16px;scale:1!important}
-  html[data-theme="compass"] body.page-index .container > .workshops > .workshop .ws-desc{display:none}
-  /* carousel / film 卡片收窄 */
-  html[data-theme="carousel"] body.page-index .container > .workshops > .workshop{
-    flex-basis:86vw;min-height:44vh;flex-direction:column;align-items:flex-start;gap:20px;padding:26px}
-  html[data-theme="carousel"] body.page-index .container > .workshops > .workshop .ws-glyph{width:92px;height:92px;font-size:46px}
-  html[data-theme="film"] body.page-index .container > .workshops > .workshop{flex-basis:78vw}
-  /* hero 双栏 → 单栏 */
-  html[data-theme="hero"] body.page-index .container > .workshops{
-    grid-template-columns:1fr;grid-template-rows:none;min-height:0;gap:12px}
-  html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child,
-  html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child){
-    grid-column:1;grid-row:auto;min-height:172px;flex-direction:column;align-items:flex-start;padding:20px}
-  html[data-theme="hero"] body.page-index .container > .workshops > .workshop:first-child .ws-name{font-size:30px}
-  html[data-theme="hero"] body.page-index .container > .workshops > .workshop:not(:first-child) .ws-enter{margin-left:0}
-  /* scroll 长卷 → 单列 */
-  html[data-theme="scroll"] body.page-index .masthead{min-height:42vh}
-  html[data-theme="scroll"] body.page-index .container > .workshops > .workshop{
-    min-height:0;display:flex;flex-direction:column;gap:10px;padding:26px 6px}
-  html[data-theme="scroll"] body.page-index .container > .workshops > .workshop .ws-glyph{
-    width:78px;height:78px;font-size:34px}
-  html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:nth-child(even) .ws-name,
-  html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:nth-child(even) .ws-desc,
-  html[data-theme="scroll"] body.page-index .container > .workshops > .workshop:nth-child(even) .ws-enter{
-    text-align:left;justify-self:start}
-  /* sidebar 侧栏 → 顶部横条 */
-  html[data-theme="sidebar"] body.page-index .container{padding:0 16px 50px}
-  html[data-theme="sidebar"] body.page-index .masthead{
-    position:static;width:auto;height:auto;flex-direction:row;flex-wrap:wrap;
-    align-items:center;gap:10px;padding:16px}
-  html[data-theme="sidebar"] body.page-index .mh-mascot{width:56px}
-  html[data-theme="sidebar"] body.page-index .logo-kai{font-size:30px}
-  html[data-theme="sidebar"] body.page-index .mh-chips,
-  html[data-theme="sidebar"] body.page-index .gold-divider{display:none}
-  html[data-theme="sidebar"] .theme-switcher{left:10px;right:auto}
-  /* avatar */
-  html[data-theme="avatar"] body.page-index .container > .workshops{grid-template-columns:repeat(2,1fr);gap:12px}
-  html[data-theme="avatar"] body.page-index .container > .workshops > .workshop{min-height:250px}
-  html[data-theme="avatar"] body.page-index .container > .workshops > .workshop .ws-glyph{height:120px;font-size:52px}
-
-  /* v3.90.0 移动端视觉修正：胶囊不再占两行、孤卡跨列、首屏更紧凑 */
-  html[data-theme] body.page-index .masthead{padding:8px 0 2px}
-  html[data-theme] body.page-index .mh-mascot{width:64px}
-  html[data-theme] body.page-index .logo-kai{font-size:34px}
-  html[data-theme] body.page-index .mh-chips{display:none}
-  html[data-theme="scroll"] body.page-index .masthead{min-height:30vh}
-  /* 5 张卡在 2 列下第 5 张跨列，避免孤卡留白 */
-  html[data-theme="colorful"] body.page-index .container > .workshops > .workshop:last-child,
-  html[data-theme="avatar"] body.page-index .container > .workshops > .workshop:last-child,
-  html[data-theme="compass"] body.page-index .container > .workshops > .workshop:last-child{grid-column:span 2}
-  /* sidebar：桌面 6 列 span 规则在手机上会挤成 3 列窄卡、文字竖排，回退 2 列 */
-  html[data-theme="sidebar"] body.page-index .container > .workshops{grid-template-columns:repeat(2,1fr);gap:12px}
-  html[data-theme="sidebar"] body.page-index .container > .workshops > .workshop,
-  html[data-theme="sidebar"] body.page-index .container > .workshops > .workshop:nth-child(4),
-  html[data-theme="sidebar"] body.page-index .container > .workshops > .workshop:nth-child(5){grid-column:span 1;min-height:168px}
-  html[data-theme="sidebar"] body.page-index .container > .workshops > .workshop:last-child{grid-column:span 2}
-  /* 横向区与下方 33 界之间补分隔节奏，消除上下割裂 */
-  html[data-theme="carousel"] body.page-index .container > .workshops,
-  html[data-theme="film"] body.page-index .container > .workshops{margin-bottom:18px}
-
+  html[data-theme] body.page-index .masthead{padding:18px 0 6px}
+  /* 杂志 */
+  html[data-theme="editorial"] body.page-index .masthead{min-height:0;padding:28px 0 16px;text-align:center}
+  html[data-theme="editorial"] body.page-index .logo-kai{font-size:64px}
+  html[data-theme="editorial"] body.page-index .sub{letter-spacing:.24em}
+  html[data-theme="editorial"] body.page-index .mh-chips{max-width:100%;justify-content:center}
+  html[data-theme="editorial"] body.page-index .masthead::after{display:none}
+  html[data-theme="editorial"] body.page-index .container > .section-title{font-size:22px;flex-wrap:wrap}
+  html[data-theme="editorial"] body.page-index .container > .workshops{grid-template-columns:1fr}
+  html[data-theme="editorial"] body.page-index .container > .workshops > .workshop,
+  html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(n){
+    grid-column:1;padding:18px 10px;min-height:0;border-right:0}
+  html[data-theme="editorial"] body.page-index .container > .workshops > .workshop .ws-name,
+  html[data-theme="editorial"] body.page-index .container > .workshops > .workshop:nth-child(1) .ws-name{font-size:27px}
+  html[data-theme="editorial"] body.page-index .container > .workshops > .workshop .ws-desc{max-width:100%}
+  html[data-theme="editorial"] .ws-group .workshops{columns:1}
+  /* 手帐 */
+  html[data-theme="zine"] body.page-index .logo-kai{font-size:52px}
+  html[data-theme="zine"] body.page-index .container > .workshops{gap:22px 14px}
+  /* 第三轮修正：卡片有 22px 内边距且原先未 box-sizing，46% 实际撑到 185px 导致两张放不下变单列 */
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop{flex-basis:47%;width:47%}
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-glyph{height:110px;font-size:62px}
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-name{font-size:19px}
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop::after{top:82px;font-size:11px;right:4px}
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(odd),
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(even){transform:rotate(-1.4deg)}
+  /* 第 5 张改成跨列宽拍立得，不再孤零零占半行 */
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop:last-child{flex-basis:96%;width:96%}
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop::after{top:82px}
+  /* Y2K */
+  html[data-theme="y2k"] body.page-index .logo-kai{font-size:42px;gap:8px}
+  html[data-theme="y2k"] body.page-index .container > .workshops{grid-template-columns:repeat(2,1fr);gap:12px}
+  html[data-theme="y2k"] body.page-index .container > .workshops > .workshop:last-child{grid-column:span 2}
+  /* 水墨 */
+  html[data-theme="ink"] body.page-index .masthead{gap:16px;padding:24px 0 18px}
+  html[data-theme="ink"] body.page-index .logo-kai{font-size:52px;height:160px}
+  html[data-theme="ink"] body.page-index .sub{font-size:11px;height:150px;margin-top:10px}
+  html[data-theme="ink"] body.page-index .masthead::after{left:60px;top:138px;width:30px;height:30px;font-size:17px}
+  html[data-theme="ink"] body.page-index .mh-chips{display:none}
+  html[data-theme="ink"] body.page-index .container > .workshops > .workshop{
+    grid-template-columns:52px 1fr;grid-template-rows:auto auto auto;gap:4px 10px;padding:16px 2px}
+  html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-glyph{
+    grid-column:1;grid-row:1/4;width:44px;height:44px;font-size:21px}
+  html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-name,
+  html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-desc{grid-column:2}
+  html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-name{font-size:20px}
+  html[data-theme="ink"] body.page-index .container > .workshops > .workshop .ws-enter{grid-column:2;grid-row:3;justify-self:start}
+  html[data-theme="ink"] body.page-index .container > .workshops > .workshop::after{display:none}
+  /* 瑞士 */
+  html[data-theme="swiss"] body.page-index .logo-kai{font-size:58px}
+  html[data-theme="swiss"] body.page-index .sub{font-size:18px}
+  html[data-theme="swiss"] body.page-index .container > .workshops > .workshop{
+    grid-template-columns:56px 1fr 88px;gap:10px;padding:16px 0}
+  html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-glyph::before{font-size:30px}
+  html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-name{font-size:22px}
+  html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-desc{display:none}
+  html[data-theme="swiss"] body.page-index .container > .workshops > .workshop .ws-enter{
+    font-size:15px;white-space:nowrap;justify-self:start}
+  html[data-theme="swiss"] .ws-group .workshops{grid-template-columns:repeat(2,1fr);gap:0 16px}
+  /* 终端 */
+  html[data-theme="term"] body.page-index .logo-kai::before{font-size:30px;letter-spacing:.08em}
+  html[data-theme="term"] body.page-index .container > .workshops{padding:12px 12px}
+  html[data-theme="term"] body.page-index .container > .workshops > .workshop{gap:8px}
+  html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-desc{display:none}
+  html[data-theme="term"] body.page-index .container > .workshops > .workshop .ws-name{font-size:14px}
+  /* 通用：小云与切换坞不遮挡内容 */
+  html[data-theme] #xyBuddy{right:10px;bottom:10px;transform:scale(.68);transform-origin:bottom right}
+  html[data-theme] .ver-badge{left:10px;bottom:10px;font-size:11px}
 }
