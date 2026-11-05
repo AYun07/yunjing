@@ -338,6 +338,9 @@ const VariableAI = {
     try {
       const wblock = parser && parser.extractWorldBlock ? parser.extractWorldBlock(reply) : null;
       if (wblock && window.WorldAlive) window.WorldAlive.applyAI(wblock);
+      /* v3.93.0 兜底：真实模型常不写 (world_update) 块，但正文里确实写了「某盟被灭」「另立一盟」。
+         从正文高置信度识别势力新生/覆灭并回写，保证「被灭的势力地图实时体现」不依赖模型守规矩。 */
+      else if (window.WorldAlive && window.WorldAlive.detectFactionEvents) window.WorldAlive.detectFactionEvents(reply);
     } catch (e) { if (window.YJ_DEBUG) console.warn("[变量AI] world_update 应用失败:", e); }
     const block = parser ? parser.extractUpdateBlock(reply) : null;
     if (block) {
