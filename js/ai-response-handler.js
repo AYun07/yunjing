@@ -37,6 +37,12 @@ const StoryResponseHandler = {
       }
     } catch (e) { /* 保底不干扰主解析 */ }
     fw.storyState.variables = newVariables;
+    /* v3.93.0 活世界势力实体化兜底：变量整体替换后确保本界势力实体仍在
+       （seedFactions 幂等，已播种直接返回），随后 onVars 才能把势力状态同步上图。
+       覆盖未经 buildStoryMessages 的路径（如载入旧存档后直接开图）。 */
+    try {
+      if (window.WorldAlive && window.WorldAlive.seedFactions) window.WorldAlive.seedFactions();
+    } catch (e) {}
     /* v3.55.23 行旅图鉴实时追踪：每轮变量落地即上报——AI 报了玩家新位置，
        地图足迹与剧情地标立刻生成，不再等到打开面板才补读 */
     try {
@@ -354,36 +360,85 @@ const StoryResponseHandler = {
     t = t.replace(new RegExp("(?:^|\\n)[ \\t]*[:：][ \\t]*[^\\n]*" + KV + "[^\\n]*", "g"), "\n");
     return t;
   },
-  /** 提取结尾选项 */
+  /** 提取结尾选项（v3.94.0 鲁棒化）
+   *  真实评测暴露：模型用「1. … 6.」数字编号、无标题、或「⑥【成人】」无分隔符写法时，
+   *  旧逻辑只在末尾 600 字里找「1.」开头，长回复里第 1 条常被切掉 → 选项 0 个（斗破界实测）。
+   *  现改为：① 优先 <selection> 块 → ② 传统标题段 → ③ 全文扫描连续编号行块（取最长一组）。 */
   extractOptions(reply) {
     if (!reply) return [];
-    let tail = reply.match(/【(?:情节走向|后续走向|剧情选项|下一步|行动选项|行动方案|可选行动|行动列表|你的选择|关键抉择|生死抉择|命运岔口|抉择)】([\s\S]*)$/i);
-    let segment = tail ? tail[1] : "";
+    const src = String(reply);
+    let segment = "";
+    const sel = src.match(/<selection>\s*([\s\S]*?)\s*<\/selection>/i);
+    if (sel) segment = sel[1];
     if (!segment) {
-      const tailZone = String(reply).slice(-600);
-      const m = tailZone.match(/(?:^|\n)\s*[1１][.、:：]\s*(.+)/);
-      if (m) segment = tailZone.slice(tailZone.indexOf(m[0]));
+      const tail = src.match(/【(?:情节走向|后续走向|剧情选项|下一步|行动选项|行动方案|可选行动|行动列表|你的选择|关键抉择|生死抉择|命运岔口|抉择)】([\s\S]*)$/i);
+      if (tail) segment = tail[1];
+    }
+    if (!segment) {
+      /* 编号行：①-⑳ 可不带分隔符；数字/字母必须带分隔符（避免 chapter: 2 这类变量行被误认） */
+      const NUM = /^(?:[①-⑳]\s*[.、,，:：)）]?|[1-9１-９]\s*[.、,，:：)）]|[A-Da-d]\s*[.、,，:：)）]|选项\s*[一二三四五六七八九1-9])\s*(?:【[^】]{1,10}】)?\s*\S/;
+      const lines = src.split("\n").map((l) => l.trim()).filter(Boolean);
+      let block = [], best = [];
+      for (const l of lines) {
+        if (NUM.test(l)) block.push(l);
+        else { if (block.length > best.length) best = block; block = []; }
+      }
+      if (block.length > best.length) best = block;
+      if (best.length >= 2) segment = best.join("\n");
     }
     if (!segment) return [];
     const options = [];
     const lines = segment.split("\n").map((l) => l.trim()).filter(Boolean);
     for (const line of lines) {
-      /* v3.53.0 修复：旧正则 /^(?:[ABCDabcd1234…])\s*[.、:：)）]?\s*(.+)/ 的分隔符是可选的，
-         于是「chapter: 1」「characters: 陈平安…」这类变量块键值行会被误当选项——
-         首个字母被吃掉，按钮上直接显示「hapter: 1」（龙族实测命中）。现在：
-         ① 分隔符必选（A. / 1、/ ① ...）② 无分隔号时只认「字母数字+空格」且限大写/数字圈码
-         ③ 变量协议行一律跳过（模型把变量块写在选项区之后时会连坐）。 */
-      let skip = false;
-      try { skip = this._isVarProtocolLine(line, true); } catch (e) { skip = false; }
-      if (skip) continue;
-      let m = line.match(/^(?:[ABCDabcd]|[1-9１-９]|[①②③④⑤⑥⑦⑧⑨]|(?:选项|选)\s*[一二三四五六七八九1-9])\s*[.、,，:：)）]\s*(.+)/);
-      if (!m) m = line.match(/^(?:[A-D]|[1-9]|[①②③④])\s+(?=\S)(.+)/);
-      if (m) {
-        let text = m[1].trim();
-        if (text.length >= 2 && text.length <= 80) options.push(text);
-      }
+      if (/^<\/?(?:selection|status|variable_update|wlog|memory_log|npc_log)/i.test(line)) continue;
+      let m = line.match(/^(?:[①-⑳]|[1-9１-９]|[A-Da-d]|选项\s*[一二三四五六七八九1-9])\s*[.、,，:：)）]\s*(.+)$/);
+      if (!m) m = line.match(/^[①-⑳]\s*(.+)$/);
+      if (!m) m = line.match(/^(?:【[^】]{1,10}】)\s*(.+)$/);
+      if (!m) continue;
+      const text = m[1].trim();
+      /* 变量块键值行兜底：编号匹配成功也可能撞上「1. 灵石: +5」这类行 */
+      if (/^[^:：]{1,20}[:：]/.test(text) && !/【/.test(text)) continue;
+      if (text.length >= 2 && text.length <= 80) options.push(text);
     }
     return options.slice(0, 6);
+  },
+  /** v3.94.0 本地补齐：模型一条选项都没给时，按六类补中性方向（不编造具体剧情）。
+   *  用于替代「格式守卫」为此多发的那次完整 system 请求——零额外费用。 */
+  padOptions(reply) {
+    if (this.extractOptions(reply || "").length > 0) return reply;
+    const NEUTRAL = [
+      "继续把眼前这件事往前推一步",
+      "与在场的人说句话，或回应对方",
+      "做一件出人意料的小事",
+      "停下来细看片刻，不急着行动",
+      "换一处地方，或略过一段时日",
+      "若愿与某人更近一步（可选，忽略亦可）"
+    ];
+    const CATS = ["快进", "交互", "整活", "慢推", "时空", "成人"];
+    const KEY = ["①", "②", "③", "④", "⑤", "⑥"];
+    const lines = CATS.map((c, i) => `${KEY[i]}【${c}】${NEUTRAL[i]}`);
+    return String(reply || "").replace(/\s+$/, "") + "\n\n【行动选项】\n" + lines.join("\n") + "\n";
+  },
+  /** 渲染时把 1~5 条真实选项按缺失类别补齐到 6 条；不改变 extractOptions 的返回值，
+   *  因此不影响续写判断、回放存档与正文剥离。 */
+  padOptionList(options) {
+    const opts = (options || []).slice(0, 6);
+    if (opts.length >= 6) return opts;
+    const CATS = ["快进", "交互", "整活", "慢推", "时空", "成人"];
+    const NEUTRAL = [
+      "【快进】继续把眼前这件事往前推一步",
+      "【交互】与在场的人说句话，或回应对方",
+      "【整活】做一件出人意料的小事",
+      "【慢推】停下来细看片刻，不急着行动",
+      "【时空】换一处地方，或略过一段时日",
+      "【成人】若愿与某人更近一步（可选，忽略亦可）"
+    ];
+    const have = new Set();
+    opts.forEach((o) => { const m = String(o).match(/【(快进|交互|整活|慢推|时空|成人)】/); if (m) have.add(m[1]); });
+    const need = 6 - opts.length;
+    const fill = CATS.map((c, i) => ({ c, t: NEUTRAL[i] }))
+      .filter((x) => !have.has(x.c)).slice(0, Math.max(0, need)).map((x) => x.t);
+    return opts.concat(fill);
   },
   /** 侦测本轮选项区标题（扮演模式「行动选项」/ 创作模式「情节走向」），供按钮区显示 */
   detectOptionsLabel(reply) {
@@ -414,6 +469,20 @@ const StoryResponseHandler = {
       cardsHtml = rg.cardsHtml || "";
     }
     const words2 = prose ? prose.replace(/\s/g, "").length : 0;
+    /* v3.94.0 未授权时间跳变可见提示：玩家实测里模型擅自写「这一年，你早把杂役活儿熬熟了」，
+       而玩家并没有要求跳时间。这里不改动正文，只在卡片里给一条轻提示 + 可操作建议。 */
+    const timeJumpNote = (() => {
+      try {
+        const st = window.storyFramework && window.storyFramework.storyState;
+        const hist = (st && st.conversationHistory) || [];
+        const lastUser = [...hist].reverse().find((h) => h && h.role === "user" && h.content);
+        const asked = lastUser ? /(跳转|跳到|数日后|多年后|一年后|快进|时间跳跃|个月后|日后|过了[一二三四五六七八九十\d]+[年月日])/.test(String(lastUser.content)) : false;
+        if (asked) return "";
+        const head = String(prose || "").slice(0, 180);
+        if (!/(这一年|一年后|一年过去|数月后|数日后|半年后|数年后|时光荏苒|一晃|转眼(?:间)?(?:已|便|就)?|几个月后|多年以后)/.test(head)) return "";
+        return `<div class="yj-timejump-note" style="margin:9px 0 0;padding:7px 10px;border-left:3px solid #c9a86a;background:rgba(201,168,106,.08);font-size:11.5px;color:#a8a290;border-radius:0 6px 6px 0">⏳ 本轮正文出现时间跳跃，可能未按你的动作自然推进；若想按原节奏展开，可点「↻ 重新生成」或在下一条指令里写明。</div>`;
+      } catch (e) { return ""; }
+    })();
     let html = `
             <div class="ai-card-header">
                 <span class="chapter-badge">✒ ${chapter}</span>
@@ -422,6 +491,7 @@ const StoryResponseHandler = {
             </div>
             <div class="story-body">${this.formatProse(prose)}</div>
             ${cardsHtml ? `<div class="mm-card-area">${cardsHtml}</div>` : ""}
+            ${timeJumpNote}
         `;
     if (updateBlock) {
       const chips = this.translateChanges(updateBlock);
@@ -439,14 +509,15 @@ const StoryResponseHandler = {
                 `;
       }
     }
-    if (options && options.length) {
+    const shownOptions = this.padOptionList(options || []);
+    if (shownOptions.length) {
       const label = optionsLabel || "情节走向";
       const dramatic = !!(window.ImmersionPlus && window.ImmersionPlus.isDramatic && window.ImmersionPlus.isDramatic(label));
       /* v3.55.6 云起专属美化：行动选项美化开着 → 序号徽章 + yq-opts 皮肤；
          关闭时回退朴素按钮（纯文本序号）。 */
       const yqOptOn = !!(window.YunqiPresetRegex && window.YunqiPresetRegex.ruleOn && window.YunqiPresetRegex.ruleOn("云起·行动选项美化"));
       html += `<div class="options-area${dramatic ? " dramatic" : ""}${yqOptOn ? " yq-opts" : ""}"><div class="options-title">▸ ${this.escapeHtml(label)}</div>`;
-      options.forEach((opt, i) => {
+      shownOptions.forEach((opt, i) => {
         const delay = dramatic ? ` style="animation-delay:${(0.18 + i * 0.35).toFixed(2)}s"` : "";
         const key = ["①", "②", "③", "④", "⑤", "⑥"][i] || i + 1;
         const keyHtml = yqOptOn ? `<span class="opt-key">${key}</span>` : `${key}. `;

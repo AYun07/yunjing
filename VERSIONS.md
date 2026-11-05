@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **61** 个版本，从 `v3.55.7` 到 `v3.92.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **63** 个版本，从 `v3.55.7` 到 `v3.94.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,8 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.94.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.94.0) |
+| **v3.93.0** * | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.93.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.93.0) |
 | **v3.92.1** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.1) |
 | **v3.92.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.0) |
 | **v3.91.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.91.0) |
@@ -75,6 +77,35 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.94.0 · 2026-11-05
+
+玩家主导 · 势力真实演化 · 选项鲁棒化 · 省请求 · 测试模型边界对齐
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.94.0)  [🔍 与 v3.93.0 差异](https://github.com/AYun07/yunjing/compare/v3.93.0...v3.94.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip)
+
+- **玩家主导硬约束**：全模式注入「玩家宣告不可否决、不得擅自快进、不替玩家写心理与台词」，未授权时间跳变给可见提示
+- **势力演化三通道**：玩家宣告直驱落图（不再依赖模型写 `(world_update)`）、剧情文本强／弱两档兜底（弱信号标 waning 而非误判覆灭）、散装 `faction.名.collapse` 行识别
+- **选项鲁棒化**：重写 `extractOptions()`，兼容数字编号／混排／无分隔符圈码／无标题连续编号块，不足六类由中性模板本地补齐
+- **省请求**：VariableAI 启用时不再每轮白补一次完整 system，世界状态改差分注入；真实单界 prompt 9.5 万 → 7.4 万（-22%）
+- **地图补录**：第二批 42 条逐条人工审定，earth 大洲／地区改按真实经纬度 `geoXY()` 投影，移除随机落点
+- **慢响应反馈**：45 / 90 / 150 秒分级读秒
+- **模型边界对齐**（用户澄清）：Agnes／硅基流动模型限制只作用于开发期测试脚本，产品运行时玩家自由配置自己的模型；据此回滚误加在配置面板／生图／向量链路的运行时门禁，策略清单移至 `yunjing-test/model-policy.js`。测试脚本默认单并发、1800ms 最小间隔、429/5xx 指数退避、请求数与 token 熔断
+- 验收：12 个 JS 语法 OK、修复用例 23/23、速率与准入 11/11、势力舆图 10/10、33 界全功能链路 33/33、控制台错误 0；真实 API 仅用 `agnes-3.0-flash` 跑 1 界 3 轮最小探针，未重跑全量 33 界以免重复消耗
+- 版本同源 3.94.0（`YJ_VER` / `SW_VER` / 标题 / 徽标 / `?v=` 全部对齐）
+
+## v3.93.0 · 2026-11-05
+
+33 界势力动态舆图 · 原著地图补录 · 真实玩家实测（33 界 × 3 轮）
+
+> 本版与 v3.94.0 同批发布、共用同一份快照。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.93.0)  [🔍 与 v3.92.1 差异](https://github.com/AYun07/yunjing/compare/v3.92.1...v3.93.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.93.0.zip)
+
+- **地图准确与详尽**：新增 `faction-atlas-data.js`（33 界静态据点表）与 `atlas-supplement.js`（147 条原著补录地标），开局即锚定真实地标落图，解决懒加载未就绪时落点退化成数字的问题
+- **势力动态演化与覆灭实时体现**：`vars.entities.factions` 为真源，新势力按本界据点落图并随影响力演化；覆灭即时灰化／划线／标废墟，新增不随切层消失的「覆灭势力榜」跨层双保险；复兴自动标注
+- **真实玩家实测**：33 界逐界各 3 轮共 99 轮，含重试 181 次请求 / 289 万 prompt tokens / 105 分钟；实测暴露 9 类问题（AI 推翻玩家决定、擅自快进、慢且贵、势力不演化、地图覆盖率低、选项不稳等），已在 v3.94.0 逐条整改
+- 版本同源 3.93.0
 
 ## v3.92.1 · 2026-11-05
 

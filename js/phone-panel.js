@@ -503,7 +503,7 @@
     /* ==================== 提示词构建 ==================== */
     contactBrief() {
       const p = this.state();
-      const v = (window.storyFramework.storyState || {}).variables || {};
+      const v = ((window.storyFramework && window.storyFramework.storyState) || {}).variables || {};
       const chars = v.characters || {};
       return p.contacts.slice(0, 14).map((c) => {
         const d = chars[c.name] || {};
@@ -1413,7 +1413,7 @@ ${notes.map((n) => "· " + n).join("\n")}
       const t = this.tierInfo() || this.TIERS.sms;
       const shell = document.getElementById("phShell");
       shell.dataset.tier = this.tier();
-      const v = (window.storyFramework.storyState || {}).variables || {};
+      const v = ((window.storyFramework && window.storyFramework.storyState) || {}).variables || {};
       const sb = document.getElementById("phStatusbar");
       sb.innerHTML = `<span>${this.esc(t.carrier)}</span><span>${this.esc(this.nowLabel() || "")}</span><span>🔋</span>`;
       document.getElementById("phScreen").innerHTML = this.renderScreen();
@@ -2386,20 +2386,20 @@ ${notes.map((n) => "· " + n).join("\n")}
     try {
       const link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "css/phone-style.css?v=3.92.1";
+      link.href = "css/phone-style.css?v=3.94.0";
       document.head.appendChild(link);
       PhonePanel.install();
       const aliveScript = document.createElement("script");
-      aliveScript.src = "js/phone-alive.js?v=3.92.1";
+      aliveScript.src = "js/phone-alive.js?v=3.94.0";
       aliveScript.onerror = () => console.warn("[PhoneAlive] 主动联系引擎加载失败（不影响手机基础功能）");
       document.head.appendChild(aliveScript);
       const appsScript = document.createElement("script");
-      appsScript.src = "js/phone-apps.js?v=3.92.1";
+      appsScript.src = "js/phone-apps.js?v=3.94.0";
       appsScript.onerror = () => console.warn("[PhoneApps] App 生态加载失败（不影响手机基础功能）");
       document.head.appendChild(appsScript);
       /* v3.47.0 墨韵融合：微博/匿名树洞/日历/商城/日记（CSS 由该模块自注入） */
       const socialScript = document.createElement("script");
-      socialScript.src = "js/phone-social.js?v=3.92.1";
+      socialScript.src = "js/phone-social.js?v=3.94.0";
       socialScript.onerror = () => console.warn("[PhoneSocial] 墨韵融合社交包加载失败（基础 App 不受影响）");
       document.head.appendChild(socialScript);
     } catch (e) {

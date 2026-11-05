@@ -283,6 +283,26 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+        <article class="log-entry" data-tags="版本 修复 测试 体验 模型" style="--entry-hue:#3f8f74;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.94.0</span>
+                <span class="entry-date">2026-11-05</span>
+            </div>
+            <h3 class="entry-title">玩家主导 · 势力真实演化 · 选项鲁棒化 · 省请求 · 测试模型边界对齐</h3>
+            <p class="entry-text">按玩家实测 9 个问题逐条整改：①全模式注入「玩家主导·不可否决·不得擅自快进」硬约束，并对未授权时间跳变给可见提示；②玩家自己宣告「另立 X盟 / 灭掉 X帮」时不再依赖模型配合，机械层直接落图，剧情文本兜底分强/弱两档（弱信号标 waning 而非误杀覆灭），另认散装 faction.名.collapse 行；③选项提取重写（数字编号 / 混排 / 无分隔符圈码 / 无标题连续编号块），不足六类用中性模板本地补齐；④砍掉 VariableAI 启用时每轮白补的一次完整 system 请求，世界状态改差分注入，真实单界 prompt 从 9.5 万降到 7.4 万（-22%）；⑤地图第二批逐条审定补录 42 条，移除 earth 真实世界地图的随机落点、改按真实经纬度投影；⑥慢响应分级读秒反馈。<b>模型边界对齐（用户澄清）</b>：Agnes / 硅基流动的模型限制只作用于开发期测试脚本，产品运行时玩家自由配置自己的模型；据此回滚了误加在产品配置面板 / 生图 / 向量链路上的运行时门禁，策略清单移至 yunjing-test/model-policy.js。评估脚本默认单并发、全局最小间隔、429/5xx 指数退避、请求数与 token 熔断，全部可本地单测验证。验收：11 个 JS 语法 OK、修复用例 23/23、速率与准入 11/11、势力舆图 10/10、33 界全功能链路 33/33、控制台错误 0；真实 API 仅用 agnes-3.0-flash 跑 1 界 3 轮最小探针（4 次请求 / 73958 prompt tokens），未重跑全量 33 界以免重复消耗。</p>
+        </article>
+
+        <article class="log-entry" data-tags="版本 地图 势力 测试 修复" style="--entry-hue:#3f8f74;">
+            <div class="entry-head">
+                <span class="entry-ver">v3.93.0</span>
+                <span class="entry-date">2026-11-05</span>
+            </div>
+            <h3 class="entry-title">33 界势力动态舆图 · 原著地图补录 · 真实玩家实测揪出的接线修复</h3>
+            <p class="entry-text">🗺 <b>地图准确与详尽</b>：新增 33 界静态据点表（<code>faction-atlas-data.js</code>）与从各世界配置「势力／地图／组织」章节逐条人工审定的 <b>147 条原著补录地标</b>（<code>atlas-supplement.js</code>），运行期锚定已有真实地标后追加，解决开局懒加载未就绪时势力落点退化成数字的问题。两个同步脚本已补进 SW 离线预缓存。逐界通过坐标、重名、跨层链路回归。</p>
+            <p class="entry-text">⚔️ <b>势力动态演化与覆灭实时体现</b>：<code>vars.entities.factions</code> 作为势力真源，新势力按本界真实据点落图、节点深度随影响力演化；覆灭即时灰化、划线、标废墟，写进地标详情状态行与图例，并新增不随切层消失的「覆灭势力榜」做跨层双保险；覆灭后重新立旗自动标注「复兴」。主笔不写 <code>(world_update)</code> 时，另有剧情文本兜底从「某盟一夜倾覆／另立云岚盟」高置信度识别势力生死并立即刷新舆图。</p>
+            <p class="entry-text">🔧 <b>真实玩家实测揪出的接线缺陷（本版最关键）</b>：以玩家身份用真实 API 逐界跑剧情时发现 <code>entities.factions</code> 恒为 0。干净上下文诊断显示 <code>seedFactions()</code> 调用 0 次 —— 活世界上行注入（<code>WorldAlive</code>／灵宠／小队／战斗协同）整组被写在 <code>buildPlayerIdentityCard</code> 里，而该函数仅在 <code>mode === "roleplay"</code> 时调用，创作模式的绝大多数世界从未执行：势力不播种、主笔看不到势力消长、变更协议也从未送达，此前 33/33 全绿是测试桩手动播种造成的假象。现已统一提到 <code>buildStoryMessages</code> 主装配函数，并在变量落地处加幂等兜底。修复后真实单界势力 0→6、图鉴节点 18→21。</p>
+            <p class="entry-text">🐛 同时修掉 earth 界手机面板 <code>phone-panel.js</code> 两处裸取 <code>window.storyFramework.storyState</code> 的 TypeError（控制台错误 2→0）。回归：势力舆图专项 10/10、33 界全功能链路 33/33、控制台错误 0。</p>
+        </article>
 
         <article class="log-entry" data-tags="修复 地图" style="--entry-hue:#3f8f74;">
             <div class="entry-head">

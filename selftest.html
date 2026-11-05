@@ -21,7 +21,7 @@ button{padding:10px 22px;background:#e0a84c;color:#16181f;border:none;border-rad
 <button onclick="runAll()">▶ 运行全部检查</button>
 <div id="sum"></div><div id="out"></div>
 <script>
-const ENGINE_VER = '3.92.1';
+const ENGINE_VER = '3.94.0';
 const ENGINES = ['js/world-runtime.js','js/world-bus.js','js/module-forge.js','js/combat-core.js','js/quest-chain.js','js/world-stage.js','js/story-hooks.js','js/world-director.js','js/world-legacy.js','js/world-ext/world-ext-core.js','js/player-kit.js','js/knowledge-manager.js','js/kb-vector.js','js/st-import.js','js/store-guard.js','js/mobile-fit.js','js/id-migrate.js','js/preset-io.js','js/regex-io.js','js/ai-message-builder.js','js/ai-response-handler.js','js/opportunity-system.js','js/world-alive.js'];
 const GENRES = ["mystery","scifi","wuxia","cthulhu","free","swallowedstar","shrouding","quanzhigaoshou","doupocangqiong","wanmeishijie","douluodalu","daoguiyixian","zhongshengdushi","dibao","longzu","quanzhifashi","limingzhijian","lunhuileyuan","wulianfengdian","shengxu","shenmifusu","ditandali","fanrenxiuxian","xianni","earth","freeworld","quanqiubingfeng","chaoshenxueyuan","zhanhen","jianlai","guimi","guzhenren","xuanjianxianzu"];
 function item(cls, name, detail){ const d=document.getElementById('out'); d.insertAdjacentHTML('beforeend', `<div class="item ${cls}">${cls==='ok'?'✅':cls==='fail'?'❌':'⚠️'} <b>${name}</b> — ${detail}</div>`); return cls==='ok'?1:cls==='fail'?0:1; }

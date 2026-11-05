@@ -200,7 +200,12 @@ const StoryInput = {
          时，即便正文剥离后偶发偏短，也视为模型正常输出、跳过自动重写——避免「第N回合：」式常规开场
          被误判为空正文、凭空多发一次请求（实测：合规回复按 1 次/轮结算，无需重写通道兜底）。
          失控正文（isRunawayText）无论如何都重写，不受熔断影响。 */
-      const isCompliant = /\(?\/?variable_update/i.test(reply) &&
+      /* v3.94.0 省请求（真实评测 3 轮→5 次、prompt +75% 的根因）：
+         VariableAI 启用/兜底时，主笔被明令「严禁输出任何变量更新块」，
+         旧逻辑却仍把 variable_update 当作合规必备条件 → 每轮白补一次请求。
+         变量由独立系统登记，这里直接视为已具备，不再为它多发一次完整 system。 */
+      const hasVarInReply = /\(?\/?variable_update/i.test(reply);
+      const isCompliant = (vaActive || hasVarInReply) &&
         (RH.extractOptions(reply).length > 0 || (RH.OPT_HEADER_RE && RH.OPT_HEADER_RE.test(reply)));
       const needsRewrite = () => {
         if (isRunawayText(reply)) return true;
@@ -228,12 +233,16 @@ const StoryInput = {
          在 10 字/秒的中转站上这是 3 分钟起步，且常见越补越短、直接超时丢稿。
          现改为「只补协议片段的轻量请求」（输出压到 600 token 内），
          取回的块拼接到原回复尾部；补块失败也绝不丢正文。 */
-      const hasVarBlock = /\(?\/?variable_update/i.test(reply);
+      const hasVarBlock = vaActive || /\(?\/?variable_update/i.test(reply);
       const hasOptBlock = RH.extractOptions(reply).length > 0 || (RH.OPT_HEADER_RE && RH.OPT_HEADER_RE.test(reply));
-      if (!hasVarBlock || !hasOptBlock) {
+      /* 只缺选项、且变量已由独立系统登记时：不发补齐请求（那会再烧一整份 system），
+         改用本地中性六类模板补齐按钮——不编造剧情、零额外费用。 */
+      if (!hasOptBlock && hasVarBlock && RH.padOptions) reply = RH.padOptions(reply);
+      const hasOptBlock2 = RH.extractOptions(reply).length > 0 || (RH.OPT_HEADER_RE && RH.OPT_HEADER_RE.test(reply));
+      if (!hasVarBlock || !hasOptBlock2) {
         const missing = [];
         if (!hasVarBlock) missing.push("(variable_update) 变量更新块");
-        if (!hasOptBlock) missing.push("【行动选项】段（六类各一条）");
+        if (!hasOptBlock2) missing.push("【行动选项】段（六类各一条）");
         RH.notice(`本轮缺${missing.join("与")}，正在补齐（只补协议，不重写正文）…`, "info", 8000);
         try {
           const tail = String(reply).replace(/\s+$/, "").slice(-1200);
@@ -350,7 +359,15 @@ const StoryInput = {
         const txt = indicator.querySelector(".typing-text");
         this._waitTimer = setInterval(() => {
           const s = Math.round((Date.now() - t0) / 1000);
-          if (txt) txt.textContent = `${isRP ? "世界正在回应" : "主笔 AI 正在落笔"}…${s}s${s > 45 ? "（长章正常，可继续等待）" : ""}`;
+          if (txt) {
+            /* v3.94.0 慢响应分级反馈：实测单轮最长 438s、两界 180s 超时，
+               旧版只有一句「长章正常」，玩家不知道是排队还是卡死。 */
+            const stage = s > 150 ? "（响应明显偏慢，多半是模型侧排队；可继续等待，或在「接口设置」调大超时后重试）"
+              : s > 90 ? "（已超过一分半，模型仍在生成，可继续等待）"
+              : s > 45 ? "（长章正常，可继续等待）" : "";
+            txt.textContent = `${isRP ? "世界正在回应" : "主笔 AI 正在落笔"}…${s}s${stage}`;
+            if (s > 90) txt.setAttribute("data-slow", "1");
+          }
         }, 1000);
       }
     } else if (indicator) {

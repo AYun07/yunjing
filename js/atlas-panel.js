@@ -7535,7 +7535,9 @@
       ]
     }
   };
-  const state = { genre: null, layerId: null, currentId: null, visits: [], dyn: [], open: false };
+  /* v3.93.0 势力状态表：按归一化的势力名索引，随存档持久化。
+     地图节点（含预置原著势力节点）在渲染时查此表，覆灭/新生/消长即时可见。 */
+  const state = { genre: null, layerId: null, currentId: null, visits: [], dyn: [], open: false, factionState: {} };
 
   /* ===== v3.92.0 · 地球界真实世界地图 =====
      底图：Natural Earth 1:110m 陆地（公有领域），已简化为 1606 点 / 16KB 内嵌。
@@ -7644,7 +7646,7 @@
     return `storyAtlas_${state.genre}`;
   }
   function save() {
-    const v = JSON.stringify({ layerId: state.layerId, currentId: state.currentId, visits: state.visits, dyn: state.dyn || [] });
+    const v = JSON.stringify({ layerId: state.layerId, currentId: state.currentId, visits: state.visits, dyn: state.dyn || [], factionState: state.factionState || {} });
     try {
       localStorage.setItem(storeKey(), v);
     } catch (e) {
@@ -7655,6 +7657,7 @@
   }
   function load(genre) {
     let raw = null;
+    state.factionState = {}; /* 切界时先清空，避免上一界势力状态串到新界（无存档时尤其重要） */
     try {
       raw = localStorage.getItem("storyAtlas_" + genre) || store["storyAtlas_" + genre];
     } catch (e) {
@@ -7667,6 +7670,7 @@
         state.currentId = o.currentId || null;
         state.visits = Array.isArray(o.visits) ? o.visits : [];
         state.dyn = Array.isArray(o.dyn) ? o.dyn.filter((d) => d && d.id && d.n) : [];
+        state.factionState = (o.factionState && typeof o.factionState === "object") ? o.factionState : {};
       } catch (e) {
         state.visits = [];
         state.dyn = [];
@@ -7879,16 +7883,18 @@
     let changed = 0;
     const round = Number(vars.chapter || vars["回合数"]) || window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.turnCount || 0;
     const depthOf = (n) => (Number(n) >= 2000 ? 3 : Number(n) >= 300 ? 2 : 1);
+    /* v3.93.0 势力节点深度随影响力动态演化（不再只看成员数），覆灭态写进说明 */
+    const infDepth = (f) => { const x = Number(f && f.influence) || 0; return x >= 68 ? 3 : x >= 38 ? 2 : 1; };
     const dangerDepth = (d) => (Number(d) >= 60 ? 3 : Number(d) >= 25 ? 2 : 1);
     const descOf = (type, def) => type === "faction"
-      ? `${def.ideology || "理念未明"} · 成员约 ${Number(def.members) || 0} · 影响力 ${Number(def.influence) || 0}/100`
+      ? `${def.ideology || "理念未明"} · 成员约 ${Number(def.members) || 0} · 影响力 ${Number(def.influence) || 0}/100${def.territory && !/^\d+$/.test(String(def.territory)) ? " · 据点 " + def.territory : ""}${def.collapsed || def.status === "destroyed" ? " · 🏚 已覆灭" : ""}`
       : `${def.region || "四野"} · 危险度 ${Number(def.danger) || 0}${def.desc ? " · " + def.desc : ""}`;
     const ensureNode = (name, type, def) => {
       const v0 = norm(name);
       if (v0.length < 2) return null;
       const exist = (state.dyn || []).find((d) => d.src === "ent" && norm(d.n) === v0);
       if (exist) {
-        const nd = type === "faction" ? depthOf(def.members) : dangerDepth(def.danger);
+        const nd = type === "faction" ? infDepth(def) : dangerDepth(def.danger);
         if (nd && exist.d !== nd) { exist.d = nd; changed++; }
         const ds = descOf(type, def);
         if (ds && exist.desc !== ds) { exist.desc = ds; changed++; }
@@ -7911,11 +7917,14 @@
         }
       }
       poi.src = "ent";
+      /* v3.93.0：resolveLocation 会把「势力：执行部·特别事务」截成简称「特别事务」当节点名，
+         但状态表按实体全名索引。记下 entName，渲染/覆灭判定按全名对齐，避免势力在图上静默消失。 */
+      poi.entName = name;
       poi.entType = type;
       poi.t = type === "faction" ? "sect" : (Number(def.danger) >= 60 ? "danger" : Number(def.danger) >= 15 ? "city" : "wild");
       poi.desc = descOf(type, def);
       poi.c = type === "faction" ? "🏛 世界实体 · 原创势力" : "🗺 世界实体 · 原创地点";
-      poi.d = type === "faction" ? depthOf(def.members) : dangerDepth(def.danger);
+      poi.d = type === "faction" ? infDepth(def) : dangerDepth(def.danger);
       changed++;
       return poi;
     };
@@ -7923,6 +7932,98 @@
     Object.values(ent.places || {}).forEach((p) => { if (p && p.name) try { ensureNode(p.name, "place", p); } catch (e) {} });
     if (changed) { save(); if (state.open) render(); }
     return changed;
+  }
+
+  /* ===== v3.93.0 势力动态舆图 =====
+     真源：vars.entities.factions（WorldAlive 播种 / 主笔 (world_update) 回写 / 生命周期演化）。
+     ① 新势力 → 由 syncEntities 按 territory（真实地名）精确锚定落图，落在对应位置；
+     ② 势力消长 → syncEntities 更新节点深度/说明/坐标，此处再登记影响力快照；
+     ③ 势力覆灭 → 写 factionState，动态节点与预置原著势力节点一律渲染为废墟；
+     ④ 覆灭后重新崛起 → 清除废墟态，标注「复兴」。
+     幂等：按归一化名精确匹配；旧名 syncEntities 仍可用，StoryAtlas.syncEntities 指向本函数。 */
+  function factionAnchorPool(genre) {
+    const g = ATLAS_DATA[genre];
+    if (!g) return [];
+    const out = [];
+    /* looksLikeHeading 定义在下方的 syncFromWorldBook 作用域内，此处自带同口径判定 */
+    const heading = /(概况|概貌|概览|总览|概述|概要|纲要|总纲|体系|分类|时间线|年表|简介|大全|一览|索引|附录|目录|说明)$|^主要.+与.+$/;
+    const push = (n, l) => {
+      if (!n || !n.n || heading.test(n.n) || String(n.n).length >= 12) return;
+      out.push({ n: n.n, x: n.x, y: n.y, layerId: l.id, t: n.t });
+    };
+    (g.layers || []).forEach((l) => (l.nodes || []).forEach((n) => {
+      if (n.t === "sect" || n.t === "city" || n.t === "relic" || n.t === "arena") push(n, l);
+    }));
+    if (!out.length) (g.layers || []).forEach((l) => (l.nodes || []).forEach((n) => push(n, l)));
+    return out;
+  }
+  function factionStateOf(name) {
+    return name ? (state.factionState || {})[norm(name)] || null : null;
+  }
+  function setFactionState(name, patch) {
+    const k = norm(name);
+    if (!k) return null;
+    const prev = state.factionState[k] || null;
+    const next = { ...(prev || {}), ...patch };
+    if (prev && JSON.stringify(prev) === JSON.stringify(next)) return prev;
+    state.factionState[k] = next;
+    return next;
+  }
+  function syncFactions(vars) {
+    let changed = 0;
+    try { changed += syncEntities(vars) || 0; } catch (e) { /* 实体上图失败不阻断状态层 */ }
+    if (!state.genre || !vars) return changed;
+    const facs = (vars.entities && vars.entities.factions) || {};
+    const round = Number(vars.chapter || vars["回合数"]) ||
+      (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.turnCount) || 0;
+    Object.values(facs).forEach((f) => {
+      if (!f || !f.name) return;
+      const k = norm(f.name);
+      if (!k) return;
+      const inf = Math.round(Number(f.influence) || 0);
+      const dead = !!(f.collapsed || f.status === "destroyed" || inf <= 12);
+      const prev = state.factionState[k];
+      let next;
+      if (dead) {
+        next = { status: "destroyed", round: (prev && prev.round) || Number(f.collapsedRound) || round,
+          influence: inf, note: (prev && prev.status === "destroyed" && prev.note) || f.collapseNote || "势力覆灭" };
+      } else if (prev && prev.status === "destroyed") {
+        next = { status: "revived", round, influence: inf, note: "重新立旗" };
+      } else {
+        next = { status: "active", round, influence: inf, members: Math.round(Number(f.members) || 0) };
+      }
+      if (JSON.stringify(prev) !== JSON.stringify(next)) { state.factionState[k] = next; changed++; }
+      /* 动态实体节点同步废墟标记；预置节点由 glyph 查 factionState 渲染 */
+      const dyn = (state.dyn || []).find((d) => d && d.src === "ent" && (norm(d.entName || "") === k || norm(d.n) === k));
+      if (dyn) {
+        const want = next.status === "destroyed";
+        if (!!dyn.fallen !== want) {
+          dyn.fallen = want;
+          dyn.fallenRound = want ? next.round : null;
+          changed++;
+        }
+      }
+    });
+    if (changed) { save(); if (state.open) render(); }
+    return changed;
+  }
+  /** 外部（WorldAlive / 变量AI / 测试）在势力新生、覆灭、迁徙时立即调用，地图当场刷新 */
+  function onFactionEvent(name, kind, meta) {
+    if (!name) return 0;
+    const k = norm(name), m = meta || {};
+    const round = m.round || (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.turnCount) || 0;
+    if (kind === "collapse" || kind === "destroyed") {
+      setFactionState(k, { status: "destroyed", round, influence: 0, note: m.note || "势力覆灭" });
+    } else if (kind === "emerge" || kind === "revive") {
+      setFactionState(k, { status: kind === "revive" ? "revived" : "emerged", round, influence: m.influence || 30, note: m.note || "新兴势力" });
+    } else {
+      setFactionState(k, { status: "active", round, ...m });
+    }
+    const v = window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables;
+    try { syncFactions(v || { entities: {} }); } catch (e) {}
+    save();
+    if (state.open) render();
+    return 1;
   }
   function playerName() {
     const fw = window.storyFramework;
@@ -7968,8 +8069,8 @@
       load(gk);
     }
     if (!state.genre || !ATLAS_DATA[state.genre]) return;
-    /* v3.58.0 每次变量更新同步世界实体上图（势力发展/新地点自动标注） */
-    try { syncEntities(vars); } catch (e) {}
+    /* v3.93.0 每次变量更新同步世界实体上图 + 势力状态（新势力落位/消长/覆灭即时体现） */
+    try { syncFactions(vars); } catch (e) {}
     const loc = extractPlayerLocation(vars);
     if (!loc) return;
     const round = Number(vars && (vars.chapter || vars["回合数"])) || window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.turnCount || 0;
@@ -8188,10 +8289,15 @@
   function glyph(n, mode, P, lp, geo) {
     const isCur = mode === "cur", isStd = mode === "standby";
     const visited = mode === "vis" || isCur;
+    /* v3.93.0 势力覆灭：预置原著势力节点查状态表，动态实体节点自带 fallen */
+    const fstate = factionStateOf(n.entName) || factionStateOf(n.n) || (n.fallen ? { status: "destroyed" } : null);
+    const fallen = !!(fstate && fstate.status === "destroyed");
     const k = isCur || isStd ? 1.28 : 1;
-    const main = visited ? P.primary : hexA(P.muted, 0.9);
-    const fill = visited ? P.primary : "none";
-    const fogAttr = mode === "fog" ? ' opacity=".55" filter="url(#agFog)"' : "";
+    const main = fallen ? hexA(P.muted, 0.5) : visited ? P.primary : hexA(P.muted, 0.9);
+    const fill = fallen ? "none" : visited ? P.primary : "none";
+    const fogAttr = mode === "fog" || fallen
+      ? ` opacity="${fallen ? 0.5 : 0.55}"${mode === "fog" ? ' filter="url(#agFog)"' : ""}`
+      : "";
     const body = (() => {
       switch (n.t) {
         case "start":
@@ -8266,14 +8372,19 @@
       const fs = isCur || isStd ? 2.9 : 2.4;
       const c = lp || { dx: n.x <= 72 ? 4.4 : -4.4, dy: 0.85, anchor: n.x <= 72 ? "start" : "end" };
       const lx = c.dx, ly = c.dy, anchor = c.anchor;
-      const lf = isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.muted, 0.85);
-      return `<text x="${lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label" opacity="${mode === "fog" ? 0.6 : 1}">${n.n}</text>`;
+      const lf = fallen ? hexA(P.muted, 0.72) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.muted, 0.85);
+      const lname = fallen ? `${n.n}（已覆灭）` : n.n;
+      return `<text x="${lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label"${fallen ? ' text-decoration="line-through"' : ""} opacity="${fallen ? 0.72 : mode === "fog" ? 0.6 : 1}">${lname}</text>`;
     })();
-    return `<g class="atlas-node${mode === "fog" ? " atlas-fogged" : ""}" data-node="${n.id}" data-mode="${mode}" style="cursor:pointer;">
+    const fallenMark = fallen ? `<g transform="translate(2.4,-2.6)" opacity=".92">
+                <circle r="1.6" fill="${hexA(P.deep, 0.94)}" stroke="${hexA(P.muted, 0.75)}" stroke-width=".22"/>
+                <path d="M-.62,-.62 L.62,.62 M.62,-.62 L-.62,.62" stroke="#d08a8a" stroke-width=".34" stroke-linecap="round"/>
+            </g>` : "";
+    return `<g class="atlas-node${mode === "fog" ? " atlas-fogged" : ""}${fallen ? " atlas-fallen" : ""}" data-node="${n.id}" data-mode="${mode}" data-fallen="${fallen ? 1 : 0}" style="cursor:pointer;">
             <g transform="translate(${n.x},${n.y})">
                 ${mark}
                 <g transform="scale(${k})"${fogAttr}>${ring}${body}</g>
-                ${badge}${banner}${label}
+                ${fallenMark}${badge}${banner}${label}
             </g></g>`;
   }
   function layerSvg(layer) {
@@ -8439,6 +8550,12 @@
     const rec = state.visits.find((v) => v.id === node.id);
     const vi = visitedIds.indexOf(node.id);
     const badge = isCur ? `<span class="ab ab-cur">◈ 当前位置</span>` : visited ? `<span class="ab ab-vis">已到访 · 第 ${vi + 1} 站</span>` : `<span class="ab ab-fog">未涉足 · 迷雾</span>`;
+    /* v3.93.0 势力实时状态：覆灭/复兴/影响力，点开地标即可核对 */
+    const fs = factionStateOf(node.entName) || factionStateOf(node.n) || (node.fallen ? { status: "destroyed" } : null);
+    const facRow = fs ? `<div class="ad-canon" style="border-left-color:${fs.status === "destroyed" ? "#d08a8a" : hexA(P.accent, 0.7)};">${
+      fs.status === "destroyed" ? `🏚 势力已覆灭 · 第 ${escA(fs.round || "—")} 回合 · ${escA(fs.note || "")}`
+        : fs.status === "revived" ? `🌱 势力复兴 · 第 ${escA(fs.round)} 回合 · 影响力 ${escA(fs.influence)}`
+        : `🏛 活跃势力 · 影响力 ${escA(fs.influence)}/100 · 成员 ${escA(fs.members != null ? fs.members : "—")} · 第 ${escA(fs.round)} 回合`}</div>` : "";
     const routes = (layer.roads || []).filter((r) => r.includes(node.id)).map((r) => {
       const other = r[0] === node.id ? r[1] : r[0];
       const n2 = layer.nodes.find((x) => x.id === other);
@@ -8451,6 +8568,7 @@
                 <div class="ad-badges">${badge}<span class="ab">${typeTxt(node.t)}</span><span class="ab">${escA(node.rg)}</span></div>
             </div>
             <div class="ad-row"><span>危险度</span><span class="ad-v">${dangerStars(node.d, P)}</span></div>
+            ${facRow}
             <div class="ad-desc">${node.dyn && !node.src ? isTraceMode() ? `此处不在预置舆图之上——第 ${escA(node.round)} 回合你的行踪落在「${escA(node.raw)}」，行旅图鉴随行迹落笔生成此地，坐落于「${escA(node.anchorN)}」一带。` : `此处不在原著舆图之上——第 ${escA(node.round)} 回合你的行踪落在「${escA(node.raw)}」，行旅图鉴随剧情落笔生成此地，坐落于「${escA(node.anchorN)}」一带。` : escA(node.desc || "")}</div>
             ${node.dyn && node.src === "wb" ? `<div class="ad-canon" style="border-left-color:${hexA(P.accent, 0.6)};">📚 资料库地标 · 来自本界资料库的地理条目，随资料库增补自动上图</div>` : ""}
             ${node.related && node.related.length ? `<div class="ad-canon" style="border-left-color:${hexA(P.primary, 0.5)};">此地相关：${node.related.map((r) => escA(r.cat) + "「" + escA(r.n) + "」").join(" · ")}</div>` : ""}
@@ -8508,11 +8626,20 @@
                 }).join("") + `</div>`;
               } catch (e) { return ""; }
             })()}
+            ${(() => {
+              /* v3.93.0 覆灭势力榜：节点废墟态只在所在层可见，跨层切换会看不见。
+                 此榜不随切层消失，保证「哪个势力被灭了」在图鉴里任何一层都实时可见。 */
+              const dead = Object.entries(state.factionState || {}).filter(([, x]) => x && x.status === "destroyed");
+              if (!dead.length) return "";
+              return `<div class="atlas-fallen-list"><b>🏚 已覆灭势力</b>${dead.map(([k, x]) =>
+                `<span>${escA(k)} · 第 ${escA(x.round || "—")} 回合</span>`).join("")}</div>`;
+            })()}
             <div class="atlas-legend">
                 <span><i class="lg lg-cur" style="background:${P.primary};box-shadow:0 0 5px ${P.primary};"></i>当前</span>
                 <span><i class="lg" style="background:${hexA(P.primary, 0.9)};"></i>已到访</span>
                 <span><i class="lg lg-fog"></i>迷雾</span>
                 <span style="color:${P.accent};">✦ ${isTraceMode() ? "行迹" : "剧情"}地标</span>
+                ${Object.values(state.factionState || {}).some((x) => x && x.status === "destroyed") ? `<span style="color:#d08a8a;">✕ 已覆灭势力（灰·划线）</span>` : ""}
                 <span class="lg-road" style="border-color:${hexA(P.primary, 0.55)};"></span>
                 <span class="lg-hint">点击地点看详情</span>
             </div>
@@ -8813,6 +8940,13 @@
         .ad-route{margin-top:8px;font-size:11px;color:var(--primary,#c9a86a);letter-spacing:.5px;}
         .ad-canon{margin-top:9px;padding:7px 11px;border-left:2px solid var(--primary,#c9a86a);font-size:11px;color:var(--text-muted,#a8a290);line-height:1.7;background:rgba(0,0,0,.16);border-radius:0 8px 8px 0;}
         .ad-visit{margin-top:9px;font-size:11px;color:var(--primary,#c9a86a);letter-spacing:.5px;}
+        .atlas-fallen-list{margin:9px 0 0;display:flex;gap:7px;flex-wrap:wrap;align-items:center;padding:8px 11px;
+            border:1px solid rgba(208,138,138,.34);border-radius:11px;
+            background:linear-gradient(150deg,rgba(208,86,86,.09),rgba(0,0,0,.14));font-size:10.5px;}
+        .atlas-fallen-list>b{font-weight:700;letter-spacing:1.5px;color:#d08a8a;}
+        .atlas-fallen-list span{padding:2px 8px;border-radius:99px;border:1px solid rgba(208,138,138,.28);
+            color:var(--text-muted,#a8a290);background:rgba(0,0,0,.14);letter-spacing:.5px;
+            text-decoration:line-through;text-decoration-color:rgba(208,138,138,.6);}
         .atlas-legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:11px;font-size:10.5px;color:var(--text-muted,#a8a290);}
         .atlas-legend span{display:flex;align-items:center;gap:4px;}
         .lg{width:8px;height:8px;border-radius:50%;display:inline-block;}
@@ -8831,8 +8965,64 @@
         `;
     document.head.appendChild(st);
   }
+  /* ===== v3.93.0 舆图补录 =====
+     把 ATLAS_SUPPLEMENT（从 configs 原著势力谱系逐条审定抽出）追加到 33 界对应层。
+     坐标一律由本界已有真实地标「锚点 + 避让」推导，不凭空摆放；同名幂等；
+     只改运行期 ATLAS_DATA，不动原始定义，删掉数据文件即可整体回滚。 */
+  function injectSupplement() {
+    const S = window.ATLAS_SUPPLEMENT;
+    if (!S || typeof S !== "object") return 0;
+    let added = 0;
+    Object.keys(S).forEach((g) => {
+      const cfg = ATLAS_DATA[g], items = S[g];
+      if (!cfg || !Array.isArray(cfg.layers) || !Array.isArray(items) || !items.length) return;
+      items.forEach((it, i) => {
+        if (!it || !it.n) return;
+        if (cfg.layers.some((l) => (l.nodes || []).some((n) => n.n === it.n))) return;
+        let anchor = null, layer = null;
+        for (const l of cfg.layers) {
+          for (const n of (l.nodes || [])) {
+            if (anchor) break;
+            if (n.n === it.anchor || (it.anchor && n.n.includes(it.anchor)) || (it.anchor && it.anchor.includes(n.n))) { anchor = n; layer = l; }
+          }
+        }
+        if (!anchor) for (const l of cfg.layers) {
+          const s = (l.nodes || []).find((n) => n.t === "start");
+          if (s) { anchor = s; layer = l; break; }
+        }
+        if (!anchor) { layer = cfg.layers[0]; anchor = (layer.nodes || [])[0]; }
+        if (!anchor || !layer) return;
+        /* v3.94.0 真实地球世界地图：带 lon/lat 的补录节点走等距圆柱投影落到真实经纬度，
+           不用锚点随机偏移（第一批曾把「中国 / 欧洲」随机放点，属准确性缺陷）。 */
+        const earthXY = (g === "earth" && Number.isFinite(it.lon) && Number.isFinite(it.lat) && typeof geoXY === "function")
+          ? geoXY(it.lon, it.lat) : null;
+        const seed = strHash(g + "|" + it.n);
+        let bx = anchor.x, by = anchor.y, best = -1;
+        for (let k = 0; k < 16; k++) {
+          const a = prand(seed, k) * Math.PI * 2, r = 5 + prand(seed + 7, k) * 5.5;
+          const x = Math.min(94, Math.max(6, anchor.x + Math.cos(a) * r));
+          const y = Math.min(92, Math.max(8, anchor.y + Math.sin(a) * r));
+          let md = 99;
+          for (const n of layer.nodes) { const dd = Math.hypot(n.x - x, n.y - y); if (dd < md) md = dd; }
+          if (md > best) { best = md; bx = x; by = y; }
+          if (best >= 5) break;
+        }
+        layer.nodes.push({
+          id: "supp_" + seed.toString(36) + "_" + i,
+          n: it.n, x: earthXY ? earthXY[0] : +bx.toFixed(1), y: earthXY ? earthXY[1] : +by.toFixed(1),
+          t: it.t || "poi", d: 1, rg: anchor.rg || "原著补录",
+          aliases: [], desc: it.desc || "", c: it.c || "原著设定补录",
+          supp: true, anchorN: anchor.n
+        });
+        added++;
+      });
+    });
+    return added;
+  }
   function init() {
     injectStyle();
+    /* v3.93.0 在任何 render / sync 之前补录，保证足迹、势力落位都能用上新增地标 */
+    try { injectSupplement(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 舆图补录失败:", e); }
     const genre = new URLSearchParams(location.search).get("genre");
     if (genre) {
       if (!ATLAS_DATA[genre]) ensureGenreData(genre);
@@ -8855,8 +9045,13 @@
     resetFootprint,
     removeDyn,
     syncFromWorldBook,
-    /* v3.58.0 世界实体（原创势力/地点）自动上图与动态更新 */
-    syncEntities,
+    /* v3.58.0 世界实体（原创势力/地点）自动上图与动态更新；v3.93.0 起指向含势力状态层的增强版 */
+    syncEntities: syncFactions,
+    syncFactions,
+    onFactionEvent,
+    factionAnchors: function (g) { return factionAnchorPool(g || state.genre); },
+    factionState: function () { return { ...(state.factionState || {}) }; },
+    factionStatus: factionStateOf,
     /* v3.55.23 当前图上「资料库地标」数量（syncFromWorldBook 幂等，落过即不再重复） */
     wbCount: function () { return (state.dyn || []).filter((d) => d.src === "wb").length; },
     data: ATLAS_DATA,
@@ -8865,6 +9060,7 @@
       state.currentId = null;
       state.layerId = null;
       state.dyn = [];
+      state.factionState = {};
       save();
       if (state.open) render();
     }

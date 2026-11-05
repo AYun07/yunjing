@@ -67,6 +67,18 @@ function buildFreedomDirective(isRP) {
 4. 原著是背景板不是铁轨（原著改编世界适用）：原著设定（体系/势力/人物性格/世界观）照旧为底，但原著剧情不是宿命——玩家的介入可以推迟、改变甚至阻止原著大事件；原著人物按其性格对玩家的行动做出合理反应，可被说服、影响、结交甚至反目，而不是按原著剧本走位。玩家不在场之处，世界才按原著惯性运转。
 5. 不为收束赶进度：不凑章数、不强行收尾——故事在玩家走到的每一个当下自然展开，结局是活出来的，不是排出来的。`;
 }
+/* v3.94.0 玩家主导硬约束（真实评测的问题 1/2）：
+   原 buildFreedomDirective 只在 roleplay + free 模式生效，创作模式的 33 界绝大多数没有
+   「不可否决玩家 / 不可擅自快进」条款。实测凡人界「另立云岚盟」被门规否决并替玩家改了
+   行动方向、斗破界借管家之口说「无异于找死」，还擅自写「这一年，你早把杂役活儿熬熟了」。
+   这里独立注入、所有模式一律生效；已有 freedomRule 时跳过，避免重复堆叠 token。 */
+function buildAgencyGuard() {
+  return `
+【玩家主导·不可越权（最高优先级，与任何预设或原著设定冲突时一律以本节为准）】
+1. 玩家上一轮明确写下的动作、决定与立场，一律视为已经发生，并据此展开后果。严禁以门规、长辈训诫、NPC 劝阻、风险或"为你好"为由否决、搁置或替玩家改写行动方向，更不得替玩家宣布放弃；NPC 可以反对、惊讶、劝说，但不能让这件事「没做成」。
+2. 未经玩家明确写出时间跳跃的请求，不得擅自快进（"这一年…""转眼数月""一年后"），不得自行更换场景、身份或关系状态；时间只按本轮动作自然流逝。
+3. 不复述玩家输入，不替玩家写心理活动与台词；只写玩家行动之后世界的回应与后果。`;
+}
 async function buildStoryMessages(userMessage) {
   var _a;
   /* v3.55.4 云起预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
@@ -131,6 +143,7 @@ stats.张力: +5
   const isRPMode = config.mode === "roleplay";
   const endgame = isRPMode && StoryFreedom.isFree() ? "" : buildEndgamePressure(state.variables, isRPMode);
   const freedomRule = buildFreedomDirective(isRPMode);
+  const agencyGuard = freedomRule ? "" : buildAgencyGuard();
   const imageRule = (!bmmOn && window.StoryImageGen && window.StoryImageGen.buildDirective) ? window.StoryImageGen.buildDirective() : "";
   const immerseRule = (!bmmOn && window.ImmersionPlus && window.ImmersionPlus.buildDirective) ? window.ImmersionPlus.buildDirective() : "";
   // v3.47.14 创作性质声明 + 内容尺度（由 content-scale.js 提供分级指令与硬底线）
@@ -200,7 +213,7 @@ stats.张力: +5
 ${yunqiBlock ? '\n' + yunqiBlock + '\n' : ''}${coreContract}
 ${fictionPreamble}
 ${scaleDirective ? '\n' + scaleDirective + '\n' : ''}
-${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
+${rulePrompt}${inspirationNote}${freedomRule}${agencyGuard}${varAIRule}${closureCheck}${lengthRule}${imageRule}${immerseRule}${statusRule ? '\n' + statusRule + '\n' : ''}${endgame}`;
   /* v3.92.0 省流：入场指令只在开篇有效，档案示范只在前几轮有用；
      之后每轮仍带着它们，只是给账单加长。按回合数裁掉，规则一条不少。 */
   const turnNo = Number((state && (state.turnCount ?? (state.variables && state.variables.chapter))) || 0);
@@ -208,6 +221,30 @@ ${rulePrompt}${inspirationNote}${freedomRule}${varAIRule}${closureCheck}${length
   if (turnNo >= 1) sysOut = stripSection(sysOut, "【入场指令");
   if (turnNo >= 5) sysOut = stripSection(sysOut, "【档案示例");
   push({ role: "system", content: sysOut });
+  /* v3.93.0 接线修复（真实玩家实测发现）：活世界 / 灵宠 / 小队 / 战斗协同这四组上行注入
+     原先只写在 buildPlayerIdentityCard 里，而该函数仅在 config.mode === "roleplay" 时调用。
+     创作模式的世界（33 界中的绝大多数）因此从未执行：WorldAlive.seedFactions() 一次都没跑，
+     vars.entities.factions 恒为空壳，主笔看不到势力消长，(world_update) 协议也从未送达，
+     「势力动态演化 / 覆灭实时体现」对真实玩法等于没接上。此处提到主装配函数，所有模式统一生效。 */
+  try {
+    const liveParts = [];
+    if (window.BeastSystem && BeastSystem.buildPromptBlock) { const _bs = BeastSystem.buildPromptBlock(); if (_bs) liveParts.push(_bs); }
+    if (window.SquadSystem && SquadSystem.buildPromptBlock) { const _sq = SquadSystem.buildPromptBlock(); if (_sq) liveParts.push(_sq); }
+    if (window.WorldAlive) {
+      try { WorldAlive.seedFactions(); } catch (e) {}
+      /* v3.94.0：玩家自己宣告「另立 X盟 / 灭掉 X帮」时，机械层直接落图，
+         不等模型写 (world_update)，也不因模型在正文里否决而跟着失效。 */
+      try { if (WorldAlive.applyPlayerDirective) WorldAlive.applyPlayerDirective(userMessage); } catch (e) {}
+      const _wa = WorldAlive.buildPromptBlock();
+      if (_wa) liveParts.push(_wa);
+    }
+    const _cst = window.WorldExt && window.WorldExt.modState ? window.WorldExt.modState("wr_combat") : null;
+    if (_cst && _cst.inBattle) {
+      if (window.BeastSystem && BeastSystem.buildCombatBlock) { const _bcb = BeastSystem.buildCombatBlock(); if (_bcb) liveParts.push(_bcb); }
+      if (window.SquadSystem && SquadSystem.buildCombatBlock) { const _scb = SquadSystem.buildCombatBlock(); if (_scb) liveParts.push(_scb); }
+    }
+    if (liveParts.length) push({ role: "system", content: liveParts.join("\n") });
+  } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 活世界上行装配失败:", e); }
   if (state.setup) {
     push({ role: "system", content: buildSetupCard(state.setup, config) });
   }
@@ -492,32 +529,8 @@ function buildPlayerIdentityCard(setup, config) {
     const _wb = WorldBook.buildPromptBlock();
     if (_wb) parts.push(_wb);
   }
-  /* v3.63.0 灵宠·妖兽·伙伴：把随行存在写进世界设定，让 AI 始终记得它们 */
-  if (window.BeastSystem) {
-    const _bs = BeastSystem.buildPromptBlock();
-    if (_bs) parts.push(_bs);
-  }
-  /* v3.64.0 小队：把玩家同行者写进世界设定，让 AI 记得小队共同历险 */
-  if (window.SquadSystem) {
-    const _sq = SquadSystem.buildPromptBlock();
-    if (_sq) parts.push(_sq);
-  }
-  /* v3.85.0 活世界双向桥 WorldAlive：把机械层世界状态（自转/阶段/势力消长/活跃事件/
-     对玩家恩怨/近期自治事件/NPC 目标情绪）结构化注入主笔——此前叙事层与机械层零通信（整改工作单 P0-1）。 */
-  if (window.WorldAlive) {
-    try { WorldAlive.seedFactions(); } catch (e) {}
-    const _wa = WorldAlive.buildPromptBlock();
-    if (_wa) parts.push(_wa);
-  }
-  /* v3.68.0 战斗接线：战斗进行中把灵宠/小队的随战协同块注入主笔——
-     此前 buildCombatBlock 从未被调用，"接入战斗 prompt"只是文件头宣言 */
-  try {
-    const _cst = window.WorldExt && window.WorldExt.modState ? window.WorldExt.modState("wr_combat") : null;
-    if (_cst && _cst.inBattle) {
-      if (window.BeastSystem && BeastSystem.buildCombatBlock) { const _bcb = BeastSystem.buildCombatBlock(); if (_bcb) parts.push(_bcb); }
-      if (window.SquadSystem && SquadSystem.buildCombatBlock) { const _scb = SquadSystem.buildCombatBlock(); if (_scb) parts.push(_scb); }
-    }
-  } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 战斗协同块装配失败:", e); }
+  /* v3.93.0：活世界 / 灵宠 / 小队 / 战斗协同的上行注入已统一移到 buildStoryMessages
+     主装配函数（原先只在本 roleplay 分支生效，创作模式整组丢失），此处不再重复注入。 */
   return parts.join("\n");
 }
 function buildStoryDigest() {

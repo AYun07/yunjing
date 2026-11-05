@@ -105,7 +105,7 @@
       spawnEvents.forEach((e) => v.history.push(`【众生】第${day}日 · ${e}`));
       if (v.history.length > MAX_HISTORY) v.history.splice(0, v.history.length - MAX_HISTORY);
       /* v3.58.0 新实体（人物/势力/地点）自动上图并随发展更新标注 */
-      try { window.StoryAtlas && StoryAtlas.syncEntities && StoryAtlas.syncEntities(v); } catch (e) {}
+      try { var _sa = window.StoryAtlas; var _fn = _sa && (_sa.syncFactions || _sa.syncEntities); if (_fn) _fn(v); } catch (e) {}
       /* v3.85.0 大势推演：调用 SimCore.advance 对真实状态演化（势力影响力消长 / 关系衰减 / 张力），使自转有方向性（P1-3） */
       try { if (window.SimCore && SimCore.advance) SimCore.advance(v, 1, rnd); } catch (e) {}
       /* v3.86.0 涌现式机缘：世界自转时按当前世界状态滚动机缘候选（P0-2，有代价有时限） */
