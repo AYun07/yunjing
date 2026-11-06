@@ -19,3 +19,7 @@ update_payload*.json
 # 玩家本地造物模块（小云生成）——仅存本地，禁止提交到仓库/GitHub
 modules/
 xy-local-*.html
+
+# 验收实拍（本地留证，不入库）
+_shots_v398/
+_shots_v397/

@@ -367,6 +367,38 @@ window.CommConfigs = (function () {
             costHint: '',
             groups: ['本家子弟'],
             degrade: '符讯过界要过宗门关防：越境的讯息需加盖坊市印信；家族隐秘走族老亲符，寻常符讯只载得了家常'
+        },
+        dazhuzai: {
+            carrier: 'jade', name: '传讯玉简', boxName: '玉简传讯', icon: '🧿',
+            tip: '神识沉入玉简，大千世界虽广，强者一念可抵——北苍灵院与牧府之间，简讯往来如面谈',
+            bubbleNote: '玉简微光流转，神识留言干脆直接；大千世界人重实力，话不多说半句，越阶者懒得多言',
+            tone: '大千世界口吻：牧府与各大古族、天罗大陆的强者对话直来直去，称「府主/至尊/圣女」；禁现代词',
+            offline: { '闭关': '闭关冲击地至尊，简不传讯', '征战': '征战域外，音讯渺茫' },
+            sendCost: null, costHint: '', groups: ['牧府亲信'], degrade: ''
+        },
+        wudongqiankun: {
+            carrier: 'jade', name: '传讯玉简', boxName: '玉简传讯', icon: '🧿',
+            tip: '元力凝简，符师一道贯通天地——道宗与妖域、异魔域之间，玉简传讯如常',
+            bubbleNote: '玉简载元力与符文，讯息简短有力；武者性烈，话里带火气，强者从不寒暄',
+            tone: '武动乾坤口吻：道宗弟子、妖域霸族、林氏宗族对话硬气凛冽，称「师兄/殿主/祖」；禁现代词',
+            offline: { '闭关': '闭关涅槃，简不传讯', '历练': '乱魔海历练，简讯偶通' },
+            sendCost: null, costHint: '', groups: ['林氏宗族'], degrade: ''
+        },
+        yuanzun: {
+            carrier: 'jade', name: '源气玉简', boxName: '玉简传讯', icon: '🧿',
+            tip: '源气刻简，苍玄宗各脉与诸族之间往来如常——天源界虽广，源师一念可达',
+            bubbleNote: '玉简载源气，神识留言清润有节；源师修心，措辞讲究分寸，师门长辈面前尤恭',
+            tone: '元尊口吻：苍玄宗各脉弟子、大周王朝旧部对话温润有礼，称「师姐/殿主/殿下」；禁现代词',
+            offline: { '闭关': '闭关开脉，简不传讯', '远行': '远走圣迹，简讯难得' },
+            sendCost: null, costHint: '', groups: ['苍玄宗同门'], degrade: ''
+        },
+        wanxiangzhiwang: {
+            carrier: 'jade', name: '相讯玉简', boxName: '玉简传讯', icon: '🧿',
+            tip: '相力刻简，天元神州诸学府与天王一脉之间往来如常——洛岚府旧部尤重此简',
+            bubbleNote: '玉简载相力，讯息明快机灵；相师多圆滑，话里留三分，紧要处却极分明',
+            tone: '万相之王口吻：天元古学府、洛岚府、李天王一脉对话圆融机变，称「府主/侯/师姐」；禁现代词',
+            offline: { '闭关': '闭关开相宫，简不传讯', '远行': '远走神州，简讯难得' },
+            sendCost: null, costHint: '', groups: ['洛岚府旧部'], degrade: ''
         }
     };
 
