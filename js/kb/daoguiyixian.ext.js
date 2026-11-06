@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 道诡异仙 · 后期真相（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：道诡异仙
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["daoguiyixian"] || (KB["daoguiyixian"] = []);
+  var add = [{"title":"道诡异仙 · 李火旺与双线真相","content":"狐尾的笔《道诡异仙》：李火旺为「心素」，在「修真界」（丹阳子、清风观、坐忘道、红中、白玉京、大傩、司命、心蟠）与「现代精神病院」双线之间真假难辨；「修真/修假」「丹阳子炼丹」「坐忘道骗术」「白玉京大傩」「司命与心蟠」为顶层设定。","category":"道诡异仙","tags":["道诡异仙","李火旺","心素","丹阳子","清风观","坐忘道","红中","白玉京","大傩","司命","心蟠","daoguiyixian","续作设定"]},{"title":"道诡异仙 · 后期格局速查","content":"速查：坐忘道（红中、骰子）、「监天司」「袄景教」「兵家」「阴阳斗姥」「无生老母」「大傩」「司命」与「心蟠」；现代线有「精神病院」「杨娜」「医生」「白灵淼」等；真相围绕「大傩」「白玉京」「迷惘」与「真假」展开。","category":"道诡异仙","tags":["监天司","袄景教","坐忘道","无生老母","大傩","白玉京","心蟠","白灵淼","daoguiyixian","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

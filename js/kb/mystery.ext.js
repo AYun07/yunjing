@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 悬疑推理 · 题材体系（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：本格派 / 变格派 / 社会派 / 硬汉派 / 新本格
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["mystery"] || (KB["mystery"] = []);
+  var add = [{"title":"悬疑推理题材 · 流派与经典底座","content":"推理题材流派：本格派（诡计 / 密室 / 不在场证明 / 公平线索）、变格派（怪奇与心理）、社会派（动机与社会批判）、硬汉派（冷硬侦探）、新本格（岛田庄司、绫辻行人，馆型诡计）、日常之谜、法医 / 刑侦 / 犯罪心理。经典元素：暴风雪山庄、孤岛、密室、叙述性诡计、双胞胎、时刻表、童谣杀人、倒叙推理。","category":"题材体系","tags":["推理","本格派","社会派","新本格","密室","暴风雪山庄","不在场证明","叙述性诡计","mystery","续作设定"]},{"title":"悬疑推理题材 · 后期演化速查","content":"演化：爱伦·坡奠基 → 柯南·道尔「侦探 + 助手」范式 → 阿加莎·克里斯蒂黄金期 → 日本社会派与新本格 → 现代「刑侦技术 / 法医 / 侧写 / 监控取证」与「叙述性诡计 / 设定系推理」。常见结构：案发 → 勘验与线索 → 嫌疑人清单 → 多重解答 → 真凶与动机。","category":"题材体系","tags":["爱伦·坡","福尔摩斯","阿加莎","社会派","设定系推理","多重解答","侧写","mystery","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **66** 个版本，从 `v3.55.7` 到 `v3.96.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **67** 个版本，从 `v3.55.7` 到 `v3.97.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.97.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) |
 | **v3.96.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
 | **v3.96.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) |
 | **v3.95.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
@@ -80,6 +81,26 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.97.0 · 2026-11-06
+
+斗破苍穹补全《大主宰》大千世界 26 条、斗罗大陆补全全五部与外传 28 条，连同辰东三部曲、诡秘之主→宿命之环等 30 界同世界观与续作设定共 172 条入库，静态资料库 21,299 → 21,471 条。
+
+为 10 个世界新增 13 张时代独立舆图：大千世界、斗罗Ⅱ–Ⅴ、仙域与成仙路、乱古九天十地、阴阳界、宿命之环因蒂斯、北寒仙域、龙族日本与北欧、神河宇宙、宇宙海起源大陆；共 110 个据点、81 条通路，每个据点都标原著出处与所属区域，切层即换图。
+
+纪元说明并入左上标题牌成「主标题＋时代」两行，左下角不再与提示文字挤成重影；桌面与移动双视口可见标签零重叠、放大后屏幕字号恒定、控制台零错误。
+
+舆图补录清洗描述性短语误抽 16 处，拆分《吞噬星空》被误合的「紫月圣地·东帝圣地」为两个独立据点；新增时代层内容结构校验（字段、坐标、通路端点、专名合并）0 问题。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.97.0)  [🔍 与 v3.96.1 差异](https://github.com/AYun07/yunjing/compare/v3.96.1...v3.97.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip)
+
+- **点名两界补全**：斗破苍穹补《大主宰》大千世界 **26 条**（位面关系、灵力境界与苍穹榜主宰境、无尽火域／武境／牧府三大势力、牧尘洛璃九幽等人物、地理总览、事件年表，并衔接《武动乾坤》《元尊》）；斗罗大陆补全 **28 条**（五部总时间线、各部时代背景／魂环魂灵斗铠体系／主角／势力／地标，含《神界传说》《唐门英雄传》两部外传）。
+- **30 界同世界观与续作全线补齐**：辰东三部曲（遮天／完美世界／圣墟各 12 条）、诡秘之主→宿命之环、凡人修仙传→仙界篇、龙族全系列、超神学院→雄兵连、吞噬星空后期等共 **172 条**，写入 `YJ_SEQUEL` 幂等段；另给克苏鲁／武侠／悬疑／科幻 4 个题材世界补题材体系底座（非续作，单列口径）。静态索引 **21,299 → 21,471 条**，运行时 33 界合计 **21,453 条**，抽样专名命中 **99/99**。
+- **按时代分卷做地图**：10 个世界新增 **13 张时代独立舆图** —— 大千世界、斗罗Ⅱ绝世唐门／Ⅲ龙王传说／Ⅳ终极斗罗／Ⅴ重生唐三、遮天仙域与成仙路、完美世界乱古九天十地、圣墟阴阳界、宿命之环因蒂斯、凡人北寒仙域、龙族Ⅲ–Ⅴ日本与北欧、雄兵连神河宇宙、吞噬星空宇宙海起源大陆。共 **110 个据点、81 条通路**，每个据点都带原著出处与所属区域，切层即换图。
+- **地图美化与适配**：纪元说明并入左上标题牌成「主标题＋时代」两行（初版放左下角，实拍发现与提示文字挤成重影后修正），左下恢复干净；桌面／移动双视口实测可见标签重叠 **0**、1× 与放大后屏幕字号恒定、控制台 0 错误。缩放 LOD、势力覆灭动态链路原样保留。
+- **地图内容校勘（和原著对上）**：舆图补录清洗描述性短语误抽 **16 处**（814 → 805 条），如「坐落圣丹城」→「圣丹城」、「守护幻梦境圣地」→「幻梦境」；拆分《吞噬星空》被误合的「紫月圣地·东帝圣地」为两个独立据点；新增时代层内容结构校验（字段、坐标、通路端点、专名合并）**0 问题**。「瑶池圣地」「圣地亚哥」等原著／真实专名未误删。
+- **验收证据**：`verify-eras.mjs` 7/7 全过（13 层／110 节点／81 通路／10 界全 tab／桌面＋移动／零重叠／字号恒定／纪元牌可见／控制台 0 错误）；`verify-v396.mjs` 全量回归通过（33 界、每界通用常识 194 条、earth 事实 503 条、标题无重复、16 个地图用例零重叠、字号三档恒定、LOD 0/1/2）。
+- **版本同源再收口**：`release.mjs` 补进 `selftest.html` 的 `ENGINE_VER` 同步规则（3.96.1 发版后仍停在 3.96.0）；本版 `YJ_VER`／`ENGINE_VER`／`SW_VER`／页面标题／静态徽标／全部 `?v=` 参数／`QUICKSTART.txt`／`VERSIONS.md`／`changelog`／`README` 统一 3.97.0。
 
 ## v3.96.1 · 2026-11-06
 
@@ -209,7 +230,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
 
-图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
 
 一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
 
@@ -365,7 +386,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 ## v3.69.0 · 2026-11-02
 
-预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
@@ -443,7 +464,7 @@ chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
 ## v3.59.0 · 2026-11-01
 
-晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
@@ -479,7 +500,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 ## v3.55.30 · 2026-11-01
 
-多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 

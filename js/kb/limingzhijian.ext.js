@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 黎明之剑 · 后期（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：黎明之剑
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["limingzhijian"] || (KB["limingzhijian"] = []);
+  var add = [{"title":"黎明之剑 · 高文与塞西尔","content":"远瞳《黎明之剑》：高文·塞西尔自「安苏王国」先祖苏醒，以「塞西尔领」起家，建「塞西尔帝国」；主线为「魔潮」「刚铎帝国遗产」「忤逆要塞」「神明与众神」「凡人文明对抗神明」。","category":"黎明之剑","tags":["黎明之剑","高文","塞西尔帝国","安苏王国","魔潮","刚铎帝国","忤逆要塞","远瞳","limingzhijian","续作设定"]},{"title":"黎明之剑 · 地标与设定速查","content":"速查：安苏王国（圣苏尼尔城）、塞西尔领/塞西尔帝国、忤逆要塞、刚铎帝国遗址、「魔潮」「畸变体」「神明/众神」「元素/法则」「永眠者」「圣光教会」「白银帝国」「塔尔隆德」「龙族」与「起航者」遗产。","category":"黎明之剑","tags":["圣苏尼尔城","塞西尔领","忤逆要塞","刚铎","魔潮","起航者","白银帝国","塔尔隆德","limingzhijian","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

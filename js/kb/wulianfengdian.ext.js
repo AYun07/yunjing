@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 武炼巅峰 · 后期星界（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，3 条）
+ * 作品：武炼巅峰
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["wulianfengdian"] || (KB["wulianfengdian"] = []);
+  var add = [{"title":"武炼巅峰 · 杨开与乾坤之外","content":"莫默《武炼巅峰》：杨开自「中都」杨家与「凌霄阁」起步，得「无字黑书」；由「中都→通玄大陆→星界→乾坤之外→虚空地→三千世界」层层放大。后期「星界」被「魔域」入侵，杨开立「虚空地」、入「乾坤之外」，卷入「世界树」「墨族」「人族十八州」之局。","category":"武炼巅峰","tags":["武炼巅峰","杨开","凌霄阁","通玄大陆","星界","乾坤之外","虚空地","墨族","世界树","莫默","wulianfengdian","续作设定"]},{"title":"武炼巅峰 · 境界体系速查","content":"速查：淬体→开元→气动→离合→真元→神游→超凡→入圣→圣王→返虚→虚王→道源→帝尊（伪帝/大帝）→开天（一品至九品）→「造化/创世」层面；武道与「法则」「道印」「世界之力」挂钩，另有「龙族」「石傀」「魔族」「墨族」体系。","category":"武炼巅峰","tags":["淬体","道源","帝尊","开天","法则","世界之力","武炼巅峰","wulianfengdian","续作设定"]},{"title":"武炼巅峰 · 地标速查","content":"速查：中都（杨家、凌霄阁）、通玄大陆（中都、九星大陆、幽暗星）、星界（东域、南域、西域、北域、凌霄宫、星界五大家）、魔域、乾坤之外（虚空地、三千世界、人族十八州）、世界树、墨之战场。","category":"武炼巅峰","tags":["中都","凌霄阁","星界","凌霄宫","虚空地","三千世界","世界树","地标","wulianfengdian","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

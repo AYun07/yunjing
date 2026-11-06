@@ -35,3 +35,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 玄鉴仙族 · 后期（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：玄鉴仙族
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["xuanjianxianzu"] || (KB["xuanjianxianzu"] = []);
+  var add = [{"title":"玄鉴仙族 · 家族修仙与后期","content":"季越人《玄鉴仙族》：以「家族」而非个人为主角，讲「李氏」世代经营灵田、坊市、丹器、子弟培养与宗门关系；体系为「练气→筑基→紫府→金丹→元婴」与「仙族/世家/宗门」格局，后期由「一县之地」放大到「州域/天下」。","category":"玄鉴仙族","tags":["玄鉴仙族","李氏","家族修仙","灵田","坊市","紫府","金丹","季越人","xuanjianxianzu","续作设定"]},{"title":"玄鉴仙族 · 地标速查","content":"速查：「李氏祖地」「青池宗」「坊市」「灵田」「山门」「州域」「世家联盟」「仙鉴」与「玄鉴」（家族传承之镜）；地标按「县→郡→州→天下」逐级展开。","category":"玄鉴仙族","tags":["李氏祖地","青池宗","坊市","灵田","玄鉴","地标","xuanjianxianzu","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

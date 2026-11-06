@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 全球冰封 · 后期（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：全球冰封：我打造了末日安全屋
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["quanqiubingfeng"] || (KB["quanqiubingfeng"] = []);
+  var add = [{"title":"全球冰封 · 末日安全屋","content":"《全球冰封：我打造了末日安全屋》：全球骤入极寒冰封末世，主角张奕凭「空间异能」与前世记忆打造安全屋；体系为「寒潮/极夜→物资/避难所→异能者→势力割据→重建」。","category":"全球冰封","tags":["全球冰封","张奕","末日安全屋","寒潮","空间异能","避难所","quanqiubingfeng","续作设定"]},{"title":"全球冰封 · 地标速查","content":"速查：「安全屋」「云港市/江城」等城市、「避难所」「物资仓库」「地下城」「幸存者营地」「异能者组织」「极寒冰原」。","category":"全球冰封","tags":["安全屋","避难所","幸存者营地","异能者","地标","quanqiubingfeng","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

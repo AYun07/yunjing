@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 开局地摊卖大力 · 后期（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：开局地摊卖大力
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["ditandali"] || (KB["ditandali"] = []);
+  var add = [{"title":"开局地摊卖大力 · 江南与灵气复苏","content":"《开局地摊卖大力》：江南在地摊卖「大力丸」起家，卷入「灵气复苏」「异兽」「武道」「守夜人」格局；体系由「普通人→武者→异能者→神明」递进，以「摆摊系统」「反差搞笑」与「大昌市」为特色。","category":"地摊卖大力","tags":["开局地摊卖大力","江南","大力丸","灵气复苏","异兽","武者","守夜人","ditandali","续作设定"]},{"title":"地摊卖大力 · 地标速查","content":"速查：大昌市（地摊、夜市）、「灵气复苏」后的「秘境」「异兽潮」「武道大学」「守夜人分部」「龙虎山」等；与《神秘复苏》同用「大昌市」地名，但为不同作品、不同设定，主持时须按本界处理，不可混用。","category":"地摊卖大力","tags":["大昌市","秘境","异兽潮","武道大学","守夜人","地标","ditandali","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

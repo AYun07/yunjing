@@ -78,6 +78,8 @@ sub('index.html', /(id="verBadge"[^>]*>)v[\d.]+( 云境版<\/a>)/g, `$1v${nextVe
 sub('studio.html', /(id="verDot"[^>]*>)v[\d.]+(<\/span>)/g, `$1v${nextVer}$2`);
 sub('QUICKSTART.txt', /云境工坊 v[\d.]+ · 使用说明/g, `云境工坊 v${nextVer} · 使用说明`);
 sub(path.join('changelog', 'index.html'), /\?v=[\d.]+/g, `?v=${nextVer}`);
+/* v3.97.0：自检页的 ENGINE_VER 也没进同源规则，3.96.1 发版后仍停在 3.96.0，一并收口 */
+sub('selftest.html', /const ENGINE_VER = '[\d.]+'/g, `const ENGINE_VER = '${nextVer}'`);
 
 /* ---------- 2. 更新日志（changelog/index.html） ---------- */
 const cl = read('changelog/index.html');

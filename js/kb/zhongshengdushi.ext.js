@@ -54,3 +54,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 重生之都市修仙 · 后期（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：重生之都市修仙
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["zhongshengdushi"] || (KB["zhongshengdushi"] = []);
+  var add = [{"title":"重生之都市修仙 · 陈凡与北玄仙尊","content":"《重生之都市修仙》：北玄仙尊陈凡渡劫失败，重生回都市少年时代，以「修仙」重走红尘；体系为「炼气→筑基→金丹→元婴→化神」对照世俗「内劲/宗师/化境」；格局由「世俗世家→隐门/武道界→修真界」递进。","category":"重生都市","tags":["重生之都市修仙","陈凡","北玄仙尊","炼气","金丹","世俗世家","隐门","zhongshengdushi","续作设定"]},{"title":"重生都市 · 地标与势力速查","content":"速查：江南省/楚州市、陈凡母校与家族、「姜家/苏家」等世俗世家、「武道宗师」「隐门」「药王谷」「昆仑」「修真界」与「灵脉」「法器」「丹药」。","category":"重生都市","tags":["楚州市","世俗世家","武道宗师","隐门","昆仑","灵脉","地标","zhongshengdushi","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

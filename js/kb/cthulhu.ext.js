@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 克苏鲁神话 · 题材体系（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：克苏鲁神话 / 洛夫克拉夫特 / 德雷斯神话 / 混沌元素 TRPG
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["cthulhu"] || (KB["cthulhu"] = []);
+  var add = [{"title":"克苏鲁神话 · 旧日支配者与外神体系","content":"克苏鲁题材底座：旧日支配者（克苏鲁、哈斯塔、阿撒托斯、奈亚拉托提普、犹格·索托斯、莎布·尼古拉丝、大衮、伊格、克苏加…）与「外神」「旧神」分层；核心是「人类渺小、知识即疯狂、不可名状之恐怖」。《死灵之书》《伊波恩之书》《无名祭祀书》等禁书，「拉莱耶」「印斯茅斯」「阿卡姆」「密斯卡托尼克大学」「敦威治」「金斯波特」为经典地标。","category":"题材体系","tags":["克苏鲁","旧日支配者","外神","哈斯塔","阿撒托斯","奈亚拉托提普","拉莱耶","印斯茅斯","阿卡姆","死灵之书","cthulhu","续作设定"]},{"title":"克苏鲁题材 · 调查员与体系演化","content":"题材演化：洛夫克拉夫特原典 → 德雷斯将元素与旧神归类、「神话体系化」 → 混沌元素《克苏鲁的呼唤》TRPG 确立「调查员 / SAN 值 /  investigator」玩法 → 后世衍生「新怪谭 / 宇宙恐怖 / 旧日系网文」。常见结构：调查员受委托、线索与禁书、仪式与召唤、理智崩坏、真相不可直视。","category":"题材体系","tags":["调查员","SAN 值","TRPG","混沌元素","德雷斯","宇宙恐怖","理智","cthulhu","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

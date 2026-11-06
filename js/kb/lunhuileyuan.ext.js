@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 轮回乐园 · 后期阶段（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：轮回乐园
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["lunhuileyuan"] || (KB["lunhuileyuan"] = []);
+  var add = [{"title":"轮回乐园 · 苏晓与阶段递进","content":"那一只蚊子《轮回乐园》：苏晓因复仇入「轮回乐园」成为「猎杀者」，以「斩龙闪」与「青钢影」立身；衍生世界 → 原生世界 → 树生世界 → 虚空 → 绝强/至强 → 深渊/超脱，舞台与战力逐层放大。","category":"轮回乐园","tags":["轮回乐园","苏晓","猎杀者","斩龙闪","树生世界","虚空","绝强","至强","深渊","lunhuileyuan","续作设定"]},{"title":"轮回乐园 · 体系与地标速查","content":"速查：契约者/猎杀者/违规者、乐园（轮回/死亡/圣光/暗影等）、「世界节点」「主线任务」「勋章」「霸权」；地标：树生世界、虚空、深渊、绝强战场、至强者议会、轮回乐园「结算大厅」「强化大厅」。","category":"轮回乐园","tags":["契约者","违规者","世界节点","虚空","深渊","结算大厅","地标","lunhuileyuan","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */
