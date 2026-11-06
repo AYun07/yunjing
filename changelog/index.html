@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.00.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.00.1">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.00.1</span>
+                <span class="entry-date">2026-11-06</span>
+            </div>
+            <h3 class="entry-title">舆图标签治理 · 区域名内置</h3>
+            <p class="entry-text">舆图标签重排：区域名从疆域边界外挪进疆域内部上方，不再与据点标签争一条横带；区域名牌的碰撞盒补上两侧菱形端点与引线宽度（此前少算 4 单位，导致「七宝琉璃宗」末字被「魂兽地界」的菱形压掉） 修掉一处长期存在的静默重叠：标签布局判定「放不下」时不给位置，而绘制函数遇到没有位置会退回默认位照样画——所有挤不下的标签都在偷偷叠字。现在未获位置即不画，另给常显标签一次降字号重试（2.2→1.85）塞回缝里 同名去重：区域名与据点同名时（斗罗「猎魂森林」「武魂殿」）只保留区域名，据点仍可点开看详情，不再出现「同一名字写两遍」 像素级兜底把区域名牌纳入冲突集合，区域名优先保留；标签布局新增渲染前硬校验，与区域名牌相交的据点标签直接让路 斗罗、斗破、诡秘、遮天四界截图复核：可见标签零重叠，区域名完整可读</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -326,7 +335,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.00.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.00.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">
