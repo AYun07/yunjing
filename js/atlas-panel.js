@@ -8254,7 +8254,7 @@
     }
     return pts;
   }
-  function regionSvg(r, idx, P, top) {
+  function regionSvg(r, idx, P, top, outBoxes, pos, labelOut) {
     const fillA = top ? 0.17 : 0.1;
     const col = { mountain: P.stone, forest: P.tree, desert: P.sand, water: P.water, city: P.accent, void: P.accent, plain: P.tree }[r.tr] || P.stone;
     const blob = blobPath(r.cx, r.cy, r.rx, r.ry, idx + 1);
@@ -8275,16 +8275,25 @@
       glyphs += terrainGlyph(r.tr, p[0].toFixed(1), p[1].toFixed(1), s, P, i * 7 + idx + 5);
     });
     /* 区域名牌 v4：抬高到边界外侧，左右带引线与菱形端点，读起来像制图标注而不是按钮 */
-    const ly = Math.max(5.0, r.cy - r.ry - 2.9);
-    const tw = labelWidth(r.n, 2.0);
-    const lx = r.cx;
-    const label = `<g class="atlas-rlabel">
-            <path d="M${(lx - tw / 2 - 3.4).toFixed(1)},${ly.toFixed(1)} h2.4" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
-            <path d="M${(lx + tw / 2 + 1).toFixed(1)},${ly.toFixed(1)} h2.4" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
-            <path d="M${(lx - tw / 2 - 3.9).toFixed(1)},${ly.toFixed(1)} l.7,-.6 l.7,.6 l-.7,.6 Z" fill="${hexA(col, 0.85)}"/>
-            <path d="M${(lx + tw / 2 + 3.9).toFixed(1)},${ly.toFixed(1)} l-.7,-.6 l-.7,.6 l.7,.6 Z" fill="${hexA(col, 0.85)}"/>
+    const ly = (pos && pos.ly != null) ? pos.ly : Math.max(5.0, r.cy - r.ry * 0.58);
+    const tw = regionLabelW(r.n);
+    const lx = (pos && pos.lx != null) ? pos.lx : r.cx;
+    /* v4.00.0 区域名牌的包围盒要交给标签布局当障碍物：此前据点标签完全不知道区域名
+       存在，于是「猎魂森林」区域名和同名据点名叠成重影，「魂兽地界」与「七宝琉璃宗」
+       挨在一起读成「七宝琉璃宗地界」。 */
+    /* 盒宽要把两侧菱形端点与引线一起算进去（各约 4.2）：只按文字宽算，据点标签的末字
+       会被菱形压住——「七宝琉璃宗」的「宗」就是这么没的。 */
+    if (outBoxes) outBoxes.push({ x1: lx - tw / 2 - 3.0, x2: lx + tw / 2 + 3.0, y1: ly - 1.9, y2: ly + 1.9 });
+    const label = `<g class="atlas-rlabel atlas-rlabel-top">
+            <path d="M${(lx - tw / 2 - 2.4).toFixed(1)},${ly.toFixed(1)} h1.8" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
+            <path d="M${(lx + tw / 2 + 0.6).toFixed(1)},${ly.toFixed(1)} h1.8" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
+            <path d="M${(lx - tw / 2 - 2.9).toFixed(1)},${ly.toFixed(1)} l.7,-.6 l.7,.6 l-.7,.6 Z" fill="${hexA(col, 0.85)}"/>
+            <path d="M${(lx + tw / 2 + 2.9).toFixed(1)},${ly.toFixed(1)} l-.7,-.6 l-.7,.6 l.7,.6 Z" fill="${hexA(col, 0.85)}"/>
             <rect x="${(lx - tw / 2).toFixed(1)}" y="${(ly - 1.55).toFixed(1)}" width="${tw.toFixed(1)}" height="3.1" rx="1.55" fill="${hexA(P.deep, 0.82)}" stroke="${hexA(col, 0.55)}" stroke-width=".2"/>
             <text x="${lx.toFixed(1)}" y="${(ly + 0.72).toFixed(1)}" font-size="2.0" fill="${hexA(P.text, 0.94)}" text-anchor="middle" letter-spacing=".9" class="atlas-label">${r.n}</text></g>`;
+    /* v4.00.0 名牌外置：疆域按面积从小到大叠着画，小的疆域会盖住大的疆域名牌，
+       出现「七宝琉璃宗」压掉「魂兽地界」首字的情况。名牌统一挪到最上层单独画。 */
+    if (labelOut) labelOut.push(label);
     return `<g class="atlas-region">
             <path d="${blob}" fill="${hexA(col, fillA * 0.55)}"/>
             <path d="${blob}" fill="url(#agP_${r.tr || "plain"})" opacity=".42"/>
@@ -8295,7 +8304,7 @@
             <path d="${blob}" fill="none" stroke="${hexA(col, 0.16)}" stroke-width="1.15"/>
             <path d="${blob}" fill="none" stroke="${hexA(col, 0.6)}" stroke-width=".32" stroke-linecap="round"/>
             <path d="${blobIn}" fill="none" stroke="${hexA(col, 0.2)}" stroke-width=".18" stroke-dasharray="1 1.9"/>
-            ${label}</g>`;
+            </g>`;
   }
   function bgSvg(decor, P) {
     if (decor === "cosmos") {
@@ -8403,6 +8412,13 @@
      关键标签被挤到默认位互相压字 —— 这就是「名字挤在一起」的根因。
      现在分两组排：常显组只含原有节点，补录组另排且带分级 LOD（放大才逐级显现）；
      8 个候选位 + 最小留白 PAD，放不下就只留圆点，点开详情照样有全名。 */
+  /* 区域名牌带 letter-spacing，底框与实际字宽必须按同一公式算，否则字会比框宽，
+     既难看又会骗过碰撞盒（「七宝琉璃宗」压掉「魂兽地界」首字就是这么来的）。 */
+  const RLAB_LSP = 0.9;
+  function regionLabelW(t) {
+    const n = String(t || "").length;
+    return labelWidth(t, 2.0) + Math.max(0, n - 1) * RLAB_LSP;
+  }
   function labelWidth(t, fs) {
     let w = 0;
     for (const ch of String(t)) w += /[\u3400-\u9fa5\uff00-\uffef]/.test(ch) ? fs : fs * 0.56;
@@ -8577,7 +8593,7 @@
       const keyNode = fallen || isCur || isStd;
       const need = n.supp ? (lodNeed == null ? 1 : lodNeed) : 0;
       if (lp === false && !keyNode) return "";
-      const fs = isCur || isStd ? 2.75 : (n.supp ? 1.85 : 2.2);
+      const fs = n._fs || (isCur || isStd ? 2.75 : (n.supp ? 1.85 : 2.2));
       const c = (lp && lp !== false) ? lp : { dx: n.x <= 72 ? 4.4 : -4.4, dy: 0.85, anchor: n.x <= 72 ? "start" : "end" };
       const lx = c.dx, ly = c.dy, anchor = c.anchor;
       const lf = fallen ? hexA(P.muted, 0.9) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.text, 0.86);
@@ -8663,7 +8679,35 @@
        旧版按数据顺序画，几个边界交叠时看不出谁属于谁，整片糊成一团。 */
     const regionOrder = (layer.regions || []).map((r, i) => ({ r, i }))
       .sort((a, b) => (b.r.rx * b.r.ry) - (a.r.rx * a.r.ry));
-    const regions = regionOrder.map((o, k) => regionSvg(o.r, o.i, P, k === regionOrder.length - 1)).join("");
+    const rlabelBoxes = [];
+    /* 区域名牌彼此也会撞：斗罗「七宝琉璃宗」就压住了「魂兽地界」的首字，读起来像
+       「七宝琉璃宗兽地界」。先按 x 排序做一轮上下错位，再交给据点标签当障碍物。 */
+    const rlabelPos = (() => {
+      const list = regionOrder.map((o, k) => ({
+        k,
+        cx: o.r.cx,
+        lx: o.r.cx,
+        ly: Math.max(5.0, o.r.cy - o.r.ry * 0.58),
+        tw: regionLabelW(o.r.n)
+      })).sort((a, b) => a.ly - b.ly || a.lx - b.lx);
+      const placed = [];
+      const out = {};
+      list.forEach((it) => {
+        const hitOne = () => placed.some((p) => !(it.lx + it.tw / 2 + 0.6 < p.lx - p.tw / 2 || it.lx - it.tw / 2 - 0.6 > p.lx + p.tw / 2 || it.ly + 1.75 < p.ly - 1.75 || it.ly - 1.75 > p.ly + 1.75));
+        /* 先往上让（名牌压在疆域顶边外），让到顶格还撞就横向错开——总比两块钱叠着强 */
+        let guard = 0;
+        while (hitOne() && guard < 10) { it.ly -= 3.4; guard++; }
+        if (it.ly < 4.4) it.ly = 4.4;
+        let hx = 0, hg = 0;
+        while (hitOne() && hg < 8) { hx = (hg % 2 === 0 ? 1 : -1) * (3.2 + hg * 1.6); it.lx = it.cx + hx; hg++; }
+        it.lx = Math.max(8 + it.tw / 2, Math.min(92 - it.tw / 2, it.lx));
+        placed.push(it);
+        out[it.k] = { lx: it.lx, ly: it.ly };
+      });
+      return out;
+    })();
+    const rlabels = [];
+    const regions = regionOrder.map((o, k) => regionSvg(o.r, o.i, P, k === regionOrder.length - 1, rlabelBoxes, rlabelPos[k], rlabels)).join("");
     const modes = {};
     layerNodes.forEach((n) => {
       let mode = "fog";
@@ -8675,10 +8719,29 @@
     const rank = (id) => (modes[id] === "cur" || modes[id] === "standby" ? 0 : modes[id] === "vis" ? 1 : 2);
     /* v3.96.0：常显组与补录组分开避让。补录节点不再挤占常显标签的位置；
        补录按 lod 分两级（1.8× 显示约 1/3，3× 全部显示），放大越多地名越全，缩小时清爽。 */
-    const mk = (n) => ({ id: n.id, x: n.x, y: n.y, n: n.n, fs: rank(n.id) === 0 ? 2.75 : (n.supp ? 1.85 : 2.2), banner: rank(n.id) === 0 });
-    const base = layerNodes.filter((n) => !n.supp);
-    const supp = layerNodes.filter((n) => n.supp);
-    const main = layoutLabels(base.slice().sort((a, b) => rank(a.id) - rank(b.id) || a.y - b.y).map(mk));
+    const mk = (n) => ({ id: n.id, x: n.x, y: n.y, n: n.n, fs: n._fs || (rank(n.id) === 0 ? 2.75 : (n.supp ? 1.85 : 2.2)), banner: rank(n.id) === 0 });
+    /* 区域名与同名据点并存时只留区域名：猎魂森林、武魂殿这类在斗罗是「一片地方」，
+       据点标签再写一遍就成了用户眼里的重影。已到访/当前所在的点例外——那时玩家要看的是这个点。 */
+    const regionNames = new Set(regionOrder.map((o) => o.r.n));
+    /* glyph() 在没有 placement 时会退回默认位置照样画标签——所以「不参与布局」不等于「不画」，
+       必须显式传 false 才能真隐藏。同名于区域名的据点（猎魂森林、武魂殿）走这条路。 */
+    const hiddenLabelIds = new Set(layerNodes.filter((n) => regionNames.has(n.n) && rank(n.id) !== 0).map((n) => n.id));
+    const base = layerNodes.filter((n) => !n.supp && !(regionNames.has(n.n) && rank(n.id) !== 0));
+    const supp = layerNodes.filter((n) => !(regionNames.has(n.n) && rank(n.id) !== 0) && n.supp);
+    const main = layoutLabels(base.slice().sort((a, b) => rank(a.id) - rank(b.id) || a.y - b.y).map(mk), rlabelBoxes);
+    /* 密集区（斗罗「天斗城」一带）常显标签挤不下就直接消失，观感上像「这个门派没了」。
+       给没排上的常显节点一次降字号重试（2.2→1.85），用小一号的字塞回缝里。 */
+    const retryBase = base.filter((n) => !main.placements[n.id]);
+    const retryMap = retryBase.length
+      ? layoutLabels(retryBase.map((n) => ({ id: n.id, x: n.x, y: n.y, n: n.n, fs: rank(n.id) === 0 ? 2.4 : 1.85, banner: rank(n.id) === 0 })), main.boxes)
+      : { placements: {}, boxes: main.boxes };
+    Object.keys(retryMap.placements).forEach((id) => { main.placements[id] = retryMap.placements[id]; });
+    /* 重试时用了小一号的字，渲染必须跟着小，否则判定盒与实际盒子又对不上 */
+    base.forEach((n) => { delete n._fs; });
+    Object.keys(retryMap.placements).forEach((id) => {
+      const n = base.find((x) => x.id === id);
+      if (n) n._fs = rank(id) === 0 ? 2.4 : 1.85;
+    });
     /* 用名称+坐标哈希打散，避免同一层的补录标签扎堆 */
     const suppSorted = supp.slice().sort((a, b) => strHash(a.n + "|" + a.x) - strHash(b.n + "|" + b.x));
     const s1 = suppSorted.filter((_, i) => i % 3 === 0);
@@ -8691,7 +8754,29 @@
     const lodOf = {};
     s1.forEach((n) => { lodOf[n.id] = 0; });
     s2.forEach((n) => { lodOf[n.id] = 2; });
-    const nodes = layerNodes.map((n) => glyph(n, modes[n.id], P, lps[n.id], layer.geo === "world", lodOf[n.id] || 0)).join("");
+    /* 硬校验：布局给了位置，不代表真不压。凡与区域名牌相交的据点标签一律隐藏——
+       区域名是「这是哪片地方」的骨架，据点名是细节，冲突时细节让路。
+       这一步按 glyph() 的盒模型复算，和渲染用的是同一套数字，不做二次估算。 */
+    const labelBoxOf = (pl, name, fs) => {
+      if (!pl || pl === false) return null;
+      const tw = labelWidth(name, fs), th = fs * 1.44;
+      const bx = pl.anchor === "start" ? pl.dx - 0.8 : pl.anchor === "end" ? pl.dx - tw + 0.8 : pl.dx - tw / 2;
+      return { x1: bx, x2: bx + tw, y1: pl.dy - fs * 0.94, y2: pl.dy - fs * 0.94 + th };
+    };
+    const labelFsOf = (n) => n._fs || (rank(n.id) === 0 ? 2.75 : (n.supp ? 1.85 : 2.2));
+    const hitsRegion = (b) => b && rlabelBoxes.some((o) => !(b.x2 + 0.3 < o.x1 || b.x1 - 0.3 > o.x2 || b.y2 + 0.3 < o.y1 || b.y1 - 0.3 > o.y2));
+    layerNodes.forEach((n) => {
+      const pl = lps[n.id];
+      if (pl == null) return;
+      const fs = labelFsOf(n);
+      if (hitsRegion(labelBoxOf(pl, n.n, fs))) hiddenLabelIds.add(n.id);
+    });
+    /* 更根本的一条：layoutLabels 判定「放不下」时压根不给位置，而 glyph() 遇到没有位置
+       会退回默认位照样画——于是所有挤不下的标签都在悄悄重叠。凡参与过布局却没拿到位置
+       的，一律不画；只有从未参与布局的节点（关键节点/动态点）才允许走默认位。 */
+    const layoutIds = new Set(base.concat(s1, s2).map((n) => n.id));
+    layoutIds.forEach((id) => { if (!lps[id]) hiddenLabelIds.add(id); });
+    const nodes = layerNodes.map((n) => glyph(n, modes[n.id], P, hiddenLabelIds.has(n.id) ? false : lps[n.id], layer.geo === "world", lodOf[n.id] || 0)).join("");
     /* 罗盘避让：斗罗「海神岛」等疆域会顶到右上角，罗盘压上去既挡地名又显乱。
        在右上/左下两个候选角里选与疆域重叠最小的位置。 */
     const _regs = layer.regions || [];
@@ -8822,6 +8907,7 @@
             ${tethers}
             ${trail}
             <g filter="url(#agGlow)">${nodes}</g>
+            ${rlabels.join("")}
             ${cart}${compass}${corners}${scale}
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="none" stroke="${hexA(P.primary, 0.5)}" stroke-width=".45"/>
             <rect x="2.2" y="2.2" width="95.6" height="95.6" rx="1.6" fill="none" stroke="${hexA(P.primary, 0.18)}" stroke-width=".22"/>
@@ -9043,7 +9129,14 @@
     vis.sort((a, b) => (Number(b.dataset.key || 0) - Number(a.dataset.key || 0))
       || (Number(a.dataset.lod || 0) - Number(b.dataset.lod || 0))
       || (Number(b.dataset.fallen || 0) - Number(a.dataset.fallen || 0)));
+    /* 区域名牌先入场占位：它们是「这一片叫什么」的骨架，优先级高于任何据点标签。
+       旧版这里只收 .atlas-lab，区域名牌完全不在冲突集合里，于是「七宝琉璃宗」被
+       「魂兽地界」的菱形端点压掉半个字，像素级兜底也没拦住。 */
     const kept = [];
+    Array.from(svg.querySelectorAll(".atlas-rlabel")).forEach((e) => {
+      const b = e.getBoundingClientRect();
+      if (b.width > 0) kept.push({ x1: b.left, x2: b.right, y1: b.top, y2: b.bottom });
+    });
     vis.forEach((e) => {
       const r = e.querySelector("rect");
       if (!r) return;
