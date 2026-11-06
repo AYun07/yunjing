@@ -534,6 +534,31 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
     if (error && error.name === "AbortError") {
       throw new Error(`AI 响应超时（${Math.round(secsToMs(fw.apiConfig.timeout, 300) / 1e3)} 秒内无任何数据返回）：网络或中转站无响应。可尝试：①接口设置里加大超时秒数 ②更换模型或中转站 ③关闭流式开关后重试。`);
     }
+    /* v3.99.0 上下文超限自适应：小模型（或推断不出窗口的中转端点）最容易撞这个墙。
+       捕获到就把预算压到 55%，重新装配消息后自动重试一次——玩家只会觉得「慢了一拍」，
+       而不是对着一串英文报错不知道怎么办。 */
+    const PB = window.PromptBudget;
+    if (!isTest && !lightContext && PB && PB.isOverflowError && PB.isOverflowError(error)) {
+      try {
+        PB.noteOverflow();
+        console.warn("[PromptBudget] 上下文超限，按压缩后的预算重建消息并重试一次");
+        const shrunk = await buildStoryMessages(userMessage);
+        (_a = window.TokenUsage) == null ? void 0 : _a.recordRequest(shrunk, "主笔");
+        const bmm2 = window.BaseModelMode;
+        const retryCfg2 = (bmm2 && bmm2.isLite && bmm2.isLite()) ? bmm2.clampParams(fw.apiConfig) : undefined;
+        const reply2 = fw.apiConfig.type === "gemini"
+          ? await callGemini(shrunk, opts, retryCfg2)
+          : await callOpenAI(shrunk, opts, retryCfg2);
+        const clean2 = window.stripAIThink(reply2);
+        if (!isTest) (_b = window.TokenUsage) == null ? void 0 : _b.recordOutput(clean2, "主笔");
+        return clean2;
+      } catch (e2) {
+        console.error("[PromptBudget] 降级重试仍失败:", e2);
+        throw new Error(
+          `模型上下文装不下本轮请求（已自动压缩并重试一次仍失败）。可尝试：①在接口设置里把「上下文窗口」填成模型的真实值 ②换一个上下文更大的模型 ③开启「基础模型模式」减负。原始错误：${String(error && error.message ? error.message : error).slice(0, 160)}`
+        );
+      }
+    }
     throw error;
   }
 }

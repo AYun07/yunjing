@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **68** 个版本，从 `v3.55.7` 到 `v3.98.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **69** 个版本，从 `v3.55.7` 到 `v3.99.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.99.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.99.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.99.0) |
 | **v3.98.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.98.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.98.0) |
 | **v3.97.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) |
 | **v3.96.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
@@ -82,6 +83,22 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.99.0 · 2026-11-06
+
+**极低参数模型适配 · 37 界 OOC 红线 · 四界舆图补厚**
+
+低配档重做：知识库改为「按预算生成 ＋ 超长条目压成标题与铁律句」而非整段丢弃，世界骨架在裁剪后仍存活；系统提示词按 `##` 分段压到 2.1–2.7k 字（原 7.3–8.7k，去掉约七成）；历史窗口减半；服务端报上下文超限自动降到 8000 字符并重试一次。
+
+设置面板的预算档位由「8 万/11 万/15 万/20 万字符」改为「8K/16K/32K/64K/128K 上下文」——旧档位最小 8 万字符，用小模型的玩家根本调不下来。
+
+37 界全部补上集中式「OOC 红线清单」常驻条目（每界 6–7 条具体到人名/境界名的易错点），其中 31 界为新增；四界核心库 14 条重写为 100 条，常驻从 96/59 条收敛到 7–13 条，全站常驻均值 4702 字。
+
+四界舆图补专属配色（此前一直套兜底色，与世界观不符）与节点：2–4 个补到 10–13 个，13 层共 148 个节点、同层最小间距 12.2；修正最外层区域标签压地图边框。
+
+验收：专项 15 项 ＋ 回归 25 项 ＋ 低配档 20 项全部通过，298 个 JS 语法通过，知识库 24,239 条。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.99.0)  [🔍 与 v3.98.0 差异](https://github.com/AYun07/yunjing/compare/v3.98.0...v3.99.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.99.0.zip)
 
 ## v3.98.0 · 2026-11-06
 

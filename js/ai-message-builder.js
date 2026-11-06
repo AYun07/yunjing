@@ -96,7 +96,12 @@ async function buildStoryMessages(userMessage) {
   /* v3.55.10 基础小模型适配：轻量协议块替代全量云起预设，知识库背景与
      生图/沉浸指令暂停加载（强模型用户不受影响） */
   const bmmOn = !!(window.BaseModelMode && window.BaseModelMode.isLite());
-  const rawSystem = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
+  const rawSystem0 = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
+  /* v3.99.0 低配档压缩世界提示词：原文 7~8.7k 字，小模型读不完设定、正文必崩。
+     压到 ~2.8k 字（保段标题 + 首句 + 铁律句），信息骨架不丢，注意力留给写作本身。 */
+  const rawSystem = (bmmOn && window.BaseModelMode.compactSystemPrompt)
+    ? window.BaseModelMode.compactSystemPrompt(rawSystem0, 2800)
+    : rawSystem0;
   const rawRule = config.defaultSystemPrompt || "";
   const chapterNow = Number((_a = state.variables) == null ? void 0 : _a.chapter) || 0;
   const rawRuleTrimmed = chapterNow > 1 ? stripOpeningTemplate(rawRule) : rawRule;
@@ -255,9 +260,19 @@ ${digest}` });
   }
   const storyKB = window.StoryKnowledge;
   if (storyKB && storyKB.getCount() > 0) {
-    /* v3.55.10 基础小模型适配：背景知识整包注入对小模型是负担，
-       暂停背景包、保留前景检索（与玩家当前输入相关的条目照常注入） */
-    if (!bmmOn) for (const m of storyKB.buildBackgroundKnowledge()) push(m, "知识库·背景", 10);
+    /* v3.99.0 低配档知识库策略重写。
+       旧逻辑（v3.55.10）是 lite 档整包跳过背景知识——省 token，但代价是
+       小模型完全拿不到世界地理/势力/设定骨架，人物开口就串戏，OOC 反而更严重。
+       新逻辑：背景层照给，只按档位给预算；预算内超长的条目被压缩（保留铁律句）
+       而不是丢弃，于是小模型拿到的是「薄但完整」的世界。 */
+    let bgBudget = 0;
+    try {
+      const total = (window.PromptBudget && window.PromptBudget.get && window.PromptBudget.get().limit) || 0;
+      bgBudget = bmmOn ? 2000 : Math.max(4000, Math.round(total * 0.22));
+    } catch (e) { bgBudget = bmmOn ? 2000 : 6000; }
+    /* v3.99.0 prio=100：知识库已在源头按预算生成（薄但完整），不能再让 finalize 整段裁掉——
+       它一被裁，小模型就彻底失去世界骨架，人物立刻串戏。让「历史」去当缓冲区。 */
+    for (const m of storyKB.buildBackgroundKnowledge(bgBudget)) push(m, "知识库·背景", 100);
   }
   const recap = state.digest;
   if (recap && (recap.summary || (recap.blocks && recap.blocks.length))) {
@@ -279,7 +294,9 @@ ${arch}` : ""}` }, "前情提要", 60);
       if (retr) push({ role: "system", content: retr }, "旧章召回", 55);
     } catch (e) { console.warn("[长程召回] 失败（静默跳过）:", e && e.message); }
   }
-  const recent = state.conversationHistory.slice(-17, -1);
+  /* v3.99.0 低配档历史窗口减半：16 轮正文即便压缩后仍占 1.2 万~1.6 万字，
+     是仅次于系统提示词的第二大头。8 轮足够维持连贯，把省下的额度留给世界骨架。 */
+  const recent = state.conversationHistory.slice(bmmOn ? -9 : -17, -1);
   for (const msg of recent) {
     if (!msg || !msg.role || msg.content == null) continue;
     if (msg.role === "assistant") {
@@ -289,10 +306,16 @@ ${arch}` : ""}` }, "前情提要", 60);
     }
   }
   if (storyKB && storyKB.getCount() > 0) {
+    let fgBudget = 0;
+    try {
+      const total = (window.PromptBudget && window.PromptBudget.get && window.PromptBudget.get().limit) || 0;
+      fgBudget = bmmOn ? 3000 : Math.max(6000, Math.round(total * 0.34));
+    } catch (e) { fgBudget = bmmOn ? 3000 : 9000; }
     const fgList = (typeof storyKB.buildForegroundKnowledgeAsync === "function")
-      ? await storyKB.buildForegroundKnowledgeAsync(userMessage, state.conversationHistory)
-      : storyKB.buildForegroundKnowledge(userMessage, state.conversationHistory);
-    for (const m of fgList) push(m, "知识库·前景", 20);
+      ? await storyKB.buildForegroundKnowledgeAsync(userMessage, state.conversationHistory, fgBudget)
+      : storyKB.buildForegroundKnowledge(userMessage, state.conversationHistory, null, fgBudget);
+    /* 同上：源头已按预算生成，免疫最终裁剪，铁律与人物档案必须活着到模型手里 */
+    for (const m of fgList) push(m, "知识库·前景", 100);
   }
   const antibagu = window.AntibaguGuard && window.AntibaguGuard.buildDirective() || "";
   if (antibagu) {

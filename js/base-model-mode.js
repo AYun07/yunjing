@@ -201,6 +201,54 @@
 </status>`;
   }
 
+  /* ---------- 2.5 世界提示词压缩（仅 lite 用） ----------
+     各世界 config 的 fullSystemPrompt 是 7000~8700 字的完整设定（境界、地理、势力、
+     人物志、功法、事件……），对 8k/16k 上下文的小模型是致命负担：它会把注意力全花在
+     读设定上，正文反而写崩。
+     但整段砍掉又会让小模型完全不知道世界长什么样 → 人物串戏、境界乱编（OOC）。
+     折中：按 "##" 分段，每段保「段标题 + 首句 + 所有铁律句」，把 8k 字压到 2.5k 字左右，
+     信息密度保住，字数砍掉七成。段落顺序与原文一致，模型仍能建立结构感。 */
+  const MUST_RE = /铁律|禁止|不得|严禁|切勿|必须|不可|唯一|绝不|不是|禁止|勿|切勿|只有|方能/;
+  function compactSystemPrompt(text, budget) {
+    var src = String(text || '');
+    if (!src) return '';
+    var B = budget > 0 ? budget : 2800;
+    if (src.length <= B) return src;
+    /* config 的知识库真源以 "## " 起段；没有 ## 的走【】分段；再没有就按空行切 */
+    var parts = src.split(/\n(?=##\s)/);
+    if (parts.length < 3) parts = src.split(/\n(?=【)/);
+    if (parts.length < 3) parts = src.split(/\n{2,}/);
+    var out = [];
+    var used = 0;
+    for (var i = 0; i < parts.length; i++) {
+      var block = parts[i].trim();
+      if (!block) continue;
+      var lines = block.split('\n');
+      var headLine = lines.length && /^(#|【)/.test(lines[0].trim()) ? lines[0].trim() : '';
+      var body = headLine ? lines.slice(1).join('\n') : block;
+      /* 逐句筛：首句给语境，约束句防 OOC，其余丢弃 */
+      var sents = body.split(/(?<=[。！？\n])/).filter(function (s) { return s.trim(); });
+      var keep = [];
+      if (sents.length) keep.push(sents[0].trim());
+      for (var j = 1; j < sents.length; j++) {
+        var s = sents[j].trim();
+        if (s && MUST_RE.test(s) && keep.indexOf(s) === -1) keep.push(s);
+      }
+      var seg = (headLine ? headLine + '\n' : '') + keep.join('');
+      /* 预算不够时降级：先只留标题，再彻底放弃该段（标题也放不下的段直接跳） */
+      var remain = B - used;
+      if (seg.length > remain) {
+        seg = headLine && headLine.length <= remain ? headLine : '';
+      }
+      if (!seg) continue;
+      out.push(seg);
+      used += seg.length + 1;
+      if (used >= B) break;
+    }
+    var res = out.join('\n');
+    return res || src.slice(0, B);
+  }
+
   /* ---------- 4. 复读崩塌检测（全档生效的安全基线） ---------- */
   function detectCollapse(text) {
     if (!text || typeof text !== 'string' || text.length < 400) return false;
@@ -253,7 +301,7 @@
     resolveTier, isLite, isFull,
     isEnabled: isLite,                 // 兼容旧布尔语义（=是否走裁剪档）
     isEnabledRaw: getTier,
-    clampParams, buildLitePreset, detectCollapse,
+    clampParams, buildLitePreset, compactSystemPrompt, detectCollapse,
     noteCollapse, noteStable, install
   };
 })();

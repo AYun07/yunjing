@@ -1866,10 +1866,11 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
             ${window.PromptBudget ? PromptBudget.meterHTML() : ""}
             <div class="st-row"><span>预算控制</span>
                 <button class="imm-mini big ${window.PromptBudget && PromptBudget.get().enabled ? "on" : ""}" onclick="ImmersiveSuite.toggleBudget()">${window.PromptBudget && PromptBudget.get().enabled ? "✅ 开启中（点击关闭）" : "已关闭 · 开启"}</button></div>
-            <div class="st-row"><span>预算上限</span>
-                <button class="imm-mini big" onclick="ImmersiveSuite.cycleBudgetLimit()">${window.PromptBudget ? (PromptBudget.get().auto !== false && PromptBudget.get().autoLimitChars ? "🔎 自适应 · " + (PromptBudget.get().limit / 1e4).toFixed(1) + " 万字符" : (PromptBudget.get().limit / 1e4).toFixed(0) + " 万字符") + "（点击切换）" : "—"}</button></div>
-            <div class="st-note">🔎 自适应：按主接口模型的上下文窗口自动定预算（如 32K 上下文 ≈ 1.6 万字符）；点上面的按钮可切换成手动档位，循环到底回到自适应。</div>
-            <div class="st-note">超预算时按"先丢最不值"裁剪：知识库背景 → 前景检索 → 反八股 → 历史最旧（保底12条）→ 场域注记 → 前情提要；系统提示词 / 设定卡 / 状态面板 / 本轮指令永不裁</div>
+            <div class="st-row"><span>模型窗口</span>
+                <button class="imm-mini big" onclick="ImmersiveSuite.cycleBudgetLimit()">${window.PromptBudget ? ((PromptBudget.ctxExplicit && PromptBudget.ctxExplicit()) ? "📐 已锁定 " + Math.round(PromptBudget.ctxExplicit() / 1000) + "K 上下文" : "🔎 自适应" + (PromptBudget.get().ctxTokens ? "（认出 " + Math.round(PromptBudget.get().ctxTokens / 1000) + "K）" : "")) + "（点击切换）" : "—"}</button></div>
+            <div class="st-note">🔎 自适应：按主接口模型的名字推断上下文窗口。**推断不出来（自建端点/中转站/本地模型）就点上面的按钮手动选**：8K → 16K → 32K → 64K → 128K → 回到自适应。用便宜小模型建议选 8K 或 16K。</div>
+            <div class="st-note">超预算时的裁剪顺序（v3.99.0）：历史最旧一轮 → 场域注记 → 反八股 → 前情提要。**知识库不会被整段裁**——它已按预算生成，超长的条目会被压成「标题＋铁律句」而不是丢掉，保证小模型也拿得到世界骨架。系统提示词 / 设定卡 / 状态面板 / 本轮指令永不裁。</div>
+            <div class="st-note">若服务端仍报上下文超限，系统会自动把上限降到 8000 字符并重试一次，无需手动处理。</div>
         </div>
         <div class="st-sec">
             <div class="st-title">📖 古籍竖排</div>
@@ -2497,17 +2498,23 @@ ${(() => {
       PromptBudget.save({ enabled: !cfg.enabled });
       if (state.open && state.tab === "settings") renderTab();
     },
-    /** v3.5.0 预算上限档位循环：8万 / 11万 / 15万 / 20万字符；v3.55.19 末尾回到自适应 */
+    /** v3.5.0 预算上限档位循环；v3.55.19 末尾回到自适应
+     *  v3.99.0 改为直接循环「模型上下文窗口」（8K/16K/32K/64K/128K/自适应）：
+     *  旧档位最小 8 万字符，用小模型的玩家根本调不下来，只能被动爆窗。 */
     cycleBudgetLimit() {
       if (!window.PromptBudget) return;
-      const steps = [8e4, 11e4, 15e4, 2e5];
-      const cfg = PromptBudget.get();
-      if (cfg.auto !== false && cfg.autoLimitChars > 0) {
-        PromptBudget.save({ limit: steps[0], auto: false });
+      if (window.PromptBudget.cycleContext) {
+        window.PromptBudget.cycleContext();
       } else {
-        const idx = steps.indexOf(cfg.limit);
-        if (idx < 0 || idx === steps.length - 1) PromptBudget.save({ auto: true });
-        else PromptBudget.save({ limit: steps[idx + 1], auto: false });
+        const steps = [8e4, 11e4, 15e4, 2e5];
+        const cfg = PromptBudget.get();
+        if (cfg.auto !== false && cfg.autoLimitChars > 0) {
+          PromptBudget.save({ limit: steps[0], auto: false });
+        } else {
+          const idx = steps.indexOf(cfg.limit);
+          if (idx < 0 || idx === steps.length - 1) PromptBudget.save({ auto: true });
+          else PromptBudget.save({ limit: steps[idx + 1], auto: false });
+        }
       }
       if (state.open && state.tab === "settings") renderTab();
     },

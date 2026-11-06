@@ -580,67 +580,198 @@ ${text}`;
     return { role: "system", content: `${title}
 ${items.map((i) => this._itemText(i)).join("\n\n")}` };
   },
-  /** 背景层常驻知识（一般/次重点），置于对话历史之前 */
-  buildBackgroundKnowledge() {
+  /**
+   * v3.99.0 预算内打包（低参数模型的核心保障）
+   *
+   * 旧做法是「全部常驻条目一次性塞进去」，超上下文后由 PromptBudget 整段丢弃——
+   * 结果是便宜小模型要么爆窗报错，要么成段丢掉世界骨架，随即人物跑偏（OOC）。
+   *
+   * 新做法：先按优先级排序，逐条累加；预算不够时对**当前这一条**做压缩
+   * （保留标题 + 首句 + 带铁律/禁止/必须的句子），而不是整段删。
+   * 这样小模型拿到的永远是「薄但完整」的世界骨架，而不是「厚但残缺」的碎片。
+   *
+   * @param {Array} items 条目
+   * @param {number} budget 字符预算（<=0 视为不限）
+   * @param {string} title 段标题
+   * @returns {{msg: object|null, used: number, kept: number, dropped: number, squeezed: number}}
+   */
+  _packLayer(items, title, budget) {
+    if (!items.length) return { msg: null, used: 0, kept: 0, dropped: 0, squeezed: 0 };
+    const head = `${title}\n`;
+    const unlimited = !(budget > 0);
+    let used = head.length;
+    const out = [];
+    let dropped = 0;
+    let squeezed = 0;
+    for (const it of items) {
+      const full = this._itemText(it);
+      if (unlimited) {
+        out.push(full);
+        used += full.length + 2;
+        continue;
+      }
+      const remain = budget - used - 2;
+      if (remain <= 40) {
+        dropped += 1;
+        continue;
+      }
+      if (full.length <= remain) {
+        out.push(full);
+        used += full.length + 2;
+        continue;
+      }
+      /* 压缩：标题必留 + 内容按句切，优先保留含铁律/禁止/必须/不得/切勿的句子 */
+      const squeezedText = this._squeezeItem(it, remain - 8);
+      if (squeezedText) {
+        out.push(squeezedText);
+        used += squeezedText.length + 2;
+        squeezed += 1;
+      } else {
+        dropped += 1;
+      }
+    }
+    if (!out.length) return { msg: null, used: 0, kept: 0, dropped, squeezed };
+    return {
+      msg: { role: "system", content: head + out.join("\n\n") },
+      used,
+      kept: out.length,
+      dropped,
+      squeezed
+    };
+  },
+  /** v3.99.0 是否低配档（极低参数模型）：注入量需整体收紧 */
+  _isLite() {
+    try {
+      return !!(window.BaseModelMode && window.BaseModelMode.isLite && window.BaseModelMode.isLite());
+    } catch (e) {
+      return false;
+    }
+  },
+  /** 把一条内容压到 n 字以内：保留首句与所有「约束句」，宁短勿断义 */  _squeezeItem(item, n) {
+    if (n < 60) return null;
+    const head = `【${item.title}】（${item.category}）\n`;
+    const raw = this._contentText(item.content);
+    const room = n - head.length;
+    if (room < 40) return null;
+    if (raw.length <= room) return head + raw;
+    const sentences = raw.split(/(?<=[。！？；])/).filter((s) => s.trim());
+    if (!sentences.length) return head + raw.slice(0, room) + "…";
+    const MUST = /铁律|禁止|不得|严禁|切勿|必须|不可|唯一|绝不|不是/;
+    const must = sentences.filter((s) => MUST.test(s));
+    const picked = [];
+    let len = 0;
+    /* 先放约束句（防 OOC 的关键），再放首句补语境 */
+    for (const s of must) {
+      if (len + s.length > room) continue;
+      picked.push(s);
+      len += s.length;
+    }
+    if (!picked.length && sentences[0].length <= room) {
+      picked.push(sentences[0]);
+      len += sentences[0].length;
+    }
+    if (!picked.length) {
+      return head + raw.slice(0, Math.max(20, room - 1)) + "…";
+    }
+    return head + picked.join("") + (len < raw.length ? "…" : "");
+  },
+  /** 背景层常驻知识（一般/次重点），置于对话历史之前
+   *  @param {number} budget 字符预算，<=0 不限（v3.99.0 新增） */
+  buildBackgroundKnowledge(budget) {
     if (!this.isEnabled()) return [];
     const always = this.knowledgeBase.filter((i) => i.alwaysInclude === true && i.enabled !== false);
     const messages = [];
-    const low = this._layerMessage(always.filter((i) => !i.priority || i.priority === "low"), "【一般常驻知识（背景参考）】");
-    if (low) messages.push(low);
-    const medium = this._layerMessage(always.filter((i) => i.priority === "medium"), "【次重点常驻知识（背景参考）】");
-    if (medium) messages.push(medium);
+    const medium = always.filter((i) => i.priority === "medium");
+    const low = always.filter((i) => !i.priority || i.priority === "low");
+    let left = budget > 0 ? budget : 0;
+    /* 次重点先给（含世界地理/势力这类骨架），一般常驻吃剩下的 */
+    const m1 = this._packLayer(medium, "【次重点常驻知识（背景参考）】", left);
+    if (m1.msg) {
+      messages.push(m1.msg);
+      if (left > 0) left -= m1.used;
+    }
+    const m2 = this._packLayer(low, "【一般常驻知识（背景参考）】", left);
+    if (m2.msg) messages.push(m2.msg);
+    this._lastBgStat = { medium: m1, low: m2, budget: budget || 0 };
     return messages;
   },
-  /** 前景层知识（核心/重点常驻 + 关键词触发 + 相关检索），置于本轮指令之前以获得更高权重 */
-  buildForegroundKnowledge(userMessage, history = [], precomputedRelevant = null) {
+  /** 前景层知识（核心/重点常驻 + 关键词触发 + 相关检索），置于本轮指令之前以获得更高权重
+   *  @param {number} budget 字符预算，<=0 不限（v3.99.0 新增） */
+  buildForegroundKnowledge(userMessage, history = [], precomputedRelevant = null, budget) {
     if (!this.isEnabled()) return [];
     const messages = [];
     const always = this.knowledgeBase.filter((i) => i.alwaysInclude === true && i.enabled !== false);
-    const high = this._layerMessage(always.filter((i) => i.priority === "high"), "【重点常驻知识（写作时须贯彻）】");
-    if (high) messages.push(high);
-    const top = this._layerMessage(always.filter((i) => i.priority === "top"), "【核心设定知识（最高优先级，必须严格遵守）】");
-    if (top) messages.push(top);
-    const triggered = this.matchKeys(userMessage, history);
+    let left = budget > 0 ? budget : 0;
+    /* v3.99.0 顺序修正：top（铁律）必须先入场，旧代码先塞 high 再塞 top，
+       预算一紧就把铁律挤掉了——那正是 OOC 的直接来源。 */
+    const top = this._packLayer(always.filter((i) => i.priority === "top"), "【核心设定知识（最高优先级，必须严格遵守）】", left);
+    if (top.msg) {
+      messages.push(top.msg);
+      if (left > 0) left -= top.used;
+    }
+    const high = this._packLayer(always.filter((i) => i.priority === "high"), "【重点常驻知识（写作时须贯彻）】", left);
+    if (high.msg) {
+      messages.push(high.msg);
+      if (left > 0) left -= high.used;
+    }
+    /* v3.99.0 低配档：触发上限与单条字数同步收紧，避免 5×1500 字一次灌进去 */
+    const lite = this._isLite();
+    const triggered = this.matchKeys(userMessage, history, lite ? 3 : 5);
     if (triggered.length) {
       let text = "【触发式设定（关键词命中，本段情节涉及，写作时须遵守）】：\n\n";
+      const per = lite ? 700 : 1500;
       triggered.forEach((item) => {
-        text += `${this._itemText(item)}
+        const body = this._contentText(item.content);
+        text += `【${item.title}】（${item.category}）
+${body.length > per ? body.slice(0, per) + "…" : body}
 
 `;
       });
       messages.push({ role: "system", content: text.trim() });
     }
     const query = this._buildQuery(userMessage, history);
-    const relevant = (precomputedRelevant && precomputedRelevant.length) ? precomputedRelevant : this.retrieve(query, 3);
+    /* v3.99.0 检索条数与单条长度按档位收缩：lite 档 2 条 × 600 字（约 1.2k 字），
+       full 档保持 3 条 × 1200 字。把「贵」的额度留给常驻铁律而不是随机命中。 */
+    const topK = lite ? 2 : 3;
+    const perItem = lite ? 600 : 1200;
+    const relevant = (precomputedRelevant && precomputedRelevant.length) ? precomputedRelevant.slice(0, topK) : this.retrieve(query, topK);
     if (relevant.length) {
       let text = "【相关知识库】以下是与当前情节相关的背景资料，写作时可自然引用（严禁在正文中罗列资料原文）：\n\n";
       relevant.forEach((item, i) => {
         text += `资料${i + 1}（${item.category} - ${item.title}，相关度 ${(item.similarity * 100).toFixed(0)}%）：
-${this._contentText(item.content).slice(0, 1200)}
+${this._contentText(item.content).slice(0, perItem)}
 
 `;
       });
       messages.push({ role: "system", content: text.trim() });
     }
-    console.log(`[StoryKnowledge] 本轮注入：常驻 ${always.length} 条（top:${always.filter((i) => i.priority === "top").length}/high:${always.filter((i) => i.priority === "high").length}/medium:${always.filter((i) => i.priority === "medium").length}/low:${always.filter((i) => !i.priority || i.priority === "low").length}），关键词触发 ${triggered.length} 条，检索命中 ${relevant.length} 条`);
+    this._lastFgStat = {
+      budget: budget || 0,
+      lite: lite,
+      top: top,
+      high: high,
+      triggered: triggered.length,
+      relevant: relevant.length
+    };
+    console.log(`[StoryKnowledge] 本轮注入（${lite ? "低配" : "标准"}档）：常驻 ${always.length} 条（top:${always.filter((i) => i.priority === "top").length}/high:${always.filter((i) => i.priority === "high").length}/medium:${always.filter((i) => i.priority === "medium").length}/low:${always.filter((i) => !i.priority || i.priority === "low").length} → 实投 top ${top.kept}${top.squeezed ? `(压${top.squeezed})` : ""}/high ${high.kept}${high.squeezed ? `(压${high.squeezed})` : ""}），触发 ${triggered.length} 条，检索 ${relevant.length} 条`);
     return messages;
   },
   /**
    * 异步前景知识（v3.49.0）：检索可走「BM25 候选池 → 向量/重排」，
    * 由 js/kb-vector.js 提供；未配置、超时或报错时自动回退纯 BM25，不阻断写作。
    */
-  async buildForegroundKnowledgeAsync(userMessage, history = []) {
+  async buildForegroundKnowledgeAsync(userMessage, history = [], budget) {
     if (!this.isEnabled()) return [];
     let rel = null;
     try {
       if (window.KBVector && typeof window.KBVector.retrieve === "function" && window.KBVector.isOn()) {
         const query = this._buildQuery(userMessage, history);
-        rel = await window.KBVector.retrieve(this, query, 3);
+        rel = await window.KBVector.retrieve(this, query, this._isLite() ? 4 : 6);
       }
     } catch (e) {
       console.warn("[StoryKnowledge] 向量检索失败，已回退 BM25：", e && e.message ? e.message : e);
     }
-    return this.buildForegroundKnowledge(userMessage, history, rel);
+    return this.buildForegroundKnowledge(userMessage, history, rel, budget);
   },
   /**
    * v3.18.0 关键词触发：keys 命中「本轮指令 + 最近 scanDepth 轮正文」即注入

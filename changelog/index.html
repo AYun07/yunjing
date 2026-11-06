@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=3.98.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=3.99.0">
 </head>
 
 <body class="page-changelog">
@@ -286,6 +286,15 @@
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
+                <span class="entry-ver">v3.99.0</span>
+                <span class="entry-date">2026-11-06</span>
+            </div>
+            <h3 class="entry-title">极低参数模型适配 · 37 界 OOC 红线 · 四界舆图补厚</h3>
+            <p class="entry-text">低配档重做：知识库改为「按预算生成＋超长条目压成标题与铁律句」而非整段丢弃，世界骨架在裁剪后仍存活；系统提示词按 ## 分段压到 2.1–2.7k 字（原 7.3–8.7k，去掉 7 成）；历史窗口减半；服务端报超限自动降到 8000 字符并重试一次。设置面板的预算档位由「8万/11万/15万/20万字符」改为「8K/16K/32K/64K/128K 上下文」——旧档位最小 8 万，用小模型的玩家根本调不下来。37 界全部补上集中式「OOC 红线清单」常驻条目（每界 6–7 条具体到专名的易错点），31 界为新增；四界核心库 14 条重写为 100 条并把常驻从 96/59 条收敛到 7–13 条。四界舆图补专属配色（此前一直套兜底色）与节点，2–4 个补到 10–13 个，13 层共 148 个节点、最小间距 12.2；修正最外层区域标签压边框。验收：专项 15 项＋回归 25 项＋低配档 20 项全过，298 个 JS 语法通过，知识库 24,239 条。</p>
+        </article>
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
                 <span class="entry-ver">v3.98.0</span>
                 <span class="entry-date">2026-11-06</span>
             </div>
@@ -308,7 +317,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=3.98.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=3.99.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">
