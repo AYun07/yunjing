@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 科幻未来 · 题材体系（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：黄金时代 / 新浪潮 / 赛博朋克 / 太空歌剧 / 硬科幻
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["scifi"] || (KB["scifi"] = []);
+  var add = [{"title":"科幻题材 · 经典母题与谱系","content":"科幻母题：太空歌剧（星际帝国 / 银河联邦）、赛博朋克（巨企 / 义体 / 网络 / 低生活高技）、时间旅行与悖论、人工智能与机器人三定律、外星文明与费米悖论、基因编辑与克隆、末世废土、虚拟现实与意识上传、硬科幻（天体 / 物理 / 工程自洽）、太空殖民与世代飞船、第一接触与黑暗森林。","category":"题材体系","tags":["科幻","太空歌剧","赛博朋克","时间旅行","人工智能","机器人三定律","费米悖论","黑暗森林","意识上传","scifi","续作设定"]},{"title":"科幻题材 · 时代分期与后期演化","content":"分期：凡尔纳 / 威尔斯「科学传奇」→ 黄金时代（阿西莫夫、海因莱因、克拉克，重技术乐观与宏大工程）→ 新浪潮（重心理、社会、文体）→ 赛博朋克（威廉·吉布森《神经漫游者》）→ 当代「硬科幻回潮 + 气候 / 生物 / AI 伦理 + 太空歌剧复兴」。后期常见格局：文明等级（卡尔达肖夫）、奇点、后人类、多宇宙与模拟假说。","category":"题材体系","tags":["黄金时代","新浪潮","赛博朋克","阿西莫夫","克拉克","神经漫游者","卡尔达肖夫","奇点","后人类","scifi","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

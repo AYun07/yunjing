@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 帝霸 · 后期纪元（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：帝霸
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["dibao"] || (KB["dibao"] = []);
+  var add = [{"title":"帝霸 · 李七夜与纪元递进","content":"厌笔萧生《帝霸》：李七夜本为蛮荒时代放羊少年，因「长生不死」跨越无数纪元，被后世尊为「万古第一帝」「帝师」；主线由「九界→十三洲→八荒→天境→第十界/三仙界」推进，以「纪元更替」「仙帝」「天坟」「无上神道」为顶层概念。","category":"帝霸","tags":["帝霸","李七夜","九界","十三洲","八荒","天境","三仙界","仙帝","纪元","厌笔萧生","dibao","续作设定"]},{"title":"帝霸 · 境界与地标速查","content":"速查：凡人「拓疆→蕴体→……」至「圣皇/仙帝」层层重排；地标：九界（人皇界、幽圣界、石药界等）、十三洲、八荒、天境、第十界、三仙界、天坟、祖地、葬地、「仙帝道统」与「古府」。","category":"帝霸","tags":["九界","十三洲","八荒","天境","天坟","三仙界","仙帝道统","地标","dibao","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

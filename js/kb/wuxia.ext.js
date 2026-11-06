@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 武侠仙侠 · 题材体系（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：金庸 / 古龙 / 梁羽生 / 温瑞安 / 还珠楼主
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["wuxia"] || (KB["wuxia"] = []);
+  var add = [{"title":"武侠仙侠题材 · 经典体系与门派底座","content":"武侠题材底座：内功 / 外功 / 轻功 / 点穴 / 暗器 / 兵器谱，门派有少林、武当、峨眉、丐帮、华山、嵩山、日月神教、明教、逍遥派、天山、大理段氏、桃花岛、全真、古墓派；江湖以「门派 / 世家 / 镖局 / 盟主 / 武林大会 / 秘籍 / 恩怨」为骨架。金庸「射雕三部曲 / 天龙 / 笑傲 / 鹿鼎」、古龙「小李飞刀 / 陆小凤 / 楚留香」、梁羽生「天山系列」、温瑞安「四大名捕」、还珠楼主「蜀山」为经典谱系。","category":"题材体系","tags":["武侠","内功","门派","少林","武当","丐帮","金庸","古龙","射雕","蜀山","wuxia","续作设定"]},{"title":"武侠仙侠题材 · 后期演化速查","content":"题材演化：旧派武侠（还珠楼主《蜀山剑侠传》剑仙御剑）→ 新派武侠（金梁古温，重历史与人性）→ 仙侠 / 修真（境界化：炼气、筑基、金丹、元婴、化神）→ 网文武侠与「灵气复苏 / 高武」变体。后期常见格局：正邪之争、秘籍现世、王朝与江湖、飞升与长生、「侠之大者为国为民」。","category":"题材体系","tags":["新派武侠","仙侠","修真","境界","灵气复苏","高武","飞升","侠之大者","wuxia","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */
