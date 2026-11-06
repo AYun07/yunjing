@@ -213,7 +213,7 @@ stats.张力: +5
     yunqiBlock = '';
   }
   /* v3.55.17 云境核心契约 · 预设解耦注入
-     问题：玩家用「导入 SillyTavern 预设」整份替换内置预设后，那份预设里没有云境的
+     问题：玩家用「导入 常见前端工具 预设」整份替换内置预设后，那份预设里没有云境的
      六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
      六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
      对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
@@ -280,12 +280,14 @@ ${rulePrompt}${inspirationNote}${freedomRule}${agencyGuard}${varAIRule}${closure
     if (liveParts.length) push({ role: "system", content: liveParts.join("\n") }, "活世界", 26);
   } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 活世界上行装配失败:", e); }
   if (state.setup) {
-    push({ role: "system", content: buildSetupCard(state.setup, config) });
+    /* v4.00.0 补标签：这一段此前没写 label，账单里显示成 "undefined" 段，
+       排查预算时看不出是哪块在吃字符。设定卡属于不可裁内容，prio=100。 */
+    push({ role: "system", content: buildSetupCard(state.setup, config) }, "设定卡", 100);
   }
   const digest = buildStoryDigest();
   if (digest) {
     push({ role: "system", content: `【当前故事状态面板（必须严格延续，不得矛盾）】
-${digest}` });
+${digest}` }, "状态面板", 100);
   }
   const storyKB = window.StoryKnowledge;
   if (storyKB && storyKB.getCount() > 0) {
@@ -435,7 +437,9 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
 ${fmtVarLine}
 3) 正文后必须输出【行动选项】，六类（快进/交互/整活/慢推/时空/成人）各一条、顺序固定、格式照旧，严禁省略或合并；
 4) 除上述骨架外，不得输出任何状态面板、数值清单或 OOC 说明。` }, "格式契约", 90);
-  push({ role: "user", content: userMessage });
+  /* v4.00.0 补标签：本轮指令是最后一条 user 消息，永远不裁（prio=100），
+     此前没 label，账单里剩下唯一的 "undefined" 段就是它。 */
+  push({ role: "user", content: userMessage }, "本轮指令", 100);
   return window.PromptBudget && PromptBudget.finalize(messages, segs) || messages;
 }
 function buildSetupCard(setup, config) {

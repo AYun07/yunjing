@@ -711,14 +711,31 @@ ${items.map((i) => this._itemText(i)).join("\n\n")}` };
       const d = g && N[g];
       if (!d) return { msg: null, used: 0 };
       const lim = maxChars > 0 ? maxChars : 1100;
+      /* v4.00.0 模板类世界（悬疑/西幻/科幻/武侠/全球冰封/重生都市）没有原著人物：
+         names.js 的 people 里存的是职业原型。若照「只可用以下人物名单」渲染，等于
+         禁止模型给 NPC 起名——悬疑案子里连侦探都不许有名字，是反效果。 */
+      const tpl = !!d.tpl;
       const head = "【本界专名铁律 · 最高优先级】\n";
-      const tail = "\n【硬约束】以上专名的字、归属、层级错一处即为 OOC；不确定人物关系时保持沉默，绝不许编。";
+      const tail = tpl
+        ? "\n【硬约束】本界无原著固定人物：NPC 姓名由你按本界时代与地域自拟，禁止套用其他作品的专名；上面的阶位与设定词必须照用，不得改名、不得自创同级新词。"
+        : "\n【硬约束】以上专名的字、归属、层级错一处即为 OOC；不确定人物关系时保持沉默，绝不许编。";
       const blocks = [];
       if (d.realms && d.realms.length) blocks.push(`【境界】必须严格按此顺序，不得跳级、不得自创：${d.realms.join(" → ")}`);
-      if (d.people && d.people.length) blocks.push(`【人物】只可用以下名单；需要无名路人时用「某」泛指，禁止杜撰与原著同姓同名的角色：${d.people.join("、")}`);
+      /* v4.00.0 并行体系单独成段：诡秘的 22 条途径、剑来的练气士与武夫、仙逆的古神、
+         斗罗二至五部——它们不是主阶梯的下一级，混进箭头链会让模型以为「序列0 之后是愚者途径」。
+         若本界压根没有主阶梯（剑来就是两套并行），措辞改为「多套并行」，避免出现「与上面并存」却无上面。 */
+      if (d.realmsExtra && d.realmsExtra.length) {
+        const hasMain = !!(d.realms && d.realms.length);
+        blocks.push(hasMain
+          ? `【并行体系】与上面的阶梯并存，不可混用、不可串级：${d.realmsExtra.join("；")}`
+          : `【境界】本界有多套并行阶梯，各自按序、不得混用、不得串级：${d.realmsExtra.join("；")}`);
+      }
+      if (d.people && d.people.length) blocks.push(tpl
+        ? `【身份原型】本界人物由你自拟姓名，身份可取自：${d.people.join("、")}`
+        : `【人物】只可用以下名单；需要无名路人时用「某」泛指，禁止杜撰与原著同姓同名的角色：${d.people.join("、")}`);
       if (d.factions && d.factions.length) blocks.push(`【势力】${d.factions.join("、")}`);
       if (d.places && d.places.length) blocks.push(`【地名】${d.places.join("、")}`);
-      if (d.arts && d.arts.length) blocks.push(`【功法器物】${d.arts.join("、")}`);
+      if (d.arts && d.arts.length) blocks.push(`${tpl ? "【常用设定词】" : "【功法器物】"}${d.arts.join("、")}`);
       if (!blocks.length) return { msg: null, used: 0 };
       let text = head;
       for (const b of blocks) {
