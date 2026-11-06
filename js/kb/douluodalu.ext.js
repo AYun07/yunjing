@@ -59,3 +59,12 @@
   window.__KB_SEQUEL_OK__ = true;
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["douluodalu"] || (KB["douluodalu"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"douluodalu·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《斗罗大陆 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「斗罗大陆」：圣魂村、诺丁学院、史莱克学院、索托城、星斗大森林、天斗城、武魂城、杀戮之都、嘉陵关、海神岛、昊天宗、七宝琉璃宗、蓝电霸王龙家族、猎魂森林、冰火两仪眼、星罗城、瀚海城。\n【别名】诺丁、史莱克、苏托城、索托、巴拉克城、星斗、天斗皇城、武魂殿、教皇殿、杀戮、海神、昊天、七宝、蓝电、星罗皇城、瀚海。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","douluodalu"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

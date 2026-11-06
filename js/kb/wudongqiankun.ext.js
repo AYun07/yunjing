@@ -34,3 +34,32 @@
   if (add && add.length) for (var i = 0; i < add.length; i++) a.push(add[i]);
 })();
 /* YJ_EXTRA_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wudongqiankun"] || (KB["wudongqiankun"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"wudongqiankun·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《武动乾坤 · 玄域行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「大炎王朝 · 青阳镇」：东玄域、乱魔海、异魔域、青阳镇、黑暗之殿、炎城。\n第2层「东玄域 · 百朝大战」：古墓府、炎神殿、北玄域、百朝山、金猿山、洪荒殿。\n第3层「乱魔海与异魔域」：异魔城、泥丸宫、西玄域、血龙殿、四象宫、青阳镇林。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","wudongqiankun"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wudongqiankun"] || (KB["wudongqiankun"] = []);
+  var t = "wudongqiankun·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"wudongqiankun·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《武动乾坤 · 玄域行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「大炎王朝 · 青阳镇」：东玄域、乱魔海、异魔域、青阳镇、黑暗之殿、炎城、古墓府、炎神殿、北玄域、百朝山、金猿山、洪荒殿。\n第2层「东玄域 · 百朝大战」：异魔城、泥丸宫、西玄域、血龙殿、四象宫、青阳镇林、魔音山、兽战域、荒殿、南玄域、天王殿、三王殿。\n第3层「乱魔海与异魔域」：万海天宫、荒殿后山、万象城、青龙殿、玄灵山、天妖域、符谷、阳城、天殿、祝山、荒芜领域、二王殿。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","wudongqiankun"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wudongqiankun"] || (KB["wudongqiankun"] = []);
+  var t = "wudongqiankun·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"wudongqiankun·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《武动乾坤 · 玄域行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「大炎王朝 · 青阳镇」：东玄域、乱魔海、异魔域、青阳镇、黑暗之殿、炎城、古墓府、炎神殿、北玄域、百朝山、金猿山、洪荒殿。\n第2层「东玄域 · 百朝大战」：异魔城、泥丸宫、西玄域、血龙殿、四象宫、青阳镇林、魔音山、兽战域、荒殿、南玄域、天王殿、三王殿。\n第3层「乱魔海与异魔域」：万海天宫、荒殿后山、万象城、青龙殿、玄灵山、天妖域、符谷、阳城、天殿、祝山、荒芜领域、二王殿。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","wudongqiankun"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();

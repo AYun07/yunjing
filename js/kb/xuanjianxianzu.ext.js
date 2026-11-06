@@ -49,3 +49,21 @@
   window.__KB_SEQUEL_OK__ = true;
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["xuanjianxianzu"] || (KB["xuanjianxianzu"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"xuanjianxianzu·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《玄鉴仙族 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「家族领地 · 玄鉴宗」：玄鉴山门、灵田稻浪、丹房、藏经阁、演武场。\n第2层「修真界 · 坊市与四方」：青枫坊市、家族矿脉、友邻宗门、小秘境。\n第3层「越国 · 古黎道」：黎泾村、眉尺河、古黎道、大黎山、山越之地、望月湖、郁家、青池宗、青穗峰。\n【别名】山门、宗门、本家、灵田、田亩、灵谷、丹房、炼丹、丹炉、藏经、功法、书阁、演武、大比、校场、坊市、集市、青枫、矿脉、灵矿、矿洞、邻宗、大宗、仙门、秘境、古修、遗府、黎泾、李氏祖地、老村、眉尺、河底、越国南部、乡土、大黎、凶山、山越、蛮族、湖洲、望月、邻族、世家、青池、大宗、青穗、青穗剑仙。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","xuanjianxianzu"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 专名铁律补遗：补齐铁律表已注入但知识库缺锚点的名目 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["xuanjianxianzu"] || (KB["xuanjianxianzu"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"玄鉴仙族·专名铁律补遗（地理、家族与境界）","content":"【地理】江东：本界地域称谓，用于标注族地所在方位，不是某个具体城镇名。\n【家族】李氏家族：本界核心家族，写法固定；与「李家」可作简称，但不得写成其他姓氏的家族，也不得把「李氏家族」当成一处地名。\n【境界】胎息（玄景/承明/周行/青元/玉京/灵初六轮）：本界胎息境的六轮划分，六轮名目固定且按序，不得增删、调序或自造第七轮；写境界时须保留「胎息」主名，不得只写轮名而丢掉主境界，也不得与其他界的胎息境混用。\n【口径】本条只锁定名目写法与序列归属；家族世系与剧情以本界既有条目为准。","category":"专名核对","tags":["专名","防幻觉","核对","xuanjianxianzu"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

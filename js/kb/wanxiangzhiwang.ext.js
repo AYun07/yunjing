@@ -34,3 +34,32 @@
   if (add && add.length) for (var i = 0; i < add.length; i++) a.push(add[i]);
 })();
 /* YJ_EXTRA_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wanxiangzhiwang"] || (KB["wanxiangzhiwang"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"wanxiangzhiwang·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《万相之王 · 神州行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「洛岚府与南风学府」：洛岚府、天元神州、金龙山、十柱金台、界河宝域、中央神州。\n第2层「天元神州 · 十柱金台」：东域神州、界河、玄灵神州、南风学府、天镜塔、极炎府。\n第3层「界河宝域与中央神州」：兰陵府、御兽灵殿、宋云峰、圣灵院、南风城、金雀府。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","wanxiangzhiwang"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wanxiangzhiwang"] || (KB["wanxiangzhiwang"] = []);
+  var t = "wanxiangzhiwang·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"wanxiangzhiwang·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《万相之王 · 神州行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「洛岚府与南风学府」：洛岚府、天元神州、金龙山、十柱金台、界河宝域、中央神州、东域神州、界河、玄灵神州、南风学府、天镜塔、极炎府。\n第2层「天元神州 · 十柱金台」：兰陵府、御兽灵殿、宋云峰、圣灵院、南风城、金雀府、界河域、灵相洞、四星院、大夏城、天镜州、洛岚城。\n第3层「界河宝域与中央神州」：圣山学府、暗之学府、东渊学府、煞魔洞、灵相宫、澹台、张摧城、秦重渊、李长峰、青冥院、神阳神州、雷火神州。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","wanxiangzhiwang"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wanxiangzhiwang"] || (KB["wanxiangzhiwang"] = []);
+  var t = "wanxiangzhiwang·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"wanxiangzhiwang·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《万相之王 · 神州行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「洛岚府与南风学府」：洛岚府、天元神州、金龙山、十柱金台、界河宝域、中央神州、东域神州、界河、玄灵神州、南风学府、天镜塔、极炎府。\n第2层「天元神州 · 十柱金台」：兰陵府、御兽灵殿、宋云峰、圣灵院、南风城、金雀府、界河域、灵相洞、四星院、大夏城、天镜州、洛岚城。\n第3层「界河宝域与中央神州」：圣山学府、暗之学府、东渊学府、煞魔洞、灵相宫、澹台、张摧城、秦重渊、李长峰、青冥院、神阳神州、雷火神州。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","wanxiangzhiwang"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();

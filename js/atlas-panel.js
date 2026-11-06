@@ -45,6 +45,4487 @@
     wanxiangzhiwang: { primary: "#b8a0e8", accent: "#f0d090", stone: "#9a94b0", tree: "#78c0a8", sand: "#b8b0cc", water: "#6f9fe0", deep: "#110e1c", panel: "#171327", text: "#ece8f6", muted: "#a8a0c0" }
   };
   const ATLAS_DATA = {
+  "dazhuzai": {
+    "name": "大主宰 · 大千行旅图鉴",
+    "flavor": "大千世界，万道争锋",
+    "layers": [
+      {
+        "id": "beiling",
+        "name": "北灵境 · 少年起步",
+        "ico": "境",
+        "hint": "大千世界边隅，牧尘自北灵院走出",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "dazhuzai_l0n0",
+            "dazhuzai_l0n1"
+          ],
+          [
+            "dazhuzai_l0n1",
+            "dazhuzai_l0n2"
+          ],
+          [
+            "dazhuzai_l0n2",
+            "dazhuzai_l0n3"
+          ],
+          [
+            "dazhuzai_l0n3",
+            "dazhuzai_l0n4"
+          ],
+          [
+            "dazhuzai_l0n4",
+            "dazhuzai_l0n5"
+          ],
+          [
+            "dazhuzai_l0n5",
+            "dazhuzai_l0n6"
+          ],
+          [
+            "dazhuzai_l0n6",
+            "dazhuzai_l0n7"
+          ],
+          [
+            "dazhuzai_l0n7",
+            "dazhuzai_l0n8"
+          ],
+          [
+            "dazhuzai_l0n8",
+            "dazhuzai_l0n9"
+          ],
+          [
+            "dazhuzai_l0n9",
+            "dazhuzai_l0n10"
+          ],
+          [
+            "dazhuzai_l0n10",
+            "dazhuzai_l0n11"
+          ],
+          [
+            "dazhuzai_l0n0",
+            "dazhuzai_l0n3"
+          ],
+          [
+            "dazhuzai_l0n1",
+            "dazhuzai_l0n4"
+          ],
+          [
+            "dazhuzai_l0n2",
+            "dazhuzai_l0n5"
+          ],
+          [
+            "dazhuzai_l0n3",
+            "dazhuzai_l0n6"
+          ],
+          [
+            "dazhuzai_l0n4",
+            "dazhuzai_l0n7"
+          ],
+          [
+            "dazhuzai_l0n5",
+            "dazhuzai_l0n8"
+          ],
+          [
+            "dazhuzai_l0n6",
+            "dazhuzai_l0n9"
+          ],
+          [
+            "dazhuzai_l0n7",
+            "dazhuzai_l0n10"
+          ],
+          [
+            "dazhuzai_l0n8",
+            "dazhuzai_l0n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "dazhuzai_l0n0",
+            "n": "北苍灵院",
+            "x": 16,
+            "y": 16,
+            "t": "start",
+            "d": 1,
+            "rg": "西北",
+            "desc": "牧尘、洛璃母校；洛神会（牧尘洛璃所创最强社团，雨曦坐镇）；守护神兽北溟龙鲲",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n1",
+            "n": "大罗天域",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "大罗天域诸王中血鹰王、灵剑王、白王、秋王、冰河王等皆为八品至尊巅峰，是一方天域王级势力的中坚",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n2",
+            "n": "西天战殿",
+            "x": 84,
+            "y": 18,
+            "t": "sect",
+            "d": 1,
+            "rg": "东南",
+            "desc": "西天战殿的秘术宝库，与上古洛神遗迹同为西天战殿标志性的传承之地，殿中战阵与战灵一脉的秘术多藏于此",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n3",
+            "n": "上古天宫",
+            "x": 16,
+            "y": 40,
+            "t": "sect",
+            "d": 2,
+            "rg": "西北",
+            "desc": "上古天宫现世时登场的一方王朝势力，四太子夏弘在天宫之争中与牧尘交手，被牧尘击败",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n4",
+            "n": "牧府",
+            "x": 50,
+            "y": 38,
+            "t": "relic",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "牧府麾下精锐军团，由玄武战帝旧部姜龙统领，牧尘接管时余一万五千人",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n5",
+            "n": "北灵院",
+            "x": 84,
+            "y": 42,
+            "t": "sect",
+            "d": 2,
+            "rg": "东南",
+            "desc": "北灵境中立学院，掌握晋入\"五大院\"的名额；北灵之原（险地，多灵兽灵药）、黑冥渊、邙阴山等",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n6",
+            "n": "龙魔宫",
+            "x": 16,
+            "y": 64,
+            "t": "sect",
+            "d": 1,
+            "rg": "西北",
+            "desc": "龙魔宫原是北苍大陆霸主，因白龙至尊盗走大须弥魔柱并反叛而元气大伤",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n7",
+            "n": "幽冥宫",
+            "x": 50,
+            "y": 62,
+            "t": "sect",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "幽冥宫强者，大狩猎战中被牧尘击败并擒下，牧尘以其为质要挟幽冥宫",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n8",
+            "n": "木神殿",
+            "x": 84,
+            "y": 66,
+            "t": "sect",
+            "d": 1,
+            "rg": "东南",
+            "desc": "木神殿中与牧尘争夺神器玄龟印，败北，其余木神牌亦被夺，木神经与大神术就此归牧尘",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n9",
+            "n": "大千宫",
+            "x": 16,
+            "y": 86,
+            "t": "sect",
+            "d": 2,
+            "rg": "西北",
+            "desc": "大千宫的分部，也是大千宫唯一的实物产地，镇守于圣渊大陆，监视域外邪族的一举一动",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n10",
+            "n": "万凰灵院",
+            "x": 50,
+            "y": 84,
+            "t": "sect",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "万凰灵院首席天骄，灵院大赛排名第一的强者，容貌与天赋俱是顶尖",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l0n11",
+            "n": "圣灵山",
+            "x": 84,
+            "y": 88,
+            "t": "wild",
+            "d": 2,
+            "rg": "东南",
+            "desc": "圣灵山争夺九天梯第一层时与牧尘死战，被牧尘强势击杀，其重宝噬龙魔枪由此落入牧尘之手",
+            "c": "原著补录 · js/kb/dazhuzai"
+          }
+        ]
+      },
+      {
+        "id": "beicang",
+        "name": "北苍灵院与大罗天域",
+        "ico": "境",
+        "hint": "灵院之争与域主割据",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "dazhuzai_l1n0",
+            "dazhuzai_l1n1"
+          ],
+          [
+            "dazhuzai_l1n1",
+            "dazhuzai_l1n2"
+          ],
+          [
+            "dazhuzai_l1n2",
+            "dazhuzai_l1n3"
+          ],
+          [
+            "dazhuzai_l1n3",
+            "dazhuzai_l1n4"
+          ],
+          [
+            "dazhuzai_l1n4",
+            "dazhuzai_l1n5"
+          ],
+          [
+            "dazhuzai_l1n5",
+            "dazhuzai_l1n6"
+          ],
+          [
+            "dazhuzai_l1n6",
+            "dazhuzai_l1n7"
+          ],
+          [
+            "dazhuzai_l1n7",
+            "dazhuzai_l1n8"
+          ],
+          [
+            "dazhuzai_l1n8",
+            "dazhuzai_l1n9"
+          ],
+          [
+            "dazhuzai_l1n9",
+            "dazhuzai_l1n10"
+          ],
+          [
+            "dazhuzai_l1n10",
+            "dazhuzai_l1n11"
+          ],
+          [
+            "dazhuzai_l1n0",
+            "dazhuzai_l1n3"
+          ],
+          [
+            "dazhuzai_l1n1",
+            "dazhuzai_l1n4"
+          ],
+          [
+            "dazhuzai_l1n2",
+            "dazhuzai_l1n5"
+          ],
+          [
+            "dazhuzai_l1n3",
+            "dazhuzai_l1n6"
+          ],
+          [
+            "dazhuzai_l1n4",
+            "dazhuzai_l1n7"
+          ],
+          [
+            "dazhuzai_l1n5",
+            "dazhuzai_l1n8"
+          ],
+          [
+            "dazhuzai_l1n6",
+            "dazhuzai_l1n9"
+          ],
+          [
+            "dazhuzai_l1n7",
+            "dazhuzai_l1n10"
+          ],
+          [
+            "dazhuzai_l1n8",
+            "dazhuzai_l1n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "dazhuzai_l1n0",
+            "n": "圣灵院",
+            "x": 16,
+            "y": 16,
+            "t": "sect",
+            "d": 2,
+            "rg": "西北",
+            "desc": "与圣灵院、青天灵院、万凰灵院、北苍灵院共掌上古神器审判之镜，共同开辟灵路试炼",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n1",
+            "n": "玄天殿",
+            "x": 50,
+            "y": 14,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "玄天殿与大罗天域长期对立，柳天道曾为柳冥出头与曼荼罗交手，后北界诸势力并入牧府",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n2",
+            "n": "审判海",
+            "x": 84,
+            "y": 18,
+            "t": "wild",
+            "d": 2,
+            "rg": "东南",
+            "desc": "灵路血祸有姬玄的影子，审判海设计、灵院大赛借外力、召远古天龙鹰寄宿，都是他为了赢而跨过的线",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n3",
+            "n": "万圣山",
+            "x": 16,
+            "y": 40,
+            "t": "wild",
+            "d": 3,
+            "rg": "西北",
+            "desc": "天罗大陆北界顶尖势力之一，与玄天殿、幽冥宫、万圣山等并列，牧府建立后并入其中",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n4",
+            "n": "邙阴山",
+            "x": 50,
+            "y": 38,
+            "t": "wild",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "邙阴山为北灵境黑道最强，暗通柳域",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n5",
+            "n": "牧域",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "牧域之主牧锋步入三天之境后，联合北灵境其余八域结成的盟约，牧锋任盟主",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n6",
+            "n": "青天灵院",
+            "x": 16,
+            "y": 64,
+            "t": "sect",
+            "d": 2,
+            "rg": "西北",
+            "desc": "与圣灵院、青天灵院、万凰灵院、北苍灵院共掌上古神器审判之镜，共同开辟灵路试炼",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n7",
+            "n": "龙凤阁",
+            "x": 50,
+            "y": 62,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "龙凤阁只守此城，不向外拓展疆域，树敌极少却无人愿轻易得罪，古城因此成为天罗大陆一方超然之地",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n8",
+            "n": "血天都",
+            "x": 84,
+            "y": 66,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "血天都，血神族天骄，木神殿继承者之一",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n9",
+            "n": "灵值殿",
+            "x": 16,
+            "y": 86,
+            "t": "sect",
+            "d": 3,
+            "rg": "西北",
+            "desc": "洛神会、玄帮、妖门各据一方",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n10",
+            "n": "灵诀殿",
+            "x": 50,
+            "y": 84,
+            "t": "sect",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "洛神会、玄帮、妖门各据一方",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l1n11",
+            "n": "四圣塔",
+            "x": 84,
+            "y": 88,
+            "t": "sect",
+            "d": 3,
+            "rg": "东南",
+            "desc": "四圣塔矗立在上古圣渊，是大千与邪族交界处最古老的遗迹之一，塔分四重，各藏传承与杀局，塔内封存着上古强者的尸骸与未散的意志",
+            "c": "原著补录 · js/kb/dazhuzai"
+          }
+        ]
+      },
+      {
+        "id": "daqian",
+        "name": "大千宫与上古天宫",
+        "ico": "境",
+        "hint": "万域来朝，域外邪族压境",
+        "decor": "void",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "dazhuzai_l2n0",
+            "dazhuzai_l2n1"
+          ],
+          [
+            "dazhuzai_l2n1",
+            "dazhuzai_l2n2"
+          ],
+          [
+            "dazhuzai_l2n2",
+            "dazhuzai_l2n3"
+          ],
+          [
+            "dazhuzai_l2n3",
+            "dazhuzai_l2n4"
+          ],
+          [
+            "dazhuzai_l2n4",
+            "dazhuzai_l2n5"
+          ],
+          [
+            "dazhuzai_l2n5",
+            "dazhuzai_l2n6"
+          ],
+          [
+            "dazhuzai_l2n6",
+            "dazhuzai_l2n7"
+          ],
+          [
+            "dazhuzai_l2n7",
+            "dazhuzai_l2n8"
+          ],
+          [
+            "dazhuzai_l2n8",
+            "dazhuzai_l2n9"
+          ],
+          [
+            "dazhuzai_l2n9",
+            "dazhuzai_l2n10"
+          ],
+          [
+            "dazhuzai_l2n0",
+            "dazhuzai_l2n3"
+          ],
+          [
+            "dazhuzai_l2n1",
+            "dazhuzai_l2n4"
+          ],
+          [
+            "dazhuzai_l2n2",
+            "dazhuzai_l2n5"
+          ],
+          [
+            "dazhuzai_l2n3",
+            "dazhuzai_l2n6"
+          ],
+          [
+            "dazhuzai_l2n4",
+            "dazhuzai_l2n7"
+          ],
+          [
+            "dazhuzai_l2n5",
+            "dazhuzai_l2n8"
+          ],
+          [
+            "dazhuzai_l2n6",
+            "dazhuzai_l2n9"
+          ],
+          [
+            "dazhuzai_l2n7",
+            "dazhuzai_l2n10"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "dazhuzai_l2n0",
+            "n": "雷音山",
+            "x": 16,
+            "y": 16,
+            "t": "wild",
+            "d": 3,
+            "rg": "西北",
+            "desc": "北域最强的三方势力瓜分近八成地域，紫云宗、雷音山、金雕府各有超级势力为靠山",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n1",
+            "n": "金雕府",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "北域最强的三方势力瓜分近八成地域，紫云宗、雷音山、金雕府各有超级势力为靠山",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n2",
+            "n": "天域",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "大罗天域诸王中血鹰王、灵剑王、白王、秋王、冰河王等皆为八品至尊巅峰，是一方天域王级势力的中坚",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n3",
+            "n": "百战域",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 4,
+            "rg": "西北",
+            "desc": "百战域大悲天统领，三品至尊",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n4",
+            "n": "远古雷宫",
+            "x": 50,
+            "y": 38,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "远古雷宫传承后由雷神宫继承，是雷道一脉的源头",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n5",
+            "n": "黑冥渊",
+            "x": 84,
+            "y": 42,
+            "t": "wild",
+            "d": 4,
+            "rg": "东南",
+            "desc": "境中有北灵院（掌握五大院名额的中立学院）、北灵之原（灵兽与灵药的险地）、黑冥渊、邙阴山等凶地",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n6",
+            "n": "上古圣渊",
+            "x": 16,
+            "y": 64,
+            "t": "wild",
+            "d": 3,
+            "rg": "西北",
+            "desc": "上古圣渊是大千世界与域外邪族的交界地带，魔气与灵力在此对冲，空间破碎，凶险异常",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n7",
+            "n": "血鹰殿",
+            "x": 50,
+            "y": 62,
+            "t": "sect",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "血鹰殿统领，背叛九幽宫，被牧尘打至残废、断其双臂",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n8",
+            "n": "白虎山",
+            "x": 84,
+            "y": 66,
+            "t": "wild",
+            "d": 3,
+            "rg": "东南",
+            "desc": "天罗大陆北界底蕴最悠久的顶尖势力，历经五次大狩猎战而不灭，麾下有天龙山、白虎山等",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n9",
+            "n": "西天战城",
+            "x": 16,
+            "y": 86,
+            "t": "city",
+            "d": 4,
+            "rg": "西北",
+            "desc": "西天战城举办的大陆之子争夺战，西天战殿四大圣子与洛璃、牧尘等各方天骄同场",
+            "c": "原著补录 · js/kb/dazhuzai"
+          },
+          {
+            "id": "dazhuzai_l2n10",
+            "n": "大灵山",
+            "x": 50,
+            "y": 84,
+            "t": "wild",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "大灵山不重灵诀花巧，只以肉身与意志磨砺取胜",
+            "c": "原著补录 · js/kb/dazhuzai"
+          }
+        ]
+      }
+    ]
+  },
+  "wudongqiankun": {
+    "name": "武动乾坤 · 玄域行旅图鉴",
+    "flavor": "修炼一途，乃窃阴阳",
+    "layers": [
+      {
+        "id": "dayan",
+        "name": "大炎王朝 · 青阳镇",
+        "ico": "境",
+        "hint": "林动自青阳镇起步，炎城与古墓府",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "wudongqiankun_l0n0",
+            "wudongqiankun_l0n1"
+          ],
+          [
+            "wudongqiankun_l0n1",
+            "wudongqiankun_l0n2"
+          ],
+          [
+            "wudongqiankun_l0n2",
+            "wudongqiankun_l0n3"
+          ],
+          [
+            "wudongqiankun_l0n3",
+            "wudongqiankun_l0n4"
+          ],
+          [
+            "wudongqiankun_l0n4",
+            "wudongqiankun_l0n5"
+          ],
+          [
+            "wudongqiankun_l0n5",
+            "wudongqiankun_l0n6"
+          ],
+          [
+            "wudongqiankun_l0n6",
+            "wudongqiankun_l0n7"
+          ],
+          [
+            "wudongqiankun_l0n7",
+            "wudongqiankun_l0n8"
+          ],
+          [
+            "wudongqiankun_l0n8",
+            "wudongqiankun_l0n9"
+          ],
+          [
+            "wudongqiankun_l0n9",
+            "wudongqiankun_l0n10"
+          ],
+          [
+            "wudongqiankun_l0n10",
+            "wudongqiankun_l0n11"
+          ],
+          [
+            "wudongqiankun_l0n0",
+            "wudongqiankun_l0n3"
+          ],
+          [
+            "wudongqiankun_l0n1",
+            "wudongqiankun_l0n4"
+          ],
+          [
+            "wudongqiankun_l0n2",
+            "wudongqiankun_l0n5"
+          ],
+          [
+            "wudongqiankun_l0n3",
+            "wudongqiankun_l0n6"
+          ],
+          [
+            "wudongqiankun_l0n4",
+            "wudongqiankun_l0n7"
+          ],
+          [
+            "wudongqiankun_l0n5",
+            "wudongqiankun_l0n8"
+          ],
+          [
+            "wudongqiankun_l0n6",
+            "wudongqiankun_l0n9"
+          ],
+          [
+            "wudongqiankun_l0n7",
+            "wudongqiankun_l0n10"
+          ],
+          [
+            "wudongqiankun_l0n8",
+            "wudongqiankun_l0n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "wudongqiankun_l0n0",
+            "n": "东玄域",
+            "x": 16,
+            "y": 16,
+            "t": "start",
+            "d": 1,
+            "rg": "西北",
+            "desc": "东玄域超级宗派九天太清宫的山门，宫中以太清池为要地，镇宫秘传《太上感应诀》非处子之身不可修",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n1",
+            "n": "乱魔海",
+            "x": 50,
+            "y": 14,
+            "t": "wild",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "乱魔海炎神殿殿主摩罗曾取走其十分之一本源（后归还），绫清竹亦曾执掌此符；林动晋祖境后掌之",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n2",
+            "n": "异魔域",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 1,
+            "rg": "东南",
+            "desc": "那是位面的一道裂口，异魔族盘踞其中，万年前被符祖封印，破封后重燃战火",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n3",
+            "n": "青阳镇",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 2,
+            "rg": "西北",
+            "desc": "青阳镇要写出“小地方的窒息感”：谁家米缸见底全镇都知道，谁家孩子有出息全镇都来攀亲",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n4",
+            "n": "黑暗之殿",
+            "x": 50,
+            "y": 38,
+            "t": "sect",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "北玄域霸主，黑暗之主波玄所创，青檀（林青檀）师从此处，掌黑暗祖符",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n5",
+            "n": "炎城",
+            "x": 84,
+            "y": 42,
+            "t": "city",
+            "d": 2,
+            "rg": "东南",
+            "desc": "炎城是“江湖的入门课”：帮派、商会、城主府、符师会四方拉扯，谁都讲规矩，谁都不守规矩",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n6",
+            "n": "古墓府",
+            "x": 16,
+            "y": 64,
+            "t": "relic",
+            "d": 1,
+            "rg": "西北",
+            "desc": "古墓府试炼与林动相识，屡次助其脱困，后掌九天太清宫，助林动感应太上、执掌位面之胎，结为夫妻，生女林静",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n7",
+            "n": "炎神殿",
+            "x": 50,
+            "y": 62,
+            "t": "sect",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "炎神殿殿主摩罗执火焰祖符（曾取十分之一本源），与林动亦敌亦友；雷殿祖符之争亦在此线展开，诸祖符掌控者曾联手诛魔",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n8",
+            "n": "北玄域",
+            "x": 84,
+            "y": 66,
+            "t": "relic",
+            "d": 1,
+            "rg": "东南",
+            "desc": "后随北玄域黑暗之殿殿主波玄修行，承黑暗祖符，持黑暗圣镰，终为黑暗之殿殿主、黑暗符主",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n9",
+            "n": "百朝山",
+            "x": 16,
+            "y": 86,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "百朝山最后一战，林动与宿敌林琅天生死相向，将其连同体内那道元神一并斩杀，十年血仇了结，也为自己挣下冠军之位",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n10",
+            "n": "金猿山",
+            "x": 50,
+            "y": 84,
+            "t": "wild",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "妖域顶尖势力，由林动整合雷渊山、血龙殿、金猿山、鬼雕涧而成，宫主林动，林貂、林炎为首领",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l0n11",
+            "n": "洪荒殿",
+            "x": 84,
+            "y": 88,
+            "t": "sect",
+            "d": 2,
+            "rg": "东南",
+            "desc": "元门、九天太清宫、道宗、剑宗、神宗、符谷、洪荒殿、万傀门；北玄域黑暗之殿一家独霸",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          }
+        ]
+      },
+      {
+        "id": "dongxuan",
+        "name": "东玄域 · 百朝大战",
+        "ico": "境",
+        "hint": "宗派林立，百朝山论武",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "wudongqiankun_l1n0",
+            "wudongqiankun_l1n1"
+          ],
+          [
+            "wudongqiankun_l1n1",
+            "wudongqiankun_l1n2"
+          ],
+          [
+            "wudongqiankun_l1n2",
+            "wudongqiankun_l1n3"
+          ],
+          [
+            "wudongqiankun_l1n3",
+            "wudongqiankun_l1n4"
+          ],
+          [
+            "wudongqiankun_l1n4",
+            "wudongqiankun_l1n5"
+          ],
+          [
+            "wudongqiankun_l1n5",
+            "wudongqiankun_l1n6"
+          ],
+          [
+            "wudongqiankun_l1n6",
+            "wudongqiankun_l1n7"
+          ],
+          [
+            "wudongqiankun_l1n7",
+            "wudongqiankun_l1n8"
+          ],
+          [
+            "wudongqiankun_l1n8",
+            "wudongqiankun_l1n9"
+          ],
+          [
+            "wudongqiankun_l1n9",
+            "wudongqiankun_l1n10"
+          ],
+          [
+            "wudongqiankun_l1n10",
+            "wudongqiankun_l1n11"
+          ],
+          [
+            "wudongqiankun_l1n0",
+            "wudongqiankun_l1n3"
+          ],
+          [
+            "wudongqiankun_l1n1",
+            "wudongqiankun_l1n4"
+          ],
+          [
+            "wudongqiankun_l1n2",
+            "wudongqiankun_l1n5"
+          ],
+          [
+            "wudongqiankun_l1n3",
+            "wudongqiankun_l1n6"
+          ],
+          [
+            "wudongqiankun_l1n4",
+            "wudongqiankun_l1n7"
+          ],
+          [
+            "wudongqiankun_l1n5",
+            "wudongqiankun_l1n8"
+          ],
+          [
+            "wudongqiankun_l1n6",
+            "wudongqiankun_l1n9"
+          ],
+          [
+            "wudongqiankun_l1n7",
+            "wudongqiankun_l1n10"
+          ],
+          [
+            "wudongqiankun_l1n8",
+            "wudongqiankun_l1n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "wudongqiankun_l1n0",
+            "n": "异魔城",
+            "x": 16,
+            "y": 16,
+            "t": "city",
+            "d": 2,
+            "rg": "西北",
+            "desc": "异魔城中识破小貂天妖貂身份而欲下杀手，逼得林动为救兄弟退出道宗，自此结下灭门之仇",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n1",
+            "n": "泥丸宫",
+            "x": 50,
+            "y": 14,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "泥丸宫开窍后，以精神力在识海中反复刻同一道符文，刻到它自己成形、自己发亮，这就是本命符印",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n2",
+            "n": "西玄域",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "西玄域超级宗派为夺远古战场，携纯元之宝封天阵图封锁全场，东玄域八大宗派强者被困",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n3",
+            "n": "血龙殿",
+            "x": 16,
+            "y": 40,
+            "t": "sect",
+            "d": 3,
+            "rg": "西北",
+            "desc": "妖域顶尖势力，由林动整合雷渊山、血龙殿、金猿山、鬼雕涧而成，宫主林动，林貂、林炎为首领",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n4",
+            "n": "四象宫",
+            "x": 50,
+            "y": 38,
+            "t": "sect",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "四象宫五位转轮境长老之首，妖域成名强者",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n5",
+            "n": "青阳镇林",
+            "x": 84,
+            "y": 42,
+            "t": "wild",
+            "d": 3,
+            "rg": "东南",
+            "desc": "青阳镇林氏分家子弟，父林啸十年前族会被林琅天一招重创、经脉堵塞，家道自此倾颓",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n6",
+            "n": "魔音山",
+            "x": 16,
+            "y": 64,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "魔音山一带的凶名强者，与元门暗通",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n7",
+            "n": "兽战域",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "妖域兽战域中的一方势力，以金猿一族为主，后被整合入四象宫",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n8",
+            "n": "荒殿",
+            "x": 84,
+            "y": 66,
+            "t": "sect",
+            "d": 2,
+            "rg": "东南",
+            "desc": "抢他的丹药、搅他的闭关、在他被殿内排挤时第一个跳出来骂人",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n9",
+            "n": "南玄域",
+            "x": 16,
+            "y": 86,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "地理 · 南玄域",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n10",
+            "n": "天王殿",
+            "x": 50,
+            "y": 84,
+            "t": "sect",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "本命神物冰莲，绝技有永恒冰冻、九重冰山狱、冰封之墙；为八主中唯一能重创天王殿者，轮回转世为应欢欢",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l1n11",
+            "n": "三王殿",
+            "x": 84,
+            "y": 88,
+            "t": "sect",
+            "d": 3,
+            "rg": "东南",
+            "desc": "王殿级异魔皆掌一方魔军，三王殿之名在远古天地大战中即为天玄强者所忌",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          }
+        ]
+      },
+      {
+        "id": "luanmo",
+        "name": "乱魔海与异魔域",
+        "ico": "境",
+        "hint": "异魔族入侵，位面之战的终局",
+        "decor": "void",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "wudongqiankun_l2n0",
+            "wudongqiankun_l2n1"
+          ],
+          [
+            "wudongqiankun_l2n1",
+            "wudongqiankun_l2n2"
+          ],
+          [
+            "wudongqiankun_l2n2",
+            "wudongqiankun_l2n3"
+          ],
+          [
+            "wudongqiankun_l2n3",
+            "wudongqiankun_l2n4"
+          ],
+          [
+            "wudongqiankun_l2n4",
+            "wudongqiankun_l2n5"
+          ],
+          [
+            "wudongqiankun_l2n5",
+            "wudongqiankun_l2n6"
+          ],
+          [
+            "wudongqiankun_l2n6",
+            "wudongqiankun_l2n7"
+          ],
+          [
+            "wudongqiankun_l2n7",
+            "wudongqiankun_l2n8"
+          ],
+          [
+            "wudongqiankun_l2n8",
+            "wudongqiankun_l2n9"
+          ],
+          [
+            "wudongqiankun_l2n9",
+            "wudongqiankun_l2n10"
+          ],
+          [
+            "wudongqiankun_l2n10",
+            "wudongqiankun_l2n11"
+          ],
+          [
+            "wudongqiankun_l2n0",
+            "wudongqiankun_l2n3"
+          ],
+          [
+            "wudongqiankun_l2n1",
+            "wudongqiankun_l2n4"
+          ],
+          [
+            "wudongqiankun_l2n2",
+            "wudongqiankun_l2n5"
+          ],
+          [
+            "wudongqiankun_l2n3",
+            "wudongqiankun_l2n6"
+          ],
+          [
+            "wudongqiankun_l2n4",
+            "wudongqiankun_l2n7"
+          ],
+          [
+            "wudongqiankun_l2n5",
+            "wudongqiankun_l2n8"
+          ],
+          [
+            "wudongqiankun_l2n6",
+            "wudongqiankun_l2n9"
+          ],
+          [
+            "wudongqiankun_l2n7",
+            "wudongqiankun_l2n10"
+          ],
+          [
+            "wudongqiankun_l2n8",
+            "wudongqiankun_l2n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "wudongqiankun_l2n0",
+            "n": "万海天宫",
+            "x": 16,
+            "y": 16,
+            "t": "sect",
+            "d": 3,
+            "rg": "西北",
+            "desc": "最强势力并非人族而是海妖一族，炎神殿、万海天宫、不死圣鲸族等并立",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n1",
+            "n": "荒殿后山",
+            "x": 50,
+            "y": 14,
+            "t": "wild",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "荒殿后山大荒芜碑静立，他的第二段师门岁月自此开始",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n2",
+            "n": "万象城",
+            "x": 84,
+            "y": 18,
+            "t": "city",
+            "d": 3,
+            "rg": "东南",
+            "desc": "林动在万象城的涅槃碑测试中得地级涅槃印，后升至紫金，登入涅槃金榜",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n3",
+            "n": "青龙殿",
+            "x": 16,
+            "y": 40,
+            "t": "sect",
+            "d": 4,
+            "rg": "西北",
+            "desc": "龙族青龙王，远古天罡联盟青龙殿掌控者，创《青天化龙诀》传林动；林动被围杀时出手相助",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n4",
+            "n": "玄灵山",
+            "x": 50,
+            "y": 38,
+            "t": "wild",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "玄灵山所产的灵果，服之可大幅增补生机、助人突破",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n5",
+            "n": "天妖域",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 4,
+            "rg": "东南",
+            "desc": "天妖貂族与元门为世仇，天妖域因此常年戒备森严，外人难入",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n6",
+            "n": "符谷",
+            "x": 16,
+            "y": 64,
+            "t": "wild",
+            "d": 3,
+            "rg": "西北",
+            "desc": "元门、九天太清宫、道宗、剑宗、神宗、符谷、洪荒殿、万傀门；北玄域黑暗之殿一家独霸",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n7",
+            "n": "阳城",
+            "x": 50,
+            "y": 62,
+            "t": "city",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "阳城一带倚势凌人，林动以其立威，将其斩杀，借此在阳城结交铁王朝磨铁、取得开启远古秘藏的远古秘钥",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n8",
+            "n": "天殿",
+            "x": 84,
+            "y": 66,
+            "t": "sect",
+            "d": 3,
+            "rg": "东南",
+            "desc": "道宗天殿大师姐，掌教应玄子长女、应欢欢之姐，道宗年轻一辈第一人，九元涅槃境，修成天殿《天皇经》",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n9",
+            "n": "祝山",
+            "x": 16,
+            "y": 86,
+            "t": "wild",
+            "d": 4,
+            "rg": "西北",
+            "desc": "齐雷嗓门大、拍桌子、当面骂人背后护人；夏炎话少、先算后动；祝山一句话能顶回去、张口就是打；尘真笑着护短、跟齐雷斗嘴但大事一致",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n10",
+            "n": "荒芜领域",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "技能·大荒芜经·荒芜领域",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          },
+          {
+            "id": "wudongqiankun_l2n11",
+            "n": "二王殿",
+            "x": 84,
+            "y": 88,
+            "t": "sect",
+            "d": 4,
+            "rg": "东南",
+            "desc": "人物 · 二王殿",
+            "c": "原著补录 · js/kb/wudongqiankun"
+          }
+        ]
+      }
+    ]
+  },
+  "yuanzun": {
+    "name": "元尊 · 诸天行旅图鉴",
+    "flavor": "天地为炉，气府为根",
+    "layers": [
+      {
+        "id": "dazhou",
+        "name": "大周府 · 苍玄天",
+        "ico": "境",
+        "hint": "周元自圣源峰起，气府初开",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "yuanzun_l0n0",
+            "yuanzun_l0n1"
+          ],
+          [
+            "yuanzun_l0n1",
+            "yuanzun_l0n2"
+          ],
+          [
+            "yuanzun_l0n2",
+            "yuanzun_l0n3"
+          ],
+          [
+            "yuanzun_l0n3",
+            "yuanzun_l0n4"
+          ],
+          [
+            "yuanzun_l0n4",
+            "yuanzun_l0n5"
+          ],
+          [
+            "yuanzun_l0n5",
+            "yuanzun_l0n6"
+          ],
+          [
+            "yuanzun_l0n6",
+            "yuanzun_l0n7"
+          ],
+          [
+            "yuanzun_l0n7",
+            "yuanzun_l0n8"
+          ],
+          [
+            "yuanzun_l0n8",
+            "yuanzun_l0n9"
+          ],
+          [
+            "yuanzun_l0n9",
+            "yuanzun_l0n10"
+          ],
+          [
+            "yuanzun_l0n10",
+            "yuanzun_l0n11"
+          ],
+          [
+            "yuanzun_l0n0",
+            "yuanzun_l0n3"
+          ],
+          [
+            "yuanzun_l0n1",
+            "yuanzun_l0n4"
+          ],
+          [
+            "yuanzun_l0n2",
+            "yuanzun_l0n5"
+          ],
+          [
+            "yuanzun_l0n3",
+            "yuanzun_l0n6"
+          ],
+          [
+            "yuanzun_l0n4",
+            "yuanzun_l0n7"
+          ],
+          [
+            "yuanzun_l0n5",
+            "yuanzun_l0n8"
+          ],
+          [
+            "yuanzun_l0n6",
+            "yuanzun_l0n9"
+          ],
+          [
+            "yuanzun_l0n7",
+            "yuanzun_l0n10"
+          ],
+          [
+            "yuanzun_l0n8",
+            "yuanzun_l0n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "yuanzun_l0n0",
+            "n": "天渊域",
+            "x": 16,
+            "y": 16,
+            "t": "start",
+            "d": 1,
+            "rg": "西北",
+            "desc": "混元天苍渊所创，诸天抗圣族中坚；周元入主后任总阁主，率域于九域大会、陨落之渊扬名",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n1",
+            "n": "圣源峰",
+            "x": 50,
+            "y": 14,
+            "t": "wild",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "苍玄老祖旧属、夭夭旧居；苍玄老祖陨落后被封印，周元于选山大典后入主，集四道圣纹修圣源术",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n2",
+            "n": "剑来峰",
+            "x": 84,
+            "y": 18,
+            "t": "wild",
+            "d": 1,
+            "rg": "东南",
+            "desc": "剑来峰剑道源术、灵纹峰源纹禁制、水潭峰源池淬体术、雷狱峰雷法",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n3",
+            "n": "苍渊",
+            "x": 16,
+            "y": 40,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "苍渊不是保姆，也不是开局无敌的打手；他有圣者的格局与冷峻，指点有分寸，救场有代价",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n4",
+            "n": "雷狱峰",
+            "x": 50,
+            "y": 38,
+            "t": "wild",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "雷狱峰峰主叛宗后，他与吕惊神等弟子仍守宗门，是雷狱峰在宗内撑住门面的老牌人物",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n5",
+            "n": "百花仙宫",
+            "x": 84,
+            "y": 42,
+            "t": "sect",
+            "d": 2,
+            "rg": "东南",
+            "desc": "百花仙宫宫主，法域境，一袭彩裙，容颜气质皆为绝世，曾是苍玄天第一美人",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n6",
+            "n": "灵纹峰",
+            "x": 16,
+            "y": 64,
+            "t": "wild",
+            "d": 1,
+            "rg": "西北",
+            "desc": "苍玄宗镇宗七术（含魂灯术—灵纹峰、碎玉掌、天昭剑、太玄圣灵术等），各峰源术根基",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n7",
+            "n": "天鬼府",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "天鬼府首席刘符原本轻视周元，正是见赵鲸败北后才改了口风，可见此战在苍玄天年轻一辈中震动不小",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n8",
+            "n": "雪莲峰",
+            "x": 84,
+            "y": 66,
+            "t": "wild",
+            "d": 1,
+            "rg": "东南",
+            "desc": "雪莲峰峰主柳涟漪一脉素重容貌与天赋，苏耀能居首席，自有一身过硬修为",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n9",
+            "n": "洪崖峰",
+            "x": 16,
+            "y": 86,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "顾天洪，苍玄宗洪崖峰峰主，苍玄老祖三弟子，苍玄宗肉身最强之人，一身皮骨血淬至极致，掌玄圣体",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n10",
+            "n": "阴阳气府",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "阴阳气府是苏幼微在养气境开辟的稀有体质，形如两个气府，可分别容纳阴阳两种源气而不冲突",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l0n11",
+            "n": "伪法域",
+            "x": 84,
+            "y": 88,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "源婴大圆满后强凝法域而未成，战力介于源婴与法域之间，是诸天修士最常见的\"卡关\"状态",
+            "c": "原著补录 · js/kb/yuanzun"
+          }
+        ]
+      },
+      {
+        "id": "zongmen",
+        "name": "苍玄宗与诸峰",
+        "ico": "境",
+        "hint": "七峰争锋，天渊洞天",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "yuanzun_l1n0",
+            "yuanzun_l1n1"
+          ],
+          [
+            "yuanzun_l1n1",
+            "yuanzun_l1n2"
+          ],
+          [
+            "yuanzun_l1n2",
+            "yuanzun_l1n3"
+          ],
+          [
+            "yuanzun_l1n3",
+            "yuanzun_l1n4"
+          ],
+          [
+            "yuanzun_l1n4",
+            "yuanzun_l1n5"
+          ],
+          [
+            "yuanzun_l1n5",
+            "yuanzun_l1n6"
+          ],
+          [
+            "yuanzun_l1n6",
+            "yuanzun_l1n7"
+          ],
+          [
+            "yuanzun_l1n7",
+            "yuanzun_l1n8"
+          ],
+          [
+            "yuanzun_l1n8",
+            "yuanzun_l1n9"
+          ],
+          [
+            "yuanzun_l1n9",
+            "yuanzun_l1n10"
+          ],
+          [
+            "yuanzun_l1n10",
+            "yuanzun_l1n11"
+          ],
+          [
+            "yuanzun_l1n0",
+            "yuanzun_l1n3"
+          ],
+          [
+            "yuanzun_l1n1",
+            "yuanzun_l1n4"
+          ],
+          [
+            "yuanzun_l1n2",
+            "yuanzun_l1n5"
+          ],
+          [
+            "yuanzun_l1n3",
+            "yuanzun_l1n6"
+          ],
+          [
+            "yuanzun_l1n4",
+            "yuanzun_l1n7"
+          ],
+          [
+            "yuanzun_l1n5",
+            "yuanzun_l1n8"
+          ],
+          [
+            "yuanzun_l1n6",
+            "yuanzun_l1n9"
+          ],
+          [
+            "yuanzun_l1n7",
+            "yuanzun_l1n10"
+          ],
+          [
+            "yuanzun_l1n8",
+            "yuanzun_l1n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "yuanzun_l1n0",
+            "n": "苍玄峰",
+            "x": 16,
+            "y": 16,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "苍玄峰为七峰之首，首席之位分量极重，她在宗门事务与各脉较量中常代苍玄峰出面，性子沉稳持重",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n1",
+            "n": "黑炎州",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "黑炎州深处蕴生炎髓的火脉绝地，炎髓为火属至宝，可淬体、可炼器，故每次出世皆引群雄争夺",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n2",
+            "n": "大周府",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "大周府入学大考，周元以重开之脉连战连捷，击败林枫等人，夺得进入甲院的名额",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n3",
+            "n": "万祖域",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "天渊域四方边境，五大联盟受万祖域挑拨在此筑九座金塔，汇九道金色洪流轰击天渊洞天入口",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n4",
+            "n": "血海域",
+            "x": 50,
+            "y": 38,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "血海域以杀戮修行，王羲一身杀气极重，出手狠厉，是九域年轻一辈里最不好惹的几人之一",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n5",
+            "n": "黑毒城",
+            "x": 84,
+            "y": 42,
+            "t": "city",
+            "d": 3,
+            "rg": "东南",
+            "desc": "黑毒城之主，养气境老牌强者，盘踞黑毒城多年",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n6",
+            "n": "圣宫十殿",
+            "x": 16,
+            "y": 64,
+            "t": "sect",
+            "d": 2,
+            "rg": "西北",
+            "desc": "圣宫十殿各设首席，王渊在诸首席中排名靠前，是圣宫年轻一辈的牌面之一，常代圣宫行走玄源洞天等秘境之争",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n7",
+            "n": "造化塔",
+            "x": 50,
+            "y": 62,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "造化塔使周元一方有了不依赖宗门也能培养强者的根基",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n8",
+            "n": "玄源洞",
+            "x": 84,
+            "y": 66,
+            "t": "wild",
+            "d": 2,
+            "rg": "东南",
+            "desc": "玄源洞天中遭险，被周元所救，此后与周元联手对敌，是灵纹峰年轻一辈中较有分量的人物",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n9",
+            "n": "紫霄域",
+            "x": 16,
+            "y": 86,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "紫霄域在九域大会中排名第三，底蕴不在武神域之下",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n10",
+            "n": "御兽域",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "御兽域与万兽天诸族之间，往来颇为微妙",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l1n11",
+            "n": "陨落之渊",
+            "x": 84,
+            "y": 88,
+            "t": "wild",
+            "d": 3,
+            "rg": "东南",
+            "desc": "混元天苍渊所创，诸天抗圣族中坚；周元入主后任总阁主，率域于九域大会、陨落之渊扬名",
+            "c": "原著补录 · js/kb/yuanzun"
+          }
+        ]
+      },
+      {
+        "id": "wanza",
+        "name": "万祖域与诸天",
+        "ico": "境",
+        "hint": "诸天之争，圣族压境",
+        "decor": "void",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "yuanzun_l2n0",
+            "yuanzun_l2n1"
+          ],
+          [
+            "yuanzun_l2n1",
+            "yuanzun_l2n2"
+          ],
+          [
+            "yuanzun_l2n2",
+            "yuanzun_l2n3"
+          ],
+          [
+            "yuanzun_l2n3",
+            "yuanzun_l2n4"
+          ],
+          [
+            "yuanzun_l2n4",
+            "yuanzun_l2n5"
+          ],
+          [
+            "yuanzun_l2n5",
+            "yuanzun_l2n6"
+          ],
+          [
+            "yuanzun_l2n6",
+            "yuanzun_l2n7"
+          ],
+          [
+            "yuanzun_l2n7",
+            "yuanzun_l2n8"
+          ],
+          [
+            "yuanzun_l2n8",
+            "yuanzun_l2n9"
+          ],
+          [
+            "yuanzun_l2n9",
+            "yuanzun_l2n10"
+          ],
+          [
+            "yuanzun_l2n10",
+            "yuanzun_l2n11"
+          ],
+          [
+            "yuanzun_l2n0",
+            "yuanzun_l2n3"
+          ],
+          [
+            "yuanzun_l2n1",
+            "yuanzun_l2n4"
+          ],
+          [
+            "yuanzun_l2n2",
+            "yuanzun_l2n5"
+          ],
+          [
+            "yuanzun_l2n3",
+            "yuanzun_l2n6"
+          ],
+          [
+            "yuanzun_l2n4",
+            "yuanzun_l2n7"
+          ],
+          [
+            "yuanzun_l2n5",
+            "yuanzun_l2n8"
+          ],
+          [
+            "yuanzun_l2n6",
+            "yuanzun_l2n9"
+          ],
+          [
+            "yuanzun_l2n7",
+            "yuanzun_l2n10"
+          ],
+          [
+            "yuanzun_l2n8",
+            "yuanzun_l2n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "yuanzun_l2n0",
+            "n": "元老院",
+            "x": 16,
+            "y": 16,
+            "t": "sect",
+            "d": 3,
+            "rg": "西北",
+            "desc": "元老院下辖长老团，再下为九百州州主",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n1",
+            "n": "齐王府",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "齐王府颜面扫地，周元则借府试正式立威，大周朝野始知这位废太子已重开八脉",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n2",
+            "n": "圣迹城",
+            "x": 84,
+            "y": 18,
+            "t": "city",
+            "d": 3,
+            "rg": "东南",
+            "desc": "圣迹城中接待各方天骄的酒楼，龙蛇混杂、消息灵通",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n3",
+            "n": "法域",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 4,
+            "rg": "西北",
+            "desc": "源婴大圆满后强凝法域而未成，战力介于源婴与法域之间，是诸天修士最常见的\"卡关\"状态",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n4",
+            "n": "武神域",
+            "x": 50,
+            "y": 38,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "武神域在九域大会中排名第二，是混元天对抗圣族的一支硬锋",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n5",
+            "n": "大周城",
+            "x": 84,
+            "y": 42,
+            "t": "city",
+            "d": 4,
+            "rg": "东南",
+            "desc": "后齐王举兵建大齐王朝，纠合七位太初境强者围大周城，事败被周擎斩杀，齐王府随之覆灭",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n6",
+            "n": "玄机域",
+            "x": 16,
+            "y": 64,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "玄机域擅情报，九宫之能正在于知彼",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n7",
+            "n": "妖傀域",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "妖傀域修士往往一身是傀，杀之不尽",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n8",
+            "n": "九百州",
+            "x": 84,
+            "y": 66,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "九百州天地源气经引源大阵汇入天渊洞天，是一域之本",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n9",
+            "n": "圣子峰",
+            "x": 16,
+            "y": 86,
+            "t": "wild",
+            "d": 4,
+            "rg": "西北",
+            "desc": "内山弟子方为真传，七峰、圣子峰、源池皆在其中，是苍玄天修士梦寐以求之地",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n10",
+            "n": "远古地域",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "九域大会远古地域中先与周元交手，后结盟共对九宫、薛惊涛一队，并合力击败陨落妖影，夺得先天灵机",
+            "c": "原著补录 · js/kb/yuanzun"
+          },
+          {
+            "id": "yuanzun_l2n11",
+            "n": "圣纹域",
+            "x": 84,
+            "y": 88,
+            "t": "relic",
+            "d": 4,
+            "rg": "东南",
+            "desc": "混元天圣纹域域主，域内专修神魂与源纹，造诣极深，年轻一辈领首者为李通神",
+            "c": "原著补录 · js/kb/yuanzun"
+          }
+        ]
+      }
+    ]
+  },
+  "wanxiangzhiwang": {
+    "name": "万相之王 · 神州行旅图鉴",
+    "flavor": "十柱金台，相品定高低",
+    "layers": [
+      {
+        "id": "luolan",
+        "name": "洛岚府与南风学府",
+        "ico": "境",
+        "hint": "李洛自南风城起步，府主之争",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "wanxiangzhiwang_l0n0",
+            "wanxiangzhiwang_l0n1"
+          ],
+          [
+            "wanxiangzhiwang_l0n1",
+            "wanxiangzhiwang_l0n2"
+          ],
+          [
+            "wanxiangzhiwang_l0n2",
+            "wanxiangzhiwang_l0n3"
+          ],
+          [
+            "wanxiangzhiwang_l0n3",
+            "wanxiangzhiwang_l0n4"
+          ],
+          [
+            "wanxiangzhiwang_l0n4",
+            "wanxiangzhiwang_l0n5"
+          ],
+          [
+            "wanxiangzhiwang_l0n5",
+            "wanxiangzhiwang_l0n6"
+          ],
+          [
+            "wanxiangzhiwang_l0n6",
+            "wanxiangzhiwang_l0n7"
+          ],
+          [
+            "wanxiangzhiwang_l0n7",
+            "wanxiangzhiwang_l0n8"
+          ],
+          [
+            "wanxiangzhiwang_l0n8",
+            "wanxiangzhiwang_l0n9"
+          ],
+          [
+            "wanxiangzhiwang_l0n9",
+            "wanxiangzhiwang_l0n10"
+          ],
+          [
+            "wanxiangzhiwang_l0n10",
+            "wanxiangzhiwang_l0n11"
+          ],
+          [
+            "wanxiangzhiwang_l0n0",
+            "wanxiangzhiwang_l0n3"
+          ],
+          [
+            "wanxiangzhiwang_l0n1",
+            "wanxiangzhiwang_l0n4"
+          ],
+          [
+            "wanxiangzhiwang_l0n2",
+            "wanxiangzhiwang_l0n5"
+          ],
+          [
+            "wanxiangzhiwang_l0n3",
+            "wanxiangzhiwang_l0n6"
+          ],
+          [
+            "wanxiangzhiwang_l0n4",
+            "wanxiangzhiwang_l0n7"
+          ],
+          [
+            "wanxiangzhiwang_l0n5",
+            "wanxiangzhiwang_l0n8"
+          ],
+          [
+            "wanxiangzhiwang_l0n6",
+            "wanxiangzhiwang_l0n9"
+          ],
+          [
+            "wanxiangzhiwang_l0n7",
+            "wanxiangzhiwang_l0n10"
+          ],
+          [
+            "wanxiangzhiwang_l0n8",
+            "wanxiangzhiwang_l0n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "wanxiangzhiwang_l0n0",
+            "n": "洛岚府",
+            "x": 16,
+            "y": 16,
+            "t": "start",
+            "d": 1,
+            "rg": "西北",
+            "desc": "洛岚府危局时掌府，燃光明心后入圣光古学府，凝第二道九品光明相，登无双侯，号十二翼光明神女",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n1",
+            "n": "天元神州",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "天元神州西部疆域，天元古学府坐落于此，为古学府一脉的势力核心；西域诸城皆以古学府马首是瞻",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n2",
+            "n": "金龙山",
+            "x": 84,
+            "y": 18,
+            "t": "wild",
+            "d": 1,
+            "rg": "东南",
+            "desc": "金龙山吕脉家主，鱼红溪之夫，吕清儿之父；掌吕脉一峰事务，为金龙山三姓七峰中吕姓一脉的当家人",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n3",
+            "n": "十柱金台",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 2,
+            "rg": "西北",
+            "desc": "无双侯的标志，封侯台化为十柱金台，柱数即根基；李洛以万相金丹将此台补至圆满，故称无双无缺",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n4",
+            "n": "界河宝域",
+            "x": 50,
+            "y": 38,
+            "t": "relic",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "界河宝域开启，四方强者争夺封侯之机；李洛在此成功封侯，并踏上以十柱金台为标志的无双之路",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n5",
+            "n": "中央神州",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "中央神州强者，姜青娥燃尽光明心后将其带往中央神州救治，后引其入圣光古学府，是姜青娥再生之恩人",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n6",
+            "n": "东域神州",
+            "x": 16,
+            "y": 64,
+            "t": "relic",
+            "d": 1,
+            "rg": "西北",
+            "desc": "东域神州四大王朝之一，与大夏国接壤，国力不弱于大夏；其皇庭以狮为号，武风彪悍，边境摩擦不断",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n7",
+            "n": "界河",
+            "x": 50,
+            "y": 62,
+            "t": "wild",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "界河沿岸的辽阔战区，各大天王脉设卫驻守，异类越河则战；李洛归族后入龙牙卫历练，官至四统领",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n8",
+            "n": "玄灵神州",
+            "x": 84,
+            "y": 66,
+            "t": "relic",
+            "d": 1,
+            "rg": "东南",
+            "desc": "玄灵神州的天王级势力，与两殿三脉并称；以驭使精兽、钻研万兽相立教，族中有林淼、沈云歌、沈碧溪等",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n9",
+            "n": "南风学府",
+            "x": 16,
+            "y": 86,
+            "t": "relic",
+            "d": 2,
+            "rg": "西北",
+            "desc": "南风学府二院学员，五品银熊相，力大豪爽；李洛好友，后入圣玄星学府，是二院第一个与李洛交心的人",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n10",
+            "n": "天镜塔",
+            "x": 50,
+            "y": 84,
+            "t": "sect",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "天镜塔所出的砂状奇物，蕴含天王级能量；寻常人只能泡水服用，李洛以青铜古灯将其催化为金烟",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l0n11",
+            "n": "极炎府",
+            "x": 84,
+            "y": 88,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "极炎府府主，封侯境四品，大夏本土最强侯之一；暗投归一会，府祭时与牛彪彪一战被重创，后随宫渊北迁",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          }
+        ]
+      },
+      {
+        "id": "tianyuan",
+        "name": "天元神州 · 十柱金台",
+        "ico": "境",
+        "hint": "金台论品，学府与府院角力",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "wanxiangzhiwang_l1n0",
+            "wanxiangzhiwang_l1n1"
+          ],
+          [
+            "wanxiangzhiwang_l1n1",
+            "wanxiangzhiwang_l1n2"
+          ],
+          [
+            "wanxiangzhiwang_l1n2",
+            "wanxiangzhiwang_l1n3"
+          ],
+          [
+            "wanxiangzhiwang_l1n3",
+            "wanxiangzhiwang_l1n4"
+          ],
+          [
+            "wanxiangzhiwang_l1n4",
+            "wanxiangzhiwang_l1n5"
+          ],
+          [
+            "wanxiangzhiwang_l1n5",
+            "wanxiangzhiwang_l1n6"
+          ],
+          [
+            "wanxiangzhiwang_l1n6",
+            "wanxiangzhiwang_l1n7"
+          ],
+          [
+            "wanxiangzhiwang_l1n7",
+            "wanxiangzhiwang_l1n8"
+          ],
+          [
+            "wanxiangzhiwang_l1n8",
+            "wanxiangzhiwang_l1n9"
+          ],
+          [
+            "wanxiangzhiwang_l1n9",
+            "wanxiangzhiwang_l1n10"
+          ],
+          [
+            "wanxiangzhiwang_l1n10",
+            "wanxiangzhiwang_l1n11"
+          ],
+          [
+            "wanxiangzhiwang_l1n0",
+            "wanxiangzhiwang_l1n3"
+          ],
+          [
+            "wanxiangzhiwang_l1n1",
+            "wanxiangzhiwang_l1n4"
+          ],
+          [
+            "wanxiangzhiwang_l1n2",
+            "wanxiangzhiwang_l1n5"
+          ],
+          [
+            "wanxiangzhiwang_l1n3",
+            "wanxiangzhiwang_l1n6"
+          ],
+          [
+            "wanxiangzhiwang_l1n4",
+            "wanxiangzhiwang_l1n7"
+          ],
+          [
+            "wanxiangzhiwang_l1n5",
+            "wanxiangzhiwang_l1n8"
+          ],
+          [
+            "wanxiangzhiwang_l1n6",
+            "wanxiangzhiwang_l1n9"
+          ],
+          [
+            "wanxiangzhiwang_l1n7",
+            "wanxiangzhiwang_l1n10"
+          ],
+          [
+            "wanxiangzhiwang_l1n8",
+            "wanxiangzhiwang_l1n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "wanxiangzhiwang_l1n0",
+            "n": "兰陵府",
+            "x": 16,
+            "y": 16,
+            "t": "relic",
+            "d": 2,
+            "rg": "西北",
+            "desc": "兰陵府出身，圣玄星学府七星柱之一，四星院称号学员；兰陵府在学府中的门面人物，行事低调而难缠",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n1",
+            "n": "御兽灵殿",
+            "x": 50,
+            "y": 14,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "御兽灵殿天骄，精于驭兽与万兽相；玄灵神州年轻一辈中与精兽最为亲近者之一，可与精兽心神相通",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n2",
+            "n": "宋云峰",
+            "x": 84,
+            "y": 18,
+            "t": "wild",
+            "d": 2,
+            "rg": "东南",
+            "desc": "宋云峰之姐，圣玄星学府淬相院高材生，下七品水相；掌宋家松子屋，与颜灵卿结怨，灵水奇光之祭败于李洛",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n3",
+            "n": "圣灵院",
+            "x": 16,
+            "y": 40,
+            "t": "sect",
+            "d": 3,
+            "rg": "西北",
+            "desc": "(3) 学府正名「圣玄星学府」，天元神州是天元古学府，中央神州是圣光古学府，原著并无「圣灵院」",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n4",
+            "n": "南风城",
+            "x": 50,
+            "y": 38,
+            "t": "city",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "南风城的知名酒楼，贝锟曾在此设宴邀李洛，欲以言语相激；李洛未予理会，此事遂成贝家与李洛结怨的开端",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n5",
+            "n": "金雀府",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "金雀府府主，封侯境；先附宫渊，后随北域政权，是大夏内战中关键的摇摆势力，其女其子皆在圣玄星学府",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n6",
+            "n": "界河域",
+            "x": 16,
+            "y": 64,
+            "t": "relic",
+            "d": 2,
+            "rg": "西北",
+            "desc": "界河域中的宝地，天地能量与异类遗藏交汇，是封侯之机的出处；四方强者云集争夺，李洛在此封侯并踏上无双之路",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n7",
+            "n": "灵相洞",
+            "x": 50,
+            "y": 62,
+            "t": "wild",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "灵相洞天深处的奇物，蕴含枯荣相之力；李洛服之，为冲击天王境积累底蕴，亦与宗主的枯荣相遥相呼应",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n8",
+            "n": "四星院",
+            "x": 84,
+            "y": 66,
+            "t": "sect",
+            "d": 2,
+            "rg": "东南",
+            "desc": "兰陵府出身，圣玄星学府七星柱之一，四星院称号学员；兰陵府在学府中的门面人物，行事低调而难缠",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n9",
+            "n": "大夏城",
+            "x": 16,
+            "y": 86,
+            "t": "city",
+            "d": 3,
+            "rg": "西北",
+            "desc": "大夏城中的宫家宫城，护国奇阵的核心所在；先帝宫轩在此驾崩，少帝宫景曜在此登基，宫渊亦在此发难，酿成王庭之变",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n10",
+            "n": "天镜州",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "天镜州中庞大到看不见尽头的树城，由无数相力树的枝条垂落交织而成；学府联盟于此设天镜塔的入塔之试",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l1n11",
+            "n": "洛岚城",
+            "x": 84,
+            "y": 88,
+            "t": "city",
+            "d": 3,
+            "rg": "东南",
+            "desc": "地点·大夏国（天蜀郡·大夏城·洛岚城）",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          }
+        ]
+      },
+      {
+        "id": "jiehe",
+        "name": "界河宝域与中央神州",
+        "ico": "境",
+        "hint": "界河两岸，暗世界窥伺",
+        "decor": "void",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "wanxiangzhiwang_l2n0",
+            "wanxiangzhiwang_l2n1"
+          ],
+          [
+            "wanxiangzhiwang_l2n1",
+            "wanxiangzhiwang_l2n2"
+          ],
+          [
+            "wanxiangzhiwang_l2n2",
+            "wanxiangzhiwang_l2n3"
+          ],
+          [
+            "wanxiangzhiwang_l2n3",
+            "wanxiangzhiwang_l2n4"
+          ],
+          [
+            "wanxiangzhiwang_l2n4",
+            "wanxiangzhiwang_l2n5"
+          ],
+          [
+            "wanxiangzhiwang_l2n5",
+            "wanxiangzhiwang_l2n6"
+          ],
+          [
+            "wanxiangzhiwang_l2n6",
+            "wanxiangzhiwang_l2n7"
+          ],
+          [
+            "wanxiangzhiwang_l2n7",
+            "wanxiangzhiwang_l2n8"
+          ],
+          [
+            "wanxiangzhiwang_l2n8",
+            "wanxiangzhiwang_l2n9"
+          ],
+          [
+            "wanxiangzhiwang_l2n9",
+            "wanxiangzhiwang_l2n10"
+          ],
+          [
+            "wanxiangzhiwang_l2n10",
+            "wanxiangzhiwang_l2n11"
+          ],
+          [
+            "wanxiangzhiwang_l2n0",
+            "wanxiangzhiwang_l2n3"
+          ],
+          [
+            "wanxiangzhiwang_l2n1",
+            "wanxiangzhiwang_l2n4"
+          ],
+          [
+            "wanxiangzhiwang_l2n2",
+            "wanxiangzhiwang_l2n5"
+          ],
+          [
+            "wanxiangzhiwang_l2n3",
+            "wanxiangzhiwang_l2n6"
+          ],
+          [
+            "wanxiangzhiwang_l2n4",
+            "wanxiangzhiwang_l2n7"
+          ],
+          [
+            "wanxiangzhiwang_l2n5",
+            "wanxiangzhiwang_l2n8"
+          ],
+          [
+            "wanxiangzhiwang_l2n6",
+            "wanxiangzhiwang_l2n9"
+          ],
+          [
+            "wanxiangzhiwang_l2n7",
+            "wanxiangzhiwang_l2n10"
+          ],
+          [
+            "wanxiangzhiwang_l2n8",
+            "wanxiangzhiwang_l2n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "wanxiangzhiwang_l2n0",
+            "n": "圣山学府",
+            "x": 16,
+            "y": 16,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "圣山学府成员，东域神州学府一脉的天骄；圣杯战参赛者，以悍勇闻名于诸学府之间，打法狠而不留余地",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n1",
+            "n": "暗之学府",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "大夏国一郡，郡中有暗之学府，以影相与暗属相术见长；辛符即从此郡学府出身，后入圣玄星学府",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n2",
+            "n": "东渊学府",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "师擎之子，东渊学府第一人，上七品雷相；学府大考中引诱宋云峰背叛南风学府，事败后随父失势",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n3",
+            "n": "煞魔洞",
+            "x": 16,
+            "y": 40,
+            "t": "wild",
+            "d": 4,
+            "rg": "西北",
+            "desc": "李天王一脉龙牙脉的山门所在，依山而建，脉中设二十旗、煞魔洞与青冥院；李惊蛰坐镇于此，李洛归族后即在此认祖",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n4",
+            "n": "灵相宫",
+            "x": 50,
+            "y": 38,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "无相圣宗所遗秘境，内有金露台、灵相宫；金烟可淬炼相性，造化神浆胜九品灵水奇光，宗主的枯荣相污染被奇阵镇压于深处",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n5",
+            "n": "澹台",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 4,
+            "rg": "东南",
+            "desc": "澹台岚九品（万兽相）；龙相：李太玄虚九品",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n6",
+            "n": "张摧城",
+            "x": 16,
+            "y": 64,
+            "t": "city",
+            "d": 3,
+            "rg": "西北",
+            "desc": "金龙山三姓七峰中的张姓一脉，始祖张天王张大仙，族中有张摧城；掌张脉一峰，与吕、钱二脉共治金龙山",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n7",
+            "n": "秦重渊",
+            "x": 50,
+            "y": 62,
+            "t": "wild",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "秦天王一脉镇守界河域的军队总称，下分九劫卫、重渊卫等；家主秦九劫与秦重渊各领一卫",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n8",
+            "n": "李长峰",
+            "x": 84,
+            "y": 66,
+            "t": "wild",
+            "d": 3,
+            "rg": "东南",
+            "desc": "通灵级封侯术，黄沙蔽感知、蚀血消力；龙牙卫左龙牙使李长峰所修，姜青娥挑战龙牙使时曾与此术对阵",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n9",
+            "n": "青冥院",
+            "x": 16,
+            "y": 86,
+            "t": "sect",
+            "d": 4,
+            "rg": "西北",
+            "desc": "龙牙脉下辖的院署，设院主分掌脉中事务；牛彪彪被封侯台修复后，得李惊蛰之助出任青冥院第六院主",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n10",
+            "n": "神阳神州",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "神阳神州的古学府，学府联盟成员；封号光明侯的第五明煊即出其门下，是内神州中光明一脉的重镇",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          },
+          {
+            "id": "wanxiangzhiwang_l2n11",
+            "n": "雷火神州",
+            "x": 84,
+            "y": 88,
+            "t": "relic",
+            "d": 4,
+            "rg": "东南",
+            "desc": "地理 · 雷火神州",
+            "c": "原著补录 · js/kb/wanxiangzhiwang"
+          }
+        ]
+      }
+    ]
+  },
+  "free": {
+    "name": "自由创作 · 山河行旅图鉴",
+    "flavor": "此界无定规，落笔即山河",
+    "layers": [
+      {
+        "id": "shanye",
+        "name": "山野与书院",
+        "ico": "境",
+        "hint": "故事起于村野，落脚于书院",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "free_l0n0",
+            "free_l0n1"
+          ],
+          [
+            "free_l0n1",
+            "free_l0n2"
+          ],
+          [
+            "free_l0n2",
+            "free_l0n3"
+          ],
+          [
+            "free_l0n3",
+            "free_l0n4"
+          ],
+          [
+            "free_l0n4",
+            "free_l0n5"
+          ],
+          [
+            "free_l0n5",
+            "free_l0n6"
+          ],
+          [
+            "free_l0n6",
+            "free_l0n7"
+          ],
+          [
+            "free_l0n7",
+            "free_l0n8"
+          ],
+          [
+            "free_l0n8",
+            "free_l0n9"
+          ],
+          [
+            "free_l0n9",
+            "free_l0n10"
+          ],
+          [
+            "free_l0n10",
+            "free_l0n11"
+          ],
+          [
+            "free_l0n0",
+            "free_l0n3"
+          ],
+          [
+            "free_l0n1",
+            "free_l0n4"
+          ],
+          [
+            "free_l0n2",
+            "free_l0n5"
+          ],
+          [
+            "free_l0n3",
+            "free_l0n6"
+          ],
+          [
+            "free_l0n4",
+            "free_l0n7"
+          ],
+          [
+            "free_l0n5",
+            "free_l0n8"
+          ],
+          [
+            "free_l0n6",
+            "free_l0n9"
+          ],
+          [
+            "free_l0n7",
+            "free_l0n10"
+          ],
+          [
+            "free_l0n8",
+            "free_l0n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "free_l0n0",
+            "n": "云隐村",
+            "x": 16,
+            "y": 16,
+            "t": "start",
+            "d": 1,
+            "rg": "西北",
+            "desc": "群山褶皱里的小村，炊烟与晨雾分不清；故事最常从这里起笔。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n1",
+            "n": "落霞渡",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "河面宽阔处的老渡口，一条乌篷船往来两岸，消息比人先到。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n2",
+            "n": "青石镇",
+            "x": 84,
+            "y": 18,
+            "t": "city",
+            "d": 1,
+            "rg": "东南",
+            "desc": "青石板被独轮车磨出深槽的镇子，酒肆、铁匠铺与说书人挤在一条街上。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n3",
+            "n": "听雨楼",
+            "x": 16,
+            "y": 40,
+            "t": "sect",
+            "d": 2,
+            "rg": "西北",
+            "desc": "临水而建的三层小楼，江湖人在此交换消息，也交换恩怨。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n4",
+            "n": "无相寺",
+            "x": 50,
+            "y": 38,
+            "t": "sect",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "不供金身的古寺，僧人只讲「无相」二字，藏经阁却从不闭门。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n5",
+            "n": "百草谷",
+            "x": 84,
+            "y": 42,
+            "t": "wild",
+            "d": 2,
+            "rg": "东南",
+            "desc": "药农踩出的山谷，雾气终年不散，毒草与灵草长在同一道溪边。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n6",
+            "n": "旧驿道",
+            "x": 16,
+            "y": 64,
+            "t": "relic",
+            "d": 1,
+            "rg": "西北",
+            "desc": "前朝官道废弃的一段，界碑半埋，夜里常有过路人歇脚的火堆。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n7",
+            "n": "观星台",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "山顶石台，刻着早已失传的星图；占星者说这里离天最近。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n8",
+            "n": "龙脊墟",
+            "x": 84,
+            "y": 66,
+            "t": "wild",
+            "d": 1,
+            "rg": "东南",
+            "desc": "连绵山脊上的断层遗迹，石阶断在云里，谁也说不清从前通向何处。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n9",
+            "n": "镜湖",
+            "x": 16,
+            "y": 86,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "无风时也起细浪的湖，老人说湖底沉着另一座城。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n10",
+            "n": "断剑冢",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "插满残剑的土坡，剑锈得看不出名号，却没人敢拔。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l0n11",
+            "n": "万卷阁",
+            "x": 84,
+            "y": 88,
+            "t": "sect",
+            "d": 2,
+            "rg": "东南",
+            "desc": "藏书楼，规矩只有一条：只许抄，不许带走。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          }
+        ]
+      },
+      {
+        "id": "chengyi",
+        "name": "城邑与市井",
+        "ico": "境",
+        "hint": "人烟稠密处，恩怨也稠密",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "free_l1n0",
+            "free_l1n1"
+          ],
+          [
+            "free_l1n1",
+            "free_l1n2"
+          ],
+          [
+            "free_l1n2",
+            "free_l1n3"
+          ],
+          [
+            "free_l1n3",
+            "free_l1n4"
+          ],
+          [
+            "free_l1n4",
+            "free_l1n5"
+          ],
+          [
+            "free_l1n5",
+            "free_l1n6"
+          ],
+          [
+            "free_l1n6",
+            "free_l1n7"
+          ],
+          [
+            "free_l1n7",
+            "free_l1n8"
+          ],
+          [
+            "free_l1n8",
+            "free_l1n9"
+          ],
+          [
+            "free_l1n9",
+            "free_l1n10"
+          ],
+          [
+            "free_l1n10",
+            "free_l1n11"
+          ],
+          [
+            "free_l1n0",
+            "free_l1n3"
+          ],
+          [
+            "free_l1n1",
+            "free_l1n4"
+          ],
+          [
+            "free_l1n2",
+            "free_l1n5"
+          ],
+          [
+            "free_l1n3",
+            "free_l1n6"
+          ],
+          [
+            "free_l1n4",
+            "free_l1n7"
+          ],
+          [
+            "free_l1n5",
+            "free_l1n8"
+          ],
+          [
+            "free_l1n6",
+            "free_l1n9"
+          ],
+          [
+            "free_l1n7",
+            "free_l1n10"
+          ],
+          [
+            "free_l1n8",
+            "free_l1n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "free_l1n0",
+            "n": "药王坡",
+            "x": 16,
+            "y": 16,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "向阳缓坡，春夏开满药花，采药人按节气上山。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n1",
+            "n": "黑水泽",
+            "x": 50,
+            "y": 14,
+            "t": "danger",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "水色发黑的沼泽，苇荡深处有旧船板，进去的人多半绕不回来。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n2",
+            "n": "松风渡",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "松林夹岸的野渡，风过时有涛声，船家按潮水开船。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n3",
+            "n": "砚山",
+            "x": 16,
+            "y": 40,
+            "t": "wild",
+            "d": 3,
+            "rg": "西北",
+            "desc": "产砚石的小山，采石洞层层向内，石屑堆成白色斜坡。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n4",
+            "n": "鹤鸣谷",
+            "x": 50,
+            "y": 38,
+            "t": "wild",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "幽谷多鹤，晨昏齐鸣；谷口有一方无字碑。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n5",
+            "n": "旧剑铺",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "镇口打铁铺，炉火不熄，墙上挂着几柄无人认领的旧剑。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n6",
+            "n": "雾隐潭",
+            "x": 16,
+            "y": 64,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "终年起雾的深潭，水面无波，投石不闻回声。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n7",
+            "n": "白石桥",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "横跨溪涧的石桥，桥栏刻着捐资人姓名，多半已模糊。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n8",
+            "n": "望月楼",
+            "x": 84,
+            "y": 66,
+            "t": "sect",
+            "d": 2,
+            "rg": "东南",
+            "desc": "镇中最高的一处楼，登楼可见整片屋瓦与远山。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n9",
+            "n": "古战场残垒",
+            "x": 16,
+            "y": 86,
+            "t": "danger",
+            "d": 3,
+            "rg": "西北",
+            "desc": "塌了半边的夯土垒，犁地时常翻出锈甲片。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n10",
+            "n": "藏书洞",
+            "x": 50,
+            "y": 84,
+            "t": "wild",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "山腹石洞，里头一排木架，放的多是抄本与残卷。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l1n11",
+            "n": "听松阁",
+            "x": 84,
+            "y": 88,
+            "t": "sect",
+            "d": 3,
+            "rg": "东南",
+            "desc": "半山小阁，四面皆松，读书人常在此借住一宿。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          }
+        ]
+      },
+      {
+        "id": "mijing",
+        "name": "秘境与遗迹",
+        "ico": "境",
+        "hint": "山海尽头，旧时代的残迹",
+        "decor": "void",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "free_l2n0",
+            "free_l2n1"
+          ],
+          [
+            "free_l2n1",
+            "free_l2n2"
+          ],
+          [
+            "free_l2n2",
+            "free_l2n3"
+          ],
+          [
+            "free_l2n3",
+            "free_l2n4"
+          ],
+          [
+            "free_l2n4",
+            "free_l2n5"
+          ],
+          [
+            "free_l2n5",
+            "free_l2n6"
+          ],
+          [
+            "free_l2n6",
+            "free_l2n7"
+          ],
+          [
+            "free_l2n7",
+            "free_l2n8"
+          ],
+          [
+            "free_l2n8",
+            "free_l2n9"
+          ],
+          [
+            "free_l2n9",
+            "free_l2n10"
+          ],
+          [
+            "free_l2n0",
+            "free_l2n3"
+          ],
+          [
+            "free_l2n1",
+            "free_l2n4"
+          ],
+          [
+            "free_l2n2",
+            "free_l2n5"
+          ],
+          [
+            "free_l2n3",
+            "free_l2n6"
+          ],
+          [
+            "free_l2n4",
+            "free_l2n7"
+          ],
+          [
+            "free_l2n5",
+            "free_l2n8"
+          ],
+          [
+            "free_l2n6",
+            "free_l2n9"
+          ],
+          [
+            "free_l2n7",
+            "free_l2n10"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "free_l2n0",
+            "n": "石阶渡",
+            "x": 16,
+            "y": 16,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "凿在石壁上的阶式渡口，水涨时只余最上几级。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n1",
+            "n": "野茶棚",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "三岔路口的草棚，粗茶免费，消息却要拿故事换。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n2",
+            "n": "旧窑址",
+            "x": 84,
+            "y": 18,
+            "t": "wild",
+            "d": 3,
+            "rg": "东南",
+            "desc": "废了多年的窑场，碎陶片混在草里，雨后泛出釉色。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n3",
+            "n": "鹿鸣坡",
+            "x": 16,
+            "y": 40,
+            "t": "wild",
+            "d": 4,
+            "rg": "西北",
+            "desc": "缓坡多鹿，猎人不到入冬不下套，坡顶有座小土地庙。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n4",
+            "n": "云梯崖",
+            "x": 50,
+            "y": 38,
+            "t": "danger",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "一线石梯贴上崖壁，雾大时看不见顶，崖下有旧绳桩。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n5",
+            "n": "纸伞巷",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 4,
+            "rg": "东南",
+            "desc": "制伞匠聚居的窄巷，晴天也晾着半干的伞面。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n6",
+            "n": "药市",
+            "x": 16,
+            "y": 64,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "逢集才有的草药摊阵，药香混着泥土味，识货的清晨就来。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n7",
+            "n": "星落湖",
+            "x": 50,
+            "y": 62,
+            "t": "wild",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "高山小湖，夜里星影沉在水底，老人说湖底有块陨铁。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n8",
+            "n": "断碑亭",
+            "x": 84,
+            "y": 66,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "亭中立着半截残碑，字被风雨磨平，只剩年月可辨。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n9",
+            "n": "藤桥",
+            "x": 16,
+            "y": 86,
+            "t": "danger",
+            "d": 4,
+            "rg": "西北",
+            "desc": "横跨深涧的老藤桥，一次只容一人，风大时整桥轻晃。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "free_l2n10",
+            "n": "道士庐",
+            "x": 50,
+            "y": 84,
+            "t": "sect",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "山脚一间茅庐，住着个不收徒的道士，只替人写符与看病。",
+            "c": "自由创作 · 类型通用地名库（非原著，可按需增改）"
+          }
+        ]
+      }
+    ]
+  },
+  "freeworld": {
+    "name": "原创世界 · 驿路行旅图鉴",
+    "flavor": "一封信走数日，急事靠捎口信",
+    "layers": [
+      {
+        "id": "xiangye",
+        "name": "乡野与驿道",
+        "ico": "境",
+        "hint": "消息靠腿与马，一封信走数日",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "freeworld_l0n0",
+            "freeworld_l0n1"
+          ],
+          [
+            "freeworld_l0n1",
+            "freeworld_l0n2"
+          ],
+          [
+            "freeworld_l0n2",
+            "freeworld_l0n3"
+          ],
+          [
+            "freeworld_l0n3",
+            "freeworld_l0n4"
+          ],
+          [
+            "freeworld_l0n4",
+            "freeworld_l0n5"
+          ],
+          [
+            "freeworld_l0n5",
+            "freeworld_l0n6"
+          ],
+          [
+            "freeworld_l0n6",
+            "freeworld_l0n7"
+          ],
+          [
+            "freeworld_l0n7",
+            "freeworld_l0n8"
+          ],
+          [
+            "freeworld_l0n8",
+            "freeworld_l0n9"
+          ],
+          [
+            "freeworld_l0n9",
+            "freeworld_l0n10"
+          ],
+          [
+            "freeworld_l0n10",
+            "freeworld_l0n11"
+          ],
+          [
+            "freeworld_l0n0",
+            "freeworld_l0n3"
+          ],
+          [
+            "freeworld_l0n1",
+            "freeworld_l0n4"
+          ],
+          [
+            "freeworld_l0n2",
+            "freeworld_l0n5"
+          ],
+          [
+            "freeworld_l0n3",
+            "freeworld_l0n6"
+          ],
+          [
+            "freeworld_l0n4",
+            "freeworld_l0n7"
+          ],
+          [
+            "freeworld_l0n5",
+            "freeworld_l0n8"
+          ],
+          [
+            "freeworld_l0n6",
+            "freeworld_l0n9"
+          ],
+          [
+            "freeworld_l0n7",
+            "freeworld_l0n10"
+          ],
+          [
+            "freeworld_l0n8",
+            "freeworld_l0n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "freeworld_l0n0",
+            "n": "石门驿",
+            "x": 16,
+            "y": 16,
+            "t": "start",
+            "d": 1,
+            "rg": "西北",
+            "desc": "官道上第一处驿站，换马不换信；一封急件在此盖第一枚火漆印。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n1",
+            "n": "柳河县",
+            "x": 50,
+            "y": 14,
+            "t": "city",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "依河而筑的县城，县衙前一面鸣冤鼓，集市逢三六九开。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n2",
+            "n": "烽燧台",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 1,
+            "rg": "东南",
+            "desc": "山头夯土高台，白日举烟、夜里举火，三座台子能把手势传到州城。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n3",
+            "n": "渡口集",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 2,
+            "rg": "西北",
+            "desc": "河渡旁长出的草市，船工、脚夫与货栈伙计在此论价。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n4",
+            "n": "旧祠堂",
+            "x": 50,
+            "y": 38,
+            "t": "sect",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "族中议事的老祠，匾额褪色，族谱锁在樟木箱里。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n5",
+            "n": "青盐井",
+            "x": 84,
+            "y": 42,
+            "t": "wild",
+            "d": 2,
+            "rg": "东南",
+            "desc": "盐井与灶棚连成一片，盐工按井口分班，井绳磨得发亮。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n6",
+            "n": "北岭关",
+            "x": 16,
+            "y": 64,
+            "t": "danger",
+            "d": 1,
+            "rg": "西北",
+            "desc": "扼住山口的旧关隘，关门半塌，守卒只剩一队老兵。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n7",
+            "n": "纸鸢铺",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "前街的纸扎铺，也代写书信——不识字的人把话念给掌柜听。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n8",
+            "n": "石板巷",
+            "x": 84,
+            "y": 66,
+            "t": "relic",
+            "d": 1,
+            "rg": "东南",
+            "desc": "雨后泛光的窄巷，两侧是高墙，脚步声能传很远。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n9",
+            "n": "望乡坡",
+            "x": 16,
+            "y": 86,
+            "t": "wild",
+            "d": 2,
+            "rg": "西北",
+            "desc": "出城第一道缓坡，送行的人到此止步，故名望乡。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n10",
+            "n": "石窟寺",
+            "x": 50,
+            "y": 84,
+            "t": "sect",
+            "d": 1,
+            "rg": "中枢",
+            "desc": "崖壁上凿出的佛龛，香火不盛，壁画却比州志还老。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l0n11",
+            "n": "水磨坊",
+            "x": 84,
+            "y": 88,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "溪边木轮昼夜转，四乡的麦子都驮到这里来磨。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          }
+        ]
+      },
+      {
+        "id": "chengguan",
+        "name": "城邑与关隘",
+        "ico": "境",
+        "hint": "县衙、鼓楼与烽燧撑起秩序",
+        "decor": "land",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "freeworld_l1n0",
+            "freeworld_l1n1"
+          ],
+          [
+            "freeworld_l1n1",
+            "freeworld_l1n2"
+          ],
+          [
+            "freeworld_l1n2",
+            "freeworld_l1n3"
+          ],
+          [
+            "freeworld_l1n3",
+            "freeworld_l1n4"
+          ],
+          [
+            "freeworld_l1n4",
+            "freeworld_l1n5"
+          ],
+          [
+            "freeworld_l1n5",
+            "freeworld_l1n6"
+          ],
+          [
+            "freeworld_l1n6",
+            "freeworld_l1n7"
+          ],
+          [
+            "freeworld_l1n7",
+            "freeworld_l1n8"
+          ],
+          [
+            "freeworld_l1n8",
+            "freeworld_l1n9"
+          ],
+          [
+            "freeworld_l1n9",
+            "freeworld_l1n10"
+          ],
+          [
+            "freeworld_l1n10",
+            "freeworld_l1n11"
+          ],
+          [
+            "freeworld_l1n0",
+            "freeworld_l1n3"
+          ],
+          [
+            "freeworld_l1n1",
+            "freeworld_l1n4"
+          ],
+          [
+            "freeworld_l1n2",
+            "freeworld_l1n5"
+          ],
+          [
+            "freeworld_l1n3",
+            "freeworld_l1n6"
+          ],
+          [
+            "freeworld_l1n4",
+            "freeworld_l1n7"
+          ],
+          [
+            "freeworld_l1n5",
+            "freeworld_l1n8"
+          ],
+          [
+            "freeworld_l1n6",
+            "freeworld_l1n9"
+          ],
+          [
+            "freeworld_l1n7",
+            "freeworld_l1n10"
+          ],
+          [
+            "freeworld_l1n8",
+            "freeworld_l1n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "freeworld_l1n0",
+            "n": "义庄",
+            "x": 16,
+            "y": 16,
+            "t": "danger",
+            "d": 2,
+            "rg": "西北",
+            "desc": "城外停放无名棺木的院子，夜里有更夫敲梆，不敢走近。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n1",
+            "n": "州城鼓楼",
+            "x": 50,
+            "y": 14,
+            "t": "city",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "州城中心的鼓楼，晨钟暮鼓定全城的作息，榜文也贴在这里。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n2",
+            "n": "白石驿",
+            "x": 84,
+            "y": 18,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "换马不换信的第二处驿站，驿卒按火漆印记登册。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n3",
+            "n": "河湾集",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "河曲处的定期集市，四乡人在此以物易物、捎带口信。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n4",
+            "n": "旧县衙",
+            "x": 50,
+            "y": 38,
+            "t": "city",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "县衙前堂，案卷按房科分柜，堂鼓只在放告日敲。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n5",
+            "n": "常平仓",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 3,
+            "rg": "东南",
+            "desc": "官家粮仓，墙高门厚，丰年籴入、歉年平粜。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n6",
+            "n": "官马厩",
+            "x": 16,
+            "y": 64,
+            "t": "relic",
+            "d": 2,
+            "rg": "西北",
+            "desc": "驿道旁的马厩，草料与蹄铁都从这里支取。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n7",
+            "n": "渡船局",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "管渡口船只与渡资的小衙，船票是一枚竹牌。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n8",
+            "n": "更夫巷",
+            "x": 84,
+            "y": 66,
+            "t": "relic",
+            "d": 2,
+            "rg": "东南",
+            "desc": "更夫歇脚的窄巷，梆子声一夜数起，是城里唯一的准点。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n9",
+            "n": "牌坊街",
+            "x": 16,
+            "y": 86,
+            "t": "city",
+            "d": 3,
+            "rg": "西北",
+            "desc": "立着几座旧牌坊的长街，坊下常有说书与卖药摊。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n10",
+            "n": "山神庙",
+            "x": 50,
+            "y": 84,
+            "t": "sect",
+            "d": 2,
+            "rg": "中枢",
+            "desc": "山口小庙，进山出山的人都要在此歇一歇、添一炷香。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l1n11",
+            "n": "界碑坡",
+            "x": 84,
+            "y": 88,
+            "t": "danger",
+            "d": 3,
+            "rg": "东南",
+            "desc": "两县交界处的缓坡，界碑半埋，过了坡便算离乡。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          }
+        ]
+      },
+      {
+        "id": "shanhai",
+        "name": "山海与边荒",
+        "ico": "境",
+        "hint": "关外之地，榜文到不了",
+        "decor": "void",
+        "regions": [
+          {
+            "n": "西北",
+            "cx": 22,
+            "cy": 28,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          },
+          {
+            "n": "中枢",
+            "cx": 52,
+            "cy": 50,
+            "rx": 22,
+            "ry": 24,
+            "tr": "city"
+          },
+          {
+            "n": "东南",
+            "cx": 80,
+            "cy": 72,
+            "rx": 20,
+            "ry": 20,
+            "tr": "plain"
+          }
+        ],
+        "roads": [
+          [
+            "freeworld_l2n0",
+            "freeworld_l2n1"
+          ],
+          [
+            "freeworld_l2n1",
+            "freeworld_l2n2"
+          ],
+          [
+            "freeworld_l2n2",
+            "freeworld_l2n3"
+          ],
+          [
+            "freeworld_l2n3",
+            "freeworld_l2n4"
+          ],
+          [
+            "freeworld_l2n4",
+            "freeworld_l2n5"
+          ],
+          [
+            "freeworld_l2n5",
+            "freeworld_l2n6"
+          ],
+          [
+            "freeworld_l2n6",
+            "freeworld_l2n7"
+          ],
+          [
+            "freeworld_l2n7",
+            "freeworld_l2n8"
+          ],
+          [
+            "freeworld_l2n8",
+            "freeworld_l2n9"
+          ],
+          [
+            "freeworld_l2n9",
+            "freeworld_l2n10"
+          ],
+          [
+            "freeworld_l2n10",
+            "freeworld_l2n11"
+          ],
+          [
+            "freeworld_l2n0",
+            "freeworld_l2n3"
+          ],
+          [
+            "freeworld_l2n1",
+            "freeworld_l2n4"
+          ],
+          [
+            "freeworld_l2n2",
+            "freeworld_l2n5"
+          ],
+          [
+            "freeworld_l2n3",
+            "freeworld_l2n6"
+          ],
+          [
+            "freeworld_l2n4",
+            "freeworld_l2n7"
+          ],
+          [
+            "freeworld_l2n5",
+            "freeworld_l2n8"
+          ],
+          [
+            "freeworld_l2n6",
+            "freeworld_l2n9"
+          ],
+          [
+            "freeworld_l2n7",
+            "freeworld_l2n10"
+          ],
+          [
+            "freeworld_l2n8",
+            "freeworld_l2n11"
+          ]
+        ],
+        "nodes": [
+          {
+            "id": "freeworld_l2n0",
+            "n": "石桥铺",
+            "x": 16,
+            "y": 16,
+            "t": "relic",
+            "d": 3,
+            "rg": "西北",
+            "desc": "石桥头的脚夫聚处，扛活、歇脚、等雇主都在这片空地。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n1",
+            "n": "盐仓巷",
+            "x": 50,
+            "y": 14,
+            "t": "relic",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "官盐入库前暂放的巷子，地面常年泛白，秤声从早到晚。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n2",
+            "n": "马道坡",
+            "x": 84,
+            "y": 18,
+            "t": "wild",
+            "d": 3,
+            "rg": "东南",
+            "desc": "驿马上下坡的土道，雨天泥深，坡腰有一眼饮马井。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n3",
+            "n": "报房",
+            "x": 16,
+            "y": 40,
+            "t": "relic",
+            "d": 4,
+            "rg": "西北",
+            "desc": "抄录邸报与榜文的小屋，外间贴榜、里间落墨。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n4",
+            "n": "税关",
+            "x": 50,
+            "y": 38,
+            "t": "city",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "水陆要道上的关卡，货担逐一验票，账簿按日封存。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n5",
+            "n": "义仓",
+            "x": 84,
+            "y": 42,
+            "t": "relic",
+            "d": 4,
+            "rg": "东南",
+            "desc": "乡绅合设的备荒粮仓，钥匙由三家分执，缺一不开。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n6",
+            "n": "更楼",
+            "x": 16,
+            "y": 64,
+            "t": "city",
+            "d": 3,
+            "rg": "西北",
+            "desc": "高于屋脊的木楼，更夫按更次敲梆，火烛也在此看守。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n7",
+            "n": "船坞",
+            "x": 50,
+            "y": 62,
+            "t": "relic",
+            "d": 4,
+            "rg": "中枢",
+            "desc": "修造内河船的坞口，桐油与木屑味混在一起。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n8",
+            "n": "樵径",
+            "x": 84,
+            "y": 66,
+            "t": "wild",
+            "d": 3,
+            "rg": "东南",
+            "desc": "砍柴人踩出的山径，岔路多，路口堆着指路的小石堆。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n9",
+            "n": "古渡碑",
+            "x": 16,
+            "y": 86,
+            "t": "relic",
+            "d": 4,
+            "rg": "西北",
+            "desc": "旧渡口边立着的碑，记着某年修渡的捐资与工价。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n10",
+            "n": "驿站后院",
+            "x": 50,
+            "y": 84,
+            "t": "relic",
+            "d": 3,
+            "rg": "中枢",
+            "desc": "驿卒家眷住的后院，晾着马具与草料，急件不进这里。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          },
+          {
+            "id": "freeworld_l2n11",
+            "n": "城壕",
+            "x": 84,
+            "y": 88,
+            "t": "danger",
+            "d": 4,
+            "rg": "东南",
+            "desc": "城墙外的壕沟，平日干浅，汛期积水，夜间不许靠近。",
+            "c": "原创世界 · 类型通用地名库（非原著，可按需增改）"
+          }
+        ]
+      }
+    ]
+  },
+
     /* ---------- 网游之盗版神话（v4.02.0 新增） ---------- */
     daobanshenhua: {"name":"网游之盗版神话 · 月恒行旅图鉴","flavor":"登录《月恒》，从新手村打到国战","layers":[{"id":"start","name":"月恒 · 新手与练级区","ico":"村","hint":"低等级地图，绿白装与首杀","decor":"land","regions":[{"n":"新手与练级区","cx":22,"cy":70,"rx":20,"ry":22,"tr":"forest"}],"roads":[["n0","n1"],["n1","n2"]],"nodes":[{"id":"n0","n":"新手村 / 野狗村","x":20,"y":56,"t":"start","d":1,"rg":"新手与练级区","desc":"《月恒》新手阶段的新手村。「野狗村」仅见自动生成百科页，存疑","c":"原著地图索引"},{"id":"n1","n":"野狼谷","x":40,"y":72,"t":"wild","d":2,"rg":"新手与练级区","desc":"《月恒》新手阶段的练级区。第9章","c":"原著地图索引"},{"id":"n2","n":"松木林","x":60,"y":56,"t":"wild","d":3,"rg":"新手与练级区","desc":"《月恒》新手阶段的练级区/装备出处。原文「松木林巨剑」","c":"原著地图索引"},{"id":"n3","n":"瘟疫墓地","x":80,"y":72,"t":"wild","d":1,"rg":"新手与练级区","desc":"《月恒》新手阶段的任务/练级区。第27章","c":"原著地图索引"}]},{"id":"city","name":"月恒 · 主城与行会","ico":"城","hint":"转职、建帮令、领地与行会争霸","decor":"city","regions":[{"n":"中国区主城","cx":60,"cy":42,"rx":24,"ry":24,"tr":"city"}],"roads":[["m0","m1"],["m1","m2"],["m2","m3"]],"nodes":[{"id":"m0","n":"飓风城","x":24,"y":36,"t":"city","d":2,"rg":"中国区主城","desc":"《月恒》中期的主城。分卷「飓风城风云」","c":"原著地图索引"},{"id":"m1","n":"银月城","x":39,"y":56,"t":"sect","d":3,"rg":"中国区主城","desc":"《月恒》中期的中国区主城。分卷「银月城风云」；原文「全银月城最好的铁匠铺」；守城战主场","c":"原著地图索引"},{"id":"m2","n":"疾风城","x":54,"y":36,"t":"wild","d":4,"rg":"中国区主城","desc":"《月恒》中期的主城。丁舒升「曾独战疾风城」","c":"原著地图索引"},{"id":"m3","n":"连云城","x":69,"y":56,"t":"city","d":2,"rg":"中国区主城","desc":"《月恒》中期的主城。第549章「血战连云城」","c":"原著地图索引"},{"id":"m4","n":"荣耀主城 / 荣耀城","x":84,"y":36,"t":"sect","d":3,"rg":"中国区主城","desc":"《月恒》中期的主城。第574、578章","c":"原著地图索引"}]},{"id":"end","name":"月恒 · 高级地图与国战","ico":"战","hint":"隐藏职业、神装与跨国主城战","decor":"cosmos","regions":[{"n":"国战与高级地图","cx":86,"cy":76,"rx":14,"ry":18,"tr":"mountain"}],"roads":[["e0","e1"],["e1","e2"]],"nodes":[{"id":"e0","n":"凌通城","x":30,"y":52,"t":"wild","d":4,"rg":"国战与高级地图","desc":"《月恒》后期的法国主城（国战）。百度百科慕容姗姗条目","c":"原著地图索引"},{"id":"e1","n":"龙域","x":52,"y":70,"t":"wild","d":5,"rg":"国战与高级地图","desc":"《月恒》后期的高级地图。第615章「冰兰在龙域」","c":"原著地图索引"},{"id":"e2","n":"夜幕高地","x":74,"y":52,"t":"relic","d":6,"rg":"国战与高级地图","desc":"《月恒》后期的练级区/行会战。仅见自动生成百科页，存疑","c":"原著地图索引"}]}]},
     /* ---------- 网游之纵横天下（v4.02.0 新增） ---------- */

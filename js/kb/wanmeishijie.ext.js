@@ -69,3 +69,21 @@
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wanmeishijie"] || (KB["wanmeishijie"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"wanmeishijie·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《完美世界 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「下界 · 大荒」：石村、大荒、虚神界、石国都城、火国、百断山、武王府、补天阁、鲲鹏巢、西陵兽山。\n第2层「上界 · 三千州」：上界三千州、仙古遗迹、帝关、界海、仙域、天神书院、异域。\n【别名】虚神、石国、百断、武王府、补天、鲲鹏巢穴、北海、西陵、三千州、上界、仙古、边荒帝关、黑暗界海、天神书院、异域。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","wanmeishijie"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 专名铁律命中率修复：为注入模型的专名补可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["wanmeishijie"] || (KB["wanmeishijie"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"完美世界·战族与战天歌详录（原著核对）","content":"战天歌：战族当代战王之一，修战碑印、战剑气、战王身、战帝手与不灭战意，曾与石昊交手，最终死于石昊之手。战族为原著上界族群之一，以战意与战王传承立族。\n【口径】战天歌是战族战王，不是石昊的师兄弟、不是石国皇族；与「石中天」（石昊祖父，大魔神）、「秦昊」（石昊同父同母亲弟）三人不可混同。","category":"专名核对","tags":["专名","防幻觉","核对","wanmeishijie"],"alwaysInclude":false,"priority":""},{"title":"完美世界·荒域族群与苍莽山脉详录（原著核对）","content":"火族：荒域族群，火灵儿为火国公主，曾在火族祖地得朱雀传承；火族祖地是火系传承所在，不是主角出身的石村。\n雷族：雷侯一族，雷明远（雷侯幼子）、雷云坤（雷侯四子）皆死于雷族灭族之役。\n苍莽山脉：石村所在大荒边缘的山脉，紫山侯之族叔紫山寿曾带队进入，觊觎石村所得的狻猊宝骨，被柳神切去一只手掌；罗浮大泽蛟苍亦在此失去一臂。\n【口径】苍莽山脉是下界荒域地名，不是上界三千道州的某座仙山。","category":"专名核对","tags":["专名","防幻觉","核对","wanmeishijie"],"alwaysInclude":false,"priority":""},{"title":"完美世界·宝术神通名目核对（勿张冠李戴）","content":"化天神通、照天术：月婵（补天教女修，主次身分立，次身化名清漪）所修神通，与御龙术、补天术、真龙宝术、神凰宝术并列；\n麒麟步、上苍劫光：石毅（石昊族兄，天生重瞳）所修，其中上苍劫光源自其母夺取石昊至尊骨后嫁接所得，与混沌天地、补天术同为石毅手段；\n日月神印：火金族年轻至尊藤一（本体为神藤）所修，与火金宝瓶印并列。\n【口径】以上名目各有其主，不得把月婵的神通安到火灵儿身上，也不得把石毅的上苍劫光写成石昊自创；至尊骨的归属与流转另有专条，勿在此处改写。","category":"专名核对","tags":["专名","防幻觉","核对","wanmeishijie"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

@@ -59,3 +59,21 @@
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["quanzhigaoshou"] || (KB["quanzhigaoshou"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"quanzhigaoshou·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《全职高手 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「荣耀双界」：兴欣网吧、H市街区、荣耀第十区、野图BOSS领地、兴欣训练室、挑战赛场馆、全明星会场、总决赛场馆、世界邀请赛。\n第2层「荣耀 · 副本与神域」：格林之森、埋骨之地、一线峡谷、空中陵墓、溪山城。\n第3层「联盟 · 主场城市」：B市 · 三队同城、Q市 · 霸图、G市 · 蓝雨、S市 · 轮回。\n【别名】网吧、兴欣、H市、第十区、新区、野图、训练室、挑战赛、全明星、总决赛、世界邀请赛、国家队、格林、哥布林、埋骨、丧尸贝利、峡谷、影刀客、陵墓、神域副本、溪山、蓝溪阁驻地、B市、微草、皇风、义斩、Q市、霸气雄图、G市、蓝溪阁、蓝雨主场、S市、轮回。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","quanzhigaoshou"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 专名铁律补遗：补齐铁律表已注入但知识库缺锚点的名目 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["quanzhigaoshou"] || (KB["quanzhigaoshou"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"全职高手·专名铁律补遗（俱乐部与技能名）","content":"【俱乐部】三零一度俱乐部、义斩俱乐部、皇风俱乐部：均为荣耀联盟职业俱乐部，「三零一度」是数字写法，「义斩」「皇风」是俱乐部名，不得改成「301度」「义斩战队」「皇风战队」以外的自造简称，也不得与嘉世、霸图、蓝雨、轮回、雷霆、虚空、烟雨、百花、呼啸等其他俱乐部混同。\n【技能】三段斩、拔刀斩：荣耀游戏中的技能名，属剑士系/剑客系的招式，写法固定，不得写成「三连斩」「拔刀术」等自造名，也不得当作装备或副本名。\n【境界/荣誉】荣耀之巅：本界对最高竞技水准的称谓，用于形容顶尖对决与荣誉，不是等级数值、不是装备品级、不是某个副本名。\n【口径】俱乐部、账号、技能三者不可互换；本条只锁定名目写法。","category":"专名核对","tags":["专名","防幻觉","核对","quanzhigaoshou"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
