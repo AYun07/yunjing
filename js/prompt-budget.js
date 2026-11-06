@@ -43,6 +43,20 @@
       const chars = Math.floor(ctx * 0.6 / 1.2);
       return Math.max(3000, Math.min(this.defaults.limit, chars));
     },
+    /**
+     * v3.99.0 低配档硬上限：极低参数模型的上下文常是 4k/8k/16k，而上面按模型名推断
+     * 一旦推不出（自建端点、中转站、本地 ollama、名字里没有规格数字）就会退回 11 万字符，
+     * 对它们是必爆。这里在 lite 档给一个不依赖推断的保守天花板。
+     * 18000 字符 ≈ 1.5 万 token，落在 16k~32k 上下文的安全区；真 8k 的模型由
+     * autoLimit() 推断出的 4000 字符接住，两者取小。 */
+    LITE_LIMIT: 18000,
+    isLite() {
+      try {
+        return !!(window.BaseModelMode && window.BaseModelMode.isLite && window.BaseModelMode.isLite());
+      } catch (e) {
+        return false;
+      }
+    },
     /** 粗略 token 估算（中文字 1.2、其余 0.3），仅用于展示，不参与裁剪判断 */
     estTokens(messages) {
       let t = 0;
@@ -52,6 +66,87 @@
         t += cjk * 1.2 + (s.length - cjk) * 0.3;
       });
       return Math.round(t);
+    },
+    /**
+     * v3.99.0 超限自适应降级（最后的兜底）
+     *
+     * 模型名推断不出来的情况很常见（自建端点、中转站、本地 ollama、名字里不带规格数字），
+     * 这时无论默认值设多少都可能踩空。真正可靠的信号只有一个：服务端报「上下文超限」。
+     * 捕获到就把它记下来，上限立刻砍到 55%，下次装配按新上限走，并自动重试一次。
+     * 玩家只会感觉「卡了一下就好了」，而不是看到一串英文报错。
+     */
+    OVERFLOW_KEY: "storyPromptOverflow",
+    /** 是否为上下文超限类错误 */
+    isOverflowError(err) {
+      const s = String((err && (err.message || err.error || err)) || "").toLowerCase();
+      if (!s) return false;
+      return /context[_ ]?length|maximum context|too many tokens|reduce the length|prompt is too long|input is too long|exceed.*(token|context)|token.*exceed|上下文.*(超|长)|超出.*长度|内容过长/.test(s);
+    },
+    /** 记录一次超限：直接落到最保守档（约 6.7k token，8k 上下文的模型也能跑），
+     *  已经比它还小就再砍 25%。玩家撞一次墙就到位，不必反复试。 */
+    noteOverflow() {
+      const cfg = this.get();
+      const cur = Number(cfg.limit) || this.defaults.limit;
+      const SAFE = 8000;
+      const next = cur > SAFE ? SAFE : Math.max(3000, Math.round(cur * 0.75));
+      try {
+        localStorage.setItem(this.OVERFLOW_KEY, String(next));
+      } catch (e) {}
+      console.warn(`[PromptBudget] 服务端报告上下文超限，上限自动下调：${cur} → ${next} 字符`);
+      return next;
+    },
+    clearOverflow() {
+      try {
+        localStorage.removeItem(this.OVERFLOW_KEY);
+      } catch (e) {}
+    },
+    /**
+     * v3.99.0 上下文窗口循环（玩家侧唯一的可操作项）
+     *
+     * 旧版给的是「预算上限 8万/11万/15万/20万字符」——**最小也是 8 万字符**，
+     * 用便宜小模型的玩家根本调不下来，只能被动爆窗。而且玩家其实不知道自己要多少字符，
+     * 只知道模型是 8K/32K/128K。所以改成直接循环「上下文窗口」，预算由它换算。
+     * 顺序：自动 → 8K → 16K → 32K → 64K → 128K → 回到自动。
+     */
+    CTX_STEPS: [8000, 16000, 32000, 64000, 128000],
+    /** 当前显式设定的窗口（0 = 自适应） */
+    ctxExplicit() {
+      try {
+        return Number(localStorage.getItem(this.CTX_KEY) || 0) || 0;
+      } catch (e) {
+        return 0;
+      }
+    },
+    setCtx(n) {
+      try {
+        if (n > 0) localStorage.setItem(this.CTX_KEY, String(n));
+        else localStorage.removeItem(this.CTX_KEY);
+      } catch (e) {}
+    },
+    /** 循环到下一档，返回 {ctx, label} */
+    cycleContext() {
+      const cur = this.ctxExplicit();
+      let next;
+      if (!cur) next = this.CTX_STEPS[0];
+      else {
+        const i = this.CTX_STEPS.indexOf(cur);
+        next = i < 0 || i === this.CTX_STEPS.length - 1 ? 0 : this.CTX_STEPS[i + 1];
+      }
+      this.setCtx(next);
+      /* 手动切过窗口后，之前的超限记录失效（玩家已经明确告知了真实窗口） */
+      this.clearOverflow();
+      this.KEY_MANUAL = true;
+      try { localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), auto: true })); } catch (e) {}
+      return { ctx: next, label: next ? `${Math.round(next / 1000)}K 上下文` : "自适应" };
+    },
+    /** 被 noteOverflow 记录过的上限（没有则 0） */
+    overflowLimit() {
+      try {
+        const v = Number(localStorage.getItem(this.OVERFLOW_KEY) || 0);
+        return v > 0 ? v : 0;
+      } catch (e) {
+        return 0;
+      }
     },
     get() {
       let saved = {};
@@ -71,6 +166,21 @@
           cfg.autoLimitChars = auto;
         }
       }
+      /* v3.99.0 低配档兜底：推断不出窗口时不能留 11 万字符的默认值；
+         即便推断出来了，小模型的真实安全线也远低于 0.6 系数理论值。 */
+      cfg.lite = this.isLite();
+      if (cfg.lite && cfg.limit > this.LITE_LIMIT) {
+        cfg.limit = this.LITE_LIMIT;
+        cfg.liteClamped = true;
+      }
+      /* 曾经被服务端判定超限的，按实测值继续收紧，避免每次都撞墙 */
+      const of = this.overflowLimit();
+      if (of > 0 && of < cfg.limit) {
+        cfg.limit = of;
+        cfg.overflowTightened = true;
+      }
+      /* 手动档位也不允许超过小模型可承受的范围之外的「人为抬高」——
+         玩家自己设的更大值仍尊重，但给出标记供 UI 提示。 */
       cfg.ctxTokens = this.ctxTokens();
       return cfg;
     },

@@ -34,7 +34,15 @@
     cthulhu: { primary: "#6fb8a8", accent: "#8a78c8", stone: "#4a6862", tree: "#3f5a52", sand: "#8a98a0", water: "#4f6f9f", deep: "#080d0e", panel: "#0d1416", text: "#e0ece8", muted: "#88a8a0" },
     scifi: { primary: "#5fc8e8", accent: "#8ab0ff", stone: "#5a7890", tree: "#4fae9f", sand: "#a8b8c0", water: "#4f8fd8", deep: "#060a18", panel: "#0a1020", text: "#e6f0f8", muted: "#8ca0b8" },
     free: { primary: "#c9a86a", accent: "#9fb8d8", stone: "#8a8878", tree: "#6f9f7a", sand: "#d0bc90", water: "#6f8fb0", deep: "#0e0d0a", panel: "#15130d", text: "#eee8d8", muted: "#a8a090" },
-    freeworld: { primary: "#b8a878", accent: "#8fc0b0", stone: "#8a8474", tree: "#6f9f88", sand: "#c8b890", water: "#5f8fa8", deep: "#0c0d0a", panel: "#13140f", text: "#eae8dc", muted: "#a0a490" }
+    freeworld: { primary: "#b8a878", accent: "#8fc0b0", stone: "#8a8474", tree: "#6f9f88", sand: "#c8b890", water: "#5f8fa8", deep: "#0c0d0a", panel: "#13140f", text: "#eae8dc", muted: "#a0a490" },
+    /* v3.99.0 天蚕土豆宇宙四界专属配色。
+       此前四界没有登记配色，一直套 xianni/free 的兜底色，与各自世界气质不符：
+       大主宰该是「赤金＋苍穹紫」，武动该是「苍青＋琥珀」，元尊该是「天青＋圣金」，
+       万相该是「相紫＋光明金」。补上之后四界地图才有自己的辨识度。 */
+    dazhuzai: { primary: "#e8b45c", accent: "#a878e8", stone: "#a89a88", tree: "#8fae7a", sand: "#e0c894", water: "#5f9fd8", deep: "#14101c", panel: "#1c1626", text: "#f2eadc", muted: "#b8a898" },
+    wudongqiankun: { primary: "#7fc9a8", accent: "#e8b050", stone: "#8a9888", tree: "#5fb888", sand: "#d8c898", water: "#4fa8c0", deep: "#0a1614", panel: "#0f1e1a", text: "#e8f2ec", muted: "#98b0a4" },
+    yuanzun: { primary: "#86c8e8", accent: "#e8d8a0", stone: "#8a9cae", tree: "#6fc0b0", sand: "#a8bcc8", water: "#4f9fe0", deep: "#08131f", panel: "#0c1a28", text: "#e8f2f8", muted: "#98aec0" },
+    wanxiangzhiwang: { primary: "#b8a0e8", accent: "#f0d090", stone: "#9a94b0", tree: "#78c0a8", sand: "#b8b0cc", water: "#6f9fe0", deep: "#110e1c", panel: "#171327", text: "#ece8f6", muted: "#a8a0c0" }
   };
   const ATLAS_DATA = {
     /* ---------- 遮天 ---------- */
@@ -8176,7 +8184,10 @@
       const gs = 0.9 + prand(i + idx * 31, 9) * 0.85;
       glyphs += terrainGlyph(r.tr, gx.toFixed(1), gy.toFixed(1), gs.toFixed(2), P);
     }
-    const ly = Math.max(3.4, r.cy - r.ry - 3.1);
+    /* v3.99.0 留白修正：最外层 region 常撑到 rx/ry≈42，标签会被推到画布边缘、
+       与地图边框线和圆角叠在一起（实拍可见「大夏国」「北灵境」压线）。
+       抬高下限让标签始终留在框内，读起来干净。 */
+    const ly = Math.max(5.4, r.cy - r.ry - 3.1);
     const tw = r.n.length * 2.06 + 4.6;
     const label = `<g>
             <rect x="${(r.cx - tw / 2).toFixed(1)}" y="${ly.toFixed(1)}" width="${tw.toFixed(1)}" height="3.6" rx="1.7" fill="${hexA(P.deep, 0.72)}" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
