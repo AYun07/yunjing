@@ -1,0 +1,149 @@
+/* ============================================================
+   大主宰主题 - 主宰紫金（天蚕土豆大千世界宇宙）
+   v3.98.0 每界专属 UI 皮肤：
+   主宰王座 · 主宰图鉴标题 · 专属滚动条 · 主题色贯通全界面
+   ============================================================ */
+body {
+    --primary: #9b6ad0;
+    --primary-dim: rgba(155, 106, 208, 0.12);
+    --primary-glow: rgba(155, 106, 208, 0.3);
+    --secondary: #d9a86a;
+    --accent: #b08ad8;
+    --panel-border: rgba(155, 106, 208, 0.18);
+    background-color: #120a18;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(155, 106, 208, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(217, 168, 106, 0.06), transparent 60%),
+        radial-gradient(ellipse 500px 300px at 50% 118%, rgba(155, 106, 208, 0.08), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='130' viewBox='0 0 130 130'%3E%3Cg fill='none' stroke='%239b6ad0' stroke-opacity='0.055'%3E%3Cpath d='M15 110 Q30 70 22 40 Q34 60 44 30 Q42 66 58 24 Q60 58 76 34 Q70 72 88 48'/%3E%3Cpath d='M60 128 Q76 92 70 64 Q80 82 92 58 Q90 90 104 70'/%3E%3C/g%3E%3Cg fill='%23cbb0e8' fill-opacity='0.09'%3E%3Ccircle cx='30' cy='52' r='1.1'/%3E%3Ccircle cx='70' cy='28' r='1.3'/%3E%3Ccircle cx='95' cy='60' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #cbb0e8, #9b6ad0); }
+body .progress-fill { background: linear-gradient(90deg, #9b6ad0, #d9a86a); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #cbb0e8, #9b6ad0); }
+body .foreshadow-item.planted {
+    background: rgba(155, 106, 208, 0.08);
+    border-left-color: #9b6ad0;
+    color: #c8aee0;
+}
+body .char-status { color: #9b6ad0; border-color: rgba(155, 106, 208, 0.4); }
+
+/* ─────────── ① 顶栏：主宰王座 ─────────── */
+body.theme-dazhuzai .top-bar {
+    background: linear-gradient(180deg, rgba(28, 16, 36, 0.96), rgba(22, 14, 28, 0.93));
+    border-bottom: 1px solid rgba(155, 106, 208, 0.32);
+    box-shadow: 0 2px 18px rgba(0, 0, 0, 0.45), 0 3px 12px rgba(155, 106, 208, 0.1);
+}
+body.theme-dazhuzai #gameTitle {
+    letter-spacing: 5px;
+    text-shadow: 0 0 18px rgba(155, 106, 208, 0.45), 0 0 36px rgba(217, 168, 106, 0.2);
+}
+
+/* ─────────── ② 正文卡：星河淬炼 ─────────── */
+body.theme-dazhuzai .ai-card {
+    position: relative;
+    border-left: 3px solid #9b6ad0;
+    background:
+        linear-gradient(0deg, rgba(155, 106, 208, 0.09), transparent 30%),
+        linear-gradient(160deg, rgba(217, 168, 106, 0.04), transparent 40%),
+        var(--panel);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.38);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+body.theme-dazhuzai .ai-card:hover {
+    border-left-color: #cbb0e8;
+    box-shadow: 0 4px 26px rgba(0, 0, 0, 0.42), 0 0 22px rgba(155, 106, 208, 0.14);
+}
+body.theme-dazhuzai .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 24px;
+    width: 4px; height: 16px;
+    background: linear-gradient(180deg, rgba(203, 176, 232, 0.55), transparent);
+    border-radius: 2px 2px 0 0;
+    pointer-events: none;
+}
+body.theme-dazhuzai .ai-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 14px;
+    width: 3px; height: 10px;
+    background: linear-gradient(180deg, rgba(155, 106, 208, 0.5), transparent);
+    border-radius: 2px 2px 0 0;
+    pointer-events: none;
+}
+body.theme-dazhuzai .ai-card-header {
+    border-bottom: 1px solid rgba(155, 106, 208, 0.22);
+    border-image: linear-gradient(90deg, rgba(155, 106, 208, 0.45), rgba(217, 168, 106, 0.15) 70%, transparent) 1;
+}
+
+/* ─────────── ③ 章节徽章：大千榜刻名 ─────────── */
+body.theme-dazhuzai .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(203, 176, 232, 0.5);
+    box-shadow: 0 0 14px rgba(155, 106, 208, 0.35);
+    text-shadow: 0 0 8px rgba(155, 106, 208, 0.35);
+}
+
+/* ─────────── ④ 选项按钮：灵力激发 ─────────── */
+body.theme-dazhuzai .option-btn { border-radius: 8px 8px 8px 2px; }
+body.theme-dazhuzai .option-btn::before { content: '✦ '; font-size: 0.8em; }
+body.theme-dazhuzai .option-btn:hover:not(:disabled) {
+    border-color: rgba(155, 106, 208, 0.7);
+    box-shadow: inset 2px 0 0 #9b6ad0, 0 0 16px rgba(155, 106, 208, 0.18);
+    background: rgba(155, 106, 208, 0.06);
+    text-shadow: 0 0 8px rgba(155, 106, 208, 0.35);
+}
+body.theme-dazhuzai .options-title { letter-spacing: 5px; }
+body.theme-dazhuzai .options-title::before { content: '≡ '; color: #b08ad8; }
+
+/* ─────────── ⑤ 输入区：灵力灌注 ─────────── */
+body.theme-dazhuzai #userInput:focus {
+    border-color: #9b6ad0;
+    box-shadow: 0 0 0 3px rgba(155, 106, 208, 0.16), 0 0 22px rgba(155, 106, 208, 0.12);
+}
+body.theme-dazhuzai #sendBtn {
+    box-shadow: 0 0 14px rgba(155, 106, 208, 0.3);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：主宰图鉴 ─────────── */
+body.theme-dazhuzai .panel-title { letter-spacing: 3px; }
+body.theme-dazhuzai .panel-title::before { content: '❖ '; color: #b08ad8; }
+body.theme-dazhuzai .gauge-label { color: #b08ad8; }
+body.theme-dazhuzai .gauge-fill {
+    box-shadow: 0 0 8px rgba(155, 106, 208, 0.4);
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0 4px, transparent 4px 8px);
+    background-size: 8px 100%;
+}
+body.theme-dazhuzai .sheet-box { border-top: 2px solid rgba(155, 106, 208, 0.42); }
+body.theme-dazhuzai .modal-box { border-top: 2px solid rgba(155, 106, 208, 0.42); }
+
+/* ─────────── ⑦ 滚动条：星河流道 ─────────── */
+body.theme-dazhuzai #chatMessages::-webkit-scrollbar-thumb,
+body.theme-dazhuzai #statusPanel::-webkit-scrollbar-thumb,
+body.theme-dazhuzai #setupWrap::-webkit-scrollbar-thumb { background: rgba(155, 106, 208, 0.3); }
+body.theme-dazhuzai #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(155, 106, 208, 0.5); }
+
+/* ─────────── ⑧ 扮演模式特化：大千之路 ─────────── */
+body.theme-dazhuzai .wizard-title { letter-spacing: 4px; text-shadow: 0 0 16px rgba(155, 106, 208, 0.4); }
+body.theme-dazhuzai .book-title-line { color: #9b6ad0; }
+body.theme-dazhuzai .status-panel {
+    border-image: linear-gradient(180deg, rgba(155, 106, 208, 0.4), rgba(217, 168, 106, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：灵诀钮 ─────────── */
+body.theme-dazhuzai .quick-btn { border-radius: 8px 8px 8px 2px; }
+body.theme-dazhuzai .quick-btn:hover {
+    border-color: rgba(155, 106, 208, 0.6);
+    box-shadow: 0 0 10px rgba(155, 106, 208, 0.16);
+}
+
+/* ─────────── ⑩ 章节标题：主宰刻字 ─────────── */
+body.theme-dazhuzai .story-chapter-title {
+    letter-spacing: 10px;
+    text-shadow: 0 0 22px rgba(155, 106, 208, 0.4), 0 0 44px rgba(217, 168, 106, 0.2);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-dazhuzai.mobile .ai-card::before,
+body.theme-dazhuzai.mobile .ai-card::after { display: none; }

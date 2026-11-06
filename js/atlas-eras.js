@@ -55,7 +55,7 @@
           { n: "极北之地", cx: 22, cy: 14, rx: 15, ry: 10, tr: "water" },
           { n: "史莱克城", cx: 44, cy: 66, rx: 15, ry: 12, tr: "forest" }
         ],
-        roads: [["slk2", "hslg"], ["slk2", "clt"], ["slk2", "mingdu"], ["mingdu", "mingdetang"], ["clt", "jibei"], ["mingdu", "xingluo2"], ["slk2", "bentizong"]],
+        roads: [["slk2", "hslg", ["slk2","tangmen2"]], ["slk2", "clt"], ["slk2", "mingdu"], ["mingdu", "mingdetang"], ["clt", "jibei"], ["mingdu", "xingluo2"], ["slk2", "bentizong"]],
         nodes: [
           { id: "slk2", n: "史莱克学院", x: 42, y: 66, t: "city", d: 2, rg: "史莱克城", desc: "万年后仍是大陆第一学府，霍雨浩、唐舞桐所在；新一代史莱克七怪自此成名，海神阁为最高决策机构。", c: "《绝世唐门》史莱克学院与海神阁。" },
           { id: "hslg", n: "海神阁", x: 52, y: 74, t: "sect", d: 3, rg: "史莱克城", desc: "史莱克学院最高决策机构，阁主言少哲、宿老玄老（玄子）坐镇；霍雨浩入学院后进入海神阁体系。", c: "《绝世唐门》海神阁、言少哲、玄老。" },
@@ -67,7 +67,8 @@
           { id: "bentizong", n: "本体宗", x: 26, y: 56, t: "sect", d: 3, rg: "天魂·斗灵", desc: "以「本体武魂」二次觉醒闻名，毒必死、毒不死兄弟坐镇，与史莱克、明德堂并立。", c: "《绝世唐门》本体宗、毒不死。" },
           { id: "xingluo2", n: "星罗帝国", x: 78, y: 78, t: "city", d: 2, rg: "星罗帝国", desc: "万年后的星罗帝国，与天魂、斗灵、日月并立；白虎公爵戴家一脉仍为国之柱石。", c: "《绝世唐门》四国格局。" },
           { id: "tianhun", n: "天魂帝国", x: 16, y: 36, t: "city", d: 2, rg: "天魂·斗灵", desc: "日月帝国侵略战争首当其冲的帝国之一，与斗灵帝国相邻，是魂导器时代旧秩序的代表。", c: "《绝世唐门》天魂帝国、斗灵帝国。" }
-        ]
+        ,
+          {"id":"tangmen2","n":"唐门","x":60,"y":84,"t":"sect","d":3,"rg":"史莱克城","desc":"霍雨浩、唐舞桐一脉重兴的唐门，魂导器与暗器双修，万年后仍为大陆顶尖势力。","c":"《绝世唐门》唐门复兴。"}]
       },
       {
         id: "dou3", name: "龙王传说 · 斗铠时代", ico: "铠", era: "斗罗Ⅲ · 绝世唐门约两万年后",
@@ -79,7 +80,9 @@
           { n: "极北冰封", cx: 22, cy: 16, rx: 14, ry: 10, tr: "water" },
           { n: "深渊通道", cx: 84, cy: 74, rx: 14, ry: 12, tr: "void" }
         ],
-        roads: [["slk3", "tangmen3"], ["slk3", "clt3"], ["tangmen3", "mingdu3"], ["clt3", "hunshou3"], ["hunshou3", "shenyuan"], ["slk3", "jibei3"], ["mingdu3", "lianbang"]],
+        roads: [["slk3", "tangmen3", ["tangmen3","donghai3"], ["jingling3","guanyi3"]], ["slk3", "clt3"], ["tangmen3", "mingdu3"], ["clt3", "hunshou3"], ["hunshou3", "shenyuan"], ["slk3", "jibei3"], ["mingdu3", "lianbang"],
+          {"id":"donghai3","n":"东海学院","x":18,"y":84,"t":"city","d":2,"rg":"斗罗联邦","desc":"唐舞麟少年求学之地，魂导器与斗铠启蒙之所，新一代史莱克七怪起点。","c":"《龙王传说》东海学院。"},
+          {"id":"jingling3","n":"精灵星","x":88,"y":18,"t":"wild","d":4,"rg":"魂兽地界","desc":"魂兽共主古月娜一脉乐土，生命古树与精灵族共生，斗罗星灵气之源。","c":"《龙王传说》精灵星。"}],
         nodes: [
           { id: "slk3", n: "史莱克学院", x: 40, y: 50, t: "city", d: 3, rg: "斗罗联邦", desc: "遭「两枚弑神级定装魂导炮弹」摧毁、史莱克城几近覆灭，唐舞麟等幸存者重建；仍是大陆精神象征。", c: "《龙王传说》史莱克大劫与重建。" },
           { id: "tangmen3", n: "唐门", x: 28, y: 62, t: "sect", d: 3, rg: "斗罗联邦", desc: "唐三所立、五部不衰；唐舞麟接任门主，与史莱克并肩，于大劫后以暗器与玄天功延续传承。", c: "《龙王传说》唐门、唐舞麟任门主。" },
@@ -102,7 +105,9 @@
           { n: "龙马星系", cx: 72, cy: 38, rx: 20, ry: 16, tr: "void" },
           { n: "深红之域", cx: 84, cy: 76, rx: 13, ry: 11, tr: "void" }
         ],
-        roads: [["douluoxing", "tianluoxing"], ["douluoxing", "slk4"], ["slk4", "haishenhu"], ["douluoxing", "longma"], ["longma", "tianlong"], ["longma", "shenhong"], ["douluoxing", "zhanshendian"]],
+        roads: [["douluoxing", "tianluoxing", ["shrek4","jingling4"], ["tianlong4","mujian4"]], ["douluoxing", "slk4"], ["slk4", "haishenhu"], ["douluoxing", "longma"], ["longma", "tianlong"], ["longma", "shenhong"], ["douluoxing", "zhanshendian"],
+          {"id":"jingling4","n":"精灵星","x":20,"y":84,"t":"wild","d":4,"rg":"天罗星","desc":"永恒之树化身所在地，生命古树庇佑，蓝轩宇一脉的精灵族家园。","c":"《终极斗罗》精灵星。"},
+          {"id":"mujian4","n":"联邦母舰","x":84,"y":20,"t":"relic","d":4,"rg":"龙马星系","desc":"斗罗联邦深空远征核心战舰，承载第七舰队，星际战争移动堡垒。","c":"《终极斗罗》联邦舰队母舰。"}],
         nodes: [
           { id: "douluoxing", n: "斗罗星", x: 28, y: 42, t: "city", d: 3, rg: "斗罗星", desc: "人类母星，最终晋升神界级位面；大神圈与神界于本作回归，斗罗星成为斗罗宇宙的中心。", c: "《终极斗罗》斗罗星晋升、神界回归。" },
           { id: "tianluoxing", n: "天罗星", x: 18, y: 74, t: "city", d: 2, rg: "天罗星", desc: "斗罗联邦殖民星之一，蓝轩宇成长与早期历练之地；与天斗星、森罗星同为星际时代人类疆域。", c: "《终极斗罗》天罗星、天斗星、森罗星。" },
@@ -125,7 +130,7 @@
           { n: "人族聚居", cx: 46, cy: 74, rx: 20, ry: 14, tr: "desert" },
           { n: "祖庭", cx: 52, cy: 18, rx: 14, ry: 10, tr: "city" }
         ],
-        roads: [["zuting", "tianyu"], ["zuting", "richen"], ["tianyu", "jiushu"], ["richen", "jiushu"], ["jiushu", "renzu"]],
+        roads: [["zuting", "tianyu", ["buduo5","shuijing5"]], ["zuting", "richen"], ["tianyu", "jiushu"], ["richen", "jiushu"], ["jiushu", "renzu"]],
         nodes: [
           { id: "zuting", n: "祖庭", x: 52, y: 18, t: "city", d: 4, rg: "祖庭", desc: "妖精大陆最高权力中枢，妖、精两族共治之地，大妖皇与天精皇议政之所；唐三于此逐步触及世界顶层秩序。", c: "《重生唐三》祖庭、皇者议会。" },
           { id: "tianyu", n: "天宇帝国", x: 22, y: 34, t: "sect", d: 3, rg: "妖族疆域", desc: "妖怪族主导的帝国，与日辰帝国分掌妖精大陆；人族在其治下沦为附庸。", c: "《重生唐三》天宇帝国。" },
@@ -134,7 +139,8 @@
           { id: "renzu", n: "人族聚居地", x: 48, y: 78, t: "city", d: 2, rg: "人族聚居", desc: "人族被视为猪狗般役使的聚居区，唐三于此重修「妖神变」与血脉烙印，寻回前世神识、寻找转世小舞。", c: "《重生唐三》人族处境、妖神变。" },
           { id: "dayaohuang", n: "大妖皇", x: 18, y: 20, t: "danger", d: 4, rg: "妖族疆域", desc: "妖族顶级皇者序列，为妖精大陆最高战力；与「天精皇」共同构成唐三复兴人族必须面对的统治阶层。", c: "《重生唐三》大妖皇、天精皇。" },
           { id: "tianjinghuang", n: "天精皇", x: 82, y: 20, t: "danger", d: 4, rg: "精族疆域", desc: "精族顶级皇者序列，与大妖皇并列，掌精怪族最高权柄。", c: "《重生唐三》皇者体系。" },
-          { id: "zhufazhimen", n: "诸法之门", x: 62, y: 48, t: "relic", d: 4, rg: "祖庭", desc: "唐三以诸法之门、混沌之气与前世神识重修的关键机缘，是其于妖精大陆重登巅峰的根基。", c: "《重生唐三》诸法之门、混沌之气。" }
+          { id: "zhufazhimen", n: "诸法之门", x: 62, y: 48, t: "relic", d: 4, rg: "祖庭", desc: "唐三以诸法之门、混沌之气与前世神识重修的关键机缘，是其于妖精大陆重登巅峰的根基。", c: "《重生唐三》诸法之门、混沌之气。" },
+          { id: "shuijing5", n: "水晶城", x: 14, y: 46, t: "city", d: 3, rg: "妖族疆域", desc: "水晶大妖皇座城，救赎城之外最耀眼的妖皇都；唐三重生线的重要舞台之一。", c: "《重生唐三》水晶大妖皇。" }
         ]
       }
     ],

@@ -21,9 +21,9 @@ button{padding:10px 22px;background:#e0a84c;color:#16181f;border:none;border-rad
 <button onclick="runAll()">▶ 运行全部检查</button>
 <div id="sum"></div><div id="out"></div>
 <script>
-const ENGINE_VER = '3.97.0';
+const ENGINE_VER = '3.98.0';
 const ENGINES = ['js/world-runtime.js','js/world-bus.js','js/module-forge.js','js/combat-core.js','js/quest-chain.js','js/world-stage.js','js/story-hooks.js','js/world-director.js','js/world-legacy.js','js/world-ext/world-ext-core.js','js/player-kit.js','js/knowledge-manager.js','js/kb-vector.js','js/st-import.js','js/store-guard.js','js/mobile-fit.js','js/id-migrate.js','js/preset-io.js','js/regex-io.js','js/ai-message-builder.js','js/ai-response-handler.js','js/opportunity-system.js','js/world-alive.js'];
-const GENRES = ["mystery","scifi","wuxia","cthulhu","free","swallowedstar","shrouding","quanzhigaoshou","doupocangqiong","wanmeishijie","douluodalu","daoguiyixian","zhongshengdushi","dibao","longzu","quanzhifashi","limingzhijian","lunhuileyuan","wulianfengdian","shengxu","shenmifusu","ditandali","fanrenxiuxian","xianni","earth","freeworld","quanqiubingfeng","chaoshenxueyuan","zhanhen","jianlai","guimi","guzhenren","xuanjianxianzu"];
+const GENRES = ["mystery","scifi","wuxia","cthulhu","free","swallowedstar","shrouding","quanzhigaoshou","doupocangqiong","wanmeishijie","douluodalu","daoguiyixian","zhongshengdushi","dibao","longzu","quanzhifashi","limingzhijian","lunhuileyuan","wulianfengdian","shengxu","shenmifusu","ditandali","fanrenxiuxian","xianni","earth","freeworld","quanqiubingfeng","chaoshenxueyuan","zhanhen","jianlai","guimi","guzhenren","xuanjianxianzu","dazhuzai","wudongqiankun","yuanzun","wanxiangzhiwang"];
 function item(cls, name, detail){ const d=document.getElementById('out'); d.insertAdjacentHTML('beforeend', `<div class="item ${cls}">${cls==='ok'?'✅':cls==='fail'?'❌':'⚠️'} <b>${name}</b> — ${detail}</div>`); return cls==='ok'?1:cls==='fail'?0:1; }
 let pass=0,total=0;
 async function getText(f){
@@ -49,16 +49,16 @@ async function runAll(){
     for(const n of need){ try{ const r=await fetch(n+'?t='+Date.now()); if(!r.ok) miss.push(n); }catch(e){ miss.push(n); } }
     total++; pass+=miss.length?item('fail','资源四件套 '+g,'缺 '+miss.join(',')):item('ok','资源四件套 '+g,'config/ext/css 齐全');
   }
-  // ③ 引擎 33 界注册
+  // ③ 引擎阵容注册
   const c=await getText('js/combat-core.js');
   const missC=c.ok?GENRES.filter(g=>!c.text.includes(g+':{')):GENRES;
-  total++; pass+=missC.length?item('fail','战斗注册',c.ok?`缺 ${missC.join(',')}`:'文件获取失败'):item('ok','战斗注册','33 界阵容齐全');
+  total++; pass+=missC.length?item('fail','战斗注册',c.ok?`缺 ${missC.join(',')}`:'文件获取失败'):item('ok','战斗注册',`${GENRES.length} 界阵容齐全`);
   const q=await getText('js/quest-chain.js');
   const missQ=q.ok?GENRES.filter(g=>!q.text.includes(g+':{')):GENRES;
-  total++; pass+=missQ.length?item('fail','主线注册',q.ok?`缺 ${missQ.join(',')}`:'文件获取失败'):item('ok','主线注册','33 界章节齐全');
+  total++; pass+=missQ.length?item('fail','主线注册',q.ok?`缺 ${missQ.join(',')}`:'文件获取失败'):item('ok','主线注册',`${GENRES.length} 界章节齐全`);
   const s=await getText('js/world-stage.js');
   const missS=s.ok?GENRES.filter(g=>!s.text.includes(g+':{')):GENRES;
-  total++; pass+=missS.length?item('fail','阶段注册',s.ok?`缺 ${missS.join(',')}`:'文件获取失败'):item('ok','阶段注册','33 界时代齐全');
+  total++; pass+=missS.length?item('fail','阶段注册',s.ok?`缺 ${missS.join(',')}`:'文件获取失败'):item('ok','阶段注册',`${GENRES.length} 界时代齐全`);
   // ④ 大厅卡=validGenres=标题计数
   const idx=await getText('index.html');
   const stu=await getText('studio.html');

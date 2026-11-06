@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **67** 个版本，从 `v3.55.7` 到 `v3.97.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **68** 个版本，从 `v3.55.7` 到 `v3.98.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v3.98.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.98.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.98.0) |
 | **v3.97.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) |
 | **v3.96.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
 | **v3.96.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) |
@@ -81,6 +82,20 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v3.98.0 · 2026-11-06
+
+把《大主宰》从斗破续作段拆为独立世界，新增武动乾坤/大主宰/元尊/万相之王四界（全站共 37 界）
+
+四界资料库从 109–126 条补到 586–612 条，新增逐项原著百科 1913 条（人物/势力/地理/境界/功法器物/事件/设定），全站知识库 21928 → 23864 条
+
+大千世界宇宙五界互引、辰东三部曲三界互引、斗罗大陆一至五部按时代分层联动——同世界观才联，不同世界观不硬凑
+
+原著勘误 10 处：血神族归位、慕芊芊改大魔门宗主之女、苍玄宗改七峰、苍玄七术一峰一术、境界链改伪法域—伪圣—准神、源术品阶改普通/玄/天/圣、无双侯改十柱金台、李太玄改天龙相、姜青娥改十品光明相、苍渊改初二莲后破三莲
+
+斗罗时代层修复水晶城节点误插 era 数组导致图鉴整层打不开；四界舆图与五张斗罗时代图零重叠、零控制台错误
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.98.0)  [🔍 与 v3.97.0 差异](https://github.com/AYun07/yunjing/compare/v3.97.0...v3.98.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.98.0.zip)
 
 ## v3.97.0 · 2026-11-06
 
