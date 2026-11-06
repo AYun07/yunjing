@@ -59,3 +59,21 @@
   window.__KB_SEQUEL_OK__ = true;
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["limingzhijian"] || (KB["limingzhijian"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"limingzhijian·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《黎明之剑 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「塞西尔领 · 黎明工地」：领主府 · 先祖工坊、魔导工坊区、学堂街、移民村、铁路工地、南境哨线。\n第2层「洛伦大陆 · 列国棋盘」：圣苏尼尔、教区大教堂、提丰边境、圣灵平原。\n第3层「废土 · 旧纪元残响」：边缘市集、刚铎遗迹、静默深区。\n【别名】领主府、先祖、工坊、府邸、工坊、工坊区、魔导工坊、厂区、学堂、学校、教室、新学、移民村、垦荒村、村、村子、铁路、工地、路基、铁轨、哨线、哨塔、边境、边陲、圣苏尼尔、王都、安苏、帝都、教堂、教区、大教堂、圣光教会、提丰、边境、帝国、圣灵、平原、朝圣、市集、边缘、废土市集、拾荒、遗迹、刚铎、废墟、旧纪元、深区、静默、深处、禁地。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","limingzhijian"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 专名铁律补遗：补齐铁律表已注入但知识库缺锚点的名目 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["limingzhijian"] || (KB["limingzhijian"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"黎明之剑·专名铁律补遗（人物写法）","content":"【人物】薇薇安·塞西尔：本界人物全名，「薇薇安」为名、「塞西尔」为姓，正文首次出现宜用全名，后续可用「薇薇安」；不得写成「维维安」「薇薇安·塞西尔二世」等自造变体，也不得与高文·塞西尔等塞西尔家族其他成员混为一人。\n【口径】本条只锁定名目写法；人物身份与剧情以本界既有条目为准。","category":"专名核对","tags":["专名","防幻觉","核对","limingzhijian"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

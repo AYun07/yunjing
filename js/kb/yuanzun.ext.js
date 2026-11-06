@@ -34,3 +34,32 @@
   if (add && add.length) for (var i = 0; i < add.length; i++) a.push(add[i]);
 })();
 /* YJ_EXTRA_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["yuanzun"] || (KB["yuanzun"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"yuanzun·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《元尊 · 诸天行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「大周府 · 苍玄天」：天渊域、圣源峰、剑来峰、苍渊、雷狱峰、百花仙宫。\n第2层「苍玄宗与诸峰」：灵纹峰、天鬼府、雪莲峰、洪崖峰、阴阳气府、伪法域。\n第3层「万祖域与诸天」：苍玄峰、黑炎州、大周府、万祖域、血海域、黑毒城。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","yuanzun"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["yuanzun"] || (KB["yuanzun"] = []);
+  var t = "yuanzun·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"yuanzun·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《元尊 · 诸天行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「大周府 · 苍玄天」：天渊域、圣源峰、剑来峰、苍渊、雷狱峰、百花仙宫、灵纹峰、天鬼府、雪莲峰、洪崖峰、阴阳气府、伪法域。\n第2层「苍玄宗与诸峰」：苍玄峰、黑炎州、大周府、万祖域、血海域、黑毒城、圣宫十殿、造化塔、玄源洞、紫霄域、御兽域、陨落之渊。\n第3层「万祖域与诸天」：元老院、齐王府、圣迹城、法域、武神域、大周城、玄机域、妖傀域、九百州、圣子峰、远古地域、圣纹域。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","yuanzun"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["yuanzun"] || (KB["yuanzun"] = []);
+  var t = "yuanzun·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"yuanzun·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《元尊 · 诸天行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「大周府 · 苍玄天」：天渊域、圣源峰、剑来峰、苍渊、雷狱峰、百花仙宫、灵纹峰、天鬼府、雪莲峰、洪崖峰、阴阳气府、伪法域。\n第2层「苍玄宗与诸峰」：苍玄峰、黑炎州、大周府、万祖域、血海域、黑毒城、圣宫十殿、造化塔、玄源洞、紫霄域、御兽域、陨落之渊。\n第3层「万祖域与诸天」：元老院、齐王府、圣迹城、法域、武神域、大周城、玄机域、妖傀域、九百州、圣子峰、远古地域、圣纹域。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","yuanzun"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();

@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.02.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.03.0">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.03.0</span>
+                <span class="entry-date">2026-11-07</span>
+            </div>
+            <h3 class="entry-title">全 40 界舆图补齐 · 三层覆盖率治理 · 网游知识库扩容</h3>
+            <p class="entry-text">补齐 6 界缺失主舆图：dazhuzai / wudongqiankun / yuanzun / wanxiangzhiwang / free / freeworld 此前走「只有 1 个启程之地」的兜底图；现 40/40 界均有 3 层主舆图，每层 12 个工整节点，6 图几何体检重叠 0 / 越界 0 / 重复 0 / 标签溢出 0 40 界各补一条「舆图地名索引」，739 个舆图节点名 100% 可在知识库内检索（模型只看知识库，不看舆图数据文件） 专名铁律治理：为 earth / cthulhu / wanmeishijie 及另外 7 界共 74 个「已注入模型但知识库查不到」的专名补核对条目，补 free 的 tpl 专名表；非模板 33 界命中率最低 96% 完美世界 10 个可疑专名经联网查证均为原著真实存在（战天歌、麒麟步、上苍劫光、日月神印等），判定为知识库缺条目而非专名污染，只补条目不删表 网游三部曲知识库由 79 / 97 / 98 扩至 384 / 432 / 428 条：原著核对条目 + 明确标注为「引擎通用口径、非原著」的职业模板、技能、等级段经验、装备品级与槽位、副本、系统词、变量结算协议 补齐 FACTION_ATLAS 缺的 4 个土豆宇宙界；为 free / freeworld / mystery 写类型通用地名补录；清理顶层两个畸形空目录 全库 24572 条，重内容 0、超长 0、脏标题 0，常驻条目与常驻字符不变；selftest 71/71；tiny / small 真实模型实测通过</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -353,7 +362,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.02.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.03.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">

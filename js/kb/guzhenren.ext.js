@@ -49,3 +49,21 @@
   window.__KB_SEQUEL_OK__ = true;
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["guzhenren"] || (KB["guzhenren"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"guzhenren·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《蛊真人 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「青茅山 · 古月家」：古月老宅、炼蛊房、青茅猎场、白云坊市、义庄秘地。\n第2层「南疆 · 蛊师江湖」：魔道盘踞地、义盟驻地、万药山、蛮荒深处、义天山。\n第3层「五域 · 两天」：天庭、中州十大古派、中州地渊、天露绿洲、万矿戈壁、鲛人王庭、真阳楼、宝黄天。\n【别名】老宅、古月家、祖宅、炼蛊、蛊房、秘室、青茅山、猎场、深山、坊市、白云山、集市、义庄、家族秘辛、魔道、魔头、炼尸、义盟、正道、盟会、药山、采药、灵材、蛮荒、深处、禁地、义天山大战、南疆高峰、天庭洞天、尊者、仙鹤门、战仙宗、风云府、天莲派、地渊、深渊、绿洲、西漠活水、矿脉、戈壁、鲛人、异人势力、长生天、王庭福地、宝光、公共洞天。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","guzhenren"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 专名铁律补遗：补齐铁律表已注入但知识库缺锚点的名目 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["guzhenren"] || (KB["guzhenren"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"蛊真人·专名铁律补遗（防串名）","content":"【人物】花酒和尚：本界人物，写法以此为准；气绝魔仙：本界魔道尊者名号，勿与「尊者」「蛊仙」等泛称混用为同一人。\n【地点】天外天：本界地名，用于标注该处场景，勿与其他界的同名/近名境界混为一谈。\n【阵营】正道阵营、魔道阵营：本界两大对立阵营的统称，属阵营标签而非某个具体宗门；写人物立场时用这两个词，不得另造一个「第三阵营」顶替，也不得把具体家族直接等同于整条阵营。\n【口径】本条只锁定名目写法与阵营归属；蛊、蛊仙体系与具体人物经历以本界既有条目为准。","category":"专名核对","tags":["专名","防幻觉","核对","guzhenren"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

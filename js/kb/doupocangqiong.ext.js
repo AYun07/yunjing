@@ -57,3 +57,12 @@
   window.__KB_SEQUEL_OK__ = true;
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["doupocangqiong"] || (KB["doupocangqiong"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"doupocangqiong·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《斗破苍穹 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「加玛帝国」：乌坦城、魔兽山脉、云岚宗、迦南学院、天焚炼气塔、黑角域、加玛圣城。\n第2层「中州 · 万域之心」：星陨阁、丹塔、天墓、兽域、魂殿、古界。\n【别名】魔兽山脉边缘、云岚、迦南、炼气塔、帝都、加玛帝都、星陨、魂殿总部、古族。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","doupocangqiong"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

@@ -54,3 +54,32 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["freeworld"] || (KB["freeworld"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"freeworld·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《原创世界 · 驿路行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「乡野与驿道」：石门驿、柳河县、烽燧台、渡口集、旧祠堂、青盐井。\n第2层「城邑与关隘」：北岭关、纸鸢铺、石板巷、望乡坡、石窟寺、水磨坊。\n第3层「山海与边荒」：义庄、州城鼓楼。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","freeworld"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["freeworld"] || (KB["freeworld"] = []);
+  var t = "freeworld·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"freeworld·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《原创世界 · 驿路行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「乡野与驿道」：石门驿、柳河县、烽燧台、渡口集、旧祠堂、青盐井、北岭关、纸鸢铺。\n第2层「城邑与关隘」：石板巷、望乡坡、石窟寺、水磨坊、义庄、州城鼓楼、白石驿、河湾集。\n第3层「山海与边荒」：旧县衙、常平仓、官马厩、渡船局、更夫巷、牌坊街、山神庙、界碑坡。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","freeworld"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点（覆盖更新） */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["freeworld"] || (KB["freeworld"] = []);
+  var t = "freeworld·舆图地名索引（行旅图鉴全地标）";
+  var hit = null; a.forEach(function(x){ if(String(x&&x.title||'').trim()===t) hit = x; });
+  var e = {"title":"freeworld·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《原创世界 · 驿路行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「乡野与驿道」：石门驿、柳河县、烽燧台、渡口集、旧祠堂、青盐井、北岭关、纸鸢铺、石板巷、望乡坡、石窟寺、水磨坊。\n第2层「城邑与关隘」：义庄、州城鼓楼、白石驿、河湾集、旧县衙、常平仓、官马厩、渡船局、更夫巷、牌坊街、山神庙、界碑坡。\n第3层「山海与边荒」：石桥铺、盐仓巷、马道坡、报房、税关、义仓、更楼、船坞、樵径、古渡碑、驿站后院、城壕。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","freeworld"],"alwaysInclude":false,"priority":""};
+  if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
+})();

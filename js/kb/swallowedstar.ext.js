@@ -59,3 +59,21 @@
   window.__KB_SEQUEL_OK__ = true;
 })();
 /* YJ_SEQUEL_END */
+
+/* v4.03.0 舆图地名索引：让每个地标在知识库里有可检索锚点 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["swallowedstar"] || (KB["swallowedstar"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"swallowedstar·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《吞噬星空 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「地球 · 基地市时代」：江南基地市、废墟区、极限武馆总部、雾岛遗迹、精英训练营、荒野区、京都基地市、澳洲大陆。\n第2层「星海 · 宇宙时代」：虚拟宇宙网络、混沌城、原始星、陨墨星、宇宙海、起源大陆、巨斧斗武场、机械族疆域。\n【别名】江南、废墟、极限武馆、雾岛、训练营、荒野、京都、澳洲、虚拟宇宙、混沌城主城、原始宇宙、原始星域、陨墨、巨斧、机械族。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","swallowedstar"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
+
+/* v4.03.0 专名铁律补遗：补齐铁律表已注入但知识库缺锚点的名目 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["swallowedstar"] || (KB["swallowedstar"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"吞噬星空·专名铁律补遗（兵器与武者阶位）","content":"【兵器】灭世枪、血刃：本界兵器名，写法固定；二者是具体兵器而非功法或境界，不得改写成「灭世之枪」「血刃刀」等自造名，也不得与「衍神兵」等其他兵器混同。\n【武者阶位】武师、武尊：地球武者体系中的阶位称谓，属境界/称号，与宇宙星级、宇宙尊者等宇宙体系阶位分属不同序列，不得串级或互相换算。\n【口径】本条只锁定名目写法与序列归属；具体阶位高低以本界境界体系条目为准。","category":"专名核对","tags":["专名","防幻觉","核对","swallowedstar"],"alwaysInclude":false,"priority":""}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
