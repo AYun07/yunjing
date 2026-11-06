@@ -1,0 +1,33 @@
+/* 网游之天下无双 · 《天纵》数据流网游主题 v4.02.0
+   终端霓虹 × 属性面板栅格：等宽数字、品级色阶、扫描线底纹 */
+body.theme-tianxiawushuang {
+    --primary: #d9a35e;
+    --primary-dim: color-mix(in srgb, #d9a35e 14%, transparent);
+    --primary-glow: color-mix(in srgb, #d9a35e 34%, transparent);
+    --secondary: #c8d4e0;
+    --accent: #e0b878;
+    --panel-border: color-mix(in srgb, #d9a35e 22%, transparent);
+    background-color: #0b1118;
+    background-image:
+        radial-gradient(ellipse 720px 420px at 12% -8%, color-mix(in srgb, #d9a35e 12%, transparent), transparent 62%),
+        repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, #d9a35e 3%, transparent) 3px 4px);
+}
+body.theme-tianxiawushuang .ws-glyph,
+body.theme-tianxiawushuang .rpg-lv { font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+.rpg-panel { font-variant-numeric: tabular-nums; }
+.rpg-bar { position:relative; height:8px; border-radius:4px; overflow:hidden; background: color-mix(in srgb, var(--ip,#c9a86a) 18%, transparent); }
+.rpg-bar > i { display:block; height:100%; border-radius:4px; transition:width .45s ease; }
+.rpg-hp > i { background: linear-gradient(90deg,#e07070,#e0a84c); }
+.rpg-mp > i { background: linear-gradient(90deg,#5f9fe0,#8fd9c8); }
+.rpg-exp > i { background: linear-gradient(90deg,#8fd9a8,var(--ip,#c9a86a)); }
+.rpg-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(116px,1fr)); gap:6px; }
+.rpg-cell { border:1px solid color-mix(in srgb, var(--ip,#c9a86a) 24%, transparent); border-radius:8px; padding:6px 8px; background:rgba(255,255,255,.025); min-width:0; }
+.rpg-cell small { display:block; color:var(--imt,#9a8c6e); font-size:10.5px; }
+.rpg-cell b { font-size:14px; color:var(--itx,#e8dcc0); font-weight:600; }
+.rpg-cell em { font-style:normal; font-size:10px; color:#8fd9a8; margin-left:3px; }
+.rpg-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:6px; margin-top:8px; }
+.rpg-slot { border:1px dashed color-mix(in srgb, var(--ip,#c9a86a) 30%, transparent); border-radius:8px; padding:6px 8px; font-size:11.5px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rpg-slot.on { border-style:solid; background:color-mix(in srgb, var(--ip,#c9a86a) 10%, transparent); }
+.rpg-slot i { font-style:normal; color:var(--imt,#9a8c6e); margin-right:4px; }
+.rpg-tier { display:inline-block; font-size:10px; padding:1px 6px; border-radius:6px; background:color-mix(in srgb, var(--ip,#c9a86a) 18%, transparent); }
+@media (max-width:640px){ .rpg-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .rpg-slots{grid-template-columns:repeat(2,minmax(0,1fr));} }

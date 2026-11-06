@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.01.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.02.0">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.02.0</span>
+                <span class="entry-date">2026-11-07</span>
+            </div>
+            <h3 class="entry-title">网游三部曲三界 · 网游数值面板 · 资料库治理</h3>
+            <p class="entry-text">新增失落叶网游三部曲三界：网游之盗版神话（月恒·林凡/青菜白玉汤）、网游之纵横天下（灵恸·丁舒升/轻狂书生）、网游之天下无双（天纵·陆尘/折戟沉沙）；每界配 core+ext 世界书 79/98/97 条、专名铁律表、专属舆图与势力谱系、三件套配置与皮肤 新增网游数值引擎与角色面板：等级/经验(80×Lv^1.55)/HP·MP/六维/攻防/暴击/攻速确定性计算，13 个职业模板（含元素弓箭手、龙语者、死灵剑士、死亡剑术宗师等隐藏职业），10 个装备槽、技能冷却与耗蓝、掉落按等级结算、加点与转职；常驻状态栏 + 浮标个人面板 + 每轮数值快照注入模型，桌面与移动端均不溢出 资料库治理：合并完美世界/全职高手/克苏鲁 33 条原著核对详录，修正「石中天是祖父非父亲」「秦昊是同父同母亲弟非月宫竞争者」等 3 条事实错误；全库删除 258 条内容完全重复条目，把 741 条「条目N」切碎残句整理成 35 条条文汇编，脏标题与重复内容清零；_presetVersion v15→v16 保证老存档自动补入 舆图补录扩编：三界地名按原著地图索引逐条拆分合并名，节点 4→10/31/28，全界重叠 0 / 重复 0 / 越界 0 真实 agnes 三档模型实测 6+3 轮：修复网游界与全局「严禁数值面板」格式契约冲突，根治 full 档输出思维链分析、模型自编 Lv.8 数值与续写坏段；复测三档 analysisStart/fakeLevel/badPunct 全为 0</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -344,7 +353,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.01.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.02.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">

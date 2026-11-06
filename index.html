@@ -17,8 +17,8 @@
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
-    <script src="js/id-migrate.js?v=4.01.0"></script>
-    <title>云境 v4.01.0 · AI创作与开放世界扮演</title>
+    <script src="js/id-migrate.js?v=4.02.0"></script>
+    <title>云境 v4.02.0 · AI创作与开放世界扮演</title>
     <style>
         /* v3.93.0 大厅：css/lobby-themes.css 六套风格皮肤 + css/lobby-layouts.css 六套异构骨架（旧 8 套深紫玻璃版式已移除） */
         :root {
@@ -29,15 +29,15 @@
     </style>
 
     <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集 -->
-    <link rel="stylesheet" href="css/fonts-local.css?v=4.01.0">
+    <link rel="stylesheet" href="css/fonts-local.css?v=4.02.0">
     <!-- v3.93.0 大厅：基础版式 + 六套风格皮肤 + 六套异构骨架（杂志/手帐/Y2K/水墨/瑞士/终端） -->
-    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=4.01.0">
-    <link rel="stylesheet" href="css/lobby-themes.css?v=4.01.0">
+    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=4.02.0">
+    <link rel="stylesheet" href="css/lobby-themes.css?v=4.02.0">
     <!-- 骨架层必须在皮肤层之后：六种风格各有自己的排版结构，不是换配色 -->
-    <link rel="stylesheet" href="css/lobby-layouts.css?v=4.01.0">
+    <link rel="stylesheet" href="css/lobby-layouts.css?v=4.02.0">
     <!-- 主题切换器：同步挂 html[data-theme]，首屏不闪色；六套主题可见可切可记忆 -->
-    <script src="js/lobby-themes.js?v=4.01.0"></script>
-    <script src="js/theme-studio.js?v=4.01.0"></script>
+    <script src="js/lobby-themes.js?v=4.02.0"></script>
+    <script src="js/theme-studio.js?v=4.02.0"></script>
 </head>
 
 <body class="page-index">
@@ -99,7 +99,7 @@
         </div>
 
         <!-- 廿四界开放世界扮演（v3.38.0：新增斩神一界，廿三界扩为廿四界；大厅按题材折叠分组） -->
-        <div class="section-title">开放世界扮演 · 32 界（原著 30 界 + 现实地球 1 界 + 自由世界 1 界）｜全站 37 界</div>
+        <div class="section-title">开放世界扮演 · 35 界（原著 33 界 + 现实地球 1 界 + 自由世界 1 界）｜全站 40 界</div>
         <div class="ws-groups-ctl" id="wsGroupsCtl">
             <button type="button" class="ws-ctl-btn" id="wsExpandAll">⊕ 全部展开</button>
             <button type="button" class="ws-ctl-btn" id="wsCollapseAll">⊖ 全部收起</button>
@@ -351,6 +351,40 @@
             </div>
         </div>
 
+        <div class="ws-group" data-gkey="wangyou" style="--g-hue:#79c0e0;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">游</span>
+                <span class="wg-name">数据流网游</span>
+                <span class="wg-sub">网游之盗版神话 · 网游之纵横天下 · 网游之天下无双</span>
+                <span class="wg-count">3 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=daobanshenhua&v=1.0.0" style="--ws-hue:#79c0e0;">
+                            <div class="ws-glyph">恒</div>
+                            <div class="ws-name">网游之盗版神话</div>
+                            <div class="ws-desc">替代林凡入《月恒》：从足浴中心的大茶壶到中国区第一剑士，绿蓝紫装与守城国战都由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=zonghengtianxia&v=1.0.0" style="--ws-hue:#8fd0c0;">
+                            <div class="ws-glyph">恸</div>
+                            <div class="ws-name">网游之纵横天下</div>
+                            <div class="ws-desc">替代丁舒升入《灵恸》：从见习弓箭手到元素弓箭手与龙语者，建帮令、领地战与WSL一路打上去</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=tianxiawushuang&v=1.0.0" style="--ws-hue:#d9a35e;">
+                            <div class="ws-glyph">纵</div>
+                            <div class="ws-name">网游之天下无双</div>
+                            <div class="ws-desc">替代陆尘入《天纵》：从死灵剑士到修罗、神将与死亡剑术宗师，十二神兵、名将技与国战由你扛起</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="ws-group" data-gkey="xinghai" style="--g-hue:#6f9fe8;">
             <button type="button" class="ws-group-head" aria-expanded="true">
                 <span class="wg-glyph">星</span>
@@ -531,12 +565,12 @@
         <div class="footer">
             <p>首次进入需配置 AI 接口（支持 OpenAI 兼容格式与 Gemini 格式）</p>
             <p>建议通过本地 HTTP 服务访问 · 支持电脑 / 平板 / 手机多端创作</p>
-            <p class="footer-log">📜 <a href="changelog/">创作日志 · 独立成册</a> · 当前版本 <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v4.01.0 云境版</a></p>
+            <p class="footer-log">📜 <a href="changelog/">创作日志 · 独立成册</a> · 当前版本 <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v4.02.0 云境版</a></p>
         </div>
     </div>
 
     <!-- v3.38.1 错误哨兵：脚本加载失败/运行异常时屏幕直接显示出错文件 -->
-    <script defer src="js/boot-error-guard.js?v=4.01.0"></script>
+    <script defer src="js/boot-error-guard.js?v=4.02.0"></script>
     <script>
         // 响应式模式类（与 studio.html 同策略；判空防异常，媒体查询兜底已内置）
         (function () {
@@ -644,14 +678,14 @@
 })();
 </script>
 <!-- v3.84.0 小云：大厅即全功能可用（世界书/存档/预设/正文急救/造物工坊） -->
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=4.01.0">
-<script src="js/worldbook-seeds.js?v=4.01.0"></script>
-<script src="js/world-book.js?v=4.01.0"></script>
-<script src="js/xiaoyun-ops.js?v=4.01.0"></script>
-<script src="js/xiaoyun-buddy.js?v=4.01.0"></script>
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=4.02.0">
+<script src="js/worldbook-seeds.js?v=4.02.0"></script>
+<script src="js/world-book.js?v=4.02.0"></script>
+<script src="js/xiaoyun-ops.js?v=4.02.0"></script>
+<script src="js/xiaoyun-buddy.js?v=4.02.0"></script>
 <script>
   /* v3.87.0 P3-3：首页版本徽标与 YJ_VER 同源（此前写死 v3.84.0，与实际版本长期不符） */
-  window.YJ_VER = '4.01.0';
+  window.YJ_VER = '4.02.0';
   (function () {
     var b = document.getElementById('verBadge');
     if (b) b.textContent = 'v' + window.YJ_VER + ' 云境版';

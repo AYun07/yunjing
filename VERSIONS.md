@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **72** 个版本，从 `v3.55.7` 到 `v4.01.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **73** 个版本，从 `v3.55.7` 到 `v4.02.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.02.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.02.0) |
 | **v4.01.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.01.0) |
 | **v4.00.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.1) |
 | **v4.00.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.0) |
@@ -86,6 +87,20 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.02.0 · 2026-11-07
+
+新增失落叶网游三部曲三界：网游之盗版神话（月恒·林凡/青菜白玉汤）、网游之纵横天下（灵恸·丁舒升/轻狂书生）、网游之天下无双（天纵·陆尘/折戟沉沙）；每界配 core+ext 世界书 79/98/97 条、专名铁律表、专属舆图与势力谱系、三件套配置与皮肤
+
+新增网游数值引擎与角色面板：等级/经验(80×Lv^1.55)/HP·MP/六维/攻防/暴击/攻速确定性计算，13 个职业模板（含元素弓箭手、龙语者、死灵剑士、死亡剑术宗师等隐藏职业），10 个装备槽、技能冷却与耗蓝、掉落按等级结算、加点与转职；常驻状态栏 + 浮标个人面板 + 每轮数值快照注入模型，桌面与移动端均不溢出
+
+资料库治理：合并完美世界/全职高手/克苏鲁 33 条原著核对详录，修正「石中天是祖父非父亲」「秦昊是同父同母亲弟非月宫竞争者」等 3 条事实错误；全库删除 258 条内容完全重复条目，把 741 条「条目N」切碎残句整理成 35 条条文汇编，脏标题与重复内容清零；_presetVersion v15→v16 保证老存档自动补入
+
+舆图补录扩编：三界地名按原著地图索引逐条拆分合并名，节点 4→10/31/28，全界重叠 0 / 重复 0 / 越界 0
+
+真实 agnes 三档模型实测 6+3 轮：修复网游界与全局「严禁数值面板」格式契约冲突，根治 full 档输出思维链分析、模型自编 Lv.8 数值与续写坏段；复测三档 analysisStart/fakeLevel/badPunct 全为 0
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.02.0)  [🔍 与 v4.01.0 差异](https://github.com/AYun07/yunjing/compare/v4.01.0...v4.02.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip)
 
 ## v4.01.0 · 2026-11-07
 
