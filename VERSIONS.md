@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **72** 个版本，从 `v3.55.7` 到 `v4.01.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **73** 个版本，从 `v3.55.7` 到 `v4.02.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.02.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.02.0) |
 | **v4.01.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.01.0) |
 | **v4.00.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.1) |
 | **v4.00.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.0) |
@@ -86,6 +87,20 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.02.0 · 2026-11-07
+
+新增失落叶网游三部曲三界：网游之盗版神话（月恒·林凡/青菜白玉汤）、网游之纵横天下（灵恸·丁舒升/轻狂书生）、网游之天下无双（天纵·陆尘/折戟沉沙）；每界配 core+ext 世界书 79/98/97 条、专名铁律表、专属舆图与势力谱系、三件套配置与皮肤
+
+新增网游数值引擎与角色面板：等级/经验(80×Lv^1.55)/HP·MP/六维/攻防/暴击/攻速确定性计算，13 个职业模板（含元素弓箭手、龙语者、死灵剑士、死亡剑术宗师等隐藏职业），10 个装备槽、技能冷却与耗蓝、掉落按等级结算、加点与转职；常驻状态栏 + 浮标个人面板 + 每轮数值快照注入模型，桌面与移动端均不溢出
+
+资料库治理：合并完美世界/全职高手/克苏鲁 33 条原著核对详录，修正「石中天是祖父非父亲」「秦昊是同父同母亲弟非月宫竞争者」等 3 条事实错误；全库删除 258 条内容完全重复条目，把 741 条「条目N」切碎残句整理成 35 条条文汇编，脏标题与重复内容清零；_presetVersion v15→v16 保证老存档自动补入
+
+舆图补录扩编：三界地名按原著地图索引逐条拆分合并名，节点 4→10/31/28，全界重叠 0 / 重复 0 / 越界 0
+
+真实 agnes 三档模型实测 6+3 轮：修复网游界与全局「严禁数值面板」格式契约冲突，根治 full 档输出思维链分析、模型自编 Lv.8 数值与续写坏段；复测三档 analysisStart/fakeLevel/badPunct 全为 0
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.02.0)  [🔍 与 v4.01.0 差异](https://github.com/AYun07/yunjing/compare/v4.01.0...v4.02.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip)
 
 ## v4.01.0 · 2026-11-07
 
@@ -311,7 +326,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
 
-图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
 
 一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
 
@@ -467,7 +482,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 ## v3.69.0 · 2026-11-02
 
-预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
@@ -545,7 +560,7 @@ chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
 ## v3.59.0 · 2026-11-01
 
-晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
@@ -581,7 +596,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 ## v3.55.30 · 2026-11-01
 
-多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 
