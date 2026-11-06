@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **71** 个版本，从 `v3.55.7` 到 `v4.00.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **72** 个版本，从 `v3.55.7` 到 `v4.01.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.01.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.01.0) |
 | **v4.00.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.1) |
 | **v4.00.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.0) |
 | **v3.99.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.99.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.99.0) |
@@ -85,6 +86,24 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.01.0 · 2026-11-07
+
+修掉舆图最严重的一处错：无锚点补录一律挂到含起点节点的层，遮天「地球·起点」上因此标满轮回海/紫微星域/冰雪宫/大雷音寺——玩家看到的是「泰山旁边挨着天璇圣地」。改为按层名与区域名语义匹配，匹配不上才在非起点层之间分摊
+
+标签越界回拉此前一直是失效的：bx 是相对节点的偏移，却拿去和画布边界 97.6 比，单位对不上条件永不成立，earth「悉尼·植物学湾」右侧溢出 84px。改用绝对坐标判定后 37 界零越界
+
+标签宽度按 DOM 实测重算：旧公式每块少算 2.2 单位（「北京·燕京」实际占位 13.83、按 11.63 布局），这是「判定放得下、画出来压住」的数学根源；内边距 1.6→3.8
+
+区域名与起点节点同名时让位，吞噬星空「江南基地市」、圣墟「大漠古道」不再一个名字写两遍
+
+地名扩编：从 33 界知识库逐条回库校验，补录 805→1286 条（+60%），每界平均 15→24 个地点；剔除泛称（掌教/巅峰/三大族）、他作地名（慕兰帝国/天蛇帝国/邪神之渊）与句子截断名
+
+修正知识库源头 7 处「慕兰帝国」「天蛇帝国」——原著是慕兰谷与天蛇府，此前被写成了帝国
+
+真实模型实测（agnes 系列）：8K 档输出上限 1400→2000。旧值下模型写不到收尾就触发续写，拼接处丢标点，单轮出现 14 处共 403 字无标点长段；改后 0 处，9 轮对局全部正常收束
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.01.0)  [🔍 与 v4.00.1 差异](https://github.com/AYun07/yunjing/compare/v4.00.1...v4.01.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip)
 
 ## v4.00.1 · 2026-11-06
 
@@ -292,7 +311,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
 
-图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
 
 一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
 
@@ -448,7 +467,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 ## v3.69.0 · 2026-11-02
 
-预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
@@ -526,7 +545,7 @@ chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
 ## v3.59.0 · 2026-11-01
 
-晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
@@ -562,7 +581,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 ## v3.55.30 · 2026-11-01
 
-多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 
