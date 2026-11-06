@@ -1,9 +1,8 @@
 {
   "version": "v3.97.0",
-  "worlds": 30,
-  "entries": 172,
+  "worlds": 29,
+  "entries": 146,
   "files": [
-    "js/kb/doupocangqiong.ext.js",
     "js/kb/douluodalu.ext.js",
     "js/kb/shrouding.ext.js",
     "js/kb/wanmeishijie.ext.js",
@@ -35,7 +34,6 @@
     "js/kb/scifi.ext.js"
   ],
   "perWorld": {
-    "doupocangqiong": 26,
     "douluodalu": 28,
     "shrouding": 12,
     "wanmeishijie": 12,
