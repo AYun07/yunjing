@@ -153,6 +153,14 @@
   }
 
   function isLite() { return resolveTier() === 'lite'; }
+  /* v4.00.0 低配档再分三档：8K 与 16K 的可支配额度差一倍，用同一套预算必然一边浪费一边爆窗。
+     tiny(≤8K) / small(≤16K) / normal。推断不出窗口时按 small 处理（保守但不至于太寒酸）。 */
+  function ctxTier() {
+    const ctx = (window.PromptBudget && window.PromptBudget.ctxTokens && window.PromptBudget.ctxTokens()) || 0;
+    if (ctx > 0 && ctx <= 8192) return 'tiny';
+    if (ctx > 0 && ctx <= 16384) return 'small';
+    return 'normal';
+  }
   function isFull() { return resolveTier() === 'full'; }
 
   /* ---------- 1. 参数安全锁（仅 lite） ---------- */
@@ -162,6 +170,12 @@
     const c = Object.assign({}, cfg);
     if (typeof c.temperature !== 'number' || c.temperature > 0.75) c.temperature = 0.75;
     if (!c.maxTokens || c.maxTokens > 8000) c.maxTokens = 8000;
+    /* v4.00.0 8K 档必须给输出留够：实测输入 6300 字符已占满 8K 窗口的七成，
+       输出再按 2000 token 走就必然「说到一半断了」。压到 1400，约 1000 字正文。 */
+    if (ctxTier() === 'tiny') {
+      const mt = Number(c.maxTokens) || 2000;
+      c.maxTokens = Math.max(700, Math.min(mt, 1400));
+    }
     return c;
   }
 
@@ -298,7 +312,7 @@
   window.BaseModelMode = {
     TIER_AUTO: 'auto', TIER_LITE: 'lite', TIER_FULL: 'full',
     getTier, setTier, isAuto,
-    resolveTier, isLite, isFull,
+    resolveTier, isLite, isFull, ctxTier,
     isEnabled: isLite,                 // 兼容旧布尔语义（=是否走裁剪档）
     isEnabledRaw: getTier,
     clampParams, buildLitePreset, compactSystemPrompt, detectCollapse,

@@ -78,6 +78,8 @@ const StoryKnowledge = {
     });
     /* v3.55.28：世界书二次拆分——进界先挂 core（常驻/高优先，最大约 45KB，原整包最大 411KB），
        其余条目由 ext 在空闲时补齐并自动补注入，玩家感知不到先后，进界不再背整包下载 */
+    /* v4.00.0 专名铁律表：35 界共用一份约 16KB，与 core 并行拉取，进界即可用 */
+    if (!window.KB_NAMES) loadOne(`js/kb/names.js?v=${v}`);
     window.__kbLoading = loadOne(`js/kb/${g}.core.js?v=${v}`).then(async (ok) => {
       if (ok && window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
         window.__KB_SPLIT_OK__ = true;
@@ -695,6 +697,39 @@ ${items.map((i) => this._itemText(i)).join("\n\n")}` };
     this._lastBgStat = { medium: m1, low: m2, budget: budget || 0 };
     return messages;
   },
+  /** v4.00.0 专名铁律段
+   *  极低参数模型最典型的翻车不是文笔，而是专名：把「萧炎」写成「萧炎炎」、
+   *  把「斗宗」跳到「斗帝」、给原著不存在的宗门安个名字。检索式知识库对这类
+   *  错误无能为力（它只在关键词命中时才给资料）。这里给一份按世界硬编码的
+   *  人物/地名/势力/功法/境界名单，永远第一个入场、永远不被裁掉。
+   *  @param {number} maxChars 上限，<=0 取默认 1100 */
+  _nameAnchorMsg(maxChars) {
+    try {
+      const N = window.KB_NAMES;
+      if (!N) return { msg: null, used: 0 };
+      const g = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey) || "";
+      const d = g && N[g];
+      if (!d) return { msg: null, used: 0 };
+      const lim = maxChars > 0 ? maxChars : 1100;
+      const head = "【本界专名铁律 · 最高优先级】\n";
+      const tail = "\n【硬约束】以上专名的字、归属、层级错一处即为 OOC；不确定人物关系时保持沉默，绝不许编。";
+      const blocks = [];
+      if (d.realms && d.realms.length) blocks.push(`【境界】必须严格按此顺序，不得跳级、不得自创：${d.realms.join(" → ")}`);
+      if (d.people && d.people.length) blocks.push(`【人物】只可用以下名单；需要无名路人时用「某」泛指，禁止杜撰与原著同姓同名的角色：${d.people.join("、")}`);
+      if (d.factions && d.factions.length) blocks.push(`【势力】${d.factions.join("、")}`);
+      if (d.places && d.places.length) blocks.push(`【地名】${d.places.join("、")}`);
+      if (d.arts && d.arts.length) blocks.push(`【功法器物】${d.arts.join("、")}`);
+      if (!blocks.length) return { msg: null, used: 0 };
+      let text = head;
+      for (const b of blocks) {
+        if (text.length + b.length + tail.length > lim && text.length > head.length) break;
+        text += (text.length > head.length ? "\n" : "") + b;
+      }
+      text += tail;
+      if (text.length > lim + 120) text = text.slice(0, lim) + "…";
+      return { msg: { role: "system", content: text }, used: text.length };
+    } catch (e) { return { msg: null, used: 0 }; }
+  },
   /** 前景层知识（核心/重点常驻 + 关键词触发 + 相关检索），置于本轮指令之前以获得更高权重
    *  @param {number} budget 字符预算，<=0 不限（v3.99.0 新增） */
   buildForegroundKnowledge(userMessage, history = [], precomputedRelevant = null, budget) {
@@ -702,6 +737,14 @@ ${items.map((i) => this._itemText(i)).join("\n\n")}` };
     const messages = [];
     const always = this.knowledgeBase.filter((i) => i.alwaysInclude === true && i.enabled !== false);
     let left = budget > 0 ? budget : 0;
+    /* v4.00.0 专名铁律永远第一个入场：名单错了，后面给多少设定都救不回来 */
+    const _tier = (window.BaseModelMode && window.BaseModelMode.ctxTier) ? window.BaseModelMode.ctxTier() : "normal";
+    const _naCap = _tier === "tiny" ? 420 : 1100;
+    const _na = this._nameAnchorMsg(budget > 0 ? Math.min(budget * 0.42, _naCap) : _naCap);
+    if (_na.msg) {
+      messages.push(_na.msg);
+      if (left > 0) left -= _na.used;
+    }
     /* v3.99.0 顺序修正：top（铁律）必须先入场，旧代码先塞 high 再塞 top，
        预算一紧就把铁律挤掉了——那正是 OOC 的直接来源。 */
     const top = this._packLayer(always.filter((i) => i.priority === "top"), "【核心设定知识（最高优先级，必须严格遵守）】", left);

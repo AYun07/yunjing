@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **69** 个版本，从 `v3.55.7` 到 `v3.99.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **70** 个版本，从 `v3.55.7` 到 `v4.00.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.00.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.0) |
 | **v3.99.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.99.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.99.0) |
 | **v3.98.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.98.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.98.0) |
 | **v3.97.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) |
@@ -83,6 +84,20 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.00.0 · 2026-11-06
+
+舆图引擎重写：地形改为纹样铺陈＋多变体笔触，城池/宗门/秘境图标重绘，地名加引线标注与越界回拉，疆域做圆填充松弛与自动铺满，补录节点用力导向摊平——斗罗 11 片疆域不再互相穿插，单层可见地名从 7 个增至 30+
+
+新增 35 界专名铁律表（2011 条人物/地名/势力/功法/境界链），作为最高优先级段注入，专门治小模型把「萧炎」写错、把「斗宗」跳「斗帝」、给原著不存在宗门编名字
+
+低配档按上下文分三档：8K 模型请求体 7487→3915 字符、输出上限锁 1400，16K 档 7151，都留足输出空间；低配档不再砍掉生图与沉浸，改用 70 字精简协议
+
+高配档历史窗口按窗口放开：32K→20 轮、64K→28 轮、128K→40 轮（原固定 16 轮），长线「过完一生」接得住；知识库前景预算上限 24000 字符
+
+补录落位改为「描述命中区域→名称命中→哈希分摊」，斗破 38 条补录不再全堆在乌坦城一角
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.00.0)  [🔍 与 v3.99.0 差异](https://github.com/AYun07/yunjing/compare/v3.99.0...v4.00.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip)
 
 ## v3.99.0 · 2026-11-06
 

@@ -99,8 +99,12 @@ async function buildStoryMessages(userMessage) {
   const rawSystem0 = typeof config.systemPrompt === "function" ? config.systemPrompt() : config.fullSystemPrompt || "";
   /* v3.99.0 低配档压缩世界提示词：原文 7~8.7k 字，小模型读不完设定、正文必崩。
      压到 ~2.8k 字（保段标题 + 首句 + 铁律句），信息骨架不丢，注意力留给写作本身。 */
+  /* v4.00.0 按上下文再分档：8K 模型装不下 2800 字系统提示 + 知识库 + 专名段，
+     实测 7489 字符 ≈ 6200 token，加输出直接超 8192。tiny 档压到 1500。 */
+  const _ct = (window.BaseModelMode && window.BaseModelMode.ctxTier) ? window.BaseModelMode.ctxTier() : "normal";
+  const _sysCap = _ct === "tiny" ? 950 : _ct === "small" ? 2400 : 2800;
   const rawSystem = (bmmOn && window.BaseModelMode.compactSystemPrompt)
-    ? window.BaseModelMode.compactSystemPrompt(rawSystem0, 2800)
+    ? window.BaseModelMode.compactSystemPrompt(rawSystem0, _sysCap)
     : rawSystem0;
   const rawRule = config.defaultSystemPrompt || "";
   const chapterNow = Number((_a = state.variables) == null ? void 0 : _a.chapter) || 0;
@@ -115,8 +119,8 @@ ${state.inspirations.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : "";
 
 【变量登记说明】状态登记（章节/字数/仪表盘/角色档案/伏笔/道具/大事记）由独立系统自动完成，你只负责写好正文与情节选项。严禁输出任何变量更新块、状态指令或键值清单，严禁在正文或结尾罗列任何状态、数值、面板内容——只写小说。` : `
 
-【变量块输出格式铁律（系统解析依赖，违反将导致状态丢失）】
-(variable_update) 与 (/variable_update) 之间必须使用"逐行 键: 值"的纯文本指令，一行一条。严禁输出 JSON 对象、严禁使用花括号/方括号/代码块。
+【变量块格式（系统解析依赖）】
+(variable_update) 与 (/variable_update) 之间逐行写"键: 值"，一行一条，禁止 JSON、禁止花括号。
 【每轮必做】本轮正文里新登场或有变化的人物必须登记档案（新登场者至少报 角色名.role / .appearance / .personality / .motivation / .status 五项，有变化者报变化字段）；在场人物位置/状态/信任度变动须更新；如 >>角色名.history: 一句话轨迹。
 正确示例：
 (variable_update)
@@ -149,8 +153,26 @@ stats.张力: +5
   const endgame = isRPMode && StoryFreedom.isFree() ? "" : buildEndgamePressure(state.variables, isRPMode);
   const freedomRule = buildFreedomDirective(isRPMode);
   const agencyGuard = freedomRule ? "" : buildAgencyGuard();
-  const imageRule = (!bmmOn && window.StoryImageGen && window.StoryImageGen.buildDirective) ? window.StoryImageGen.buildDirective() : "";
-  const immerseRule = (!bmmOn && window.ImmersionPlus && window.ImmersionPlus.buildDirective) ? window.ImmersionPlus.buildDirective() : "";
+  /* v4.00.0 低配档不再直接砍掉生图与沉浸：那等于「小模型玩家没有配图功能」。
+     生图指令原文 1040 字（含画风/语言/构图细则），小模型读完记不住还挤占额度；
+     这里换成 70 字的精简协议，功能照用、标记格式不变。沉浸协议只 534 字且含
+     tension 上报，原样保留。 */
+  let imageRule = "";
+  if (window.StoryImageGen && window.StoryImageGen.buildDirective) {
+    const fullImg = window.StoryImageGen.buildDirective() || "";
+    imageRule = fullImg
+      ? (bmmOn
+        ? "\n【配图协议·精简】在值得配图处单独占一行写 (image: 中文一句话画面描述，写清主体、场景、光影与画风)，每章最多 2 张，宁缺毋滥，严禁写在选项区。\n"
+        : fullImg)
+      : "";
+  }
+  let immerseRule = "";
+  if (window.ImmersionPlus && window.ImmersionPlus.buildDirective) {
+    const fullImm = window.ImmersionPlus.buildDirective() || "";
+    immerseRule = fullImm
+      ? (bmmOn ? "\n【演出协议·精简】正文后单独一行写 tension: 0-100（本轮紧张度，日常≤20，冲突60-80，生死90+）。\n" : fullImm)
+      : "";
+  }
   // v3.47.14 创作性质声明 + 内容尺度（由 content-scale.js 提供分级指令与硬底线）
   const fictionPreamble = `【创作性质声明】本次对话是合法的架空小说/互动文学创作平台内的虚构写作：所有世界观、人物与情节均为虚构，创作目的是文学表达。请以专业小说家的笔法处理题材内在的冲突、残酷、恐怖与悲剧——它们是叙事的养分，应忠实于世界设定地写出，而非回避或稀释；同时保持叙事张力服务于故事本身。`;
   const scaleDirective = window.MoContentScale && window.MoContentScale.buildDirective
@@ -225,7 +247,14 @@ ${rulePrompt}${inspirationNote}${freedomRule}${agencyGuard}${varAIRule}${closure
   let sysOut = system;
   if (turnNo >= 1) sysOut = stripSection(sysOut, "【入场指令");
   if (turnNo >= 5) sysOut = stripSection(sysOut, "【档案示例");
-  push({ role: "system", content: sysOut });
+  /* v4.00.0 低配档二次压缩：sysOut 把世界设定 + 创作声明 + 变量契约 + 篇幅/生图/沉浸/
+     状态栏协议全拼在一条里，实测 4348 字符——占满 8K 窗口一半。compactSystemPrompt
+     按【】分段保标题+首句+铁律句，压到 2400/3400，语义骨架不丢。 */
+  if (bmmOn && window.BaseModelMode.compactSystemPrompt && sysOut.length > 200) {
+    const _cap = _ct === "tiny" ? 2400 : _ct === "small" ? 3400 : 3600;
+    if (sysOut.length > _cap) sysOut = window.BaseModelMode.compactSystemPrompt(sysOut, _cap);
+  }
+  push({ role: "system", content: sysOut }, "系统提示词", 100);
   /* v3.93.0 接线修复（真实玩家实测发现）：活世界 / 灵宠 / 小队 / 战斗协同这四组上行注入
      原先只写在 buildPlayerIdentityCard 里，而该函数仅在 config.mode === "roleplay" 时调用。
      创作模式的世界（33 界中的绝大多数）因此从未执行：WorldAlive.seedFactions() 一次都没跑，
@@ -248,7 +277,7 @@ ${rulePrompt}${inspirationNote}${freedomRule}${agencyGuard}${varAIRule}${closure
       if (window.BeastSystem && BeastSystem.buildCombatBlock) { const _bcb = BeastSystem.buildCombatBlock(); if (_bcb) liveParts.push(_bcb); }
       if (window.SquadSystem && SquadSystem.buildCombatBlock) { const _scb = SquadSystem.buildCombatBlock(); if (_scb) liveParts.push(_scb); }
     }
-    if (liveParts.length) push({ role: "system", content: liveParts.join("\n") });
+    if (liveParts.length) push({ role: "system", content: liveParts.join("\n") }, "活世界", 26);
   } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 活世界上行装配失败:", e); }
   if (state.setup) {
     push({ role: "system", content: buildSetupCard(state.setup, config) });
@@ -268,8 +297,11 @@ ${digest}` });
     let bgBudget = 0;
     try {
       const total = (window.PromptBudget && window.PromptBudget.get && window.PromptBudget.get().limit) || 0;
-      bgBudget = bmmOn ? 2000 : Math.max(4000, Math.round(total * 0.22));
-    } catch (e) { bgBudget = bmmOn ? 2000 : 6000; }
+      /* lite 档背景预算随总预算收缩：8K 档总预算只有 5200 字符，固定 2000 会把前景挤没 */
+      bgBudget = bmmOn
+        ? (_ct === "tiny" ? 500 : _ct === "small" ? 1400 : 2000)
+        : Math.max(4000, Math.round(total * 0.22));
+    } catch (e) { bgBudget = bmmOn ? 1200 : 6000; }
     /* v3.99.0 prio=100：知识库已在源头按预算生成（薄但完整），不能再让 finalize 整段裁掉——
        它一被裁，小模型就彻底失去世界骨架，人物立刻串戏。让「历史」去当缓冲区。 */
     for (const m of storyKB.buildBackgroundKnowledge(bgBudget)) push(m, "知识库·背景", 100);
@@ -295,8 +327,15 @@ ${arch}` : ""}` }, "前情提要", 60);
     } catch (e) { console.warn("[长程召回] 失败（静默跳过）:", e && e.message); }
   }
   /* v3.99.0 低配档历史窗口减半：16 轮正文即便压缩后仍占 1.2 万~1.6 万字，
-     是仅次于系统提示词的第二大头。8 轮足够维持连贯，把省下的额度留给世界骨架。 */
-  const recent = state.conversationHistory.slice(bmmOn ? -9 : -17, -1);
+     是仅次于系统提示词的第二大头。8 轮足够维持连贯，把省下的额度留给世界骨架。
+     v4.00.0 高配档按上下文窗口放开：旧版写死 16 轮，128K 上下文的强模型也只记得
+     16 轮，玩家玩到中后期就「忘了几十章前的事」，所谓「在一个世界里过完一生」根本撑不住。
+     现在 32K→20 轮、64K→28 轮、128K 及以上→40 轮，长线剧情才接得住。 */
+  const _ctxTk = (window.PromptBudget && window.PromptBudget.ctxTokens && window.PromptBudget.ctxTokens()) || 0;
+  const histRounds = bmmOn
+    ? (_ct === "tiny" ? 2 : _ct === "small" ? 8 : 10)
+    : (_ctxTk >= 128000 ? 40 : _ctxTk >= 64000 ? 28 : _ctxTk >= 32000 ? 20 : 16);
+  const recent = state.conversationHistory.slice(-(histRounds + 1), -1);
   for (const msg of recent) {
     if (!msg || !msg.role || msg.content == null) continue;
     if (msg.role === "assistant") {
@@ -309,15 +348,19 @@ ${arch}` : ""}` }, "前情提要", 60);
     let fgBudget = 0;
     try {
       const total = (window.PromptBudget && window.PromptBudget.get && window.PromptBudget.get().limit) || 0;
-      fgBudget = bmmOn ? 3000 : Math.max(6000, Math.round(total * 0.34));
-    } catch (e) { fgBudget = bmmOn ? 3000 : 9000; }
+      /* lite 档 4200：专名铁律段（约 550 字）已占一部分，3000 会把人物档案挤没；
+         高配档上限 24000，避免 11 万字符预算下知识库独吞三分之一上下文。 */
+      fgBudget = bmmOn
+        ? (_ct === "tiny" ? 850 : _ct === "small" ? 2400 : 3400)
+        : Math.max(8000, Math.min(24000, Math.round((total || 40000) * 0.3)));
+    } catch (e) { fgBudget = bmmOn ? 2200 : 12000; }
     const fgList = (typeof storyKB.buildForegroundKnowledgeAsync === "function")
       ? await storyKB.buildForegroundKnowledgeAsync(userMessage, state.conversationHistory, fgBudget)
       : storyKB.buildForegroundKnowledge(userMessage, state.conversationHistory, null, fgBudget);
     /* 同上：源头已按预算生成，免疫最终裁剪，铁律与人物档案必须活着到模型手里 */
     for (const m of fgList) push(m, "知识库·前景", 100);
   }
-  const antibagu = window.AntibaguGuard && window.AntibaguGuard.buildDirective() || "";
+  const antibagu = (!bmmOn && window.AntibaguGuard && window.AntibaguGuard.buildDirective()) || "";
   if (antibagu) {
     push({ role: "system", content: antibagu }, "反八股", 30);
   }
@@ -327,7 +370,9 @@ ${arch}` : ""}` }, "前情提要", 60);
     const intel = window.ImmersiveSuite ? ImmersiveSuite.takeIntel() : [];
     const notes = [];
     if (imm && (imm.time || imm.weather)) {
-      notes.push(`【场域氛围（当前场景的真实环境，正文环境描写必须与此一致）】时辰：${imm.time || "未知"}｜天象：${imm.weather || "未知"}${imm.day ? "｜历日：" + imm.day : ""}——环境细节（光影/温度/风声/衣着）应自然贴合此刻此景，不得写出矛盾的天象。`);
+      notes.push(bmmOn
+        ? `【场域】时辰：${imm.time || "未知"}｜天象：${imm.weather || "未知"}——环境描写须与此一致。`
+        : `【场域氛围（当前场景的真实环境，正文环境描写必须与此一致）】时辰：${imm.time || "未知"}｜天象：${imm.weather || "未知"}${imm.day ? "｜历日：" + imm.day : ""}——环境细节（光影/温度/风声/衣着）应自然贴合此刻此景，不得写出矛盾的天象。`);
     }
     if (intel && intel.length) {
       notes.push(`【密谈所得（玩家与NPC私下对话获知的情报，本轮起自然生效）】

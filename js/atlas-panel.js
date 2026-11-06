@@ -8123,13 +8123,24 @@
     const x = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453;
     return x - Math.floor(x);
   }
+  /* v4.00.0 边界形态：旧版 12 点、扰动仅 ±15%，画出来个个是圆斑，几张圆叠在一起
+     自然「乱」。现在 18 点、扰动 ±22%，再叠一层低频起伏，轮廓才有山川疆界的样子。 */
   function blobPath(cx, cy, rx, ry, seed) {
-    const K = 12;
-    const pts = [];
+    const K = 18;
+    let pts = [];
     for (let i = 0; i < K; i++) {
       const a = i / K * Math.PI * 2;
-      const w = 0.84 + prand(i * 3 + seed * 17, seed + 2) * 0.3;
-      pts.push([cx + Math.cos(a) * rx * w, cy + Math.sin(a) * ry * w]);
+      const w = 0.72 + prand(i * 3 + seed * 17, seed + 2) * 0.52;
+      const wob = 1 + Math.sin(a * 2.7 + seed * 1.7) * 0.07 + Math.sin(a * 5.3 + seed) * 0.035;
+      pts.push([cx + Math.cos(a) * rx * w * wob, cy + Math.sin(a) * ry * w * wob]);
+    }
+    /* 归一化：扰动后的最远点不超过 rx/ry 的 1.12 倍，疆域才不会顶出画布边框
+       （斗罗「海神岛」「武魂城」曾因超出被裁掉一角）。形状自由度保留在内凹与起伏上。 */
+    let maxR = 0;
+    pts.forEach((p) => { maxR = Math.max(maxR, Math.hypot((p[0] - cx) / rx, (p[1] - cy) / ry)); });
+    if (maxR > 1.12) {
+      const k = 1.12 / maxR;
+      pts = pts.map((p) => [cx + (p[0] - cx) * k, cy + (p[1] - cy) * k]);
     }
     let d = `M${((pts[0][0] + pts[1][0]) / 2).toFixed(1)},${((pts[0][1] + pts[1][1]) / 2).toFixed(1)}`;
     for (let i = 1; i <= K; i++) {
@@ -8138,128 +8149,254 @@
     }
     return d + " Z";
   }
-  function terrainGlyph(tr, x, y, s, P) {
+  /* ============ v4.00.0 舆图重绘 · 地形笔触 ============
+     旧版每种地形只有 1 个字形、约 4px、线条单薄，铺在图上就是一层噪点——
+     这是「地图过于简约、图标太简单」的直接原因。新版每种地形 3–4 个变体，
+     带受光面 / 背光面 / 雪线 / 投影，按 seed 稳定选型，铺满后才有手绘舆图的密度。 */
+  function terrainGlyph(tr, x, y, s, P, seed) {
+    const v = Math.abs(Math.floor(seed || 0)) % 4;
+    const g = `transform="translate(${x},${y}) scale(${s.toFixed(2)})"`;
     switch (tr) {
       case "mountain":
-        return `<g transform="translate(${x},${y}) scale(${s})" opacity=".72">
-                <path d="M-2.1,1.1 L-.8,-1.4 L-.1,-.2 L.7,-1.6 L2.1,1.1 Z" fill="${hexA(P.stone, 0.5)}" stroke="${hexA(P.stone, 0.8)}" stroke-width=".22"/>
-                <path d="M-.8,-1.4 L-.45,-.75 L-.15,-1.05 L.05,-.75 L.3,-1 Z" fill="${hexA(P.text, 0.55)}"/></g>`;
-      case "forest":
-        return `<g transform="translate(${x},${y}) scale(${s})" opacity=".72">
-                <line x1="0" y1=".5" x2="0" y2="1.3" stroke="${hexA(P.tree, 0.8)}" stroke-width=".28"/>
-                <path d="M0,-1.5 L.85,.1 L.4,.1 L1,1.1 L-1,1.1 L-.4,.1 L-.85,.1 Z" fill="${hexA(P.tree, 0.55)}" stroke="${hexA(P.tree, 0.85)}" stroke-width=".2"/></g>`;
-      case "desert":
-        return `<g transform="translate(${x},${y}) scale(${s})" opacity=".66">
-                <path d="M-1.8,.3 Q-.9,-.6 0,.3 T1.8,.3" fill="none" stroke="${hexA(P.sand, 0.85)}" stroke-width=".26" stroke-linecap="round"/>
-                <path d="M-1.1,1.1 Q-.4,.4 .4,1.1 T1.4,1.1" fill="none" stroke="${hexA(P.sand, 0.6)}" stroke-width=".22" stroke-linecap="round"/></g>`;
+        if (v === 0) return `<g ${g} opacity=".9">
+                <path d="M-3.5,2 L-1.2,-2.1 L-.2,-.4 L1.1,-3 L3.5,2 Z" fill="${hexA(P.stone, 0.36)}" stroke="${hexA(P.stone, 0.92)}" stroke-width=".22" stroke-linejoin="round"/>
+                <path d="M-1.2,-2.1 L-.55,-.95 L-1.8,.35 Z" fill="${hexA(P.text, 0.32)}"/>
+                <path d="M1.1,-3 L1.6,-1.6 L.75,-.55 Z" fill="${hexA(P.text, 0.26)}"/>
+                <path d="M-.2,-.4 L.4,.6 L-.75,1.35 Z" fill="${hexA(P.deep, 0.26)}"/></g>`;
+        if (v === 1) return `<g ${g} opacity=".86">
+                <path d="M-3.7,2.2 L-2.1,-1 L-1.2,.6 L.2,-2.3 L1.3,.5 L2.3,-.9 L3.7,2.2 Z" fill="${hexA(P.stone, 0.3)}" stroke="${hexA(P.stone, 0.86)}" stroke-width=".2" stroke-linejoin="round"/>
+                <path d="M.2,-2.3 L.66,-1.2 L-.16,-.32 Z" fill="${hexA(P.text, 0.3)}"/></g>`;
+        if (v === 2) return `<g ${g} opacity=".94">
+                <path d="M0,-3.3 L2.6,2 L-2.6,2 Z" fill="${hexA(P.stone, 0.4)}" stroke="${hexA(P.stone, 0.95)}" stroke-width=".24" stroke-linejoin="round"/>
+                <path d="M0,-3.3 L.66,-1.5 L-.52,-1.05 Z" fill="${hexA(P.text, 0.5)}"/>
+                <path d="M0,-3.3 L-1.2,-.3 L.1,.4 Z" fill="${hexA(P.text, 0.16)}"/>
+                <path d="M2.6,2 L1.1,1.2 L1.5,-.35 Z" fill="${hexA(P.deep, 0.22)}"/></g>`;
+        return `<g ${g} opacity=".72">
+                <path d="M-3.1,1.6 Q-1.9,.05 -.9,1.2 Q.1,.15 1.1,1.3 Q2.1,.35 3.1,1.6" fill="none" stroke="${hexA(P.stone, 0.7)}" stroke-width=".26" stroke-linecap="round"/>
+                <path d="M-2.2,2.2 Q-1.2,1.2 -.2,2.2" fill="none" stroke="${hexA(P.stone, 0.4)}" stroke-width=".2" stroke-linecap="round"/></g>`;
+      case "forest": {
+        const pine = (dx, dy, sc) => `<g transform="translate(${dx},${dy}) scale(${sc})">
+                <line x1="0" y1=".5" x2="0" y2="1.45" stroke="${hexA(P.tree, 0.8)}" stroke-width=".26"/>
+                <path d="M0,-1.95 L.8,-.4 L.4,-.4 L1,.55 L-1,.55 L-.4,-.4 L-.8,-.4 Z" fill="${hexA(P.tree, 0.46)}" stroke="${hexA(P.tree, 0.92)}" stroke-width=".17"/>
+                <path d="M0,-1.95 L.3,-.75 L-.12,-.55 Z" fill="${hexA(P.text, 0.2)}"/></g>`;
+        if (v === 0) return `<g ${g} opacity=".9">${pine(-1.1, .25, .82)}${pine(.95, -.15, 1)}</g>`;
+        if (v === 1) return `<g ${g} opacity=".88">${pine(-1.5, .55, .66)}${pine(.05, -.3, .95)}${pine(1.5, .45, .7)}</g>`;
+        if (v === 2) return `<g ${g} opacity=".8">
+                <line x1="0" y1=".3" x2="0" y2="1.5" stroke="${hexA(P.tree, 0.8)}" stroke-width=".24"/>
+                <ellipse cx="0" cy="-.15" rx="1.5" ry="1.15" fill="${hexA(P.tree, 0.34)}" stroke="${hexA(P.tree, 0.8)}" stroke-width=".18"/>
+                <ellipse cx="-.45" cy="-.55" rx=".7" ry=".55" fill="${hexA(P.text, 0.12)}"/></g>`;
+        return `<g ${g} opacity=".62">
+                <path d="M-1.9,1.5 Q-1.4,.1 -.85,1.1 Q-.3,-.15 .35,1.05 Q1,.05 1.9,1.4" fill="none" stroke="${hexA(P.tree, 0.55)}" stroke-width=".22" stroke-linecap="round"/></g>`;
+      }
       case "water":
-        return `<g transform="translate(${x},${y}) scale(${s})" opacity=".72">
-                <path d="M-1.9,0 Q-1.4,-.55 -.95,0 T0,0 T.95,0 T1.9,0" fill="none" stroke="${hexA(P.water, 0.85)}" stroke-width=".26" stroke-linecap="round"/>
-                <path d="M-1.4,.9 Q-.9,.4 -.4,.9 T.6,.9 T1.6,.9" fill="none" stroke="${hexA(P.water, 0.55)}" stroke-width=".2" stroke-linecap="round"/></g>`;
+        if (v === 0) return `<g ${g} opacity=".78">
+                <path d="M-2.2,.1 Q-1.65,-.62 -1.1,.1 T0,.1 T1.1,.1 T2.2,.1" fill="none" stroke="${hexA(P.water, 0.85)}" stroke-width=".26" stroke-linecap="round"/>
+                <path d="M-1.6,1 Q-1.05,.4 -.5,1 T.6,1 T1.7,1" fill="none" stroke="${hexA(P.water, 0.5)}" stroke-width=".2" stroke-linecap="round"/></g>`;
+        if (v === 1) return `<g ${g} opacity=".72">
+                <path d="M-2.4,-.5 Q-1.2,-1.1 0,-.5 T2.4,-.5" fill="none" stroke="${hexA(P.water, 0.55)}" stroke-width=".22" stroke-linecap="round"/>
+                <path d="M-2.2,.5 Q-1.1,-.05 0,.5 T2.2,.5" fill="none" stroke="${hexA(P.water, 0.75)}" stroke-width=".24" stroke-linecap="round"/>
+                <path d="M-1.7,1.4 Q-.85,1 0,1.4 T1.7,1.4" fill="none" stroke="${hexA(P.water, 0.45)}" stroke-width=".18" stroke-linecap="round"/></g>`;
+        if (v === 2) return `<g ${g} opacity=".8">
+                <path d="M-1.9,1.6 Q-1.2,-1.5 0,-1.7 Q1.2,-1.5 1.9,1.6" fill="${hexA(P.water, 0.14)}" stroke="${hexA(P.water, 0.62)}" stroke-width=".2"/>
+                <path d="M-1.1,.9 Q-.6,-.6 0,-.75 Q.6,-.6 1.1,.9" fill="none" stroke="${hexA(P.water, 0.45)}" stroke-width=".16"/></g>`;
+        return `<g ${g} opacity=".55">
+                <circle cx="-.7" cy=".2" r=".22" fill="${hexA(P.water, 0.8)}"/><circle cx=".2" cy="-.4" r=".16" fill="${hexA(P.water, 0.65)}"/><circle cx=".75" cy=".55" r=".19" fill="${hexA(P.water, 0.7)}"/></g>`;
+      case "desert":
+        if (v === 0) return `<g ${g} opacity=".74">
+                <path d="M-2.1,.35 Q-1,.75 .1,.35 Q1.1,-.05 2.1,.35" fill="none" stroke="${hexA(P.sand, 0.9)}" stroke-width=".28" stroke-linecap="round"/>
+                <path d="M-1.3,1.25 Q-.4,1.55 .5,1.25" fill="none" stroke="${hexA(P.sand, 0.55)}" stroke-width=".2" stroke-linecap="round"/></g>`;
+        if (v === 1) return `<g ${g} opacity=".66">
+                <path d="M-2.2,.6 Q-.7,-1.3 .6,.5" fill="${hexA(P.sand, 0.16)}" stroke="${hexA(P.sand, 0.72)}" stroke-width=".22"/>
+                <path d="M-.2,1.4 Q.9,-.1 2.1,1.3" fill="${hexA(P.sand, 0.12)}" stroke="${hexA(P.sand, 0.55)}" stroke-width=".2"/></g>`;
+        if (v === 2) return `<g ${g} opacity=".6">
+                <path d="M-2.4,-.3 h3.4 M-1.9,.5 h3.2 M-2.1,1.3 h2.6" stroke="${hexA(P.sand, 0.45)}" stroke-width=".17" stroke-dasharray=".7 .6" stroke-linecap="round"/></g>`;
+        return `<g ${g} opacity=".5">
+                <circle cx="-.9" cy=".4" r=".15" fill="${hexA(P.sand, 0.7)}"/><circle cx=".1" cy="-.3" r=".12" fill="${hexA(P.sand, 0.6)}"/><circle cx=".9" cy=".7" r=".13" fill="${hexA(P.sand, 0.65)}"/></g>`;
       case "city":
-        return `<g transform="translate(${x},${y}) scale(${s})" opacity=".72">
-                <rect x="-1.6" y="-.2" width=".85" height="1.5" fill="${hexA(P.accent, 0.5)}" stroke="${hexA(P.accent, 0.85)}" stroke-width=".18"/>
-                <rect x="-.5" y="-.9" width=".9" height="2.2" fill="${hexA(P.accent, 0.62)}" stroke="${hexA(P.accent, 0.9)}" stroke-width=".18"/>
-                <rect x=".6" y="-.35" width=".95" height="1.65" fill="${hexA(P.accent, 0.5)}" stroke="${hexA(P.accent, 0.85)}" stroke-width=".18"/></g>`;
+        if (v % 2 === 0) return `<g ${g} opacity=".82">
+                <path d="M-2.6,1.9 V.2 h.6 V-.5 h.5 V.2 h.9 V-.9 h.6 V.2 h.6 V-.4 h.5 V.2 h.6 V1.9 Z" fill="${hexA(P.accent, 0.42)}" stroke="${hexA(P.accent, 0.9)}" stroke-width=".18" stroke-linejoin="round"/>
+                <path d="M-1.4,1.9 v-.7 h.5 v.7" fill="${hexA(P.deep, 0.7)}"/>
+                <path d="M.1,-1.5 h.5 v.5 h-.5 Z" fill="${hexA(P.accent, 0.8)}"/></g>`;
+        return `<g ${g} opacity=".8">
+                <path d="M-2.4,1.9 V-.1 l1.2,-.9 l1.2,.9 V1.9 Z" fill="${hexA(P.accent, 0.4)}" stroke="${hexA(P.accent, 0.88)}" stroke-width=".18"/>
+                <path d="M-2.9,-.1 H.5" stroke="${hexA(P.accent, 0.7)}" stroke-width=".22"/>
+                <path d="M.7,1.9 V.3 l1.6,-1.2 l1.6,1.2 V1.9 Z" fill="${hexA(P.accent, 0.3)}" stroke="${hexA(P.accent, 0.7)}" stroke-width=".16"/></g>`;
       case "void":
-        return `<g transform="translate(${x},${y}) scale(${s})" opacity=".8">
-                <path d="M0,-1.5 L.32,-.32 L1.5,0 L.32,.32 L0,1.5 L-.32,.32 L-1.5,0 L-.32,-.32 Z" fill="${hexA(P.accent, 0.6)}" stroke="${hexA(P.accent, 0.9)}" stroke-width=".16"/></g>`;
+        if (v % 2 === 0) return `<g ${g} opacity=".85">
+                <path d="M0,-1.7 L.36,-.36 L1.7,0 L.36,.36 L0,1.7 L-.36,.36 L-1.7,0 L-.36,-.36 Z" fill="${hexA(P.accent, 0.52)}" stroke="${hexA(P.accent, 0.95)}" stroke-width=".15"/>
+                <circle r=".34" fill="${hexA(P.text, 0.9)}"/></g>`;
+        return `<g ${g} opacity=".7">
+                <circle r="1.5" fill="none" stroke="${hexA(P.accent, 0.6)}" stroke-width=".16"/>
+                <path d="M-1.5,0 A1.5,1.5 0 0 1 .1,-1.49" fill="none" stroke="${hexA(P.accent, 0.95)}" stroke-width=".24" stroke-linecap="round"/>
+                <circle r=".28" fill="${hexA(P.accent, 0.9)}"/></g>`;
       default:
-        return `<g transform="translate(${x},${y}) scale(${s})" opacity=".55">
-                <path d="M-1.6,.9 Q-1.2,-.5 -.6,.3 Q-.1,-.9 .5,-.1 Q1.1,-.8 1.6,.4" fill="none" stroke="${hexA(P.tree, 0.6)}" stroke-width=".24" stroke-linecap="round"/></g>`;
+        if (v === 0) return `<g ${g} opacity=".72">
+                <path d="M-2.1,1.5 Q-1.05,-.5 0,1.45 Q1.05,-.5 2.1,1.5" fill="${hexA(P.tree, 0.1)}" stroke="${hexA(P.tree, 0.6)}" stroke-width=".22" stroke-linecap="round"/></g>`;
+        if (v === 1) return `<g ${g} opacity=".62">
+                <path d="M-1.7,1.25 l.32,-.75 M-1.38,1.25 l.16,-1.05 M-1.05,1.25 l.48,-.62 M.72,1.15 l-.32,-.68 M1.05,1.15 l-.16,-1 M1.38,1.15 l-.45,-.58" stroke="${hexA(P.tree, 0.62)}" stroke-width=".18" stroke-linecap="round"/></g>`;
+        if (v === 2) return `<g ${g} opacity=".6">
+                <path d="M-2.1,1.55 Q-1,1.05 0,1.55 Q1,2.05 2.1,1.55" fill="none" stroke="${hexA(P.tree, 0.5)}" stroke-width=".2"/>
+                <path d="M-1.5,.7 Q-.6,.35 .4,.7" fill="none" stroke="${hexA(P.tree, 0.35)}" stroke-width=".16"/></g>`;
+        return `<g ${g} opacity=".5">
+                <ellipse cx="0" cy=".7" rx="1.5" ry=".8" fill="${hexA(P.tree, 0.08)}" stroke="${hexA(P.tree, 0.4)}" stroke-width=".16"/></g>`;
     }
   }
-  function regionSvg(r, idx, P) {
+  /* 抖动向日葵螺旋：均匀铺满椭圆区域且天然不重叠，比纯随机的「几粒噪点」密实得多 */
+  function scatterPoints(cx, cy, rx, ry, n, seed) {
+    const pts = [];
+    const ga = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < n; i++) {
+      const t = (i + 0.42) / Math.max(1, n);
+      const rr = Math.sqrt(t) * 0.87;
+      const a = i * ga + prand(i + seed * 31, 3) * 1.2;
+      const jr = 1 + (prand(i + seed * 17, 4) - 0.5) * 0.2;
+      pts.push([cx + Math.cos(a) * rx * rr * jr, cy + Math.sin(a) * ry * rr * jr]);
+    }
+    return pts;
+  }
+  function regionSvg(r, idx, P, top) {
+    const fillA = top ? 0.17 : 0.1;
     const col = { mountain: P.stone, forest: P.tree, desert: P.sand, water: P.water, city: P.accent, void: P.accent, plain: P.tree }[r.tr] || P.stone;
     const blob = blobPath(r.cx, r.cy, r.rx, r.ry, idx + 1);
-    const blobIn = blobPath(r.cx, r.cy, r.rx * 0.82, r.ry * 0.82, idx + 40);
+    const blobIn = blobPath(r.cx, r.cy, r.rx * 0.78, r.ry * 0.78, idx + 40);
     const area = r.rx * r.ry;
-    const count = Math.max(3, Math.min(9, Math.round(area / 42)));
-    let glyphs = "";
-    for (let i = 0; i < count; i++) {
-      const a = prand(i + idx * 31, 7) * Math.PI * 2;
-      const rr = 0.28 + prand(i + idx * 31, 8) * 0.62;
-      const gx = r.cx + Math.cos(a) * r.rx * rr;
-      const gy = r.cy + Math.sin(a) * r.ry * rr;
-      const gs = 0.9 + prand(i + idx * 31, 9) * 0.85;
-      glyphs += terrainGlyph(r.tr, gx.toFixed(1), gy.toFixed(1), gs.toFixed(2), P);
+    /* 密度：旧版 area/42 且上限 9，一整片山脉只有 9 个小三角，纯看是空的。
+       现在 area/13、下限 10 上限 46，铺满后地形才有「面上有东西」的质感。 */
+    const count = Math.max(6, Math.min(44, Math.round(area / 22)));
+    const pts = scatterPoints(r.cx, r.cy, r.rx, r.ry, count, idx + 3);
+    let contours = "";
+    for (let k = 1; k <= 2; k++) {
+      const cw = 0.9 - k * 0.19;
+      contours += `<path d="${blobPath(r.cx, r.cy, r.rx * cw, r.ry * cw, idx + 60 + k * 7)}" fill="none" stroke="${hexA(col, 0.16)}" stroke-width=".16" stroke-dasharray="2.4 2.2"/>`;
     }
-    /* v3.99.0 留白修正：最外层 region 常撑到 rx/ry≈42，标签会被推到画布边缘、
-       与地图边框线和圆角叠在一起（实拍可见「大夏国」「北灵境」压线）。
-       抬高下限让标签始终留在框内，读起来干净。 */
-    const ly = Math.max(5.4, r.cy - r.ry - 3.1);
-    const tw = r.n.length * 2.06 + 4.6;
-    const label = `<g>
-            <rect x="${(r.cx - tw / 2).toFixed(1)}" y="${ly.toFixed(1)}" width="${tw.toFixed(1)}" height="3.6" rx="1.7" fill="${hexA(P.deep, 0.72)}" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
-            <path d="M${(r.cx - tw / 2 + 1.6).toFixed(1)},${(ly + 1.8).toFixed(1)} l1,-1 l1,1 l-1,1 Z" fill="${hexA(col, 0.9)}"/>
-            <text x="${(r.cx + 0.9).toFixed(1)}" y="${(ly + 2.55).toFixed(1)}" font-size="1.95" fill="${hexA(P.text, 0.92)}" text-anchor="middle" letter-spacing=".6" class="atlas-label">${r.n}</text></g>`;
+    let glyphs = "";
+    pts.forEach((p, i) => {
+      const s = 0.78 + prand(i + idx * 13, 9) * 0.72;
+      glyphs += terrainGlyph(r.tr, p[0].toFixed(1), p[1].toFixed(1), s, P, i * 7 + idx + 5);
+    });
+    /* 区域名牌 v4：抬高到边界外侧，左右带引线与菱形端点，读起来像制图标注而不是按钮 */
+    const ly = Math.max(5.0, r.cy - r.ry - 2.9);
+    const tw = labelWidth(r.n, 2.0);
+    const lx = r.cx;
+    const label = `<g class="atlas-rlabel">
+            <path d="M${(lx - tw / 2 - 3.4).toFixed(1)},${ly.toFixed(1)} h2.4" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
+            <path d="M${(lx + tw / 2 + 1).toFixed(1)},${ly.toFixed(1)} h2.4" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
+            <path d="M${(lx - tw / 2 - 3.9).toFixed(1)},${ly.toFixed(1)} l.7,-.6 l.7,.6 l-.7,.6 Z" fill="${hexA(col, 0.85)}"/>
+            <path d="M${(lx + tw / 2 + 3.9).toFixed(1)},${ly.toFixed(1)} l-.7,-.6 l-.7,.6 l.7,.6 Z" fill="${hexA(col, 0.85)}"/>
+            <rect x="${(lx - tw / 2).toFixed(1)}" y="${(ly - 1.55).toFixed(1)}" width="${tw.toFixed(1)}" height="3.1" rx="1.55" fill="${hexA(P.deep, 0.82)}" stroke="${hexA(col, 0.55)}" stroke-width=".2"/>
+            <text x="${lx.toFixed(1)}" y="${(ly + 0.72).toFixed(1)}" font-size="2.0" fill="${hexA(P.text, 0.94)}" text-anchor="middle" letter-spacing=".9" class="atlas-label">${r.n}</text></g>`;
     return `<g class="atlas-region">
-            <path d="${blob}" fill="${hexA(col, 0.09)}" stroke="${hexA(col, 0.42)}" stroke-width=".32" stroke-dasharray="2 1.3"/>
-            <path d="${blobIn}" fill="none" stroke="${hexA(col, 0.16)}" stroke-width=".2" stroke-dasharray="1 1.6"/>
-            ${glyphs}${label}</g>`;
+            <path d="${blob}" fill="${hexA(col, fillA * 0.55)}"/>
+            <path d="${blob}" fill="url(#agP_${r.tr || "plain"})" opacity=".42"/>
+            <path d="${blob}" fill="url(#agRshade)" pointer-events="none"/>
+            ${contours}
+            ${glyphs}
+            <path d="${blob}" fill="none" stroke="${hexA(col, 0.2)}" stroke-width="1.9" filter="url(#agBlur)" opacity=".7"/>
+            <path d="${blob}" fill="none" stroke="${hexA(col, 0.16)}" stroke-width="1.15"/>
+            <path d="${blob}" fill="none" stroke="${hexA(col, 0.6)}" stroke-width=".32" stroke-linecap="round"/>
+            <path d="${blobIn}" fill="none" stroke="${hexA(col, 0.2)}" stroke-width=".18" stroke-dasharray="1 1.9"/>
+            ${label}</g>`;
   }
   function bgSvg(decor, P) {
     if (decor === "cosmos") {
-      let stars = "";
-      const N = 88;
-      for (let i = 0; i < N; i++) {
+      /* 星海：三层星（微尘 / 常星 / 亮星十字芒）+ 星云 + 银河带 + 星座连线。
+         旧版 88 颗统一样式的小圆点，图上像撒了盐；分层后才有纵深。 */
+      let neb = `
+            <ellipse cx="26" cy="30" rx="30" ry="15" fill="${hexA(P.accent, 0.075)}" filter="url(#agBlur2)"/>
+            <ellipse cx="74" cy="70" rx="26" ry="13" fill="${hexA(P.primary, 0.07)}" filter="url(#agBlur2)"/>
+            <ellipse cx="52" cy="14" rx="22" ry="9" fill="${hexA(P.accent, 0.05)}" filter="url(#agBlur2)"/>`;
+      let milky = `<g transform="rotate(-18 50 50)" opacity=".55">`;
+      for (let i = 0; i < 70; i++) {
+        const mx = 5 + prand(i, 21) * 90;
+        const my = 50 + (prand(i, 22) - 0.5) * 13;
+        milky += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="${(0.08 + prand(i, 23) * 0.14).toFixed(2)}" fill="${hexA(P.text, 0.2 + prand(i, 24) * 0.3)}"/>`;
+      }
+      milky += `</g>`;
+      let stars = "", big = "";
+      for (let i = 0; i < 150; i++) {
         const sx = 2 + prand(i, 1) * 96, sy = 2 + prand(i, 2) * 96;
-        const big = prand(i, 3) > 0.82;
-        const r = big ? 0.5 + prand(i, 4) * 0.4 : 0.18 + prand(i, 4) * 0.3;
-        const tw = prand(i, 5) > 0.7 ? ' class="atlas-twinkle"' : "";
-        stars += `<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${r.toFixed(2)}" fill="${hexA(big ? P.text : P.muted, 0.16 + prand(i, 6) * 0.5)}"${tw}/>`;
-        if (big) stars += `<path d="M${sx.toFixed(1)},${(sy - r * 2.4).toFixed(1)} v${(r * 4.8).toFixed(1)} M${(sx - r * 2.4).toFixed(1)},${sy.toFixed(1)} h${(r * 4.8).toFixed(1)}" stroke="${hexA(P.text, 0.28)}" stroke-width=".12"/>`;
+        const r = 0.1 + prand(i, 4) * 0.22;
+        const tw = prand(i, 5) > 0.72 ? ' class="atlas-twinkle"' : "";
+        stars += `<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${r.toFixed(2)}" fill="${hexA(P.text, 0.14 + prand(i, 6) * 0.42)}"${tw}/>`;
+      }
+      for (let i = 0; i < 16; i++) {
+        const sx = 4 + prand(i, 31) * 92, sy = 4 + prand(i, 32) * 92;
+        const r = 0.42 + prand(i, 33) * 0.5;
+        big += `<g transform="translate(${sx.toFixed(1)},${sy.toFixed(1)})" opacity="${(0.5 + prand(i, 34) * 0.45).toFixed(2)}">
+                <circle r="${r.toFixed(2)}" fill="${P.text}"/>
+                <path d="M0,${(-r * 3.4).toFixed(2)} V${(r * 3.4).toFixed(2)} M${(-r * 3.4).toFixed(2)},0 H${(r * 3.4).toFixed(2)}" stroke="${hexA(P.text, 0.4)}" stroke-width=".1"/>
+                <circle r="${(r * 2.4).toFixed(2)}" fill="none" stroke="${hexA(P.accent, 0.22)}" stroke-width=".1"/></g>`;
       }
       let constel = "";
-      for (let c = 0; c < 2; c++) {
+      for (let c = 0; c < 3; c++) {
         let d = "", pts = [];
         for (let i = 0; i < 5; i++) {
           pts.push([8 + prand(i + c * 9, 11) * 80, 8 + prand(i + c * 9, 12) * 80]);
         }
-        pts.forEach((p, i) => {
-          d += (i ? " L" : "M") + p[0].toFixed(1) + "," + p[1].toFixed(1);
-        });
-        constel += `<path d="${d}" fill="none" stroke="${hexA(P.accent, 0.2)}" stroke-width=".14" stroke-dasharray="1 .8"/>`;
-        pts.forEach((p) => {
-          constel += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r=".38" fill="${hexA(P.accent, 0.5)}"/>`;
-        });
+        pts.forEach((p, i) => { d += (i ? " L" : "M") + p[0].toFixed(1) + "," + p[1].toFixed(1); });
+        constel += `<path d="${d}" fill="none" stroke="${hexA(P.accent, 0.18)}" stroke-width=".13" stroke-dasharray="1.1 .9"/>`;
+        pts.forEach((p) => { constel += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r=".34" fill="${hexA(P.accent, 0.55)}"/>`; });
       }
-      return `<g>
-                <ellipse cx="70" cy="28" rx="26" ry="12" fill="${hexA(P.accent, 0.07)}" filter="url(#agBlur2)" class="atlas-soft"/>
-                <ellipse cx="24" cy="74" rx="20" ry="9" fill="${hexA(P.primary, 0.06)}" filter="url(#agBlur2)" class="atlas-soft"/>
-                ${stars}${constel}</g>`;
+      return `<g>${neb}${milky}${stars}${big}${constel}</g>`;
     }
     if (decor === "city") {
+      /* 城域：街区网格 + 主干道 + 环线 + 建筑块 + 节点光点 */
       let grid = "";
-      for (let v = 5; v < 100; v += 5) {
-        const major = v % 25 === 0;
-        grid += `<line x1="${v}" y1="2" x2="${v}" y2="98" stroke="${hexA(P.accent, major ? 0.16 : 0.07)}" stroke-width="${major ? 0.2 : 0.12}"/>
-                         <line x1="2" y1="${v}" x2="98" y2="${v}" stroke="${hexA(P.accent, major ? 0.16 : 0.07)}" stroke-width="${major ? 0.2 : 0.12}"/>`;
+      for (let v = 4; v < 100; v += 4) {
+        const major = v % 20 === 0;
+        grid += `<line x1="${v}" y1="2" x2="${v}" y2="98" stroke="${hexA(P.accent, major ? 0.14 : 0.055)}" stroke-width="${major ? 0.18 : 0.1}"/>
+                 <line x1="2" y1="${v}" x2="98" y2="${v}" stroke="${hexA(P.accent, major ? 0.14 : 0.055)}" stroke-width="${major ? 0.18 : 0.1}"/>`;
       }
-      let circuits = "";
-      const traces = [[6, 20, 26, 20, 26, 44], [60, 92, 60, 70, 84, 70], [14, 60, 14, 84, 34, 84], [44, 12, 44, 26, 58, 26]];
+      let blocks = "";
+      for (let i = 0; i < 26; i++) {
+        const bx = 6 + prand(i, 41) * 86, by = 6 + prand(i, 42) * 86;
+        const bw = 1.6 + prand(i, 43) * 4.2, bh = 1.2 + prand(i, 44) * 3.2;
+        blocks += `<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${hexA(P.accent, 0.05 + prand(i, 45) * 0.07)}" stroke="${hexA(P.accent, 0.12)}" stroke-width=".1"/>`;
+      }
+      const ring = `<ellipse cx="50" cy="52" rx="33" ry="22" fill="none" stroke="${hexA(P.accent, 0.16)}" stroke-width=".3" stroke-dasharray="3 2"/>
+                    <ellipse cx="50" cy="52" rx="24" ry="16" fill="none" stroke="${hexA(P.accent, 0.1)}" stroke-width=".2"/>`;
+      let traffic = "";
+      const traces = [[6, 20, 26, 20, 26, 44, 52, 44], [60, 92, 60, 70, 84, 70, 84, 40], [14, 60, 14, 84, 34, 84], [44, 12, 44, 26, 58, 26, 58, 8]];
       traces.forEach((t) => {
         let d = `M${t[0]},${t[1]}`;
         for (let k = 2; k + 1 < t.length; k += 2) d += ` L${t[k]},${t[k + 1]}`;
-        circuits += `<path d="${d}" fill="none" stroke="${hexA(P.accent, 0.3)}" stroke-width=".22"/>
-                    <circle cx="${t[t.length - 2]}" cy="${t[t.length - 1]}" r=".5" fill="${hexA(P.accent, 0.7)}"/>`;
+        traffic += `<path d="${d}" fill="none" stroke="${hexA(P.accent, 0.34)}" stroke-width=".26" stroke-linecap="round"/>
+                    <circle cx="${t[t.length - 2]}" cy="${t[t.length - 1]}" r=".65" fill="${hexA(P.accent, 0.75)}" filter="url(#agGlow)"/>`;
       });
-      return `<g>${grid}${circuits}</g>`;
+      return `<g>${grid}${blocks}${ring}${traffic}</g>`;
     }
+    /* 山河大地：远山三层剪影 + 水系（河/湖）+ 极淡等高线 */
     let m = "";
-    const ridges = [{ y: 87, a: 5, o: 0.1 }, { y: 92.5, a: 6.5, o: 0.15 }, { y: 97, a: 5.5, o: 0.2 }];
+    const ridges = [{ y: 84, a: 6, o: 0.1 }, { y: 90, a: 8, o: 0.15 }, { y: 96, a: 7, o: 0.2 }];
     ridges.forEach((r, i) => {
       let d = `M-2,101 L-2,${r.y}`;
-      for (let x = 0; x <= 100; x += 12.5) {
-        const peak = r.y - r.a * (0.4 + prand(x / 12.5 + i * 7, 5));
-        d += ` L${x + 6.25},${peak.toFixed(1)} L${x + 12.5},${(r.y - prand(x / 12.5, 6) * 2).toFixed(1)}`;
+      for (let x = 0; x <= 100; x += 10) {
+        const peak = r.y - r.a * (0.4 + prand(x / 10 + i * 7, 5));
+        d += ` L${x + 5},${peak.toFixed(1)} L${x + 10},${(r.y - prand(x / 10, 6) * 2.4).toFixed(1)}`;
       }
       d += " L102,101 Z";
       m += `<path d="${d}" fill="${hexA(P.primary, r.o)}"/>`;
     });
-    return `<g>${m}
-            <ellipse cx="30" cy="16" rx="24" ry="5" fill="${hexA(P.text, 0.05)}" filter="url(#agBlur2)" class="atlas-soft"/>
-            <ellipse cx="74" cy="72" rx="20" ry="4.5" fill="${hexA(P.text, 0.04)}" filter="url(#agBlur2)" class="atlas-soft"/></g>`;
+    let rivers = "";
+    [[17, 0.6], [61, 1.7], [87, 2.6]].forEach(([x0, ph]) => {
+      let d = `M${x0},102`;
+      for (let t = 1; t <= 5; t++) {
+        const y = 102 - t * 19;
+        const x = x0 + Math.sin(t * 1.15 + ph) * 8;
+        d += ` Q${(x + Math.sin(ph + t * 1.7) * 5).toFixed(1)},${(y + 10).toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`;
+      }
+      rivers += `<path d="${d}" fill="none" stroke="${hexA(P.water, 0.08)}" stroke-width="1.9" stroke-linecap="round"/>
+                 <path d="${d}" fill="none" stroke="${hexA(P.water, 0.2)}" stroke-width=".22" stroke-linecap="round"/>`;
+    });
+    let contours = "";
+    for (let k = 0; k < 4; k++) {
+      const d = blobPath(16 + k * 24, 28 + (k % 2) * 26, 12 + k % 3 * 5, 7 + k % 2 * 4, 120 + k * 13);
+      contours += `<path d="${d}" fill="none" stroke="${hexA(P.primary, 0.05)}" stroke-width=".16" stroke-dasharray="5 4"/>`;
+    }
+    return `<g>${contours}${m}
+            ${rivers}
+            <ellipse cx="30" cy="14" rx="26" ry="5" fill="${hexA(P.text, 0.05)}" filter="url(#agBlur2)" class="atlas-soft"/>
+            <ellipse cx="76" cy="70" rx="22" ry="4.5" fill="${hexA(P.text, 0.04)}" filter="url(#agBlur2)" class="atlas-soft"/></g>`;
   }
   /* v3.96.0 标签排布
      旧问题：814 个补录节点虽被 CSS 设成透明，却仍全部参与避让，把可用位置占满，
@@ -8285,12 +8422,15 @@
       boxes.push({ x1: bnr.x - bw / 2, x2: bnr.x + bw / 2, y1: bnr.y - 9.0, y2: bnr.y - 2.8 });
     }
     const cands = [
-      { dx: 4.6, dy: 0.9, anchor: "start" }, { dx: -4.6, dy: 0.9, anchor: "end" },
-      { dx: 0, dy: -3.8, anchor: "middle" }, { dx: 0, dy: 5.6, anchor: "middle" },
-      { dx: 4.4, dy: -3.4, anchor: "start" }, { dx: -4.4, dy: -3.4, anchor: "end" },
-      { dx: 4.4, dy: 5.2, anchor: "start" }, { dx: -4.4, dy: 5.2, anchor: "end" },
-      { dx: 7.6, dy: -2.4, anchor: "start" }, { dx: -7.6, dy: -2.4, anchor: "end" },
-      { dx: 7.6, dy: 4.2, anchor: "start" }, { dx: -7.6, dy: 4.2, anchor: "end" }
+      { dx: 4.4, dy: 0.85, anchor: "start" }, { dx: -4.4, dy: 0.85, anchor: "end" },
+      { dx: 0, dy: -3.4, anchor: "middle" }, { dx: 0, dy: 5.2, anchor: "middle" },
+      { dx: 4.2, dy: -3.0, anchor: "start" }, { dx: -4.2, dy: -3.0, anchor: "end" },
+      { dx: 4.2, dy: 4.8, anchor: "start" }, { dx: -4.2, dy: 4.8, anchor: "end" },
+      { dx: 7.2, dy: -1.9, anchor: "start" }, { dx: -7.2, dy: -1.9, anchor: "end" },
+      { dx: 7.2, dy: 3.6, anchor: "start" }, { dx: -7.2, dy: 3.6, anchor: "end" },
+      { dx: 0, dy: -6.3, anchor: "middle" }, { dx: 0, dy: 7.7, anchor: "middle" },
+      { dx: 10.2, dy: -2.8, anchor: "start" }, { dx: -10.2, dy: -2.8, anchor: "end" },
+      { dx: 10.2, dy: 4.6, anchor: "start" }, { dx: -10.2, dy: 4.6, anchor: "end" }
     ];
     items.forEach((it) => {
       /* 盒模型必须与 glyph() 里 pill rect 完全一致，否则避让会漏判（首测仍有 1 处压字） */
@@ -8315,51 +8455,90 @@
     /* v3.93.0 势力覆灭：预置原著势力节点查状态表，动态实体节点自带 fallen */
     const fstate = factionStateOf(n.entName) || factionStateOf(n.n) || (n.fallen ? { status: "destroyed" } : null);
     const fallen = !!(fstate && fstate.status === "destroyed");
-    const k = isCur || isStd ? 1.28 : 1;
+    /* 补录条文数量远大于原著主地标（斗破单层 38:7），同尺寸会盖过主角；缩到 0.76 做层次 */
+    const k = (isCur || isStd ? 1.28 : 1) * (n.supp ? 0.62 : 1);
     const main = fallen ? hexA(P.muted, 0.5) : visited ? P.primary : hexA(P.muted, 0.9);
     const fill = fallen ? "none" : visited ? P.primary : "none";
     const fogAttr = mode === "fog" || fallen
-      ? ` opacity="${fallen ? 0.5 : 0.55}"${mode === "fog" ? ' filter="url(#agFog)"' : ""}`
+      ? ` opacity="${fallen ? 0.5 : (n.supp ? 0.72 : 0.58)}"${mode === "fog" ? ' filter="url(#agFog)"' : ""}`
       : "";
+    /* ===== v4.00.0 图标重绘：底座投影 + 双层轮廓 + 类型专属细节 =====
+       旧版每种地标只有一堆 1px 细线（城墙是三个方块、宗门是三道横线），
+       放到 1200px 屏上就是「几个小点」。新版统一加投影与实体填充，
+       城池有垛口/塔楼/城门，宗门是山门牌坊，秘境是残拱，一眼能分辨。 */
     const body = (() => {
+      const sh = `<ellipse cx=".3" cy="2.15" rx="3.2" ry=".78" fill="${hexA(P.deep, 0.5)}" filter="url(#agBlur)"/>`;
+      /* 补录条目一律用小菱形 + 细圈：它们动辄 30+ 条，若各自套类型图标，
+         一堆「山/城/旗」会互相干扰；主地标才需要完整图标。 */
+      if (n.supp && !isCur && !isStd) {
+        const sc = fallen ? hexA(P.muted, 0.6) : visited ? P.primary : hexA(P.text, 0.72);
+        return `<g>
+                <path d="M0,-2.1 L1.5,0 L0,2.1 L-1.5,0 Z" fill="${visited ? hexA(P.primary, 0.5) : "none"}" stroke="${sc}" stroke-width=".26"/>
+                <circle r=".42" fill="${sc}"/></g>`;
+      }
       switch (n.t) {
         case "start":
-          return `<circle r="2.2" fill="${hexA(P.primary, visited ? 0.3 : 0.08)}" stroke="${main}" stroke-width=".45"/>
-                    ${[0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<line x1="${(Math.cos(a * Math.PI / 180) * 2.6).toFixed(2)}" y1="${(Math.sin(a * Math.PI / 180) * 2.6).toFixed(2)}" x2="${(Math.cos(a * Math.PI / 180) * 3.3).toFixed(2)}" y2="${(Math.sin(a * Math.PI / 180) * 3.3).toFixed(2)}" stroke="${main}" stroke-width=".3"/>`).join("")}
-                    <circle r="1.05" fill="${fill}" stroke="${main}" stroke-width=".4"/>
-                    <circle r=".38" fill="${isCur ? "#fff" : P.deep}"/>`;
+          return `<g>${sh}
+                    <circle r="3.05" fill="${hexA(P.primary, visited ? 0.24 : 0.07)}" stroke="${hexA(P.primary, 0.3)}" stroke-width=".22"/>
+                    ${[0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<path d="M0,-3.95 L.44,-3.3 L0,-3 L-.44,-3.3 Z" fill="${hexA(main, a % 90 === 0 ? 0.95 : 0.5)}" transform="rotate(${a})"/>`).join("")}
+                    <circle r="2.2" fill="${fill}" stroke="${main}" stroke-width=".4"/>
+                    <circle r=".92" fill="${isCur ? "#fff" : hexA(P.primary, 0.82)}"/>
+                    <circle r=".32" fill="${P.deep}"/></g>`;
         case "city":
-          return `<path d="M-2.1,1.6 V-.4 h.7 v-.7 h.5 v.7 h.6 V-1.5 l1,-.8 l1,.8 V1.6 Z" fill="${fill}" stroke="${main}" stroke-width=".38"/>
-                    <rect x="-2.1" y="-.9" width=".5" height=".55" fill="${main}"/><rect x="-1.2" y="-.9" width=".5" height=".55" fill="${main}"/>
-                    <rect x="-.1" y="-1.7" width=".5" height=".5" fill="${main}"/>`;
+          return `<g>${sh}
+                    <path d="M-2.7,1.9 V0 h.55 v-.62 h.5 V0 h.5 V-.78 h.6 V0 h.5 v-.62 h.5 V1.9 Z" fill="${fill}" stroke="${main}" stroke-width=".34" stroke-linejoin="round"/>
+                    <path d="M-2.7,0 h5.4" stroke="${main}" stroke-width=".28"/>
+                    <path d="M-1.05,1.9 v-.82 a.55,.58 0 0 1 1.1,0 v.82" fill="${hexA(P.deep, 0.78)}" stroke="${main}" stroke-width=".24"/>
+                    <path d="M1.55,-.78 v-1.15" stroke="${hexA(P.accent, 0.95)}" stroke-width=".22"/>
+                    <path d="M1.55,-1.93 l1,.34 l-1,.36 Z" fill="${hexA(P.accent, 0.85)}"/></g>`;
         case "sect":
-          return `<path d="M-2.3,-.9 h4.6 M-2,-1.5 h4 M-1.9,-1 v3 M1.9,-1 v3 M-2.3,2.2 h4.6" stroke="${main}" stroke-width=".42" fill="none" stroke-linecap="round"/>
-                    <path d="M-2.6,-1.9 Q0,-3 2.6,-1.9" stroke="${main}" stroke-width=".4" fill="none"/>`;
+          return `<g>${sh}
+                    <path d="M-3.35,-.5 Q0,-2.05 3.35,-.5" fill="${fill}" stroke="${main}" stroke-width=".34" stroke-linejoin="round"/>
+                    <path d="M-2.95,-.4 v2.3 M-.95,-.8 v2.7 M.95,-.8 v2.7 M2.95,-.4 v2.3" stroke="${main}" stroke-width=".32" stroke-linecap="round"/>
+                    <path d="M-3.55,1.9 H3.55" stroke="${main}" stroke-width=".3" stroke-linecap="round"/>
+                    <rect x="-1.2" y="-.2" width="2.4" height=".9" rx=".16" fill="${hexA(P.deep, 0.55)}" stroke="${main}" stroke-width=".2"/></g>`;
         case "wild":
-          return `<path d="M-3,1.6 L-1.1,-1.9 L-.1,-.3 L1,-2.2 L3,1.6 Z" fill="${fill}" stroke="${main}" stroke-width=".38"/>
-                    <path d="M-1.1,-1.9 L-.75,-1.2 L-.45,-1.6 L-.15,-1.1 L.1,-1.5" stroke="${hexA(P.text, visited ? 0.8 : 0.5)}" stroke-width=".22" fill="none"/>`;
+          return `<g>${sh}
+                    <path d="M-3.35,1.9 L-1.35,-1.9 L-.35,-.32 L.78,-2.4 L3.35,1.9 Z" fill="${fill}" stroke="${main}" stroke-width=".36" stroke-linejoin="round"/>
+                    <path d="M-1.35,-1.9 L-.82,-.9 L-1.98,.18 Z" fill="${hexA(P.text, visited ? 0.42 : 0.22)}"/>
+                    <path d="M.78,-2.4 L1.26,-1.3 L.44,-.38 Z" fill="${hexA(P.text, visited ? 0.34 : 0.18)}"/></g>`;
         case "danger":
-          return `<path d="M-3,1.6 L-1.5,-2 L-.1,-.5 L1.3,-2.3 L3,1.6 Z" fill="${fill}" stroke="${dcol(n.d)}" stroke-width=".42"/>
-                    <circle cx="-1" cy=".3" r=".26" fill="${dcol(n.d)}"/><circle cx="1" cy=".5" r=".26" fill="${dcol(n.d)}"/>
-                    <path d="M2.2,-2.6 l0,1.6 l-1,-.8 Z" fill="${dcol(n.d)}" stroke="${dcol(n.d)}" stroke-width=".3" stroke-linejoin="round"/>`;
+          return `<g>${sh}
+                    <circle r="3.2" fill="${hexA(dcol(n.d), 0.09)}"/>
+                    <path d="M-3.2,1.9 L-1.55,-2.15 L-.1,-.5 L1.35,-2.5 L3.2,1.9 Z" fill="${fill}" stroke="${dcol(n.d)}" stroke-width=".4" stroke-linejoin="round"/>
+                    <path d="M0,-3.95 L.72,-2.75 L0,-1.55 L-.72,-2.75 Z" fill="${hexA(dcol(n.d), 0.88)}"/>
+                    <circle cx="-1.15" cy=".45" r=".24" fill="${dcol(n.d)}"/><circle cx=".95" cy=".68" r=".24" fill="${dcol(n.d)}"/></g>`;
+        case "relic":
+          return `<g>${sh}
+                    <path d="M-2.5,1.9 V-.35 A2.5,2.5 0 0 1 2.5,-.35 V1.9" fill="none" stroke="${main}" stroke-width=".36"/>
+                    <path d="M-1.55,1.9 V0 A1.55,1.55 0 0 1 1.55,0 V1.9" fill="${fill}" stroke="${main}" stroke-width=".24"/>
+                    <circle cy=".35" r=".44" fill="${hexA(P.accent, 0.9)}" class="atlas-pulse"/>
+                    <path d="M-3,1.9 H3" stroke="${main}" stroke-width=".28" stroke-linecap="round"/></g>`;
         case "arena":
-          return `<rect x="-2" y="-.6" width="4" height="2.2" rx=".3" fill="${fill}" stroke="${main}" stroke-width=".38"/>
-                    <path d="M-.6,-.6 v-1 h1.2 v1" stroke="${main}" stroke-width=".34" fill="none"/>
-                    <path d="M-1.3,-3 Q0,-4.6 1.3,-3 Q1.3,-1.6 0,-1.9 Q-1.3,-1.6 -1.3,-3 Z" fill="${fill}" stroke="${main}" stroke-width=".36"/>
-                    <line x1="0" y1="-1.9" x2="0" y2="-.6" stroke="${main}" stroke-width=".3"/><line x1="-1.7" y1="1.6" x2="1.7" y2="1.6" stroke="${main}" stroke-width=".4"/>`;
+          return `<g>${sh}
+                    <path d="M-2.95,1.9 L-2.35,-.72 H2.35 L2.95,1.9 Z" fill="${fill}" stroke="${main}" stroke-width=".34" stroke-linejoin="round"/>
+                    <path d="M-2.55,-.72 L-2.02,-1.55 H2.02 L2.55,-.72" fill="${hexA(P.accent, 0.2)}" stroke="${main}" stroke-width=".28" stroke-linejoin="round"/>
+                    <path d="M-2.95,1.9 H2.95" stroke="${main}" stroke-width=".26"/>
+                    <path d="M0,-1.55 V-3.4" stroke="${hexA(P.accent, 0.95)}" stroke-width=".24"/>
+                    <path d="M0,-3.4 l1.3,.42 l-1.3,.52 Z" fill="${hexA(P.accent, 0.88)}"/></g>`;
         case "poi":
-          return `<g>
-                            <path d="M-2.5,1.8 h5" stroke="${main}" stroke-width=".3" stroke-linecap="round" opacity=".85"/>
-                            <line x1="0" y1="-3.1" x2="0" y2="1.5" stroke="${main}" stroke-width=".3"/>
-                            <path d="M0,-3.1 L2.5,-2.1 L.6,-1.3 L0,-.5 Z" fill="${main}" stroke="${hexA(P.deep, 0.4)}" stroke-width=".12"/>
-                            <path d="M0,.1 l.32,.62 l.62,.32 l-.62,.32 l-.32,.62 l-.32,-.62 l-.62,-.32 l.62,-.32 Z" fill="${visited ? main : "none"}" stroke="${main}" stroke-width=".18"/></g>`;
+          return `<g>${sh}
+                    <path d="M-2.75,1.88 h5.5" stroke="${main}" stroke-width=".28" stroke-linecap="round" opacity=".82"/>
+                    <line x1="0" y1="-3.45" x2="0" y2="1.62" stroke="${main}" stroke-width=".28"/>
+                    <path d="M0,-3.45 L2.95,-2.15 L.7,-1.22 L0,-.3 Z" fill="${main}" stroke="${hexA(P.deep, 0.4)}" stroke-width=".12"/>
+                    <path d="M0,.32 l.34,.68 l.68,.34 l-.68,.34 l-.34,.68 l-.34,-.68 l-.68,-.34 l.68,-.34 Z" fill="${visited ? main : "none"}" stroke="${main}" stroke-width=".16"/></g>`;
         default:
-          return `<path d="M-1.9,1.8 h3.8 M-1.5,1 v.8 h3 V1 M-1.2,-.1 v1.1 h2.4 V-.1 M-.9,-1.1 v1 h1.8 v-1" stroke="${main}" stroke-width=".34" fill="${visited ? hexA(P.primary, 0.25) : "none"}"/>
-                    <path d="M-2.2,-1.2 Q0,-2.6 2.2,-1.2 M-1.4,-2.2 Q0,-3.3 1.4,-2.2" stroke="${main}" stroke-width=".36" fill="none"/>
-                    <path d="M0,-3.9 l.3,.8 l.8,.12 l-.6,.56 l.16,.8 l-.66,-.42 l-.66,.42 l.16,-.8 l-.6,-.56 l.8,-.12 Z" fill="${isCur ? "#fff" : main}" stroke="${main}" stroke-width=".14"/>`;
+          return `<g>${sh}
+                    <path d="M-3.3,-.05 Q0,-2.6 3.3,-.05" fill="${hexA(P.primary, visited ? 0.5 : 0.14)}" stroke="${main}" stroke-width=".36" stroke-linejoin="round"/>
+                    <path d="M-2.75,-.05 H2.75" stroke="${main}" stroke-width=".3"/>
+                    <path d="M-2.35,-.05 V1.9 M-.8,-.05 V1.9 M.8,-.05 V1.9 M2.35,-.05 V1.9" stroke="${main}" stroke-width=".26"/>
+                    <path d="M-3.05,1.9 H3.05" stroke="${main}" stroke-width=".32" stroke-linecap="round"/>
+                    <path d="M0,-2.95 l.34,.64 l.7,.06 l-.52,.56 l.16,.7 l-.68,-.38 l-.68,.38 l.16,-.7 l-.52,-.56 l.7,-.06 Z" fill="${isCur ? "#fff" : main}" stroke="${main}" stroke-width=".12"/></g>`;
       }
     })();
-    const ring = `<circle r="3.3" fill="none" stroke="${dcol(n.d)}" stroke-width=".3" stroke-dasharray="${(n.d / 5 * 20.7).toFixed(1)} 20.7" stroke-linecap="round" transform="rotate(-90)" opacity="${visited ? 0.8 : 0.4}"/>`;
+    /* 危险度环：外圈刻度，随危险等级填色，比单纯一条细虚线可读 */
+    const ring = `<circle r="3.5" fill="none" stroke="${hexA(P.deep, 0.5)}" stroke-width=".42"/>
+            <circle r="3.5" fill="none" stroke="${dcol(n.d)}" stroke-width=".38" stroke-dasharray="${(n.d / 5 * 21.99).toFixed(1)} 21.99" stroke-linecap="round" transform="rotate(-90)" opacity="${visited ? 0.85 : 0.42}"/>`;
     const vi = state.visits.findIndex((v) => v.id === n.id);
     const badge = visited && !isCur && vi >= 0 ? `<g transform="translate(2.9,-2.9)">
             <circle r="1.5" fill="${hexA(P.deep, 0.92)}" stroke="${P.primary}" stroke-width=".26"/>
@@ -8396,21 +8575,39 @@
          所有标签包在 .atlas-lab 里，缩放时由 applyZoom 反向 scale(1/k) 保持屏幕字号恒定。
          关键状态（覆灭 / 当前 / 起点）始终常显，避让放不下也回落默认位。 */
       const keyNode = fallen || isCur || isStd;
-      const need = n.supp ? (lodNeed || 1) : 0;
+      const need = n.supp ? (lodNeed == null ? 1 : lodNeed) : 0;
       if (lp === false && !keyNode) return "";
-      const fs = isCur || isStd ? 2.9 : 2.4;
-      const c = (lp && lp !== false) ? lp : { dx: n.x <= 72 ? 4.6 : -4.6, dy: 0.9, anchor: n.x <= 72 ? "start" : "end" };
+      const fs = isCur || isStd ? 2.75 : (n.supp ? 1.85 : 2.2);
+      const c = (lp && lp !== false) ? lp : { dx: n.x <= 72 ? 4.4 : -4.4, dy: 0.85, anchor: n.x <= 72 ? "start" : "end" };
       const lx = c.dx, ly = c.dy, anchor = c.anchor;
-      const lf = fallen ? hexA(P.muted, 0.9) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.text, 0.84);
+      const lf = fallen ? hexA(P.muted, 0.9) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.text, 0.86);
       const lname = fallen ? `${n.n}（已覆灭）` : n.n;
-      const tw = labelWidth(lname, fs), th = fs * 1.46;
+      const tw = labelWidth(lname, fs), th = fs * 1.44;
       const bx = anchor === "start" ? lx - 0.8 : anchor === "end" ? lx - tw + 0.8 : lx - tw / 2;
       const by = ly - fs * 0.94;
-      const bdr = fallen ? hexA(P.muted, 0.42) : isCur ? hexA(P.primary, 0.85) : isStd ? hexA(P.accent, 0.7) : hexA(P.primary, 0.26);
-      const bgc = isCur ? hexA(P.deep, 0.95) : "rgba(7,11,18,.88)";
+      const bdr = fallen ? hexA(P.muted, 0.42) : isCur ? hexA(P.primary, 0.9) : isStd ? hexA(P.accent, 0.75) : hexA(P.primary, 0.22);
+      const bgc = isCur ? hexA(P.deep, 0.96) : hexA(P.deep, 0.88);
+      /* 引线：候选位被挤到 5.4 单位外时，用一条细虚线把名字接回地标，
+         否则密集区会出现「名字悬空、不知指谁」的错觉。 */
+      const far = Math.abs(c.dx) > 5.4 || Math.abs(c.dy) > 3.4;
+      let leader = "";
+      if (far) {
+        const tx = anchor === "start" ? bx - 0.25 : anchor === "end" ? bx + tw + 0.25 : lx;
+        const ty = anchor === "middle" ? (c.dy > 0 ? by : by + th) : ly;
+        leader = `<path d="M0,0 L${tx.toFixed(2)},${ty.toFixed(2)}" stroke="${hexA(P.primary, 0.36)}" stroke-width=".14" stroke-dasharray="1.1 .8"/>
+                  <circle cx="${tx.toFixed(2)}" cy="${ty.toFixed(2)}" r=".2" fill="${hexA(P.primary, 0.62)}"/>`;
+      }
+      /* 越界回拉：边缘地标的默认位会把半个名字挤出画布（诡秘「东拜朗」、斗罗「海神岛」）。
+         整块标签平移回框内，引线仍从节点出发，指向不变。 */
+      let _sx = 0;
+      if (bx < 2.2) _sx = 2.2 - bx;
+      else if (bx + tw > 97.6) _sx = 97.6 - (bx + tw);
+      const _bx = bx + _sx, _lx = lx + _sx;
       return `<g class="atlas-lab" data-lod="${need}"${keyNode ? ' data-key="1"' : ""}${fallen ? ' data-fallen="1"' : ""}>
-                <rect x="${bx.toFixed(2)}" y="${by.toFixed(2)}" width="${tw.toFixed(2)}" height="${th.toFixed(2)}" rx="${(th / 2).toFixed(2)}" fill="${bgc}" stroke="${bdr}" stroke-width=".24"/>
-                <text x="${lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label"${fallen ? ' text-decoration="line-through"' : ""}>${lname}</text>
+                ${_sx ? `<path d="M0,0 L${_bx.toFixed(2)},${ly.toFixed(2)}" stroke="${hexA(P.primary, 0.3)}" stroke-width=".14" stroke-dasharray="1.1 .8"/>` : leader}
+                <rect x="${_bx.toFixed(2)}" y="${by.toFixed(2)}" width="${tw.toFixed(2)}" height="${th.toFixed(2)}" rx="${(th / 2).toFixed(2)}" fill="${bgc}" stroke="${bdr}" stroke-width=".22"/>
+                <path d="M${(_bx + .55).toFixed(2)},${(by + th / 2).toFixed(2)} h1.05" stroke="${fallen ? hexA(P.muted, .7) : isCur ? P.primary : isStd ? P.accent : hexA(P.primary, 0.5)}" stroke-width=".34" stroke-linecap="round"/>
+                <text x="${_lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label"${fallen ? ' text-decoration="line-through"' : ""}>${lname}</text>
               </g>`;
     })();
     const fallenMark = fallen ? `<g transform="translate(2.4,-2.6)" opacity=".92">
@@ -8420,7 +8617,7 @@
     return `<g class="atlas-node${mode === "fog" ? " atlas-fogged" : ""}${fallen ? " atlas-fallen" : ""}" data-node="${n.id}" data-mode="${mode}" data-fallen="${fallen ? 1 : 0}" style="cursor:pointer;">
             <g transform="translate(${n.x},${n.y})">
                 <g class="atlas-mark">${mark}
-                <g transform="scale(${k})"${fogAttr}>${ring}${body}</g>
+                <g transform="scale(${k})"${fogAttr}>${n.supp ? "" : ring}${body}</g>
                 ${fallenMark}${badge}${banner}</g>
                 ${label}
             </g></g>`;
@@ -8462,7 +8659,11 @@
       trail = `<path d="${d}" fill="none" stroke="${hexA(P.primary, 0.9)}" stroke-width=".62" stroke-linecap="round" filter="url(#agGlow)" class="atlas-dash" stroke-dasharray="2.4 1.7"/>
                      <path d="${d}" fill="none" stroke="${hexA(P.primary, 0.25)}" stroke-width="1.5" stroke-linecap="round" filter="url(#agBlur)"/>`;
     }
-    const regions = (layer.regions || []).map((r, i) => regionSvg(r, i, P)).join("");
+    /* v4.00.0 疆域分层：按面积降序绘制，小疆域压在大疆域之上。
+       旧版按数据顺序画，几个边界交叠时看不出谁属于谁，整片糊成一团。 */
+    const regionOrder = (layer.regions || []).map((r, i) => ({ r, i }))
+      .sort((a, b) => (b.r.rx * b.r.ry) - (a.r.rx * a.r.ry));
+    const regions = regionOrder.map((o, k) => regionSvg(o.r, o.i, P, k === regionOrder.length - 1)).join("");
     const modes = {};
     layerNodes.forEach((n) => {
       let mode = "fog";
@@ -8474,7 +8675,7 @@
     const rank = (id) => (modes[id] === "cur" || modes[id] === "standby" ? 0 : modes[id] === "vis" ? 1 : 2);
     /* v3.96.0：常显组与补录组分开避让。补录节点不再挤占常显标签的位置；
        补录按 lod 分两级（1.8× 显示约 1/3，3× 全部显示），放大越多地名越全，缩小时清爽。 */
-    const mk = (n) => ({ id: n.id, x: n.x, y: n.y, n: n.n, fs: rank(n.id) === 0 ? 2.9 : 2.4, banner: rank(n.id) === 0 });
+    const mk = (n) => ({ id: n.id, x: n.x, y: n.y, n: n.n, fs: rank(n.id) === 0 ? 2.75 : (n.supp ? 1.85 : 2.2), banner: rank(n.id) === 0 });
     const base = layerNodes.filter((n) => !n.supp);
     const supp = layerNodes.filter((n) => n.supp);
     const main = layoutLabels(base.slice().sort((a, b) => rank(a.id) - rank(b.id) || a.y - b.y).map(mk));
@@ -8485,19 +8686,33 @@
     const r1 = layoutLabels(s1.map(mk), main.boxes);
     const r2 = layoutLabels(s2.map(mk), r1.boxes);
     const lps = Object.assign({}, main.placements, r1.placements, r2.placements);
+    /* 第一档常显（lod 0）：1× 就能看到约 1/3 的补录地名，图面才不空；
+       第二档留到 3× 全展。旧版两档都藏起来，导致「放大可查看更多地名」成了默认留白。 */
     const lodOf = {};
-    s1.forEach((n) => { lodOf[n.id] = 1; });
+    s1.forEach((n) => { lodOf[n.id] = 0; });
     s2.forEach((n) => { lodOf[n.id] = 2; });
     const nodes = layerNodes.map((n) => glyph(n, modes[n.id], P, lps[n.id], layer.geo === "world", lodOf[n.id] || 0)).join("");
-    const compass = `<g transform="translate(90.5,10.5)" opacity=".92">
-            <circle r="5.2" fill="${hexA(P.deep, 0.55)}" stroke="${hexA(P.primary, 0.45)}" stroke-width=".3"/>
-            <circle r="4" fill="none" stroke="${hexA(P.primary, 0.25)}" stroke-width=".18"/>
-            ${Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="-4.6" x2="0" y2="-4" stroke="${hexA(P.primary, 0.5)}" stroke-width=".18" transform="rotate(${i * 30})"/>`).join("")}
-            <path d="M0,-3.7 L.75,0 L0,3.7 L-.75,0 Z" fill="${P.primary}"/>
-            <path d="M-3.7,0 L0,.75 L3.7,0 L0,-.75 Z" fill="${hexA(P.text, 0.55)}"/>
-            <path d="M0,-3 L.5,-.5 L0,0 L-.5,-.5 Z" fill="#fff" opacity=".9"/>
-            <circle r=".55" fill="${P.primary}" stroke="${hexA(P.deep, 0.8)}" stroke-width=".2"/>
-            <text y="-5.7" font-size="1.8" fill="${hexA(P.text, 0.9)}" text-anchor="middle" class="atlas-label">北</text></g>`;
+    /* 罗盘避让：斗罗「海神岛」等疆域会顶到右上角，罗盘压上去既挡地名又显乱。
+       在右上/左下两个候选角里选与疆域重叠最小的位置。 */
+    const _regs = layer.regions || [];
+    const _cornerScore = (cx0, cy0) => _regs.reduce((acc, r) => {
+      const d = Math.hypot((r.cx - cx0) / Math.max(4, r.rx), (r.cy - cy0) / Math.max(4, r.ry));
+      return acc + Math.max(0, 1.35 - d);
+    }, 0);
+    const _cand = [{ x: 89.4, y: 12.4 }, { x: 12.6, y: 87.6 }];
+    const _cp = _cand.slice().sort((a, b) => _cornerScore(a.x, a.y) - _cornerScore(b.x, b.y))[0];
+    const compass = `<g transform="translate(${_cp.x},${_cp.y})" opacity=".95">
+            <circle r="6.7" fill="${hexA(P.deep, 0.74)}" stroke="${hexA(P.primary, 0.5)}" stroke-width=".32"/>
+            <circle r="5.95" fill="none" stroke="${hexA(P.primary, 0.28)}" stroke-width=".14"/>
+            <circle r="4.35" fill="none" stroke="${hexA(P.primary, 0.16)}" stroke-width=".12" stroke-dasharray=".5 .9"/>
+            ${Array.from({ length: 36 }, (_, i) => `<line x1="0" y1="-6.15" x2="0" y2="${i % 9 === 0 ? "-5.25" : "-5.7"}" stroke="${hexA(P.primary, i % 9 === 0 ? 0.72 : 0.34)}" stroke-width="${i % 9 === 0 ? 0.2 : 0.12}" transform="rotate(${i * 10})"/>`).join("")}
+            ${Array.from({ length: 8 }, (_, i) => `<path d="M0,-4.15 L${i % 2 ? 0.48 : 0.86},0 L0,0.92 L-${i % 2 ? 0.48 : 0.86},0 Z" fill="${hexA(P.text, i % 2 ? 0.2 : 0.4)}" transform="rotate(${i * 45})"/>`).join("")}
+            <path d="M0,-3.85 L.6,0 L0,3.85 L-.6,0 Z" fill="${P.primary}"/>
+            <path d="M0,-3.85 L.6,0 L0,.6 Z" fill="#fff" opacity=".5"/>
+            <path d="M-3.85,0 L0,.6 L3.85,0 L0,-.6 Z" fill="${hexA(P.text, 0.46)}"/>
+            <circle r=".6" fill="${hexA(P.deep, 0.94)}" stroke="${P.primary}" stroke-width=".2"/>
+            <text y="-7.05" font-size="1.85" fill="${hexA(P.text, 0.92)}" text-anchor="middle" letter-spacing=".4" class="atlas-label">北</text>
+            <text y="8.55" font-size="1.35" fill="${hexA(P.muted, 0.6)}" text-anchor="middle" class="atlas-label">南</text></g>`;
     /* v3.97.0 时代层：把「纪元」并入左上主标题牌作第二行。
        初版独立放在左下角（y=88.6~93.8），与底部 hint（基线 96.2）只隔 0.7 单位，
        桌面/移动实拍两行小字挤成重影；并入标题牌后一眼可辨时代，左下也恢复干净。
@@ -8513,26 +8728,26 @@
             <text x="${(3.4 + tw / 2 + 0.9).toFixed(1)}" y="8.3" font-size="2.85" fill="${P.primary}" text-anchor="middle" letter-spacing="1.4" class="atlas-label">${layer.name}</text>
             ${eraTitle ? `<line x1="6.2" y1="10.4" x2="${(tw + 0.6).toFixed(1)}" y2="10.4" stroke="${hexA(P.accent, 0.38)}" stroke-width=".16"/>
             <text x="${(3.4 + tw / 2 + 0.9).toFixed(1)}" y="12.65" font-size="2.05" fill="${P.accent}" text-anchor="middle" letter-spacing=".45" class="atlas-label atlas-era">${eraTitle}</text>` : ""}</g>`;
-    const corners = [[3, 3, 1, 1], [97, 3, -1, 1], [3, 97, 1, -1], [97, 97, -1, -1]].map(([cx0, cy0, sx, sy]) => `<path d="M${cx0},${cy0 + 5.6 * sy} L${cx0},${cy0} L${cx0 + 5.6 * sx},${cy0}" fill="none" stroke="${hexA(P.primary, 0.6)}" stroke-width=".42"/>
-             <path d="M${cx0 + 1.6 * sx},${cy0 + 1.6 * sy} l.9,-.9 l.9,.9 l-.9,.9 Z" fill="${hexA(P.primary, 0.8)}"/>`).join("");
-    const scale = `<g opacity=".85">
-            <line x1="78" y1="95.6" x2="94" y2="95.6" stroke="${hexA(P.primary, 0.6)}" stroke-width=".3"/>
-            <line x1="78" y1="94.6" x2="78" y2="96.6" stroke="${hexA(P.primary, 0.6)}" stroke-width=".3"/>
-            <line x1="86" y1="95" x2="86" y2="96.2" stroke="${hexA(P.primary, 0.6)}" stroke-width=".25"/>
-            <line x1="94" y1="94.6" x2="94" y2="96.6" stroke="${hexA(P.primary, 0.6)}" stroke-width=".3"/>
-            <text x="86" y="93.4" font-size="1.75" fill="${hexA(P.muted, 0.85)}" text-anchor="middle" class="atlas-label">${layer.geo === "world" ? "公里" : "千里"}</text></g>`;
+    const corners = [[3, 3, 1, 1], [97, 3, -1, 1], [3, 97, 1, -1], [97, 97, -1, -1]].map(([cx0, cy0, sx, sy]) => `<path d="M${cx0},${cy0 + 7 * sy} L${cx0},${cy0} L${cx0 + 7 * sx},${cy0}" fill="none" stroke="${hexA(P.primary, 0.62)}" stroke-width=".46"/>
+             <path d="M${cx0 + 1.15 * sx},${cy0 + 4.7 * sy} L${cx0 + 1.15 * sx},${cy0 + 1.15 * sy} L${cx0 + 4.7 * sx},${cy0 + 1.15 * sy}" fill="none" stroke="${hexA(P.primary, 0.26)}" stroke-width=".2"/>
+             <path d="M${cx0 + 2.55 * sx},${cy0 + 2.55 * sy} l.95,-.95 l.95,.95 l-.95,.95 Z" fill="${hexA(P.primary, 0.85)}"/>
+             <circle cx="${cx0 + 5.95 * sx}" cy="${cy0 + 1.4 * sy}" r=".3" fill="${hexA(P.accent, 0.8)}"/>`).join("");
+    /* 比例尺：分段色块 + 端点读数，比三根裸刻度线更像地图 */
+    const scale = `<g opacity=".9">
+            ${[0, 1, 2, 3].map((i) => `<rect x="${(75.5 + i * 4.1).toFixed(1)}" y="94.55" width="4.1" height="1.15" fill="${i % 2 ? hexA(P.primary, 0.1) : hexA(P.text, 0.5)}" stroke="${hexA(P.primary, 0.45)}" stroke-width=".12"/>`).join("")}
+            <path d="M75.5,94.55 v-1.1 M91.9,94.55 v-1.1" stroke="${hexA(P.primary, 0.55)}" stroke-width=".22"/>
+            <text x="75.5" y="93.2" font-size="1.5" fill="${hexA(P.muted, 0.9)}" text-anchor="middle" class="atlas-label">0</text>
+            <text x="91.9" y="93.2" font-size="1.5" fill="${hexA(P.muted, 0.9)}" text-anchor="middle" class="atlas-label">${layer.geo === "world" ? "2000" : "20"}</text>
+            <text x="83.7" y="93.2" font-size="1.5" fill="${hexA(P.muted, 0.9)}" text-anchor="middle" class="atlas-label">${layer.geo === "world" ? "公里" : "千里"}</text></g>`;
     /* v3.96.0 规整底格：极淡等距网格，让画面有秩序感、不显杂乱 */
     const grid = `<g pointer-events="none">${Array.from({ length: 9 }, (_, i) => {
       const v = (i + 1) * 10;
       return `<line x1="${v}" y1="2.2" x2="${v}" y2="97.8" stroke="${hexA(P.primary, 0.055)}" stroke-width=".12"/>
               <line x1="2.2" y1="${v}" x2="97.8" y2="${v}" stroke="${hexA(P.primary, 0.055)}" stroke-width=".12"/>`;
     }).join("")}</g>`;
-    const sealPos = (layer.geo === "world") ? "50,88" : "50,84";
-    const seal = state.visits.length === 0 ? `<g transform="translate(${sealPos}) rotate(-5)" opacity=".55">
-            <circle r="8.6" fill="none" stroke="${hexA(P.primary, 0.4)}" stroke-width=".35" stroke-dasharray="1.6 1.2"/>
-            <circle r="7.2" fill="none" stroke="${hexA(P.primary, 0.28)}" stroke-width=".22"/>
-            <text y="-1.2" font-size="3.3" fill="${hexA(P.primary, 0.85)}" text-anchor="middle" letter-spacing="1.6" class="atlas-label">迷雾未开</text>
-            <text y="2.6" font-size="1.9" fill="${hexA(P.muted, 0.85)}" text-anchor="middle" letter-spacing=".6" class="atlas-label">踏出第一步 · 足迹自会点亮</text></g>` : "";
+    /* v4.00.0 移除正中「迷雾未开」大印章：它压在区域与地名上，是「图面乱」的固定来源。
+       未踏足状态由顶部「足迹点亮 0/N」与行前提示表达，不需要在图心再盖一次。 */
+    /* seal 已在 v4.00.0 移除 */
     return `
         <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" class="atlas-svg">
             <defs>
@@ -8555,20 +8770,59 @@
                 <filter id="agBlur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation=".7"/></filter>
                 <filter id="agBlur2" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2"/></filter>
                 <filter id="agFog" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation=".3"/></filter>
+                <pattern id="agP_mountain" width="15" height="10.4" patternUnits="userSpaceOnUse">
+                    <path d="M.6,5.4 L2.4,2 L3.2,3.4 L4.4,1.2 L6.2,5.4" fill="${hexA(P.stone, 0.1)}" stroke="${hexA(P.stone, 0.55)}" stroke-width=".26" stroke-linejoin="round"/>
+                    <path d="M4.4,1.2 L4.95,2.3 L4.05,2.9" fill="${hexA(P.text, 0.22)}"/>
+                    <path d="M6.9,5.4 L7.9,3.5 L8.9,5.4" fill="none" stroke="${hexA(P.stone, 0.32)}" stroke-width=".2"/>
+                </pattern>
+                <pattern id="agP_forest" width="12.6" height="10" patternUnits="userSpaceOnUse">
+                    <g stroke="${hexA(P.tree, 0.5)}" stroke-width=".22" fill="${hexA(P.tree, 0.16)}" stroke-linejoin="round">
+                        <path d="M1.9,5 L1.9,3.4 M1.9,1.1 L2.9,3.4 L.9,3.4 Z"/>
+                        <path d="M5.5,5 L5.5,3.6 M5.5,1.9 L6.3,3.6 L4.7,3.6 Z"/>
+                    </g>
+                </pattern>
+                <pattern id="agP_plain" width="13.6" height="9.4" patternUnits="userSpaceOnUse">
+                    <path d="M1,4.6 Q2,-.2 3,4.6 Q4,-.2 5,4.6" fill="none" stroke="${hexA(P.tree, 0.34)}" stroke-width=".2"/>
+                    <path d="M5.6,4.2 Q6.4,2.6 7.2,4.2" fill="none" stroke="${hexA(P.tree, 0.22)}" stroke-width=".18"/>
+                </pattern>
+                <pattern id="agP_water" width="17" height="9.2" patternUnits="userSpaceOnUse">
+                    <path d="M0,2 Q1.6,0 3.2,2 T6.4,2 T9.6,2" fill="none" stroke="${hexA(P.water, 0.4)}" stroke-width=".22"/>
+                    <path d="M-.6,4.2 Q1,2.4 2.6,4.2 T5.8,4.2 T9,4.2" fill="none" stroke="${hexA(P.water, 0.22)}" stroke-width=".18"/>
+                </pattern>
+                <pattern id="agP_desert" width="15.4" height="9.6" patternUnits="userSpaceOnUse">
+                    <path d="M0,3.4 Q2.2,1.4 4.5,3.4 T9,3.4" fill="none" stroke="${hexA(P.sand, 0.4)}" stroke-width=".24"/>
+                    <path d="M1.6,5 Q3,4 4.6,5" fill="none" stroke="${hexA(P.sand, 0.22)}" stroke-width=".18"/>
+                </pattern>
+                <pattern id="agP_city" width="13.6" height="12" patternUnits="userSpaceOnUse">
+                    <path d="M.8,6.2 V2.4 h1.7 v-1 h1.4 v1 h1.2 V6.2 Z" fill="${hexA(P.accent, 0.1)}" stroke="${hexA(P.accent, 0.42)}" stroke-width=".18"/>
+                    <path d="M5.4,6.2 V3.6 h1.9 v2.6" fill="${hexA(P.accent, 0.07)}" stroke="${hexA(P.accent, 0.3)}" stroke-width=".16"/>
+                </pattern>
+                <pattern id="agP_void" width="13.6" height="13.6" patternUnits="userSpaceOnUse">
+                    <path d="M2,2 l.5,1.1 l1.1,.5 l-1.1,.5 l-.5,1.1 l-.5,-1.1 l-1.1,-.5 l1.1,-.5 Z" fill="${hexA(P.accent, 0.28)}"/>
+                    <circle cx="6.2" cy="5.6" r=".42" fill="${hexA(P.accent, 0.35)}"/>
+                </pattern>
+                <radialGradient id="agRshade" cx="40%" cy="30%" r="78%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity=".1"/>
+                    <stop offset="62%" stop-color="#ffffff" stop-opacity="0"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity=".22"/>
+                </radialGradient>
+                <pattern id="agGrain" width="2.6" height="2.6" patternUnits="userSpaceOnUse">
+                    <circle cx="1.3" cy="1.3" r=".08" fill="${hexA(P.text, 0.2)}"/>
+                    <circle cx=".2" cy="2.1" r=".06" fill="${hexA(P.text, 0.12)}"/>
+                </pattern>
             </defs>
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agBg)"/>
             ${layer.geo === "world" ? geoWorldSvg(P) : bgSvg(layer.decor, P)}
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agVig)" pointer-events="none"/>
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" filter="url(#agPaper)" opacity=".22" pointer-events="none" class="atlas-soft"/>
+            <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agGrain)" opacity=".55" pointer-events="none"/>
             ${grid}
             ${regions}
-            ${layer.geo === "world" ? "" : seal}
             ${roads}
             ${tethers}
             ${trail}
             <g filter="url(#agGlow)">${nodes}</g>
             ${cart}${compass}${corners}${scale}
-            <text x="4.2" y="96.2" font-size="1.85" fill="${hexA(P.muted, 0.7)}" letter-spacing=".4" class="atlas-label">${layer.hint}</text>
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="none" stroke="${hexA(P.primary, 0.5)}" stroke-width=".45"/>
             <rect x="2.2" y="2.2" width="95.6" height="95.6" rx="1.6" fill="none" stroke="${hexA(P.primary, 0.18)}" stroke-width=".22"/>
         </svg>`;
@@ -8616,7 +8870,6 @@
     const rec = state.visits.find((v) => v.id === node.id);
     const vi = visitedIds.indexOf(node.id);
     const badge = isCur ? `<span class="ab ab-cur">◈ 当前位置</span>` : visited ? `<span class="ab ab-vis">已到访 · 第 ${vi + 1} 站</span>` : `<span class="ab ab-fog">未涉足 · 迷雾</span>`;
-    /* v3.93.0 势力实时状态：覆灭/复兴/影响力，点开地标即可核对 */
     const fs = factionStateOf(node.entName) || factionStateOf(node.n) || (node.fallen ? { status: "destroyed" } : null);
     const facRow = fs ? `<div class="ad-canon" style="border-left-color:${fs.status === "destroyed" ? "#d08a8a" : hexA(P.accent, 0.7)};">${
       fs.status === "destroyed" ? `🏚 势力已覆灭 · 第 ${escA(fs.round || "—")} 回合 · ${escA(fs.note || "")}`
@@ -8680,6 +8933,7 @@
                 <div class="ap-now">${cur ? cur.standby ? `整装待发 · 起点「${escA(cur.node.n)}」——开篇后 AI 上报行踪，足迹自动点亮` : `此刻 · ${escA(cur.node.n)}${cur.node.dyn ? '<span style="color:' + P.accent + ';">（' + (isTraceMode() ? "行迹" : "剧情") + "地标）</span>" : ""}` : "尚无位置记录"}</div>
             </div>
             <div class="atlas-map" style="border-color:${hexA(P.primary, 0.3)};">${layerSvg(layer)}</div>
+            <div class="atlas-layhint" style="color:${P.muted};">${escA(layer.hint || "")}</div>
             <div id="atlasDetail"></div>
             ${(() => {
               try {
@@ -8751,7 +9005,8 @@
     const lv = map.querySelector(".atlas-zlevel");
     if (lv) lv.textContent = Math.round(zoom.k * 100) + "%";
     const hint = map.querySelector(".atlas-lodhint");
-    if (hint) hint.textContent = lod === 0 ? "放大可查看更多地名" : lod === 1 ? "继续放大显示全部地名" : "已显示全部地名";
+    const zt = Math.round(zoom.k * 100) + "%";
+    if (hint) hint.textContent = (lod === 0 ? "放大可查看更多地名" : lod === 1 ? "继续放大显示全部地名" : "已显示全部地名") + " · " + zt;
     const zin = map.querySelector(".atlas-zbtn[data-zin]");
     const zout = map.querySelector(".atlas-zbtn[data-zout]");
     if (zin) zin.disabled = zoom.k >= zoom.maxK - 1e-3;
@@ -9019,11 +9274,12 @@
         .atlas-tabs{display:flex;gap:7px;margin:13px 0 9px;flex-wrap:wrap;}
         .atlas-tab{background:rgba(127,127,127,.07);border:1px solid var(--panel-border,rgba(200,170,110,.2));color:var(--text-muted,#a8a290);
             font-size:11.5px;padding:5px 13px;border-radius:999px;cursor:pointer;letter-spacing:1px;transition:.2s;font-family:inherit;display:flex;align-items:center;gap:6px;}
-        .atlas-tab i{font-style:normal;font-family:'Noto Serif SC',serif;font-size:11px;width:18px;height:18px;border-radius:5px;
-            display:inline-flex;align-items:center;justify-content:center;background:rgba(127,127,127,.12);}
+        .atlas-tab i{font-style:normal;font-family:'Noto Serif SC',serif;font-size:10px;width:17px;height:17px;border-radius:4px;
+            display:inline-flex;align-items:center;justify-content:center;background:rgba(127,127,127,.1);
+            border:1px solid currentColor;opacity:.62;letter-spacing:0;}
         .atlas-tab.on{color:#131109;background:var(--p,var(--primary,#c9a86a));border-color:var(--p,var(--primary,#c9a86a));font-weight:700;
             box-shadow:0 0 14px color-mix(in srgb,var(--p,var(--primary,#c9a86a)) 45%,transparent);}
-        .atlas-tab.on i{background:rgba(0,0,0,.18);}
+        .atlas-tab.on i{background:rgba(0,0,0,.18);opacity:.85;}
         .atlas-progress{margin-bottom:9px;}
         .ap-txt{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted,#a8a290);margin-bottom:4px;letter-spacing:.5px;}
         .ap-bar{height:5px;border-radius:99px;background:rgba(127,127,127,.16);overflow:hidden;position:relative;}
@@ -9040,7 +9296,10 @@
         /* ---- v3.27.4 地图缩放（手机端 1.85 单位标签≈7px，无缩放不可读）---- */
         .atlas-map.canpan .atlas-svg{cursor:grab;}
         .atlas-map.dragging .atlas-svg{transition:none;cursor:grabbing;}
-        .atlas-zoom{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;z-index:5;}
+        .atlas-layhint{font-size:11px;letter-spacing:.4px;opacity:.62;margin:7px 2px 2px;line-height:1.5;}
+        .atlas-zoom{position:absolute;right:9px;bottom:9px;display:flex;flex-direction:column;gap:5px;z-index:5;opacity:.86;}
+        .atlas-zoom:hover{opacity:1;}
+        .atlas-zlevel{display:none;}
         .atlas-zbtn{width:36px;height:36px;border-radius:11px;border:1px solid color-mix(in srgb,var(--primary,#c9a86a) 42%,transparent);
             background:rgba(10,12,20,.87);color:var(--primary,#c9a86a);font-size:17px;line-height:1;cursor:pointer;font-family:inherit;
             display:flex;align-items:center;justify-content:center;transition:.15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
@@ -9122,6 +9381,163 @@
      把 ATLAS_SUPPLEMENT（从 configs 原著势力谱系逐条审定抽出）追加到 33 界对应层。
      坐标一律由本界已有真实地标「锚点 + 避让」推导，不凭空摆放；同名幂等；
      只改运行期 ATLAS_DATA，不动原始定义，删掉数据文件即可整体回滚。 */
+  /* v4.00.0 补录节点摊平（力导向松弛）
+     实测：斗破「乌坦城地界」一层 45 个节点里 38 个是补录，全部按 anchor±(5~10) 撒点，
+     结果 31 个叠在 20×30 的小角落里，渲染成一团白雾——这是「地图乱」的元凶之一。
+     这里做一次轻量松弛：互相排斥 + 弱引力回锚点 + 收进所属区域椭圆 + 画布边界约束，
+     迭代后补录点自然铺满整片区域，标签也才有地方排。 */
+  function relaxSupp() {
+    Object.keys(ATLAS_DATA).forEach((g) => {
+      const cfg = ATLAS_DATA[g];
+      if (!cfg || !Array.isArray(cfg.layers)) return;
+      cfg.layers.forEach((layer) => {
+        const nodes = layer.nodes || [];
+        const supp = nodes.filter((n) => n.supp);
+        if (supp.length < 6) return;
+        const fixed = nodes.filter((n) => !n.supp);
+        const regs = layer.regions || [];
+        const regOf = (n) => regs.find((r) => r.n === n.rg) || null;
+        const byName = {};
+        fixed.forEach((n) => { byName[n.n] = n; });
+        const minD = 6.2;
+        const ITER = 90;
+        for (let it = 0; it < ITER; it++) {
+          const step = 0.5 * (1 - it / (ITER * 1.25));
+          supp.forEach((n) => {
+            let fx = 0, fy = 0;
+            const all = fixed.concat(supp);
+            for (let i = 0; i < all.length; i++) {
+              const o = all[i];
+              if (o === n) continue;
+              const dx = n.x - o.x, dy = n.y - o.y;
+              const d = Math.hypot(dx, dy) || 0.001;
+              const lim = o.supp ? minD : minD * 1.2;
+              if (d < lim) {
+                const f = (lim - d) / d;
+                fx += dx * f;
+                fy += dy * f;
+              }
+            }
+            /* 区域只是软边界：一片区域里塞 30+ 补录时，硬拉回椭圆只会挤成一团，
+               允许溢出到相邻留白，视觉上就是「这一带散布着许多地名」。 */
+            const r = regOf(n);
+            if (r && r.rx > 2 && r.ry > 2) {
+              const nx = (n.x - r.cx) / r.rx, ny = (n.y - r.cy) / r.ry;
+              const rr = Math.hypot(nx, ny) || 0.001;
+              if (rr > 1.0) {
+                const tx = r.cx + nx / rr * 0.96 * r.rx;
+                const ty = r.cy + ny / rr * 0.96 * r.ry;
+                fx += (tx - n.x) * 0.22;
+                fy += (ty - n.y) * 0.22;
+              }
+            }
+            const a = byName[n.anchorN];
+            if (a) { fx += (a.x - n.x) * 0.018; fy += (a.y - n.y) * 0.018; }
+            n.x = Math.min(94.5, Math.max(5.5, n.x + fx * step));
+            n.y = Math.min(92.5, Math.max(8.5, n.y + fy * step));
+          });
+        }
+      });
+    });
+  }
+  /* v4.00.0 疆域铺满
+     实测多界地图只用了画布上半部（凡人「天南·越国七派」三片疆域挤在 y=20~75，
+     下半四分之一完全空白），观感就是「很多地方没画」。这里按包围盒整体等比放大
+     并居中到可用区（留出左上图名与底部比例尺），节点与疆域同步缩放，语义不变。 */
+  function fitLayers() {
+    Object.keys(ATLAS_DATA).forEach((g) => {
+      const cfg = ATLAS_DATA[g];
+      if (!cfg || !Array.isArray(cfg.layers)) return;
+      cfg.layers.forEach((layer) => {
+        if (layer.geo === "world") return;
+        const regs = layer.regions || [];
+        if (!regs.length) return;
+        const nodes = (layer.nodes || []).filter((n) => !n.dyn);
+        if (!nodes.length) return;
+        let x1 = 1e9, x2 = -1e9, y1 = 1e9, y2 = -1e9;
+        regs.forEach((r) => {
+          x1 = Math.min(x1, r.cx - r.rx); x2 = Math.max(x2, r.cx + r.rx);
+          y1 = Math.min(y1, r.cy - r.ry); y2 = Math.max(y2, r.cy + r.ry);
+        });
+        const w = x2 - x1, h = y2 - y1;
+        if (w < 15 || h < 15) return;
+        const TX1 = 6, TX2 = 94, TY1 = 11, TY2 = 90;
+        const sc = Math.min((TX2 - TX1) / w, (TY2 - TY1) / h, 1.5);
+        if (sc < 1.06) return;
+        const cx = (x1 + x2) / 2, cy = (y1 + y2) / 2;
+        const ncx = (TX1 + TX2) / 2, ncy = (TY1 + TY2) / 2;
+        const fx = (x) => ncx + (x - cx) * sc;
+        const fy = (y) => ncy + (y - cy) * sc;
+        /* 单疆域层（遮天「地球」、吞噬「地球」等）铺满整幅会变成一团巨大色块，
+           收 0.9 并居中，四周留出星空/山影，反而更像舆图。 */
+        const soloShrink = regs.length === 1 ? 0.9 : 1;
+        regs.forEach((r) => {
+          r.cx = +fx(r.cx).toFixed(2);
+          r.cy = +fy(r.cy).toFixed(2);
+          r.rx = +(r.rx * sc * soloShrink).toFixed(2);
+          r.ry = +(r.ry * sc * soloShrink).toFixed(2);
+        });
+        nodes.forEach((n) => {
+          n.x = +Math.min(95, Math.max(5, fx(n.x))).toFixed(2);
+          n.y = +Math.min(93, Math.max(9, fy(n.y))).toFixed(2);
+        });
+      });
+    });
+  }
+  /* v4.00.0 疆域互不压叠
+     斗罗一层 11 片疆域，旧布局全挤在中部互相穿插，边界绞成一团——这是「乱」的极致样本。
+     这里做圆填充松弛：把每片疆域近似成圆，互相推开 + 弱回位 + 边界收束，
+     再按最近疆域把节点一起平移，保证地名仍落在自己的疆域里。 */
+  function packRegions() {
+    Object.keys(ATLAS_DATA).forEach((g) => {
+      const cfg = ATLAS_DATA[g];
+      if (!cfg || !Array.isArray(cfg.layers)) return;
+      cfg.layers.forEach((layer) => {
+        const regs = layer.regions || [];
+        if (regs.length < 4) return;
+        const SHRINK = regs.length >= 8 ? 0.76 : 0.88;
+        const rad = (r) => (r.rx + r.ry) / 2;
+        const home = regs.map((r) => ({ x: r.cx, y: r.cy }));
+        const nodes = (layer.nodes || []).filter((n) => !n.dyn);
+        const near = nodes.map((n) => {
+          let bi = 0, bd = 1e9;
+          regs.forEach((r, i) => {
+            const d = Math.hypot(n.x - r.cx, n.y - r.cy);
+            if (d < bd) { bd = d; bi = i; }
+          });
+          return { n, i: bi, ox: n.x - regs[bi].cx, oy: n.y - regs[bi].cy };
+        });
+        regs.forEach((r) => { r.rx = +(r.rx * SHRINK).toFixed(2); r.ry = +(r.ry * SHRINK).toFixed(2); });
+        const GAP = regs.length >= 8 ? 0.92 : 0.96;
+        for (let it = 0; it < 150; it++) {
+          for (let i = 0; i < regs.length; i++) {
+            for (let j = i + 1; j < regs.length; j++) {
+              const a = regs[i], b = regs[j];
+              const dx = b.cx - a.cx, dy = b.cy - a.cy;
+              const d = Math.hypot(dx, dy) || 0.01;
+              const min = (rad(a) + rad(b)) * GAP;
+              if (d < min) {
+                const push = (min - d) / d * 0.5;
+                a.cx -= dx * push; a.cy -= dy * push;
+                b.cx += dx * push; b.cy += dy * push;
+              }
+            }
+          }
+          regs.forEach((r, k) => {
+            r.cx += (home[k].x - r.cx) * 0.003;
+            r.cy += (home[k].y - r.cy) * 0.003;
+            r.cx = Math.min(96 - r.rx, Math.max(4 + r.rx, r.cx));
+            r.cy = Math.min(95 - r.ry, Math.max(5 + r.ry, r.cy));
+          });
+        }
+        near.forEach((o) => {
+          const r = regs[o.i];
+          o.n.x = +Math.min(94, Math.max(6, r.cx + o.ox * SHRINK)).toFixed(1);
+          o.n.y = +Math.min(93, Math.max(8, r.cy + o.oy * SHRINK)).toFixed(1);
+        });
+      });
+    });
+  }
   function injectSupplement() {
     const S = window.ATLAS_SUPPLEMENT;
     if (!S || typeof S !== "object") return 0;
@@ -9148,16 +9564,33 @@
         }
         if (!anchor) { layer = cfg.layers[0]; anchor = (layer.nodes || [])[0]; }
         if (!anchor || !layer) return;
+        /* v4.00.0 无锚点补录的落位修正
+           旧逻辑把无锚点条目一律挂到含 start 的那个节点（斗破＝乌坦城），一层 38 条补录
+           全堆在左下 20×30 的范围里，渲染成一团糊。现在按「描述命中区域名 → 名称命中区域
+           → 按名字哈希分摊」选出归属疆域，以区域中心为落点，补录会均匀散到各片区域。 */
+        let regHint = null;
+        if (!it.anchor && Array.isArray(layer.regions) && layer.regions.length) {
+          const regs = layer.regions.filter((r) => r.rx > 3 && r.ry > 3);
+          if (regs.length) {
+            const txt = (it.n || "") + " " + (it.desc || "");
+            let hit = regs.find((r) => r.n && txt.includes(r.n));
+            if (!hit) hit = regs.find((r) => r.n && r.n.length >= 2 && (it.n || "").includes(r.n.slice(0, 2)));
+            if (!hit) hit = regs[strHash(g + "|" + it.n) % regs.length];
+            regHint = hit || null;
+          }
+        }
         /* v3.94.0 真实地球世界地图：带 lon/lat 的补录节点走等距圆柱投影落到真实经纬度，
            不用锚点随机偏移（第一批曾把「中国 / 欧洲」随机放点，属准确性缺陷）。 */
         const earthXY = (g === "earth" && Number.isFinite(it.lon) && Number.isFinite(it.lat) && typeof geoXY === "function")
           ? geoXY(it.lon, it.lat) : null;
         const seed = strHash(g + "|" + it.n);
-        let bx = anchor.x, by = anchor.y, best = -1;
-        for (let k = 0; k < 16; k++) {
-          const a = prand(seed, k) * Math.PI * 2, r = 5 + prand(seed + 7, k) * 5.5;
-          const x = Math.min(94, Math.max(6, anchor.x + Math.cos(a) * r));
-          const y = Math.min(92, Math.max(8, anchor.y + Math.sin(a) * r));
+        const ox = regHint ? regHint.cx : anchor.x, oy = regHint ? regHint.cy : anchor.y;
+        const span = regHint ? Math.min(regHint.rx, regHint.ry) * 0.78 : 10;
+        let bx = ox, by = oy, best = -1;
+        for (let k = 0; k < 26; k++) {
+          const a = prand(seed, k) * Math.PI * 2, r = span * (0.35 + prand(seed + 7, k) * 0.75);
+          const x = Math.min(94, Math.max(6, ox + Math.cos(a) * r));
+          const y = Math.min(92, Math.max(8, oy + Math.sin(a) * r));
           let md = 99;
           for (const n of layer.nodes) { const dd = Math.hypot(n.x - x, n.y - y); if (dd < md) md = dd; }
           if (md > best) { best = md; bx = x; by = y; }
@@ -9166,7 +9599,7 @@
         layer.nodes.push({
           id: "supp_" + seed.toString(36) + "_" + i,
           n: it.n, x: earthXY ? earthXY[0] : +bx.toFixed(1), y: earthXY ? earthXY[1] : +by.toFixed(1),
-          t: it.t || "poi", d: 1, rg: anchor.rg || "原著补录",
+          t: it.t || "poi", d: 1, rg: (regHint && regHint.n) || anchor.rg || "原著补录",
           aliases: [], desc: it.desc || "", c: it.c || "原著设定补录",
           supp: true, anchorN: anchor.n
         });
@@ -9207,7 +9640,11 @@
       });
     } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 土豆宇宙舆图合并失败:", e); }
     /* v3.93.0 在任何 render / sync 之前补录，保证足迹、势力落位都能用上新增地标 */
+    try { fitLayers(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 疆域铺满失败:", e); }
+    try { packRegions(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 疆域松弛失败:", e); }
     try { injectSupplement(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 舆图补录失败:", e); }
+    /* v4.00.0 补录落位后立刻松弛一次，否则同一锚点下的几十条补录会叠成一团白雾 */
+    try { relaxSupp(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 舆图松弛失败:", e); }
     const genre = new URLSearchParams(location.search).get("genre");
     if (genre) {
       if (!ATLAS_DATA[genre]) ensureGenreData(genre);

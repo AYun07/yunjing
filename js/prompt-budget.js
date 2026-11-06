@@ -50,6 +50,14 @@
      * 18000 字符 ≈ 1.5 万 token，落在 16k~32k 上下文的安全区；真 8k 的模型由
      * autoLimit() 推断出的 4000 字符接住，两者取小。 */
     LITE_LIMIT: 18000,
+    /** v4.00.0 低配档上限随上下文分档：8K 模型按 18000 字符装配必爆（实测 8087 字符
+     *  ≈ 6700 token，加上输出就超过 8192）。8K→5200、16K→9000、更高→18000。 */
+    liteLimit() {
+      const ctx = this.ctxTokens();
+      if (ctx > 0 && ctx <= 8000) return 5200;
+      if (ctx > 0 && ctx <= 16000) return 9000;
+      return 18000;
+    },
     isLite() {
       try {
         return !!(window.BaseModelMode && window.BaseModelMode.isLite && window.BaseModelMode.isLite());
@@ -169,8 +177,9 @@
       /* v3.99.0 低配档兜底：推断不出窗口时不能留 11 万字符的默认值；
          即便推断出来了，小模型的真实安全线也远低于 0.6 系数理论值。 */
       cfg.lite = this.isLite();
-      if (cfg.lite && cfg.limit > this.LITE_LIMIT) {
-        cfg.limit = this.LITE_LIMIT;
+      const LL = this.liteLimit();
+      if (cfg.lite && cfg.limit > LL) {
+        cfg.limit = LL;
         cfg.liteClamped = true;
       }
       /* 曾经被服务端判定超限的，按实测值继续收紧，避免每次都撞墙 */
