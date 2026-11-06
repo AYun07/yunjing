@@ -8254,7 +8254,7 @@
     }
     return pts;
   }
-  function regionSvg(r, idx, P, top, outBoxes, pos, labelOut) {
+  function regionSvg(r, idx, P, top, outBoxes, pos, labelOut, hideLabel) {
     const fillA = top ? 0.17 : 0.1;
     const col = { mountain: P.stone, forest: P.tree, desert: P.sand, water: P.water, city: P.accent, void: P.accent, plain: P.tree }[r.tr] || P.stone;
     const blob = blobPath(r.cx, r.cy, r.rx, r.ry, idx + 1);
@@ -8277,13 +8277,20 @@
     /* 区域名牌 v4：抬高到边界外侧，左右带引线与菱形端点，读起来像制图标注而不是按钮 */
     const ly = (pos && pos.ly != null) ? pos.ly : Math.max(5.0, r.cy - r.ry * 0.58);
     const tw = regionLabelW(r.n);
-    const lx = (pos && pos.lx != null) ? pos.lx : r.cx;
+    let lx = (pos && pos.lx != null) ? pos.lx : r.cx;
+    /* v4.01.0 区域名牌同样会出框：名牌宽 = 文字 + 两侧菱形端点 + 引线，
+       中心落在 90 附近时右半截直接跑出画布。这里按整块宽度夹回。 */
+    {
+      const halfW = regionLabelW(r.n) / 2 + 3.0;
+      lx = Math.max(halfW + 1.5, Math.min(98.5 - halfW, lx));
+    }
     /* v4.00.0 区域名牌的包围盒要交给标签布局当障碍物：此前据点标签完全不知道区域名
        存在，于是「猎魂森林」区域名和同名据点名叠成重影，「魂兽地界」与「七宝琉璃宗」
        挨在一起读成「七宝琉璃宗地界」。 */
     /* 盒宽要把两侧菱形端点与引线一起算进去（各约 4.2）：只按文字宽算，据点标签的末字
        会被菱形压住——「七宝琉璃宗」的「宗」就是这么没的。 */
-    if (outBoxes) outBoxes.push({ x1: lx - tw / 2 - 3.0, x2: lx + tw / 2 + 3.0, y1: ly - 1.9, y2: ly + 1.9 });
+    /* 名牌不画时（与起点同名）连障碍盒也不占，否则周围据点标签会为一处不存在的字让位 */
+    if (outBoxes && !hideLabel) outBoxes.push({ x1: lx - tw / 2 - 3.0, x2: lx + tw / 2 + 3.0, y1: ly - 1.9, y2: ly + 1.9 });
     const label = `<g class="atlas-rlabel atlas-rlabel-top">
             <path d="M${(lx - tw / 2 - 2.4).toFixed(1)},${ly.toFixed(1)} h1.8" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
             <path d="M${(lx + tw / 2 + 0.6).toFixed(1)},${ly.toFixed(1)} h1.8" stroke="${hexA(col, 0.5)}" stroke-width=".24"/>
@@ -8293,7 +8300,7 @@
             <text x="${lx.toFixed(1)}" y="${(ly + 0.72).toFixed(1)}" font-size="2.0" fill="${hexA(P.text, 0.94)}" text-anchor="middle" letter-spacing=".9" class="atlas-label">${r.n}</text></g>`;
     /* v4.00.0 名牌外置：疆域按面积从小到大叠着画，小的疆域会盖住大的疆域名牌，
        出现「七宝琉璃宗」压掉「魂兽地界」首字的情况。名牌统一挪到最上层单独画。 */
-    if (labelOut) labelOut.push(label);
+    if (labelOut && !hideLabel) labelOut.push(label);
     return `<g class="atlas-region">
             <path d="${blob}" fill="${hexA(col, fillA * 0.55)}"/>
             <path d="${blob}" fill="url(#agP_${r.tr || "plain"})" opacity=".42"/>
@@ -8422,7 +8429,11 @@
   function labelWidth(t, fs) {
     let w = 0;
     for (const ch of String(t)) w += /[\u3400-\u9fa5\uff00-\uffef]/.test(ch) ? fs : fs * 0.56;
-    return w + 1.6;
+    /* v4.01.0 内边距按实测放大。用 DOM 量「北京·燕京」（fs=2.2）：
+         文字 10.84、连同药丸底框 13.83，而旧公式给的是 11.63——每块标签少算 2.2 单位。
+       布局按 11.63 判定放得下，实际画出来是 13.83，于是挤压、出界、压住菱形端点全来了。
+       这个 3.8 = 实测底框宽 13.83 - 文字宽 10.03，含左右留白与描边。 */
+    return w + 3.8;
   }
   function layoutLabels(items, seedBoxes) {
     /* 判定盒与 glyph() 的 pill rect 完全一致，任何放宽都会带来真实压字，故一律严格避让。
@@ -8615,9 +8626,16 @@
       }
       /* 越界回拉：边缘地标的默认位会把半个名字挤出画布（诡秘「东拜朗」、斗罗「海神岛」）。
          整块标签平移回框内，引线仍从节点出发，指向不变。 */
+      /* v4.01.0 越界回拉修正（此前一直是失效的）
+         bx 是**相对节点**的偏移（标签画在 translate(n.x,n.y) 内），而旧代码拿它直接和
+         画布边界 97.6 / 2.2 比——单位对不上，条件永远不成立，于是边缘地标的标签照样
+         冲出画布（earth「悉尼·植物学湾」右侧溢出 84px、诡秘「总部大昌分部」溢出 29px）。
+         这里先把节点绝对坐标加回来再判边界。 */
+      const absAnchor = n.x + lx;
+      const absBx = anchor === "start" ? absAnchor - 0.8 : anchor === "end" ? absAnchor - tw + 0.8 : absAnchor - tw / 2;
       let _sx = 0;
-      if (bx < 2.2) _sx = 2.2 - bx;
-      else if (bx + tw > 97.6) _sx = 97.6 - (bx + tw);
+      if (absBx < 4.5) _sx = 4.5 - absBx;
+      else if (absBx + tw > 95.5) _sx = 95.5 - (absBx + tw);
       const _bx = bx + _sx, _lx = lx + _sx;
       return `<g class="atlas-lab" data-lod="${need}"${keyNode ? ' data-key="1"' : ""}${fallen ? ' data-fallen="1"' : ""}>
                 ${_sx ? `<path d="M0,0 L${_bx.toFixed(2)},${ly.toFixed(2)}" stroke="${hexA(P.primary, 0.3)}" stroke-width=".14" stroke-dasharray="1.1 .8"/>` : leader}
@@ -8682,13 +8700,18 @@
     const rlabelBoxes = [];
     /* 区域名牌彼此也会撞：斗罗「七宝琉璃宗」就压住了「魂兽地界」的首字，读起来像
        「七宝琉璃宗兽地界」。先按 x 排序做一轮上下错位，再交给据点标签当障碍物。 */
+    /* v4.01.0 同名让位：起点/当前节点的名字必须显示（玩家要看自己在哪），
+       此时同名的区域名牌不再重复画一遍——吞噬星空「江南基地市」、圣墟「大漠古道」
+       此前都是一个名字在图上写两遍。 */
+    const startNames = new Set(layerNodes.filter((n) => n.t === "start" || (cur && cur.node.id === n.id)).map((n) => n.n));
     const rlabelPos = (() => {
       const list = regionOrder.map((o, k) => ({
         k,
         cx: o.r.cx,
         lx: o.r.cx,
         ly: Math.max(5.0, o.r.cy - o.r.ry * 0.58),
-        tw: regionLabelW(o.r.n)
+        tw: regionLabelW(o.r.n),
+        hide: startNames.has(o.r.n)
       })).sort((a, b) => a.ly - b.ly || a.lx - b.lx);
       const placed = [];
       const out = {};
@@ -8701,13 +8724,13 @@
         let hx = 0, hg = 0;
         while (hitOne() && hg < 8) { hx = (hg % 2 === 0 ? 1 : -1) * (3.2 + hg * 1.6); it.lx = it.cx + hx; hg++; }
         it.lx = Math.max(8 + it.tw / 2, Math.min(92 - it.tw / 2, it.lx));
-        placed.push(it);
-        out[it.k] = { lx: it.lx, ly: it.ly };
+        if (!it.hide) placed.push(it);
+        out[it.k] = { lx: it.lx, ly: it.ly, hide: it.hide };
       });
       return out;
     })();
     const rlabels = [];
-    const regions = regionOrder.map((o, k) => regionSvg(o.r, o.i, P, k === regionOrder.length - 1, rlabelBoxes, rlabelPos[k], rlabels)).join("");
+    const regions = regionOrder.map((o, k) => regionSvg(o.r, o.i, P, k === regionOrder.length - 1, rlabelBoxes, rlabelPos[k], rlabels, rlabelPos[k] && rlabelPos[k].hide)).join("");
     const modes = {};
     layerNodes.forEach((n) => {
       let mode = "fog";
@@ -9648,15 +9671,47 @@
             if (n.n === it.anchor || (it.anchor && n.n.includes(it.anchor)) || (it.anchor && it.anchor.includes(n.n))) { anchor = n; layer = l; }
           }
         }
-        /* 无锚点补录统一挂到含 start 节点的层：v3.95 曾试过按层轮转均摊，
-           但会改变「覆灭势力 → 地图节点」的匹配层，导致废墟态在当前层不出现（势力链路 10→8）。
-           核心动态链路优先，故保留原逻辑；标签密度改由 atlas-label-supp 悬停机制解决。 */
-        if (!anchor) for (const l of cfg.layers) {
-          const s = (l.nodes || []).find((n) => n.t === "start");
-          if (s) { anchor = s; layer = l; break; }
+        /* v4.01.0 分层落位修正（此前最严重的一处地图错误）
+           旧逻辑把无锚点补录一律挂到「含 start 节点的层」。遮天的 start 在「地球·起点」，
+           于是轮回海、紫微星域、冰雪宫、大雷音寺这些北斗星域的地名全被塞进地球那一层，
+           玩家看到的是「泰山旁边挨着天璇圣地」。同理，斗破的补录也全堆在乌坦城那一层。
+           新逻辑：先按语义匹配层（层名 / 层内区域名是否出现在条目的名称或描述里），
+           匹配不上才按名称哈希在有节点的层之间分摊——不再一律倒进 start 层。
+           注意保留原有约束：带显式 anchor 的条目仍走锚点层，避免破坏「覆灭势力 → 废墟态」链路。 */
+        if (!layer) {
+          const txt = (it.n || "") + " " + (it.desc || "") + " " + (it.c || "");
+          let bestL = null, bestScore = 0;
+          for (const l of cfg.layers) {
+            let score = 0;
+            String(l.name || "").split(/[·・\s\/]+/).forEach((seg) => {
+              if (seg.length >= 2 && txt.includes(seg)) score += 3;
+            });
+            (l.regions || []).forEach((r) => {
+              if (r && r.n && String(r.n).length >= 2 && txt.includes(r.n)) score += 5;
+            });
+            if (score > bestScore) { bestScore = score; bestL = l; }
+          }
+          if (bestL && bestScore >= 3) layer = bestL;
         }
-        if (!anchor) { layer = cfg.layers[0]; anchor = (layer.nodes || [])[0]; }
-        if (!anchor || !layer) return;
+        if (!layer) {
+          /* 分摊时排除两类层：
+             ① 联动/他作舞台（否则斗破地名会漏进大主宰那层）
+             ② 「起点」层——它本来就只该有两三个开篇地点（遮天「地球·起点」只有泰山与古棺），
+                往里塞北斗的宗门与禁地就变成了「泰山旁边挨着光明山」。 */
+          const cands = cfg.layers.filter((l) => {
+            const nm = String(l.name || "");
+            if (/(联动|大千世界|主宰时代|跨宇宙)/.test(nm)) return false;
+            if (/(起点|序章|开篇)/.test(nm) && (l.nodes || []).length <= 4) return false;
+            return (l.nodes || []).length > 0;
+          });
+          const pool = cands.length ? cands : cfg.layers.filter((l) => (l.nodes || []).length);
+          layer = pool.length ? pool[strHash(g + "|" + it.n) % pool.length] : cfg.layers[0];
+        }
+        if (!layer) return;
+        if (!anchor) {
+          anchor = (layer.nodes || []).find((n) => n.t === "start") || (layer.nodes || [])[0];
+        }
+        if (!anchor) return;
         /* v4.00.0 无锚点补录的落位修正
            旧逻辑把无锚点条目一律挂到含 start 的那个节点（斗破＝乌坦城），一层 38 条补录
            全堆在左下 20×30 的范围里，渲染成一团糊。现在按「描述命中区域名 → 名称命中区域

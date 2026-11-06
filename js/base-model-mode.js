@@ -170,11 +170,27 @@
     const c = Object.assign({}, cfg);
     if (typeof c.temperature !== 'number' || c.temperature > 0.75) c.temperature = 0.75;
     if (!c.maxTokens || c.maxTokens > 8000) c.maxTokens = 8000;
-    /* v4.00.0 8K 档必须给输出留够：实测输入 6300 字符已占满 8K 窗口的七成，
-       输出再按 2000 token 走就必然「说到一半断了」。压到 1400，约 1000 字正文。 */
+    /* v4.01.0 8K 档输出上限按实测重定。
+       上一版压到 1400，理由是「输入 6300 字符已占七成窗口」——但实测发现更糟：
+       1400 token 约合 1000 字，模型写不到收尾就被掐断，自动续写接力 2 次，
+       而每次续写的拼接处都会丢标点（实测单轮出现 14 处、403 字无标点长段，
+       玩家看到的是「一句话没有逗号」的糊文）。
+       对照实验（agnes-2.5-flash / 8K 窗口 / 同一 prompt）：
+         max_tokens 1400 → 3019 字，续写 2 次，14 处丢标点
+         max_tokens 2000 → 2049 字，续写 0 次，0 处丢标点，结尾自然收束
+         max_tokens 2600 → 853 字（罚项归零时模型反而写短），标点正常但内容太干
+       结论：2000 是这道窗口的甜点——输入 5766 字符(≈4270 token)+2000 输出=6270，
+       距 8192 还有近 1900 token 余量。 */
     if (ctxTier() === 'tiny') {
       const mt = Number(c.maxTokens) || 2000;
-      c.maxTokens = Math.max(700, Math.min(mt, 1400));
+      c.maxTokens = Math.max(900, Math.min(mt, 2000));
+      /* 输入超过 6800 字符时，2000 输出会重新挤到窗口边缘（8K ≈ 8192 token，
+         6800 字符 ≈ 5040 token，再加 2000 = 7040，余量只剩 1100）。
+         按上一轮实际装配量回退，宁可让正文短一点，也不让它被掐成半句话。 */
+      const rep = window.PromptBudget && window.PromptBudget.lastReport;
+      const used = rep && Number(rep.total) || 0;
+      if (used > 7400) c.maxTokens = Math.min(c.maxTokens, 1200);
+      else if (used > 6800) c.maxTokens = Math.min(c.maxTokens, 1600);
     }
     return c;
   }
