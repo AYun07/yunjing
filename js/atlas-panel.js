@@ -9187,6 +9187,14 @@
         });
       });
     } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 时代层合并失败:", e); }
+    /* v3.98.0 天蚕土豆宇宙四界舆图：把 ATLAS_POTATO 直接并入 ATLAS_DATA（新世界本体，非时代层）。
+       节点 id 已带 d_/w_/y_/wx_ 前缀，与既有层/节点不会冲突。必须在 injectSupplement() 之前合并。 */
+    try {
+      const POT = window.ATLAS_POTATO || {};
+      Object.keys(POT).forEach((g) => {
+        if (!ATLAS_DATA[g] && POT[g] && Array.isArray(POT[g].layers)) ATLAS_DATA[g] = POT[g];
+      });
+    } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 土豆宇宙舆图合并失败:", e); }
     /* v3.93.0 在任何 render / sync 之前补录，保证足迹、势力落位都能用上新增地标 */
     try { injectSupplement(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 舆图补录失败:", e); }
     const genre = new URLSearchParams(location.search).get("genre");

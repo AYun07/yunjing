@@ -103,7 +103,10 @@ for (const g of genres) {
   if (!items.length) { console.log(`  ${g}: 0 条（跳过）`); continue; }
 
   const extPath = path.join(KB_DIR, `${g}.ext.js`);
-  if (!fs.existsSync(extPath)) { console.log(`  ${g}: ext 不存在（跳过）`); continue; }
+  if (!fs.existsSync(extPath)) {
+    const stub = `/* ${g} 扩展知识库（由 scripts/build-codex.mjs 生成，请勿手改本段以外内容） */\n${START}\n${END}\n`;
+    fs.writeFileSync(extPath, stub);
+  }
   let ext = fs.readFileSync(extPath, 'utf8');
   /* v3.96.0 幂等累加：把本文件里已有的 YJ_CODEX 条目读回来，净化掉提示词工程行，
      再与本次从 ##/【】 章节抽到的新条目合并（按 标题+内容 去重）。
@@ -128,7 +131,7 @@ for (const g of genres) {
   fs.writeFileSync(extPath, ext);
 
   const corePath = path.join(KB_DIR, `${g}.core.js`);
-  const count = (p) => (fs.readFileSync(p, 'utf8').match(/"title"\s*:/g) || []).length;
+  const count = (p) => fs.existsSync(p) ? ((fs.readFileSync(p, 'utf8').match(/"title"\s*:/g) || []).length) : 0;
   const n = count(corePath) + count(extPath);
   index.genres[g] = n;
   index.total += n;
@@ -137,4 +140,4 @@ for (const g of genres) {
 }
 
 fs.writeFileSync(path.join(KB_DIR, '_index.json'), JSON.stringify(index));
-console.log(`\n新增设定速查 ${grand} 条 · 跳过提示词工程章节 ${skippedSec} 个 · 33 界知识库合计 ${index.total} 条 · _index.json 已刷新`);
+console.log(`\n新增设定速查 ${grand} 条 · 跳过提示词工程章节 ${skippedSec} 个 · ${genres.length} 界知识库合计 ${index.total} 条 · _index.json 已刷新`);
