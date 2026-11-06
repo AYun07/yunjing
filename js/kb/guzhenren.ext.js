@@ -35,3 +35,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 蛊真人 · 后期阶段（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：蛊真人
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["guzhenren"] || (KB["guzhenren"] = []);
+  var add = [{"title":"蛊真人 · 方源与大时代","content":"蛊真人《蛊真人》：方源借「春秋蝉」自尽重生回五百年前，古月族青茅山出身；以「炼蛊」「蛊虫一至九转」「智道/魂道」立身，与「天庭」「宿命蛊」对抗，最终引发「大时代」「宿命大战」「五域乱战」。","category":"蛊真人","tags":["蛊真人","方源","春秋蝉","古月族","青茅山","天庭","宿命蛊","大时代","五域","guzhenren","续作设定"]},{"title":"蛊真人 · 体系与地标速查","content":"速查：蛊虫一转到九转、「元力→真元→仙元」、凡人蛊师（一转到五转）与「蛊仙」（六转以上）、「道痕」「流派」（智、魂、变化、炼、阵、天意…）；五域为「中洲、东海、西漠、南疆、北原」，另有「青茅山」「古月山寨」「商家城」「天庭」「疯魔窟」「宿命蛊」「幽魂魔尊」。","category":"蛊真人","tags":["五域","中洲","东海","西漠","南疆","北原","商家城","天庭","疯魔窟","幽魂魔尊","guzhenren","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

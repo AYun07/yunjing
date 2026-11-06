@@ -35,3 +35,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 斩神 · 后期神明格局（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：我在精神病院学斩神
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["zhanhen"] || (KB["zhanhen"] = []);
+  var add = [{"title":"斩神 · 林七夜与大夏守夜人","content":"三九音域《我在精神病院学斩神》：林七夜因「炽天使」与「神明代理」入「守夜人」，大夏在「迷雾」中被诸神窥伺；体系为「禁墟」「神明代理」「序列」「代理人」「守夜人」与「克系神明」；「诸神精神病医院」收容失控代理人。","category":"斩神","tags":["斩神","林七夜","守夜人","大夏","迷雾","禁墟","神明代理","炽天使","三九音域","zhanhen","续作设定"]},{"title":"斩神 · 地标与势力速查","content":"速查：沧南市（沧南中学、守夜人小队）、「大夏」各分部与「上京市」「广深市」、「诸神精神病医院」、「迷雾」与「神国」、「洛基/奥丁/克苏鲁系神明」、「圣裁所」「黑梧桐」「安卿鱼」与「陈牧野」。","category":"斩神","tags":["沧南市","诸神精神病医院","迷雾","神国","陈牧野","安卿鱼","地标","zhanhen","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

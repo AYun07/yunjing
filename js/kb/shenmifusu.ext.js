@@ -45,3 +45,17 @@
   window.__KB_GENRE_INDEX_OK__ = true;
 })();
 /* YJ_GENRE_INDEX_END */
+
+/* YJ_SEQUEL_START */
+/* 云境 v3.97.0 · 神秘复苏 · 后期灵异格局（由 scripts/build-sequel-codex.mjs 从 scripts/sequel-data.mjs 生成，2 条）
+ * 作品：神秘复苏
+ * 目的：补齐本界原著续作 / 后传 / 同一世界观系列 / 本作后期阶段，便宜小模型按专名即可检索，不依赖自身记忆。 */
+(function(){
+  var KB = window.KB_PRESETS || (window.KB_PRESETS = {});
+  var a = KB["shenmifusu"] || (KB["shenmifusu"] = []);
+  var add = [{"title":"神秘复苏 · 杨间与厉鬼格局","content":"佛前献花《神秘复苏》：杨间因「鬼眼」卷入灵异，成为「异类」与「驭鬼者」；体系为「厉鬼→异类→鬼域→拼图→灵异之地」与「鬼奴」「鬼差」「民国七老」「总部十二队长」。后期「异类复苏」「灵异时代」为顶层格局。","category":"神秘复苏","tags":["神秘复苏","杨间","鬼眼","厉鬼","异类","鬼域","拼图","民国七老","佛前献花","shenmifusu","续作设定"]},{"title":"神秘复苏 · 地标与组织速查","content":"速查：大昌市（周正、鬼婴）、「灵异之地」（鬼画、鬼棺、鬼镜、鬼邮局、鬼湖、灵异博物馆）、「总部」（十二队长、曹延华）、「民国七老」（异类源头）、「鬼域」「异类圈」与「佛前献花」下的「方舟计划」。","category":"神秘复苏","tags":["大昌市","鬼画","鬼棺","鬼邮局","灵异博物馆","总部","十二队长","民国七老","地标","shenmifusu","续作设定"]}];
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+  window.__KB_SEQUEL_OK__ = true;
+})();
+/* YJ_SEQUEL_END */

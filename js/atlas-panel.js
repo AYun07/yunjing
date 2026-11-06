@@ -8487,13 +8487,21 @@
             <path d="M0,-3 L.5,-.5 L0,0 L-.5,-.5 Z" fill="#fff" opacity=".9"/>
             <circle r=".55" fill="${P.primary}" stroke="${hexA(P.deep, 0.8)}" stroke-width=".2"/>
             <text y="-5.7" font-size="1.8" fill="${hexA(P.text, 0.9)}" text-anchor="middle" class="atlas-label">北</text></g>`;
-    const tw = layer.name.length * 2.6 + 9;
+    /* v3.97.0 时代层：把「纪元」并入左上主标题牌作第二行。
+       初版独立放在左下角（y=88.6~93.8），与底部 hint（基线 96.2）只隔 0.7 单位，
+       桌面/移动实拍两行小字挤成重影；并入标题牌后一眼可辨时代，左下也恢复干净。
+       既有层没有 era 字段，画面与 v3.96 完全一致。 */
+    const eraTitle = layer.era ? escA(layer.era) : "";
+    const tw = Math.max(layer.name.length * 2.6 + 9, eraTitle ? eraTitle.length * 2.15 + 11 : 0);
+    const cartH = eraTitle ? 10.6 : 6.4;
     const cart = `<g>
-            <rect x="3.4" y="3.4" width="${tw.toFixed(1)}" height="6.4" rx="1.2" fill="${hexA(P.deep, 0.82)}" stroke="${hexA(P.primary, 0.5)}" stroke-width=".32"/>
-            <rect x="4.4" y="4.3" width="${(tw - 2).toFixed(1)}" height="4.6" rx=".8" fill="none" stroke="${hexA(P.primary, 0.2)}" stroke-width=".18"/>
+            <rect x="3.4" y="3.4" width="${tw.toFixed(1)}" height="${cartH.toFixed(1)}" rx="1.2" fill="${hexA(P.deep, 0.82)}" stroke="${hexA(P.primary, 0.5)}" stroke-width=".32"/>
+            <rect x="4.4" y="4.3" width="${(tw - 2).toFixed(1)}" height="${(cartH - 1.8).toFixed(1)}" rx=".8" fill="none" stroke="${hexA(P.primary, 0.2)}" stroke-width=".18"/>
             <path d="M${(3.4 - 1e-3 + 1.5).toFixed(1)},6.6 l1.1,-1.1 l1.1,1.1 l-1.1,1.1 Z" fill="${P.primary}"/>
             <path d="M${(tw + 1.8).toFixed(1)},6.6 l1.1,-1.1 l1.1,1.1 l-1.1,1.1 Z" fill="${P.primary}"/>
-            <text x="${(3.4 + tw / 2 + 0.9).toFixed(1)}" y="8.3" font-size="2.85" fill="${P.primary}" text-anchor="middle" letter-spacing="1.4" class="atlas-label">${layer.name}</text></g>`;
+            <text x="${(3.4 + tw / 2 + 0.9).toFixed(1)}" y="8.3" font-size="2.85" fill="${P.primary}" text-anchor="middle" letter-spacing="1.4" class="atlas-label">${layer.name}</text>
+            ${eraTitle ? `<line x1="6.2" y1="10.4" x2="${(tw + 0.6).toFixed(1)}" y2="10.4" stroke="${hexA(P.accent, 0.38)}" stroke-width=".16"/>
+            <text x="${(3.4 + tw / 2 + 0.9).toFixed(1)}" y="12.65" font-size="2.05" fill="${P.accent}" text-anchor="middle" letter-spacing=".45" class="atlas-label atlas-era">${eraTitle}</text>` : ""}</g>`;
     const corners = [[3, 3, 1, 1], [97, 3, -1, 1], [3, 97, 1, -1], [97, 97, -1, -1]].map(([cx0, cy0, sx, sy]) => `<path d="M${cx0},${cy0 + 5.6 * sy} L${cx0},${cy0} L${cx0 + 5.6 * sx},${cy0}" fill="none" stroke="${hexA(P.primary, 0.6)}" stroke-width=".42"/>
              <path d="M${cx0 + 1.6 * sx},${cy0 + 1.6 * sy} l.9,-.9 l.9,.9 l-.9,.9 Z" fill="${hexA(P.primary, 0.8)}"/>`).join("");
     const scale = `<g opacity=".85">
@@ -9158,6 +9166,27 @@
   }
   function init() {
     injectStyle();
+    /* v3.97.0 时代地图层：把 ATLAS_ERAS 按层追加到对应世界的 layers。
+       render() 的 atlas-tab 由 g.layers.map() 自动生成，层切换零 UI 改动。
+       层 id 与节点 id 一律加前缀，避免与既有 ATLAS_DATA 的同名节点/层冲突（实测有 18 处同名）。
+       必须放在 injectSupplement() 之前，且新层节点不设 t:"start"，保证补录与势力动态链路按原规则走。 */
+    try {
+      const ERAS = window.ATLAS_ERAS || {};
+      Object.keys(ERAS).forEach((g) => {
+        const cfg = ATLAS_DATA[g];
+        if (!cfg || !Array.isArray(cfg.layers) || !Array.isArray(ERAS[g])) return;
+        ERAS[g].forEach((l) => {
+          if (!l || !l.id) return;
+          const copy = JSON.parse(JSON.stringify(l));
+          copy.id = "era_" + l.id;
+          if (cfg.layers.some((x) => x.id === copy.id)) return;
+          const P = copy.id + "__";
+          (copy.nodes || []).forEach((n) => { n.id = P + n.id; });
+          (copy.roads || []).forEach((r) => { r[0] = P + r[0]; r[1] = P + r[1]; });
+          cfg.layers.push(copy);
+        });
+      });
+    } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 时代层合并失败:", e); }
     /* v3.93.0 在任何 render / sync 之前补录，保证足迹、势力落位都能用上新增地标 */
     try { injectSupplement(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 舆图补录失败:", e); }
     const genre = new URLSearchParams(location.search).get("genre");

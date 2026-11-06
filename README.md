@@ -2,29 +2,33 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v3.96.1（2026-11-06）
+## 🆕 当前版本：v3.97.0（2026-11-06）
 
-> **版本同源根因修复 · 静态文案与缓存参数不再漏网**
+> **斗破苍穹补全《大主宰》大千世界 26 条、斗罗大陆补全全五部与外传 28 条，连同辰东三部曲、诡秘之主→宿命之环等 30 界同世界观与续作设定共 172 条入库，静态资料库 21,299 → 21,471 条。**
 
 **这一版做了什么**
 
-- **静态残留清零**：`index.html` 页脚徽标仍写死 v3.93.0、`studio.html` 顶栏徽标写死 v3.87.0（平时靠内联 JS 覆盖成当前号，JS 未执行就会显示旧号）、`QUICKSTART.txt` 标题停在 v3.96.0、`changelog/index.html` 的 CSS 缓存参数停在 v3.91.0（长期没被击穿）。本版四处全部对齐 3.96.1。
-- **防复发（根因）**：`scripts/release.mjs` 新增四条同源替换规则（两处静态徽标、说明页标题、changelog 页资源参数），并把**版本速查表**纳入自动发版；日期改按北京时间记，避免 UTC 让当天凌晨发的版比上一版早一天。以后每次发版自动同步，不再靠人工记得改。
-- **全量同源**：170 处 `?v=` 参数、`YJ_VER` / `SW_VER` / 页面标题 / 版本徽标 / `README.md` / `VERSIONS.md` / `changelog/index.html` 统一到 3.96.1；第三方库自有版本号（0.1.18 / 1.7.3）与历史文档里的旧号引用原样保留，不误改。
-- **本版只收口版本同源缺陷，不含功能改动**；v3.96.0 的地图焕新、标签零重叠、缩放分级、33 界资料库布满与真实地球事实库成果原样保留。
+- **点名两界补全**：斗破苍穹补《大主宰》大千世界 **26 条**（位面关系、灵力境界与苍穹榜主宰境、无尽火域／武境／牧府三大势力、牧尘洛璃九幽等人物、地理总览、事件年表，并衔接《武动乾坤》《元尊》）；斗罗大陆补全 **28 条**（五部总时间线、各部时代背景／魂环魂灵斗铠体系／主角／势力／地标，含《神界传说》《唐门英雄传》两部外传）。
+- **30 界同世界观与续作全线补齐**：辰东三部曲（遮天／完美世界／圣墟各 12 条）、诡秘之主→宿命之环、凡人修仙传→仙界篇、龙族全系列、超神学院→雄兵连、吞噬星空后期等共 **172 条**，写入 `YJ_SEQUEL` 幂等段；另给克苏鲁／武侠／悬疑／科幻 4 个题材世界补题材体系底座（非续作，单列口径）。静态索引 **21,299 → 21,471 条**，运行时 33 界合计 **21,453 条**，抽样专名命中 **99/99**。
+- **按时代分卷做地图**：10 个世界新增 **13 张时代独立舆图** —— 大千世界、斗罗Ⅱ绝世唐门／Ⅲ龙王传说／Ⅳ终极斗罗／Ⅴ重生唐三、遮天仙域与成仙路、完美世界乱古九天十地、圣墟阴阳界、宿命之环因蒂斯、凡人北寒仙域、龙族Ⅲ–Ⅴ日本与北欧、雄兵连神河宇宙、吞噬星空宇宙海起源大陆。共 **110 个据点、81 条通路**，每个据点都带原著出处与所属区域，切层即换图。
+- **地图美化与适配**：纪元说明并入左上标题牌成「主标题＋时代」两行（初版放左下角，实拍发现与提示文字挤成重影后修正），左下恢复干净；桌面／移动双视口实测可见标签重叠 **0**、1× 与放大后屏幕字号恒定、控制台 0 错误。缩放 LOD、势力覆灭动态链路原样保留。
+- **地图内容校勘（和原著对上）**：舆图补录清洗描述性短语误抽 **16 处**（814 → 805 条），如「坐落圣丹城」→「圣丹城」、「守护幻梦境圣地」→「幻梦境」；拆分《吞噬星空》被误合的「紫月圣地·东帝圣地」为两个独立据点；新增时代层内容结构校验（字段、坐标、通路端点、专名合并）**0 问题**。「瑶池圣地」「圣地亚哥」等原著／真实专名未误删。
+- **验收证据**：`verify-eras.mjs` 7/7 全过（13 层／110 节点／81 通路／10 界全 tab／桌面＋移动／零重叠／字号恒定／纪元牌可见／控制台 0 错误）；`verify-v396.mjs` 全量回归通过（33 界、每界通用常识 194 条、earth 事实 503 条、标题无重复、16 个地图用例零重叠、字号三档恒定、LOD 0/1/2）。
+- **版本同源再收口**：`release.mjs` 补进 `selftest.html` 的 `ENGINE_VER` 同步规则（3.96.1 发版后仍停在 3.96.0）；本版 `YJ_VER`／`ENGINE_VER`／`SW_VER`／页面标题／静态徽标／全部 `?v=` 参数／`QUICKSTART.txt`／`VERSIONS.md`／`changelog`／`README` 统一 3.97.0。
 
-**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) · [🔍 与 v3.96.0 的差异](https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
+**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) · [🔍 与 v3.96.1 的差异](https://github.com/AYun07/yunjing/compare/v3.96.1...v3.97.0) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
 
 > 本仓库是完整源码，下载 zip 解压即可运行，无需构建、无需后端。
 > 玩家用便宜的小参数模型也能玩：云境自带 33 界完整资料库（世界观 / 地理 / 势力 / 人物 / 境界 / 器物 / 年表 + 跨题材通用常识），按剧情检索注入，不依赖模型自身记忆。
 
-## 📋 逐版更新记录（新 → 旧，共 66 版）
+## 📋 逐版更新记录（新 → 旧，共 67 版）
 
 <details open>
 <summary><b>最近 12 版</b>（默认展开，完整历史见下方折叠区）</summary>
 
 | 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|
+| **v3.97.0** | 2026-11-06 | 斗破苍穹补全《大主宰》大千世界 26 条、斗罗大陆补全全五部与外传 28 条，连同辰东三部曲、诡秘之主→宿命之环等 30 界同世界观与续作设定共 172 条入库，静态资料库 21,299 → 21,471 条。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) |
 | **v3.96.1** | 2026-11-06 | 版本同源根因修复 · 静态文案与缓存参数不再漏网 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
 | **v3.96.0** | 2026-11-06 | 地图焕新 · 标签零重叠 · 缩放分级 · 33 界资料库布满 · 真实地球事实库 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) |
 | **v3.95.0** | 2026-11-05 | 资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
@@ -36,15 +40,15 @@
 | **v3.90.0** | 2026-11-05 | 大厅版式整改：只认实际视觉生效，把「8 套主题 = 8 套配色」升级为「8 套主题 = 8 种版式骨架」 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
 | **v3.89.0** | 2026-11-05 | v3.88 全量整改：只认实际运行生效的代码，收束主界面、单一全功能小云、只留新主题、换云境图标、修自检与离线缓存 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
 | **v3.88.0** | 2026-11-04 | 世界自转因果化：修掉'只打最弱者、最强永不衰减、与玩家零耦合'；改为兴衰势能/强者受制/弱者颓势/玩家恩怨/势力间关系/活跃事件/张力冲突多因子驱动 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
-| **v3.87.0** | 2026-11-03 | 仓库瘦身 92M→41M（filter-repo 剥离 9.5MB 旧知识库整包的两个历史版本，共 18.1MB）+ 缓存版本号归一（189 处 `?v=` 从 3.55.29/3.68.0/3.72.0/3.84.0/… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
 
 </details>
 
 <details>
-<summary><b>全部历史版本（v3.55.7 → v3.86.0，共 54 版）</b></summary>
+<summary><b>全部历史版本（v3.55.7 → v3.87.0，共 55 版）</b></summary>
 
 | 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|
+| **v3.87.0** | 2026-11-03 | 仓库瘦身 92M→41M（filter-repo 剥离 9.5MB 旧知识库整包的两个历史版本，共 18.1MB）+ 缓存版本号归一（189 处 `?v=` 从 3.55.29/3.68.0/3.72.0/3.84.0/… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
 | **v3.86.0** | 2026-11-03 | 活世界第二轮整改：机缘涌现（按世界状态滚动候选，有代价有时限，落实入正史）/ 人物情绪·记忆·目标 / 恩怨单一真源 / 关系图有向带趋势 / 势力兴衰生命周期 / 导演冲突焦点与节拍 / AI 自创装备登记 / 伙伴立… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
 | **v3.85.0** | 2026-11-03 | 活世界双向桥 WorldAlive：世界状态上行注入主笔、AI 回报下行回写势力/恩怨/关系/阶段/张力，选择真正改变世界；世界时钟默认自转；恩怨账本落盘；四类串档键按存档槽隔离 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.85.0) |
 | **v3.84.0** | 2026-11-03 | 世界书全量扩充+小云全能化：①世界书种子库外置 worldbook-seeds.js——29 界 418 条（26 个小说世界按原著公认设定还原，修复 guzhenren 错装诡秘之主条目并归正为蛊真人；earth 真实… | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.84.0) |
