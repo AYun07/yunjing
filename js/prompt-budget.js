@@ -54,8 +54,12 @@
      *  ≈ 6700 token，加上输出就超过 8192）。8K→5200、16K→9000、更高→18000。 */
     liteLimit() {
       const ctx = this.ctxTokens();
-      if (ctx > 0 && ctx <= 8000) return 5200;
-      if (ctx > 0 && ctx <= 16000) return 9000;
+      /* v4.00.0 分界值与 BaseModelMode.ctxTier() 严格同源：8K 的标准窗口是 8192、
+         16K 是 16384，本地模型（llama.cpp / Ollama）常直接填这两个值。此前这里写
+         8000/16000，玩家手动填 8192 会被 ctxTier 判成 tiny 却拿到 16K 档的 9000
+         字符预算——低配档的护栏正好被绕过，所以两处必须用同一组边界。 */
+      if (ctx > 0 && ctx <= 8192) return 5200;
+      if (ctx > 0 && ctx <= 16384) return 9000;
       return 18000;
     },
     isLite() {
