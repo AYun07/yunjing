@@ -24,3 +24,7 @@ xy-local-*.html
 _shots_v398/
 _shots_v397/
 _shots_v399/
+
+# Python 字节码缓存
+__pycache__/
+*.pyc
