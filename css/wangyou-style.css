@@ -1,19 +1,21 @@
-/* 网游之纵横天下 · 《灵恸》数据流网游主题 v4.02.0
+/* 寰宇纪元 · 网游大世界数据流主题 v4.06.0
+   赛博罗盘 × 四分区双主色：东境青蓝、北境霜白、中天赤金、中枢靛紫
    终端霓虹 × 属性面板栅格：等宽数字、品级色阶、扫描线底纹 */
-body.theme-zonghengtianxia {
-    --primary: #8fd0c0;
-    --primary-dim: color-mix(in srgb, #8fd0c0 14%, transparent);
-    --primary-glow: color-mix(in srgb, #8fd0c0 34%, transparent);
+body.theme-wangyou {
+    --primary: #6fc9d8;
+    --primary-dim: color-mix(in srgb, #6fc9d8 14%, transparent);
+    --primary-glow: color-mix(in srgb, #6fc9d8 34%, transparent);
     --secondary: #c8d4e0;
-    --accent: #e0b878;
-    --panel-border: color-mix(in srgb, #8fd0c0 22%, transparent);
-    background-color: #0b1118;
+    --accent: #e0a84c;
+    --panel-border: color-mix(in srgb, #6fc9d8 22%, transparent);
+    background-color: #080d14;
     background-image:
-        radial-gradient(ellipse 720px 420px at 12% -8%, color-mix(in srgb, #8fd0c0 12%, transparent), transparent 62%),
-        repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, #8fd0c0 3%, transparent) 3px 4px);
+        radial-gradient(ellipse 760px 440px at 14% -10%, color-mix(in srgb, #6fc9d8 13%, transparent), transparent 62%),
+        radial-gradient(ellipse 620px 380px at 88% 6%, color-mix(in srgb, #e0a84c 9%, transparent), transparent 58%),
+        repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, #6fc9d8 3%, transparent) 3px 4px);
 }
-body.theme-zonghengtianxia .ws-glyph,
-body.theme-zonghengtianxia .rpg-lv { font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+body.theme-wangyou .ws-glyph,
+body.theme-wangyou .rpg-lv { font-variant-numeric: tabular-nums; letter-spacing: 1px; }
 .rpg-panel { font-variant-numeric: tabular-nums; }
 .rpg-bar { position:relative; height:8px; border-radius:4px; overflow:hidden; background: color-mix(in srgb, var(--ip,#c9a86a) 18%, transparent); }
 .rpg-bar > i { display:block; height:100%; border-radius:4px; transition:width .45s ease; }
@@ -30,4 +32,14 @@ body.theme-zonghengtianxia .rpg-lv { font-variant-numeric: tabular-nums; letter-
 .rpg-slot.on { border-style:solid; background:color-mix(in srgb, var(--ip,#c9a86a) 10%, transparent); }
 .rpg-slot i { font-style:normal; color:var(--imt,#9a8c6e); margin-right:4px; }
 .rpg-tier { display:inline-block; font-size:10px; padding:1px 6px; border-radius:6px; background:color-mix(in srgb, var(--ip,#c9a86a) 18%, transparent); }
+/* v4.06.0：分区标识条——让「玩家此刻在哪个服务器区」在面板上一眼可辨 */
+.rpg-zonebar {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin:6px 0 8px; padding:6px 9px; border-radius:8px;
+    border:1px solid color-mix(in srgb, var(--ip,#c9a86a) 26%, transparent);
+    background:linear-gradient(90deg, color-mix(in srgb, var(--ip,#c9a86a) 12%, transparent), transparent 78%);
+    font-size:11.5px; color:var(--itx,#e8dcc0);
+}
+.rpg-zonebar b { color:var(--ip,#c9a86a); font-weight:600; }
+.rpg-zonebar i { font-style:normal; color:var(--imt,#9a8c6e); font-size:10.5px; }
 @media (max-width:640px){ .rpg-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .rpg-slots{grid-template-columns:repeat(2,minmax(0,1fr));} }

@@ -433,7 +433,7 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
      全局「严禁数值面板」会把模型逼到自编 Lv.8 属性表或干脆复述设定。
      这里放宽为「可写少量与面板一致的数字 + 结算行，但不许整段罗列属性面板」。 */
   const _gKey = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey) || '';
-  const rpgMode = ['daobanshenhua', 'zonghengtianxia', 'tianxiawushuang'].indexOf(_gKey) >= 0;
+  const rpgMode = ['wangyou'].indexOf(_gKey) >= 0;
   const fmtVarLine = rpgMode
     ? `2) 本界为数据流网游：正文可写少量与【网游角色面板】快照一致的数字（玩家等级、伤害、耗蓝、掉落品级），野怪与对手不得写具体等级或 HP 数字，并可在 (variable_update) 块里写 >>网游面板.exp: +120 一类结算行；严禁整段罗列属性面板、六维清单或自行编造与快照不符的数字；`
     : (vaOn

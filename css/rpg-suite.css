@@ -63,10 +63,10 @@ body.theme-tianxiawushuang { --rpg-accent: #d9a35e; --rpg-accent-2: #b87a30; --r
 .rpg-cur b { font-size: 15px; color: var(--rpg-acc); }
 
 /* ---------------- 标签栏 ---------------- */
-.rpg-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.rpg-tabs { display: flex; flex-wrap: nowrap; gap: 3px; margin-bottom: 8px; }
 .rpg-tab {
-  flex: 1 1 auto; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-  padding: 6px 8px; font-size: 11.5px; cursor: pointer; white-space: nowrap;
+  flex: 1 1 0; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 3px;
+  padding: 6px 2px; font-size: 10.5px; cursor: pointer; white-space: nowrap;
   color: var(--rpg-mt); background: var(--rpg-card);
   border: 1px solid var(--rpg-line2); border-radius: 8px 8px 0 0;
   transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
@@ -110,6 +110,10 @@ body.theme-tianxiawushuang { --rpg-accent: #d9a35e; --rpg-accent-2: #b87a30; --r
 }
 .rpg-status .wr-stat span { font-size: 11px; color: var(--rpg-mt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rpg-status .wr-stat b { font-size: 12px; color: var(--rpg-tx); white-space: nowrap; }
+/* v4.07.1 角色名片：6 格（位置·称号 / 职业 / 金币 / 声望 / 世界日·回合 / 委托）——比通用状态卡更紧凑 */
+.rpg-status.rpg-namecard .wr-stat { padding: 5px 8px; }
+.rpg-status.rpg-namecard .wr-stat span { font-size: 10.5px; }
+.rpg-status.rpg-namecard .wr-stat b { font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; }
 .rpg-kv { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 11.5px; }
 .rpg-kv > span { flex: 0 0 78px; color: var(--rpg-mt); }
 .rpg-kv > b { flex: 0 0 auto; min-width: 62px; text-align: right; color: var(--rpg-tx); }
@@ -264,7 +268,8 @@ body.theme-tianxiawushuang { --rpg-accent: #d9a35e; --rpg-accent-2: #b87a30; --r
 @media (max-width: 640px) {
   .rpg-panel { padding: 8px; font-size: 12px; }
   .rpg-grid, .rpg-cards, .rpg-slots, .rpg-status { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .rpg-tab { flex: 1 1 calc(25% - 4px); padding: 6px 4px; font-size: 11px; }
+  .rpg-tabs { flex-wrap: wrap; }
+  .rpg-tab { flex: 0 0 calc(25% - 3px); padding: 6px 2px; font-size: 10px; }
   .rpg-top { gap: 6px; }
   .rpg-cur { min-width: 70px; }
   .rpg-card-bd, .rpg-bbd { font-size: 10px; }
