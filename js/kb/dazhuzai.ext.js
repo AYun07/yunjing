@@ -63,3 +63,12 @@
   var e = {"title":"dazhuzai·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《大主宰 · 大千行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「北灵境 · 少年起步」：北苍灵院、大罗天域、西天战殿、上古天宫、牧府、北灵院、龙魔宫、幽冥宫、木神殿、大千宫、万凰灵院、圣灵山。\n第2层「北苍灵院与大罗天域」：圣灵院、玄天殿、审判海、万圣山、邙阴山、牧域、青天灵院、龙凤阁、血天都、灵值殿、灵诀殿、四圣塔。\n第3层「大千宫与上古天宫」：雷音山、金雕府、天域、百战域、远古雷宫、黑冥渊、上古圣渊、血鹰殿、白虎山、西天战城、大灵山。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","dazhuzai"],"alwaysInclude":false,"priority":""};
   if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["dazhuzai"] || (KB["dazhuzai"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"dazhuzai·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

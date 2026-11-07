@@ -77,3 +77,12 @@
   var add = [{"title":"黎明之剑·专名铁律补遗（人物写法）","content":"【人物】薇薇安·塞西尔：本界人物全名，「薇薇安」为名、「塞西尔」为姓，正文首次出现宜用全名，后续可用「薇薇安」；不得写成「维维安」「薇薇安·塞西尔二世」等自造变体，也不得与高文·塞西尔等塞西尔家族其他成员混为一人。\n【口径】本条只锁定名目写法；人物身份与剧情以本界既有条目为准。","category":"专名核对","tags":["专名","防幻觉","核对","limingzhijian"],"alwaysInclude":false,"priority":""}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["limingzhijian"] || (KB["limingzhijian"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"limingzhijian·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门、客栈、渡口、集市、驿站、医馆、书斋、演武场、祠堂、茶寮、铁匠铺、药圃、藏经阁、观星台、古道、义庄、镖局、酒肆、琴院、棋亭、钟楼、石桥、竹坞。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

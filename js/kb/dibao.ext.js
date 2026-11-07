@@ -68,3 +68,12 @@
   var add = [{"title":"dibao·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《帝霸 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「边荒 · 凡尘」：边荒牧村、边荒坊市、古国边戍、灵矿、上古城战场。\n第2层「中域 · 争渡」：中域帝都、大教山门、世家祖地、古族族地、帝陵、禁区、帝路。\n【别名】牧村、村子、边荒、坊市、集市、边军、戍堡、边关、矿洞、矿场、灵矿、古战场、遗迹、旧战场、帝都、京城、中域、大教、山门、世家、祖地、古族、族地、帝陵、帝藏、禁区、绝地、帝路、争渡。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","dibao"],"alwaysInclude":false,"priority":""}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["dibao"] || (KB["dibao"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"dibao·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门、客栈、渡口、集市、驿站、医馆、书斋、演武场、祠堂、茶寮、铁匠铺、药圃。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();
