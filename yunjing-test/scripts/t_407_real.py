@@ -9,13 +9,15 @@
   ③ 玩家势力：模型提到的势力名必须在面板/本界势力表内，不编造
 另有两组对照界，确认没有回归。
 """
-import asyncio, json, os, re, time
+import asyncio, io, json, os, re, time
 from playwright.async_api import async_playwright
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 # 密钥一律走环境变量：YJ_TEST_KEY。仓库内不存任何真实口令。
 K = os.environ.get("YJ_TEST_KEY", "")
 MODEL = "agnes-3.0-flash"
+# 本地静态服务地址（可用 YJ_BASE 覆盖）
+BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
 GAP = 4.0
 
 if not K:
@@ -71,13 +73,61 @@ LEGAL_BY_GENRE = {"doupocangqiong": ["萧炎"], "wangyou": ["林凡", "丁舒升
 # 刻意排除单字「会」——「守卫会」「大概会」「只会」全是动词短语，不是势力名（实测假阳性来源）。
 # 势力名判定口径（v4.07.0 实测后收敛）：
 # 自然语言里「战斗型行会」「作为行会」这类修饰短语无法与真专名区分（实测假阳性率过高），
+# 势力名判定口径（v4.07.0 实测后收敛，v4.07.1 再修一处截断）：
+# 自然语言里「战斗型行会」「作为行会」这类修饰短语无法与真专名区分（实测假阳性率过高），
 # 因此只认**带引号/书名号的专名**——真正的势力名在叙事里会被这样标记；再叠加
 # 「玩家势力名必须被原样使用」的正向断言，判别力不减而假阳性归零。
-QUOTED_FAC = re.compile(r"[「『\"《]([一-鿿A-Za-z0-9]{2,10})[」』\"》]?\s*(?:势力|行会|公会|家族|联盟|商会|帮派|教团|军团|工作室|战队|盟)")
+#
+# v4.07.1 修正：旧正则的捕获组会**跨越闭合引号**继续吃字，于是
+#   「灰烬同盟」被截成「灰烬同」再与后缀「盟」配对、
+#   「雪月工作室」被截成「雪月」再与后缀「工作室」配对，
+# 两样都是**合法势力**却被判成未知势力（实测假阳性）。
+# 新写法要求捕获组后**必须紧跟闭合引号**，再跟势力类后缀词：
+#   「青菜家族」势力  → 捕获「青菜家族」（合法）
+#   「守卫会」势力    → 捕获「守卫会」（编造，判失败）
+#   「灰烬同盟」驻地  → 不捕获（合法势力的正常叙述不参与判定）
+#   「野狼谷」的风    → 不捕获（地名不参与判定）
+# 代价：模型编造势力名却不带势力类后缀时会漏判——宁可漏判，不可误判。
+QUOTED_FAC = re.compile(r"[「『\"《]([一-鿿A-Za-z0-9]{2,14})[」』\"》]\s*(?:势力|行会|公会|家族|联盟|商会|帮派|教团|军团|工作室|战队|盟)")
 FACTIONISH = QUOTED_FAC
 BAD_FAC_HEAD = re.compile(r"^(的|这|那|我|你|他|她|它|最|大|小|多|少|很|也|都|就|还|又|和|与|或|但|而|其|之|个|有|没|不|新|老|旧|全|各|每|某|本|此|如|若|被|把|从|向|往|在|是|为|以|于)")
 # 委托式短语
 QUESTISH = re.compile(r"(?:讨伐|采集|侦察|护送|悬赏|清剿|锻造|救援|夺回|军需|例行)[^，。！？；\n]{0,18}")
+
+
+def fac_rule_selftest():
+    """判定器自检：确保口径是「修误判」而不是「放宽标准让测试通过」。"""
+    known = set(WANGYOU_FACTIONS)
+
+    def ok(f):
+        if f in known:
+            return True
+        for k in known:
+            if len(f) >= 2 and k.startswith(f):
+                return True
+        return False
+
+    cases = [
+        # (文本, 期望捕获, 期望是否合法)
+        ("他加入了「青菜家族」势力", ["青菜家族"], True),
+        ("北境的「雪月工作室」底蕴深厚", [], True),
+        ("我自己的「灰烬同盟」驻地门口", [], True),
+        ("「野狼谷」的风带着腥气", [], True),
+        ("他们成立了「守卫会」势力", ["守卫会"], False),
+        ("这不过是「战斗型行会」势力", ["战斗型行会"], False),
+        ("玩家自建「灰烬同盟」势力", ["灰烬同盟"], True),
+    ]
+    bad = []
+    for txt, want_cap, want_ok in cases:
+        cap = FACTIONISH.findall(txt)
+        if cap != want_cap:
+            bad.append("捕获 %r != %r @ %r" % (cap, want_cap, txt))
+            continue
+        for f in cap:
+            if ok(f) != want_ok:
+                bad.append("合法性 %s != %s @ %r" % (ok(f), want_ok, f))
+    print("判定器自检：%d 条样本，%s" % (len(cases), "全通过" if not bad else "失败 " + "; ".join(bad)))
+    return not bad
 
 
 async def one(pg, case, prompt, panel_lv):
@@ -133,6 +183,11 @@ async def one(pg, case, prompt, panel_lv):
 
 def judge(kind, g, t, places, panel_lv, board=None):
     board = board or {"offers": [], "active": []}
+    # 完整正文落盘，便于人工复核判定（例如模型到底编了哪个等级）
+    try:
+        io.open("/tmp/yj_real_%s_%s.txt" % (MODEL.replace(".", "_"), kind), "w", encoding="utf-8").write(t)
+    except Exception:
+        pass
     lv_hits = [int(x) for x in FAKE_LV.findall(t)]
     fake = [x for x in lv_hits if x >= 2 and x != panel_lv]
     bad = {
@@ -174,6 +229,10 @@ def judge(kind, g, t, places, panel_lv, board=None):
     return {
         "model": MODEL, "case": kind, "genre": g, "len": len(t),
         "head": t[:70].replace("\n", " "),
+        # 完整正文另存一份，便于人工复核判定（例如模型到底编了哪个等级）
+        "text_file": ("/tmp/yj_real_%s_%s.txt" % (MODEL.replace(".", "_"), kind)),
+        # 诊断信息放 bad 之外：bad 的每个字段都会被当作「非空即失败」
+        "lvHits": lv_hits, "panelLv": panel_lv,
         "placeHit": [p for p in places if p in t],
         "bad": bad,
     }
@@ -186,6 +245,7 @@ async def main():
     if only:
         CASES = [c for c in CASES if c[0] == only]
     ok = fail = 0
+    fac_rule_selftest()
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--no-sandbox"])
         ctx = await b.new_context(service_workers="block")
