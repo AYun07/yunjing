@@ -52,7 +52,8 @@
             if (action === "del") {
                 var i = Number(payload);
                 if (s.list[i]) return "已销账：「" + s.list.splice(i, 1)[0].name + "」";
-                return;
+                /* v4.07.2 修 D-22：原先是裸 return —— 点了没反应，调用方也拿不到任何反馈 */
+                return "该条目已不在账上（可能已销过）";
             }
         },
         summary: function (s) {
@@ -97,12 +98,12 @@
             if (action === "done") {
                 var i = Number(payload);
                 if (s.list[i]) { s.list[i].done = !s.list[i].done; return s.list[i].done ? "✅ 已了结：" + s.list[i].title : "↩ 重新挂起：" + s.list[i].title; }
-                return;
+                return "该委托已不在单上";
             }
             if (action === "del") {
                 var j = Number(payload);
                 if (s.list[j]) return "已揭下：" + s.list.splice(j, 1)[0].title;
-                return;
+                return "该委托已不在单上";
             }
         },
         summary: function (s) {
@@ -210,7 +211,7 @@
             if (action === "del") {
                 var nm = String(payload || "").trim();
                 if (s.vals[nm] != null) { delete s.vals[nm]; return "已除名：" + nm; }
-                return;
+                return "「" + (nm || "该势力") + "」不在势力谱上";
             }
         },
         summary: function (s) {

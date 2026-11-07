@@ -250,7 +250,14 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
   function define(g, defs) {
     var _a;
     if (g !== genre) return;
-    modules = (Array.isArray(defs) ? defs : []).filter((m) => m && m.id);
+    /* v4.07.2 修 D-30（define 整体覆盖，D-02 的镜像方向）：
+       原式 modules = defs 会把 init() 阶段 tryPlayerKit() 已挂上的随身器官
+       （面板 / 背包 / 自定义槽）整片顶掉。若此刻 PlayerKit 尚未就绪、
+       界扩展脚本又先于 YJWait 重试加载完成，随身器官就会在 define 之后、
+       tryPlayerKit 重试之前处于「消失」状态；一旦 YJWait 超时（60×150ms），
+       随身器官便永久缺失——玩家既没有背包也没有自定义槽。
+       改为合并：已挂模块保留，本界专属同名时以本界为准。 */
+    modules = mergeDefs(modules, (Array.isArray(defs) ? defs : []).filter((m) => m && m.id));
     if (pending.length) modules = mergeDefs(modules, pending);
     try {
       if (window.PlayerKit && typeof window.PlayerKit.augment === "function") {
@@ -279,21 +286,47 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
   }
   /* v3.55.29：PlayerKit 不可用（尚未加载 / 加载失败）时，原逻辑「这次不在就永远算了」——
      界专属模块就此静默全废，外界只看到 hasModules() 恒 false。改为等到就绪再补挂。 */
+  /* v4.07.2 修 D-10：此处原为 modules = got（整体覆盖）。
+     竞态场景（实测复现于玄鉴仙族界）：init() 在 DOMContentLoaded 时 PlayerKit 往往尚未加载，
+     于是走 YJWait 延后重试；而界扩展的 define() 可能已先跑完并设好了本界专属模块。
+     重试成功时用覆盖写法 → 界专属模块被随身器官整片顶掉（实测丢失「符种坛/牲祭坛/族谱位阶」3 个），
+     且此后 module-forge 的注入只能合并进随身器官，本界专属模块永久消失。
+     改为合并：随身器官在前，本界专属模块保留（同名以本界为准）。 */
   function tryPlayerKit() {
     var PK = window.PlayerKit;
     if (!PK || typeof PK.augment !== "function") return false;
     var got = PK.augment(genre, []);
     if (!Array.isArray(got)) return false;          /* 影子对象会返回 Promise，不能当数组用 */
-    modules = got;
+    modules = mergeDefs(got, modules);
     load();
     modules.forEach(ensureState);
-    console.log(`[WorldExt] ${genre} 界无扩展文件，仅挂随身器官：${modules.map((m) => m.name).join(" / ")}`);
+    console.log(`[WorldExt] ${genre} 随身器官已挂载：${got.map((m) => m.name).join(" / ")}｜本界模块共 ${modules.length} 个`);
     return true;
+  }
+  /* 本界是否已挂随身器官（面板/背包/自定义槽） */
+  function hasPkModules() {
+    try {
+      return modules.some(function (m) {
+        return m && (m.id === "pkPanel" || m.id === "pkBag" || m.id === "custom");
+      });
+    } catch (e) {
+      return false;
+    }
   }
   function init() {
     injectStyle();
+    /* v4.07.2 修 D-31（存档恢复绑在懒加载上）：此前 load() 只在 define() 与 tryPlayerKit() 里调用，
+       而两者都依赖界扩展脚本 / PlayerKit 就绪——界扩展是懒加载的，
+       于是「刷新页面 → 界扩展加载完成」这段窗口里，模块状态全是初始值，
+       玩家会以为自己的委托、灵田、背包进度全没了（实测：reload 后立即读状态，
+       resources 与 cooldowns 已被清空，3 秒后才恢复）。
+       这里在 init() 里就先把存档读回来，与界扩展的加载时机解耦。 */
+    try { load(); } catch (e) { }
     try {
-      if (!modules.length) {
+      /* v4.07.2：判断条件从「一个模块都没有」改为「缺随身器官」——
+         本界专属模块已就绪但 PlayerKit 晚到时，同样要把随身器官补挂上，
+         否则玩家在本界既没有面板也没有背包（模块不丢，但功能缺一半）。 */
+      if (!modules.length || !hasPkModules()) {
         if (!tryPlayerKit() && window.YJWait) {
           YJWait.for(tryPlayerKit, null, { name: "world-ext.playerkit", base: 150, max: 60 });
         }
@@ -391,12 +424,23 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
   }
   function act(modId, action, payload) {
     const m = modules.find((x) => x.id === modId);
-    if (!m) return;
+    if (!m) {
+      /* v4.07.2 修 D-24：模块不存在时原先静默 return —— 调用方（小云工具、脚本、自动化测试）
+         传错模块 id 时完全无从察觉，还以为动作「执行了但没效果」。
+         本轮玩家旅程实测就踩中了这个坑：把动作名当模块 id 传进来，
+         10 个步骤的动作一个都没真跑，却全程零报错。静默失败是这类缺陷最好的藏身处。 */
+      const msg = "未找到模块「" + modId + "」";
+      if (window.showToast) window.showToast(msg, "warn");
+      return msg;
+    }
     try {
       const s = ensureState(m);
       if (action && String(action).startsWith("ee") && ent && window.EE) {
-        entAct(action, payload, s, m);
-        return;
+        /* v4.07.2 修 D-22：ent 分支原先 entAct(...); return; —— 把 entAct 产出的提示文案丢了。
+           D-08 修的是 m.act 分支，这一条分支当时被漏掉，结果所有 ee* 动作（安全屋经营：
+           开工/取消/派工/请出/撤工单/确认/入账/收留）在任何以返回值驱动的调用方
+           （自动化探测、回归脚本、小云工具）眼里都是「点了没反应」。 */
+        return entAct(action, payload, s, m);
       }
       const toast = m.act(s, action, payload);
       save();
@@ -407,8 +451,15 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       } else {
       }
       if (toast && window.showToast) window.showToast(String(toast), "success");
+      /* v4.07.2 修 D-08：此前本函数不返回任何值，模块 act() 的结果只喂给 toast 就丢了。
+         后果：① 自动化功能探测无法判断动作成功与否，只能靠状态快照猜，误报/漏报都多；
+                ② 任何以「返回值」驱动逻辑的调用方（脚本、小云工具、回归测试）都拿不到反馈。
+         world-runtime 的 act 本身就返回结果字符串——包装层丢弃它是接口契约不一致。
+         修法：把结果原样返回；toast 与返回值共用同一份文案，不新增第二套口径。 */
+      return toast;
     } catch (e) {
       console.warn(`[WorldExt:${modId}.act]`, e.message);
+      return undefined;
     }
   }
   function entAct(action, payload, s, m) {
@@ -418,7 +469,9 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       switch (action) {
         case "eeStart": {
           const def = (m.eeOps || []).find((o) => o.id === payload);
-          if (!def) return;
+          /* v4.07.2 修 D-22：早退路径原先是裸 return —— 不提示、不刷新面板，
+             用户点了没反应还以为程序卡了。改成给出可读提示。 */
+          if (!def) { toast = "未找到该工程，无法开工"; break; }
           const r = EE.Projects.start(ent, def);
           if (!r.ok) {
             toast = r.msg;
@@ -435,7 +488,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
         }
         case "eeCancel": {
           const i = ent.projects.queue.findIndex((p2) => p2.id === payload);
-          if (i < 0) return;
+          if (i < 0) { toast = "队列中没有可取消的工程"; break; }
           const p = ent.projects.queue.splice(i, 1)[0];
           Object.entries(((_c = p.yield) == null ? void 0 : _c.refundCost) || {}).forEach(([k, v]) => EE.Ledger.move(ent, k, 0, "", "engine"));
           const half = {};
@@ -451,6 +504,9 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
             u.job = job;
             EE.Ops.add(ent, `派工：${name} → ${job}`);
             toast = `${name} 的分工已改为「${job}」`;
+          } else {
+            /* v4.07.2 修 D-22：名册里没这个人时原先静默无反馈 */
+            toast = name ? `名册中没有「${name}」` : "格式：姓名=分工，如 张三=守夜";
           }
           break;
         }
@@ -458,11 +514,24 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
           if (EE.Residents.remove(ent, payload, "玩家请出")) {
             EE.Ops.add(ent, `将 ${payload} 请出安全屋`);
             toast = `${payload} 已离开安全屋`;
+          } else {
+            /* v4.07.2 修 D-22：不在名册里时原先静默无反馈 */
+            toast = `名册中没有「${payload}」，无需请出`;
           }
           break;
         }
         case "eeDropOp": {
-          ent.ops.tickets.splice(Number(payload), 1);
+          /* v4.07.2 修 D-23（输入未校验致误操作）：原先直接 splice(Number(payload), 1)，
+             payload 非数字时 Number() 得 NaN，splice(NaN,1) 被当作 splice(0,1)
+             —— 会误删掉第一张待确认工单。必须先校验索引合法性。 */
+          const idx = Number(payload);
+          const n = (ent.ops.tickets || []).length;
+          if (!Number.isInteger(idx) || idx < 0 || idx >= n) {
+            toast = "工单序号无效（应为 1～" + n + "）";
+            break;
+          }
+          ent.ops.tickets.splice(idx, 1);
+          toast = "已撤销第 " + (idx + 1) + " 项待确认行动";
           break;
         }
         case "eeConfirm": {
@@ -500,6 +569,8 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       body.innerHTML = panelHTML();
     }
     if (toast && window.showToast) window.showToast(toast, "success");
+    /* v4.07.2 修 D-22：把结果原样返回，与 m.act 分支同口径（调用方拿得到反馈） */
+    return toast;
   }
   function stripHTML() {
     const groups = [];
@@ -508,13 +579,21 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       if (!visible(m)) continue;
       try {
         const s = ensureState(m);
-        const items = m.summary(s);
+        const raw = m.summary(s);
+        /* v4.07.2 修 D-01（第二半）：summary 协议约定返回数组，但第三方/旧模块可能返回字符串。
+           原实现直接 items.filter(...)，字符串没有 filter → TypeError → 被下面的空 catch
+           静默吞掉 → 整块状态板静默消失，用户看到「界面什么都没坏但就是空着」。
+           修法：字符串型 summary 包成单格；同时把 catch 从静默改为告警，让故障可观测。 */
+        let items = null;
+        if (Array.isArray(raw)) items = raw;
+        else if (typeof raw === "string" && raw.trim()) items = [{ i: m.icon, v: raw.trim() }];
         if (!items || !items.length) continue;
         const cells = items.filter((it) => it && it.v != null && String(it.v) !== "").map(
           (it) => `${it.i ? `<span class="ws-gi">${esc(String(it.i))}</span>` : ""}<span class="ws-gv${it.tone ? " " + esc(String(it.tone)) : ""}">${esc(String(it.v))}</span>` + (it.l ? `<span class="ws-gl">${esc(String(it.l))}</span>` : "")
         ).join("");
         if (cells) groups.push(`<span class="ws-grp" title="${esc(m.name)}">${cells}</span>`);
       } catch (e) {
+        console.warn("[WorldExt:stripHTML] 模块 " + (m && m.id) + " summary 异常：", e && e.message);
       }
     }
     let entRow = "";
@@ -640,6 +719,27 @@ ${directives.join("\n")}
     modState(id) {
       const m = modules.find((x) => x.id === id);
       return m ? ensureState(m) : null;
+    },
+    /* v4.07.2 模块清单枚举：此前 WorldExt 只有 modState(id) 单查，没有列表接口，
+       导致自动化功能探测只能靠正则猜模块 id（漏掉用单引号书写的 id），
+       「某界到底装了哪些模块」无法回答。补此接口后，探测与诊断都能读真实清单。
+       actions 取法：优先读模块对象自身（各 ext 用 WorldExt.define 直接注册原始对象，
+       actions 就挂在对象上），再回落到 WorldRuntime.registry()（走 WR.module 包装的模块，
+       其 actions 被列进 RESERVED 不会挂到对象上，只能从原始蓝图读）。 */
+    moduleList() {
+      const reg = (window.WorldRuntime && window.WorldRuntime.registry) ? window.WorldRuntime.registry() : {};
+      return modules.map((m) => {
+        const bp = (reg && reg[m.id]) || null;
+        const acts = (m.actions && m.actions.length) ? m.actions : ((bp && bp.actions) || []);
+        return {
+          id: m.id,
+          name: m.name,
+          icon: m.icon,
+          type: m.type,
+          actions: (acts || []).map((a) => (a && a.id) ? a.id : a).filter(Boolean),
+          hasSummary: typeof m.summary === "function",
+        };
+      });
     },
     /* v3.56.1 世界基座入口：当前变量模板 + 实体统计（供 P2 编辑器 / 小云诊断消费） */
     schema() {

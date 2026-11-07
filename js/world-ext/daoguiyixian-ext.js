@@ -132,7 +132,14 @@
 
         act(s, action, payload) {
             if (action !== 'nudge') return;
-            const n = Math.max(0, Math.min(100, s.value + Number(payload)));
+            /* v4.07.2 修 D-17：原式 `s.value + Number(payload)` 未校验输入，
+               任何非数字 payload（变量上报、脚本调用、按钮外的路径）都会让 Number() 得到 NaN，
+               继而 Math.min/max 仍返回 NaN —— 清醒度被写成 NaN，状态板显示 NaN 且不可自愈
+               （此后每次加减都是 NaN）。实测由功能探测以非数字参数触发。
+               修法：先校验，非法输入明确拒绝并保持原值。 */
+            const d = Number(payload);
+            if (!isFinite(d)) return '调整量须为数字（正数变疯，负数变醒）';
+            const n = Math.max(0, Math.min(100, s.value + d));
             if (n === s.value) return '已在端点';
             s.log.unshift(`主持补正：${s.value} → ${n}`);
             if (s.log.length > 6) s.log.length = 6;

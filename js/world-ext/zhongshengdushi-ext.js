@@ -50,7 +50,10 @@
 
         act(s, action, payload) {
             if (action !== 'nudge') return;
-            const n = Math.max(0, Math.min(100, s.risk + Number(payload)));
+            /* v4.07.2 修 D-17：同型——非数字 payload 会把暴露风险写成 NaN 且不可自愈。 */
+            const d = Number(payload);
+            if (!isFinite(d)) return '调整量须为数字';
+            const n = Math.max(0, Math.min(100, s.risk + d));
             if (n === s.risk) return '已在端点';
             s.risk = n;
             return `暴露风险 → ${n}`;

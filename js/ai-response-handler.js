@@ -121,9 +121,18 @@ const StoryResponseHandler = {
       const isVarDump = /^[\s\S]*?"(chapter|wordCount|stats|characters|foreshadowings|totalChapters|title)"\s*:/i.test(inner) || /^[\s\S]*?\b(chapter|wordCount|tension|sanity|revelation|crisis|danger)\s*[:：]/i.test(inner);
       return isVarDump ? "" : fence;
     });
+    /* v4.07.2 修 D-29：面板段深度标记（见下方 filter 里的说明） */
+    let panelDepth = 0;
     body = body.split("\n").filter((line) => {
       const t = line.trim();
       if (!t) return true;
+      /* v4.07.2 修 D-29（面板残骸入正文）：模型偶尔只吐面板不吐叙事，实测返回形如
+         「【状态栏】\ntension: 25\n\n【行动选项】1. …」——
+         「【状态栏】」这种面板标题行会原样留在正文里，玩家看到的是一句没头没尾的「【状态栏】」。
+         这里把面板段落（标题行 + 其下直到空行为止的条目）整段剥掉。
+         提示词侧也加了同款硬约束（ai-message-builder.js），这里是防御层。 */
+      if (/^【(?:状态栏|状态面板|面板|状态|属性|数值|信息栏|当前状态|角色面板|战斗面板|属性面板|角色状态|战斗信息|当前状态栏|人物面板)】\s*$/.test(t)) { panelDepth = 1; return false; }
+      if (panelDepth) { if (!t) panelDepth = 0; return false; }
       if (/^(chapter|wordCount|totalChapters|tension|sanity|revelation|crisis|danger|logic)\s*[:：=]\s*[+-]?\d/.test(t)) return false;
       if (/^[+-]\S.{0,23}(\s*x\s*\d+)?（(埋设|回收|获得|失去|埋下|揭晓)）$/.test(t)) return false;
       /* v3.47.1：剥离误写进正文的「容器.字段=值 / 容器.字段: 值」行式指令
@@ -135,7 +144,32 @@ const StoryResponseHandler = {
       if (this._isLeakedLine(t)) return false;
       return true;
     }).join("\n");
-    body = body.replace(/【(?:情节走向|后续走向|剧情选项|下一步|行动选项|行动方案|可选行动|行动列表|你的选择|关键抉择|生死抉择|命运岔口|抉择)】[\s\S]*$/i, "");
+    /* v4.07.2 修 D-36（正文被整段吞掉 · 玩家直接可见）：
+       原规则用 `【…行动选项…】[\s\S]*$` 一刀切到字符串结尾。
+       绝大多数模型把行动选项放在**结尾**，切到结尾正好。
+       但实测（38 界广度旅程 scifi 界）存在另一种排版：
+           【行动选项】1. … 2. … （选项段在前）
+           (variable_update) … /variable_update
+           我站在中转站大厅的阴影边缘…（真正的正文）
+       此时一刀切把「选项段 + 变量块 + 正文」全部删掉 —— 玩家看到的是一张空卡片，
+       正文一个字都不剩（原文见 yunjing-test/DEFECTS-v4.07.2.md D-36）。
+       修法：只剥「标题行 + 其后的选项条目行」，遇到非选项行即停；
+       若选项段之后没有正文（rest 很短），仍按原行为整段删除。 */
+    body = body.replace(/【(?:情节走向|后续走向|剧情选项|下一步|行动选项|行动方案|可选行动|行动列表|你的选择|关键抉择|生死抉择|命运岔口|抉择)】([\s\S]*)$/i, (m, tail) => {
+      const lines = String(tail || "").split("\n");
+      let i = 0, ate = 0;
+      while (i < lines.length) {
+        const t = lines[i].trim();
+        if (!t) { i++; continue; }
+        if (this._isOptionItemLine(t)) { i++; ate++; continue; }
+        break;
+      }
+      const rest = lines.slice(i).join("\n").replace(/\s/g, "");
+      /* 后面没有正文（纯选项段）→ 整段删除，保持旧行为 */
+      if (rest.length < 15) return "";
+      /* 后面还有正文 → 只删掉选项条目，正文原样保留 */
+      return lines.slice(i).join("\n");
+    });
     body = body.replace(/(?:^|\n)[ \t]*(?:情节走向|后续走向|剧情选项|下一步|行动选项|行动方案|可选行动|行动列表|你的选择|关键抉择|生死抉择|命运岔口|抉择)[ \t]*[:：]([\s\S]*)$/i, (m, tail) => {
       if (tail.length > 800) return m;
       if (!/(?:^|\n)\s*(?:[ABCDabcd1-9１-９][.、:：)）]|[①②③④⑤])/.test(tail)) return m;
@@ -180,6 +214,11 @@ const StoryResponseHandler = {
    * 新行为：从标记处逐行吞噬"协议行"（键值 / ±条目 / >>轨迹 / JSON / 短标签），
    * 一旦遇到叙事散文立即停止；若标记后紧跟的就不是协议行（正文里提到该词等情形），
    * 只删除标记本身，其后正文原样保留。 */
+  /* v4.07.2 新增（配合 D-36）：判断一行是否是「行动选项条目」。
+     支持：1. / 1、/ 1) / ① / A. / 【快进】 等六种常见编号形态。 */
+  _isOptionItemLine(t) {
+    return /^(?:\d{1,2}[.、:：)）]|[①②③④⑤⑥⑦⑧⑨⑩]|[A-Za-z][.、:：)）]|【[^】]{1,16}】)/.test(String(t || ""));
+  },
   _stripUnclosedVarBlock(body) {
     const MARKER = /[(【<]\/?variable_update[)】>]?/i;
     let m;
@@ -195,6 +234,17 @@ const StoryResponseHandler = {
       while (i < lines.length) {
         const t = lines[i].trim();
         if (!t) { i++; continue; }
+        /* v4.07.2 修 D-37：变量块的**结束标记常常缺左括号**（模型写 `/variable_update` 而非 `(/variable_update)`），
+           这时结束标记会粘在正文首行开头（实测 scifi 界：
+           「/variable_update我站在中转站大厅的阴影边缘…」），
+           原实现既认不出它、也剥不掉，残骸就留在正文第一行。
+           这里显式识别它：剥掉标记本身，保留同一行后面的正文。 */
+        const bareEnd = t.match(/^\/?\(?【?<?\/?variable_update[)】>]?[ \t]*(.*)$/i);
+        if (bareEnd) {
+          const rest = bareEnd[1] || "";
+          if (rest) { lines[i] = rest; break; }
+          i++; break;
+        }
         if (this._isVarProtocolLine(t, ate > 0 || standalone)) { i++; ate++; continue; }
         break;
       }
@@ -469,6 +519,10 @@ const StoryResponseHandler = {
       cardsHtml = rg.cardsHtml || "";
     }
     const words2 = prose ? prose.replace(/\s/g, "").length : 0;
+    /* v4.07.2 修 D-29（空正文无提示）：模型偶尔只吐状态面板不吐叙事，
+       清洗后正文为空——旧版渲染出来是一张空卡片，玩家完全不知道发生了什么。
+       这里给一条可读提示 + 重试引导（沿用 v3.94.0「时间跳变提示」的既有范式：不动正文，只加轻提示）。 */
+    const emptyNote = (!words2) ? `<div class="yj-emptynote" style="margin:9px 0 0;padding:8px 11px;border-left:3px solid #b8875a;background:rgba(184,135,90,.09);font-size:11.5px;color:#b3a795;border-radius:0 6px 6px 0">⚠ 本轮模型只回了状态面板，没有生成正文。点「↻ 重新生成」再试一次；若反复出现，可在 ⚙ 接口设置里换一个更擅长长文的模型。</div>` : "";
     /* v3.94.0 未授权时间跳变可见提示：玩家实测里模型擅自写「这一年，你早把杂役活儿熬熟了」，
        而玩家并没有要求跳时间。这里不改动正文，只在卡片里给一条轻提示 + 可操作建议。 */
     const timeJumpNote = (() => {
@@ -491,6 +545,7 @@ const StoryResponseHandler = {
             </div>
             <div class="story-body">${this.formatProse(prose)}</div>
             ${cardsHtml ? `<div class="mm-card-area">${cardsHtml}</div>` : ""}
+            ${emptyNote}
             ${timeJumpNote}
         `;
     if (updateBlock) {

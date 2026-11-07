@@ -640,10 +640,14 @@
       arenaWins: 0, arenaLoss: 0, arenaStreak: 0, arenaBest: 0, arenaLastFoe: null,
       hunt: null,
       blog: [], ach: [], questDone: [], round: 0, mapIdx: 0,
+      /* v4.07.2：动作结算日志（供 directive 下发给 AI，防止 AI 依据旧快照编造数值） */
+      actLog: [],
       /* v4.07.0 沙盒化：玩法路线（story 走三部曲主线 / sandbox 纯自由探索）、
          动态委托板、世界局势、世界日。默认 sandbox——大世界首先是一片可自由探索的旷野。 */
       mode: 'sandbox', genre: '',
       quests: { offers: [], active: [], done: 0, expired: 0, failed: 0, boardDay: -1, boardRound: -1 },
+      /* v4.07.2 修 D-28：金币流水（余额与变动额混存） */
+      goldTrail: [],
       situation: { list: [], day: 0, round: 0 },
       worldDay: 0, worldTurn: 0,
       visited: {}
@@ -655,7 +659,10 @@
     ['items', 'pet', 'party', 'guild'].forEach(function (k) {
       f[k] = Object.assign({}, def[k], (f[k] && typeof f[k] === 'object' && !Array.isArray(f[k])) ? f[k] : {});
     });
-    ['buffs', 'bag', 'log', 'blog', 'ach', 'questDone'].forEach(function (k) { if (!Array.isArray(f[k])) f[k] = def[k].slice(); });
+    ['buffs', 'bag', 'log', 'blog', 'ach', 'questDone', 'actLog'].forEach(function (k) { if (!Array.isArray(f[k])) f[k] = def[k].slice(); });
+    /* v4.07.2 修 D-28：金币流水补齐（余额与变动额混存，最多留 12 条） */
+    f.goldTrail = (Array.isArray(f.goldTrail) ? f.goldTrail : [])
+      .slice(-12).filter(function (x) { return isFinite(Number(x)); }).map(function (x) { return Math.round(Number(x)); });
     /* v4.07.0 沙盒字段：老存档一律补默认，保证切到新版本不崩 */
     if (f.mode !== 'story' && f.mode !== 'sandbox') f.mode = 'sandbox';
     f.mode = String(f.mode);
@@ -667,10 +674,19 @@
       var n2 = Number(f.quests[k]);
       f.quests[k] = (f.quests[k] == null || isNaN(n2)) ? 0 : Math.max(0, Math.round(n2));
     });
-    f.quests.boardDay = Number(f.quests.boardDay) || -1;
-    f.quests.boardRound = Number(f.quests.boardRound) || -1;
+    /* v4.07.2 修 D-25（哨兵写法误伤合法 0）：原写法 Number(x) || -1，
+       而 boardDay=0（第 0 天）、boardLv=0（Lv.1–4 档）都是合法值，
+       0 被 || 短路成 -1（=「从未刷新」的哨兵）。
+       后果：委托板每次比对都判定「板面已过期」→ refreshBoard 整块重建 offer，
+       玩家刚点下的委托可能凭空消失，提示变成「这条委托已经不在板上了（世界局势变了）」。
+       改为显式判有限数，只有真正的空值/NaN 才落到 -1。 */
+    var bd = Number(f.quests.boardDay);
+    f.quests.boardDay = isFinite(bd) ? Math.round(bd) : -1;
+    var br = Number(f.quests.boardRound);
+    f.quests.boardRound = isFinite(br) ? Math.round(br) : -1;
     f.quests.boardZone = f.quests.boardZone ? String(f.quests.boardZone) : '';
-    f.quests.boardLv = Number(f.quests.boardLv) || -1;
+    var bl = Number(f.quests.boardLv);
+    f.quests.boardLv = isFinite(bl) ? Math.round(bl) : -1;
     if (!f.situation || typeof f.situation !== 'object' || Array.isArray(f.situation)) f.situation = {};
     f.situation.list = Array.isArray(f.situation.list) ? f.situation.list : [];
     f.situation.day = Math.max(0, Math.round(Number(f.situation.day) || 0));
@@ -793,6 +809,36 @@
       tip: '等级／经验／HP·MP／六维／攻防暴击／装备槽／技能／任务／商店／传送／竞技场——网游数值由引擎结算',
       contract: '网游角色面板（等级、职业、HP/MP、六维、攻防、装备、金币、声望、当前地图）——正文数值须与面板一致',
       stats: { lv: { v: 1, max: 999, label: '等级', icon: '🎮' } },
+      /* v4.07.2：显式声明动作清单。此前本模块不声明 actions，
+         导致 WorldExt.moduleList() 读不到（actions 被 world-runtime 列进 RESERVED，
+         只有原始蓝图才有），自动化功能探测无法触达这 20+ 个动作——等于没测。
+         清单与下方 act() 的分支严格一致。 */
+      actions: [
+        { id: 'skill', label: '⚔️ 技能', desc: '释放技能' },
+        { id: 'rest', label: '🛌 休整', desc: '回血回蓝' },
+        { id: 'loot', label: '🎁 掉落', desc: '结算掉落' },
+        { id: 'teleport', label: '📍 传送', desc: '切换地图' },
+        { id: 'qaccept', label: '📋 接委托', desc: '接取委托' },
+        { id: 'qturnin', label: '✅ 交委托', desc: '交付委托' },
+        { id: 'qgiveup', label: '🗑 放弃委托', desc: '放弃在手委托' },
+        { id: 'mode', label: '🔀 路线', desc: '主线/沙盒切换' },
+        { id: 'enhance', label: '🔨 强化', desc: '强化装备' },
+        { id: 'buy', label: '🛒 买', desc: '商店购买' },
+        { id: 'sell', label: '💰 卖', desc: '商店出售' },
+        { id: 'equipbag', label: '🎒 装备', desc: '装备背包物' },
+        { id: 'usepotion', label: '🧪 用药', desc: '使用药剂' },
+        { id: 'arena', label: '⚔️ 竞技', desc: '竞技场对战' },
+        { id: 'party', label: '👥 队伍', desc: '组队' },
+        { id: 'pet', label: '🐾 灵宠', desc: '灵宠出战' },
+        { id: 'guild', label: '🏛 势力', desc: '建/入势力' },
+        { id: 'setclass', label: '🎭 转职', desc: '转职' },
+        { id: 'addpoint', label: '📊 加点', desc: '分配属性点' },
+        { id: 'buff', label: '✨ 增益', desc: '查看增益' },
+        { id: 'questclaim', label: '🏅 领奖', desc: '领取成就' },
+        { id: 'achieveclaim', label: '🎖 成就', desc: '领取成就奖励' },
+        { id: 'clearlog', label: '🧹 清日志', desc: '清理战报' },
+        { id: 'tick', label: '⏱ 推进', desc: '推进一回合' },
+      ],
       /* WR.module 把状态对象本身作为第二个参数传入（不是模块包裹），字段须直接写到 f 上 */
       backfill: function (o, f) {
         var d = initState(g);
@@ -867,13 +913,50 @@
       act: function (st, s, a, p) {
         normalizeState(st, g);
         var d = E(st), i;
-        /* 所有成功动作统一收口：金币/声望/HP/MP 绝不为负，且不超过上限 */
+        /* v4.07.2 修 D-32（技能冷却永不结束，玩家可见）：
+           冷却只在 tickBuffs（tick 动作）里递减，而 wr_rpg 的 skill / loot / buy 等动作
+           走本函数自己的分支，不经过 world-runtime 的 runPipeline（那里的通用递减管不到它们）。
+           结果：玩家打完一次怪，技能就卡在「冷却中（1 轮）」——
+           除非他翻到面板深处的「⏭ 结束回合」按钮点一下，否则再也放不出技能。
+           实测连点 4 次基本斩击：第 1 次生效，后 3 次全是「冷却中」。
+           改为：任何玩家动作执行前，先让所有技能冷却走一格（动作即回合）。
+           世界时钟 st.round 不受影响，仍由 tick / 剧情推进。 */
+        if (a !== 'tick' && st.cd && typeof st.cd === 'object') {
+          Object.keys(st.cd).forEach(function (k) {
+            if ((Number(st.cd[k]) || 0) > 0) st.cd[k] = (Number(st.cd[k]) || 0) - 1;
+          });
+        }
+        /* v4.07.2 修 D-28（金币流水缺失）：正文里合法的历史收支会被误判成「编造金币」——
+           判定器只认「当前金币数」与「委托报酬」，而引擎才是唯一知道真相的地方。
+           在 act 入口记下动作前的金币，ok() 结算时把「结算后余额」与「本次变动额」一起留痕，
+           让真实历史叙述（「你刚才花了 15 金币传送」）能被正确放行。 */
+        var goldBefore = Number(st.gold) || 0;
+        /* v4.07.2 修 D-18（核心）：动作结算结果必须回流给 AI。
+           此前 ok() 只把文案返回给界面（toast / 面板 log），从不进入 directive（AI 提示词），
+           于是引擎结算的真相——击杀掉落多少、经验加了多少、是否升级、掉了什么装备——
+           只有玩家看得见，AI 看不见。AI 拿到的仍是「动作前」的快照（经验 0/62），
+           只能靠猜：实测出现「经验+80。当前经验 80/62」（当前经验超过所需上限，自相矛盾）
+           与「Lv.2了」（实际 Lv.1，一次战斗经验不足以升级）等编造。
+           修法：ok() 统一把动作结果记入 st.actLog，directive 每轮把最近若干条送出，
+           让 AI 看到的数值与引擎结算完全同源。 */
         function ok(m) {
           st.gold = Math.max(0, Math.round(Number(st.gold) || 0));
           st.rep = Math.max(0, Math.round(Number(st.rep) || 0));
           var dd = E(st);
           st.hp = st.hp == null ? dd.maxHp : Math.max(0, Math.min(dd.maxHp, Math.round(Number(st.hp) || 0)));
           st.mp = st.mp == null ? dd.maxMp : Math.max(0, Math.min(dd.maxMp, Math.round(Number(st.mp) || 0)));
+          if (m) {
+            st.actLog = (Array.isArray(st.actLog) ? st.actLog : []).slice(-5);
+            st.actLog.push(String(m));
+            /* v4.07.2 修 D-28：金币流水（余额 + 本次变动额），供判定与 AI 溯源。
+               数组里两种值混存：结算后的余额（如 45）、本次金币变动额（如 15）。
+               两者都是玩家在正文里可能如实提到的数字。 */
+            var gv = Math.round(Number(st.gold) || 0);
+            st.goldTrail = (Array.isArray(st.goldTrail) ? st.goldTrail : []).slice(-11);
+            if (st.goldTrail.indexOf(gv) < 0) st.goldTrail.push(gv);
+            var dv = Math.abs(gv - goldBefore);
+            if (dv > 0 && st.goldTrail.indexOf(dv) < 0) st.goldTrail.push(dv);
+          }
           return m;
         }
         p = (p == null ? '' : String(p));
@@ -916,7 +999,12 @@
           if ((Number(st.hp) || 0) <= 0) return '💀 气血耗尽——请先「休整」或使用生命药水';
           st.mp -= sk[2]; st.cd[sk[0]] = sk[3];
           /* 明确结算目标：当前确定性野怪（练级/打怪），不再打空气凭空掉金币 */
-          var hunt = st.hunt, huntName = hunt.name + '(Lv.' + hunt.lv + ')';
+          /* v4.07.2 修 D-33（引擎自相矛盾）：结算文案原先带野怪等级（「毒蛛(Lv.1)」），
+             而同一份 directive 明令「严禁给野怪标注具体等级或 HP 数字」——
+             引擎自己就在提供违规素材，AI 照抄即判违规（实测正文出现「毒蛛(Lv.1)」）。
+             面板「🎯 练级目标」卡仍向玩家显示等级与 HP，信息不丢；
+             发给 AI 的结算只写名称与相对强弱。 */
+          var hunt = st.hunt, huntName = hunt.name;
           var foeDef = Math.round(12 + hunt.lv * 2.2);
           var skSeed = st.lv + '|' + sk[0] + '|' + (st.kills || 0) + '|' + hunt.seq;
           var dm = Engine.damage(d.atk, foeDef, sk[4], d.crit, skSeed);
@@ -946,9 +1034,14 @@
           note(st, sk[1] + ' 对「' + huntName + '」造成 ' + dm.value + (dm.crit ? '（暴击）' : '') + ' 点伤害' + (killed ? '，击杀掉落 ' + coin + ' ' + w.cur : '，未击杀'));
           blog(st, { a: sk[1], dmg: dm.value, crit: dm.crit, t: '技能',
             note: '目标「' + huntName + '」HP ' + hunt.hp + '/' + hunt.maxHp + ' · ' + (killed ? ('击杀掉落 ' + coin + ' ' + w.cur + '（野怪掉落）· 声望 +1') : ('未击杀 · 反击 -' + counter + ' HP · 仅经验 +' + expGain + '，' + w.cur + '无收益')) + ' · 耗 ' + resOf(st) + ' ' + sk[2] });
+          /* v4.07.2：带上动作后的等级与经验。只说「经验 +35」不足以让 AI 判断是否升级，
+             AI 就会自行脑补「Lv.2了」——实测已出现这类编造。
+             同时明确：结算里的野怪等级/HP 是引擎内部口径，只供 AI 校准玩家自身数值，
+             严禁写进正文（提示词本就禁止给野怪标注等级或 HP）。 */
           return ok('⚔️ ' + sk[1] + ' 对「' + huntName + '」造成 ' + dm.value + ' 点伤害' + (dm.crit ? ' 💥暴击' : '')
-            + (killed ? '｜击杀！野怪掉落 ' + coin + ' ' + w.cur + '、声望 +' + repGain + '、经验 +' + expGain : '｜目标 HP ' + hunt.hp + '/' + hunt.maxHp + '，未击杀，受到反击 -' + counter + ' HP，仅经验 +' + expGain + '，' + w.cur + '无收益')
-            + '，耗 ' + resOf(st) + ' ' + sk[2] + '，冷却 ' + sk[3] + ' 轮');
+            + (killed ? '｜击杀！野怪掉落 ' + coin + ' ' + w.cur + '、声望 +' + repGain + '、经验 +' + expGain : '｜未击杀，受到反击 -' + counter + ' HP，仅经验 +' + expGain + '，' + w.cur + '无收益')
+            + '，耗 ' + resOf(st) + ' ' + sk[2] + '，冷却 ' + sk[3] + ' 轮'
+            + '｜当前 Lv.' + st.lv + ' 经验 ' + st.exp + '/' + Engine.expToNext(st.lv));
         }
         if (a === 'loot') {
           var tier = 0;
@@ -1253,7 +1346,7 @@
           st.quests.active.push(of);
           st.quests.offers = st.quests.offers.filter(function (o) { return o.id !== qid; });
           blog(st, { a: '接取委托', t: '委托', note: of.title + ' · ' + of.giver + ' · 时限 ' + of.due + ' 回合' });
-          return ok('📋 接取委托「' + of.title + '」——委托人 ' + of.giver + '｜目标 ' + of.need + '｜时限 ' + of.due + ' 回合｜报酬 ' + of.gold + ' ' + w.cur + ' + ' + of.exp + ' 经验 + ' + of.rep + ' 声望');
+          return ok('📋 接取委托「' + of.title + '」——委托人 ' + of.giver + '｜目标 ' + of.need + '｜时限 ' + of.due + ' 回合｜完成后可得 ' + of.gold + ' ' + w.cur + ' + ' + of.exp + ' 经验 + ' + of.rep + ' 声望（**尚未到账**，交付后才会入账）');
         }
         /* v4.07.0 委托：交付 */
         if (a === 'qturnin') {
@@ -1361,7 +1454,11 @@
         var eq = Object.keys(st.equip || {}).map(function (k) { var e = st.equip[k]; return e ? e.n + '(' + (e.tier || '') + ')' : ''; }).filter(Boolean).join('、');
         if (tier === 'tiny') {
           return '【网游面板】Lv.' + st.lv + ' ' + clsName(st) + '｜' + zoneObj(st).short + '｜HP ' + hp + '/' + d.maxHp + '｜' + resOf(st) + ' ' + mp + '/' + d.maxMp + '｜攻 ' + d.atk + ' 防 ' + d.def + '｜' + w.cur + ' ' + st.gold + '｜' + st.map
-            + '。只准用这些数字，严禁自编等级、经验、装备或伤害数值；野怪与对手只写外形、名称与相对强弱（如「绿名怪」「高出一阶」），严禁给它们标注具体等级或 HP 数字；剧情要升级就写「经验条涨了一截」，不要写具体级数。';
+            + '。只准用这些数字，严禁自编等级、经验、装备或伤害数值；野怪与对手只写外形、名称与相对强弱（如「绿名怪」「高出一阶」），严禁给它们标注具体等级或 HP 数字；剧情要升级就写「经验条涨了一截」，不要写具体级数。'
+            /* v4.07.2：低配档同样要带上一轮动作结算，否则低配玩家拿到的仍是「动作前」快照，AI 照样会编。 */
+            + (st.actLog && st.actLog.length
+              ? ('【上轮结算】' + st.actLog.slice(-2).join('；') + '（以引擎判定为准，正文数字须一致）')
+              : '');
         }
         return '【网游角色面板·本轮快照】《' + w.game + '》｜' + clsName(st) + ' Lv.' + st.lv + '（经验 ' + st.exp + '/' + Engine.expToNext(st.lv) + '）｜HP ' + hp + '/' + d.maxHp + '｜' + resOf(st) + ' ' + mp + '/' + d.maxMp
           + '｜六维 ' + DIMS.map(function (x) { return x.n + d.attr[x.k]; }).join(' ')
@@ -1372,12 +1469,28 @@
           + '\n【玩法路线与委托】当前路线：' + (st.mode === 'story' ? '剧情路线（走失落叶网游三部曲主线章节）' : '沙盒路线（无强制主线，玩家自由探索、自行接活）') + '。'
           + '本区局势：' + (sitNow ? (sitNow.sitN + '·' + (sitNow.verb || '正在发生') + '，' + (sitNow.foe || '不明敌人') + '出没') : '暂时平静') + '。'
           + '手头委托：' + (actNow.length ? actNow.map(function (x) { return x.title + '（' + x.cur + '/' + x.need + '）'; }).join('；') : '暂无') + '。'
+          + '【委托报酬尚未到账】上面委托的报酬只是预告数字，交付之前它没有真正入账——'
+          + '正文不得写成「已获得」「到手」「领到」这些金币/经验/声望，也不得写因此升级；'
+          + '只有引擎结算里明写了到账，正文才能写获得。'
           + '正文涉及委托时必须与上述一致，不得凭空出现未接取的委托；委托报酬与时限也照抄面板，不要自编数字。'
           + '\n【玩家势力】' + (st.guild && st.guild.name
             ? ('玩家已自立势力「' + st.guild.name + '」（职位：' + (st.guild.rank || '会长') + '，驻地：' + (st.guild.seat || st.map || '—') + '，行会贡献 ' + (st.guild.contrib || 0) + '，声望 ' + st.rep + '）。'
                + '正文提到玩家自己的势力时必须用这个名字，不得另起一个名字、不得把玩家写成加入别人的势力、不得写出本名之外的势力；'
                + '玩家势力已挂在舆图「' + (st.guild.seat || st.map || '—') + '」据点上。')
-            : '玩家尚未建立或加入任何势力——正文不得让玩家凭空拥有公会、行会或势力；若剧情需要，可引导玩家自行创建。');
+            : '玩家尚未建立或加入任何势力——正文不得让玩家凭空拥有公会、行会或势力；若剧情需要，可引导玩家自行创建。')
+          /* v4.07.2 修 D-18（核心）：把玩家上一轮的动作结算结果送给 AI。
+             此前引擎结算的真相（掉落多少、经验加了多少、是否升级、掉了什么装备）
+             只有玩家在面板/提示里看得见，AI 拿到的永远是「动作前」的快照，
+             于是只能靠猜——实测出现过「经验+80。当前经验 80/62」（当前经验超过上限，自相矛盾）
+             与「Lv.2了」（实际 Lv.1）的编造。
+             现在动作结果随 directive 下发，AI 与玩家看到同一份真相。 */
+          + (st.actLog && st.actLog.length
+            ? ('\n【上一轮动作结算 · 引擎已判定 · 必须照此写】' + st.actLog.slice(-3).map(function (x) { return '· ' + x; }).join('\n')
+               + '\n以上为引擎实际结算结果（掉落、经验、等级变化均以此为准），正文写到的数字必须与之一致；'
+               + '结算里的「+N」是**本次增量**，当前值一律照抄上方快照，绝不可自行相加（实测出现过把「经验 +64」加到当前经验上，写出「68/62」这种自相矛盾的数字）；'
+               + '若结算里没有的数值（等级、经验、掉落、金币）一律不得凭空出现，也不得说「升级了」除非结算里明写了。'
+               + '结算里出现的怪物名不得在正文里加注等级、HP 或品级（如「毒蛛(Lv.1)」）——只写名称与相对强弱。')
+            : '');
       }
     });
 
@@ -1792,7 +1905,7 @@
         var ls = document.querySelectorAll('link[rel="stylesheet"]');
         for (var i = 0; i < ls.length; i++) if ((ls[i].href || '').indexOf('rpg-suite.css') >= 0) return;
         var l = document.createElement('link');
-        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.07.1'; l.setAttribute('data-rpg-suite', '1');
+        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.07.2'; l.setAttribute('data-rpg-suite', '1');
         document.head.appendChild(l);
       } catch (e) {}
     })();

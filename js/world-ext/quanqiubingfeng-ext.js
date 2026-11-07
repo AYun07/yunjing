@@ -300,7 +300,11 @@
     },
     act(s, action, payload) {
       if (action === "nudge") {
-        const n = Math.max(0, Math.min(100, s.defense + Number(payload)));
+        /* v4.07.2 修 D-17：非数字 payload 会让 Number() 得 NaN，
+           Math.min/max 仍返回 NaN → 防线被写成 NaN 且不可自愈。先校验再写。 */
+        const d = Number(payload);
+        if (!isFinite(d)) return "调整量须为数字";
+        const n = Math.max(0, Math.min(100, s.defense + d));
         if (n === s.defense) return "已在端点";
         s.defense = n;
         return `防线 → ${n}`;
@@ -615,7 +619,10 @@
     },
     act(s, action, payload) {
       if (action === "nudge") {
-        const n = Math.max(0, Math.min(100, s.order + Number(payload)));
+        /* v4.07.2 修 D-17：同型——非数字 payload 会把秩序写成 NaN 且不可自愈。 */
+        const d = Number(payload);
+        if (!isFinite(d)) return "调整量须为数字";
+        const n = Math.max(0, Math.min(100, s.order + d));
         if (n === s.order) return "已在端点";
         s.order = n;
         return `小区秩序 → ${n}`;

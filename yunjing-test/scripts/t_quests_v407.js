@@ -242,7 +242,13 @@ T('4.4 竞技场推进 wins 类委托（跨日直到板面出现该类型）', (
   let q = null, g2 = 0;
   while (g2++ < 12 && !q) {
     q = st.quests.offers.filter(o => o.t === 'wins')[0] || null;
-    if (!q) { st.round += 8; bp.act(st, { state: st }, 'tick', ''); }
+    /* v4.07.2 修正：原先写的是 st.round += 8 —— 但引擎的世界时钟是 st.worldTurn
+       （advanceWorld 里 day = floor(worldTurn / 8)，与 round 无关）。
+       所以这行从来没有真的跨日过，只是靠「板面每次都重建」才碰巧能抽到 wins 类委托。
+       v4.07.2 修 D-25 后 boardLv 不再被误写成 -1，板面在同一世界日 / 分区 / 等级档下
+       不再无故重建 —— 于是这个假依赖暴露出来，测试失败。
+       现在改用真正的字段 worldTurn，测试才真的在验证「跨日会换一批委托」。 */
+    if (!q) { st.worldTurn += 8; bp.act(st, { state: st }, 'tick', ''); }
   }
   assert(q, '多次跨日后板上仍无 wins 类委托');
   bp.act(st, { state: st }, 'qaccept', q.id);

@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **79** 个版本，从 `v3.55.7` 到 `v4.07.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **80** 个版本，从 `v3.55.7` 到 `v4.07.2`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.07.2** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.2) |
 | **v4.07.1** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.1) |
 | **v4.07.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.0) |
 | **v4.06.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.06.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.06.0) |
@@ -93,6 +94,24 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.07.2 · 2026-11-07
+
+修复 13 界专属模块被静默顶掉的加载竞态——玄鉴仙族界模块数从 3 恢复到 18，本界专属机制（符种坛/牲祭坛/族谱位阶）全部回归
+
+修复常驻状态板在孤寒/玄剑/剑来/诡秘四界整体空白——模块工厂把状态函数接错协议键，且异常被空 catch 静默吞掉
+
+引擎结算结果首次回流 AI：上一轮动作的掉落/经验/等级变化随提示词下发，AI 与玩家看同一份真相，修掉「经验 80/62」这类自相矛盾与「Lv.2 了」这类编造升级
+
+战斗结算不再向正文泄漏野怪等级与 HP，并强制禁止给野怪标注等级
+
+数值型动作校验输入，非数字 payload 不再把状态写成 NaN
+
+新增 WorldExt.moduleList() 模块清单接口与 wr_rpg 24 个动作声明，供自动化全量探测覆盖
+
+功能探测覆盖从 50 个动作提升到 380+，38 界零死按钮零异常
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.07.2)  [🔍 与 v4.07.1 差异](https://github.com/AYun07/yunjing/compare/v4.07.1...v4.07.2)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip)
 
 ## v4.07.1 · 2026-11-07
 

@@ -17,7 +17,7 @@
         id: 'seal', icon: '🕯', name: '禁锢阶梯 · 黄金配额',
         tip: '四级禁锢以命换力——C级起步、S级拿感官肢体抵账；黄金克鬼，克数就是命',
         contract: '境界（当前禁锢等级，注明所驭厉鬼如「B级禁锢·旧镜」）；黄金（当前持有黄金克数）；厉鬼[]（已驾驭或封印的厉鬼清单，注明等级）',
-        init: () => ({ rank: 0, ghost: '', gold: null, ghosts: [], log: [] }),
+        init: () => ({ rank: 0, ghost: '', gold: null, ghosts: [], log: [], _lastRank: -1 }),
 
         /* v3.32.2 状态板摘要：🕯 B级禁锢·旧镜 ·黄金320g ·驭鬼2 */
         summary(s) {
@@ -61,8 +61,14 @@
             });
             if (s.ghosts.length > 10) s.ghosts.length = 10;
             /* 跃升留痕 */
-            if (d && idx > (s._lastRank || 0)) {
-                s.log.unshift(`第${round}回：${RANKS[s._lastRank || 0]} → ${RANKS[idx]}`);
+            /* v4.07.2 修 D-35（同型 D-25）：原式 s._lastRank || 0 有两个毛病。
+               ① 「从未入榜」时 s._lastRank 为 undefined，|| 0 把它当成「上次排第 1 名」，
+                  于是首次上报若直接到最高阶（idx=0），`idx > 0` 为假 → 破境留痕被漏记；
+               ② 留痕文案把上次的境界写成 RANKS[0]（「普通人」），而玩家其实从没入过榜。
+               改为显式判有限数，从未入榜用 -1，文案写「未入榜」。 */
+            const lastRank = (typeof s._lastRank === "number" && isFinite(s._lastRank)) ? s._lastRank : -1;
+            if (d && idx > lastRank) {
+                s.log.unshift(`第${round}回：${lastRank >= 0 ? RANKS[lastRank] : '未入榜'} → ${RANKS[idx]}`);
                 if (s.log.length > 6) s.log.length = 6;
             }
             s._lastRank = idx;

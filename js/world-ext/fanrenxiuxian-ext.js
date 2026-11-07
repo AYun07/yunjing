@@ -56,8 +56,12 @@
             const root = WXH.pick(vars, ['灵根', '资质', '灵根资质']);
             if (root != null && String(root) !== s.root) { s.root = String(root).slice(0, 16); d = true; }
             /* 跃升留痕（凡人流的每一步都是熬出来的，值得记账） */
-            if (d && idx > (s._lastRank || -1)) {
-                s.log.unshift(`第${round}回：${s._lastRank >= 0 ? RANKS[s._lastRank] : '凡人'} → ${RANKS[idx]}${idx > 0 && stage ? stage : idx === 0 && layer ? '·' + layer + '层' : ''}`);
+            /* v4.07.2 修 D-25（同型）：原式 s._lastRank || -1 —— 上次排名第 1 名时
+               _lastRank=0，被 || 短路成 -1，导致「排名提升」判定恒真（没提升也记留痕），
+               且留痕文案把上次的「凡人流·第一层」显示成「凡人」。显式判有限数。 */
+            const lastRank = (typeof s._lastRank === "number" && isFinite(s._lastRank)) ? s._lastRank : -1;
+            if (d && idx > lastRank) {
+                s.log.unshift(`第${round}回：${lastRank >= 0 ? RANKS[lastRank] : '凡人'} → ${RANKS[idx]}${idx > 0 && stage ? stage : idx === 0 && layer ? '·' + layer + '层' : ''}`);
                 if (s.log.length > 6) s.log.length = 6;
             }
             s._lastRank = idx;

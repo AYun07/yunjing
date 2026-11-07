@@ -15,7 +15,7 @@
         id: 'gene', icon: '🧬', name: '基因阶梯 · 军功簿',
         tip: '超级基因一级一级觉醒——免疫枪弹是一代，特殊能力是二代，神体是三代；军衔与战功同册记功',
         contract: '基因觉醒（当前等阶，注明系别如「二代·狙击专精」）；军衔（当前军衔）；战功（累计战功值整数）；编制（所属部队）',
-        init: () => ({ rank: 0, apt: '', rankTitle: '', honors: 0, unit: '', log: [] }),
+        init: () => ({ rank: 0, apt: '', rankTitle: '', honors: 0, unit: '', log: [], _lastRank: -1 }),
 
         /* v3.37.0 状态板摘要：🧬 二代超级战士 ·战功320 */
         summary(s) {
@@ -55,8 +55,14 @@
             const unit = String(WXH.pick(vars, ['编制', '所属部队', '部队']) || '');
             if (unit && unit !== s.unit) { s.unit = unit; d = true; }
             /* 跃升留痕 */
-            if (d && idx > (s._lastRank || 0)) {
-                s.log.unshift(`第${round}回：${RANKS[s._lastRank || 0]} → ${RANKS[idx]}`);
+            /* v4.07.2 修 D-35（同型 D-25 / 同 shenmifusu）：原式 s._lastRank || 0 有两个毛病。
+               ① 「从未入榜」时 undefined||0 被当成「上次排第 1 名」，
+                  首次上报若直接到最高阶（idx=0）则 idx>0 为假 → 破境留痕被漏记；
+               ② 留痕文案把上次的境界写成 RANKS[0]，而玩家其实从没入过榜。
+               改为显式判有限数，从未入榜用 -1，文案写「未入榜」。 */
+            const lastRank = (typeof s._lastRank === "number" && isFinite(s._lastRank)) ? s._lastRank : -1;
+            if (d && idx > lastRank) {
+                s.log.unshift(`第${round}回：${lastRank >= 0 ? RANKS[lastRank] : '未入榜'} → ${RANKS[idx]}`);
                 if (s.log.length > 6) s.log.length = 6;
             }
             s._lastRank = idx;

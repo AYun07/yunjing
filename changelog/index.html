@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.07.1">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.07.2">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.07.2</span>
+                <span class="entry-date">2026-11-07</span>
+            </div>
+            <h3 class="entry-title">玩家视角实测驱动的全界缺陷修复</h3>
+            <p class="entry-text">修复 13 界专属模块被静默顶掉的加载竞态——玄鉴仙族界模块数从 3 恢复到 18，本界专属机制（符种坛/牲祭坛/族谱位阶）全部回归 修复常驻状态板在孤寒/玄剑/剑来/诡秘四界整体空白——模块工厂把状态函数接错协议键，且异常被空 catch 静默吞掉 引擎结算结果首次回流 AI：上一轮动作的掉落/经验/等级变化随提示词下发，AI 与玩家看同一份真相，修掉「经验 80/62」这类自相矛盾与「Lv.2 了」这类编造升级 战斗结算不再向正文泄漏野怪等级与 HP，并强制禁止给野怪标注等级 数值型动作校验输入，非数字 payload 不再把状态写成 NaN 新增 WorldExt.moduleList() 模块清单接口与 wr_rpg 24 个动作声明，供自动化全量探测覆盖 功能探测覆盖从 50 个动作提升到 380+，38 界零死按钮零异常</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -407,7 +416,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.07.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.07.2 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">

@@ -17324,6 +17324,9 @@
     }
   };
   window.StoryAtlas = StoryAtlas;
+  /* v4.07.2 导出舆图原始数据：供验收脚本按「本界合法专名」做防幻觉校验。
+     只读引用，不改变任何渲染行为。 */
+  window.ATLAS_DATA = ATLAS_DATA;
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

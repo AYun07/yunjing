@@ -533,8 +533,12 @@
         return `已卸下「${payload}」的 ${it.name}`;
       }
       if (action === "add") {
+        /* v4.07.2 修 D-09：此动作走 UIDialog.prompt 弹窗输入，实际结果在 async 回调里产生，
+           而 act() 同步返回 "" —— 调用方（自动化探测 / 脚本 / 小云工具）永远拿不到反馈，
+           只能靠猜。改为：弹窗流程内部照旧 toast 反馈，同时同步返回一句明确文案，
+           使「接口返回值」与「用户所见提示」是同一份信息。 */
         manualAddSlot(s);
-        return "";
+        return "已打开「自建槽位」输入框（格式：槽位名|图标|匹配关键词）";
       }
       if (action === "del") {
         const i = (s.custom || []).findIndex((x) => x.key === payload);
