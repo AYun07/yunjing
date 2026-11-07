@@ -82,7 +82,7 @@ QUESTISH = re.compile(r"(?:讨伐|采集|侦察|护送|悬赏|清剿|锻造|救�
 
 async def one(pg, case, prompt, panel_lv):
     kind, g, prompt_text, places, lv = case
-    await pg.goto(BASE + "/studio.html?genre=" + g + "&v=4.07.0",
+    await pg.goto(BASE + "/studio.html?genre=" + g + "&v=4.07.1",
                   wait_until="networkidle", timeout=60000)
     await pg.wait_for_timeout(1200)
     await pg.evaluate("""({endpoint,key,model})=>{

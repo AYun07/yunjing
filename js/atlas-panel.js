@@ -810,7 +810,87 @@
       "诸神黄昏祭坛据点"
      ]
     }
-   ],
+   ,
+    {
+     "id": "wcore1",
+     "n": "界心 · 折叠渡口",
+     "x": 45.8,
+     "y": 46.2,
+     "t": "poi",
+     "d": 2,
+     "rg": "寰宇界心",
+     "desc": "四区之间的折叠地带，界缝在此交叠；迷路的旅人可由此折返任一分区",
+     "c": "原创·界心",
+     "aliases": [
+      "界心 · 折叠渡口",
+      "折叠渡口",
+      "界缝渡口"
+     ]
+    },
+    {
+     "id": "wcore2",
+     "n": "中枢环廊 · 第零层",
+     "x": 51.8,
+     "y": 43.4,
+     "t": "relic",
+     "d": 3,
+     "rg": "寰宇界心",
+     "desc": "环绕神域的悬空回廊，通往诸神黄昏祭坛的外环；赛季开启时才有资格踏上",
+     "c": "原创·界心",
+     "aliases": [
+      "中枢环廊 · 第零层",
+      "中枢环廊",
+      "第零层"
+     ]
+    },
+    {
+     "id": "wcore3",
+     "n": "寂静回廊 · 停摆区",
+     "x": 55.6,
+     "y": 50.8,
+     "t": "danger",
+     "d": 4,
+     "rg": "寰宇界心",
+     "desc": "时间在这里停摆，守卫仍是上一赛季的残影；贸然深入会被拖入旧战局",
+     "c": "原创·界心",
+     "aliases": [
+      "寂静回廊 · 停摆区",
+      "寂静回廊",
+      "停摆区"
+     ]
+    },
+    {
+     "id": "wcore4",
+     "n": "旧王座 · 空位",
+     "x": 47.6,
+     "y": 54.6,
+     "t": "relic",
+     "d": 3,
+     "rg": "寰宇界心",
+     "desc": "上一任王者留下的空座，尚无人加冕；坐上去之前，先拿到能守住它的势力",
+     "c": "原创·界心",
+     "aliases": [
+      "旧王座 · 空位",
+      "旧王座",
+      "空位"
+     ]
+    },
+    {
+     "id": "wcore5",
+     "n": "万界棋盘 · 残局",
+     "x": 52.6,
+     "y": 57.2,
+     "t": "poi",
+     "d": 2,
+     "rg": "寰宇界心",
+     "desc": "以整张寰宇为棋盘的残局，赢面留给了仍在路上的公会；胜负每季重开",
+     "c": "原创·界心",
+     "aliases": [
+      "万界棋盘 · 残局",
+      "万界棋盘",
+      "残局"
+     ]
+    }],
    "roads": [
     [
      "wdy0",
@@ -16336,12 +16416,18 @@
        仅作界面装饰，不冒充原著设定、不进入知识库。网游三界用赛博罗盘，其余界用羊皮纸罗盘。 */
     const isRpgG = genre === "wangyou";
     const crestSrc = isRpgG ? "assets/atlas/rpg-hud-crest.png" : "assets/atlas/compass-rose.png";
+    /* v4.07.1 标题随图层变化：首层用界名，放大层用「界名 · 层名」——原先恒显界名，切层后与图内标题对不上 */
+    const curLay = (g.layers || []).filter((l) => l.id === state.layerId)[0] || (g.layers || [])[0];
+    const firstLayId = (g.layers || [])[0] ? (g.layers || [])[0].id : "";
+    const gBase = String(g.name || '').split(' · ')[0];
+    const headTitle = (!curLay || curLay.id === firstLayId) ? g.name
+      : (gBase ? gBase + ' · ' + curLay.name : curLay.name);
     wrap.innerHTML = `
         <div class="atlas-inner">
             <div class="atlas-head">
                 <img class="atlas-crest" src="${crestSrc}" alt="" aria-hidden="true">
                 <div>
-                    <div class="atlas-title" style="color:${P.primary};">${g.name}</div>
+                    <div class="atlas-title" style="color:${P.primary};">${escA(headTitle)}</div>
                     <div class="atlas-flavor">「${escA(g.flavor)}」${pn ? `<span class="atlas-pn">旅人 · ${escA(pn)}</span>` : ""}</div>
                 </div>
                 <div class="atlas-hbtns">

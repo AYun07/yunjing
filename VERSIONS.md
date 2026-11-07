@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **78** 个版本，从 `v3.55.7` 到 `v4.07.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **79** 个版本，从 `v3.55.7` 到 `v4.07.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.07.1** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.1) |
 | **v4.07.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.0) |
 | **v4.06.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.06.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.06.0) |
 | **v4.05.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.05.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.05.0) |
@@ -92,6 +93,24 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.07.1 · 2026-11-07
+
+角色页顶部 2×2 卡片改为 6 格「角色名片」：位置·称号 / 职业 / 金币 / 声望 / 世界日·回合 / 委托；等级下移至六维属性标题，与常驻状态栏错位——原先 Lv、职业、金币在两处各说一遍
+
+修复局势文案重复动词：原渲染为「兽潮正在正在侵袭」，因 verb 字段本身带动词短语而模板又拼了一次「正在」
+
+状态栏同名货币歧义：万能市集的货币标签原为「金币」，与 RPG 金币重名且数值不同，现改为「市集」
+
+世界日口径统一为「第 1 日」起算，名片、任务页、回合日志三处同源（原先显示「第 0 日」）
+
+舆图标题随图层变化：切到放大层后，面板大标题会同步为「寰宇纪元 · 东境 · 月恒服 · 放大」，原先恒显界名，与图内标题对不上
+
+全境总览层中央空白补全：新增 5 个原创「界心」地点（折叠渡口 / 中枢环廊·第零层 / 寂静回廊·停摆区 / 旧王座·空位 / 万界棋盘·残局），节点 132 → 137，地标 45 → 50，资料库同步补 5 条原创条目（总 25565 → 25570 条）
+
+真实模型实测 6/6 全部通过：agnes-3.0-flash，并发 1、间隔 ≥4s，覆盖沙盒不强推主线、委托数字一致、玩家势力名原样使用、隐藏职业解锁、对照界不串味
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.07.1)  [🔍 与 v4.07.0 差异](https://github.com/AYun07/yunjing/compare/v4.07.0...v4.07.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip)
 
 ## v4.07.0 · 2026-11-07
 

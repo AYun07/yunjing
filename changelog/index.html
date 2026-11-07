@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.07.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.07.1">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.07.1</span>
+                <span class="entry-date">2026-11-07</span>
+            </div>
+            <h3 class="entry-title">角色名片重构 · 舆图界心补全 · 文案与货币口径统一</h3>
+            <p class="entry-text">角色页顶部 2×2 卡片改为 6 格「角色名片」：位置·称号 / 职业 / 金币 / 声望 / 世界日·回合 / 委托；等级下移至六维属性标题，与常驻状态栏错位——原先 Lv、职业、金币在两处各说一遍 修复局势文案重复动词：原渲染为「兽潮正在正在侵袭」，因 verb 字段本身带动词短语而模板又拼了一次「正在」 状态栏同名货币歧义：万能市集的货币标签原为「金币」，与 RPG 金币重名且数值不同，现改为「市集」 世界日口径统一为「第 1 日」起算，名片、任务页、回合日志三处同源（原先显示「第 0 日」） 舆图标题随图层变化：切到放大层后，面板大标题会同步为「寰宇纪元 · 东境 · 月恒服 · 放大」，原先恒显界名，与图内标题对不上 全境总览层中央空白补全：新增 5 个原创「界心」地点（折叠渡口 / 中枢环廊·第零层 / 寂静回廊·停摆区 / 旧王座·空位 / 万界棋盘·残局），节点 132 → 137，地标 45 → 50，资料库同步补 5 条原创条目（总 25565 → 25570 条） 真实模型实测 6/6 全部通过：agnes-3.0-flash，并发 1、间隔 ≥4s，覆盖沙盒不强推主线、委托数字一致、玩家势力名原样使用、隐藏职业解锁、对照界不串味</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -398,7 +407,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.07.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.07.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">
