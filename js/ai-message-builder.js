@@ -213,7 +213,7 @@ stats.张力: +5
     yunqiBlock = '';
   }
   /* v3.55.17 云境核心契约 · 预设解耦注入
-     问题：玩家用「导入 SillyTavern 预设」整份替换内置预设后，那份预设里没有云境的
+     问题：玩家用「导入 常见前端工具 预设」整份替换内置预设后，那份预设里没有云境的
      六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
      六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
      对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
@@ -435,7 +435,7 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
   const _gKey = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey) || '';
   const rpgMode = ['daobanshenhua', 'zonghengtianxia', 'tianxiawushuang'].indexOf(_gKey) >= 0;
   const fmtVarLine = rpgMode
-    ? `2) 本界为数据流网游：正文可写少量与【网游角色面板】快照一致的数字（等级、伤害、耗蓝、掉落品级），并可在 (variable_update) 块里写 >>网游面板.exp: +120 一类结算行；严禁整段罗列属性面板、六维清单或自行编造与快照不符的数字；`
+    ? `2) 本界为数据流网游：正文可写少量与【网游角色面板】快照一致的数字（玩家等级、伤害、耗蓝、掉落品级），野怪与对手不得写具体等级或 HP 数字，并可在 (variable_update) 块里写 >>网游面板.exp: +120 一类结算行；严禁整段罗列属性面板、六维清单或自行编造与快照不符的数字；`
     : (vaOn
       ? `2) 严禁输出任何变量更新块、状态指令或数值面板——状态登记由独立系统完成；`
       : `2) 变量更新块（(variable_update)…(/variable_update)）与此前楼层格式完全一致，标签成对闭合；`);

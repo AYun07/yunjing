@@ -1,4 +1,4 @@
-/* RPG Suite v2.0.0 — 网游三部曲共用皮肤（v4.04.0）
+/* RPG Suite v2.1.0 — 网游三部曲共用皮肤（v4.05.0）
  * 七标签角色面板 / 四态 / 品级色阶 / HP·MP·EXP 动效 / 扫描线底纹
  * 三界通过 body.theme-<genre> 下的 --rpg-accent 区分主题色。
  * 保留并增强 daobanshenhua/zonghengtianxia/tianxiawushuang-style.css 里的 .rpg-* 基础类。
@@ -275,3 +275,13 @@ body.theme-tianxiawushuang { --rpg-accent: #d9a35e; --rpg-accent-2: #b87a30; --r
 }
 /* 兜底：任何情况下都不允许面板自身撑出横向滚动 */
 #rpgDrawer, .rpg-panel, .rpg-pane, .rpg-cards, .rpg-grid, .rpg-slots { min-width: 0; max-width: 100%; }
+
+/* v4.05.0：主线条件进度 / 队友名单（沿用主题变量，min-width:0 防横向溢出） */
+.rpg-conds { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; padding-top: 5px; border-top: 1px dashed var(--rpg-line2); }
+.rpg-cond { display: flex; align-items: center; gap: 6px; font-size: 10.5px; min-width: 0; }
+.rpg-cond > span { flex: 0 0 32px; color: var(--rpg-mt); }
+.rpg-cond > b { flex: 1 1 auto; min-width: 0; color: var(--rpg-tx); font-weight: 500; overflow-wrap: anywhere; }
+.rpg-cond > em { flex: 0 0 auto; font-style: normal; font-weight: 700; }
+.rpg-cond.ok > em { color: #8fd9a8; }
+.rpg-cond.no > em { color: #f0a0a8; }
+.rpg-mlist { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0; min-width: 0; }
