@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **75** 个版本，从 `v3.55.7` 到 `v4.04.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **76** 个版本，从 `v3.55.7` 到 `v4.05.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.05.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.05.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.05.0) |
 | **v4.04.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.04.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.04.0) |
 | **v4.03.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.03.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.03.0) |
 | **v4.02.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.02.0) |
@@ -89,6 +90,20 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.05.0 · 2026-11-07
+
+舆图细节化：新增悬停速览、8 类地标图例、道路主路/支路/小径三档分级、本层统计条、图廓刻度、详情别名与方位与古道里程；未到访标签对比度由 0.86 提到 0.96，解决深底图上地名发灰看不清；40 界 123 层逐层实测节点<10 层 0、压字 0、越界 0，375px 全界零横向溢出
+
+地理志回库：把地图结构写成舆图层志与区域详录条目，明确标注引擎整理口径非原著逐字，层名与区域名 100% 可检索；知识库 24604 增至 25045 条，常驻条目数不变，预置版本升到 v19 让老存档自动补入
+
+网游真实化：装备十槽全部可掉落可穿戴、强化成功率随强化等级递减、主线任务进度与竞技场胜场解耦、竞技场生成对手实体并记录连胜、组队公会宠物实体化、技能结算不再凭空产生金币，全部动作保持确定性并兼容老存档
+
+模型准入：严格只允许 agnes-3.0-flash、agnes-image-2.5-flash、agnes-video-2.5-flash 三个模型；校验脚本改枚举法，任何未登记 agnes 模型自动判违规；历史 tiny 档脚本留底禁用
+
+视觉：新增独立网游面板视觉增强皮肤，补质感与悬停按压反馈，尊重系统减少动效设置，不改布局尺寸
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.05.0)  [🔍 与 v4.04.0 差异](https://github.com/AYun07/yunjing/compare/v4.04.0...v4.05.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.05.0.zip)
 
 ## v4.04.0 · 2026-11-07
 

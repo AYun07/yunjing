@@ -21,7 +21,7 @@ button{padding:10px 22px;background:#e0a84c;color:#16181f;border:none;border-rad
 <button onclick="runAll()">▶ 运行全部检查</button>
 <div id="sum"></div><div id="out"></div>
 <script>
-const ENGINE_VER = '4.04.0';
+const ENGINE_VER = '4.05.0';
 const ENGINES = ['js/world-runtime.js','js/world-bus.js','js/module-forge.js','js/combat-core.js','js/rpg-core.js','js/quest-chain.js','js/world-stage.js','js/story-hooks.js','js/world-director.js','js/world-legacy.js','js/world-ext/world-ext-core.js','js/player-kit.js','js/knowledge-manager.js','js/kb-vector.js','js/st-import.js','js/store-guard.js','js/mobile-fit.js','js/id-migrate.js','js/preset-io.js','js/regex-io.js','js/ai-message-builder.js','js/ai-response-handler.js','js/opportunity-system.js','js/world-alive.js'];
 const GENRES = ["mystery","scifi","wuxia","cthulhu","free","swallowedstar","shrouding","quanzhigaoshou","doupocangqiong","wanmeishijie","douluodalu","daoguiyixian","zhongshengdushi","dibao","longzu","quanzhifashi","limingzhijian","lunhuileyuan","wulianfengdian","shengxu","shenmifusu","ditandali","fanrenxiuxian","xianni","earth","freeworld","quanqiubingfeng","chaoshenxueyuan","zhanhen","jianlai","guimi","guzhenren","xuanjianxianzu","dazhuzai","wudongqiankun","yuanzun","wanxiangzhiwang","daobanshenhua","zonghengtianxia","tianxiawushuang"];
 function item(cls, name, detail){ const d=document.getElementById('out'); d.insertAdjacentHTML('beforeend', `<div class="item ${cls}">${cls==='ok'?'✅':cls==='fail'?'❌':'⚠️'} <b>${name}</b> — ${detail}</div>`); return cls==='ok'?1:cls==='fail'?0:1; }
@@ -49,12 +49,12 @@ async function runAll(){
     for(const n of need){ try{ const r=await fetch(n+'?t='+Date.now()); if(!r.ok) miss.push(n); }catch(e){ miss.push(n); } }
     total++; pass+=miss.length?item('fail','资源四件套 '+g,'缺 '+miss.join(',')):item('ok','资源四件套 '+g,'config/ext/css 齐全');
   }
-  // ②b v4.04.0 共用资源：网游多标签皮肤 + 两张舆图纹章（Agnes 免费生图素材）
+  // ②b v4.05.0 共用资源：网游多标签皮肤 + 视觉增强皮肤 + 两张舆图纹章（Agnes 免费生图素材）
   {
-    const need=['css/rpg-suite.css','assets/atlas/compass-rose.png','assets/atlas/rpg-hud-crest.png'];
+    const need=['css/rpg-suite.css','css/rpg-polish-405.css','assets/atlas/compass-rose.png','assets/atlas/rpg-hud-crest.png'];
     let miss=[];
     for(const n of need){ try{ const r=await fetch(n+'?t='+Date.now()); if(!r.ok) miss.push(n); }catch(e){ miss.push(n); } }
-    total++; pass+=miss.length?item('fail','v4.04.0 共用资源','缺 '+miss.join(',')):item('ok','v4.04.0 共用资源','皮肤 + 两张舆图纹章齐全');
+    total++; pass+=miss.length?item('fail','v4.05.0 共用资源','缺 '+miss.join(',')):item('ok','v4.05.0 共用资源','皮肤 + 视觉增强 + 两张舆图纹章齐全');
   }
   // ③ 引擎阵容注册
   const c=await getText('js/combat-core.js');

@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.04.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.05.0">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.05.0</span>
+                <span class="entry-date">2026-11-07</span>
+            </div>
+            <h3 class="entry-title">全40界舆图细节化 · 网游真实逻辑 · 模型白名单收敛</h3>
+            <p class="entry-text">舆图细节化：新增悬停速览、8 类地标图例、道路主路/支路/小径三档分级、本层统计条、图廓刻度、详情别名与方位与古道里程；未到访标签对比度由 0.86 提到 0.96，解决深底图上地名发灰看不清；40 界 123 层逐层实测节点&lt;10 层 0、压字 0、越界 0，375px 全界零横向溢出 地理志回库：把地图结构写成舆图层志与区域详录条目，明确标注引擎整理口径非原著逐字，层名与区域名 100% 可检索；知识库 24604 增至 25045 条，常驻条目数不变，预置版本升到 v19 让老存档自动补入 网游真实化：装备十槽全部可掉落可穿戴、强化成功率随强化等级递减、主线任务进度与竞技场胜场解耦、竞技场生成对手实体并记录连胜、组队公会宠物实体化、技能结算不再凭空产生金币，全部动作保持确定性并兼容老存档 模型准入：严格只允许 agnes-3.0-flash、agnes-image-2.5-flash、agnes-video-2.5-flash 三个模型；校验脚本改枚举法，任何未登记 agnes 模型自动判违规；历史 tiny 档脚本留底禁用 视觉：新增独立网游面板视觉增强皮肤，补质感与悬停按压反馈，尊重系统减少动效设置，不改布局尺寸</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -371,7 +380,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.04.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.05.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">

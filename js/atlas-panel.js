@@ -13106,13 +13106,16 @@
       const fs = n._fs || (isCur || isStd ? 2.75 : (n.supp ? 1.85 : 2.2));
       const c = (lp && lp !== false) ? lp : { dx: n.x <= 72 ? 4.4 : -4.4, dy: 0.85, anchor: n.x <= 72 ? "start" : "end" };
       const lx = c.dx, ly = c.dy, anchor = c.anchor;
-      const lf = fallen ? hexA(P.muted, 0.9) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.text, 0.86);
+      /* v4.05.0 细节化：未到访／补录标签此前用 0.86 透明度，星海等深底图上几乎看不清，
+         这是「很多地方没显示」的观感根因之一。提到 0.96 并加深 pill 底衬；
+         字号与 layoutLabels 判定一概不动，故不会新增压字或越界。 */
+      const lf = fallen ? hexA(P.muted, 0.9) : isCur ? P.primary : isStd ? P.accent : visited ? P.text : hexA(P.text, 0.96);
       const lname = fallen ? `${n.n}（已覆灭）` : n.n;
       const tw = labelWidth(lname, fs), th = fs * 1.44;
       const bx = anchor === "start" ? lx - 0.8 : anchor === "end" ? lx - tw + 0.8 : lx - tw / 2;
       const by = ly - fs * 0.94;
-      const bdr = fallen ? hexA(P.muted, 0.42) : isCur ? hexA(P.primary, 0.9) : isStd ? hexA(P.accent, 0.75) : hexA(P.primary, 0.22);
-      const bgc = isCur ? hexA(P.deep, 0.96) : hexA(P.deep, 0.88);
+      const bdr = fallen ? hexA(P.muted, 0.42) : isCur ? hexA(P.primary, 0.9) : isStd ? hexA(P.accent, 0.75) : hexA(P.primary, 0.34);
+      const bgc = isCur ? hexA(P.deep, 0.96) : hexA(P.deep, 0.94);
       /* 引线：候选位被挤到 5.4 单位外时，用一条细虚线把名字接回地标，
          否则密集区会出现「名字悬空、不知指谁」的错觉。 */
       const far = Math.abs(c.dx) > 5.4 || Math.abs(c.dy) > 3.4;
@@ -13163,6 +13166,8 @@
     layerNodes.forEach((n) => byId[n.id] = n);
     const cur = resolveCurrent();
     let roads = "";
+    /* v4.05.0 道路分级：主路（两端皆主地标）／支路／小径（含补录点或长距）三档，
+       线宽、虚线、辉光各异，图例同步列出三档，不再所有道路一个样。 */
     (layer.roads || []).forEach(([a, b]) => {
       const A = byId[a], B = byId[b];
       if (!A || !B) return;
@@ -13172,8 +13177,16 @@
       const cx2 = mx - dy / len * off, cy2 = my + dx / len * off;
       const both = visitedIds.includes(a) && visitedIds.includes(b);
       const seg = `M${A.x},${A.y} Q${cx2.toFixed(1)},${cy2.toFixed(1)} ${B.x},${B.y}`;
-      roads += `<path d="${seg}" fill="none" stroke="${hexA(P.deep, 0.55)}" stroke-width="${both ? 1.15 : 0.85}" stroke-linecap="round"/>`;
-      roads += `<path d="${seg}" fill="none" stroke="${hexA(P.primary, both ? 0.72 : 0.22)}" stroke-width="${both ? 0.5 : 0.3}" stroke-dasharray="${both ? "2.4 1.3" : ".8 1.5"}" stroke-linecap="round"${both ? ' class="atlas-dash" filter="url(#agGlow)"' : ""}/>`;
+      const major = (n) => n && !n.supp && ["city", "start", "sect", "arena", "relic"].indexOf(n.t) >= 0;
+      let tier = major(A) && major(B) ? "main" : ((A.supp || B.supp) ? "trail" : "branch");
+      if (len > 42) tier = "trail";
+      const sw = tier === "main" ? 1.25 : (tier === "branch" ? 0.9 : 0.62);
+      const lit = both ? (tier === "main" ? 0.8 : 0.62) : (tier === "trail" ? 0.14 : 0.24);
+      const dash = both ? (tier === "main" ? "2.6 1.2" : "1.8 1.4") : (tier === "trail" ? ".5 1.8" : ".8 1.5");
+      roads += `<g class="atlas-road atlas-road-${tier}" data-road-tier="${tier}">`;
+      roads += `<path d="${seg}" fill="none" stroke="${hexA(P.deep, 0.55)}" stroke-width="${(sw + 0.3).toFixed(2)}" stroke-linecap="round"/>`;
+      roads += `<path d="${seg}" fill="none" stroke="${hexA(P.primary, lit)}" stroke-width="${(sw * 0.45).toFixed(2)}" stroke-dasharray="${dash}" stroke-linecap="round"${(both && tier === "main") ? ' class="atlas-dash" filter="url(#agGlow)"' : ""}/>`;
+      roads += `</g>`;
     });
     let tethers = "";
     (state.dyn || []).filter((d) => d.layerId === layer.id).forEach((d) => {
@@ -13440,6 +13453,20 @@
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" filter="url(#agPaper)" opacity=".22" pointer-events="none" class="atlas-soft"/>
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agGrain)" opacity=".55" pointer-events="none"/>
             ${grid}
+            ${(() => {
+              /* v4.05.0 图廓刻度：四边每 10 单位一枚短刻线（每 20 单位加长），只画线不写数字，
+                 补足古地图边框细节，又不与地名争位置、不参与标签避让判定。 */
+              let t = "";
+              for (let v = 10; v <= 90; v += 10) {
+                const big = v % 20 === 0, L = big ? 1.5 : 0.85;
+                const c = hexA(P.primary, big ? 0.5 : 0.28), w = ".16";
+                t += `<line x1="${v}" y1=".6" x2="${v}" y2="${(.6 + L).toFixed(2)}" class="atlas-tick" stroke="${c}" stroke-width="${w}"/>`;
+                t += `<line x1="${v}" y1="99.4" x2="${v}" y2="${(99.4 - L).toFixed(2)}" class="atlas-tick" stroke="${c}" stroke-width="${w}"/>`;
+                t += `<line x1=".6" y1="${v}" x2="${(.6 + L).toFixed(2)}" y2="${v}" class="atlas-tick" stroke="${c}" stroke-width="${w}"/>`;
+                t += `<line x1="99.4" y1="${v}" x2="${(99.4 - L).toFixed(2)}" y2="${v}" class="atlas-tick" stroke="${c}" stroke-width="${w}"/>`;
+              }
+              return `<g class="atlas-ticks" pointer-events="none">${t}</g>`;
+            })()}
             ${regions}
             ${roads}
             ${tethers}
@@ -13502,7 +13529,10 @@
     const routes = (layer.roads || []).filter((r) => r.includes(node.id)).map((r) => {
       const other = r[0] === node.id ? r[1] : r[0];
       const n2 = layer.nodes.find((x) => x.id === other);
-      return n2 ? escA(n2.n) : "";
+      if (!n2) return "";
+      /* v4.05.0 古道里程：按图面坐标换算成可读距离，不再是干巴巴一串地名 */
+      const km = Math.max(1, Math.round(Math.hypot((Number(n2.x) || 0) - (Number(node.x) || 0), (Number(n2.y) || 0) - (Number(node.y) || 0)) * (layer.geo === "world" ? 20 : 0.2)));
+      return escA(n2.n) + "（约 " + km + (layer.geo === "world" ? " 公里" : " 里") + "）";
     }).filter(Boolean);
     return `
         <div class="atlas-detail">
@@ -13511,6 +13541,8 @@
                 <div class="ad-badges">${badge}<span class="ab">${typeTxt(node.t)}</span><span class="ab">${escA(node.rg)}</span></div>
             </div>
             <div class="ad-row"><span>危险度</span><span class="ad-v">${dangerStars(node.d, P)}</span></div>
+            ${(node.aliases && node.aliases.length > 1) ? `<div class="ad-alias">亦作 · ${node.aliases.slice(1).map((x) => escA(x)).join(" / ")}</div>` : ""}
+            <div class="ad-row"><span>图内方位</span><span class="ad-v">X ${Number(node.x || 0).toFixed(1)} · Y ${Number(node.y || 0).toFixed(1)}　${escA(node.rg || "")}</span></div>
             ${facRow}
             <div class="ad-desc">${node.dyn && !node.src ? isTraceMode() ? `此处不在预置舆图之上——第 ${escA(node.round)} 回合你的行踪落在「${escA(node.raw)}」，行旅图鉴随行迹落笔生成此地，坐落于「${escA(node.anchorN)}」一带。` : `此处不在原著舆图之上——第 ${escA(node.round)} 回合你的行踪落在「${escA(node.raw)}」，行旅图鉴随剧情落笔生成此地，坐落于「${escA(node.anchorN)}」一带。` : escA(node.desc || "")}</div>
             ${node.dyn && node.src === "wb" ? `<div class="ad-canon" style="border-left-color:${hexA(P.accent, 0.6)};">📚 资料库地标 · 来自本界资料库的地理条目，随资料库增补自动上图</div>` : ""}
@@ -13561,6 +13593,20 @@
                 <div class="ap-bar"><div class="ap-fill" style="width:${pct}%;background:linear-gradient(90deg,${hexA(P.primary, 0.45)},${P.primary});box-shadow:0 0 8px ${hexA(P.primary, 0.55)};"></div></div>
                 <div class="ap-now">${cur ? cur.standby ? `整装待发 · 起点「${escA(cur.node.n)}」——开篇后 AI 上报行踪，足迹自动点亮` : `此刻 · ${escA(cur.node.n)}${cur.node.dyn ? '<span style="color:' + P.accent + ';">（' + (isTraceMode() ? "行迹" : "剧情") + "地标）</span>" : ""}` : "尚无位置记录"}</div>
             </div>
+            ${(() => {
+              /* v4.05.0 本层统计：地图上面一眼看清这一层有多少地标／到访／险地／疆域／道路，
+                 以及用的是哪种底图与时代，切层时数字随之变化。 */
+              const ln = layer.nodes.concat((state.dyn || []).filter((d) => d.layerId === layer.id));
+              const vis = ln.filter((n) => state.visits.some((v) => v.id === n.id)).length;
+              const danger = ln.filter((n) => (Number(n.d) || 0) >= 4).length;
+              const rg = (layer.regions || []).length, rd = (layer.roads || []).length;
+              const tr = { land: "山河", city: "城域", cosmos: "星海" }[layer.decor] || "山河";
+              return `<div class="atlas-layerstat">
+                <span><b>${ln.length}</b> 处地标</span><span><b>${vis}</b> 已到访</span>
+                <span><b>${danger}</b> 处险地</span><span><b>${rg}</b> 片疆域</span>
+                <span><b>${rd}</b> 条道路</span><span class="als-kind">${tr}底图${layer.era ? " · " + escA(layer.era) : ""}</span>
+              </div>`;
+            })()}
             <div class="atlas-map" style="border-color:${hexA(P.primary, 0.3)};">${layerSvg(layer)}</div>
             <div class="atlas-layhint" style="color:${P.muted};">${escA(layer.hint || "")}</div>
             <div id="atlasDetail"></div>
@@ -13590,13 +13636,49 @@
                 <span style="color:${P.accent};">✦ ${isTraceMode() ? "行迹" : "剧情"}地标</span>
                 ${Object.values(state.factionState || {}).some((x) => x && x.status === "destroyed") ? `<span style="color:#d08a8a;">✕ 已覆灭势力（灰·划线）</span>` : ""}
                 <span class="lg-road" style="border-color:${hexA(P.primary, 0.55)};"></span>
-                <span class="lg-hint">点击地点看详情</span>
+                <span class="lg-hint">悬停看速览 · 点击看详录</span>
+            </div>
+            <div class="atlas-typelegend">
+                <span class="atl-title">地标图例</span>
+                ${Object.keys(MINI_GLYPH).map((t) => `<span class="atl-item" data-type="${t}"><svg viewBox="-3.2 -3.2 6.4 6.4" width="15" height="15" aria-hidden="true">${(MINI_GLYPH[t] || "").replace(/SC/g, P.primary)}</svg>${typeTxt(t)}</span>`).join("")}
+                <span class="atl-road"><i class="atl-r main"></i>主路</span>
+                <span class="atl-road"><i class="atl-r branch"></i>支路</span>
+                <span class="atl-road"><i class="atl-r trail"></i>小径</span>
             </div>
         </div>`;
+    /* v4.05.0 悬停速览：悬停即浮出「名称／类型／危险／状态／区域」，不必点开详情。
+       提示层挂在 body 上——面板自身有 transform，fixed 若置于面板内会被当成包含块而错位。 */
+    let tip = $("atlasTip");
+    if (!tip) {
+      tip = document.createElement("div");
+      tip.id = "atlasTip"; tip.className = "atlas-tip";
+      tip.setAttribute("role", "tooltip"); tip.setAttribute("aria-hidden", "true");
+      document.body.appendChild(tip);
+    }
+    const tipShow = (node, ev) => {
+      if (!tip || !node) return;
+      const st = state.visits.some((v) => v.id === node.id);
+      const isCur = state.currentId === node.id;
+      const ds = "◆".repeat(Math.max(1, Math.min(5, Number(node.d) || 1)));
+      tip.innerHTML = `<b style="color:${P.primary};">${escA(node.n)}</b>`
+        + `<span>${typeTxt(node.t)} · ${escA(node.rg || "")}</span>`
+        + `<span>危险 ${ds}　${isCur ? "◈ 当前位置" : (st ? "已到访" : "未涉足")}</span>`
+        + (node.supp ? `<span class="atip-s">类型地标 · 补录</span>` : "");
+      tip.classList.add("on"); tip.setAttribute("aria-hidden", "false");
+      const w = tip.offsetWidth || 200, h = tip.offsetHeight || 80;
+      tip.style.left = Math.min(Math.max(8, ev.clientX + 14), Math.max(8, window.innerWidth - w - 8)) + "px";
+      tip.style.top = Math.min(Math.max(8, ev.clientY + 14), Math.max(8, window.innerHeight - h - 8)) + "px";
+    };
+    const tipHide = () => { if (tip) { tip.classList.remove("on"); tip.setAttribute("aria-hidden", "true"); } };
+    tipHide();
     wrap.querySelectorAll(".atlas-node").forEach((el) => {
+      const node = allNodes(genre).find((n) => n.id === el.getAttribute("data-node"));
+      el.addEventListener("mouseenter", (ev) => tipShow(node, ev));
+      el.addEventListener("mousemove", (ev) => tipShow(node, ev));
+      el.addEventListener("mouseleave", tipHide);
       el.addEventListener("click", () => {
-        const node = allNodes(genre).find((n) => n.id === el.getAttribute("data-node"));
         if (!node) return;
+        tipHide();
         const ln = g.layers.find((l) => l.id === node.layerId);
         const box = $("atlasDetail");
         if (box) box.innerHTML = detailHtml(node, ln || layer, P);
@@ -14016,6 +14098,35 @@
         .atlas-storm .as-row i{font-style:normal;font-size:10px;border:1px solid rgba(200,170,110,.3);border-radius:99px;padding:0 6px;color:var(--accent,#8ab0c8);white-space:nowrap;}
         .atlas-storm .as-tr{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.65;font-size:10.5px;}
         @media (max-width:560px){#atlasPanel{width:100vw;}.atlas-svg{max-height:47vh;min-height:280px;}.atlas-map{min-height:280px;}}
+        /* ===== v4.05.0 舆图细节化：悬停速览 / 层统计 / 八类图例 / 道路分级 / 详情增补 ===== */
+        .atlas-tip{position:fixed;z-index:9200;max-width:230px;pointer-events:none;opacity:0;visibility:hidden;
+            transform:translateY(4px);transition:opacity .14s,transform .14s;
+            background:linear-gradient(150deg,rgba(14,17,26,.97),rgba(8,10,16,.97));
+            border:1px solid color-mix(in srgb,var(--primary,#c9a86a) 52%,transparent);
+            border-radius:10px;padding:8px 11px;box-shadow:0 8px 26px rgba(0,0,0,.5);
+            font-size:11px;line-height:1.7;color:var(--text,#e8e4d8);letter-spacing:.4px;}
+        .atlas-tip.on{opacity:1;visibility:visible;transform:translateY(0);}
+        .atlas-tip b{display:block;font-size:13px;letter-spacing:1.6px;font-family:'Noto Serif SC',serif;margin-bottom:2px;}
+        .atlas-tip span{display:block;color:var(--text-muted,#a8a290);}
+        .atlas-tip .atip-s{color:var(--accent,#8ab0c8);font-size:10px;}
+        .atlas-layerstat{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:0 0 8px;
+            font-size:10.5px;color:var(--text-muted,#a8a290);letter-spacing:.4px;}
+        .atlas-layerstat span{padding:2px 9px;border-radius:99px;border:1px solid color-mix(in srgb,var(--primary,#c9a86a) 22%,transparent);background:rgba(127,127,127,.06);}
+        .atlas-layerstat b{color:var(--primary,#c9a86a);font-size:12px;font-variant-numeric:tabular-nums;}
+        .atlas-layerstat .als-kind{color:var(--accent,#8ab0c8);}
+        .atlas-typelegend{display:flex;gap:8px 11px;flex-wrap:wrap;align-items:center;margin-top:8px;padding-top:8px;
+            border-top:1px dashed color-mix(in srgb,var(--primary,#c9a86a) 20%,transparent);
+            font-size:10.5px;color:var(--text-muted,#a8a290);}
+        .atl-title{letter-spacing:1.6px;color:var(--primary,#c9a86a);font-weight:700;}
+        .atl-item,.atl-road{display:flex;align-items:center;gap:4px;}
+        .atl-item svg{flex:none;opacity:.9;}
+        .atl-r{display:inline-block;width:17px;height:0;border-top:2px solid var(--primary,#c9a86a);}
+        .atl-r.branch{border-top-width:1.4px;border-top-style:dashed;opacity:.75;}
+        .atl-r.trail{border-top-width:1px;border-top-style:dotted;opacity:.55;}
+        .atlas-road-main{opacity:1;}.atlas-road-branch{opacity:.9;}.atlas-road-trail{opacity:.72;}
+        .ad-alias{font-size:11px;color:var(--accent,#8ab0c8);letter-spacing:.6px;margin:-3px 0 8px;}
+        .ad-km{font-style:normal;opacity:.66;font-size:10px;}
+        @media (max-width:560px){.atlas-tip{max-width:180px;font-size:10px;}.atlas-typelegend{gap:6px 8px;}.atlas-layerstat{gap:5px;}}
         `;
     document.head.appendChild(st);
   }

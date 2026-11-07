@@ -6,8 +6,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REPO = 'AYun07/yunjing';
-const curVer = "4.03.0";
-const nextVer = process.argv[2] || "4.04.0";
+const curVer = "4.04.0";
+const nextVer = process.argv[2] || "4.05.0";
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const write = (p, s) => fs.writeFileSync(path.join(ROOT, p), s);
 const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);

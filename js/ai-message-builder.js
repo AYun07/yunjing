@@ -435,7 +435,7 @@ ${rvn.map((x) => `· ${x}`).join("\n")}`);
   const _gKey = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey) || '';
   const rpgMode = ['daobanshenhua', 'zonghengtianxia', 'tianxiawushuang'].indexOf(_gKey) >= 0;
   const fmtVarLine = rpgMode
-    ? `2) 本界为数据流网游：正文可写少量与【网游角色面板】快照一致的数字（等级、伤害、耗蓝、掉落品级），并可在 (variable_update) 块里写 >>网游面板.exp: +120 一类结算行；严禁整段罗列属性面板、六维清单或自行编造与快照不符的数字；`
+    ? `2) 本界为数据流网游：正文可写少量与【网游角色面板】快照一致的数字（玩家等级、伤害、耗蓝、掉落品级），野怪与对手不得写具体等级或 HP 数字，并可在 (variable_update) 块里写 >>网游面板.exp: +120 一类结算行；严禁整段罗列属性面板、六维清单或自行编造与快照不符的数字；`
     : (vaOn
       ? `2) 严禁输出任何变量更新块、状态指令或数值面板——状态登记由独立系统完成；`
       : `2) 变量更新块（(variable_update)…(/variable_update)）与此前楼层格式完全一致，标签成对闭合；`);
