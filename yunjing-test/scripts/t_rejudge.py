@@ -21,7 +21,7 @@ TP = {}
 exec(head, TP)
 judge = TP["judge"]
 
-TARGET_GENRES = ["free", "guzhenren", "longzu", "quanzhifashi", "wudongqiankun", "wangyou", "scifi", "freeworld"]
+TARGET_GENRES = ["free", "guzhenren", "longzu", "quanzhifashi", "wudongqiankun", "wangyou", "scifi", "freeworld", "wuxia", "xuanjianxianzu"]
 
 COLLECT_JS = """(g)=>{
   const out={places:[],factions:[],items:[],chars:[]};

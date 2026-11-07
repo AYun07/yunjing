@@ -78,30 +78,35 @@ async def main():
         print("接取：", (info.get("accept") or "")[:130])
         print("Lv.%s 经验 %s 金币 %s ｜在手委托 %s" % (info["lv"], info["exp"], info["gold"], info["active"]))
 
-        # 打开 RPG 面板并切到角色页
+        # 打开 RPG 抽屉（RPG 面板挂在独立的 #rpgDrawer 里，不在 #immBody）
         await pg.evaluate("""()=>{
-          try{ if(window.ImmersiveSuite) ImmersiveSuite.openTab('ext'); }catch(e){}
-          const body=document.getElementById('immBody');
-          if(body){ body.dataset.wxTab='1'; body.innerHTML=window.WorldExt.panelHTML?String(window.WorldExt.panelHTML()||''):''; }
+          try{ const fab=document.getElementById('rpgFab'); if(fab) fab.click(); }catch(e){}
+        }""")
+        await pg.wait_for_timeout(1400)
+
+        # 角色页
+        await pg.evaluate("""()=>{
           const tabs=document.querySelectorAll('.rpg-tab');
           if(tabs[0]) tabs[0].click();
         }""")
         await pg.wait_for_timeout(1200)
-        el = await pg.query_selector("#immBody")
+        el = await pg.query_selector("#rpgDrawer .rpg-panel")
+        if not el:
+            el = await pg.query_selector("#rpgDrawer")
         if el:
-            await el.screenshot(path=f"{OUT}/角色面板-战斗结算日志.png")
-            print("  截图 角色面板-战斗结算日志.png")
+            await el.screenshot(path=f"{OUT}/角色面板-等级经验与练级目标.png")
+            print("  截图 角色面板-等级经验与练级目标.png")
 
-        # 委托面板
+        # 战斗页 → 结算日志（D-32 冷却自走 / D-33 野怪不带等级 / D-34 委托进度可见）
         await pg.evaluate("""()=>{
           const tabs=document.querySelectorAll('.rpg-tab');
-          for(const t of tabs){ if((t.innerText||'').includes('委托')){ t.click(); return; } }
+          for(const t of tabs){ const x=(t.innerText||''); if(x.includes('战斗')){ t.click(); return; } }
         }""")
         await pg.wait_for_timeout(1200)
-        el = await pg.query_selector("#immBody")
+        el = await pg.query_selector("#rpgDrawer .rpg-panel")
         if el:
-            await el.screenshot(path=f"{OUT}/委托板-完成后方可得.png")
-            print("  截图 委托板-完成后方可得.png")
+            await el.screenshot(path=f"{OUT}/战斗日志-结算语义与冷却推进.png")
+            print("  截图 战斗日志-结算语义与冷却推进.png")
 
         # 技能面板
         await pg.evaluate("""()=>{
@@ -109,10 +114,21 @@ async def main():
           for(const t of tabs){ if((t.innerText||'').includes('技能')){ t.click(); return; } }
         }""")
         await pg.wait_for_timeout(1000)
-        el = await pg.query_selector("#immBody")
+        el = await pg.query_selector("#rpgDrawer .rpg-panel")
         if el:
             await el.screenshot(path=f"{OUT}/技能面板-冷却可推进.png")
             print("  截图 技能面板-冷却可推进.png")
+
+        # 任务页 → 主线与沙盒双轨路线
+        await pg.evaluate("""()=>{
+          const tabs=document.querySelectorAll('.rpg-tab');
+          for(const t of tabs){ const x=(t.innerText||''); if(x.includes('任务')){ t.click(); return; } }
+        }""")
+        await pg.wait_for_timeout(1100)
+        el = await pg.query_selector("#rpgDrawer .rpg-panel")
+        if el:
+            await el.screenshot(path=f"{OUT}/主线与沙盒-双轨路线.png")
+            print("  截图 主线与沙盒-双轨路线.png")
 
         # 舆图
         await pg.evaluate("()=>{try{StoryAtlas.toggle(false)}catch(e){};try{StoryAtlas.toggle(true)}catch(e){}}")
