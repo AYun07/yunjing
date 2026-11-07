@@ -68,3 +68,12 @@
   var add = [{"title":"daoguiyixian·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《道诡异仙 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「现代世界」：白塔医院、康宁医院、杨娜的出租屋、派出所。\n第2层「大傩世界」：清风观、牛心村、白家祠堂、恒华山·安慈庵、正德寺、大梁京城、酆都、白玉京。\n【别名】白塔、医院、十三号病房、精神病房、康宁、杨娜家、出租屋、警局、清风、道观、白家村、村子、祠堂、白家、安慈庵、恒华山、正德、大梁、京城、鬼城、黑暗洞窟、白玉京、司命天庭。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","daoguiyixian"],"alwaysInclude":false,"priority":""}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["daoguiyixian"] || (KB["daoguiyixian"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"daoguiyixian·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：旧档案室、旧钟楼、雾巷、码头仓库、停尸间、旧宅、地下室、电话亭、雨棚、报馆、当铺、旧戏院。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

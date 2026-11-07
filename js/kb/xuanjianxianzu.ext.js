@@ -67,3 +67,12 @@
   var add = [{"title":"玄鉴仙族·专名铁律补遗（地理、家族与境界）","content":"【地理】江东：本界地域称谓，用于标注族地所在方位，不是某个具体城镇名。\n【家族】李氏家族：本界核心家族，写法固定；与「李家」可作简称，但不得写成其他姓氏的家族，也不得把「李氏家族」当成一处地名。\n【境界】胎息（玄景/承明/周行/青元/玉京/灵初六轮）：本界胎息境的六轮划分，六轮名目固定且按序，不得增删、调序或自造第七轮；写境界时须保留「胎息」主名，不得只写轮名而丢掉主境界，也不得与其他界的胎息境混用。\n【口径】本条只锁定名目写法与序列归属；家族世系与剧情以本界既有条目为准。","category":"专名核对","tags":["专名","防幻觉","核对","xuanjianxianzu"],"alwaysInclude":false,"priority":""}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["xuanjianxianzu"] || (KB["xuanjianxianzu"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"xuanjianxianzu·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门、客栈、渡口、集市、驿站、医馆、书斋、祠堂、茶寮、铁匠铺、药圃、观星台、古道、义庄、镖局、酒肆、琴院、棋亭。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

@@ -77,3 +77,12 @@
   var add = [{"title":"全职高手·专名铁律补遗（俱乐部与技能名）","content":"【俱乐部】三零一度俱乐部、义斩俱乐部、皇风俱乐部：均为荣耀联盟职业俱乐部，「三零一度」是数字写法，「义斩」「皇风」是俱乐部名，不得改成「301度」「义斩战队」「皇风战队」以外的自造简称，也不得与嘉世、霸图、蓝雨、轮回、雷霆、虚空、烟雨、百花、呼啸等其他俱乐部混同。\n【技能】三段斩、拔刀斩：荣耀游戏中的技能名，属剑士系/剑客系的招式，写法固定，不得写成「三连斩」「拔刀术」等自造名，也不得当作装备或副本名。\n【境界/荣誉】荣耀之巅：本界对最高竞技水准的称谓，用于形容顶尖对决与荣誉，不是等级数值、不是装备品级、不是某个副本名。\n【口径】俱乐部、账号、技能三者不可互换；本条只锁定名目写法。","category":"专名核对","tags":["专名","防幻觉","核对","quanzhigaoshou"],"alwaysInclude":false,"priority":""}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["quanzhigaoshou"] || (KB["quanzhigaoshou"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"quanzhigaoshou·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：训练室、网吧包厢、俱乐部基地、赛场后台、数据机房、战术室、队员宿舍、粉丝看台、转播车、赞助商展台、青训营、直播间、休息区、器材室、战术白板、医疗室、荣誉墙、签售区。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

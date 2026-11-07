@@ -67,3 +67,12 @@
   var add = [{"title":"蛊真人·专名铁律补遗（防串名）","content":"【人物】花酒和尚：本界人物，写法以此为准；气绝魔仙：本界魔道尊者名号，勿与「尊者」「蛊仙」等泛称混用为同一人。\n【地点】天外天：本界地名，用于标注该处场景，勿与其他界的同名/近名境界混为一谈。\n【阵营】正道阵营、魔道阵营：本界两大对立阵营的统称，属阵营标签而非某个具体宗门；写人物立场时用这两个词，不得另造一个「第三阵营」顶替，也不得把具体家族直接等同于整条阵营。\n【口径】本条只锁定名目写法与阵营归属；蛊、蛊仙体系与具体人物经历以本界既有条目为准。","category":"专名核对","tags":["专名","防幻觉","核对","guzhenren"],"alwaysInclude":false,"priority":""}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["guzhenren"] || (KB["guzhenren"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"guzhenren·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门、客栈、渡口、集市、驿站、医馆、书斋、演武场、祠堂、茶寮、铁匠铺、药圃、藏经阁、观星台、古道、义庄、镖局、酒肆。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

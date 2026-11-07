@@ -83,3 +83,12 @@
   var e = {"title":"free·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《自由创作 · 山河行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「山野与书院」：云隐村、落霞渡、青石镇、听雨楼、无相寺、百草谷、旧驿道、观星台、龙脊墟、镜湖、断剑冢、万卷阁。\n第2层「城邑与市井」：药王坡、黑水泽、松风渡、砚山、鹤鸣谷、旧剑铺、雾隐潭、白石桥、望月楼、古战场残垒、藏书洞、听松阁。\n第3层「秘境与遗迹」：石阶渡、野茶棚、旧窑址、鹿鸣坡、云梯崖、纸伞巷、药市、星落湖、断碑亭、藤桥、道士庐。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","free"],"alwaysInclude":false,"priority":""};
   if (hit) { hit.content = e.content; hit.category = e.category; hit.tags = e.tags; } else { a.push(e); }
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["free"] || (KB["free"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"free·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

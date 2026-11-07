@@ -68,3 +68,12 @@
   var add = [{"title":"shrouding·舆图地名索引（行旅图鉴全地标）","content":"【本界行旅图鉴全地标】下列地名是《遮天 · 行旅图鉴》中可落脚、可标注、可上报行踪的地标，按舆图层级列出：\n第1层「地球 · 起点」：泰山之巅、青铜古棺。\n第2层「东荒 · 五域」：燕国、灵墟洞天、太玄门、摇光圣地、姬家、姜家、北域古矿、西漠佛国、南岭妖域、中州、星空古路。\n第3层「星空 · 仙路」：星空第一城、荧惑古星、紫微古星、成仙路、仙域。\n【别名】九龙拉棺、古棺、铜棺、灵墟、灵虚洞天、太玄、摇光、姬家祖地、北域、古矿、西漠、南岭、古路、第一城、荧惑、紫微、仙路。\n【使用口径】正文写到上述地标时须沿用此处写法；细节以本界知识库既有条目与 ATLAS_SUPPLEMENT 补录为准，不得替同一地名另造一套相互矛盾的设定。\n【性质说明】通用场景型地名（如驿站、街区、渡口一类）为行旅图鉴的落位标签，不是原著专有名词；原著专名请对照本界知识库与专名铁律表。","category":"舆图索引","tags":["舆图","地标","索引","shrouding"],"alwaysInclude":false,"priority":""}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
+
+/* v4.04.0 类型地标补录索引：让补录地名在知识库内可检索 */
+(function(){
+  var KB = window.KB_PRESETS || {};
+  var a = KB["shrouding"] || (KB["shrouding"] = []);
+  var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
+  var add = [{"title":"shrouding·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门、客栈、渡口、集市、驿站、医馆、书斋、演武场、祠堂、茶寮、铁匠铺、药圃、藏经阁、观星台、古道、义庄、镖局、酒肆。","alwaysInclude":false}];
+  add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
+})();

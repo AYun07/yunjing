@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **74** 个版本，从 `v3.55.7` 到 `v4.03.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **75** 个版本，从 `v3.55.7` 到 `v4.04.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.04.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.04.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.04.0) |
 | **v4.03.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.03.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.03.0) |
 | **v4.02.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.02.0) |
 | **v4.01.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.01.0) |
@@ -88,6 +89,24 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.04.0 · 2026-11-07
+
+全 40 界舆图美化：根治「很多地方没显示」——未到访节点不再套 agFog 高斯模糊与 opacity 0.58，浏览器逐层实测 40 界 123 层共 2622 节点全部清晰可见；补录地标由 scale(0.62) 小菱形升级为 8 类可辨迷你图标，标签常显比例由 1/3 提到 1/2；清理 14 条带 / 的合并地名（拆为主名 + aliases）
+
+两张舆图纹章由 agnes-image-2.5-flash（免费档）生成并接入面板，网游三界用赛博罗盘、其余界用羊皮纸罗盘，已加入离线预缓存
+
+三个网游界舆图每层补到 12 个正式节点，含明确标注「引擎口径、非原著逐字地名」的传送阵/拍卖行/铁匠铺/公会大厅/竞技场/副本入口等真实网游功能地标
+
+为 32 界补类型通用地标补录并同步写知识库索引条目，123 层节点全部 >=10；图廓标题与比例尺加入标签避让障碍，区域名牌同步避让，逐层体检标签压字 0 / 越界 0 / 无 pageerror
+
+网游三部曲重写数值面板：新增买药/卖装/传送/强化/宠物坐骑/组队公会/竞技场 PK/Buff/任务与成就领取等 14 个动作，七标签（角色/背包/技能/任务/地图/社交/战斗）多标签 UI 与四态完备，三界主题色各异，375px 无横向溢出；数值引擎保持确定性
+
+建立 yunjing-test/MODEL_WHITELIST.md 与可失败校验脚本：只准 agnes-3.0-flash / agnes-image-2.5-flash / agnes-video-2.5-flash 三个免费档，所有 pro 收费模型调用数为 0，并发=1 且间隔>=2s；禁用历史含收费模型的评估脚本
+
+selftest 71→72 全通过，全量 JS 语法 0 失败，网游引擎单测 84/84、浏览器 48/48
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.04.0)  [🔍 与 v4.03.0 差异](https://github.com/AYun07/yunjing/compare/v4.03.0...v4.04.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.04.0.zip)
 
 ## v4.03.0 · 2026-11-07
 
@@ -345,7 +364,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
 
-图标全部替换为云境自有 assets/yj-*，删除墨枢遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
 
 一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
 
@@ -501,7 +520,7 @@ v3.88 全量整改：只认实际运行生效的代码，收束主界面、单�
 
 ## v3.69.0 · 2026-11-02
 
-预设品牌去第三方化：咩咩引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 MoMiaomiao→YunqiPreset
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
 
@@ -579,7 +598,7 @@ chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
 
 ## v3.59.0 · 2026-11-01
 
-晓云天光：主界面换肤(告别墨枢风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
 
@@ -615,7 +634,7 @@ E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关�
 
 ## v3.55.30 · 2026-11-01
 
-多连接配置(Connection Profiles) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
 

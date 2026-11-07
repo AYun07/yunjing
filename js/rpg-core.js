@@ -1,8 +1,11 @@
-/* RPG Core v1.0.0 — 网游三部曲数值引擎 + 角色面板（v4.02.0）
+/* RPG Core v2.0.0 — 网游三部曲数值引擎 + 七标签角色面板（v4.03.0）
  *
  * 复用 WorldExt 模块协议：stats/hud 进常驻状态栏，html 出个人面板，
  * directive 每轮把数值快照送进模型，read 按轮次与变量块结算。
  * 所有数值计算集中在 Engine（纯函数，同输入恒同输出），UI 只负责呈现。
+ *
+ * v2：任务/成就/商店/传送/战斗日志/Buff/强化/宠物/组队公会/竞技场/快捷栏，
+ *     抽屉改为七标签，四态齐备，三界共用 rpg-suite.css（按 theme 变量换肤）。
  */
 (function () {
   "use strict";
@@ -48,7 +51,9 @@
       tiers: ['绿色装备', '蓝色装备', '紫色装备', '圣器', '神器'],
       starter: { n: '松木林巨剑', tier: '绿色装备', atk: 24, str: 8, sta: 7 },
       loot: [['松木林巨剑', '绿色装备', 1], ['守墓人戒指', '蓝色装备', 12], ['赤银剑', '紫色装备', 30], ['月神链', '圣器', 55], ['霜之哀伤', '神器', 80]],
-      cur: '金币', res: '怒气'
+      cur: '金币', res: '怒气',
+      maps: ['新手村 · 野狼谷', '银月城 · 城郊', '暮色森林 · 深处', '龙啸崖 · 崖顶', '月神殿 · 禁地'],
+      guildName: '银月行会', petName: '灵狼'
     },
     zonghengtianxia: {
       game: '灵恸', hero: '丁舒升', hid: '轻狂书生', startMap: '暮光城 · 浅水沼泽',
@@ -57,7 +62,9 @@
       tiers: ['粗糙品', '白色装', '黑铁器', '青铜器', '白银器', '黄金器', '暗金器', '地器', '天器', '鬼器', '仙器', '旷世圣器', '神器'],
       starter: { n: '黄金王者弓', tier: '白银器', atk: 32, agi: 6, luk: 2 },
       loot: [['黄金王者弓', '白银器', 1], ['骨灵之戒', '暗金器', 20], ['追魂之弓', '地神器', 45], ['冰川壁垒', '旷世圣器', 65], ['北冥剑', '太古神器', 90]],
-      cur: '金币', res: '魔法值'
+      cur: '金币', res: '魔法值',
+      maps: ['暮光城 · 浅水沼泽', '雪月城 · 冰原', '龙语冰川 · 裂隙', '黑暗大圣者 · 封印地', '浮空主城 · 天台'],
+      guildName: '雪月同盟', petName: '雪鹰'
     },
     tianxiawushuang: {
       game: '天纵', hero: '陆尘', hid: '折戟沉沙', startMap: '天空之城 · 果林地',
@@ -66,11 +73,47 @@
       tiers: ['白色', '黑石器', '青铜器', '玄铁器', '白银器', '黄金器', '暗金器', '紫金器', '灵器', '仙器', '圣器', '七十二鬼器', '神器', '十二神兵'],
       starter: { n: '新手长剑', tier: '黑石器', atk: 26, str: 6, tac: 3 },
       loot: [['青铜长剑', '青铜器', 1], ['逍遥吟', '七十二鬼器', 25], ['帝海盾', '中位神器', 50], ['轩辕剑', '十二神兵', 75], ['炼狱诸神的怜悯', '上古神器', 95]],
-      cur: '金币', res: '神力值'
+      cur: '金币', res: '神力值',
+      maps: ['天空之城 · 果林地', '折戟沉沙 · 古战场', '帝海 · 城关', '轩辕 · 神兵冢', '王者权杖 · 王座'],
+      guildName: '天下会', petName: '赤焰驹'
     }
   };
 
-  /* ---------------- 数值引擎（纯函数） ---------------- */
+  /* ---------------- 商店 / Buff / 成就 / 主线 / 标签（确定性常量） ---------------- */
+  var SHOP = [
+    { k: 'hp', n: '生命药水', i: '🧪', price: 20, desc: '回复 40% HP' },
+    { k: 'mp', n: '魔法药水', i: '🔵', price: 16, desc: '回复 40% MP' },
+    { k: 'buff', n: '力量药剂', i: '⚗️', price: 35, desc: '攻击 +18 / 3 回合' }
+  ];
+  var BUFFS = {
+    atk: { id: 'atk', n: '力量祝福', i: '⚔️', atk: 18, def: 0, turns: 3, kind: 'buff' },
+    guard: { id: 'guard', n: '铁壁护佑', i: '🛡️', atk: 0, def: 14, turns: 3, kind: 'buff' },
+    curse: { id: 'curse', n: '虚弱诅咒', i: '💀', atk: -10, def: -8, turns: 2, kind: 'debuff' }
+  };
+  var ACHS = [
+    { id: 'firstblood', n: '第一滴血', i: '🩸', cond: '完成 1 次掉落', gold: 30, rep: 5, test: function (s) { return (Number(s.kills) || 0) >= 1; } },
+    { id: 'slayer10', n: '十连斩', i: '⚔️', cond: '累计 10 次掉落', gold: 80, rep: 15, test: function (s) { return (Number(s.kills) || 0) >= 10; } },
+    { id: 'lv10', n: '崭露头角', i: '🎖️', cond: '达到 Lv.10', gold: 50, rep: 10, test: function (s) { return (Number(s.lv) || 1) >= 10; } },
+    { id: 'lv30', n: '一方高手', i: '🏆', cond: '达到 Lv.30', gold: 120, rep: 30, test: function (s) { return (Number(s.lv) || 1) >= 30; } },
+    { id: 'epic', n: '紫装加身', i: '🟣', cond: '穿戴品级≥第 3 阶', gold: 60, rep: 12, test: function (s, w) { var best = 0; Object.keys(s.equip || {}).forEach(function (k) { var e = s.equip[k]; if (e && e.tier) { var i = w.tiers.indexOf(e.tier); if (i > best) best = i; } }); return best >= 2; } },
+    { id: 'pk3', n: '竞技新星', i: '🥇', cond: '竞技场胜 3 场', gold: 90, rep: 20, test: function (s) { return (Number(s.arenaWins) || 0) >= 3; } }
+  ];
+  /* 主线三幕：优先读 quest-chain.js 的 arcs，缺失时用同数据兜底 */
+  var QUEST_FALLBACK = {
+    daobanshenhua: { title: '从大茶壶到守城者', st: [['晋级任务', '完成一次转正'], ['行会立足', '拿下第一片驻地'], ['国战扬名', '守住银月城']] },
+    zonghengtianxia: { title: '轻狂书生的建帮令', st: [['见习晋级', '首杀与转职'], ['雪月建帮', '夺下第一片领地'], ['龙语冰川', '封印黑暗大圣者']] },
+    tianxiawushuang: { title: '折戟沉沙的天下名将', st: [['死灵剑士', '通过蜕变与认证'], ['名将争锋', '夺得领地'], ['王者权杖', '守住天空之城']] }
+  };
+  function questArc(g) {
+    try { var a = window.QuestChain && window.QuestChain.arcs && window.QuestChain.arcs[g]; if (a && a.st && a.st.length) return a; } catch (e) {}
+    return QUEST_FALLBACK[g] || QUEST_FALLBACK.daobanshenhua;
+  }
+  var TABS = [
+    ['role', '🎮', '角色'], ['bag', '🎒', '背包'], ['skill', '✨', '技能'],
+    ['quest', '🧭', '任务'], ['map', '📍', '地图'], ['social', '👥', '社交'], ['battle', '⚔️', '战斗']
+  ];
+
+  /* ---------------- 数值引擎（纯函数，同输入恒同输出） ---------------- */
   function hash(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0); }
   function expToNext(lv) { return Math.round(80 * Math.pow(Math.max(1, lv), 1.55)); }
   function equipSum(equip) {
@@ -78,7 +121,7 @@
     Object.keys(equip || {}).forEach(function (k) {
       var e = equip[k]; if (!e || typeof e !== 'object') return;
       Object.keys(e).forEach(function (f) {
-        if (f === 'n' || f === 'tier') return;
+        if (f === 'n' || f === 'tier' || f === 'lv') return;
         o[f] = (Number(o[f]) || 0) + (Number(e[f]) || 0);
       });
     });
@@ -98,6 +141,14 @@
     var mdef = Math.round(attr.int * 1.2 + lv * 1.2 + (Number(e.mdef) || 0));
     var crit = Math.min(60, c.crit + attr.agi * 0.12 + attr.luk * 0.10 + (Number(e.crit) || 0));
     var spd = Math.round(100 + attr.agi * 0.6 + (Number(e.spd) || 0));
+    /* 增益/减益、组队、宠物——确定性叠加，影响攻击或防御 */
+    var ba = 0, bd = 0;
+    if (Array.isArray(st.buffs)) for (i = 0; i < st.buffs.length; i++) { ba += Number(st.buffs[i].atk) || 0; bd += Number(st.buffs[i].def) || 0; }
+    var psz = Math.max(1, Number(st.party && st.party.size) || 1);
+    ba += (psz - 1) * 3; bd += (psz - 1) * 2;
+    if (st.pet && st.pet.active) ba += 2 + Math.floor((Number(st.pet.growth) || 0) * 0.5);
+    atk = Math.max(1, Math.round(atk + ba));
+    def = Math.max(0, Math.round(def + bd));
     return { attr: attr, maxHp: maxHp, maxMp: maxMp, atk: atk, def: def, mdef: mdef, crit: Math.round(crit * 10) / 10, spd: spd };
   }
   /* 确定性伤害：同一 (seed) 恒得同一结果，便于单测与复现 */
@@ -119,7 +170,28 @@
   }
   var Engine = { hash: hash, expToNext: expToNext, equipSum: equipSum, derive: derive, damage: damage, gainExp: gainExp, makeEquip: makeEquip, DIMS: DIMS, SLOTS: SLOTS, CLASSES: CLASSES };
 
-  /* ---------------- 初始状态 ---------------- */
+  /* 结构化战斗日志（确定性写入） */
+  function blog(st, o) {
+    if (!Array.isArray(st.blog)) st.blog = [];
+    st.blog = st.blog.slice(-11);
+    st.blog.push({
+      r: Number(st.round) || 0, a: String(o.a || ''), dmg: Math.max(0, Math.round(Number(o.dmg) || 0)),
+      crit: !!o.crit, drop: String(o.drop || ''), res: String(o.res || ''),
+      note: String(o.note || ''), t: String(o.t || '')
+    });
+  }
+  /* 回合推进：技能冷却与 Buff 持续回合递减（确定性） */
+  function tickBuffs(st) {
+    var chg = false;
+    if (st.cd && typeof st.cd === 'object') Object.keys(st.cd).forEach(function (k) { if ((Number(st.cd[k]) || 0) > 0) { st.cd[k] = (Number(st.cd[k]) || 0) - 1; chg = true; } });
+    if (Array.isArray(st.buffs) && st.buffs.length) {
+      st.buffs = st.buffs.map(function (b) { var c = {}, k; for (k in b) if (Object.prototype.hasOwnProperty.call(b, k)) c[k] = b[k]; c.turns = (Number(c.turns) || 0) - 1; return c; }).filter(function (b) { return (Number(b.turns) || 0) > 0; });
+      chg = true;
+    }
+    return chg;
+  }
+
+  /* ---------------- 初始状态与老存档兼容 ---------------- */
   function initState(g) {
     var w = WORLD[g] || WORLD.daobanshenhua;
     return {
@@ -127,36 +199,66 @@
       map: w.startMap, hp: null, mp: null, gold: 50, rep: 0, points: 0,
       base: { str: 10, sta: 10, agi: 10, int: 10, tac: 8, luk: 5 },
       equip: { weapon: w.starter }, cd: {}, buffs: [], bag: [], kills: 0,
-      lastRound: 0, log: []
+      lastRound: 0, log: [],
+      /* v2 新增字段（老存档由 backfill/normalizeState 补默认值） */
+      items: { hp: 0, mp: 0, buff: 0 }, enhSeq: 0,
+      pet: { name: '', active: false, growth: 0 }, party: { size: 1, max: 5 },
+      guild: { name: '', contrib: 0 }, arenaWins: 0, arenaLoss: 0,
+      blog: [], ach: [], questDone: [], round: 0, mapIdx: 0
     };
+  }
+  /* 字段级补齐：老存档缺字段 / 子字段 / 形状异常时一律补默认值，绝不崩 */
+  function normalizeState(f, g) {
+    var w = WORLD[g] || WORLD.daobanshenhua, def = initState(g), i;
+    ['items', 'pet', 'party', 'guild'].forEach(function (k) {
+      f[k] = Object.assign({}, def[k], (f[k] && typeof f[k] === 'object' && !Array.isArray(f[k])) ? f[k] : {});
+    });
+    ['buffs', 'bag', 'log', 'blog', 'ach', 'questDone'].forEach(function (k) { if (!Array.isArray(f[k])) f[k] = def[k].slice(); });
+    if (!f.cd || typeof f.cd !== 'object' || Array.isArray(f.cd)) f.cd = {};
+    if (!f.equip || typeof f.equip !== 'object' || Array.isArray(f.equip)) f.equip = { weapon: w.starter };
+    f.base = Object.assign({}, def.base, (f.base && typeof f.base === 'object' && !Array.isArray(f.base)) ? f.base : {});
+    /* 数值字段：缺/坏补默认，负数夹到 0（金币/HP/MP 绝不为负），等级至少 1 */
+    ['gold', 'rep', 'points', 'kills', 'lastRound', 'enhSeq', 'arenaWins', 'arenaLoss', 'round', 'mapIdx', 'exp'].forEach(function (k) {
+      var n = Number(f[k]);
+      f[k] = (f[k] == null || isNaN(n)) ? def[k] : Math.max(0, Math.round(n));
+    });
+    var lvN = Number(f.lv);
+    f.lv = (f.lv == null || isNaN(lvN)) ? 1 : Math.max(1, Math.round(lvN));
+    if (f.hp != null && isNaN(Number(f.hp))) f.hp = null;
+    if (f.mp != null && isNaN(Number(f.mp))) f.mp = null;
+    if (f.cls == null) f.cls = def.cls;
+    if (f.map == null) f.map = def.map;
+    return f;
   }
 
   /* ---------------- 模块 ---------------- */
   function rpgModule(g) {
     var w = WORLD[g] || WORLD.daobanshenhua;
+    var maps = w.maps || [w.startMap];
     var E = function (st) { return Engine.derive(st); };
-    function note(st, txt) { st.log = (st.log || []).slice(-6); st.log.push(txt); }
+    var esc = (WR && WR.H && WR.H.esc) ? WR.H.esc : function (x) { return String(x == null ? '' : x); };
+    function note(st, txt) { st.log = (Array.isArray(st.log) ? st.log : []).slice(-6); st.log.push(String(txt)); }
     function clsName(st) { return st.hidden ? CLASSES[st.hidden].n : (CLASSES[st.cls] || CLASSES.warrior).n; }
     function clsCfg(st) { return st.hidden ? CLASSES[st.hidden] : (CLASSES[st.cls] || CLASSES.warrior); }
     function tierIdx(t) { var i = w.tiers.indexOf(t); return i < 0 ? 0 : i; }
+    var R = null; /* 渲染上下文，html 时赋值 */
 
     return WR.module({
       id: 'wr_rpg', icon: '🎮', name: w.game + ' · 角色面板', type: 'console',
-      tip: '等级／经验／HP·MP／六维／攻防暴击／装备槽／技能——网游数值由引擎结算',
+      tip: '等级／经验／HP·MP／六维／攻防暴击／装备槽／技能／任务／商店／传送／竞技场——网游数值由引擎结算',
       contract: '网游角色面板（等级、职业、HP/MP、六维、攻防、装备、金币、声望、当前地图）——正文数值须与面板一致',
       stats: { lv: { v: 1, max: 999, label: '等级', icon: '🎮' } },
       /* WR.module 把状态对象本身作为第二个参数传入（不是模块包裹），字段须直接写到 f 上 */
       backfill: function (o, f) {
-        var d = initState(g), i;
-        for (i = 0; i < Object.keys(d).length; i++) {
-          var k = Object.keys(d)[i];
-          if (o && o[k] !== undefined) d[k] = o[k];
-          f[k] = d[k];
-        }
+        var d = initState(g);
+        Object.keys(d).forEach(function (k) { if (o && o[k] !== undefined) d[k] = o[k]; f[k] = d[k]; });
         delete f.state;
+        normalizeState(f, g);
         var s = E(f);
-        f.hp = Math.min(Number(o && o.hp != null ? o.hp : s.maxHp), s.maxHp);
-        f.mp = Math.min(Number(o && o.mp != null ? o.mp : s.maxMp), s.maxMp);
+        var hpRaw = Number(o && o.hp != null ? o.hp : s.maxHp);
+        var mpRaw = Number(o && o.mp != null ? o.mp : s.maxMp);
+        f.hp = Math.max(0, Math.min(isNaN(hpRaw) ? s.maxHp : hpRaw, s.maxHp));
+        f.mp = Math.max(0, Math.min(isNaN(mpRaw) ? s.maxMp : mpRaw, s.maxMp));
       },
       hud: function (st) {
         var s = E(st), hp = Number(st.hp != null ? st.hp : s.maxHp), mp = Number(st.mp != null ? st.mp : s.maxMp);
@@ -172,6 +274,7 @@
       /* 常驻状态板走 summary 协议；与 hud 同一份数值，避免两处口径不一致 */
       summary: function (st) { return this.hud(st); },
       read: function (st, vars, round) {
+        normalizeState(st, g);
         var r = Number(round) || (vars && Number(vars.chapter)) || 0;
         if (r && r !== st.lastRound) {
           st.lastRound = r;
@@ -179,7 +282,7 @@
           var gain = Engine.gainExp(st, 8 + st.lv * 2);
           if (gain.ups) { st.lv = gain.lv; st.exp = gain.exp; st.points = (Number(st.points) || 0) + gain.points; note(st, '⬆️ 升至 Lv.' + st.lv + '，获得 ' + gain.points + ' 属性点'); }
           else st.exp = gain.exp;
-          Object.keys(st.cd || {}).forEach(function (k) { if (st.cd[k] > 0) st.cd[k]--; });
+          tickBuffs(st);
         }
         /* 从变量块里读模型写出的结算行（>>网游面板.exp: +120 等） */
         var changed = false;
@@ -201,18 +304,31 @@
             else if (key === 'mp' || key === '魔法') { st.mp = Math.max(0, Math.min(E(st).maxMp, (Number(st.mp) || 0) + (parseInt(val, 10) || 0))); changed = true; }
             else if (key === 'gold' || key === '金币') { st.gold = Math.max(0, (Number(st.gold) || 0) + (parseInt(val, 10) || 0)); changed = true; }
             else if (key === 'rep' || key === '声望') { st.rep = Math.max(0, (Number(st.rep) || 0) + (parseInt(val, 10) || 0)); changed = true; }
-            else if (key === 'equip' || key === '装备') { st.bag = (st.bag || []).slice(-8); st.bag.push({ n: val, tier: w.tiers[Math.min(tierIdx(w.tiers[0]), w.tiers.length - 1)] }); changed = true; }
+            else if (key === 'equip' || key === '装备') { st.bag = (st.bag || []).slice(-8); st.bag.push({ n: val, tier: w.tiers[0] }); changed = true; }
           }
         } catch (e) { /* 变量形状不可控，忽略解析失败 */ }
         return changed || (r && r !== 0);
       },
       act: function (st, s, a, p) {
+        normalizeState(st, g);
         var d = E(st), i;
+        /* 所有成功动作统一收口：金币/声望/HP/MP 绝不为负，且不超过上限 */
+        function ok(m) {
+          st.gold = Math.max(0, Math.round(Number(st.gold) || 0));
+          st.rep = Math.max(0, Math.round(Number(st.rep) || 0));
+          var dd = E(st);
+          st.hp = st.hp == null ? dd.maxHp : Math.max(0, Math.min(dd.maxHp, Math.round(Number(st.hp) || 0)));
+          st.mp = st.mp == null ? dd.maxMp : Math.max(0, Math.min(dd.maxMp, Math.round(Number(st.mp) || 0)));
+          return m;
+        }
+        p = (p == null ? '' : String(p));
+
+        /* —— 原有 6 动作（保持行为，补结构化日志）—— */
         if (a === 'addpoint') {
           if ((Number(st.points) || 0) <= 0) return '没有可分配的属性点';
           if (!DIMS.some(function (x) { return x.k === p; })) return '未知属性';
           st.points--; st.base[p] = (Number(st.base[p]) || 0) + 1;
-          return '✦ ' + (DIMS.filter(function (x) { return x.k === p; })[0].n) + ' +1（剩余 ' + st.points + ' 点）';
+          return ok('✦ ' + (DIMS.filter(function (x) { return x.k === p; })[0].n) + ' +1（剩余 ' + st.points + ' 点）');
         }
         if (a === 'setclass') {
           if (!w.classes.includes(p) && !w.hidden.some(function (h) { return h.id === p; })) return '本界没有这个职业';
@@ -220,11 +336,12 @@
           if (h && (Number(st.lv) || 1) < h.lv) return '🔒 需要 Lv.' + h.lv + ' 才能转职「' + h.n + '」';
           if (h) { st.hidden = p; st.title = h.n; } else { st.cls = p; st.hidden = ''; }
           note(st, '🎭 职业变更为「' + clsName(st) + '」');
-          return '职业已设为「' + clsName(st) + '」，属性按新职业成长系数重算';
+          return ok('职业已设为「' + clsName(st) + '」，属性按新职业成长系数重算');
         }
         if (a === 'rest') {
-          st.hp = d.maxHp; st.mp = d.maxMp;
-          return '🛌 回城休整——HP/MP 回满';
+          st.hp = E(st).maxHp; st.mp = E(st).maxMp;
+          note(st, '🛌 回城休整——HP/MP 回满');
+          return ok('🛌 回城休整——HP/MP 回满');
         }
         if (a === 'skill') {
           var sk = null, list = clsCfg(st).skills;
@@ -235,9 +352,10 @@
           st.mp -= sk[2]; st.cd[sk[0]] = sk[3];
           var foeDef = Math.round(12 + st.lv * 2.2);
           var dm = Engine.damage(d.atk, foeDef, sk[4], d.crit, st.lv + '|' + sk[0] + '|' + (st.kills || 0));
-          st.gold += Math.round(dm.value / 12); st.rep += 1;
+          st.gold += Math.max(1, Math.round(dm.value / 12)); st.rep += 1;
           note(st, sk[1] + ' 造成 ' + dm.value + (dm.crit ? '（暴击）' : '') + ' 点伤害');
-          return '⚔️ ' + sk[1] + '——' + dm.value + ' 点伤害' + (dm.crit ? ' 💥暴击' : '') + '，耗 ' + w.res + ' ' + sk[2] + '，冷却 ' + sk[3] + ' 轮';
+          blog(st, { a: sk[1], dmg: dm.value, crit: dm.crit, t: '技能', note: '耗 ' + w.res + ' ' + sk[2] });
+          return ok('⚔️ ' + sk[1] + '——' + dm.value + ' 点伤害' + (dm.crit ? ' 💥暴击' : '') + '，耗 ' + w.res + ' ' + sk[2] + '，冷却 ' + sk[3] + ' 轮');
         }
         if (a === 'loot') {
           var tier = 0;
@@ -248,8 +366,11 @@
             st.bag = (st.bag || []).slice(-8); st.bag.push(st.equip.weapon); st.equip[slot] = eq;
           } else { st.bag = (st.bag || []).slice(-8); st.bag.push(eq); }
           st.kills = (Number(st.kills) || 0) + 1;
-          note(st, '🎁 掉落「' + L[0] + '」（' + L[1] + '）');
-          return '🎁 掉落「' + L[0] + '」· ' + L[1] + '｜攻 +' + eq.atk + '｜已' + (st.equip.weapon === eq ? '装备' : '入包');
+          var coin = Math.round(8 + (Number(st.lv) || 1) * 1.5);
+          st.gold += coin;
+          note(st, '🎁 掉落「' + L[0] + '」（' + L[1] + '），' + w.cur + ' +' + coin);
+          blog(st, { a: '结算掉落', drop: L[0] + '·' + L[1], t: '掉落', note: '击杀数 ' + st.kills + ' · ' + w.cur + ' +' + coin });
+          return ok('🎁 掉落「' + L[0] + '」· ' + L[1] + '｜攻 +' + eq.atk + '｜' + w.cur + ' +' + coin + '｜已' + (st.equip.weapon === eq ? '装备' : '入包'));
         }
         if (a === 'equipbag') {
           var idx = parseInt(p, 10);
@@ -257,73 +378,197 @@
           var it = st.bag.splice(idx, 1)[0];
           var old = st.equip.weapon; st.equip.weapon = it;
           if (old) st.bag.push(old);
-          return '已装备「' + it.n + '」';
+          blog(st, { a: '更换武器', drop: (it && it.n) || '', t: '装备' });
+          return ok('已装备「' + (it && it.n || '') + '」');
+        }
+
+        /* —— v2 新增动作 —— */
+        if (a === 'buy') {
+          var goods = null; for (i = 0; i < SHOP.length; i++) if (SHOP[i].k === p) goods = SHOP[i];
+          if (!goods) return '商店没有这件商品';
+          if ((Number(st.gold) || 0) < goods.price) return '💰 ' + w.cur + '不足（' + st.gold + '/' + goods.price + '）';
+          st.gold -= goods.price; st.items[p] = (Number(st.items[p]) || 0) + 1;
+          blog(st, { a: '购买 ' + goods.n, t: '商店', note: '-' + goods.price + ' ' + w.cur });
+          return ok('🛒 买入「' + goods.n + '」×1，花费 ' + goods.price + ' ' + w.cur + '（库存 ' + st.items[p] + '）');
+        }
+        if (a === 'sell') {
+          var si = parseInt(p, 10);
+          if (isNaN(si) || !st.bag || !st.bag[si]) return '背包里没有这件物品';
+          var sit = st.bag.splice(si, 1)[0];
+          var price = 8 + tierIdx(sit && sit.tier) * 6 + Math.round((Number(sit && sit.atk) || 0) / 4);
+          st.gold += price;
+          blog(st, { a: '出售物品', drop: (sit && sit.n) || '', t: '商店', note: '+' + price + ' ' + w.cur });
+          return ok('💰 卖出「' + (sit && sit.n || '') + '」，获得 ' + price + ' ' + w.cur);
+        }
+        if (a === 'usepotion') {
+          var po = null; for (i = 0; i < SHOP.length; i++) if (SHOP[i].k === p) po = SHOP[i];
+          if (!po || (Number(st.items[p]) || 0) <= 0) return '背包里没有这瓶药水';
+          st.items[p]--;
+          var dd2 = E(st);
+          if (p === 'hp') { st.hp = (Number(st.hp) || 0) + Math.ceil(dd2.maxHp * 0.4); blog(st, { a: '饮用 ' + po.n, t: '药水', note: '+40% HP' }); return ok('🧪 饮用「' + po.n + '」——HP 回复 40%'); }
+          if (p === 'mp') { st.mp = (Number(st.mp) || 0) + Math.ceil(dd2.maxMp * 0.4); blog(st, { a: '饮用 ' + po.n, t: '药水', note: '+40% MP' }); return ok('🔵 饮用「' + po.n + '」——' + w.res + ' 回复 40%'); }
+          /* 力量药剂 → 施加攻击增益 Buff */
+          var bf = BUFFS.atk; st.buffs.push({ id: bf.id, n: bf.n, i: bf.i, atk: bf.atk, def: bf.def, turns: bf.turns, kind: bf.kind });
+          blog(st, { a: '饮用 ' + po.n, t: '增益', note: '攻击 +' + bf.atk + ' / ' + bf.turns + ' 回合' });
+          return ok('⚗️ 饮用「' + po.n + '」——攻击 +' + bf.atk + '（' + bf.turns + ' 回合）');
+        }
+        if (a === 'teleport') {
+          var mi = parseInt(p, 10);
+          if (isNaN(mi) || mi < 0 || mi >= maps.length) return '没有这个地名';
+          if (mi === (Number(st.mapIdx) || 0)) return '已经身处此地';
+          var cost = 10 + mi * 5;
+          if ((Number(st.gold) || 0) < cost) return '💰 ' + w.cur + '不足（' + st.gold + '/' + cost + '）';
+          st.gold -= cost; st.mapIdx = mi; st.map = maps[mi];
+          blog(st, { a: '地图传送', res: maps[mi], t: '传送', note: '-' + cost + ' ' + w.cur });
+          return ok('📍 传送至「' + maps[mi] + '」，花费 ' + cost + ' ' + w.cur);
+        }
+        if (a === 'enhance') {
+          var e0 = st.equip[p];
+          if (!e0 || typeof e0 !== 'object') return '该槽位没有可强化的装备';
+          var ecost = 30 + (Number(st.lv) || 1) * 2;
+          if ((Number(st.gold) || 0) < ecost) return '💰 ' + w.cur + '不足（' + st.gold + '/' + ecost + '）';
+          st.gold -= ecost;
+          st.enhSeq = (Number(st.enhSeq) || 0) + 1;
+          /* 确定性成功率：hash(界|序列|槽|等级)，同输入恒同结果；失败只扣金币不毁装 */
+          var roll = Engine.hash(g + '|' + st.enhSeq + '|' + p + '|' + st.lv) % 100;
+          var success = roll < 70;
+          if (success) {
+            var up = Math.round(4 + (Number(st.lv) || 1) * 0.6);
+            e0.atk = (Number(e0.atk) || 0) + up; e0.def = (Number(e0.def) || 0) + Math.round(2 + st.lv * 0.3);
+            e0.hp = (Number(e0.hp) || 0) + (Number(st.lv) || 1) * 5; e0.lv = (Number(e0.lv) || 0) + 1;
+            blog(st, { a: '强化 ' + (e0.n || p), t: '强化', note: '成功 · 攻 +' + up + ' · +' + e0.lv });
+            return ok('🔨 强化成功！「' + (e0.n || p) + '」攻 +' + up + '（+' + e0.lv + '），花费 ' + ecost + ' ' + w.cur);
+          }
+          blog(st, { a: '强化 ' + (e0.n || p), t: '强化', note: '失败 · 装备无损' });
+          return ok('🔨 强化失败（装备未损坏），花费 ' + ecost + ' ' + w.cur + '。下次成功率仍为 70%');
+        }
+        if (a === 'pet') {
+          if (p === 'summon') {
+            st.pet.active = !st.pet.active;
+            if (st.pet.active && !st.pet.name) st.pet.name = w.petName;
+            blog(st, { a: st.pet.active ? '召唤宠物' : '收回宠物', t: '宠物', note: w.petName });
+            return ok((st.pet.active ? '🐾 召唤「' + w.petName + '」——出战，攻击 +' + (2 + Math.floor((Number(st.pet.growth) || 0) * 0.5)) : '🐾 收回宠物——出战加成移除'));
+          }
+          if (p === 'feed') {
+            if ((Number(st.gold) || 0) < 15) return '💰 ' + w.cur + '不足（' + st.gold + '/15）';
+            st.gold -= 15; st.pet.growth = (Number(st.pet.growth) || 0) + 2; st.pet.active = true;
+            if (!st.pet.name) st.pet.name = w.petName;
+            blog(st, { a: '喂食宠物', t: '宠物', note: '成长值 +2 → ' + st.pet.growth });
+            return ok('🍖 喂食「' + w.petName + '」——成长值 +2（现 ' + st.pet.growth + '），出战攻击 +' + (2 + Math.floor(st.pet.growth * 0.5)));
+          }
+          return '未知宠物操作';
+        }
+        if (a === 'party') {
+          var mx = Number(st.party.max) || 5, sz = Number(st.party.size) || 1;
+          if (p === 'join') { st.party.size = Math.min(mx, sz + 1); }
+          else if (p === 'leave') { st.party.size = Math.max(1, sz - 1); }
+          else return '未知组队操作';
+          var pn = Number(st.party.size) || 1;
+          blog(st, { a: p === 'join' ? '组队' : '离队', t: '社交', note: '队伍 ' + pn + ' 人' });
+          return ok('👥 队伍 ' + pn + ' 人——攻 +' + ((pn - 1) * 3) + ' 防 +' + ((pn - 1) * 2));
+        }
+        if (a === 'guild') {
+          if (p === 'join') {
+            st.guild.name = w.guildName; st.rep += 5;
+            blog(st, { a: '加入公会', t: '社交', note: w.guildName + ' · 声望 +5' });
+            return ok('🏛 加入「' + w.guildName + '」——声望 +5');
+          }
+          if (p === 'contrib') {
+            if (!st.guild.name) return '先加入一个公会';
+            if ((Number(st.gold) || 0) < 20) return '💰 ' + w.cur + '不足（' + st.gold + '/20）';
+            st.gold -= 20; st.guild.contrib = (Number(st.guild.contrib) || 0) + 10; st.rep += 8;
+            blog(st, { a: '公会贡献', t: '社交', note: '贡献 +10 · 声望 +8' });
+            return ok('🏛 向「' + st.guild.name + '」贡献——贡献 +10（现 ' + st.guild.contrib + '），声望 +8');
+          }
+          return '未知公会操作';
+        }
+        if (a === 'arena') {
+          var seed = g + '|' + st.arenaWins + '|' + st.arenaLoss + '|' + st.round + '|' + st.kills;
+          var foeDef = 20 + (Number(st.lv) || 1) * 3, foeAtk = 28 + (Number(st.lv) || 1) * 4;
+          var my = Engine.damage(d.atk, foeDef, 1.3, d.crit, seed);
+          var foe = Engine.damage(foeAtk, d.def, 1.0, 8, seed + '-f');
+          var win = my.value >= foe.value;
+          if (win) { st.arenaWins = (Number(st.arenaWins) || 0) + 1; st.rep += 8; st.gold += 25; }
+          else { st.arenaLoss = (Number(st.arenaLoss) || 0) + 1; st.rep += 1; st.hp = (Number(st.hp) || 0) - foe.value; }
+          blog(st, { a: '竞技场 PK', dmg: my.value, crit: my.crit, res: win ? '胜' : '负', t: 'PK', note: '我方 ' + my.value + ' / 对手 ' + foe.value + ' · 声望 +' + (win ? 8 : 1) });
+          return ok((win ? '🏆 竞技场获胜' : '🛡 竞技场惜败') + '——我方 ' + my.value + (my.crit ? '（暴击）' : '') + ' vs 对手 ' + foe.value + '，声望 +' + (win ? 8 : 1) + (win ? '，' + w.cur + ' +25' : ''));
+        }
+        if (a === 'buff') {
+          var b0 = BUFFS[p];
+          if (!b0) return '未知状态';
+          st.buffs.push({ id: b0.id, n: b0.n, i: b0.i, atk: b0.atk, def: b0.def, turns: b0.turns, kind: b0.kind });
+          blog(st, { a: (b0.kind === 'debuff' ? '受到减益 ' : '施加增益 ') + b0.n, t: '状态', note: '攻 ' + (b0.atk >= 0 ? '+' : '') + b0.atk + ' 防 ' + (b0.def >= 0 ? '+' : '') + b0.def + ' / ' + b0.turns + ' 回合' });
+          return ok((b0.kind === 'debuff' ? '💀 ' : '✨ ') + b0.n + '——攻 ' + (b0.atk >= 0 ? '+' : '') + b0.atk + ' 防 ' + (b0.def >= 0 ? '+' : '') + b0.def + '，持续 ' + b0.turns + ' 回合');
+        }
+        if (a === 'tick') {
+          st.round = (Number(st.round) || 0) + 1;
+          tickBuffs(st);
+          var dd3 = E(st);
+          st.hp = (Number(st.hp) || 0) + Math.ceil(dd3.maxHp * 0.05);
+          st.mp = (Number(st.mp) || 0) + Math.ceil(dd3.maxMp * 0.08);
+          blog(st, { a: '结束回合', t: '回合', res: '第 ' + st.round + ' 回合', note: 'Buff 回合 -1 · 回血蓝' });
+          return ok('⏭ 第 ' + st.round + ' 回合——Buff/冷却递减，HP/MP 小幅回复');
+        }
+        if (a === 'achieveclaim') {
+          var ac = null; for (i = 0; i < ACHS.length; i++) if (ACHS[i].id === p) ac = ACHS[i];
+          if (!ac) return '没有这个成就';
+          if (st.ach.indexOf(ac.id) >= 0) return '该成就奖励已领取';
+          if (!ac.test(st, w)) return '🔒 尚未达成：' + ac.cond;
+          st.ach.push(ac.id); st.gold += ac.gold; st.rep += ac.rep;
+          blog(st, { a: '达成成就 ' + ac.n, t: '成就', note: w.cur + ' +' + ac.gold + ' · 声望 +' + ac.rep });
+          return ok('🏅 成就「' + ac.n + '」达成——' + w.cur + ' +' + ac.gold + '，声望 +' + ac.rep);
+        }
+        if (a === 'questclaim') {
+          var qi = (p === '' ? -1 : parseInt(p, 10));
+          var arc = questArc(g), nst = (arc.st || []).length || 3, wins = Number(st.arenaWins) || 0;
+          if (qi < 0) { for (i = 0; i < nst; i++) if (wins >= i + 1 && st.questDone.indexOf(i) < 0) { qi = i; break; } }
+          if (isNaN(qi) || qi < 0 || qi >= nst) return '暂无可领取的主线奖励（可在竞技场获胜推进主线）';
+          if (wins < qi + 1) return '🔒 主线尚未推进到第 ' + (qi + 1) + ' 幕';
+          if (st.questDone.indexOf(qi) >= 0) return '该幕奖励已领取';
+          var qgold = 40 + qi * 30, qrep = 10 + qi * 10;
+          st.questDone.push(qi); st.gold += qgold; st.rep += qrep;
+          blog(st, { a: '主线领奖 · 第 ' + (qi + 1) + ' 幕', t: '任务', note: w.cur + ' +' + qgold + ' · 声望 +' + qrep });
+          return ok('🧭 领取第 ' + (qi + 1) + ' 幕「' + ((arc.st[qi] || [])[0] || '') + '」奖励——' + w.cur + ' +' + qgold + '，声望 +' + qrep);
+        }
+        if (a === 'clearlog') {
+          st.blog = [];
+          return ok('🧹 战斗日志已清空');
         }
         return null;
       },
+
+      /* ---------------- 七标签 UI ---------------- */
       html: function (st, s) {
         var d = E(st), hp = Number(st.hp != null ? st.hp : d.maxHp), mp = Number(st.mp != null ? st.mp : d.maxMp);
         var need = Engine.expToNext(st.lv);
-        var pct = function (v, m) { return Math.max(0, Math.min(100, Math.round(v / Math.max(1, m) * 100))); };
-        var esc = WR.H.esc;
-        var o = '<div class="rpg-panel">';
-        /* 状态栏 */
-        o += '<div class="wr-status"><div class="wr-stat"><span>🎮 ' + esc(clsName(st)) + '</span><b>Lv.' + st.lv + '</b></div>'
-          + '<div class="wr-stat"><span>📍 ' + esc(st.map || w.startMap) + '</span><b>' + esc(st.title || '') + '</b></div>'
-          + '<div class="wr-stat"><span>💰 ' + w.cur + '</span><b>' + st.gold + '</b></div>'
-          + '<div class="wr-stat"><span>🏅 声望</span><b>' + st.rep + '</b></div></div>';
-        o += '<div class="wr-kv"><span>❤️ HP</span><b>' + hp + ' / ' + d.maxHp + '</b><i class="rpg-bar rpg-hp" style="flex:1"><i style="width:' + pct(hp, d.maxHp) + '%"></i></i></div>';
-        o += '<div class="wr-kv"><span>🔵 ' + esc(w.res) + '</span><b>' + mp + ' / ' + d.maxMp + '</b><i class="rpg-bar rpg-mp" style="flex:1"><i style="width:' + pct(mp, d.maxMp) + '%"></i></i></div>';
-        o += '<div class="wr-kv"><span>✨ 经验</span><b>' + st.exp + ' / ' + need + '</b><i class="rpg-bar rpg-exp" style="flex:1"><i style="width:' + pct(st.exp, need) + '%"></i></i></div>';
-        /* 六维 */
-        o += '<div class="wr-creator-sec">六维属性' + (st.points ? ' · 可分配 ' + st.points + ' 点' : '') + '</div><div class="rpg-grid">';
-        DIMS.forEach(function (x) {
-          var bonus = d.attr[x.k] - (Number(st.base[x.k]) || 0) - Math.floor((Number(st.lv) || 1) * ((clsCfg(st).growth[x.k]) || 0));
-          o += '<div class="rpg-cell"><small>' + x.n + '</small><b>' + d.attr[x.k] + '</b>' + (bonus ? '<em>+' + bonus + '</em>' : '') + '</div>';
-        });
+        var pct = function (v, m) { return Math.max(0, Math.min(100, Math.round((Number(v) || 0) / Math.max(1, m) * 100))); };
+        R = { st: st, d: d, w: w, g: g, maps: maps, hp: hp, mp: mp, need: need, pct: pct, cur: (window && window.__rpgTabCur) || 'role' };
+        var o = '<div class="rpg-panel" data-rpg-genre="' + esc(g) + '">';
+        /* 顶部身份 + 资源 */
+        o += '<div class="rpg-top">'
+          + '<div class="rpg-id"><b class="rpg-lv">Lv.' + st.lv + '</b><span>' + esc(clsName(st)) + '</span><em>' + esc(st.title || '') + '</em></div>'
+          + '<div class="rpg-cur"><span>' + esc(w.cur) + '</span><b>' + st.gold + '</b></div>'
+          + '<div class="rpg-cur"><span>🏅 声望</span><b>' + st.rep + '</b></div>'
+          + '</div>';
+        /* 标签栏 */
+        o += '<div class="rpg-tabs">';
+        TABS.forEach(function (t) { o += '<button type="button" class="rpg-tab' + (t[0] === R.cur ? ' on' : '') + '" data-rpg-tab="' + t[0] + '"><i>' + t[1] + '</i>' + t[2] + '</button>'; });
         o += '</div>';
-        o += '<div class="wr-creator-sec">战斗数值</div><div class="rpg-grid">'
-          + '<div class="rpg-cell"><small>攻击</small><b>' + d.atk + '</b></div>'
-          + '<div class="rpg-cell"><small>防御 / 魔防</small><b>' + d.def + ' / ' + d.mdef + '</b></div>'
-          + '<div class="rpg-cell"><small>暴击</small><b>' + d.crit + '%</b></div>'
-          + '<div class="rpg-cell"><small>攻速</small><b>' + d.spd + '</b></div></div>';
-        /* 装备槽 */
-        o += '<div class="wr-creator-sec">装备槽（品级：' + esc(w.tiers.slice(0, 4).join(' → ')) + ' …）</div><div class="rpg-slots">';
-        SLOTS.forEach(function (sl) {
-          var e = st.equip[sl.k];
-          o += '<div class="rpg-slot ' + (e ? 'on' : '') + '" title="' + (e ? esc(e.n) + '｜' + esc(e.tier || '') : '空') + '"><i>' + sl.i + '</i>' + sl.n + '：' + (e ? esc(e.n) + ' <span class="rpg-tier">' + esc(e.tier || '') + '</span>' : '<span style="opacity:.5">空</span>') + '</div>';
-        });
-        o += '</div>';
-        /* 技能 */
-        var list = clsCfg(st).skills;
-        o += '<div class="wr-actions">';
-        list.forEach(function (sk) {
-          var cd = st.cd[sk[0]] || 0, afford = (Number(st.mp) || 0) >= sk[2];
-          o += '<div class="wr-act"><div class="wr-act-hd"><b>' + esc(sk[1]) + '</b><span>×' + sk[4] + ' 倍率</span></div>'
-            + '<em class="wr-cost">耗 ' + esc(w.res) + '×' + sk[2] + '</em>' + (cd > 0 ? '<em class="wr-cd">冷却 ' + cd + '</em>' : '')
-            + '<button class="wr-btn" ' + (cd > 0 || !afford ? 'disabled' : '') + ' onclick="WorldExt.act(\'wr_rpg\',\'skill\',\'' + sk[0] + '\')">' + (cd > 0 ? '冷却中' : !afford ? '蓝不足' : '施展') + '</button></div>';
-        });
-        o += '<div class="wr-act"><div class="wr-act-hd"><b>🎁 结算一次掉落</b><span>按等级给本界品级装备</span></div><button class="wr-btn" onclick="WorldExt.act(\'wr_rpg\',\'loot\',\'\')">掉落</button></div>';
-        o += '<div class="wr-act"><div class="wr-act-hd"><b>🛌 回城休整</b><span>HP/MP 回满</span></div><button class="wr-btn" onclick="WorldExt.act(\'wr_rpg\',\'rest\',\'\')">休整</button></div>';
-        o += '</div>';
-        /* 加点 / 转职 */
-        if (st.points > 0) {
-          o += '<div class="wr-creator-sec">分配属性点（剩 ' + st.points + '）</div><div class="wr-actions">';
-          DIMS.forEach(function (x) { o += '<div class="wr-act"><div class="wr-act-hd"><b>' + x.n + ' +1</b></div><button class="wr-btn sm" onclick="WorldExt.act(\'wr_rpg\',\'addpoint\',\'' + x.k + '\')">加点</button></div>'; });
-          o += '</div>';
-        }
-        o += '<div class="wr-creator-sec">职业与转职</div><div class="wr-chips">';
-        w.classes.forEach(function (id) { o += '<button class="wr-btn sm" onclick="WorldExt.act(\'wr_rpg\',\'setclass\',\'' + id + '\')">' + esc(CLASSES[id].n) + '</button>'; });
-        w.hidden.forEach(function (h) { o += '<button class="wr-btn sm" onclick="WorldExt.act(\'wr_rpg\',\'setclass\',\'' + h.id + '\')">' + esc(h.n) + '（Lv.' + h.lv + '）</button>'; });
-        o += '</div>';
-        /* 背包 */
-        if (st.bag && st.bag.length) {
-          o += '<div class="wr-creator-sec">背包</div><div class="wr-chips">';
-          st.bag.forEach(function (it, i2) { o += '<button class="wr-btn sm" onclick="WorldExt.act(\'wr_rpg\',\'equipbag\',\'' + i2 + '\')">' + esc(it.n) + ' · 装备</button>'; });
-          o += '</div>';
-        }
-        if (st.log && st.log.length) o += '<div class="wx-banner" style="margin-top:9px;">' + st.log.slice(-3).map(esc).join('<br>') + '</div>';
-        o += '<div class="wr-tip">数值由引擎确定性结算：升级按 80×Lv^1.55 经验，伤害按 攻击×倍率−防御×0.55，暴击按六维计算。正文里的数值须与此面板一致。</div>';
+        /* 快捷栏导航 */
+        o += '<div class="rpg-quick"><span>⚡ 快捷</span>'
+          + '<button type="button" class="rpg-btn q" data-rpg-act="rest" data-rpg-arg="">🛌 休整</button>'
+          + '<button type="button" class="rpg-btn q" data-rpg-act="loot" data-rpg-arg="">🎁 掉落</button>'
+          + '<button type="button" class="rpg-btn q" data-rpg-act="buy" data-rpg-arg="hp">🧪 买药</button>'
+          + '<button type="button" class="rpg-btn q" data-rpg-act="teleport" data-rpg-arg="1">📍 传送</button>'
+          + '<button type="button" class="rpg-btn q" data-rpg-act="arena" data-rpg-arg="">⚔️ PK</button>'
+          + '<button type="button" class="rpg-btn q" data-rpg-act="tick" data-rpg-arg="">⏭ 回合</button>'
+          + '</div>';
+        o += '<div class="rpg-panes">'
+          + pane('role', pRole()) + pane('bag', pBag()) + pane('skill', pSkill())
+          + pane('quest', pQuest()) + pane('map', pMap()) + pane('social', pSocial())
+          + pane('battle', pBattle())
+          + '</div>';
+        o += '<div class="rpg-tip">数值由引擎确定性结算：升级按 80×Lv^1.55 经验，伤害按 攻击×倍率−防御×0.55（hash(seed) 判暴击），强化/PK 用确定性种子。正文数值须与此面板一致。</div>';
         o += '</div>';
         return o;
       },
@@ -342,11 +587,247 @@
           + '。\n【数值契约】正文写到的等级、伤害、耗蓝、掉落、升级必须与本快照一致，只准引用快照里的数字；严禁自行编造等级、经验值、属性表或角色档案（例如凭空写「Lv.8」「经验 632/1200」）。剧情要升级就写「经验条涨了一截」，具体结算交给引擎。需变更时在 (variable_update) 块写 >>网游面板.exp: +120 等行。禁止编造本界品级序列（' + w.tiers.slice(0, 4).join('→') + '…）之外的装备品级。';
       }
     });
+
+    /* ---------- 渲染小工具（读渲染上下文 R） ---------- */
+    function pane(k, inner) { return '<section class="rpg-pane' + (k === R.cur ? ' on' : '') + '" data-rpg-pane="' + k + '">' + inner + '</section>'; }
+    function sec(t, extra) { return '<div class="rpg-sec"><b>' + t + '</b>' + (extra ? '<span>' + extra + '</span>' : '') + '</div>'; }
+    function kv(k, v) { return '<div class="rpg-kv2"><span>' + k + '</span><b>' + v + '</b></div>'; }
+    function cell(sm, b, em) { return '<div class="rpg-cell"><small>' + sm + '</small><b>' + b + '</b>' + (em ? '<em>' + em + '</em>' : '') + '</div>'; }
+    function empty(txt, sub) { return '<div class="rpg-empty"><i>◌</i><b>' + esc(txt) + '</b>' + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</div>'; }
+    function btn(label, a, p, cls, dis) { return '<button type="button" class="rpg-btn ' + (cls || '') + '"' + (dis ? ' disabled' : '') + ' data-rpg-act="' + esc(a) + '" data-rpg-arg="' + esc(p == null ? '' : String(p)) + '">' + label + '</button>'; }
+    function bar(label, val, v, m, cls) { return '<div class="wr-kv rpg-kv"><span>' + label + '</span><b>' + val + '</b><i class="rpg-bar ' + cls + '" style="flex:1"><i style="width:' + R.pct(v, m) + '%"></i></i></div>'; }
+    function tierSpan(t) { return '<span class="rpg-tier" data-t="' + tierIdx(t) + '">' + esc(t || '') + '</span>'; }
+
+    /* ---------- 角色 ---------- */
+    function pRole() {
+      var st = R.st, d = R.d, w = R.w, o = '';
+      o += '<div class="rpg-status">'
+        + '<div class="wr-stat"><span>📍 ' + esc(st.map || w.startMap) + '</span><b>' + esc(st.title || '') + '</b></div>'
+        + '<div class="wr-stat"><span>🎮 ' + esc(clsName(st)) + '</span><b>Lv.' + st.lv + '</b></div>'
+        + '<div class="wr-stat"><span>💰 ' + esc(w.cur) + '</span><b>' + st.gold + '</b></div>'
+        + '<div class="wr-stat"><span>🏅 声望</span><b>' + st.rep + '</b></div></div>';
+      o += bar('❤️ HP', R.hp + ' / ' + d.maxHp, R.hp, d.maxHp, 'rpg-hp');
+      o += bar('🔵 ' + esc(w.res), R.mp + ' / ' + d.maxMp, R.mp, d.maxMp, 'rpg-mp');
+      o += bar('✨ 经验', st.exp + ' / ' + R.need, st.exp, R.need, 'rpg-exp');
+      o += sec('六维属性', st.points ? '可分配 ' + st.points + ' 点' : '基础 + 等级成长 + 装备');
+      o += '<div class="rpg-grid">';
+      DIMS.forEach(function (x) {
+        var bonus = d.attr[x.k] - (Number(st.base[x.k]) || 0) - Math.floor((Number(st.lv) || 1) * ((clsCfg(st).growth[x.k]) || 0));
+        o += cell(x.n, d.attr[x.k], bonus ? '+' + bonus : '');
+      });
+      o += '</div>';
+      o += sec('战斗数值', 'Buff / 组队 / 宠物已计入');
+      o += '<div class="rpg-grid">'
+        + cell('攻击', d.atk) + cell('防御 / 魔防', d.def + ' / ' + d.mdef)
+        + cell('暴击', d.crit + '%') + cell('攻速', d.spd)
+        + cell('击杀', st.kills || 0) + cell('回合', st.round || 0)
+        + '</div>';
+      o += sec('装备槽', '品级：' + esc(w.tiers.slice(0, 3).join(' → ')) + ' …');
+      o += '<div class="rpg-slots">';
+      SLOTS.forEach(function (sl) {
+        var e = st.equip[sl.k], mountPet = (sl.k === 'mount' && st.pet.active) ? w.petName : '';
+        o += '<div class="rpg-slot ' + (e || mountPet ? 'on' : '') + '" title="' + (e ? esc(e.n) + '｜' + esc(e.tier || '') : '空') + '"><i>' + sl.i + '</i>' + sl.n + '：'
+          + (e ? esc(e.n) + ' ' + tierSpan(e.tier) : mountPet ? esc(mountPet) + ' <span class="rpg-tier" data-t="1">出战</span>' : '<span style="opacity:.5">空</span>') + '</div>';
+      });
+      o += '</div>';
+      o += sec('当前状态', '影响攻防');
+      if (st.buffs && st.buffs.length) {
+        o += '<div class="rpg-chips">';
+        st.buffs.forEach(function (b) { o += '<span class="rpg-chip ' + (b.kind === 'debuff' ? 'bad' : '') + '">' + esc(b.i || '') + ' ' + esc(b.n) + ' · ' + (b.turns) + '回合</span>'; });
+        o += '</div>';
+      } else o += empty('暂无增益 / 减益', '去技能页施加一个状态试试');
+      if (st.points > 0) {
+        o += sec('分配属性点', '剩 ' + st.points + ' 点') + '<div class="rpg-chips">';
+        DIMS.forEach(function (x) { o += btn(x.n + ' +1', 'addpoint', x.k, 'sm'); });
+        o += '</div>';
+      }
+      o += sec('职业与转职') + '<div class="rpg-chips">';
+      w.classes.forEach(function (id) { o += btn(esc(CLASSES[id].n), 'setclass', id, 'sm' + (st.cls === id && !st.hidden ? ' on' : '')); });
+      w.hidden.forEach(function (h) { o += btn(esc(h.n) + '（Lv.' + h.lv + '）', 'setclass', h.id, 'sm' + (st.hidden === h.id ? ' on' : '')); });
+      o += '</div>';
+      if (st.log && st.log.length) o += '<div class="rpg-log">' + st.log.slice(-3).map(esc).join('<br>') + '</div>';
+      return o;
+    }
+
+    /* ---------- 背包 / 商店 / 强化 ---------- */
+    function pBag() {
+      var st = R.st, w = R.w, o = '';
+      o += sec('药水库存', '点击使用');
+      o += '<div class="rpg-grid">';
+      SHOP.forEach(function (it) { o += cell(esc(it.i + ' ' + it.n), '×' + (st.items[it.k] || 0), '') + ''; });
+      o += '</div><div class="rpg-chips">';
+      SHOP.forEach(function (it) { o += btn('🧪 用 ' + it.n, 'usepotion', it.k, 'sm', !(st.items[it.k] > 0)); });
+      o += '</div>';
+      o += sec('商店', '消耗 ' + esc(w.cur));
+      o += '<div class="rpg-cards">';
+      SHOP.forEach(function (it) {
+        o += '<div class="rpg-card"><div class="rpg-card-hd"><i>' + it.i + '</i><b>' + esc(it.n) + '</b></div>'
+          + '<div class="rpg-card-bd">' + esc(it.desc) + '</div>'
+          + '<div class="rpg-card-ft"><span>' + it.price + ' ' + esc(w.cur) + '</span>' + btn('购买', 'buy', it.k, 'sm') + '</div></div>';
+      });
+      o += '</div>';
+      o += sec('背包', (st.bag && st.bag.length ? st.bag.length + ' 件' : '空'));
+      if (st.bag && st.bag.length) {
+        o += '<div class="rpg-cards">';
+        st.bag.forEach(function (it, ix) {
+          var price = 8 + tierIdx(it && it.tier) * 6 + Math.round((Number(it && it.atk) || 0) / 4);
+          o += '<div class="rpg-card"><div class="rpg-card-hd"><b>' + esc((it && it.n) || '未知物品') + '</b>' + tierSpan(it && it.tier) + '</div>'
+            + '<div class="rpg-card-bd">攻 +' + (Number(it && it.atk) || 0) + ' · 防 +' + (Number(it && it.def) || 0) + ' · 售 ' + price + ' ' + esc(w.cur) + '</div>'
+            + '<div class="rpg-card-ft">' + btn('装备', 'equipbag', ix, 'sm') + btn('出售', 'sell', ix, 'sm') + '</div></div>';
+        });
+        o += '</div>';
+      } else o += empty('背包是空的，去打一次掉落', '点上方「掉落」或快捷栏结算一次');
+      o += sec('装备强化', '确定性成功率 70% · 失败不毁装');
+      var wep = st.equip.weapon;
+      if (wep) {
+        var ecost = 30 + (Number(st.lv) || 1) * 2;
+        o += '<div class="rpg-card"><div class="rpg-card-hd"><b>🔨 ' + esc(wep.n || '主武器') + '</b>' + tierSpan(wep.tier) + '</div>'
+          + '<div class="rpg-card-bd">强化 +' + (Number(wep.lv) || 0) + ' · 攻 ' + (Number(wep.atk) || 0) + ' · 防 ' + (Number(wep.def) || 0) + '｜费用 ' + ecost + ' ' + esc(w.cur) + '</div>'
+          + '<div class="rpg-card-ft">' + btn('强化武器', 'enhance', 'weapon', 'sm') + '</div></div>';
+      }
+      return o;
+    }
+
+    /* ---------- 技能 / Buff / 回合 ---------- */
+    function pSkill() {
+      var st = R.st, d = R.d, w = R.w, o = '';
+      var list = clsCfg(st).skills;
+      o += sec('职业技能', esc(clsName(st)) + ' · ' + esc(w.res) + ' ' + R.mp + '/' + d.maxMp);
+      o += '<div class="rpg-cards">';
+      list.forEach(function (sk) {
+        var cd = st.cd[sk[0]] || 0, afford = (Number(st.mp) || 0) >= sk[2];
+        o += '<div class="rpg-card"><div class="rpg-card-hd"><b>' + esc(sk[1]) + '</b><span class="rpg-tag">×' + sk[4] + '</span></div>'
+          + '<div class="rpg-card-bd">耗 ' + esc(w.res) + ' ' + sk[2] + ' · 冷却 ' + sk[3] + ' 轮' + (cd > 0 ? ' · <em class="rpg-cd">冷却中 ' + cd + '</em>' : '') + '</div>'
+          + '<div class="rpg-card-ft">' + btn(cd > 0 ? '冷却中' : !afford ? '蓝不足' : '施展', 'skill', sk[0], 'sm', cd > 0 || !afford) + '</div></div>';
+      });
+      o += '</div>';
+      o += sec('增益 / 减益', '状态会即时改写上方攻击与防御');
+      o += '<div class="rpg-cards">';
+      Object.keys(BUFFS).forEach(function (bk) {
+        var b = BUFFS[bk];
+        o += '<div class="rpg-card"><div class="rpg-card-hd"><i>' + b.i + '</i><b>' + esc(b.n) + '</b><span class="rpg-tag ' + (b.kind === 'debuff' ? 'bad' : '') + '">' + (b.kind === 'debuff' ? '减益' : '增益') + '</span></div>'
+          + '<div class="rpg-card-bd">攻 ' + (b.atk >= 0 ? '+' : '') + b.atk + ' · 防 ' + (b.def >= 0 ? '+' : '') + b.def + ' · 持续 ' + b.turns + ' 回合</div>'
+          + '<div class="rpg-card-ft">' + btn('施加', 'buff', bk, 'sm') + '</div></div>';
+      });
+      o += '</div>';
+      o += sec('回合推进', '当前第 ' + (st.round || 0) + ' 回合');
+      o += '<div class="rpg-chips">' + btn('⏭ 结束回合（Buff -1 回合 / 回血蓝）', 'tick', '', '') + '</div>';
+      return o;
+    }
+
+    /* ---------- 任务 / 成就 ---------- */
+    function pQuest() {
+      var st = R.st, w = R.w, o = '';
+      var arc = questArc(R.g), stages = arc.st || [], nst = stages.length || 3;
+      var wins = Number(st.arenaWins) || 0, reached = Math.min(nst, wins);
+      o += sec('三幕主线', esc(arc.title || '主线'));
+      o += '<div class="rpg-kv"><span>进度</span><b>' + reached + ' / ' + nst + '</b><i class="rpg-bar rpg-exp" style="flex:1"><i style="width:' + R.pct(reached, nst) + '%"></i></i></div>';
+      o += '<div class="rpg-tip sm">主线由竞技场胜场推进（quest-chain.js 三幕）：每胜 1 场解锁 1 幕。</div>';
+      o += '<div class="rpg-cards">';
+      stages.forEach(function (sg, i) {
+        var unlocked = wins >= i + 1, claimed = st.questDone.indexOf(i) >= 0;
+        var state = claimed ? '✅ 已领奖' : unlocked ? '🎯 可领取' : '🔒 未解锁';
+        var qgold = 40 + i * 30, qrep = 10 + i * 10;
+        o += '<div class="rpg-card ' + (unlocked && !claimed ? 'hot' : '') + '"><div class="rpg-card-hd"><b>第 ' + (i + 1) + ' 幕 · ' + esc(sg[0]) + '</b><span class="rpg-tag">' + state + '</span></div>'
+          + '<div class="rpg-card-bd">' + esc(sg[1]) + '｜奖励 ' + qgold + ' ' + esc(w.cur) + ' + ' + qrep + ' 声望</div>'
+          + '<div class="rpg-card-ft">' + (unlocked && !claimed ? btn('领取奖励', 'questclaim', i, 'sm') : '<span class="rpg-mut">' + state + '</span>') + '</div></div>';
+      });
+      if (!stages.length) o += empty('主线数据尚未载入', 'quest-chain.js 加载后自动显示三幕');
+      o += '</div>';
+      o += sec('成就', '达成后领取 ' + esc(w.cur) + ' / 声望');
+      o += '<div class="rpg-cards">';
+      ACHS.forEach(function (ac) {
+        var done = st.ach.indexOf(ac.id) >= 0, okc = ac.test(st, w);
+        o += '<div class="rpg-card ' + (okc && !done ? 'hot' : '') + '"><div class="rpg-card-hd"><i>' + ac.i + '</i><b>' + esc(ac.n) + '</b><span class="rpg-tag ' + (done ? 'ok' : okc ? '' : 'bad') + '">' + (done ? '已领取' : okc ? '可领取' : '未达成') + '</span></div>'
+          + '<div class="rpg-card-bd">' + esc(ac.cond) + '｜' + ac.gold + ' ' + esc(w.cur) + ' + ' + ac.rep + ' 声望</div>'
+          + '<div class="rpg-card-ft">' + (okc && !done ? btn('领取', 'achieveclaim', ac.id, 'sm') : '<span class="rpg-mut">' + (done ? '✓' : esc(ac.cond)) + '</span>') + '</div></div>';
+      });
+      o += '</div>';
+      return o;
+    }
+
+    /* ---------- 地图 ---------- */
+    function pMap() {
+      var st = R.st, w = R.w, o = '';
+      o += sec('当前位置', esc(w.cur) + '传送');
+      o += '<div class="rpg-card hot"><div class="rpg-card-hd"><b>📍 ' + esc(st.map || w.startMap) + '</b><span class="rpg-tag ok">所在地</span></div>'
+        + '<div class="rpg-card-bd">传送消耗随距离递增：第 n 个地名费用 = 10 + n×5 ' + esc(w.cur) + '</div></div>';
+      o += sec('本界地名', '点击传送（消耗 ' + esc(w.cur) + '）');
+      if (R.maps && R.maps.length) {
+        o += '<div class="rpg-cards">';
+        R.maps.forEach(function (mp, mi) {
+          var here = mi === (Number(st.mapIdx) || 0), cost = 10 + mi * 5;
+          o += '<div class="rpg-card ' + (here ? 'hot' : '') + '"><div class="rpg-card-hd"><b>' + (mi + 1) + '. ' + esc(mp) + '</b></div>'
+            + '<div class="rpg-card-bd">费用 ' + cost + ' ' + esc(w.cur) + (here ? ' · 当前所在地' : '') + '</div>'
+            + '<div class="rpg-card-ft">' + (here ? '<span class="rpg-mut">已在此地</span>' : btn('传送', 'teleport', mi, 'sm')) + '</div></div>';
+        });
+        o += '</div>';
+      } else o += empty('本界暂无地名数据', '');
+      return o;
+    }
+
+    /* ---------- 社交：组队 / 公会 / 宠物 / 竞技场 ---------- */
+    function pSocial() {
+      var st = R.st, w = R.w, d = R.d, o = '';
+      var psz = Number(st.party.size) || 1;
+      o += sec('组队', psz + ' / ' + (st.party.max || 5) + ' 人');
+      o += '<div class="rpg-card"><div class="rpg-card-hd"><b>👥 队伍加成</b><span class="rpg-tag">攻 +' + ((psz - 1) * 3) + ' 防 +' + ((psz - 1) * 2) + '</span></div>'
+        + '<div class="rpg-card-bd">每多 1 名队员，攻击 +3、防御 +2（已计入角色页战斗数值）</div>'
+        + '<div class="rpg-card-ft">' + btn('＋ 组队', 'party', 'join', 'sm', psz >= (st.party.max || 5)) + btn('－ 离队', 'party', 'leave', 'sm', psz <= 1) + '</div></div>';
+      o += sec('公会');
+      if (st.guild.name) {
+        o += '<div class="rpg-card"><div class="rpg-card-hd"><b>🏛 ' + esc(st.guild.name) + '</b><span class="rpg-tag">贡献 ' + (st.guild.contrib || 0) + '</span></div>'
+          + '<div class="rpg-card-bd">贡献 20 ' + esc(w.cur) + ' → 贡献值 +10、声望 +8</div>'
+          + '<div class="rpg-card-ft">' + btn('贡献', 'guild', 'contrib', 'sm') + '</div></div>';
+      } else o += empty('尚未加入任何公会', '加入后可累积贡献与声望') + '<div class="rpg-chips">' + btn('加入「' + esc(w.guildName) + '」', 'guild', 'join', 'sm') + '</div>';
+      o += sec('宠物 / 坐骑', '成长值影响出战攻击');
+      var pet = st.pet;
+      o += '<div class="rpg-card"><div class="rpg-card-hd"><b>🐾 ' + esc(w.petName) + '</b><span class="rpg-tag ' + (pet.active ? 'ok' : 'bad') + '">' + (pet.active ? '出战中' : '休息中') + '</span></div>'
+        + '<div class="rpg-card-bd">成长值 ' + (pet.growth || 0) + ' · 出战攻击 +' + (2 + Math.floor((Number(pet.growth) || 0) * 0.5)) + ' · 喂食用 15 ' + esc(w.cur) + '</div>'
+        + '<div class="rpg-card-ft">' + btn(pet.active ? '收回' : '召唤', 'pet', 'summon', 'sm') + btn('🍖 喂食', 'pet', 'feed', 'sm') + '</div></div>';
+      o += sec('竞技场', '胜 ' + (st.arenaWins || 0) + ' / 负 ' + (st.arenaLoss || 0));
+      o += '<div class="rpg-card"><div class="rpg-card-hd"><b>⚔️ 挑战对手</b><span class="rpg-tag">攻 ' + d.atk + ' / 防 ' + d.def + '</span></div>'
+        + '<div class="rpg-card-bd">用 damage() 确定性结算双方伤害；胜：声望 +8、' + esc(w.cur) + ' +25；负：声望 +1。胜利推进主线三幕。</div>'
+        + '<div class="rpg-card-ft">' + btn('🏆 挑战 PK', 'arena', '', 'sm') + '</div></div>';
+      return o;
+    }
+
+    /* ---------- 战斗日志 ---------- */
+    function pBattle() {
+      var st = R.st, o = '';
+      o += sec('战斗日志', '结构化记录 · 最近 ' + (Array.isArray(st.blog) ? st.blog.length : 0) + ' 条');
+      if (!Array.isArray(st.blog)) {
+        return o + '<div class="rpg-error"><b>⚠ 战斗日志数据异常</b><small>日志格式损坏，可清空后重建</small>' + btn('清空重建', 'clearlog', '', 'sm') + '</div>';
+      }
+      if (!st.blog.length) {
+        o += empty('还没有战斗记录', '去施展一次技能、结算掉落或挑战竞技场');
+      } else {
+        o += '<div class="rpg-blog">';
+        st.blog.slice().reverse().forEach(function (b) {
+          o += '<div class="rpg-brow"><div class="rpg-bhd"><span class="rpg-btag">' + esc(b.t || '事件') + '</span><b>' + esc(b.a || '') + '</b><em>回合 ' + b.r + '</em></div>'
+            + '<div class="rpg-bbd">'
+            + (b.dmg ? '<span>伤害 <b>' + b.dmg + '</b>' + (b.crit ? ' <i class="rpg-crit">暴击</i>' : '') + '</span>' : '')
+            + (b.res ? '<span>结果 <b>' + esc(b.res) + '</b></span>' : '')
+            + (b.drop ? '<span>掉落 <b>' + esc(b.drop) + '</b></span>' : '')
+            + (b.note ? '<span class="rpg-bnote">' + esc(b.note) + '</span>' : '')
+            + '</div></div>';
+        });
+        o += '</div>';
+      }
+      o += sec('状态与操作', '当前第 ' + (st.round || 0) + ' 回合');
+      if (st.buffs && st.buffs.length) {
+        o += '<div class="rpg-chips">';
+        st.buffs.forEach(function (b) { o += '<span class="rpg-chip ' + (b.kind === 'debuff' ? 'bad' : '') + '">' + esc(b.n) + ' · 余 ' + b.turns + ' 回合</span>'; });
+        o += '</div>';
+      } else o += empty('无生效中的状态', '技能页可施加增益 / 减益');
+      o += '<div class="rpg-chips">' + btn('⚔️ 再来一战（PK）', 'arena', '', 'sm') + btn('⏭ 结束回合', 'tick', '', 'sm') + btn('🧹 清空日志', 'clearlog', '', 'sm') + '</div>';
+      return o;
+    }
   }
 
   /* ---------------- 注入 ---------------- */
   var genre = WR && WR.genre;
-  if (!WORLD[genre]) { window.RPGCore = { Engine: Engine, WORLD: WORLD, module: rpgModule }; return; }
+  if (!WORLD[genre]) { window.RPGCore = { Engine: Engine, WORLD: WORLD, module: rpgModule, SHOP: SHOP, BUFFS: BUFFS, ACHS: ACHS, TABS: TABS, QUEST_FALLBACK: QUEST_FALLBACK, questArc: questArc, tickBuffs: tickBuffs, blog: blog, normalizeState: normalizeState }; return; }
   var injected = false, mod = null;
   function inject() {
     if (injected) return true;
@@ -355,7 +836,7 @@
       mod = rpgModule(genre);
       window.WorldExt.injectModules(genre, [mod]);
       mountFab();
-      console.log('[RPGCore] ' + genre + ' 网游面板就位');
+      console.log('[RPGCore] ' + genre + ' 网游面板就位（v2 七标签）');
     } catch (e) { console.warn('[RPGCore]', e.message); }
     injected = true; return true;
   }
@@ -365,6 +846,18 @@
   function mountFab() {
     if (!document || !document.body || document.getElementById('rpgFab')) return;
     var w = WORLD[genre] || WORLD.daobanshenhua;
+    /* 共用皮肤：若静态 <link> 尚未注册（团队统一接线前），这里兜底注入，幂等不重复 */
+    (function ensureSuiteCSS() {
+      try {
+        if (!document.head) return;
+        if (document.querySelector('link[data-rpg-suite]')) return;
+        var ls = document.querySelectorAll('link[rel="stylesheet"]');
+        for (var i = 0; i < ls.length; i++) if ((ls[i].href || '').indexOf('rpg-suite.css') >= 0) return;
+        var l = document.createElement('link');
+        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.04.0'; l.setAttribute('data-rpg-suite', '1');
+        document.head.appendChild(l);
+      } catch (e) {}
+    })();
     var css = '#rpgFab{position:fixed;right:16px;bottom:96px;z-index:9200;border:1px solid var(--ip,#c9a86a)66;'
       + 'background:color-mix(in srgb,var(--ip,#c9a86a) 20%,#10161d);color:var(--itx,#e8dcc0);'
       + 'border-radius:22px;padding:9px 15px;font-size:12.5px;letter-spacing:1px;cursor:pointer;'
@@ -372,7 +865,7 @@
       + '#rpgFab:hover{background:color-mix(in srgb,var(--ip,#c9a86a) 34%,#10161d)}'
       + '#rpgDrawer{position:fixed;right:14px;bottom:146px;z-index:9201;width:min(440px,92vw);'
       + 'max-height:min(74vh,680px);overflow:auto;background:#0e141b;border:1px solid var(--ip,#c9a86a)44;'
-      + 'border-radius:14px;padding:14px;box-shadow:0 18px 50px rgba(0,0,0,.6);display:none}'
+      + 'border-radius:14px;padding:14px;box-shadow:0 18px 50px rgba(0,0,0,.6);display:none;overflow-x:hidden}'
       + '#rpgDrawer.on{display:block}#rpgDrawer .rpg-hd{display:flex;align-items:center;gap:8px;'
       + 'margin-bottom:10px;font-size:13px;color:var(--ip,#c9a86a);letter-spacing:1px}'
       + '#rpgDrawer .rpg-hd button{margin-left:auto;background:none;border:0;color:var(--imt,#9a8c6e);'
@@ -384,26 +877,51 @@
     fab.id = 'rpgFab'; fab.type = 'button'; fab.textContent = '🎮 ' + w.game + ' · 角色面板';
     document.body.appendChild(fab);
     var dr = document.createElement('div'); dr.id = 'rpgDrawer'; document.body.appendChild(dr);
-    function render() {
-      if (!mod || !window.WorldExt) return;
-      var wrap = window.WorldExt.modState && window.WorldExt.modState('wr_rpg');
-      if (!wrap) return;
-      /* WR.module 包装后的 html 接收完整模块状态包裹，内部自行拆 .state */
-      var html = '<div class="rpg-hd"><b>🎮 ' + w.game + ' · 角色面板</b><button type="button" id="rpgClose">✕</button></div>'
-        + (mod.html ? mod.html(wrap) : '');
-      dr.innerHTML = html;
-      var c = document.getElementById('rpgClose'); if (c) c.onclick = function () { dr.classList.remove('on'); };
-    }
-    fab.onclick = function () {
-      var open = dr.classList.toggle('on');
-      if (open) render();
+
+    var HD = '<div class="rpg-hd"><b>🎮 ' + w.game + ' · 角色面板</b><button type="button" id="rpgClose">✕</button></div>';
+    var LOADING = '<div class="rpg-panel"><div class="rpg-state rpg-loading"><span class="rpg-spin"></span><b>正在同步网游数值…</b><small>加载中</small></div></div>';
+    var ERROR = '<div class="rpg-panel"><div class="rpg-state rpg-error"><b>⚠ 面板数据异常</b><small>数值读取失败，可尝试休整重置</small>'
+      + '<button type="button" class="rpg-btn sm" data-rpg-act="rest" data-rpg-arg="">休整重试</button></div></div>';
+
+    /* 全局标签切换函数（data-rpg-tab + 一个函数，不传复杂对象） */
+    window.RPGSuiteTab = function (key) {
+      window.__rpgTabCur = key || 'role';
+      if (!document) return;
+      var box = document.getElementById('rpgDrawer'); if (!box) return;
+      var bs = box.querySelectorAll('[data-rpg-tab]'), i;
+      for (i = 0; i < bs.length; i++) bs[i].classList.toggle('on', bs[i].getAttribute('data-rpg-tab') === window.__rpgTabCur);
+      var ps = box.querySelectorAll('[data-rpg-pane]');
+      for (i = 0; i < ps.length; i++) ps[i].classList.toggle('on', ps[i].getAttribute('data-rpg-pane') === window.__rpgTabCur);
     };
-    /* 模块按钮 act 后刷新抽屉（原 act 只刷新状态栏与沉浸面板） */
+    function closest(el, sel) { while (el && el !== document) { if (el.nodeType === 1 && el.matches && el.matches(sel)) return el; el = el.parentNode; } return null; }
+    /* 事件委托：标签 / 关闭 / 所有动作按钮，容器只绑一次 */
+    dr.addEventListener('click', function (e) {
+      var t = e.target;
+      if (closest(t, '[data-rpg-tab]')) { var tb = closest(t, '[data-rpg-tab]'); window.RPGSuiteTab(tb.getAttribute('data-rpg-tab')); return; }
+      if (closest(t, '#rpgClose')) { dr.classList.remove('on'); return; }
+      var b = closest(t, '[data-rpg-act]');
+      if (b && !b.disabled && window.WorldExt && window.WorldExt.act) { window.WorldExt.act('wr_rpg', b.getAttribute('data-rpg-act'), b.getAttribute('data-rpg-arg') || ''); return; }
+    });
+
+    function render() {
+      if (!mod || !window.WorldExt) { dr.innerHTML = HD + LOADING; return; }
+      var wrap = window.WorldExt.modState && window.WorldExt.modState('wr_rpg');
+      if (!wrap || !wrap.state) { dr.innerHTML = HD + LOADING; return; }
+      var inner;
+      try { inner = mod.html(wrap); } catch (e) { inner = ERROR; }
+      dr.innerHTML = HD + (inner || ERROR);
+      if (window.RPGSuiteTab) window.RPGSuiteTab(window.__rpgTabCur || 'role');
+    }
+    fab.onclick = function () { var open = dr.classList.toggle('on'); if (open) render(); };
+    /* 模块按钮 act 后刷新抽屉 + 状态栏（原 act 只刷新沉浸面板，不碰 #wxStrip） */
     if (window.WorldExt.act && !window.WorldExt.act.__rpg) {
       var orig = window.WorldExt.act;
       window.WorldExt.act = function (id) {
         var out = orig.apply(window.WorldExt, arguments);
-        if (id === 'wr_rpg' && dr.classList.contains('on')) render();
+        if (id === 'wr_rpg') {
+          try { if (window.WorldExt.refreshStrip) window.WorldExt.refreshStrip(); } catch (e) {}
+          if (dr.classList.contains('on')) render();
+        }
         return out;
       };
       window.WorldExt.act.__rpg = true;
@@ -413,6 +931,7 @@
       var origV = window.WorldExt.onVars;
       window.WorldExt.onVars = function () {
         var out = origV.apply(window.WorldExt, arguments);
+        try { if (window.WorldExt.refreshStrip) window.WorldExt.refreshStrip(); } catch (e) {}
         if (dr.classList.contains('on')) render();
         return out;
       };
@@ -422,5 +941,5 @@
   if (window.YJWait) window.YJWait.for(inject, null, { name: 'rpg-core', base: 160, max: 60 });
   else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inject);
   else inject();
-  window.RPGCore = { Engine: Engine, WORLD: WORLD, module: rpgModule, initState: initState, mountFab: mountFab };
+  window.RPGCore = { Engine: Engine, WORLD: WORLD, module: rpgModule, initState: initState, mountFab: mountFab, SHOP: SHOP, BUFFS: BUFFS, ACHS: ACHS, TABS: TABS, QUEST_FALLBACK: QUEST_FALLBACK, questArc: questArc, tickBuffs: tickBuffs, blog: blog, normalizeState: normalizeState };
 })();
