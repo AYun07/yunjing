@@ -700,6 +700,27 @@
     if (!f.quests || typeof f.quests !== 'object' || Array.isArray(f.quests)) f.quests = {};
     f.quests.offers = Array.isArray(f.quests.offers) ? f.quests.offers : [];
     f.quests.active = Array.isArray(f.quests.active) ? f.quests.active : [];
+    /* v4.10.0 修 P1-9 / P2（第三方审查「委托缺 gold 清零钱包 / 缺 need 永久卡死」）：
+       老存档 / 外部脏数据里委托可能缺 gold、exp、rep、need、cur。缺 gold 在交付时
+       会 `st.gold += undefined = NaN`，随后被本函数洗回默认金币（玩家余额被抹掉）；
+       缺 need 则 `cur >= need` 恒为 false（NaN 比较），委托永远无法完成。
+       这里对每条委托逐字段补最小合法值：need≥1、cur∈[0,need]、报酬字段≥0 且有限。
+       rpg-quests.js 正常生成的委托都带齐字段，此逻辑对正常数据零影响（幂等）。 */
+    ['offers', 'active'].forEach(function (arrKey) {
+      f.quests[arrKey] = f.quests[arrKey].filter(function (q) {
+        return q && typeof q === 'object' && !Array.isArray(q);
+      }).map(function (q) {
+        var need = Number(q.need);
+        q.need = (isFinite(need) && need >= 1) ? Math.min(9999, Math.round(need)) : 1;
+        var cur = Number(q.cur);
+        q.cur = (isFinite(cur) && cur >= 0) ? Math.min(q.need, Math.round(cur)) : 0;
+        ['gold', 'exp', 'rep'].forEach(function (k) {
+          var n = Number(q[k]);
+          q[k] = (isFinite(n) && n > 0) ? Math.min(1e9, Math.round(n)) : 0;
+        });
+        return q;
+      });
+    });
     ['done', 'expired', 'failed'].forEach(function (k) {
       var n2 = Number(f.quests[k]);
       f.quests[k] = (f.quests[k] == null || isNaN(n2)) ? 0 : Math.max(0, Math.round(n2));
@@ -729,13 +750,22 @@
     if (!f.cd || typeof f.cd !== 'object' || Array.isArray(f.cd)) f.cd = {};
     if (!f.equip || typeof f.equip !== 'object' || Array.isArray(f.equip)) f.equip = { weapon: w.starter };
     f.base = Object.assign({}, def.base, (f.base && typeof f.base === 'object' && !Array.isArray(f.base)) ? f.base : {});
-    /* 数值字段：缺/坏补默认，负数夹到 0（金币/HP/MP 绝不为负），等级至少 1 */
+    /* 数值字段：缺/坏补默认，负数夹到 0（金币/HP/MP 绝不为负），等级至少 1。
+       v4.10.0 修 P2「RPG 数值只有下限、没有上限」：旧版只有 Math.max(0,…)，
+       lv=1e308 会让 maxHp/(100+lv*18+…) 溢出成 Infinity，gold=1e308 再 += 也成
+       Infinity，一旦落盘整档损坏。统一加上限 NUM_CAP，lv 单独钳到 999。 */
+    var NUM_CAP = 1e9;
     ['gold', 'rep', 'points', 'kills', 'lastRound', 'enhSeq', 'arenaWins', 'arenaLoss', 'round', 'mapIdx', 'exp'].forEach(function (k) {
       var n = Number(f[k]);
-      f[k] = (f[k] == null || isNaN(n)) ? def[k] : Math.max(0, Math.round(n));
+      f[k] = (f[k] == null || isNaN(n) || !isFinite(n)) ? def[k] : Math.min(NUM_CAP, Math.max(0, Math.round(n)));
     });
     var lvN = Number(f.lv);
-    f.lv = (f.lv == null || isNaN(lvN)) ? 1 : Math.max(1, Math.round(lvN));
+    f.lv = (f.lv == null || isNaN(lvN) || !isFinite(lvN)) ? 1 : Math.min(999, Math.max(1, Math.round(lvN)));
+    /* 基础属性同样钳上限，防止 base.* 极端值让派生属性溢出 */
+    ['str', 'sta', 'agi', 'int', 'tac', 'luk'].forEach(function (k) {
+      var b = Number(f.base[k]);
+      f.base[k] = (isNaN(b) || !isFinite(b)) ? (def.base[k] || 0) : Math.min(1e6, Math.max(0, Math.round(b)));
+    });
     if (f.hp != null && isNaN(Number(f.hp))) f.hp = null;
     if (f.mp != null && isNaN(Number(f.mp))) f.mp = null;
     if (f.cls == null) f.cls = def.cls;
@@ -765,7 +795,7 @@
     }
     if (f.guild && typeof f.guild === 'object') {
       var gc = Number(f.guild.contrib);
-      f.guild.contrib = (f.guild.contrib == null || isNaN(gc) || !isFinite(gc)) ? 0 : Math.max(0, Math.round(gc));
+      f.guild.contrib = (f.guild.contrib == null || isNaN(gc) || !isFinite(gc)) ? 0 : Math.min(1e9, Math.max(0, Math.round(gc)));
       var gr = guildRank(f.guild.contrib);
       f.guild.level = gr.level; f.guild.rank = gr.rank;   /* 按贡献重算，幂等 */
       if (f.guild.name == null) f.guild.name = '';
@@ -1384,13 +1414,21 @@
           var tq = (st.quests.active || []).filter(function (x) { return x.id === tid; })[0];
           if (!tq) return '没有这条进行中的委托';
           if (tq.state !== 'done') return '🔒 委托尚未完成（' + tq.cur + '/' + tq.need + '）';
-          st.gold += tq.gold; st.rep += tq.rep;
-          var ge2 = Engine.gainExp(st, tq.exp);
+          /* v4.10.0 修 P1-9：委托数据可能缺 gold/exp/rep（老存档 / 外部脏数据），
+             直接 += undefined 会变 NaN，随后把整个钱包洗成默认金币。逐字段兜底为
+             有限非负数，交付动作绝不污染玩家余额（normalizeState 已做第一层回填，
+             这里是结算路径的第二层防御）。 */
+          var qGold = Number(tq.gold); if (!isFinite(qGold) || qGold < 0) qGold = 0;
+          var qRep = Number(tq.rep); if (!isFinite(qRep) || qRep < 0) qRep = 0;
+          var qExp = Number(tq.exp); if (!isFinite(qExp) || qExp < 0) qExp = 0;
+          st.gold = (Number(st.gold) || 0) + qGold;
+          st.rep = (Number(st.rep) || 0) + qRep;
+          var ge2 = Engine.gainExp(st, qExp);
           st.lv = ge2.lv; st.exp = ge2.exp; st.points = (Number(st.points) || 0) + ge2.points;
           st.quests.done = (Number(st.quests.done) || 0) + 1;
           st.quests.active = st.quests.active.filter(function (x) { return x.id !== tid; });
-          blog(st, { a: '交付委托', t: '委托', note: tq.title + ' · ' + w.cur + ' +' + tq.gold + ' · 声望 +' + tq.rep + ' · 经验 +' + tq.exp });
-          return ok('✅ 交付「' + tq.title + '」——' + w.cur + ' +' + tq.gold + '、声望 +' + tq.rep + '、经验 +' + tq.exp + '（' + (ge2.ups ? '升级至 Lv.' + ge2.lv + '！' : '当前 Lv.' + ge2.lv) + '）');
+          blog(st, { a: '交付委托', t: '委托', note: tq.title + ' · ' + w.cur + ' +' + qGold + ' · 声望 +' + qRep + ' · 经验 +' + qExp });
+          return ok('✅ 交付「' + tq.title + '」——' + w.cur + ' +' + qGold + '、声望 +' + qRep + '、经验 +' + qExp + '（' + (ge2.ups ? '升级至 Lv.' + ge2.lv + '！' : '当前 Lv.' + ge2.lv) + '）');
         }
         /* v4.07.0 委托：放弃 */
         if (a === 'qgiveup') {
@@ -1956,7 +1994,7 @@
         var ls = document.querySelectorAll('link[rel="stylesheet"]');
         for (var i = 0; i < ls.length; i++) if ((ls[i].href || '').indexOf('rpg-suite.css') >= 0) return;
         var l = document.createElement('link');
-        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.09.0'; l.setAttribute('data-rpg-suite', '1');
+        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.10.0'; l.setAttribute('data-rpg-suite', '1');
         document.head.appendChild(l);
       } catch (e) {}
     })();

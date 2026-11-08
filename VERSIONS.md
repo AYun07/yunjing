@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **82** 个版本，从 `v3.55.7` 到 `v4.09.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **83** 个版本，从 `v3.55.7` 到 `v4.10.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.10.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
 | **v4.09.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
 | **v4.08.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |
 | **v4.07.2** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.2) |
@@ -96,6 +97,20 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.10.0 · 2026-11-08
+
+第三方审查 v4.09.0 全量复现并根治：F1-F12 与 P1-P2 确定性缺陷清零
+
+数据治理：物理清除 413 条源码/提示词回灌、131 条斗破库《大主宰》倒灌、展开 34 条 wangyou 嵌套地点，运行时再过滤，KB 污染归零
+
+38 界按界注册表全补全：界名/画风/氛围/印章/原著主角/大势节点/原著配角五新界与四小说界全部就位
+
+清洗层与持久化、并发、判定器延续 v4.08/v4.09 已验证的稳健底座
+
+全量回归：JS 语法 249/249、数值清洗 5/5、node vm 复现 19/19、KB 加载 6/6、注册表 9/9、正文清洗 15/15，真浏览器零 pageerror
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.10.0)  [🔍 与 v4.09.0 差异](https://github.com/AYun07/yunjing/compare/v4.09.0...v4.10.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip)
 
 ## v4.09.0 · 2026-11-08
 

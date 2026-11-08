@@ -69,6 +69,11 @@
     xuanjianxianzu: '玄鉴仙族',
     zhanhen: '斩神',
     zhongshengdushi: '重生之都市修仙',
+    dazhuzai: '大主宰',
+    wangyou: '寰宇纪元',
+    wanxiangzhiwang: '万相之王',
+    wudongqiankun: '武动乾坤',
+    yuanzun: '元尊'
   };
 
   /** 预设文风块清单（世界名 → 档位名数组），首次用时构建 */

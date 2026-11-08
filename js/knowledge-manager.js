@@ -1,4 +1,24 @@
 const KB_GENRE = new URLSearchParams(location.search).get("genre") || "free";
+
+/* v4.10.0 修 F12（第三方审查 P1-2「项目源码 / 系统提示词被当成世界观铁律回灌知识库」）：
+   某构建/抽取脚本把 js/*.js 源码（含模板字符串）按分隔符切碎后写进各界 KB 的 add 数组，
+   产出一批 title 形如「世界观铁律 · const defaultSyste」「世界观设定 · { key」、
+   content 是 JS 语句的垃圾条目（分布 37/38 界，标题属于高优先级「世界观铁律」类）。
+   它们会被当「设定」检索、甚至注入模型，形成「提示词污染提示词」的自我回灌。
+
+   这里在装配漏斗 _mergePresets 处做**确定性过滤**：只在条目 title 命中「被切碎的源码
+   行」形态才剔除。判据刻意收窄到 title 前缀 + 明确 JS token，避免误伤
+   「速查 / 条文汇编 / 总纲 / 档案」这类 content 里恰好引用了字段名的合法设定文本。
+   数据文件本身不物理删除（可逆、可审计），过滤层同时兜住未来再次生成的同类脏数据。 */
+function KB_isCodeFragment(entry) {
+  if (!entry || typeof entry !== "object") return false;
+  var t = String(entry.title || "").trim();
+  /* 必须形如「世界观铁律 · <代码>」或「世界观设定 · <代码>」 */
+  if (!/^(?:世界观铁律|世界观设定)\s*·/.test(t)) return false;
+  var frag = t.replace(/^(?:世界观铁律|世界观设定)\s*·\s*/, "");
+  /* 片段必须是明确的 JS 源码 token（被截断的源码行） */
+  return /^(?:const\s|let\s|var\s|function\b|=>|defaultSystemPrompt|defaultDynamicWorldPrompt|getElementById|document\.|window\.|onInit\b|on[A-Z]|build[A-Z]|[A-Za-z_]+\w*StoryConfig|[A-Za-z_]+\w*\s*[:=]\s*[\(\{`]|[A-Za-z_]+\w*\s*\(|if\s*\(|return\b|[\{\}])/.test(frag);
+}
 /* v3.53.0：按「原创设计」需要补齐分类——势力与组织分开（势力有地盘与立场，组织偏职能），
    道具与技能/功法分开（一个拿在手上，一个会长在人身上），另补血脉、种族、关系、伏笔。
    旧条目的老分类全部保留，不受影响。 */
@@ -157,7 +177,10 @@ const StoryKnowledge = {
       const saved = localStorage.getItem(this.storageKey);
       if (saved) {
         const data = JSON.parse(saved);
-        this.knowledgeBase = Array.isArray(data == null ? void 0 : data.knowledge) ? data.knowledge : [];
+        const arr = Array.isArray(data == null ? void 0 : data.knowledge) ? data.knowledge : [];
+        /* v4.10.0 F12：清理老存档里已经注入过的源码/提示词碎片（存量）。
+           只剔除命中 KB_isCodeFragment 的条目，玩家自建内容零影响。 */
+        this.knowledgeBase = arr.filter(function (e) { return !KB_isCodeFragment(e); });
       }
     } catch (e) {
       console.error("[StoryKnowledge] 读取知识库失败:", e);
@@ -224,6 +247,8 @@ const StoryKnowledge = {
     const existing = new Set(this.knowledgeBase.map((i) => String(i.title).trim()));
     let added = 0;
     for (const p of presets) {
+      /* v4.10.0 F12：源码/提示词碎片不进检索池（详见文件头 KB_isCodeFragment） */
+      if (KB_isCodeFragment(p)) continue;
       const title = String(p.title || "").trim();
       if (!title || existing.has(title)) continue;
       this.knowledgeBase.push(this._normalizeEntry({ ...p, source: "preset" }));

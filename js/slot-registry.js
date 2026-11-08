@@ -67,7 +67,10 @@
   }
 
   /* ------------------------------------------------------- 键名构造规则表 */
-  /* kind 用于 purge() 时按格式反查，避免为每个模块手写一张孤儿键表。 */
+  /* 说明：下方每条规则的 kind 只是「格式标签」（A~F 便于人工阅读），
+     purge() 实际只用 RULES[i].build() 与 genreAt 生成精确键名，并不读取 kind；
+     全仓也没有任何代码读取 RULES[].kind。v4.10.0 修 F2：原注释称「kind 用于
+     purge() 时按格式反查」与实现不符，已更正为如实描述。 */
 
   /* 规则 A：{base}{suffix}                     —— 主档裸键 / 副档 ~slot 结尾
    *   例：worldExt_shrouding、worldExt_shrouding~sA1
@@ -140,20 +143,31 @@
     var sid = id || slotId();
     var gg = g || genre();
     var out = [];
-    var needles = ["~" + sid + "~", "~" + sid, ":" + sid + ":", "." + sid + "~"];
+    /* v4.10.0 修 F1（第三方审查 P1-7「跨界清档数据丢失」）：
+       旧版用 k.indexOf(gg) >= 0 判定「键属不属于本界」，是子串包含判断。
+       仓内 free 是 freeworld 的子串（38 界中唯一一对），于是
+       purge('main',{genre:'free'}) 的扫描兜底会把
+       yunjingWorldRuntime~main~freeworld / yunjingCanonTL:main:freeworld
+       误判为 free 界的键删掉 —— 在 free 界删档，毁掉 freeworld 界的数据。
+
+       现改为精确分段判定：界标识必须作为「完整一段」出现（前后都不能是
+       小写字母 / 数字），free 才不会命中 freeworld。同时给槽位令牌加尾界符，
+       避免 sid=sA1 时命中 sA10（同型前缀误伤）。 */
+    function esc(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+    var eSid = esc(sid), eGg = esc(gg);
+    /* 槽位令牌四形态：~sid~（C 类，槽在中间）/ ~sid 结尾（B、F 类）/
+       :sid:（D 类）/ .sid~（E 类）。~sid 结尾型要求其后不再跟字母数字，
+       防 sA1 命中 sA10。 */
+    var SLOT = new RegExp("(?:~" + eSid + "~|~" + eSid + "(?![a-z0-9_-])|:" + eSid + ":|\\." + eSid + "~)");
+    /* 界标识：前后均非字母数字才算命中（(^|[^a-z0-9])gg(?![a-z0-9])）。 */
+    var GENRE = gg ? new RegExp("(^|[^a-z0-9])" + eGg + "(?![a-z0-9])") : null;
     try {
       for (var i = 0; i < localStorage.length; i++) {
         var k = localStorage.key(i);
         if (!k) continue;
         if (k === "storyActiveSlot_" + gg) continue;
-        var hit = false;
-        for (var j = 0; j < needles.length; j++) {
-          if (k.indexOf(needles[j]) >= 0) { hit = true; break; }
-        }
-        if (!hit) continue;
-        /* 槽位令牌必须出现在「界标识之前或等于」，否则可能是别的界的键。
-           宽松处理：只要含槽位令牌且含当前界标识，就认定属于本槽。 */
-        if (gg && k.indexOf(gg) < 0) continue;
+        if (!SLOT.test(k)) continue;
+        if (GENRE && !GENRE.test(k)) continue;
         out.push(k);
       }
     } catch (e) {}

@@ -351,7 +351,14 @@
     "xuanjianxianzu"
   ]);
   function cfgOf() {
-    return REG[genre] || (RP_WORLDS.has(genre) ? GENERIC : null);
+    /* v4.10.0 修 F9（第三方审查 P1-3「装备模块 11/38 界静默不加载」）：
+       旧版 REG[genre] 与 RP_WORLDS 两张名单没跟上新增界，命中不到就 return null，
+       整个 IIFE 硬退出、无任何提示 —— free（默认界）、earth/mystery/wuxia/scifi/
+       freeworld 及五个新界共 11 界里玩家根本看不到装备栏。
+       GENERIC 兜底机制本身有效（guimi/guzhenren 正确落到它），只是名单不全。
+       让 cfgOf 末尾一律回落到 GENERIC：任何界都能加载通用装备栏，且以后新增界
+       不再需要回来补名单（根治边界漂移，不是逐界打补丁）。 */
+    return REG[genre] || GENERIC;
   }
   const CFG = cfgOf();
   if (!CFG) return;

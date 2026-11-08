@@ -622,6 +622,7 @@
     var tension = clamp(Number(v.tension) || 20, 0, 100);
     var conflict = tension / 100;
     var deltas = {};
+    var conflictFiredFlag = false;   /* v4.10.0 F8：本轮是否爆发资源冲突（张力出清信号） */
     function bump(k, d) { if (k == null || !isFinite(d) || !d) return; deltas[k] = (deltas[k] || 0) + d; }
     var byName = {}; alive.forEach(function (k) { byName[facs[k].name] = k; });
 
@@ -682,16 +683,72 @@
       if (a !== b) {
         var loss2 = (1.5 + conflict * 3) * amp;
         bump(a, -loss2); bump(b, -loss2 * 0.6);
+        conflictFiredFlag = true;   /* v4.10.0 F8：冲突实际发生 = 矛盾释放，计入张力回落 */
         try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: "「" + facs[a].name + "」与「" + facs[b].name + "」因地盘与资源起了冲突，双方各有损耗。" }); } catch (e) {}
       }
     }
 
     /* 应用增量（保留一位小数，使跨 tick 的真实累积可见） */
+    var swing = 0;   /* 本轮势力消长剧烈度：本函数新增，供张力演化用 */
     alive.forEach(function (k) {
       var cur = Number(facs[k].influence) || 0;
       var next = cur + (deltas[k] || 0);
+      swing += Math.abs(deltas[k] || 0);
       facs[k].influence = clamp(Math.round(next * 10) / 10, 0, 100);
     });
+
+    /* ------------------------------------------------------------------
+     * v4.10.0 修 F8（第三方审查 P2「张力没有任何上行机制」）★★
+     * 现状（已硬证明）：lifecycle() 体内 tension 六处全是读、零写入；
+     * 唯一上行源 sim-core.js:212 要求敌对边 strength≥40（每 tick 衰减 1-2，
+     * 升温窗口仅约 2 tick），world-clock.js:95 又每 tick 单向 −0.5。
+     * 净效果：张力长期只降不升，「矛盾自然积累到爆发」无法自治涌现。
+     *
+     * 这里给 lifecycle() 补张力的双向自治演化，全部基于本轮真实发生的因果量，
+     * 不是随机数噪声，也不改动上面 ①~⑦ 任何势力 deltas（保护死敌覆灭内核）：
+     *   · 升温项 = 势力消长剧烈度 swing + 敌对边强度 + 活跃冲突事件；
+     *     低张力时矛盾容易积累（系数 ∝ (100-tension)），高张力时趋缓。
+     *   · 降温项 = 高张力下爆发的实际冲突（⑦ 命中） + 势力覆灭（矛盾出清）；
+     *     高张力时回落更快（系数 ∝ tension）。
+     *   · 弱回归项：极端值（<8 或 >92）向中值轻微回拉，避免锁死在 0/100。
+     * 用 v.tensionTrend 做一位小数的平滑累积（跨 tick 可见，避免单轮跳变）。
+     * ------------------------------------------------------------------ */
+    (function evolveTension() {
+      var t = clamp(Number(v.tension) || 20, 0, 100);
+      /* 敌对边强度总量（有向边的 strength，取绝对值，只算敌对类） */
+      var hostile = 0;
+      rels.forEach(function (r) {
+        if (!r) return;
+        if (/敌|仇|对立|宿怨|死仇|竞争/.test(String(r.kind || ""))) hostile += Math.abs(Number(r.strength) || 0);
+      });
+      /* 升温：消长越剧烈、敌对越强、事件越多，张力上行越明显；低张力灵敏度更高 */
+      var pressure = swing * 0.9 + Math.min(hostile, 120) * 0.05 + Math.min((mem.events || []).length, 6) * 0.6;
+      var riseCoef = (100 - t) / 100;                    // 低张力时升温快
+      var rise = pressure * 0.10 * (0.35 + riseCoef) * amp;
+      /* 降温：高张力时，若本轮确有冲突爆发 / 势力覆灭，矛盾得到释放 */
+      var collapseNow = 0;
+      keys.forEach(function (k) { if (facs[k] && !facs[k].collapsed && (Number(facs[k].influence) || 0) <= 12) collapseNow++; });
+      var fallCoef = t / 100;                            // 高张力时回落快
+      var fall = (tension >= 55 ? (0.4 + fallCoef * 1.6) : 0)   // 高张力本身缓慢出清
+               + (conflictFiredFlag ? (1.0 + fallCoef * 2.0) : 0)  // 实际冲突 = 矛盾释放
+               + collapseNow * 0.8;                     // 势力覆灭 = 一支矛盾消失
+      /* 弱回归：极端值向 50 回拉，防锁死 */
+      var regression = 0;
+      if (t < 8) regression = (8 - t) * 0.25;
+      else if (t > 92) regression = -(t - 92) * 0.25;
+      var delta = rise - fall + regression;
+      /* 平滑：把 delta 累积进 v.tensionTrend（一位小数），满 1 才进整数位，
+         使跨 tick 的变化真实可见，又不会被单轮随机性带飞 */
+      var trend = Number(v.tensionTrend) || 0;
+      trend = clamp(trend + delta, -3, 3);
+      var step = Math.trunc(trend);
+      if (step !== 0) {
+        v.tension = clamp(t + step, 0, 100);
+        trend -= step;
+      }
+      v.tensionTrend = Math.round(trend * 10) / 10;
+    })();
+
     /* 覆灭判定：影响力枯竭 */
     keys.forEach(function (k) {
       var f = facs[k]; if (!f || f.collapsed) return;
