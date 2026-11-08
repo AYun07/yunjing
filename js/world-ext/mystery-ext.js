@@ -6,6 +6,9 @@
     'use strict';
 
     const ACCUSE_NEED = 3;   // 指认所需关联线索数
+    /* v4.08.0：嫌疑人硬上限。links 的键是「线索下标:嫌疑人下标」，
+       两者相乘会让存档体积平方级膨胀，必须给嫌疑人数封顶。 */
+    const MAX_SUSPECTS = 20;
 
     const evidenceMod = {
         id: 'evidence', icon: '🕵', name: '证据板 · 红线图',
@@ -40,6 +43,13 @@
                 const nm = String(name).replace(/[：:].*$/, '').trim();
                 if (nm && !s.suspects.some(x => x.name === nm)) { s.suspects.push({ name: nm }); d = true; }
             });
+            /* v4.08.0 修复（无上限增长）：
+               嫌疑人此前只 push 不截断 → 剧情里不断出现新名字，suspects 无限增长；
+               而 s.links 的键是 `线索下标:嫌疑人下标` → 键数 = 线索数 × 嫌疑人数，
+               两者相乘后存档体积呈平方级膨胀，直接撑爆 localStorage 配额。
+               现在：嫌疑人上限 20，超出淘汰最早入场的；线索上限维持 30。
+               注意 clues/suspects 截断会移动下标，因此必须在建 links **之后**再截断，
+               否则已有连线会指向错位的嫌疑人。 */
             /* AI 自动连线：线索对象值里点名指向谁 */
             Object.entries(WXH.asObj(evRaw)).forEach(([k, v]) => {
                 const ci = s.clues.findIndex(c => c.name === k);
@@ -53,6 +63,21 @@
             const res = vars.指认结果 || vars.指认;
             if (res && s.accused && !s.accused.result) { s.accused.result = String(res); d = true; }
             if (s.clues.length > 30) s.clues.length = 30;
+            /* 嫌疑人硬上限（截断后重建 links 索引，避免下标错位） */
+            if (s.suspects.length > MAX_SUSPECTS) {
+                const dropped = s.suspects.splice(0, s.suspects.length - MAX_SUSPECTS);
+                const droppedNames = dropped.map(x => x && x.name);
+                /* 重新按名字连线，保住仍存在的嫌疑人的证据链 */
+                const rebuilt = {};
+                Object.keys(s.links).forEach(k => {
+                    const p = k.split(':');
+                    const si = Number(p[1]);
+                    const su = s.suspects[si];
+                    if (su && droppedNames.indexOf(su.name) < 0) rebuilt[k] = true;
+                });
+                s.links = rebuilt;
+                d = true;
+            }
             return d;
         },
 
@@ -75,7 +100,21 @@
             if (action === 'addSuspect') {
                 const nm = String(payload || '').trim();
                 if (!nm) return;
-                if (!s.suspects.some(x => x.name === nm)) s.suspects.push({ name: nm });
+                if (!s.suspects.some(x => x.name === nm)) {
+                    /* v4.08.0：同样受硬上限约束（见 onVars 里的说明） */
+                    if (s.suspects.length >= MAX_SUSPECTS) {
+                        const dropped = s.suspects.splice(0, s.suspects.length - MAX_SUSPECTS + 1);
+                        const names = dropped.map(x => x && x.name);
+                        const rebuilt = {};
+                        Object.keys(s.links).forEach(k => {
+                            const si = Number(k.split(':')[1]);
+                            const su = s.suspects[si];
+                            if (su && names.indexOf(su.name) < 0) rebuilt[k] = true;
+                        });
+                        s.links = rebuilt;
+                    }
+                    s.suspects.push({ name: nm });
+                }
                 return `嫌疑人「${nm}」入板`;
             }
         },

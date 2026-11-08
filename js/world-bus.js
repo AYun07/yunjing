@@ -73,6 +73,9 @@ function load(){
   }catch(e){}
 }
 function save(){ if(saveTid) return; saveTid=setTimeout(function(){ saveTid=0; try{ localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){} },150); }
+/* v4.08.0：立即落盘版本（切档冲盘用）。save() 有 150ms 防抖，
+   切档 reload 时若防抖回调还没跑就被 unload 掐掉 → 事件总线状态丢失。 */
+function persist(){ try{ if(saveTid){ clearTimeout(saveTid); saveTid=0; } localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){} }
 load();
 
 function emit(ev){if(!ev||!ev.type)return;ev.ts=Date.now();bus.history.unshift(ev);if(bus.history.length>24)bus.history.length=24;save();try{react(ev)}catch(e){}var l=bus.handlers[ev.type]||[];for(var i=0;i<l.length;i++){try{l[i](ev)}catch(e2){}}var a=bus.handlers["*"]||[];for(var j=0;j<a.length;j++){try{a[j](ev)}catch(e3){}}}
@@ -91,7 +94,7 @@ on("custom",function(ev){if(BREAK_RE.test(ev.text||""))emit({type:"breakthrough"
 
 var API={
   emit:emit,on:on,fact:fact,drainFacts:drainFacts,recent:recent,grudge:grudge,topGrudge:topGrudge,topAlly:topAlly,
-  history:bus.history,counters:bus.counters,save:save,
+  history:bus.history,counters:bus.counters,save:save,persist:persist,
   reset:function(){ try{ var me=playerName(), rels=relStore(); if(rels){ for(var i=rels.length-1;i>=0;i--){ var r=rels[i]; if(r&&(r.a===me||r.b===me)) rels.splice(i,1); } } }catch(e){} bus.grudgeFlags={};bus.counters={};bus.history=[];save(); }
 };
 Object.defineProperty(API,"grudges",{ get:function(){ return grudgesView(); }, enumerable:true, configurable:true });

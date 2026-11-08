@@ -78,7 +78,14 @@
     cfg.baseUrl = trimBase(cfg.baseUrl) || DEF_BASE;
     cfg.embedModel = String(cfg.embedModel || '').trim() || DEF_EMBED;
     cfg.rerankModel = String(cfg.rerankModel || '').trim() || DEF_RERANK;
-    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    /* v4.08.0：加 try 保护。此前无保护 → 存储配额满时 QuotaExceededError 直接抛出，
+       UI 层没有任何反馈，玩家看到「点了没反应」，也不知道原因。 */
+    try {
+      localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    } catch (e) {
+      console.warn("[KBVector] 向量配置写入失败（存储空间可能已满）:", e);
+      try { if (window.showToast) window.showToast("⚠ 向量检索配置保存失败：浏览器存储空间不足，配置未生效。", "error"); } catch (e2) {}
+    }
     return cfg;
   }
   function isOn() {

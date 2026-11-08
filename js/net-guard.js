@@ -137,10 +137,26 @@
         await Throttle.acquire(opts.throttleKey || label);
         resp = await doFetch();
       } catch (netErr) {
-        // 网络层异常（DNS/断网/超时）——不重试超时类，避免拖死整体等待
+        /* 网络层异常（DNS/断网/超时）——不重试超时类，避免拖死整体等待
+         * v4.08.0 修复：此前只匹配 error.message，而 AbortController.abort() 抛出的
+         *   错误 message 是「This operation was aborted」/「The user aborted a request.」，
+         *   自造的流空闲超时 message 是「stream idle」——三者都不含 "AbortError" 字样，
+         *   导致「用户已放弃」和「首字节超时」被当成断网故障一路重试到 max 次。
+         * 判据改为：name 优先，其次 message；同时覆盖 abort / timeout / 超时 / 取消 四类语义。 */
         lastErr = netErr;
-        var isTimeout = /超时|timeout|TimeoutError|AbortError/i.test(String(netErr && netErr.message || ''));
-        if (isTimeout && attempt >= 1) throw netErr;
+        var errName = String((netErr && netErr.name) || '');
+        var errMsg = String((netErr && netErr.message) || '');
+        var isAbort = errName === 'AbortError' || /abort|abor|cancel|取消/i.test(errName + ' ' + errMsg);
+        var isTimeout = errName === 'TimeoutError' || /超时|timeout|TimeoutError/i.test(errName + ' ' + errMsg);
+        if (isAbort || isTimeout) {
+          /* 超时/中止：直接抛出，绝不重试。
+             理由：AbortError 绝大多数来自我们自己的超时控制器或用户主动取消，
+             重发只会让已放弃的请求继续占用端点配额，并把总耗时放大到数倍。 */
+          if (!opts.silent) {
+            notify('⏱ ' + label + (isAbort ? ' 请求被中止/超时' : ' 请求超时') + '（' + (errMsg || errName || '无数据返回').slice(0, 60) + '），不再自动重试', 'warn');
+          }
+          throw netErr;
+        }
         if (attempt >= max) throw netErr;
         var d0 = backoffMs(attempt, 0);
         if (!opts.silent) notify('⚠ ' + label + ' 网络异常（' + (netErr.message || '').slice(0, 60) + '），' + Math.round(d0 / 1000) + ' 秒后重试（' + (attempt + 1) + '/' + max + '）', 'warn');

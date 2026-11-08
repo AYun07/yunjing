@@ -7,6 +7,12 @@
     'use strict';
 
     const TOTAL = 23;   // 异火榜二十三种（原著铁律）
+    /* v4.08.0 硬上限：owned 与 devoured 此前只 push 不截断。
+       模型若持续上报新异火名（甚至编造名），owned 会超过 23 —— 但面板只渲染前 23 格，
+       超出的部分既看不见又永久占着存档体积。devoured（融合履历）同理。
+       依据原著铁律「异火榜共二十三种」给 owned 封顶在 23，履历封顶 40。 */
+    const MAX_OWNED = TOTAL;
+    const MAX_DEVOURED = 40;
 
     const flameMod = {
         id: 'flames', icon: '🔥', name: '异火榜',
@@ -37,6 +43,9 @@
             });
             const mg = vars.吞噬融合 || vars.吞噬;
             if (mg != null && mg !== '' && String(mg) !== s.merging) { s.merging = String(mg); if (!s.devoured.includes(s.merging)) s.devoured.push(s.merging); d = true; }
+            /* v4.08.0：封顶（见文件头说明） */
+            if (s.owned.length > MAX_OWNED) s.owned.length = MAX_OWNED;
+            if (s.devoured.length > MAX_DEVOURED) s.devoured.length = MAX_DEVOURED;
             return d;
         },
 

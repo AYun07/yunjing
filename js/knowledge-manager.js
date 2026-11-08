@@ -286,7 +286,15 @@ const StoryKnowledge = {
     return v === null ? true : v === "true";
   },
   setEnabled(on) {
-    localStorage.setItem(this.enabledKey, String(!!on));
+    /* v4.08.0：加 try 保护（配额满时抛 QuotaExceededError，UI 无反馈） */
+    try {
+      localStorage.setItem(this.enabledKey, String(!!on));
+      return true;
+    } catch (e) {
+      console.warn("[KnowledgeManager] 开关状态写入失败:", e);
+      try { if (window.showToast) window.showToast("⚠ 资料库开关保存失败：浏览器存储空间不足。", "error"); } catch (e2) {}
+      return false;
+    }
   },
   getCount() {
     return this.knowledgeBase.length;

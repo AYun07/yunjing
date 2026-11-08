@@ -8,8 +8,14 @@
       return "free";
     }
   })();
-  /* v3.68.0 串档修复：界专属模块状态按存档槽隔离（主档裸键零迁移，副档 ~slotId） */
-  const SLOT_SUFFIX = (() => {
+  /* v3.68.0 串档修复：界专属模块状态按存档槽隔离（主档裸键零迁移，副档 ~slotId）
+   * v4.08.0 修复（D3 · 求值时机脆弱）：原来这是 IIFE 顶层常量，脚本一加载就求值。
+   *   但 studio.html 里 story-framework.js 带 defer、world-ext-core.js 不带
+   *   → 后者先执行 → 此刻 window.storyFramework 仍是 undefined → 只能退到
+   *   localStorage['storyActiveSlot_'+genre] 兜底。两者目前恰好相等纯属巧合
+   *   （URL 的 genre 与 fw.genre 同值），一旦分叉就会静默串档。
+   *   现在改为**惰性求值**：每次用时重新解析 slotId。 */
+  const SLOT_SUFFIX = () => {
     try {
       const fw = window.storyFramework;
       const sid = (fw && fw.slotId)
@@ -17,8 +23,8 @@
         || "main";
       return sid && sid !== "main" ? "~" + sid : "";
     } catch (e) { return ""; }
-  })();
-  const STORE = `worldExt_${genre}${SLOT_SUFFIX}`;
+  };
+  const STORE = `worldExt_${genre}${SLOT_SUFFIX()}`;
   const $id = (i) => document.getElementById(i);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   function asArr(v) {
@@ -96,6 +102,8 @@
   let entMod = null;
   let dayEvents = [];
   let pending = [];
+  /* v4.08.0：写盘失败只提示一次，避免 toast 轰炸 */
+  let saveWarned = false;
   function mergeDefs(base, extra) {
     const out = base.slice();
     for (const d of extra || []) {
@@ -128,7 +136,30 @@
   function save() {
     try {
       localStorage.setItem(STORE, JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
+      if (saveWarned) { saveWarned = false; }
     } catch (e) {
+      /* v4.08.0 修复（静默写失败）：
+         此前 catch 是空块 → 配额满（QuotaExceededError）时磁盘没落盘，
+         内存里的 mods/ent 已改，刷新即回档丢失，而玩家毫不知情。
+         现在：① 降级到 MoStore（IndexedDB）再试；② 仍失败则**明确提示玩家**
+         （同一个存档里连续提示，避免 toast 轰炸）；③ 控制台留痕。 */
+      if (!saveWarned) {
+        saveWarned = true;
+        console.warn("[WorldExt] 存档写入失败（可能是浏览器存储配额已满）：", e);
+        try {
+          if (window.MoStore && typeof window.MoStore.setItem === "function") {
+            window.MoStore.setItem(STORE, JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
+            saveWarned = false;
+          }
+        } catch (e2) { /* IndexedDB 兜底也失败 */ }
+      }
+      if (saveWarned) {
+        try {
+          if (window.showToast) {
+            window.showToast("⚠ 界内进度保存失败：浏览器存储空间已满，本次改动刷新后会丢失。请到「接口设置」清理旧数据或导出存档后再试。", "error");
+          }
+        } catch (e3) {}
+      }
     }
   }
   function ensureState(mod) {
@@ -386,6 +417,10 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
             } catch (e) {
             }
           });
+          /* v4.08.0 修复（无上限增长）：dayEvents 是模块级累积数组，从不被清空
+             → 每次 EE.tick 产生的完工事件永久堆积（纯内存泄漏，长时挂机时单调增长）。
+             事件只用于弹提示，处理完本批即清空。 */
+          dayEvents.length = 0;
         }
       } catch (e) {
         console.warn("[WorldExt:ent]", e.message);
@@ -692,6 +727,15 @@ ${directives.join("\n")}
     return true;
   }
   window.WXH = H;
+  /* v4.08.0 卸载前落盘：此前 worldExt 的内存态只在 act()/onVars() 时落盘，
+     玩家在面板改完状态直接关页面 → 改动全丢（切档场景已在 SaveSlots.switchTo 里补冲盘，
+     但「关页面」这条路径仍然没有）。现挂 pagehide + beforeunload 双保险。 */
+  try {
+    if (typeof window.addEventListener === "function") {
+      window.addEventListener("pagehide", () => { try { save(); } catch (e) {} }, { capture: true });
+      window.addEventListener("beforeunload", () => { try { save(); } catch (e) {} }, { capture: true });
+    }
+  } catch (e) {}
   window.WorldExt = {
     version: VERSION,
     genre,

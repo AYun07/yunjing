@@ -85,7 +85,25 @@ function fetchWithTimeout(url, opts = {}, timeoutMs = 3e5, guardOpts = {}) {
   const once = () => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), ms);
-    return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
+    /* v4.08.0 外部取消：此前这里无条件覆盖 opts.signal，调用方无法中断请求，
+       玩家面对 150s+ 的慢响应只能干等。现在把外部 signal（用户点「停止生成」）接到
+       同一个 controller 上，任一触发都终止这次 fetch。 */
+    let extAbort = null;
+    const ext = guardOpts.signal || (opts && opts.signal);
+    if (ext) {
+      if (ext.aborted) {
+        try { controller.abort(); } catch (e) {}
+      } else if (typeof ext.addEventListener === "function") {
+        extAbort = () => { try { controller.abort(); } catch (e) {} };
+        ext.addEventListener("abort", extAbort, { once: true });
+      }
+    }
+    return fetch(url, { ...opts, signal: controller.signal }).finally(() => {
+      clearTimeout(timer);
+      if (extAbort && ext && typeof ext.removeEventListener === "function") {
+        try { ext.removeEventListener("abort", extAbort); } catch (e) {}
+      }
+    });
   };
   // v3.47.14 防 429/5xx：统一走 MoNetGuard 指数退避重试（Retry-After 优先）
   // 流式请求只对"建连阶段"生效——读到首个响应头即返回，不阻塞后续 SSE 读取
@@ -143,35 +161,47 @@ async function readSSEStream(response, opts = {}) {
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let timer = null;
+  /* v4.08.0 修复：idlePromise 原本是**单例**——只 reject 一次，且首字节超时与
+     流中空闲超时抛出的错误完全相同（name=AbortError / message="stream idle"），
+     上层无法区分「服务器根本没开始输出」与「输出中途卡住」，提示与重试策略也就没法分开。
+     现在每次 armIdle 都新建一个 promise，并给错误打上 phase 标记（'first' / 'idle'）。
+     顺带修掉：旧实现里若定时器在两次 read 之间触发，会产生一个无人接管的 rejection。 */
+  let idlePromise = null;
   let idleReject = null;
-  const idlePromise = new Promise((_, reject) => {
-    idleReject = reject;
-  });
+  const makeIdlePromise = () => {
+    idlePromise = new Promise((_, reject) => { idleReject = reject; });
+    return idlePromise;
+  };
   let gotAnyByte = false;
   const armIdle = () => {
     clearTimeout(timer);
     const base = gotAnyByte ? idleMs : firstIdleMs || idleMs;
+    const phase = gotAnyByte ? "idle" : "first";
+    const p = makeIdlePromise();
     timer = setTimeout(() => {
-      const e = new Error("stream idle");
+      const e = new Error(gotAnyByte ? "stream idle" : "stream first-byte timeout");
       e.name = "AbortError";
-      idleReject(e);
+      e.streamPhase = phase;
+      e.isTimeout = true;
+      if (idleReject) idleReject(e);
       try {
         reader.cancel();
       } catch (err) {
       }
     }, base && base > 0 ? base : 3e5);
+    return p;
   };
   let buffer = "";
   let full = "";
-  armIdle();
+  let raceIdle = armIdle();
   try {
     while (true) {
-      const chunk = await Promise.race([reader.read(), idlePromise]);
+      const chunk = await Promise.race([reader.read(), raceIdle]);
       if (chunk.done) break;
       if (!gotAnyByte) {
         gotAnyByte = true;
       }
-      armIdle();
+      raceIdle = armIdle();
       buffer += decoder.decode(chunk.value, { stream: true });
       const lines = buffer.split("\n");
       buffer = lines.pop() || "";
@@ -309,7 +339,7 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
         max_tokens: (opts && opts.maxTokens) || cfg.maxTokens || 16384,
         stream: true
       })
-    }, firstMs, { label: "主笔", throttleKey: "主笔" });
+    }, firstMs, { label: "主笔", throttleKey: "主笔", signal: opts && opts.signal });
     if (!response.ok) {
       const errText = await readErrBody(response);
       const e = new Error(`API请求失败: ${response.status} ${response.statusText} ${errText.slice(0, 200)}`);
@@ -343,6 +373,16 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
     }
   } catch (e) {
     if (sawDelta || e.isHttpError) throw e;
+    /* v4.08.0 修复：超时/中止不得落到 non-stream 回退。
+       原逻辑只对 sawDelta / isHttpError 抛出，AbortError（首字节超时、流空闲超时、
+       用户取消）会一路穿到函数末尾，再静默发一次**完整的非流式请求**——
+       携带整份 system prompt 的第二次请求，正是「长正文更慢」和 180s 超时的放大器。
+       现在：超时/中止类错误直接抛出；只有「流建立失败但原因不明」的才回退。 */
+    var en = String((e && e.name) || '');
+    var em = String((e && e.message) || '');
+    if (en === 'AbortError' || en === 'TimeoutError' || /超时|timeout|abort|abor|stream idle|取消/i.test(en + ' ' + em)) {
+      throw e;
+    }
   }
   return await callOpenAINonStream(messages, cfg, fullEndpoint, fullMs, opts);
 }
@@ -363,7 +403,7 @@ async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts)
       presence_penalty: (_b = cfg.presencePenalty) != null ? _b : 0.1,
       max_tokens: (opts && opts.maxTokens) || cfg.maxTokens || 16384
     })
-  }, timeoutMs);
+  }, timeoutMs, { label: "主笔", throttleKey: "主笔", signal: opts && opts.signal });
   if (!response.ok) {
     const errText = await readErrBody(response);
     throw new Error(`API请求失败: ${response.status} ${response.statusText} ${errText.slice(0, 200)}`);
@@ -409,7 +449,7 @@ async function callGemini(messages, opts = {}, cfgOverride) {
         systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : void 0,
         generationConfig: genConfig
       })
-    }, firstMs);
+    }, firstMs, { label: "主笔", throttleKey: "主笔", signal: opts && opts.signal });
     if (!response.ok) {
       const errText = await readErrBody(response);
       if (response.status === 404 || response.status === 405) {
@@ -439,10 +479,16 @@ async function callGemini(messages, opts = {}, cfgOverride) {
     }
   } catch (e) {
     if (sawDelta || e.isHttpError) throw e;
+    /* v4.08.0：同 OpenAI 路径，超时/中止不落到 non-stream 回退（避免第二次完整请求） */
+    var gen = String((e && e.name) || '');
+    var gem = String((e && e.message) || '');
+    if (gen === 'AbortError' || gen === 'TimeoutError' || /超时|timeout|abort|abor|stream idle|取消/i.test(gen + ' ' + gem)) {
+      throw e;
+    }
   }
   return await callGeminiNonStream(base, toContents(), systemInstruction, genConfig, cfg, fullMs);
 }
-async function callGeminiNonStream(base, contents, systemInstruction, genConfig, cfg, timeoutMs) {
+async function callGeminiNonStream(base, contents, systemInstruction, genConfig, cfg, timeoutMs, opts) {
   const endpoint = `${base}/models/${cfg.model}:generateContent?key=${cfg.apiKey}`;
   const response = await fetchWithTimeout(endpoint, {
     method: "POST",
@@ -452,7 +498,7 @@ async function callGeminiNonStream(base, contents, systemInstruction, genConfig,
       systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : void 0,
       generationConfig: genConfig
     })
-  }, timeoutMs || secsToMs(cfg.timeout, 300));
+  }, timeoutMs || secsToMs(cfg.timeout, 300), { label: "主笔", throttleKey: "主笔", signal: opts && opts.signal });
   if (!response.ok) {
     const errText = await readErrBody(response);
     throw new Error(`Gemini请求失败: ${response.status} ${response.statusText} ${errText.slice(0, 200)}`);
@@ -467,6 +513,39 @@ function parseGeminiJson(data) {
   const parts = ((_a = data.candidates[0].content) == null ? void 0 : _a.parts) || [];
   return parts.map((p) => p && p.text && !p.thought ? p.text : "").filter(Boolean).join("");
 }
+/* v4.08.0 主笔请求门闩（并发保护）
+ * 问题：callStoryAI 此前没有任何并发保护。main 线在生成时，创作工坊（creator-forge）
+ *   与草稿实验室（draft-lab）会各自再发一条完整请求，与主线争抢同一端点；
+ *   慢端点下两条请求叠加，首字节超时概率显著上升。
+ * 方案：同一时刻只允许一条**非辅助**主笔请求在飞。辅助类（lightContext 协议补丁）
+ *   与显式 opts.parallel 的场景（草稿实验室多候选并行）不受门闩限制，
+ *   因为它们本就是设计上要并发的。
+ * 生命周期：门闩在 finally 中释放，异常路径（throw / AbortError）同样释放，
+ *   不会出现「卡死后再也发不出请求」。
+ */
+const MAIN_LATCH = { busy: false, owner: "", since: 0, controller: null, userAborted: false };
+window.__aiMainLatch = MAIN_LATCH;
+
+/* v4.08.0 用户可中断：暴露一个全局句柄，让 UI（等待卡上的「停止生成」按钮）
+ * 能真正取消进行中的主笔请求。此前慢响应只能干等 150s+。
+ * 注意：net-guard 收到 AbortError 后不再重试（见 net-guard.js），所以这里中止后
+ * 不会又偷偷发一次请求。 */
+window.abortMainGeneration = function (reason) {
+  const c = MAIN_LATCH.controller;
+  if (!c) return false;
+  /* 先置标记再 abort：fetch 被 abort 后错误会以 AbortError 冒泡上来，
+     上层要靠这个标记区分「玩家主动停止」与「超时」。 */
+  MAIN_LATCH.userAborted = true;
+  try { c.abort(); } catch (e) { return false; }
+  try {
+    window.StoryResponseHandler && window.StoryResponseHandler.renderSystemMessage(
+      `⏹ 已停止本次生成${reason ? "（" + String(reason).slice(0, 40) + "）" : ""}。`,
+      "info"
+    );
+  } catch (e) {}
+  return true;
+};
+
 async function callStoryAI(userMessage, isTest = false, opts = {}) {
   var _a, _b;
   const fw = window.storyFramework;
@@ -478,21 +557,39 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
      lightContext 走极简双消息，其余路径完全不变。 */
   const lightContext = !!opts.lightContext;
   if (lightContext) { const clean = { ...opts }; delete clean.lightContext; opts = clean; }
-  let messages = [];
-  if (!isTest) {
-    if (lightContext) {
-      messages = [
-        { role: "system", content: "【格式补丁器】只输出用户指定的协议片段，禁止输出任何故事正文、解释或复述，输出尽量短。" },
-        { role: "user", content: userMessage }
-      ];
-    } else {
-      messages = await buildStoryMessages(userMessage);
+  /* v4.08.0 并发门闩：非辅助、非并发、非常规测试的请求走独占门闩 */
+  const needsLatch = !isTest && !lightContext && !opts.parallel;
+  if (needsLatch) {
+    if (MAIN_LATCH.busy) {
+      throw new Error("上一段还在生成中，请等它写完再发起新的请求（或先点「停止生成」）。");
     }
-    (_a = window.TokenUsage) == null ? void 0 : _a.recordRequest(messages, "主笔");
-  } else {
-    messages = [{ role: "user", content: '你好，请回复"连接成功"四个字。' }];
+    MAIN_LATCH.busy = true;
+    MAIN_LATCH.owner = String(userMessage || "").slice(0, 40);
+    MAIN_LATCH.since = Date.now();
+    MAIN_LATCH.userAborted = false;
+    /* v4.08.0：为本次请求创建可外部中止的 controller */
+    const ctrl = new AbortController();
+    MAIN_LATCH.controller = ctrl;
+    opts = { ...opts, signal: ctrl.signal };
   }
+  let messages = [];
   try {
+    if (!isTest) {
+      if (lightContext) {
+        messages = [
+          { role: "system", content: "【格式补丁器】只输出用户指定的协议片段，禁止输出任何故事正文、解释或复述，输出尽量短。" },
+          { role: "user", content: userMessage }
+        ];
+      } else {
+        /* v4.08.0：buildStoryMessages 移入 try 块。此前它在 try 之外 await，
+           一旦装配阶段抛错（知识库/变量引擎异常），finally 不会执行 →
+           门闩永久卡在 busy=true，之后所有主笔请求都被拒绝。 */
+        messages = await buildStoryMessages(userMessage);
+      }
+      (_a = window.TokenUsage) == null ? void 0 : _a.recordRequest(messages, "主笔");
+    } else {
+      messages = [{ role: "user", content: '你好，请回复"连接成功"四个字。' }];
+    }
     // v3.47.16 主笔独立节流队列：与动态世界/变量AI/生图/手机互不阻塞
     // 续写轮（isContinuation）关闭流式增量回调，避免把续段当作新回复重绘
     const bmm = window.BaseModelMode; // v3.55.11 模型自适应：提到 callOnce 外层，自检块共享
@@ -532,7 +629,14 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
   } catch (error) {
     console.error("AI调用错误:", error);
     if (error && error.name === "AbortError") {
-      throw new Error(`AI 响应超时（${Math.round(secsToMs(fw.apiConfig.timeout, 300) / 1e3)} 秒内无任何数据返回）：网络或中转站无响应。可尝试：①接口设置里加大超时秒数 ②更换模型或中转站 ③关闭流式开关后重试。`);
+      /* v4.08.0：区分「玩家主动停止」与「超时」。此前两者共用同一条
+         「超时，调大超时秒数」的提示——玩家明明是自己点的停止，却被告示去改超时，
+         属于明确的误导。现在按 streamPhase / 外部中止标记分流。 */
+      if (error.userAborted || error.streamPhase === "user" || (window.__aiMainLatch && window.__aiMainLatch.userAborted)) {
+        throw new Error("已停止本次生成。");
+      }
+      const phase = error.streamPhase === "first" ? "首字节" : "流中";
+      throw new Error(`AI 响应超时（${phase}阶段 ${Math.round(secsToMs(fw.apiConfig.timeout, 300) / 1e3)} 秒内无数据返回）：网络或中转站无响应。可尝试：①接口设置里加大超时秒数 ②更换模型或中转站 ③关闭流式开关后重试。`);
     }
     /* v3.99.0 上下文超限自适应：小模型（或推断不出窗口的中转端点）最容易撞这个墙。
        捕获到就把预算压到 55%，重新装配消息后自动重试一次——玩家只会觉得「慢了一拍」，
@@ -560,6 +664,15 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
       }
     }
     throw error;
+  } finally {
+    /* v4.08.0：门闩必须在**所有**退出路径释放（含 throw / AbortError / 提前 return）。
+       否则一次失败就会把「主笔通道」永久锁死，玩家再也发不出消息。 */
+    if (needsLatch) {
+      MAIN_LATCH.busy = false;
+      MAIN_LATCH.owner = "";
+      MAIN_LATCH.since = 0;
+      MAIN_LATCH.controller = null;
+    }
   }
 }
 async function callInspirationEngine() {

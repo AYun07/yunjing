@@ -549,6 +549,17 @@ async def main():
               localStorage.setItem('yj_baseModelTier','small');
               if(window.BaseModelMode&&BaseModelMode.resetCache)BaseModelMode.resetCache();
             }""", {"endpoint": E, "key": K, "model": MODEL, "maxTokens": MAXTOK})
+            # v4.08.0 修测试器自身缺陷（与 t_truthdiff.py 同源）：
+            #   BaseModelMode.resetCache() → setTier() → saveApiConfig()，
+            #   会把**当时的内存配置**持久化到 localStorage。
+            #   若此刻配置尚未就位，空配置被写盘，之后 loadApiConfig() 读回仍是空，
+            #   于是每一步都报「请先配置并保存 AI 接口」。
+            #   修法：先写 localStorage + 内存，再 resetCache，顺序不可颠倒。
+            await pg.evaluate("""({endpoint,key,model,maxTokens})=>{
+              const cfg={endpoint,apiKey:key,model,type:'openai',maxTokens:maxTokens,temperature:0.8,stream:true};
+              try{ localStorage.setItem('storyApiConfig', JSON.stringify(cfg)); }catch(e){}
+              window.storyFramework.apiConfig=Object.assign({}, window.storyFramework.apiConfig||{}, cfg);
+            }""", {"endpoint": E, "key": K, "model": MODEL, "maxTokens": MAXTOK})
             # 等模块就绪
             for _ in range(40):
                 ok = await pg.evaluate("()=>{try{return !!(window.WorldExt&&window.WorldExt.hasModules&&window.WorldExt.hasModules());}catch(e){return false;}}")

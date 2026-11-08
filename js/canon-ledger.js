@@ -24,12 +24,21 @@
   var listeners = [];
 
   function genreKey() {
+    /* v4.08.0 修复（此前 38 个界共用一份账本）：
+       原实现读 `fw.config.genre || fw.config.id`，但 38 份 config **只有 genreKey**，
+       没有 genre 也没有 id → 恒定落到 "default" → 所有界都写进
+       `yunjingCanonLedger:main:default`，互相污染。
+       现在优先用 config.genreKey，再退回 SlotRegistry（URL query / WorldExt.genre）。 */
     try {
       var fw = window.storyFramework;
-      return (fw && fw.config && (fw.config.genre || fw.config.id)) || "default";
-    } catch (e) {
-      return "default";
-    }
+      var cfg = fw && fw.config;
+      var g = cfg && (cfg.genreKey || cfg.genre || cfg.id);
+      if (g) return g;
+    } catch (e) {}
+    try {
+      if (window.SlotRegistry && window.SlotRegistry.genre) return window.SlotRegistry.genre();
+    } catch (e2) {}
+    return "default";
   }
 
   function slotId() {
@@ -100,6 +109,11 @@
 
   var CanonLedger = {
     PREFIX: PREFIX,
+    /* v4.08.0：导出当前键名——防幻觉校验需要按「本界本槽的合法条目」比对，
+       而此前外部无从得知数据落在哪个键（也无法确认界键是否正确）。 */
+    key: key,
+    slotId: slotId,
+    genreKey: genreKey,
 
     onChange(fn) {
       if (typeof fn === "function") listeners.push(fn);

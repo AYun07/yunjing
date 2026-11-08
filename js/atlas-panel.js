@@ -14966,6 +14966,12 @@
     return !!(g && g.generic && g.fallback);
   }
   function storeKey() {
+    /* v4.08.0 修复（D7 槽隔离）：舆图足迹（走过哪些节点、势力状态）是**玩家行为**，
+       原来按界全档共享 → 副档直接继承主档的足迹与势力态。
+       现走 SlotRegistry.scoped()，首次访问自动迁移旧数据（主档有存档时不搬走）。 */
+    try {
+      if (window.SlotRegistry && window.SlotRegistry.scoped) return window.SlotRegistry.scoped("storyAtlas_", state.genre);
+    } catch (e) {}
     return `storyAtlas_${state.genre}`;
   }
   function save() {
