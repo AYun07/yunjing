@@ -39,6 +39,11 @@ const AmbienceLayer = (function () {
         guimi:          { hue: 262, sat: 18, lit: 48, dust: '雾都煤灰',  drift: 0.06 },
         guzhenren:      { hue: 96,  sat: 45, lit: 52, dust: '蛊光磷粉',  drift: -0.1 },
         xuanjianxianzu: { hue: 130, sat: 38, lit: 66, dust: '灵田萤露',  drift: 0.05 },
+        dazhuzai:       { hue: 42,  sat: 80, lit: 64, dust: '至尊金屑',  drift: 0.08 },
+        wangyou:        { hue: 210, sat: 85, lit: 70, dust: '赛季流光',  drift: 0.07 },
+        wanxiangzhiwang:{ hue: 280, sat: 45, lit: 62, dust: '万相星辉',  drift: -0.05 },
+        wudongqiankun:  { hue: 18,  sat: 88, lit: 60, dust: '荒古炎屑',  drift: 0.1 },
+        yuanzun:        { hue: 200, sat: 60, lit: 64, dust: '源海青芒',  drift: -0.06 },
         freeworld:      { hue: 272, sat: 30, lit: 68, dust: '凿空星屑',  drift: -0.05 },
         default:        { hue: 40,  sat: 30, lit: 78, dust: '墨韵浮尘',  drift: -0.04 }
     };
@@ -280,8 +285,10 @@ const AmbienceLayer = (function () {
         particleEnabled: particleOn, tintEnabled: tintOn,
         /** 首次启动（页面就绪即可调用，天气/时辰未知时先铺世界底噪灵光） */
         init(g) { if (g) genre = g; try { if (particleOn() && ensureCanvas()) kick(); applyTint(); } catch (e) { /* 氛围层永不伤主流程 */ } return api; },
-        /** 调试口 */
-        _info() { return { genre, weather, slot: slot, running, n: parts.length }; }
+        /** 调试口（v4.10.0 增补 mood，供按界氛围表回归探针读取，不改变任何行为） */
+        _info() { return { genre, weather, slot: slot, running, n: parts.length, mood: mood(genre) }; },
+        /** 按界只读查询当前氛围（不启动动画、不改内部状态） */
+        moodOf(g) { return mood(g || genre); }
     };
     return api;
 })();

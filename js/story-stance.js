@@ -69,7 +69,8 @@
     quanzhigaoshou: "叶修", daoguiyixian: "李火旺", longzu: "路明非",
     quanzhifashi: "莫凡", lunhuileyuan: "苏晓", shengxu: "楚风",
     shenmifusu: "杨间", limingzhijian: "高文", xianni: "王林",
-    guzhenren: "方源", jianlai: "陈平安"
+    guzhenren: "方源", jianlai: "陈平安",
+    dazhuzai: "牧尘", wanxiangzhiwang: "李洛", wudongqiankun: "林动", yuanzun: "周元"
   };
 
   /* ---------- 大势节点（hero 态锁死的「不可改」清单）---------- */
@@ -143,6 +144,34 @@
       "挑战赛夺冠、重返联盟",
       "全明星与总决赛的恩怨",
       "荣耀不败的传说续写"
+    ],
+    dazhuzai: [
+      "牧尘北灵牧域出身、灵脉被封与灵路血祸",
+      "九幽雀血脉连接、入北苍灵院创洛神会",
+      "大罗天域建九幽宫、统一天罗建牧府",
+      "救洛璃、平血神族、白龙大陆成位面之主",
+      "万古会夺万古不朽身、苍穹榜留名斩天邪神"
+    ],
+    wudongqiankun: [
+      "林动青阳镇拾祖石、符武双修与族会雪耻",
+      "炎城凝印、古墓府炼化吞噬祖符",
+      "百朝山斩林琅天、了十年血仇",
+      "入道宗悟大荒芜经、乱魔海收祖符",
+      "集八符掌位面之胎、斩异魔皇号武祖"
+    ],
+    yuanzun: [
+      "周元八脉被封、得祖龙经重开八脉",
+      "平大周内乱、斩武王武煌复国",
+      "入苍玄宗集四圣纹、圣迹之争",
+      "入混元天天渊域、成苍玄天天主",
+      "圣神破封、夭夭献祭神骨、周元成神斩圣神"
+    ],
+    wanxiangzhiwang: [
+      "李洛三座空相宫、由一院贬二院",
+      "融水光相、入圣玄星学府拜郗婵为师",
+      "东域圣杯战、府祭败裴昊、大夏异灾",
+      "龙牙脉认祖、灵相洞天修万相轮",
+      "界河宝域封侯、回大夏渡无双劫成无双侯"
     ]
   };
   var GENERIC_NODES = [
@@ -193,6 +222,26 @@
     ],
     quanzhigaoshou: [
       { id: "tang", name: "唐柔", role: "兴欣新人 / 战斗法师", realm: "全明星级", disposition: "冷静专注、外冷内热", fate: "原著里被叶修发掘的天才少女", rel: "主角的弟子", hook: "从被保护的新人到独当一面，如何走出自己的荣耀" }
+    ],
+    dazhuzai: [
+      { id: "luo", name: "洛璃", role: "北苍灵院 / 洛神族神女", realm: "太灵古族圣女", disposition: "清冷坚毅、重情守诺", fate: "原著里与牧尘两世羁绊、共抗天邪神", rel: "牧尘的挚爱与战友", hook: "神女一脉的宿命与前世记忆，如何在重压之下护住所爱" },
+      { id: "jiu", name: "九幽雀", role: "牧尘的血脉伙伴", realm: "上古禽类至尊血脉", disposition: "傲娇毒舌、嘴硬心软", fate: "原著里与牧尘缔血脉连接、共登巅峰", rel: "牧尘同生共死的契约者", hook: "从被迫寄生到生死相托，一只神禽如何找回自己的路" },
+      { id: "ji", name: "姬玄", role: "灵院大赛宿敌", realm: "九品至尊", disposition: "高傲狠戾、记仇", fate: "原著里灵路血祸的算计者、审判海之败", rel: "牧尘的死敌", hook: "天之骄子的陨落与执念，能否在败北之后另寻出路" }
+    ],
+    wudongqiankun: [
+      { id: "yan", name: "应欢欢", role: "道宗天殿弟子 / 冰主轮回", realm: "轮回境→冰主", disposition: "外冷内热、为爱燃尽", fate: "原著里觉醒冰主、燃轮回助林动", rel: "林动的爱人与宿命", hook: "天道之女为一人逆天，如何在众生与一人之间抉择" },
+      { id: "ying", name: "应玄子", role: "道宗掌教", realm: "生死玄境", disposition: "深沉护短、识大局", fate: "原著里道宗之主、林动的师门倚仗", rel: "林动的师门长辈", hook: "一宗之主的进退，如何在元门与异魔之间护住道宗" },
+      { id: "lin", name: "林琅天", role: "林氏天骄 / 宿敌", realm: "造化三境", disposition: "骄横记仇、心狠", fate: "原著里重创林啸、百朝山被斩", rel: "林动的族中死敌", hook: "天骄间的恩怨，能否在族厄之中放下私仇" }
+    ],
+    yuanzun: [
+      { id: "yao", name: "夭夭", role: "苍渊弟子 / 圣神之女", realm: "神祇", disposition: "古灵精怪、外柔内刚", fate: "原著里身世揭晓、献祭神骨救周元", rel: "周元的守护者与挚爱", hook: "承载灭世宿命的少女，如何在不被认出的岁月里守一人" },
+      { id: "cang", name: "苍渊", role: "苍玄宗开派祖师", realm: "法域境→圣者", disposition: "深谋远虑、护犊", fate: "原著里引周元入道、镇守诸天", rel: "周元的师祖与引路人", hook: "一代天骄归来的隐忍，如何在圣族阴影下布局" },
+      { id: "wu", name: "武煌", role: "大武王之子", realm: "天关境", disposition: "狂妄好胜、心高气傲", fate: "原著里夺运之仇、被周元斩杀", rel: "周元的宿敌", hook: "被宠坏的王子与夺运之恨，能否正视自己的败因" }
+    ],
+    wanxiangzhiwang: [
+      { id: "jiang", name: "姜青娥", role: "李洛未婚妻 / 洛岚府圣女", realm: "封侯级", disposition: "清冷强势、护短", fate: "原著里主动订下婚约、一路护持李洛", rel: "李洛的未婚妻与战友", hook: "天才少女的骄傲与柔情，如何在婚约之外找到自己的道" },
+      { id: "pei", name: "裴昊", role: "洛岚府记名弟子 / 叛徒", realm: "封侯级", disposition: "野心勃勃、心狠", fate: "原著里叛变分裂洛岚府、被李洛击败", rel: "李洛的对手", hook: "叛出师门的野心家，能否在坠落之后寻得 redemption" },
+      { id: "tai", name: "澹台岚", role: "李洛之母 / 无相圣宗传人", realm: "天王级", disposition: "洒脱不羁、护家", fate: "原著里于王侯战场失踪、留手段护府", rel: "李洛的母亲", hook: "一代传奇母亲的背影，如何在失踪的岁月里守护家族" }
     ]
   };
   var GENERIC_SIDE = [
@@ -247,6 +296,8 @@
     KEY: KEY, KEY_SIDE: KEY_SIDE,
     MODES: MODES, ORDER: ORDER,
     CANON_HEROES: CANON_HEROES,
+    /* v4.10.0 只读调试口：供按界注册表回归探针核对三张表，不改变任何行为 */
+    _tables: { CANON_HEROES: CANON_HEROES, MAJOR_NODES: MAJOR_NODES, SIDE_CHARS: SIDE_CHARS },
 
     get() {
       var v = read();

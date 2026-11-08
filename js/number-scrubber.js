@@ -1,4 +1,4 @@
-/* v4.09.0 · 数值真值白名单清洗
+/* v4.10.0 · 数值真值白名单清洗
  * 玩家看到的正文里不允许出现引擎真值之外的经济 / 面板数值。
  * 小模型（agnes-3.0-flash）偶发把 UI 结算数字编进叙事（「HP 346/470」
  * 「总金币 99」「经验 +10000」「木剑才卖 5 金币」「目前 1/1」），
@@ -8,6 +8,16 @@
  * 进度对按 TruthSnapshot 真值白名单判定，非法者改写为模糊表述。
  * 合法数值来自当前快照 + 跨轮次历史，避免误伤真实结算数字。
  * 中文数字（「三十金币」「三日后」）不在受管范围，零误伤。
+ *
+ * v4.10.0 修第三方审查 F10 / P2：
+ *   ① 「余额」「血量」「怒气」等是自然叙事常用词，旧版作为裸词 + \s* 直接吞掉
+ *      「飞船能量余额 12%」「他血量 30，却仍硬撑」——把合法正文删字。
+ *      改为分层：明确 HUD 词宽松剥离；歧义词仅当「带冒号」或「带 N/M 进度对」才剥离。
+ *   ② PROG_FRAG 的分隔符 [／/] 与日期同形，「当前 2024/11 的局势」被当进度对删空。
+ *      改为：任一段是 4 位年份 / 数字 ≥1000 / 紧跟日期单位 → 判为日期，原样保留。
+ *   ③ 全角数字（３４６／４７０）绕过 \d：所有数字类正则统一 [0-9０-９]，并在
+ *      查白名单前把全角折成半角。
+ *   铁律：宁可漏剥一个 UI 数字，绝不删掉玩家一个叙事字。
  */
 (function (root, factory) {
   var api = factory();
@@ -18,6 +28,16 @@
 
   /* id / 标题 / 地名里的数字不是数值真值，不进白名单 */
   var SKIP_KEYS = /^(?:id|title|name|place|v|version|genre|slot)$/i;
+
+  /* 全角数字 → 半角，用于白名单比对（正则本身用字符类直接认全角） */
+  function fold(s) {
+    return String(s == null ? "" : s).replace(/[０-９]/g, function (c) {
+      return String.fromCharCode(c.charCodeAt(0) - 0xFEE0);
+    });
+  }
+  var D = "[0-9０-９]";           // 单个数字（半角/全角）
+  var NUM = D + "{1,7}";          // 数值
+  var SEP = "[／/]";              // 进度对分隔符（半角/全角）
 
   function collect(obj, acc, depth) {
     if (obj == null || depth > 6) return;
@@ -114,8 +134,21 @@
   }
 
   /* A 类：面板字段片段。结算信息由 UI 卡片呈现，不该出现在小说正文里。
-     连前导连接标点一起吃，避免删完留下「，。」。 */
-  var PANEL_FRAG = /(?:[，,、；;]\s*)?(?:HP|MP|hp|mp|怒气|气力|体力|血条|蓝条|血量|法力|总金币|金币剩余|当前总金币|当前金币|余额|背包格数|格数)\s*[：:]?\s*[+＋]?\s*\d{1,7}(?:\s*[／/]\s*\d{1,7})?/gi;
+     连前导连接标点一起吃，避免删完留下「，。」。
+
+     v4.10.0 分层（修 F10「删合法正文」）：
+       · HUD 词（HP/血条/总金币/背包格数…）在叙事里几乎不出现 → 宽松剥离；
+       · 歧义词（余额/血量/怒气/气力/体力/法力）是自然叙事词 → 仅当
+         「字段名后带冒号」或「带 N/M 进度对」时才剥离，单数字一律保留。
+     长词排在短词前，避免「当前总金币」被截成「总金币」。 */
+  var HUD = "HP|MP|hp|mp|血条|蓝条|当前总金币|当前金币|总金币|金币剩余|背包格数|格数|法力";
+  var AMBIG = "怒气|气力|体力|血量|余额";
+  var PANEL_FRAG = new RegExp(
+    "(?:[，,、；;]\\s*)?(?:" +
+      "(?:" + HUD + ")\\s*[：:]?\\s*[+＋]?\\s*" + NUM + "(?:\\s*" + SEP + "\\s*" + NUM + ")?" +
+      "|(?:" + AMBIG + ")\\s*[：:]\\s*[+＋]?\\s*" + NUM + "(?:\\s*" + SEP + "\\s*" + NUM + ")?" +
+      "|(?:" + AMBIG + ")\\s*[：:]?\\s*[+＋]?\\s*" + NUM + "\\s*" + SEP + "\\s*" + NUM +
+    ")", "gi");
 
   /* B 类：结算增量。数字无论真假都不该写进正文，改成中性叙述。 */
   var GAIN_WORD = {
@@ -124,15 +157,26 @@
     "伤害": "伤势加重", "体力": "体力渐复", "气血": "气血渐复",
     "怒气": "战意翻涌", "生命": "气息稍定"
   };
-  var GAIN_FRAG = /(经验|声望|金币|灵石|攻击|防御|伤害|体力|气血|怒气|生命)\s*[：:]?\s*[+＋]\s*\d{1,7}/g;
+  var GAIN_FRAG = new RegExp("(经验|声望|金币|灵石|攻击|防御|伤害|体力|气血|怒气|生命)\\s*[：:]?\\s*[+＋]\\s*" + NUM, "g");
 
   /* C 类：货币 / 资源数量。合法数字保留，非法数字模糊化。 */
   var UNIT = "金币|灵石|银币|铜钱|元宝|晶石|贡献|声望点";
-  var MONEY_PRE = new RegExp("(\\d{1,7})\\s*(枚|个|颗|块|锭|点)?\\s*(" + UNIT + ")", "g");
-  var MONEY_POST = new RegExp("(" + UNIT + ")\\s*[：:]?\\s*(\\d{1,7})", "g");
+  var MONEY_PRE = new RegExp("(" + NUM + ")\\s*(枚|个|颗|块|锭|点)?\\s*(" + UNIT + ")", "g");
+  var MONEY_POST = new RegExp("(" + UNIT + ")\\s*[：:]?\\s*(" + NUM + ")", "g");
 
   /* D 类：UI 进度对（阶段 1/3 是合法真值，已在 legalPairs 里）。 */
-  var PROG_FRAG = /(?:背包|格数|进度|委托进度|任务进度|目前|当前)\s*[：:]?\s*(\d{1,4})\s*[／/]\s*(\d{1,4})/g;
+  var PROG_FRAG = new RegExp("(?:背包|格数|进度|委托进度|任务进度|目前|当前)\\s*[：:]?\\s*(" + NUM + ")\\s*" + SEP + "\\s*(" + NUM + ")", "g");
+
+  /* 日期形态判据（修 F10「当前 2024/11」被删空）：
+     任一段 ≥4 位（年份）、或数值 ≥1000、或匹配尾部紧跟日期单位 → 视为日期，不剥离。
+     UI 进度对的 cur/need 都是小数字，年份 / 大数不会是合法进度对。 */
+  function isDateLike(a, b, whole, tail) {
+    var x = fold(a), y = fold(b);
+    if (x.length >= 4 || y.length >= 4) return true;
+    if (Number(x) >= 1000 || Number(y) >= 1000) return true;
+    if (/^\s*[年月日号]/.test(tail || "")) return true;
+    return false;
+  }
 
   function tidy(s) {
     return s.replace(/[，,]\s*([。！？；;])/g, "$1")
@@ -155,28 +199,32 @@
     /* 没有真值快照时不做数量改写，避免误伤合法数字（A/B 类仍照常剥离） */
     if (hasTruth) {
       s = s.replace(MONEY_PRE, function (m, num, q, unit) {
-        return legal[String(Number(num))] ? m : "些许" + unit;
+        return legal[String(Number(fold(num)))] ? m : "些许" + unit;
       });
       s = s.replace(MONEY_POST, function (m, unit, num) {
-        return legal[String(Number(num))] ? m : unit + "些许";
+        return legal[String(Number(fold(num)))] ? m : unit + "些许";
       });
     }
-    s = s.replace(PROG_FRAG, function (m, a, b) {
+    s = s.replace(PROG_FRAG, function (m, a, b, off, str) {
+      /* 日期形态（2024/11、11/8 号）原样保留，不当 UI 进度对剥离 */
+      var tail = str.slice(off + m.length, off + m.length + 2);
+      if (isDateLike(a, b, m, tail)) return m;
       /* 背包格数与模糊前缀的 N/M 一律是 UI 残骸：
          不能因为引擎里恰好存在同数值的合法委托进度对（如 activeQuests 1/1）
          就放行「背包 1/1」——那是小模型「换壳」绕过白名单的同型漏洞。 */
       if (/^(?:背包|格数|目前|当前)/.test(m)) return "";
-      return pairs[a + "/" + b] ? m : "";
+      return pairs[fold(a) + "/" + fold(b)] ? m : "";
     });
     return tidy(s);
   }
 
   return {
-    version: "4.09.0",
+    version: "4.10.0",
     legalNumbers: legalNumbers,
     legalMoney: legalMoney,
     legalPairs: legalPairs,
     scrub: scrub,
+    fold: fold,
     /* 测试脚本用：便于统计各类命中 */
     patterns: { PANEL_FRAG: PANEL_FRAG, GAIN_FRAG: GAIN_FRAG, PROG_FRAG: PROG_FRAG }
   };

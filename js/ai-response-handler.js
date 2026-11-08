@@ -95,16 +95,21 @@ const StoryResponseHandler = {
       try {
         CanonLedger.parse(reply);
       } catch (e) {}
-      body = body.replace(/\(claimed\)[\s\S]*?\(\/claimed\)/gi, "").replace(/【claimed】[\s\S]*?【\/claimed】/gi, "").replace(/<claimed>[\s\S]*?<\/claimed>/gi, "");
     }
+    /* v4.10.0 修 P1-8：剥离无条件执行。
+       canon-ledger / canon-timeline 在 studio.html 是 yj-lazy 懒加载（首屏未完成或
+       懒加载失败时 window.CanonLedger / CanonTimeline 不存在）。旧版把 replace 写在
+       if 内部，对象缺位时 (claimed)/(world) 登记块会原样泄漏进玩家正文。
+       parse 留在 if 内（对象不存在时不该调），正文剥离与账本是否就绪解耦。 */
+    body = body.replace(/\(claimed\)[\s\S]*?\(\/claimed\)/gi, "").replace(/【claimed】[\s\S]*?【\/claimed】/gi, "").replace(/<claimed>[\s\S]*?<\/claimed>/gi, "");
     /* v3.55.23 大势演化账本：把 (world) 块吸收进大势账本（幂等），再从正文剥离——
        诱因终结、大事改道、羁绊易主、新生事件，都从这里落账 */
     if (window.CanonTimeline) {
       try {
         CanonTimeline.parse(reply);
       } catch (e) {}
-      body = body.replace(/\(world\)[\s\S]*?\(\/world\)/gi, "").replace(/【world】[\s\S]*?【\/world】/gi, "").replace(/<world>[\s\S]*?<\/world>/gi, "");
     }
+    body = body.replace(/\(world\)[\s\S]*?\(\/world\)/gi, "").replace(/【world】[\s\S]*?【\/world】/gi, "").replace(/<world>[\s\S]*?<\/world>/gi, "");
     /* v3.53.0：先摘掉迷你状态协议（(: 名.字段: 值; …)），再走常规剥离 */
     body = this._stripMiniStatus(body);
     /* v3.46.2 纵深防御：自带 think 剥离（常规调用方均已预剥，此处兜底，

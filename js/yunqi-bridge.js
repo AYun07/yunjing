@@ -27,7 +27,7 @@
     // 推理块：要求模型在正文里输出自定义 XML 推理段，云境只剥 <think>，留着变噪音
     '🎭acg角色心理模型(需搭配世界书)',   // 输出 <acg_think>，原文亦标注"需搭配世界书"
     '🧠思维模式-故事(多选一)',            // 输出 <story_driver> 长推理块
-    // SillyTavern「预填充」专属 hack：靠伪造 </story_driver></thinking></think> 让模型跳过思考。
+    // 常见前端工具「预填充」专属 hack：靠伪造 </story_driver></thinking></think> 让模型跳过思考。
     // 云境没有预填充通道，这些串当 system 文本注入只会污染正文。
     '🧷卡原生思维链-预填充-1',
     '🧷卡原生思维链-预填充-2',
@@ -69,6 +69,11 @@
     xuanjianxianzu: '玄鉴仙族',
     zhanhen: '斩神',
     zhongshengdushi: '重生之都市修仙',
+    dazhuzai: '大主宰',
+    wangyou: '寰宇纪元',
+    wanxiangzhiwang: '万相之王',
+    wudongqiankun: '武动乾坤',
+    yuanzun: '元尊'
   };
 
   /** 预设文风块清单（世界名 → 档位名数组），首次用时构建 */

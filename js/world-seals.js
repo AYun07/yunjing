@@ -347,6 +347,52 @@
             { id: 'fw_lifer', icon: '🌅', name: '此生无憾', desc: '活过一百回合——从落脚谋生到回望一生', test: (v) => (Number(v.chapter) || 0) >= 100 }
         ],
 
+        /* ---------- 大主宰：至尊与灵力 ---------- */
+        dazhuzai: [
+            { id: 'dz_lu', icon: '🜂', name: '灵脉解封', desc: '解封被封印的神级灵脉，资质一飞冲天', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/灵脉|解封|九神脉|化塔/) },
+            { id: 'dz_nine', icon: '🐦', name: '九幽之契', desc: '与九幽雀缔下血脉连接', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/九幽雀|血脉连接|九幽/) },
+            { id: 'dz_house', icon: '🏯', name: '牧府之主', desc: '建九幽宫、统一天罗、立牧府', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/牧府|九幽宫|统一天罗/) },
+            { id: 'dz_lord', icon: '🌐', name: '位面之主', desc: '成就一方位面的主宰之位', test: (v) => /至尊|位面之主|主宰/.test(realmOf(v) + (pc(v).realm || '')) },
+            { id: 'dz_sky', icon: '⚔', name: '苍穹留名', desc: '苍穹榜留全名，斩天邪神', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/苍穹榜|天邪神|留名/) }
+        ],
+
+        /* ---------- 武动乾坤：符武与祖符 ---------- */
+        wudongqiankun: [
+            { id: 'wd_stone', icon: '💎', name: '祖石认主', desc: '拾得祖石，得器灵岩指点', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/祖石|器灵岩|拾得祖石/) },
+            { id: 'wd_fu', icon: '🔯', name: '符师之路', desc: '踏入符师一途，凝印成师', test: (v) => /符师|三印|符宗|符祖/.test(realmOf(v) + (pc(v).realm || '')) },
+            { id: 'wd_rune', icon: '🜨', name: '祖符加身', desc: '炼化第一道祖符', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/祖符|吞噬祖符|收祖符/) },
+            { id: 'wd_nir', icon: '🔥', name: '涅槃之身', desc: '渡过涅槃劫，肉身蜕变', test: (v) => /涅槃|生死玄|转轮|轮回/.test(realmOf(v) + (pc(v).realm || '')) },
+            { id: 'wd_anc', icon: '👑', name: '武祖之路', desc: '集八符掌位面之胎，斩异魔皇', test: (v) => /祖境|武祖|位面之胎/.test(realmOf(v) + (pc(v).realm || '')) }
+        ],
+
+        /* ---------- 元尊：源气与圣纹 ---------- */
+        yuanzun: [
+            { id: 'yz_mai', icon: '🌀', name: '八脉重开', desc: '得祖龙经，重开被封的八脉', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/祖龙经|八脉|重开八脉|开脉/) },
+            { id: 'yz_wen', icon: '🌟', name: '四圣纹集', desc: '集齐苍玄宗四道圣纹', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/圣纹|四圣纹|集.{0,3}圣纹/) },
+            { id: 'yz_src', icon: '💧', name: '源气初成', desc: '踏入源气修炼之途', test: (v) => /开脉|养气|天关|法域|源婴|神府/.test(realmOf(v) + (pc(v).realm || '')) },
+            { id: 'yz_tian', icon: '🛡', name: '苍玄天主', desc: '执掌苍玄天', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/苍玄天|天主|天渊域/) },
+            { id: 'yz_god', icon: '⚡', name: '第一序列之神', desc: '成第一序列之神，斩圣神', test: (v) => /神祇|第一序列|圣神|成神/.test(realmOf(v) + (pc(v).realm || '')) }
+        ],
+
+        /* ---------- 万相之王：相术与相宫 ---------- */
+        wanxiangzhiwang: [
+            { id: 'wx_palace', icon: '🏛', name: '空相宫现', desc: '觉醒三座空相宫', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/空相宫|三座空相宫|相宫/) },
+            { id: 'wx_phase', icon: '🌊', name: '后天之相', desc: '融合第一道后天之相', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/水光相|后天之相|融.{0,3}相|相术/) },
+            { id: 'wx_sch', icon: '🎓', name: '学府之路', desc: '入圣玄星学府拜师修行', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/圣玄星学府|拜郗婵|学府/) },
+            { id: 'wx_hou', icon: '🏅', name: '封侯之阶', desc: '踏上封侯之路', test: (v) => /封侯|称王|无双侯|十相王/.test(realmOf(v) + (pc(v).realm || '')) },
+            { id: 'wx_dragon', icon: '🐉', name: '龙牙认祖', desc: '赴天元神州龙牙脉认祖', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/龙牙脉|认祖|灵相洞天|万相轮/) }
+        ],
+
+        /* ---------- 寰宇纪元：网游三服与国战 ---------- */
+        wangyou: [
+            { id: 'wy_job', icon: '🗡', name: '转职立业', desc: '选定本命职业，踏上猎杀之路', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/转职|职业|warrior|archer|mage|priest|rogue|knight|beast|tactician|暗火法师|龙骑士|龙语者|死灵剑士|死亡剑术宗师/) },
+            { id: 'wy_hidden', icon: '🔓', name: '隐藏觉醒', desc: '通过隐藏职业认证', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/隐藏职业|暗火法师|龙骑士|龙语者|死灵剑士|死亡剑术宗师|元素弓箭手/) },
+            { id: 'wy_guild', icon: '🛡', name: '开宗立派', desc: '创建或加入一个行会', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/行会|公会|建帮|驻地|领地|盟/) },
+            { id: 'wy_boss', icon: '👑', name: '世界首杀', desc: '完成一次世界首领击杀', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/世界首领|首杀|巫妖王|青兽|明宇|总巢/) },
+            { id: 'wy_war', icon: '⚔', name: '跨服会战', desc: '赢下一场跨服战场', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/跨服|国战|白马平原|中韩|中国区|战盟/) },
+            { id: 'wy_crown', icon: '👑', name: '王者权杖', desc: '守住或夺取王者权杖', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/王者权杖|加冕|终焉之塔|神域决战/) }
+        ],
+
         /* ---------- 五大创作工坊（通用写作里程） ---------- */
         _workshop: [
             { id: 'ws_ch10', icon: '📖', name: '十章之功', desc: '写到第十章', test: (v) => (Number(v.chapter) || 0) >= 10 },

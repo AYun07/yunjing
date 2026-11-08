@@ -14,7 +14,14 @@
   var BACKUP_KEY = 'yunjingVaultBackup';
 
   var SAVE_PREFIX = ['storySave_', 'storySlots_', 'storyActiveSlot_'];
-  var DATA_PREFIX = ['storyKnowledge_', 'storyAtlas_', 'storyKBTrash_'];
+  /* v4.10.0 修 P1-10（第三方审查「导出即丢 RPG 全部数值」）：
+     rpg-core 的等级/经验/金币/职业/委托经 WorldExt.modState('wr_rpg') 落在
+     worldExt_{genre}{suffix} 键上。旧版 DATA_PREFIX / SAVE_PREFIX / CFG_PREFIX
+     都不含 world 前缀 —— 整机导出（pack('all')）与备份会漏掉这些键，
+     玩家导出再导入，RPG 数值全部消失。归入 data 组（世界扩展数据），
+     导入端按 saves/config/data 三组原样写回，无需改导入逻辑。
+     yunjingWorldRuntime~* 已由 CFG_PREFIX 的 'yunjing' 覆盖（实测已在包内）。 */
+  var DATA_PREFIX = ['storyKnowledge_', 'storyAtlas_', 'storyKBTrash_', 'worldExt_'];
   /* 配置类键：白名单优先，另加通配（新增模块不用回来改表） */
   var CFG_KEYS = [
     'storyApiConfig', 'yunjingTheme', 'storyContentScale', 'storyAdultConfirmed',

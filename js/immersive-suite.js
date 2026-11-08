@@ -621,6 +621,82 @@ const ImmersiveSuite = function() {
     sigil: "墨纹",
     sound: { kind: "rain", f0: 110, hue: 40 }
   };
+
+  /* v4.10.0 修 F11（第三方审查 P1-6「默认界 free 套错主题 / 五新界主题缺失」）：
+     THEMES 原有 32 键，缺的恰是 free（本项目默认界）与五个新增界
+     （dazhuzai/wangyou/wanxiangzhiwang/wudongqiankun/yuanzun）。T() 用
+     `THEMES[state.genre] || THEMES.mystery` 隐式兜底 —— 未注册界一律套用
+     「创作 / 写作里程」主题：free 是自由创作工坊语义尚可，但五个玄幻 / 网游界
+     显示「开笔→立骨→转折」的写作里程明显违和，且隐式兜底本身就是边界漂移温床。
+
+     修法（零臆造）：显式补齐 6 界，全部 38 界都有真主题。境界链 / 地名一律取自
+     js/kb/names.js（KB_NAMES）中已收录的原著真值，只作界面刻度展示，不新编任何
+     设定、不冒充剧情；deriveTheme 复用已有完整主题基底，保证 19 个字段齐全。 */
+  function deriveTheme(base, ov) {
+    var t = {}; for (var k in base) if (Object.prototype.hasOwnProperty.call(base, k)) t[k] = base[k];
+    for (var k2 in ov) if (Object.prototype.hasOwnProperty.call(ov, k2)) t[k2] = ov[k2];
+    return t;
+  }
+  var XH = THEMES.doupocangqiong;   /* 东方玄幻基底 */
+  var NET = THEMES.quanzhigaoshou;  /* 网游 / 竞技基底 */
+  var H12 = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+  var TB = ["夜行", "结怨", "夺宝", "赌斗", "历练", "问鼎", "归途", "雪耻"];
+  THEMES.dazhuzai = deriveTheme(XH, {
+    name: "大主宰", deep: "#120c1c", panel: "#1c1430", primary: "#b98cff", accent: "#9b6ad0",
+    text: "#efe6ff", muted: "#a898c4",
+    realms: ["感应境", "灵动境", "灵轮境", "神魄境", "融天境", "化天境", "通天境", "至尊小三难", "至尊境", "地至尊", "天至尊", "主宰境"],
+    realmLabel: "灵力境界", realmHint: "境界名以本界知识库为准",
+    medium: "灵简传讯", letterGreet: "阁下台鉴", courier: "商队捎信",
+    compassName: "大千罗盘", hourSet: H12,
+    titleA: ["大千世界", "北灵境", "北苍灵院", "天罗大陆", "大罗天域", "圣灵山", "龙凤天", "灵路"],
+    titleB: TB, sigil: "浮屠纹", sound: { kind: "desert", f0: 98, hue: 272 }
+  });
+  THEMES.yuanzun = deriveTheme(XH, {
+    name: "元尊", deep: "#0a1520", panel: "#102336", primary: "#7fc0f0", accent: "#5a9bd4",
+    text: "#e6f2ff", muted: "#96b0c8",
+    realms: ["开脉境", "养气境", "天关境", "太初境", "神府境", "天阳境", "源婴境", "法域境", "源法领域", "归墟境", "问鼎境", "圣者境", "神祇境"],
+    realmLabel: "源气境界", realmHint: "境界名以本界知识库为准",
+    medium: "源纹传讯", letterGreet: "见字如晤", courier: "宗门信使",
+    compassName: "天源罗盘", hourSet: H12,
+    titleA: ["天源界", "大周王朝", "苍玄天", "苍玄宗", "圣迹之地", "混元天", "天渊域", "归墟山"],
+    titleB: TB, sigil: "祖龙纹", sound: { kind: "chime", f0: 210, hue: 205 }
+  });
+  THEMES.wanxiangzhiwang = deriveTheme(XH, {
+    name: "万相之王", deep: "#161208", panel: "#241c0e", primary: "#e0bc58", accent: "#c9a83a",
+    text: "#f5ecd4", muted: "#b8a878",
+    realms: ["十印境", "相师境", "拜将境", "封侯境", "称王境", "天王境"],
+    realmLabel: "相力境界", realmHint: "境界名以本界知识库为准",
+    medium: "相术传讯", letterGreet: "阁下台鉴", courier: "学府信使",
+    compassName: "天元罗盘", hourSet: H12,
+    titleA: ["大夏国", "洛岚城", "圣玄星学府", "天元神州", "龙牙脉", "灵相洞天", "界河宝域", "天镜塔"],
+    titleB: TB, sigil: "万相纹", sound: { kind: "chime", f0: 260, hue: 45 }
+  });
+  THEMES.wudongqiankun = deriveTheme(XH, {
+    name: "武动乾坤", deep: "#08181a", panel: "#0e2426", primary: "#5fd0c0", accent: "#3a9d8f",
+    text: "#e2f5f0", muted: "#8fb8b2",
+    realms: ["淬体境", "地元境", "天元境", "元丹境", "造形境", "造气境", "造化境", "涅槃境", "生玄境", "死玄境", "转轮境", "轮回境", "祖境"],
+    realmLabel: "元力境界", realmHint: "境界名以本界知识库为准",
+    medium: "符纹传讯", letterGreet: "见字如晤", courier: "宗门信使",
+    compassName: "天玄罗盘", hourSet: H12,
+    titleA: ["青阳镇", "炎城", "天炎山脉", "大炎王朝", "大荒郡", "大荒古碑", "道宗", "乱魔海"],
+    titleB: TB, sigil: "祖符纹", sound: { kind: "desert", f0: 120, hue: 172 }
+  });
+  /* wangyou 是网游大世界《寰宇纪元》：以装备品阶为刻度，套网游基底而非玄幻基底 */
+  THEMES.wangyou = deriveTheme(NET, {
+    name: "网游·寰宇纪元", deep: "#08161a", panel: "#0e242a", primary: "#6fc9d8", accent: "#4fb0c0",
+    text: "#e0f4f8", muted: "#8fb6be",
+    realms: ["白装", "绿装", "蓝装", "紫装", "黑铁器", "青铜器", "玄铁器", "白银器", "黄金器", "暗金器", "灵器", "鬼器", "仙器", "圣器", "旷世圣器", "神装"],
+    realmLabel: "装备品阶", realmHint: "品阶名以本界知识库为准",
+    medium: "行会邮件", letterGreet: "玩家亲启", courier: "系统信使",
+    compassName: "世界地图", hourSet: H12,
+    titleA: ["野狼谷", "松木林", "银月城", "疾风城", "连云城", "荣耀主城", "龙域", "新手村"],
+    titleB: ["开荒", "组队", "抢 BOSS", "国战", "夺城", "下副本", "冲榜", "结盟"],
+    sigil: "赛季纹", sound: { kind: "chime", f0: 300, hue: 190 }
+  });
+  /* free 是自由创作工坊：显式注册「创作」主题（语义本就相符），消除隐式兜底 */
+  THEMES.free = deriveTheme(THEMES.mystery, {
+    name: "自由创作", sigil: "云纹", compassName: "案头更漏"
+  });
   const state = {
     genre: null,
     tab: "gallery",

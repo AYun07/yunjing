@@ -91,8 +91,18 @@
       try { if (window.LifeMode) LifeMode.daily(v, day, rnd); } catch (e) {}
       /* v3.85.0 确保真实势力实体存在（首轮从世界阶段静态表初始化），供 SimCore 演化（P0-1/P1-3） */
       try { if (window.WorldAlive && WorldAlive.seedFactions) WorldAlive.seedFactions(); } catch (e) {}
-      /* 张力自然回落 */
-      if (v.tension != null) v.tension = clamp(Math.round(Number(v.tension)) - (rnd() < 0.5 ? 1 : 0), 0, 100);
+      /* v4.10.0 修 F8（P2「张力只降不升」）：
+         旧版每 tick `Math.round(tension) - (rnd<0.5?1:0)` 是**单向**且带取整偏差的衰减，
+         lifecycle() 又完全不写 tension，导致张力长期单调下滑、矛盾无法自治积累。
+         现在改为「向中值 50 的弱回归」：极高张力缓慢出清、极低张力缓慢回暖，
+         用 rnd() 做 ±0.5 的无偏抖动（不再是恒 −0.5）。lifecycle() 已接管主要的
+         因果双向演化，这里只做温和的均值回归，两者叠加不会把张力锁死在端点。 */
+      if (v.tension != null) {
+        var tv = clamp(Number(v.tension) || 20, 0, 100);
+        var meanPull = (50 - tv) * 0.01;                 /* 向 50 的弱回归：±0.5 内 */
+        var jitter = (rnd() - 0.5) * 0.6;               /* 无偏抖动，替代旧的恒递减 */
+        v.tension = clamp(Math.round((tv + meanPull + jitter) * 10) / 10, 0, 100);
+      }
       /* 关系淡忘：|强度|>20 每日衰减 1（世界推进，非玩家回合） */
       const rels = v.entities && v.entities.relations;
       if (Array.isArray(rels)) rels.forEach((r) => {

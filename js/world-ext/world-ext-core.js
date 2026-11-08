@@ -24,7 +24,13 @@
       return sid && sid !== "main" ? "~" + sid : "";
     } catch (e) { return ""; }
   };
-  const STORE = `worldExt_${genre}${SLOT_SUFFIX()}`;
+  /* v4.10.0 修 P2「运行中切档仍写旧槽键」：
+     STORE 原是 IIFE 顶层常量，脚本加载时求值一次就冻结。起始在主档时它恒为
+     `worldExt_{genre}`（裸键），此后切到副档，所有进展仍落进主档裸键；而删副档时
+     purge 清的是 `worldExt_{genre}~{副档}` —— 那是空键，真正的数据留在主档清不掉。
+     SLOT_SUFFIX 本身已是惰性求值，问题只出在 STORE 把它在加载期固化了。
+     改为函数，每次读 / 写时重新解析当前槽位（与 SLOT_SUFFIX 的惰性口径一致）。 */
+  const STORE = () => `worldExt_${genre}${SLOT_SUFFIX()}`;
   const $id = (i) => document.getElementById(i);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   function asArr(v) {
@@ -122,7 +128,7 @@
   }
   function load() {
     try {
-      const raw = localStorage.getItem(STORE);
+      const raw = localStorage.getItem(STORE());
       if (raw) {
         const d = JSON.parse(raw);
         if (d && d.mods) mods = d.mods;
@@ -135,7 +141,7 @@
   }
   function save() {
     try {
-      localStorage.setItem(STORE, JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
+      localStorage.setItem(STORE(), JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
       if (saveWarned) { saveWarned = false; }
     } catch (e) {
       /* v4.08.0 修复（静默写失败）：
@@ -148,7 +154,7 @@
         console.warn("[WorldExt] 存档写入失败（可能是浏览器存储配额已满）：", e);
         try {
           if (window.MoStore && typeof window.MoStore.setItem === "function") {
-            window.MoStore.setItem(STORE, JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
+            window.MoStore.setItem(STORE(), JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
             saveWarned = false;
           }
         } catch (e2) { /* IndexedDB 兜底也失败 */ }
