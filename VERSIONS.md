@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **80** 个版本，从 `v3.55.7` 到 `v4.07.2`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **81** 个版本，从 `v3.55.7` 到 `v4.08.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.08.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |
 | **v4.07.2** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.2) |
 | **v4.07.1** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.1) |
 | **v4.07.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.0) |
@@ -94,6 +95,22 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.08.0 · 2026-11-08
+
+网络延迟放大器根除（AbortError 误重试 / 超时后二次完整请求 / 主笔并发门闩 / isProcessing 卡死兜底）
+
+多存档槽隔离根治：新建 SlotRegistry 统一 20+ 处键名拼接，修删档残留/副档认领摧毁主档/清档无效/界键恒 default/面板崩溃等 9 项
+
+长时运行稳定性：buffs·suspects·owned 三处封顶、dayEvents 回收、静默写失败改可见提示、切档关页前强制落盘
+
+移动端小屏回归：375/414 双视口 4 界面，修 box-sizing 与 [class*=quick] 误伤等 4 项布局缺陷
+
+判定器升级为真值差分校验：引擎真值快照差分 + KB 全文合法名单 + 运行时真值 + 跨轮次一致性，34 条自检与 17+ 变异灵敏度全检出
+
+真实模型复跑修 7 类确定性缺陷：测试器交付动作从未真跑（D-27 重演）、系统块换壳、思维链泄漏、整块装备面板、孤立协议标签、数值契约措辞、SW 预缓存漏两模块
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.08.0)  [🔍 与 v4.07.2 差异](https://github.com/AYun07/yunjing/compare/v4.07.2...v4.08.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip)
 
 ## v4.07.2 · 2026-11-07
 

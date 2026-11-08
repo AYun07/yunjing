@@ -85,6 +85,22 @@ body.theme-tianxiawushuang { --rpg-accent: #d9a35e; --rpg-accent-2: #b87a30; --r
 .rpg-quick > span { font-size: 10.5px; color: var(--rpg-acc); letter-spacing: .5px; margin-right: 2px; }
 .rpg-btn.q { padding: 4px 9px; font-size: 11px; }
 
+/* v4.08.0 说明：
+   RPG 角色面板（#rpgDrawer / .rpg-hd / #rpgClose）的样式由 js/rpg-core.js 在运行期注入
+   （因需按界切换主题色），外链 CSS 无法覆盖同优先级的注入规则。
+   因此关闭按钮尺寸与面板盒模型的修复**必须改在 rpg-core.js 的注入 CSS 里**，
+   此处只保留非注入态的补充（.rpg-hd 在面板内嵌时使用）。 */
+.rpg-panel .rpg-hd {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 12px; margin: -10px -10px 10px;
+  border-bottom: 1px solid var(--rpg-line, rgba(201,168,106,.3));
+  border-radius: 12px 12px 0 0;
+  background: color-mix(in srgb, var(--rpg-acc, #c9a86a) 7%, transparent);
+}
+.rpg-panel .rpg-hd > b { font-size: 13px; color: var(--rpg-acc, #c9a86a); letter-spacing: .5px; }
+body.mobile .rpg-btn.q { padding: 9px 12px; font-size: 12px; min-height: 34px; }
+body.mobile .rpg-quick { gap: 7px; padding: 8px; }
+
 /* ---------------- 分区 / Pane ---------------- */
 .rpg-panes { display: block; }
 .rpg-pane { display: none; }
@@ -277,6 +293,28 @@ body.theme-tianxiawushuang { --rpg-accent: #d9a35e; --rpg-accent-2: #b87a30; --r
 @media (max-width: 380px) {
   .rpg-quick > span { flex: 1 1 100%; }
   .rpg-kv > span { flex-basis: 66px; }
+}
+/* v4.08.0 修复（375/414px 小屏横向溢出 153px / 14px）：
+   `.rpg-quick` 是 flex 容器，6 个快捷按钮（🛌休整 / 🎁掉落 / 🧪买药 / 📍传送 / ⚔️PK / ⏭回合）
+   加上「⚡ 快捷」标签，在 313px 的可用宽度里放不下。
+   flex-wrap 换行不可靠——按钮带 emoji 与中文文字，有不可压缩的固有宽度，
+   一旦某行剩余空间不足，浏览器会把整行按钮**推出容器**而不是折行（实测 PK/回合两枚
+   按钮被推到 right=428px，视口仅 375px），且 .rpg-panel 的 overflow-x:hidden
+   把它们裁掉 → 玩家在手机上根本点不到「PK」和「回合」两个按钮。
+   修法：改用 CSS Grid（auto-fit + minmax），每格等宽、行数自适应，永不溢出。 */
+.rpg-quick {
+  display: grid;
+  /* 固定 3 列：auto-fit 在存在「占满整行」的 span 时会算出额外隐式列，
+     把按钮推到视口外（实测 right 到 653px）。3 列 × 每格 1fr 是稳定的。 */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  align-items: center;
+}
+.rpg-quick > span { grid-column: 1 / -1; margin-right: 0; }
+.rpg-quick .rpg-btn.q { width: 100%; justify-content: center; text-align: center; min-width: 0; }
+/* 宽屏时回到一行排布 */
+@media (min-width: 481px) {
+  .rpg-quick { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 /* 兜底：任何情况下都不允许面板自身撑出横向滚动 */
 #rpgDrawer, .rpg-panel, .rpg-pane, .rpg-cards, .rpg-grid, .rpg-slots { min-width: 0; max-width: 100%; }

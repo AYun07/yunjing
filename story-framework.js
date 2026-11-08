@@ -21,8 +21,21 @@ window.slotSuffixOf = function (genre) {
 /** 旧共享键一次性归属迁移：当前活跃副档「已有存档但无自有档」时，
  *  把旧共享键的数据认领为本档（迁移后删除旧键，主档与其余书档从此不再串味）。
  *  全新书（无存档）不认领——正是"新书残留旧书数据"的病灶，应从零开始。
+ *  @returns {string} 本档应使用的键（无论是否发生迁移）
+ *
+ *  v4.08.0 修复（副档认领摧毁主档数据）：
+ *  原实现无条件 `removeItem(legacyKey)`——但裸键（imm_{genre} 等）**正是主档正在
+ *  使用的键**。副档一进入就把主档的沉浸档/世界线数据抹掉了，主档玩家回来发现
+ *  人物志与编年史全空。现改为「归属判定」：裸键若已被主档持有（有主档存档），
+ *  则归属主档，副档不得认领；只有真正的孤儿旧数据才允许副档搬走。
+ *  具体实现下沉到 slot-registry.js（claimLegacy），此处仅做代理。
  *  @returns {string} 本档应使用的键（无论是否发生迁移） */
 window.claimSlotKey = function (legacyKey, genre) {
+    try {
+        if (window.SlotRegistry && window.SlotRegistry.claimLegacy) {
+            return window.SlotRegistry.claimLegacy(legacyKey, genre);
+        }
+    } catch (e) { /* 注册表异常则退回旧逻辑 */ }
     const suffix = window.slotSuffixOf(genre);
     if (!suffix) return legacyKey;                        // 主档：直接沿用旧键
     const mine = legacyKey + suffix;
@@ -425,14 +438,28 @@ class StoryFramework {
             if (window.GameLayer && window.GameLayer.resetAll) window.GameLayer.resetAll();
             if (window.ReaderLetters && window.ReaderLetters.resetAll) window.ReaderLetters.resetAll();
             if (window.WorldExt && window.WorldExt._reset) window.WorldExt._reset();
-            // v3.68.0 串档修复：灵宠/小队/身份三态/资料库随清档一并清除（按当前槽位；裸键兜底清老数据）
-            var _sid = this.slotId && this.slotId !== 'main' ? '~' + this.slotId : '';
-            ['yunjingBeasts', 'yunjingSquad', 'yunjingStoryStance', 'yunjingSideChar', 'yunjingPlayerIdentity', 'yunjingHeroRelation'].forEach(function (k) {
-                try { localStorage.removeItem(k + _sid); localStorage.removeItem(k); } catch (e) { }
-            });
-            if (this.config && this.config.genreKey) {
-                try { localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey + _sid); localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey); } catch (e) { }
-                try { localStorage.removeItem('worldExt_' + this.config.genreKey + _sid); localStorage.removeItem('worldExt_' + this.config.genreKey); } catch (e) { }
+            /* v4.08.0 修复（清档残留）：
+               原实现手写键名清理，且主档用的是 `_sid = ''`（裸键），
+               但灵宠/小队的**真实主档键是 `yunjingBeasts~main` / `yunjingSquad~main`**
+               （beast-system / squad-system 的 storeKey 恒带 '~' + slotId）→
+               裸键清理对主档完全无效 → 清档后新书仍继承上一本的灵宠与小队。
+               同样，world-runtime / world-bus / world-clock / world-alive /
+               canon-ledger / world-legacy 这 6 类键用「槽位在中间」或冒号/点号分隔，
+               旧实现一个都没清到。
+               现统一交给 SlotRegistry.purge()：枚举规则表 + 扫描兜底，主档额外清裸键。 */
+            if (window.SlotRegistry && window.SlotRegistry.purge) {
+                try {
+                    window.SlotRegistry.purge(this.slotId || 'main', { genre: (this.config && this.config.genreKey) || undefined });
+                } catch (e) { console.warn('[StoryFramework] 清档键清理异常:', e); }
+            } else {
+                var _sid = this.slotId && this.slotId !== 'main' ? '~' + this.slotId : '';
+                ['yunjingBeasts', 'yunjingSquad', 'yunjingStoryStance', 'yunjingSideChar', 'yunjingPlayerIdentity', 'yunjingHeroRelation'].forEach(function (k) {
+                    try { localStorage.removeItem(k + _sid); localStorage.removeItem(k); localStorage.removeItem(k + '~' + (window.storyFramework && window.storyFramework.slotId || 'main')); } catch (e) { }
+                });
+                if (this.config && this.config.genreKey) {
+                    try { localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey + _sid); localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey); } catch (e) { }
+                    try { localStorage.removeItem('worldExt_' + this.config.genreKey + _sid); localStorage.removeItem('worldExt_' + this.config.genreKey); } catch (e) { }
+                }
             }
             if (this.config && this.config.genreKey) {
                 // 沉浸演出游标（扉页章号 / 回响去重）也是书内状态，一并清

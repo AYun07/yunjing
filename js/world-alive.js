@@ -857,6 +857,8 @@
     applyPlayerDirective: applyPlayerDirective,
     pickDynamicEvent: pickDynamicEvent,
     scheduleFollowUp: scheduleFollowUp,
+    /* v4.08.0：切档冲盘入口（此前 WorldAlive 无任何落盘接口，切档时活跃事件/影响力快照会丢） */
+    persist: saveMem,
     _mem: mem,
     _factionSeeds: kbFactionNames
   };

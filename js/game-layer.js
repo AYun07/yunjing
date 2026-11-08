@@ -2,7 +2,22 @@ const GameLayer = function() {
   "use strict";
   const MAX_DICE = 30, RANK_SIZE = 10;
   let genre = "free";
-  const KEY = () => "gl_" + genre;
+  /* v4.08.0 修复：
+     ① D9 同源崩溃 —— panelHTML() 调用裸 `onGenre(gk)`，但 onGenre 只是 api 的方法，
+        模块作用域无同名函数 → 首次渲染即 ReferenceError（世界线面板空白）。
+     ② D7 槽隔离 —— 键名 `gl_{genre}` 全档共享，副档直接继承主档的塔罗/成就状态。
+        现统一走 SlotRegistry.scoped()，首次访问自动迁移旧数据。 */
+  function setGenre(g) {
+    const ng = g || "free";
+    if (ng !== genre) { genre = ng; load(); }
+    return genre;
+  }
+  const KEY = () => {
+    try {
+      if (window.SlotRegistry && window.SlotRegistry.scoped) return window.SlotRegistry.scoped("gl_", genre);
+    } catch (e) {}
+    return "gl_" + genre;
+  };
   const st = {
     seals: [],
     /* 已解锁成就 id[] */
@@ -227,7 +242,7 @@ const GameLayer = function() {
   const WARN_CHAPTERS = 8;
   function panelHTML(vars) {
     const gk = window.storyFramework && storyFramework.config && storyFramework.config.genreKey || null;
-    if (gk && gk !== genre) onGenre(gk);
+    if (gk && gk !== genre) setGenre(gk);
     const v = vars || window.storyFramework && storyFramework.storyState.variables || {};
     const curRound = Number(v.chapter) || 0;
     const th = theme();
@@ -319,8 +334,7 @@ const GameLayer = function() {
   }
   const api = {
     onGenre(g) {
-      genre = g || "free";
-      load();
+      setGenre(g);
       return api;
     },
     onVars,

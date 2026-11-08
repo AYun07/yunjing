@@ -69,11 +69,12 @@ const StoryInput = {
     }
     if ((_b = window.VariableAI) == null ? void 0 : _b.pending) {
       /* v3.68.0 竞态修复：等待变量AI期间锁住处理位——此前守卫在 await 之前，
-         快速双击"重新生成"会双份回退+双份请求 */
-      fw.isProcessing = true;
-      await window.VariableAI.pending.catch(() => {
-      });
-      fw.isProcessing = false;
+         快速双击"重新生成"会双份回退+双份请求
+         v4.08.0 修复：等待原本是裸 await，若 VariableAI.pending 因故永不 settle
+         （端点无响应 / 请求被 abort 后 promise 悬空），这里会永远挂住，
+         fw.isProcessing 永远为 true → 之后点发送/重生成/回滚只弹 toast 不发请求，
+         只能刷新页面。现改为「最多等 N 秒」，超时后照常往下走。 */
+      await this.awaitPending(window.VariableAI.pending, 20000);
     }
     const t = fw.restoreTurn();
     if (!t) return;
@@ -107,11 +108,9 @@ const StoryInput = {
     });
     if (!ok) return;
     if ((_b = window.VariableAI) == null ? void 0 : _b.pending) {
-      /* v3.68.0 竞态修复：同 regenerate，等待期间上锁 */
-      fw.isProcessing = true;
-      await window.VariableAI.pending.catch(() => {
-      });
-      fw.isProcessing = false;
+      /* v3.68.0 竞态修复：同 regenerate，等待期间上锁
+         v4.08.0：同样加上等待上限，避免 pending 悬空导致 isProcessing 永久卡死 */
+      await this.awaitPending(window.VariableAI.pending, 20000);
     }
     const t = fw.restoreTurn();
     if (!t) return;
@@ -120,6 +119,32 @@ const StoryInput = {
       `↩ 已回退本轮（指令「${String(t.user).slice(0, 30)}${String(t.user).length > 30 ? "…" : ""}」），故事状态已还原。可直接重新发令或改写指令。`,
       "info"
     );
+  },
+  /**
+   * 带上限地等待一个可能悬空的 promise。
+   * v4.08.0 新增：VariableAI.pending 在端点无响应时可能永不 settle，
+   * 裸 await 会让调用方（regenerate / rollback / requestAI）永久挂起，
+   * 进而把 fw.isProcessing 永久锁在 true —— 之后所有输入都被守卫拒绝，
+   * 玩家只能刷新页面。这里加超时兜底：到点就当作「没等到」继续往下走。
+   * @param {Promise} p    待等待的 promise
+   * @param {number} ms    上限毫秒数
+   * @returns {Promise<boolean>} true = 已 settle，false = 超时未 settle
+   */
+  async awaitPending(p, ms) {
+    if (!p || typeof p.then !== "function") return true;
+    let timer = null;
+    const guard = new Promise((resolve) => {
+      timer = setTimeout(() => resolve(false), Math.max(500, Number(ms) || 20000));
+    });
+    try {
+      const ok = await Promise.race([
+        Promise.resolve(p).then(() => true, () => true),
+        guard
+      ]);
+      return ok !== false;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
   },
   /** 实际调用 AI */
   async requestAI(message) {
@@ -130,8 +155,8 @@ const StoryInput = {
     try {
       const vaActive = window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive());
       if (vaActive && window.VariableAI.pending) {
-        await window.VariableAI.pending.catch(() => {
-        });
+        /* v4.08.0：变量AI 的 pending 挂起不再无限期阻塞主笔（超时上限 20s） */
+        await this.awaitPending(window.VariableAI.pending, 20000);
       }
       let lastPaint = 0;
       const paintDelta = (_delta, full) => {
@@ -348,9 +373,21 @@ const StoryInput = {
         indicator = document.createElement("div");
         indicator.id = "typingIndicator";
         indicator.className = "message-card ai-card typing-card";
-        indicator.innerHTML = `<div class="typing"><span></span><span></span><span></span></div><span class="typing-text">${isRP ? "世界正在回应……" : "主笔 AI 正在落笔……"}</span>`;
+        indicator.innerHTML = `<div class="typing"><span></span><span></span><span></span></div><span class="typing-text">${isRP ? "世界正在回应……" : "主笔 AI 正在落笔……"}</span><button type="button" class="typing-stop" title="停止本次生成">⏹ 停止</button>`;
         container.appendChild(indicator);
         container.scrollTop = container.scrollHeight;
+        /* v4.08.0：等待卡上的「停止生成」按钮——此前慢响应只能干等 150s+ */
+        const stopBtn = indicator.querySelector(".typing-stop");
+        if (stopBtn) {
+          stopBtn.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const okStop = window.abortMainGeneration ? window.abortMainGeneration("玩家主动停止") : false;
+            if (!okStop) {
+              window.showToast && window.showToast("本次生成已结束或正在收尾，稍等即可", "info");
+            }
+          });
+        }
       }
       /* v3.53.0 等待计时：中转站 10 字/秒时一章要一两分钟，
          不给读秒玩家会以为卡死（旧版只有一个不会变的省略号） */
@@ -599,7 +636,14 @@ const StoryInput = {
     var _a;
     const cur = parseFloat(localStorage.getItem(this.FS_KEY)) || 1;
     const next = Math.min(1.4, Math.max(0.85, +(cur + delta).toFixed(2)));
-    localStorage.setItem(this.FS_KEY, next);
+    /* v4.08.0：加 try 保护（配额满时抛 QuotaExceededError → 字号点了没反应） */
+    try {
+      localStorage.setItem(this.FS_KEY, next);
+    } catch (e) {
+      console.warn("[UI] 字号写入失败:", e);
+      (_a = window.showToast) == null ? void 0 : _a.call(window, "⚠ 字号保存失败：浏览器存储空间不足。", "error");
+      return;
+    }
     this.applyFontScale();
     (_a = window.showToast) == null ? void 0 : _a.call(window, `字号 ${Math.round(next * 100)}%`);
   },
@@ -667,7 +711,14 @@ const StoryInput = {
     const list = this.snapList();
     if (!list[slot]) return;
     list[slot] = null;
-    localStorage.setItem(this.SNAP_KEY, JSON.stringify(list));
+    /* v4.08.0：加 try 保护（配额满时抛 QuotaExceededError → 按钮点了没反应） */
+    try {
+      localStorage.setItem(this.SNAP_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn("[UI] 快照清理写入失败:", e);
+      (_a = window.showToast) == null ? void 0 : _a.call(window, "⚠ 快照清理失败：浏览器存储空间不足。", "error");
+      return;
+    }
     (_a = window.Snapshots) == null ? void 0 : _a.render();
   },
   /** 导出小说全文（TXT / Markdown） */

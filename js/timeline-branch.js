@@ -2,7 +2,23 @@ const TimelineBranch = function() {
   "use strict";
   const MAX_NODES = 10, HIST_CAP = 50, TURNS_CAP = 20;
   let genre = "free";
-  const KEY = () => window.claimSlotKey ? window.claimSlotKey("tl_" + genre, genre) : "tl_" + genre;
+  /* v4.08.0 修复（D9 · 崩溃）：
+     panelHTML() 里调用 `onGenre(gk)`，但 onGenre 只是 api 对象上的方法，
+     模块作用域里并不存在同名函数 → 首次渲染面板即抛 ReferenceError，
+     世界线面板整块空白。现改为调用本作用域的 setGenre()。
+     同时（D7）键名改为走 SlotRegistry 的槽位隔离，避免副档继承主档世界线。 */
+  function setGenre(g) {
+    const ng = g || "free";
+    if (ng !== genre) { genre = ng; selId = null; cmpA = cmpB = null; }
+    return genre;
+  }
+  const KEY = () => {
+    const base = "tl_" + genre;
+    try {
+      if (window.SlotRegistry && window.SlotRegistry.claimLegacy) return window.SlotRegistry.claimLegacy(base, genre);
+    } catch (e) {}
+    return window.claimSlotKey ? window.claimSlotKey(base, genre) : base;
+  };
   function load() {
     try {
       const r = localStorage.getItem(KEY());
@@ -291,7 +307,7 @@ const TimelineBranch = function() {
   let selId = null, cmpA = null, cmpB = null;
   function panelHTML() {
     const gk = window.storyFramework && storyFramework.config && storyFramework.config.genreKey || null;
-    if (gk && gk !== genre) onGenre(gk);
+    if (gk && gk !== genre) setGenre(gk);
     const d = db();
     if (!selId || !d.nodes.find((n2) => n2.id === selId)) selId = d.activeId;
     if (!d.nodes.length) {
@@ -374,9 +390,7 @@ const TimelineBranch = function() {
   }
   const api = {
     onGenre(g) {
-      genre = g || "free";
-      selId = null;
-      cmpA = cmpB = null;
+      setGenre(g);
       return api;
     },
     panelHTML,

@@ -29,18 +29,43 @@
   var listeners = [];
 
   function genreKey() {
+    /* v4.08.0 修复：与 canon-ledger 同源问题——38 份 config 只有 genreKey，
+       原实现读 `genre || id` 恒为 undefined → 落到 "default"，全界共用一份编年史。
+       现优先 config.genreKey，再退回 SlotRegistry。 */
     try {
       var fw = window.storyFramework;
       var c = fw && fw.config;
-      return (c && (c.genreKey || c.genre || c.id)) || "default";
-    } catch (e) { return "default"; }
+      var g = c && (c.genreKey || c.genre || c.id);
+      if (g) return g;
+    } catch (e) {}
+    try {
+      if (window.SlotRegistry && window.SlotRegistry.genre) return window.SlotRegistry.genre();
+    } catch (e2) {}
+    return "default";
   }
 
-  function key() { return PREFIX + genreKey(); }
+  function slotId() {
+    try { return (window.storyFramework && window.storyFramework.slotId) || "main"; } catch (e) { return "main"; }
+  }
+
+  /* v4.08.0（D7 槽隔离）：原来 `yunjingCanonTL:{genre}` 全档共享，副档继承主档编年史。 */
+  function key() { return PREFIX + slotId() + ":" + genreKey(); }
 
   function load() {
     try {
       var raw = localStorage.getItem(key());
+      if (!raw) {
+        /* v4.08.0 旧键迁移：原键为 `yunjingCanonTL:{genre}`（无槽位）。
+           仅在当前槽尚未持有数据时迁移一次；主档有存档时保留给主档（不搬走）。 */
+        var old = PREFIX + genreKey();
+        var oldRaw = localStorage.getItem(old);
+        if (oldRaw) {
+          var mainHasSave = !!(localStorage.getItem("storySave_" + genreKey()) || localStorage.getItem("storySave_" + genreKey() + ".bak"));
+          raw = oldRaw;
+          localStorage.setItem(key(), oldRaw);
+          if (!mainHasSave) localStorage.removeItem(old);
+        }
+      }
       var o = raw ? JSON.parse(raw) : {};
       return (o && typeof o === "object" && o.events && o.bonds) ? o : { events: {}, bonds: {} };
     } catch (e) { return { events: {}, bonds: {} }; }
@@ -92,6 +117,10 @@
   var CanonTimeline = {
     PREFIX: PREFIX,
     STATUS: STATUS,
+    /* v4.08.0：导出当前键名（同 canon-ledger，供防幻觉校验按本界本槽比对） */
+    key: key,
+    slotId: slotId,
+    genreKey: genreKey,
 
     onChange(fn) { if (typeof fn === "function") listeners.push(fn); },
 

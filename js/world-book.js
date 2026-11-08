@@ -70,7 +70,10 @@
   function ensureSeed() {
     var g = genreKey();
     if (!seedsOf(g)) return;
-    var flag = SEED_FLAG + g;
+    /* v4.08.0 修复（D8）：播种标记原本是 `yunjingWorldBookSeeded:v3:{genre}`，
+       **不带槽位后缀** → 主档播种后写入标记，副档进来直接被标记挡住 → 副档永远是空库。
+       现在标记也按槽隔离。 */
+    var flag = SEED_FLAG + g + slotSuffix();
     var done;
     try { done = localStorage.getItem(flag); } catch (e) { done = null; }
     if (done) return;

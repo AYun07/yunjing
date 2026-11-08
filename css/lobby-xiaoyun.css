@@ -198,6 +198,10 @@ html body.page-index .container > .workshops{grid-template-columns:repeat(auto-f
   box-shadow:var(--soft);}
 .ws-cat-head{display:flex;align-items:center;gap:16px;width:100%;text-align:left;cursor:pointer;
   padding:20px 22px;background:none;border:0;color:var(--ink);font:inherit;
+  /* v4.08.0 修复（375px 小屏横向溢出 3px）：本元素是 content-box，
+     width:100% 之外还要再加左右 padding（移动端 14px×2）→ 实际宽度多出 28px，
+     右边溢出视口。改为 border-box 后 width:100% 即为最终占位宽。 */
+  box-sizing:border-box;
   border-bottom:1px solid color-mix(in srgb,var(--cat-hue) 18%,transparent);}
 .ws-cat-head .wc-glyph{width:52px;height:52px;flex:0 0 auto;border-radius:16px;display:grid;place-items:center;
   font-size:24px;font-weight:700;color:#fff;

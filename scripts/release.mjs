@@ -120,6 +120,33 @@ ${detail.join('\n\n') || title || ''}
   touched.push('VERSIONS.md');
 }
 
+/* ---------- 3.5 README 同源（v4.08.0 补：此前 release.mjs 完全没有 README 规则，
+   只有独立 _bump*.mjs 有，导致 README 顶部长期停在旧版描述、zip 链接指向 v3.99.0。
+   这里把「当前版本标题 / 立即获取链接 / 逐版记录表新行」纳入自动发版，防复发。
+   顶部「这一版做了什么」长摘要属人工撰写，脚本不改（避免用模板覆盖已有叙述）。） ---------- */
+{
+  const rm = read('README.md');
+  let out = rm;
+  /* ① 当前版本标题 */
+  out = out.replace(/## 🆕 当前版本：v[\d.]+（[\d-]+）/, `## 🆕 当前版本：v${nextVer}（${today}）`);
+  /* ② 立即获取区：把三个旧 tag 链接换成新版（只命中该行，不动表格里的历史链接） */
+  const acqLine = out.match(/^\*\*立即获取\*\*：[^\n]*$/m);
+  if (acqLine) {
+    const newline = `**立即获取**：[⬇ 完整包 zip](https://github.com/${REPO}/archive/refs/tags/${tag}.zip)`
+      + ` · [📄 发布页](https://github.com/${REPO}/releases/tag/${tag})`
+      + ` · [🔍 与 v${curVer} 的差异](https://github.com/${REPO}/compare/v${curVer}...${tag})`
+      + ` · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)`;
+    out = out.replace(acqLine[0], newline);
+  }
+  /* ③ 逐版记录表：在表头分隔行之后插入本版新行（若尚不存在） */
+  if (!out.includes(`| **${tag}** |`)) {
+    const row = `| **${tag}** | ${today} | ${(detail.join(' ') || title || '').slice(0, 600)}`
+      + ` | [zip](https://github.com/${REPO}/archive/refs/tags/${tag}.zip) · [发布页](https://github.com/${REPO}/releases/tag/${tag}) |`;
+    out = out.replace(/(## 📋 逐版更新记录[\s\S]*?\n\|[-| ]+\|\n)/m, `$1${row}\n`);
+  }
+  if (out !== rm) { write('README.md', out); touched.push('README.md'); }
+}
+
 console.log(`版本号 ${curVer} → ${nextVer}，改动文件 ${[...new Set(touched)].length} 个`);
 if (DRY) { console.log('[dry] 到此为止，未提交未推送'); process.exit(0); }
 

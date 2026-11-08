@@ -126,11 +126,19 @@ input, select, textarea { font-size: 16px; } /* 防 iOS 聚焦自动放大 */
   .imm-fab, .wr-fab, .drawer-fab, #wxStrip + .fab, [class*="float-btn"], [class*="fab-btn"] {
     transform: scale(.82) !important; opacity: .8 !important;
   }
-  /* ③ 底部快捷行动行:单行横滑不换行 */
-  .qa-row, .quick-actions, [class*="action-strip"], [class*="quick"] {
+  /* ③ 底部快捷行动行:单行横滑不换行
+     v4.08.0 修复（375px 小屏横向溢出 153px）：
+     原选择器 `[class*="quick"]` 是**子串匹配**，会命中任何 class 里含 "quick" 的元素——
+     包括 RPG 角色面板里的 `.rpg-quick`（六个快捷按钮：休整/掉落/买药/传送/PK/回合）。
+     它被强制 `display:flex !important; flex-wrap:nowrap !important`，
+     于是六个按钮挤在一行不肯折行，最后两枚（PK / 回合）被推出视口（right 到 653px），
+     玩家在手机上根本点不到这两个按钮。
+     修法：把子串匹配收紧为**明确的目标类**（本项目里真正的快捷行动行就是 .qa-row /
+     .quick-actions / .action-strip 这几个），不再误伤 .rpg-quick。 */
+  .qa-row, .quick-actions, .action-strip, [class*="action-strip"] {
     display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none !important; gap: 6px !important; padding: 6px 8px !important;
   }
-  .qa-row button, .quick-actions button, [class*="action-strip"] button, [class*="quick"] button {
+  .qa-row button, .quick-actions button, .action-strip button, [class*="action-strip"] button {
     flex: 0 0 auto !important; white-space: nowrap !important; padding: 8px 12px !important; font-size: 13px !important;
   }
   /* ④ 输入区:完整露出,底部给 HUD 条留位 */

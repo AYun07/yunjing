@@ -3,7 +3,14 @@ const ReaderLetters = function() {
   const EVERY = 5;
   let genre = "free";
   let sending = false;
-  const KEY = () => "rl_" + genre;
+  /* v4.08.0 修复（D7 槽隔离）：键名 `rl_{genre}` 全档共享，
+     副档的读者来信会继承主档记录。现走 SlotRegistry.scoped()，首次访问自动迁移旧数据。 */
+  const KEY = () => {
+    try {
+      if (window.SlotRegistry && window.SlotRegistry.scoped) return window.SlotRegistry.scoped("rl_", genre);
+    } catch (e) {}
+    return "rl_" + genre;
+  };
   function loadSent() {
     try {
       const a = JSON.parse(localStorage.getItem(KEY()) || "[]");

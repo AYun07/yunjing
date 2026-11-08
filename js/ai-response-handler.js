@@ -110,6 +110,19 @@ const StoryResponseHandler = {
     /* v3.46.2 纵深防御：自带 think 剥离（常规调用方均已预剥，此处兜底，
        防止推理模型思考过程混入正文/导出/朗读） */
     body = body.replace(/<think(?:\s[^>]*)?>[\s\S]*?<\/think\s*>/gi, "").replace(/<think(?:\s[^>]*)?>[\s\S]*$/i, "").replace(/<\/think\s*>/gi, "");
+    /* v4.08.0 修 D-35（思维链泄漏进正文 · 玩家直接可见）：
+       实测（wangyou 深度旅程 quest2 步）模型输出了整块英文推理：
+         (Thinking process: The user wants me to continue the story from the exact
+          point of interruption. Current state: - Character: "I" (18-year-old male,
+          inheritor/Lin Fan/Qingshuai Baiyu Tang identity … Wait, the engine log says
+          -16 HP. Wait, the engine log provided in the system …)
+       玩家看到的是模型的内心戏 + 推理里的错误数字（「HP 346/403」就是从这里来的：
+       模型在推理里自己把 304+42 加成 346，随后把这个错数写进正文）。
+       此前只剥 <think> 标签，而本模型用的是 (Thinking process: …) 这类括号格式，
+       于是整块泄漏。提示词侧同步加了硬约束（ai-message-builder.js 格式契约 4.3）。
+       剥离口径：括号包裹的思维链块整体删除，直到出现「正文恢复信号」为止——
+       优先匹配闭合块；未闭合时按「思维链特征行」逐行剥离，避免吃掉后面真正文。 */
+    body = this._stripThinkingChain(body);
     body = body.replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, "").replace(/【variable_update】[\s\S]*?【\/variable_update】/gi, "").replace(/<variable_update>[\s\S]*?<\/variable_update>/gi, "");
     body = this._stripUnclosedVarBlock(body);
     if (window.ImmersionPlus && window.ImmersionPlus.stripHookMarkers) {
@@ -121,6 +134,19 @@ const StoryResponseHandler = {
       const isVarDump = /^[\s\S]*?"(chapter|wordCount|stats|characters|foreshadowings|totalChapters|title)"\s*:/i.test(inner) || /^[\s\S]*?\b(chapter|wordCount|tension|sanity|revelation|crisis|danger)\s*[:：]/i.test(inner);
       return isVarDump ? "" : fence;
     });
+    /* v4.08.0 修 D-38（整块装备/属性面板抄进正文 · 玩家直接可见）：
+       实测（wangyou 深度旅程 loot 步）模型把一整块装备卡片原样吐进正文：
+           【新手木剑】
+           品级：白装
+           槽位：胸甲
+           攻击：+17
+           金币奖励：+11（已自动入账）
+           当前总金币：99
+       现有 panelDepth 只认「【状态栏】」这类固定标题，不认装备名标题；
+       _isLeakedLine 只单行剥「字段:值」，带括号注记的行漏网，整块 UI 仍留在正文。
+       这里按「装备名标题 + 其后连续 ≥3 行装备字段」整段剥离，严格判定防误伤
+       （正文里正常的「【苍狼】」强调后面跟的是叙事，不会命中）。 */
+    body = this._stripEquipPanel(body);
     /* v4.07.2 修 D-29：面板段深度标记（见下方 filter 里的说明） */
     let panelDepth = 0;
     body = body.split("\n").filter((line) => {
@@ -134,6 +160,19 @@ const StoryResponseHandler = {
       if (/^【(?:状态栏|状态面板|面板|状态|属性|数值|信息栏|当前状态|角色面板|战斗面板|属性面板|角色状态|战斗信息|当前状态栏|人物面板)】\s*$/.test(t)) { panelDepth = 1; return false; }
       if (panelDepth) { if (!t) panelDepth = 0; return false; }
       if (/^(chapter|wordCount|totalChapters|tension|sanity|revelation|crisis|danger|logic)\s*[:：=]\s*[+-]?\d/.test(t)) return false;
+      /* v4.08.0 修 D-32（系统提示块漏进正文 · 玩家直接可见）：
+         实测（v4.08.0 wangyou 深度旅程「faction」步）模型把引擎 directive 里的
+         系统消息**照抄**成正文行：
+             【恭喜玩家「在水一方」建立势力「灰烬同盟」。】
+             【驻地：松木林·巨剑台。】
+             【行会等级：1/120。】
+             【成员人数：1/999999。】
+         这些是界面自己画的系统提示，不是小说内容。提示词侧已加硬约束
+         （ai-message-builder.js 格式契约 4.1），这里是防御层。
+         判定口径（宁漏勿误伤）：整行**完全**被一对「【…】」包住，
+         且内容含系统特征词（恭喜/等级/驻地/成员/提示/获得/任务/经验/等级 等），
+         才剥离。正文里正常的方括号用法（书名号式强调、括号补充说明）不受影响。 */
+      if (this._isSystemNoticeLine(t)) return false;
       if (/^[+-]\S.{0,23}(\s*x\s*\d+)?（(埋设|回收|获得|失去|埋下|揭晓)）$/.test(t)) return false;
       /* v3.47.1：剥离误写进正文的「容器.字段=值 / 容器.字段: 值」行式指令
          （旧 player-kit 模板教 AI 用「=」，这些行曾以字面量留在正文里）。
@@ -195,6 +234,21 @@ const StoryResponseHandler = {
       if (i < lines.length) body = lines.slice(0, i).join("\n");
     }
     body = body.replace(/\(?\/?variable_update\)?/gi, "").replace(/\n{3,}/g, "\n\n");
+    /* v4.08.0 修 D-36（协议开标签残骸 · 玩家直接可见）：
+       实测（wangyou 深度旅程 loot 步）正文末尾粘了一个孤立的 `<status>` ——
+       模型写到状态栏开头就被 maxTokens 截断，`<status>` 开标签留下了、闭合标签没有。
+       现有 YunqiPresetRegex.process 只抽**成对闭合**的协议块，孤立开标签会以裸 XML 留在正文里。
+       这里兜底剥掉「独立成行、且后面没有对应闭合标签」的协议开/闭标签，
+       不碰成对块（成对块由 process 抽成折叠卡片），也不碰正文里行内出现的尖括号。 */
+    body = body.replace(/(?:^|\n)([ \t]*)(<\/?)(status|wlog|memory_log|npc_log|thinking|think|variable_update|selection|world|claimed)([ \t]*>)(?=[ \t]*(?:\n|$))/gi,
+      (m, lead, slash, tag, tail, off, whole) => {
+        const isClose = slash === "</";
+        /* 开标签：往后找闭合标签；闭标签：往前找开标签。找得到 → 成对块，保留 */
+        const mate = isClose
+          ? new RegExp("<\\s*" + tag + "\\s*>", "i").test(whole.slice(0, off))
+          : new RegExp("<\\/\\s*" + tag + "\\s*>", "i").test(whole.slice(off + m.length));
+        return mate ? m : lead;   // 孤立残骸 → 只保留行首缩进，标签本身删掉
+      });
     const out = body.trim();
     /* v3.46.2 防线：常规剥离后正文为空/过短 → 从原文打捞叙事段兜底
        （覆盖：正文整体被写进代码围栏、残缺标记连锁误剥、只吐变量块等情形） */
@@ -309,6 +363,89 @@ const StoryResponseHandler = {
     if (key && this._knownProtocolKeys().has(String(key).trim())) return true;
     return false;
   },
+  /** v4.08.0 修 D-35：剥离思维链泄漏块。
+   *  覆盖格式（同一模型的不同轮次会用不同写法）：
+   *    (Thinking process: …)  (Thought: …)  (Reasoning: …)  【思考过程】…  （思考：…）
+   *  剥离策略（宁漏勿误伤 —— 吃掉正文比漏掉思维链更糟）：
+   *    ① 有闭合括号 → 整块删
+   *    ② 无闭合 → 逐行删「思维链特征行」，遇到像正文的行即停
+   *  思维链特征行的判据：含英文推理口吻（Wait/Let me/Current state/Character:/Action:）
+   *    或含「思考」「推理」「分析一下」等词且该行以结构化列表/键值形态出现。 */
+  _stripThinkingChain(body) {
+    if (!body) return body;
+    var t = String(body);
+    /* v4.08.0 修正一处误删事故：
+       初版用 /\(…Thinking process…\)/ 的非贪婪闭合匹配整块删。
+       但真实泄漏样本里，模型是在一句中文之后才开括号（「…只要它 (Thinking process: …」），
+       非贪婪匹配吃到**中途第一个右括号**（推理正文自带括号），
+       于是只删了前半段，后面的状态清单行失去上下文标记、原样漏进正文。
+       修法：闭合块只在「整块都在一行内」时才整块删；
+       跨行的思维链一律交给逐行策略（已验证能正确恢复中文正文）。 */
+    t = t.replace(/[（(]\s*(?:Thinking\s*process|Thought|Reasoning)\s*[：:][^（）()\n]{0,600}[）)]/gi, "");
+    t = t.replace(/[【\[]\s*(?:思考过程|思维链|推理过程|Thinking\s*process|Thought|Reasoning)\s*[】\]][:：]?[^\n]{0,600}/gi, "");
+    /* 逐行剥（跨行思维链的主路径） */
+    var lines = t.split("\n");
+    var out = [];
+    var inChain = false;
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i];
+      var trimmed = ln.trim();
+      if (!trimmed) {
+        /* 空行：思维链内部的空行继续剥离；不在链里则保留 */
+        if (inChain) continue;
+        out.push(ln);
+        continue;
+      }
+      /* 进入思维链的起点：行内出现思维链标记即进入 */
+      if (!inChain && /(?:Thinking\s*process|Thought|Reasoning)\s*[：:]|^\s*[（(]\s*(?:思考过程|思维链|推理过程)/i.test(trimmed)) {
+        inChain = true;
+        /* 该行若在标记之后还有中文正文，保留标记之后的部分 */
+        var mk = trimmed.match(/^[\s\S]*?(?:Thinking\s*process|Thought|Reasoning)\s*[：:]/i);
+        if (mk) {
+          var rest = trimmed.slice(mk[0].length);
+          if (/[一-鿿]{6,}/.test(rest) && !this._isThinkingLine(rest)) {
+            inChain = false;
+            out.push(rest);
+          }
+        }
+        continue;
+      }
+      if (inChain) {
+        /* 思维链特征行 → 继续剥 */
+        if (this._isThinkingLine(trimmed)) continue;
+        /* 结构化列表行（- Character: … / - Location: …）→ 继续剥 */
+        if (/^[-*•]\s*[A-Za-z][A-Za-z ]{1,24}\s*[:：]/.test(trimmed)) continue;
+        if (/^[-*•]\s/.test(trimmed) && /[A-Za-z]{3,}/.test(trimmed)) continue;
+        /* 出现中文叙事句 → 认为是正文恢复，退出剥离状态 */
+        if (/[一-鿿]{6,}/.test(trimmed) && !/[:：]\s*\S{0,60}$/.test(trimmed)) {
+          inChain = false;
+          out.push(ln);
+          continue;
+        }
+        /* 其他英文行 → 仍属思维链 */
+        if (/[A-Za-z]{3,}/.test(trimmed) && !/[一-鿿]{4,}/.test(trimmed)) continue;
+        inChain = false;
+        out.push(ln);
+        continue;
+      }
+      out.push(ln);
+    }
+    return out.join("\n");
+  },
+  /** 判定一行是否属于思维链（英文推理口吻 / 结构化键值 / 中英文混合的推理句） */
+  _isThinkingLine(s) {
+    var t = String(s || "").trim();
+    if (!t) return false;
+    /* 英文推理口吻 */
+    if (/^(?:Wait|Let me|Okay|So|Now|First|Also|Hmm|I need to|The user|Current state|Based on|According to|Next|But|However)/i.test(t)) return true;
+    if (/\b(?:Wait|Let me'?(?:s)? think|Current state|Character|Enemy|Action|Location|Level \d|HP|rethink|actually|hmm)\b/i.test(t)) return true;
+    /* 结构化键值行（思维链里的状态清单） */
+    if (/^(?:[-*•]\s*)?[A-Z][A-Za-z ]{1,20}\s*[:：]\s*\S/.test(t)) return true;
+    /* 中文推理口吻 */
+    if (/^(?:等等|让我|我来|思考|推理|分析一下|注意|首先|用户想要)/.test(t)) return true;
+    if (/(?:等等|让我想想|我需要|根据提示|根据系统|根据引擎|等等[，,]?\s*)/.test(t) && /[A-Za-z]{3,}/.test(t)) return true;
+    return false;
+  },
   /** 行级判定（正文语境用——句读守卫 + ≤100 字符，防止误伤叙事与对白） */
   _isLeakedLine(s) {
     const t = String(s || "").trim();
@@ -317,6 +454,85 @@ const StoryResponseHandler = {
     if (!cm) return false;
     const key = cm[1].trim().replace(/^["'“”]+|["'“”]+$/g, "");
     return this._leakedKVShape(key, cm[2], t);
+  },
+  /** v4.08.0 修 D-32：判定一行是否是「系统提示行」（模型照抄 UI 系统消息）。
+   *  判定口径（宁漏勿误伤 —— 误伤会吃掉真正文）：
+   *   ① 整行**完全**被一对「【…】」包住（行内不得有其他正文）
+   *   ② 内容含系统特征词（恭喜/提示/等级/驻地/成员/经验/任务/获得/解锁/系统/操作/奖励）
+   *   ③ 内容呈「字段: 值」或含数字 + 百分号/等级这类**系统消息体征**
+   * 三条同时满足才剥离。
+   *  正文里常见的「【他低声说】」「【注：此段为回忆】」不含系统特征词 → 不受影响。 */
+  /* v4.08.0 D-38：剥离「【装备名】标题 + 连续装备字段行」整块 UI 面板。
+     判定口径（宁漏勿误伤）：
+       ① 标题行形如【…】，2~16 字，且不含系统/状态/频道等面板标题词；
+       ② 其后连续 ≥3 行都是「装备字段：值」形态；
+       ③ 字段白名单固定（品级/槽位/攻击/防御/金币奖励/…），叙事句不会命中。 */
+  _stripEquipPanel(body) {
+    if (!body) return body;
+    const TITLE = /^【([^】]{2,16})】\s*$/;
+    const TITLE_BAD = /(系统|状态|面板|提示|公告|频道|行动选项|行动|选项|章节|任务|委托)/;
+    const FIELD = /^(?:品级|品质|品阶|槽位|部位|装备位|攻击|防御|魔防|生命|魔力|暴击|暴击率|耐久|等级需求|需求等级|绑定|属性|加成|金币奖励|当前总金币|总金币|金币|经验奖励|声望奖励|掉落|重量|镶孔|特效|套装|耗蓝|耗怒)[：:]\s*\S/;
+    const lines = String(body).split("\n");
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+      const t = lines[i].trim();
+      const m = t.match(TITLE);
+      if (m && !TITLE_BAD.test(m[1])) {
+        let j = i + 1, hits = 0;
+        while (j < lines.length && hits < 12) {
+          const s = lines[j].trim();
+          if (!s) break;
+          if (!FIELD.test(s)) break;
+          hits++; j++;
+        }
+        if (hits >= 3) { i = j - 1; continue; }   // 整块丢弃
+      }
+      out.push(lines[i]);
+    }
+    return out.join("\n");
+  },
+
+  _isSystemNoticeLine(s) {
+    const t = String(s || "").trim();
+    if (!t || t.length > 120) return false;
+    /* v4.08.0：模型换了外壳绕过只认【】的判定——实测（wangyou 深度旅程 turnin 步）出现
+         「委托完成：悬赏·缉拿雷阵守卫」
+         「奖励：金币 x100，声望 +5」
+         **「已购买：松木林巨剑（绿色装备）」**
+         **「金币剩余：28」**
+       先把 markdown 加粗壳（**…**）剥掉，再按外壳类型分流判定。
+       关键：引号「」是正文对白的主要载体，绝不能沿用方括号的宽松口径，
+       否则「我终于获得了自由！」这类台词会被误剥。 */
+    var core = t.replace(/^\*{1,3}\s*/, "").replace(/\s*\*{1,3}$/, "").trim();
+    var isBracket = /^【[\s\S]+】$/.test(core);
+    var m = isBracket
+      ? core.match(/^【([\s\S]+)】$/)
+      : (core.match(/^[「『]([\s\S]+)[」』]$/) || core.match(/^[“"]([\s\S]+)[”"]$/));
+    if (!m) return false;
+    const inner = String(m[1] || "").trim();
+    if (!inner) return false;
+
+    if (!isBracket) {
+      /* ── 引号外壳：只认「UI 字段:值」形态，且不得以句读收尾 ──
+         白名单字段全部来自界面结算行（奖励/已购买/金币剩余/委托完成/…），
+         正常对白不会以这些词开头带冒号；且系统 UI 行不带句号，对白带。 */
+      if (/[。！？…]$/.test(inner)) return false;
+      return /^(?:奖励|已购买|购买成功|金币剩余|剩余|余额|结算|到账|委托完成|任务完成|已获得|获得物品|系统提示|系统消息|行会等级|成员人数|驻地|经验|声望|掉落|已装备|已使用|已学习|已解锁)[：:]\s*\S/.test(inner);
+    }
+
+    /* ── 方括号外壳：沿用 v4.08.0 原口径（宽松，因为正文几乎不用【】包对白）── */
+    /* ① 系统特征词 */
+    if (!/(恭喜|提示|等级|驻地|成员|经验|任务|获得|解锁|系统|操作|奖励|状态|属性|金币|声望|等级别)/.test(inner)) return false;
+    /* ② 系统消息体征：
+     *   a) 「字段: 值」形态（驻地：… / 行会等级：1/120）
+     *   b) 数字 + 分隔数值 / 百分比 / Lv.N
+     *   c) **事件型系统播报**——「恭喜…建立…」「…已解锁」「…获得…」这类
+     *      带事件动词的整句系统消息。它没有 kv 形态，但同样是界面自己画的。 */
+    var kv = /[：:]/.test(inner) && /^[^\s：:]{1,12}[：:]\s*\S/.test(inner);
+    var numPair = /\d+\s*[/／]\s*\d+|\d+\s*[:：]\s*\d+|\d+\s*%|Lv\.?\s*\d+/.test(inner);
+    var event = /(恭喜|已解锁|解锁成功|获得|领取|创建成功|建立成功|加入成功|晋升|任务完成|系统提示|系统消息|操作成功|结算)/.test(inner);
+    if (!kv && !numPair && !event) return false;
+    return true;
   },
   /** 判定一行是否"变量协议行"（而非叙事散文）
    *  allowAmbiguous：短中文键+短文本值（如「身份: 天才修士」）存在与对白（「许静：你好」）

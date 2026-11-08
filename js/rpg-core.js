@@ -424,7 +424,37 @@
       note: String(o.note || ''), t: String(o.t || '')
     });
   }
-  /* 回合推进：技能冷却与 Buff 持续回合递减（确定性） */
+  /* 回合推进：技能冷却与 Buff 持续回合递减（确定性）
+     v4.08.0 修复（无上限增长）：
+     此前 st.buffs 只 push 不去重不截断 —— 玩家连续喝「力量药剂」或反复施加
+     增益，buffs 数组单调增长且永不回收（tickBuffs 只在 tick 动作或回合推进时触发，
+     不推进回合就一直涨）→ 存档 JSON 无限膨胀 → 撑爆 localStorage 配额，
+     新内容静默丢失（叠加 B7 的静默写失败）。
+     现在：① 同一 id 的 buff 刷新回合数而非叠加；② 总数硬上限，超出淘汰最旧的。 */
+  var MAX_BUFFS = 24;
+  function addBuff(st, b) {
+    if (!Array.isArray(st.buffs)) st.buffs = [];
+    var hit = null;
+    for (var i = 0; i < st.buffs.length; i++) {
+      if (st.buffs[i] && st.buffs[i].id === b.id) { hit = st.buffs[i]; break; }
+    }
+    if (hit) {
+      /* 同 id 刷新：取更长的持续回合，不叠加数值（避免攻击力无限膨胀） */
+      hit.turns = Math.max(Number(hit.turns) || 0, Number(b.turns) || 0);
+    } else {
+      st.buffs.push({
+        id: b.id, n: b.n, i: b.i,
+        atk: Number(b.atk) || 0, def: Number(b.def) || 0,
+        turns: Number(b.turns) || 0, kind: b.kind
+      });
+    }
+    /* 硬上限：超出时淘汰回合最少的（最先把失效的那个），再不行淘汰最早的 */
+    if (st.buffs.length > MAX_BUFFS) {
+      st.buffs.sort(function (x, y) { return (Number(x.turns) || 0) - (Number(y.turns) || 0); });
+      st.buffs.splice(0, st.buffs.length - MAX_BUFFS);
+    }
+    return st.buffs;
+  }
   function tickBuffs(st) {
     var chg = false;
     if (st.cd && typeof st.cd === 'object') Object.keys(st.cd).forEach(function (k) { if ((Number(st.cd[k]) || 0) > 0) { st.cd[k] = (Number(st.cd[k]) || 0) - 1; chg = true; } });
@@ -1104,7 +1134,7 @@
           if (p === 'hp') { st.hp = (Number(st.hp) || 0) + Math.ceil(dd2.maxHp * 0.4); blog(st, { a: '饮用 ' + po.n, t: '药水', note: '+40% HP' }); return ok('🧪 饮用「' + po.n + '」——HP 回复 40%'); }
           if (p === 'mp') { st.mp = (Number(st.mp) || 0) + Math.ceil(dd2.maxMp * 0.4); blog(st, { a: '饮用 ' + po.n, t: '药水', note: '+40% MP' }); return ok('🔵 饮用「' + po.n + '」——' + resOf(st) + ' 回复 40%'); }
           /* 力量药剂 → 施加攻击增益 Buff */
-          var bf = BUFFS.atk; st.buffs.push({ id: bf.id, n: bf.n, i: bf.i, atk: bf.atk, def: bf.def, turns: bf.turns, kind: bf.kind });
+          var bf = BUFFS.atk; addBuff(st, bf);
           blog(st, { a: '饮用 ' + po.n, t: '增益', note: '攻击 +' + bf.atk + ' / ' + bf.turns + ' 回合' });
           return ok('⚗️ 饮用「' + po.n + '」——攻击 +' + bf.atk + '（' + bf.turns + ' 回合）');
         }
@@ -1301,7 +1331,7 @@
         if (a === 'buff') {
           var b0 = BUFFS[p];
           if (!b0) return '未知状态';
-          st.buffs.push({ id: b0.id, n: b0.n, i: b0.i, atk: b0.atk, def: b0.def, turns: b0.turns, kind: b0.kind });
+          addBuff(st, b0);
           blog(st, { a: (b0.kind === 'debuff' ? '受到减益 ' : '施加增益 ') + b0.n, t: '状态', note: '攻 ' + (b0.atk >= 0 ? '+' : '') + b0.atk + ' 防 ' + (b0.def >= 0 ? '+' : '') + b0.def + ' / ' + b0.turns + ' 回合' });
           return ok((b0.kind === 'debuff' ? '💀 ' : '✨ ') + b0.n + '——攻 ' + (b0.atk >= 0 ? '+' : '') + b0.atk + ' 防 ' + (b0.def >= 0 ? '+' : '') + b0.def + '，持续 ' + b0.turns + ' 回合');
         }
@@ -1464,7 +1494,15 @@
           + '｜六维 ' + DIMS.map(function (x) { return x.n + d.attr[x.k]; }).join(' ')
           + '｜攻 ' + d.atk + ' 防 ' + d.def + ' 魔防 ' + d.mdef + ' 暴击 ' + d.crit + '%'
           + '｜装备 ' + (eq || '无') + '｜' + w.cur + ' ' + st.gold + ' 声望 ' + st.rep + '｜当前地图 ' + st.map
-          + '。\n【数值契约】正文写到的等级、伤害、耗蓝、掉落、升级必须与本快照一致，只准引用快照里的数字；严禁自行编造等级、经验值、属性表或角色档案（例如凭空写「Lv.8」「经验 632/1200」）。野怪与对手的等级、HP 由引擎「练级目标」管理，正文只写外形、名称与相对强弱（如「绿名怪」「高出一阶」），严禁给它们标注具体等级或 HP 数字。剧情要升级就写「经验条涨了一截」，具体结算交给引擎。需变更时在 (variable_update) 块写 >>网游面板.exp: +120 等行。禁止编造本界品级序列（' + w.tiers.slice(0, 4).join('→') + '…）之外的装备品级。'
+          + '。\n【数值契约】正文写到的等级、伤害、耗蓝、掉落、升级必须与本快照一致，只准引用快照里的数字；严禁自行编造等级、经验值、属性表或角色档案（例如凭空写「Lv.8」「经验 632/1200」）。'
+          /* v4.08.0 修 D-34（模型对 HP/蓝量自行加法）：
+             实测（wangyou 深度旅程 quest2 步）引擎真值 HP 304/403，
+             正文写成「HP 346/403」「我现在的HP是346」——304+42（结算里的反击伤害）= 346，
+             模型把「当前值 + 本次结算增量」自己加了一遍。
+             这类错误比凭空编造更隐蔽：数字看着合理、且有来源，但算错了。
+             修法：明确「当前值一律照抄快照，增量绝不参与当前值的计算」。 */
+          + '当前值一律**照抄**本快照里的数字，绝不做任何加减乘除——本轮结算里的「-42 HP」是刚刚发生的变化，绝不可把它加回当前 HP（实测出现过把当前 304 加上反击 42 写成 346）。'
+          + '野怪与对手的等级、HP 由引擎「练级目标」管理，正文只写外形、名称与相对强弱（如「绿名怪」「高出一阶」），严禁给它们标注具体等级或 HP 数字。剧情要升级就写「经验条涨了一截」，具体结算交给引擎。需变更时在 (variable_update) 块写 >>网游面板.exp: +120 等行。禁止编造本界品级序列（' + w.tiers.slice(0, 4).join('→') + '…）之外的装备品级。'
           + '\n【分区一致性】玩家当前所在分区是「' + zoneObj(st).n + '」，该区品级叫法为「' + (zoneObj(st).tierNote || w.tiers.join('→')) + '」，第二资源为「' + resOf(st) + '」。正文提到装备品级必须用本区的叫法；只有明确写「跨服／合流／中枢」时才允许出现他区品级与专名。'
           + '\n【玩法路线与委托】当前路线：' + (st.mode === 'story' ? '剧情路线（走失落叶网游三部曲主线章节）' : '沙盒路线（无强制主线，玩家自由探索、自行接活）') + '。'
           + '本区局势：' + (sitNow ? (sitNow.sitN + '·' + (sitNow.verb || '正在发生') + '，' + (sitNow.foe || '不明敌人') + '出没') : '暂时平静') + '。'
@@ -1483,11 +1521,24 @@
              只有玩家在面板/提示里看得见，AI 拿到的永远是「动作前」的快照，
              于是只能靠猜——实测出现过「经验+80。当前经验 80/62」（当前经验超过上限，自相矛盾）
              与「Lv.2了」（实际 Lv.1）的编造。
-             现在动作结果随 directive 下发，AI 与玩家看到同一份真相。 */
+             现在动作结果随 directive 下发，AI 与玩家看到同一份真相。
+             v4.08.0 修 D-33（结算日志被照抄进正文）：
+               原措辞「【上一轮动作结算 · 引擎已判定 · 必须照此写】」+「以上为引擎实际结算结果…
+               正文写到的数字必须与之一致」——「必须照此写」被小模型理解为
+               「把这段话抄进正文」。实测（wangyou 深度旅程 quest2 步）正文出现
+               「⚔️ 基本斩击 对「雷阵守卫」造成 35 点伤害（受静电护盾减免）」
+               「怒气消耗 4/96」「经验 +2（因对方为精英级NPC，经验溢出衰减）」
+               ——引擎日志原文被逐行搬进正文，玩家看到的是系统日志而不是小说。
+               修法：① 标题改为「判定依据 · 不得写进正文」；
+                     ② 明确「这是给你判断对错的依据，不是可引用的素材」；
+                     ③ 明确「正文不得出现结算日志的原文格式（动作名+伤害数值+结算语）」。 */
           + (st.actLog && st.actLog.length
-            ? ('\n【上一轮动作结算 · 引擎已判定 · 必须照此写】' + st.actLog.slice(-3).map(function (x) { return '· ' + x; }).join('\n')
-               + '\n以上为引擎实际结算结果（掉落、经验、等级变化均以此为准），正文写到的数字必须与之一致；'
-               + '结算里的「+N」是**本次增量**，当前值一律照抄上方快照，绝不可自行相加（实测出现过把「经验 +64」加到当前经验上，写出「68/62」这种自相矛盾的数字）；'
+            ? ('\n【上一轮动作结算 · 判定依据 · 不得写进正文】' + st.actLog.slice(-3).map(function (x) { return '· ' + x; }).join('\n')
+               + '\n以上是引擎算给你的**内部判定依据**，作用是让你知道这一击到底打中了没有、掉了什么、涨了多少经验——'
+               + '它不是正文素材，绝不可原文搬运、也绝不可改写成「⚔️ xxx 造成 NN 点伤害」「怒气消耗 N/N」「经验 +N」这类结算日志句式；'
+               + '正文只写角色能感觉到的结果（一剑劈进骨头、伤口迸出血珠），不写日志格式、不写结算项名称。'
+               + '数字口径：结算里的「+N」是**本次增量**，当前值一律照抄上方快照，绝不可自行相加'
+               + '（实测出现过把「经验 +64」加到当前经验上，写出「68/62」这种自相矛盾的数字）；'
                + '若结算里没有的数值（等级、经验、掉落、金币）一律不得凭空出现，也不得说「升级了」除非结算里明写了。'
                + '结算里出现的怪物名不得在正文里加注等级、HP 或品级（如「毒蛛(Lv.1)」）——只写名称与相对强弱。')
             : '');
@@ -1905,7 +1956,7 @@
         var ls = document.querySelectorAll('link[rel="stylesheet"]');
         for (var i = 0; i < ls.length; i++) if ((ls[i].href || '').indexOf('rpg-suite.css') >= 0) return;
         var l = document.createElement('link');
-        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.07.2'; l.setAttribute('data-rpg-suite', '1');
+        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.08.0'; l.setAttribute('data-rpg-suite', '1');
         document.head.appendChild(l);
       } catch (e) {}
     })();
@@ -1916,13 +1967,22 @@
       + '#rpgFab:hover{background:color-mix(in srgb,var(--ip,#c9a86a) 34%,#10161d)}'
       + '#rpgDrawer{position:fixed;right:14px;bottom:146px;z-index:9201;width:min(440px,92vw);'
       + 'max-height:min(74vh,680px);overflow:auto;background:#0e141b;border:1px solid var(--ip,#c9a86a)44;'
+      /* v4.08.0 修复（375px 小屏横向溢出 28px）：#rpgDrawer 是 content-box，
+         width:calc(100vw - 16px) 之外还要加左右 padding（14px×2）→ 实际比视口宽 28px，
+         面板内的快捷按钮（.rpg-btn.q）随之溢出屏幕右缘。改为 border-box。 */
+      + 'box-sizing:border-box;'
       + 'border-radius:14px;padding:14px;box-shadow:0 18px 50px rgba(0,0,0,.6);display:none;overflow-x:hidden}'
       + '#rpgDrawer.on{display:block}#rpgDrawer .rpg-hd{display:flex;align-items:center;gap:8px;'
       + 'margin-bottom:10px;font-size:13px;color:var(--ip,#c9a86a);letter-spacing:1px}'
-      + '#rpgDrawer .rpg-hd button{margin-left:auto;background:none;border:0;color:var(--imt,#9a8c6e);'
-      + 'font-size:16px;cursor:pointer}'
+      /* v4.08.0：关闭按钮此前无样式 → 退化成 13px 宽的小字符，手机上点不中 */
+      + '#rpgDrawer .rpg-hd button{margin-left:auto;background:rgba(255,255,255,.05);'
+      + 'border:1px solid var(--ip,#c9a86a)44;color:var(--imt,#9a8c6e);'
+      + 'width:34px;height:34px;min-width:34px;border-radius:50%;display:inline-flex;'
+      + 'align-items:center;justify-content:center;font-size:15px;line-height:1;cursor:pointer}'
+      + '#rpgDrawer .rpg-hd button:hover{color:var(--ip,#c9a86a);border-color:var(--ip,#c9a86a)}'
       + '@media(max-width:640px){#rpgFab{right:10px;bottom:78px;padding:8px 12px}'
-      + '#rpgDrawer{right:8px;bottom:126px;width:calc(100vw - 16px);max-height:66vh}}';
+      + '#rpgDrawer{right:8px;bottom:126px;width:calc(100vw - 16px);max-height:66vh}'
+      + '#rpgDrawer .rpg-hd button{width:38px;height:38px;min-width:38px;font-size:16px}}';
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
     var fab = document.createElement('button');
     fab.id = 'rpgFab'; fab.type = 'button'; fab.textContent = '🎮 ' + w.game + ' · 角色面板';

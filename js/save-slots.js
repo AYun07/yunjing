@@ -105,38 +105,54 @@
         return;
       }
       const fw = window.storyFramework;
-      const suffix = slotId !== "main" ? `~${slotId}` : "";
-      const key = `storySave_${fw.genre}${suffix}`;
-      localStorage.removeItem(key);
-      localStorage.removeItem(key + ".bak");
-      try {
-        localStorage.removeItem(key + ".idb");
-        if (window.StorageBoost && StorageBoost.ready()) StorageBoost.remove("主档/" + key);
-      } catch (e) {
-      }
-      try {
-        localStorage.removeItem(`imm_${fw.genre}${suffix}`);
-        localStorage.removeItem(`tl_${fw.genre}${suffix}`);
-      } catch (e) {
-      }
-      // v3.68.0 孤儿数据修复：删槽时灵宠/小队/身份三态/界模块/资料库一并清除
-      try {
-        ['yunjingBeasts', 'yunjingSquad', 'yunjingStoryStance', 'yunjingSideChar', 'yunjingPlayerIdentity', 'yunjingHeroRelation',
-         `worldExt_${fw.genre}`, `yunjingWorldBook:${fw.genre}`].forEach((k) => {
-          localStorage.removeItem(k + suffix);
-          if (!suffix) localStorage.removeItem(k);
-        });
-      } catch (e) {
+      const genre = (fw && fw.genre) || (window.SlotRegistry && window.SlotRegistry.genre()) || "free";
+      /* v4.08.0 修复（删档不彻底）：原实现用手写的 8 个孤儿键 + 统一 `k + suffix` 拼接，
+         但全项目实际有 20+ 处模块各自拼键名，格式至少 5 种：
+           yunjingWorldRuntime~{slot}~{genre}   ← 槽位在中间
+           yunjingCanonLedger:{slot}:{genre}    ← 冒号分隔
+           yunjing.clock.{slot}~{genre}         ← 点号分隔
+           yunjingBeasts~{slot}                 ← 主档也带 ~main
+         统一拼接对这 4 类全部拼错 → 删档后数据残留，新建同名槽继承旧数据。
+         现在改由 SlotRegistry 统一枚举 + 扫描兜底，主档额外清裸键。 */
+      if (window.SlotRegistry && window.SlotRegistry.purge) {
+        try { window.SlotRegistry.purge(slotId, { genre: genre }); } catch (e) { console.warn("[SaveSlots] 槽位清理异常:", e); }
+      } else {
+        /* 注册表不可用时的兜底（老缓存路径） */
+        const suffix = slotId !== "main" ? `~${slotId}` : "";
+        const key = `storySave_${genre}${suffix}`;
+        try {
+          localStorage.removeItem(key);
+          localStorage.removeItem(key + ".bak");
+          localStorage.removeItem(key + ".idb");
+          localStorage.removeItem(`imm_${genre}${suffix}`);
+          localStorage.removeItem(`tl_${genre}${suffix}`);
+          ['yunjingBeasts', 'yunjingSquad', 'yunjingStoryStance', 'yunjingSideChar', 'yunjingPlayerIdentity', 'yunjingHeroRelation',
+           `worldExt_${genre}`, `yunjingWorldBook:${genre}`].forEach((k) => {
+            localStorage.removeItem(k + suffix);
+            if (!suffix) localStorage.removeItem(k);
+          });
+        } catch (e) {}
       }
       this._write(this.list().filter((x) => x.id !== slotId));
       (_b = window.showToast) == null ? void 0 : _b.call(window, "已删除", "success");
       this.open();
     },
-    /** 切换档位：存当前 → 记激活槽 → 重载（最干净的上下文切换） */
+    /** 切换档位：存当前 → 冲刷各模块内存态 → 记激活槽 → 重载（最干净的上下文切换） */
     switchTo(slotId) {
       var _a;
       const fw = window.storyFramework;
       if (fw.storyState.isStoryStarted) fw.saveStory();
+      /* v4.08.0 修复（切档丢进度）：此前只调 fw.saveStory()，
+         而界扩展模块（worldExt_*）的内存态只在 act()/onVars() 时才落盘，
+         玩家在面板上改完没点任何按钮就切档 → 那部分进度直接消失。
+         这里显式冲刷所有已知持久化入口。 */
+      try { if (fw.flushSave) fw.flushSave(); } catch (e) {}
+      try { if (window.WorldExt && window.WorldExt.persist) window.WorldExt.persist(); } catch (e) {}
+      try { if (window.WorldRuntime && window.WorldRuntime.persist) window.WorldRuntime.persist(); } catch (e) {}
+      try { if (window.WorldBus && window.WorldBus.persist) window.WorldBus.persist(); } catch (e) {}
+      try { if (window.WorldAlive && window.WorldAlive.persist) window.WorldAlive.persist(); } catch (e) {}
+      try { if (window.BeastSystem && window.BeastSystem.save) window.BeastSystem.save(); } catch (e) {}
+      try { if (window.SquadSystem && window.SquadSystem.save) window.SquadSystem.save(); } catch (e) {}
       localStorage.setItem(this.activeKey(), slotId);
       (_a = window.showToast) == null ? void 0 : _a.call(window, "正在切换书档…", "info");
       setTimeout(() => location.reload(), 350);
