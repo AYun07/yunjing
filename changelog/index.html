@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.08.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.09.0">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.09.0</span>
+                <span class="entry-date">2026-11-08</span>
+            </div>
+            <h3 class="entry-title">能力边界攻坚：数值真值清洗 + 语义判定层 + 38 界广度旅程</h3>
+            <p class="entry-text">把 v4.08.0 第七节列出的全部已知限制，在现有硬约束内做成确定性工程解法 新建 js/number-scrubber.js 数值真值白名单清洗，玩家所见正文确定性根除小模型自编经济/面板数值，23 条正反样本 + 4 变异体全检出并用浏览器真实快照复验 新建 semantic_judge.py 语义判定层，白名单模型做 A/B/C/D 四类二次复核，只追加告警不放宽规则层 新建 t_concurrency.py 平台级并发压测（本地桩，不调模型）5/5 通过；t_persist.py 按存档三分类，38 界真丢失 0 38 界 × 3 步 = 114 次真实模型广度旅程，闭环 6 个问题（含 J-1 修复自身引入的短正文回归，靠复跑探针抓出） 新增 t_scrub_effect.py / t_final_audit.py / t_body_probe.py 诚实量化并全量离线复判，不额外消耗模型请求 验收：297 JS 语法 0 失败、委托 37/37、长程 300 轮、38 界功能与压力探测 0 问题、移动端双视口 0 溢出、正文回归 11/11</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -425,7 +434,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.08.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.09.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
             <div class="entry-head">

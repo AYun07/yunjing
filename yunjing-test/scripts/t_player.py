@@ -98,6 +98,13 @@ FAC_VAGUE_ANY = re.compile(
     r"|不仅|不但|不能|不可|可以|应该|想要|打算|需要|必须|能够|或许|也许|大概|可能|似乎|仿佛|好像"
     r"|能否|是否|多少|即使|哪怕|要是|如果|其实|当然|显然|的确|反正|另外|此外|关于|对于|按照|根据"
     r"|由于|因为|所以|于是|然后|接着|最后|拿到|得到|成为|变成"
+    # v4.09.0 广度旅程实测：「…茫然。而在公会侧面的阴影里…」被「而在公会」误判成编造势力。
+    # 与 v4.08.0 修 truthdiff.py 的「需分心助盟 / 而非任何行会」同型，补连词组合。
+    r"|而在|而是|而非|而不|而且|然而|反而|从而|进而|转而"
+    # v4.09.0 广度旅程第二轮实测（xuanjianxianzu open / act2）：
+    # 「负责家族护卫与外联」「转而回忆家族典籍」是动词短语，被当成编造势力名。
+    # 与 J-2 同型，补连词与动词组合；这些词不可能是专名修饰语。
+    r"|负责|担负|掌管|打理|操持"
     r"|[的这那哪你他她它被把让给向往朝够随换挺更很])")
 # 判定器自检样本：收紧口径后必须仍然能抓住真缺陷
 FAC_SAMPLES = [
@@ -122,10 +129,16 @@ FAC_SAMPLES = [
     ("胸口的公会", None, False),
     ("这种老牌行会", None, False),
     ("换个正经行会", None, False),
+    # v4.09.0 广度旅程实测误报（freeworld open）
+    ("而在公会侧面的阴影里", None, False),
+    ("而是行会里的人", None, False),
     ("你的行会", None, False),
     ("随着行会", None, False),
     ("不仅能拿到行会", None, False),
     ("明面上是盟", None, False),
+    # v4.09.0 第二轮实测（xuanjianxianzu open / act2）：动词短语前缀不是专名
+    ("负责家族护卫与外联的叔父", None, False),
+    ("转而回忆家族典籍中关于外来势力的记载", None, False),
     # 反向保护：常用字在真实专名里不能被误伤
     # （提取阶段应保留，是否合法由名单比对环节判定 —— 同「霜狼谷的白骨教团」）
     ("自由公会", "自由公会", True),
@@ -139,6 +152,15 @@ FAC_SAMPLES = [
 # 自检用的合法地名样本：让「地名 + 的 + 专名」这条规则在自检里也能被验证
 SELF_TEST_PLACES = ["霜狼谷", "野狼谷", "东境", "月恒服", "青竹村"]
 BAD_HEAD = re.compile(r"^\s*(让我|玩家设定|根据设定|本章要点|分析一下|首先|作为|以下是|本章|好的，|请问|抱歉|作为AI)")
+# v4.09.0 广度旅程实测（swallowedstar act2）：模型只吐英文思维链时，产品会返回
+# 明确降级提示「（这一轮没有生成正文…请重新发送指令重试。）」。它有 36 字、非空，
+# 旧口径下被判成 ✓，把「产品兜底生效」混进「模型正常输出」——不诚实。
+# 判定器必须单独标出 degraded，归类为「模型侧缺陷 + 产品侧已兜底」，不能放行。
+DEGRADED_NOTE = re.compile(r"这一轮没有生成正文|模型只返回了推理或协议内容|请重新发送指令重试")
+
+
+def is_degraded(text):
+    return bool(DEGRADED_NOTE.search(text or ""))
 BAD_PUNCT = re.compile(r"[一-鿿]{111,}")
 # v4.07.2 收紧：初版 LEAK 把正文里所有【…】都当泄漏，连「【叮！】」「【狼牙 x1】」
 # 这种正常的游戏内提示也误报。只保留「确属内部协议」的标记。
@@ -428,11 +450,34 @@ def judge_selftest():
         got = bool(GEO_QUOTED.findall(t))
         if got != want:
             fails.append("地名正则：%s 期望 %s 实得 %s" % (t, want, GEO_QUOTED.findall(t)))
+    # v4.09.0：降级提示必须被单独标出，正常短句不得误判，且检出分支要有灵敏度
+    global DEGRADED_NOTE
+    note = "（这一轮没有生成正文：模型只返回了推理或协议内容，请重新发送指令重试。）"
+    nn = {"places": [], "factions": [], "kbText": ""}
+    if not judge(note, {}, nn, "selftest")[0].get("degraded"):
+        fails.append("降级提示未被检出：产品兜底会被当成模型正常输出")
+    if is_degraded("他点了点头，转身走进风雪里，没有回头。"):
+        fails.append("正常短句被误判为降级提示")
+    _orig = DEGRADED_NOTE
+    DEGRADED_NOTE = re.compile(r"NEVER_MATCH_SENTINEL_x7f")
+    try:
+        assert is_degraded(note)
+    except AssertionError:
+        pass
+    else:
+        fails.append("变异体未被检出：降级检出形同虚设")
+    finally:
+        DEGRADED_NOTE = _orig
     return fails
 
 
 def judge(text, snap, names, genre):
     bad = {}
+    # degraded 优先于 empty：降级提示更具体，且文案将来变短也不该被归成「空白」
+    if is_degraded(text):
+        # 不是模型正文，后续基于正文的判定没有意义；直接标出并交回
+        bad["degraded"] = True
+        return bad, text
     if not text or len(text.strip()) < 20:
         bad["empty"] = True
         return bad, text
@@ -660,4 +705,5 @@ async def main():
     await b.close()
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

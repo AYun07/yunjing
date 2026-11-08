@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **81** 个版本，从 `v3.55.7` 到 `v4.08.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **82** 个版本，从 `v3.55.7` 到 `v4.09.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.09.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
 | **v4.08.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |
 | **v4.07.2** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.2) |
 | **v4.07.1** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.1) |
@@ -95,6 +96,24 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.09.0 · 2026-11-08
+
+把 v4.08.0 第七节列出的全部已知限制，在现有硬约束内做成确定性工程解法
+
+新建 js/number-scrubber.js 数值真值白名单清洗，玩家所见正文确定性根除小模型自编经济/面板数值，23 条正反样本 + 4 变异体全检出并用浏览器真实快照复验
+
+新建 semantic_judge.py 语义判定层，白名单模型做 A/B/C/D 四类二次复核，只追加告警不放宽规则层
+
+新建 t_concurrency.py 平台级并发压测（本地桩，不调模型）5/5 通过；t_persist.py 按存档三分类，38 界真丢失 0
+
+38 界 × 3 步 = 114 次真实模型广度旅程，闭环 6 个问题（含 J-1 修复自身引入的短正文回归，靠复跑探针抓出）
+
+新增 t_scrub_effect.py / t_final_audit.py / t_body_probe.py 诚实量化并全量离线复判，不额外消耗模型请求
+
+验收：297 JS 语法 0 失败、委托 37/37、长程 300 轮、38 界功能与压力探测 0 问题、移动端双视口 0 溢出、正文回归 11/11
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.09.0)  [🔍 与 v4.08.0 差异](https://github.com/AYun07/yunjing/compare/v4.08.0...v4.09.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip)
 
 ## v4.08.0 · 2026-11-08
 

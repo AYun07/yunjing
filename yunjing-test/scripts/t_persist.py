@@ -14,7 +14,7 @@
 
 输出：/tmp/persist_probe.json + 控制台摘要
 """
-import asyncio, glob, json, os
+import asyncio, glob, json, os, re
 from playwright.async_api import async_playwright
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
@@ -97,9 +97,87 @@ FINGER = r"""()=>{
   return out;
 }"""
 
+# v4.09.0：存档侧同口径扁平表，用于把「内存还没加载完」与「真没存」分开。
+SAVE_FLAT = r"""(g)=>{
+  const out={};
+  try{
+    const d=JSON.parse(localStorage.getItem('worldExt_'+g)||'{}');
+    const mods=d.mods||{};
+    const flat=(o)=>{
+      const r={};
+      const w=(x,pp)=>{ if(!x||typeof x!=='object') return;
+        for(const k in x){ if(!Object.prototype.hasOwnProperty.call(x,k)) continue;
+          const v=x[k]; const kp=pp?pp+'.'+k:k;
+          if(k==='logs'||k==='history'||k==='_facts'||k==='updatedRound'||k==='_booted'||k==='version') continue;
+          if(v&&typeof v==='object'&&!Array.isArray(v)) w(v,kp);
+          else r[kp]=v; } };
+      w(o,''); return r;
+    };
+    for(const mid in mods) out[mid]=flat(mods[mid]);
+  }catch(e){}
+  return out;
+}"""
+
+# 运行时派生槽：reload 后按设计重建 / 不落盘，不参与「字段消失」判定。
+# 下划线开头的内部槽（_order / _feedHash / _lastRank / _lastRealm）与渲染轮次缓存。
+DERIVED_PAT = re.compile(r"(?:^|\.)(?:_[A-Za-z]|lastRound$)")
+
+
+def classify_lost(fp1, fp2, saved):
+    """把 reload 后内存里消失的字段分成三类。
+    真丢失 = 存档里也找不到，才是必须报的缺陷。"""
+    real, derived, lazy = [], [], []
+    for mid, f1 in (fp1 or {}).items():
+        f2 = (fp2 or {}).get(mid) or {}
+        sv = (saved or {}).get(mid) or {}
+        for k in f1:
+            if k in f2:
+                continue
+            path = "%s.%s" % (mid, k)
+            if DERIVED_PAT.search(k):
+                derived.append(path)
+            elif k in sv:
+                lazy.append(path)          # 数据已落盘，只是懒加载窗口没读完
+            else:
+                real.append(path)          # 存档里也没有 → 真丢失
+    return {"real": real, "derived": derived, "lazy": lazy}
+
+
+def selftest():
+    """纯函数自检 + 反向灵敏度：分类逻辑不能把真丢失藏起来。"""
+    fp1 = {"m": {"_order": [], "lastRound": 0, "resources.灵药": 1, "gold": 30}}
+    fp2 = {"m": {"gold": 30}}
+    saved_ok = {"m": {"resources.灵药": 1, "gold": 30}}
+    saved_bad = {"m": {"gold": 30}}
+
+    def checks(fn):
+        r = fn(fp1, fp2, saved_ok)
+        assert r["real"] == [], r
+        assert "m._order" in r["derived"] and "m.lastRound" in r["derived"], r
+        assert "m.resources.灵药" in r["lazy"], r
+        r2 = fn(fp1, fp2, saved_bad)
+        assert "m.resources.灵药" in r2["real"], r2   # 真丢失必须报
+        return True
+
+    assert checks(classify_lost), "当前实现自检失败"
+
+    # 变异：把「存档无」也归类成懒加载 → 真丢失被吞掉 → 同一组断言必须失败
+    def mutant(a, b, c):
+        out = classify_lost(a, b, c)
+        out["lazy"] = out["lazy"] + out["real"]
+        out["real"] = []
+        return out
+    try:
+        checks(mutant)
+    except AssertionError:
+        return True                      # 变异被检出
+    raise AssertionError("变异体未被检出：分类自检形同虚设")
+
 
 async def main():
-    report = {"genres": {}, "issues": []}
+    selftest()
+    print("分类自检：派生槽 / 懒加载窗口 / 真丢失 三分类 + 变异灵敏度 → 通过")
+    report = {"genres": {}, "issues": [], "derived": 0, "lazyWindow": 0, "lostReal": 0}
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--no-sandbox"])
         ctx = await b.new_context(service_workers="block")
@@ -204,28 +282,33 @@ async def main():
                     report["issues"].append({"genre": g, "type": "stateMismatch", "detail": stMismatch[:8]})
                     print("%-22s ! 业务数据与存档不一致：%s" % (g, stMismatch[:4]))
 
-                # 对比：动作改过的字段，reload 后是否还在
-                lost = []
-                for mid, f1 in (fp1 or {}).items():
-                    f2 = (fp2 or {}).get(mid) or {}
-                    for k, v in f1.items():
-                        if k not in f2:
-                            lost.append("%s.%s" % (mid, k))
-                        elif v != f2[k]:
-                            # 值变了：可能是「时间推进/回合推进」这类必然变化，不直接判丢失
-                            pass
-                ginfo = {"modules": len(fp1 or {}), "lost": lost}
+                # v4.09.0 口径修正：动作改过的字段 reload 后不在内存里，分三种情况：
+                #   ① 运行时派生槽（_order / lastRound / _lastRank …）——设计如此不落盘
+                #   ② 懒加载窗口——存档里存在，只是内存还没加载完
+                #   ③ 真丢失——存档里也没有，才是必须报的缺陷
+                # 业务数据是否持久化以「存档」为准，stateMismatch 仍逐项严格比对。
+                saved = await pg.evaluate(SAVE_FLAT, g)
+                cls = classify_lost(fp1, fp2, saved)
+                lost = cls["real"]
+                report["derived"] += len(cls["derived"])
+                report["lazyWindow"] += len(cls["lazy"])
+                report["lostReal"] += len(lost)
+                ginfo = {"modules": len(fp1 or {}), "lost": lost,
+                         "derived": cls["derived"], "lazyWindow": cls["lazy"]}
                 report["genres"][g] = ginfo
                 if lost:
-                    report["issues"].append({"genre": g, "type": "lost", "detail": lost[:12]})
-                print("%-22s 模块 %2d  动作后消失的字段 %2d %s" % (
-                    g, len(fp1 or {}), len(lost), (lost[:3] if lost else "")))
+                    report["issues"].append({"genre": g, "type": "lostReal", "detail": lost[:12]})
+                print("%-22s 模块 %2d  真丢失 %d ｜ 派生槽 %d ｜ 懒加载窗口 %d %s" % (
+                    g, len(fp1 or {}), len(lost), len(cls["derived"]), len(cls["lazy"]),
+                    (lost[:3] if lost else "")))
             except Exception as e:
                 report["issues"].append({"genre": g, "type": "crash", "detail": "%s: %s" % (type(e).__name__, str(e)[:120])})
                 print("%-22s 崩溃 %s" % (g, str(e)[:80]))
         json.dump(report, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         print("\n=== 汇总 ===")
-        print("界数", len(report["genres"]), "| 问题总数", len(report["issues"]))
+        print("界数 %d ｜ 真丢失 %d ｜ 运行时派生槽 %d ｜ 懒加载窗口 %d ｜ 问题总数 %d" % (
+            len(report["genres"]), report["lostReal"], report["derived"],
+            report["lazyWindow"], len(report["issues"])))
         for x in report["issues"][:30]:
             print(" ", x.get("genre"), x.get("type"), str(x.get("detail"))[:150])
         await b.close()
