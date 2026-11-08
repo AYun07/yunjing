@@ -173,6 +173,22 @@ const StoryResponseHandler = {
          且内容含系统特征词（恭喜/等级/驻地/成员/提示/获得/任务/经验/等级 等），
          才剥离。正文里正常的方括号用法（书名号式强调、括号补充说明）不受影响。 */
       if (this._isSystemNoticeLine(t)) return false;
+      /* v4.09.0 J-7（语义判定层追加告警查出的玩家可见残骸 · chaoshenxueyuan/act）：
+         正文末尾出现一整组协议 / 状态条残骸，前面没有任何叙事引导句：
+             （）
+             威胁逼近: 15/100
+             world_update: faction.饕餮文明.influence=+2
+         _isSystemNoticeLine 只认【】/「」外壳，第 162 行只认固定英文键，
+         都漏了这些「裸键 : 值」。口径收紧到「整行、短、无句读」三种确定形态：
+           ① 已知内部协议键（world_update 等）—— 产品协议，绝不进正文；
+           ② 短字段 + 冒号 + 纯数值 / N-M 进度条 —— 状态条字段；
+           ③ 孤立空括号残骸。
+         叙事里「屏幕上显示：」「他说：」这类带句读的引导句不命中；
+         系统流世界把系统面板写进叙述句（ditandali「【怨气值 5/100…】」）
+         也不命中，刻意保留以免误伤合法叙事。 */
+      if (/^(?:world_update|world_state|variable_update|status|state|directive|actLog|snapshot)\s*[：:=]\s*\S/i.test(t)) return false;
+      if (/^[\u4e00-\u9fa5A-Za-z_]{1,10}\s*[：:]\s*[+-]?\d{1,6}\s*(?:[/／]\s*\d{1,6})?\s*%?\s*$/.test(t)) return false;
+      if (/^[（(]\s*[)）]\s*$/.test(t)) return false;
       if (/^[+-]\S.{0,23}(\s*x\s*\d+)?（(埋设|回收|获得|失去|埋下|揭晓)）$/.test(t)) return false;
       /* v3.47.1：剥离误写进正文的「容器.字段=值 / 容器.字段: 值」行式指令
          （旧 player-kit 模板教 AI 用「=」，这些行曾以字面量留在正文里）。
@@ -249,12 +265,39 @@ const StoryResponseHandler = {
           : new RegExp("<\\/\\s*" + tag + "\\s*>", "i").test(whole.slice(off + m.length));
         return mate ? m : lead;   // 孤立残骸 → 只保留行首缩进，标签本身删掉
       });
+    /* v4.09.0 · 数值真值白名单清洗（根除小模型自编经济 / 面板数值）：
+       提示词压制与 UI 块剥离挡不住零散句式变体（「木剑才卖 5 金币」
+       「HP 346/470」「经验 +10000」「目前 1/1」）。这里用 TruthSnapshot 的
+       合法数值 / 进度对集合做确定性兜底：面板字段片段一律剥离，货币数量
+       与进度对按真值白名单改写；拿不到快照时只做面板剥离，不误伤数字。 */
+    if (window.NumberScrubber && window.NumberScrubber.scrub) {
+      try {
+        var _nsSnap = window.TruthSnapshot && window.TruthSnapshot.snapshot
+          ? window.TruthSnapshot.snapshot() : null;
+        var _nsTurns = window.TruthSnapshot && window.TruthSnapshot.turns
+          ? window.TruthSnapshot.turns() : null;
+        body = window.NumberScrubber.scrub(body, _nsSnap, _nsTurns);
+      } catch (e) { /* 清洗异常不阻断正文交付 */ }
+    }
     const out = body.trim();
     /* v3.46.2 防线：常规剥离后正文为空/过短 → 从原文打捞叙事段兜底
        （覆盖：正文整体被写进代码围栏、残缺标记连锁误剥、只吐变量块等情形） */
     if (out.replace(/\s/g, "").length < 15) {
       const rescued = this._rescueProse(reply);
       if (rescued) return rescued;
+      /* v4.09.0 修广度旅程实测缺陷（doupocangqiong act2）：模型只吐整块英文思维链、
+         一个中文叙事字都没写。清洗层把思维链全剥掉后 out 为空，_rescueProse 也救不回
+         （英文推理段 CJK 不足），玩家看到的是一张空白卡片，像「点了没反应」。
+         只改 extractBody 的返回值，不动 handle() 的章节推进 / 存档流程。
+
+         v4.09.0 第二次探针实测（J-6）：这个 <15 分支会同时命中「正常短正文」与
+         「清洗后变短的正文」——「三日后，他回到松木林。」「他摸了摸钱袋，转身进了酒馆。」
+         一律返回降级提示，等于把玩家正文吞掉（修 A 坏 B）。
+         因此降级只用于「清洗后连中文叙事字都不剩」的情形；短正文照常交付。 */
+      const cjk = (out.match(/[\u4e00-\u9fa5]/g) || []).length;
+      if (cjk < 4) {
+        return "（这一轮没有生成正文：模型只返回了推理或协议内容，请重新发送指令重试。）";
+      }
     }
     if (!options) {
       if (this._bodyCacheNoOpt.size > 4) this._bodyCacheNoOpt.clear();

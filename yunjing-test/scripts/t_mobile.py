@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""云境 v4.08.0 · 移动端小屏回归探测（不调模型）
+"""云境 · 移动端小屏回归探测（不调模型）
 
 v4.07.2 交付报告的未闭环项之一：「移动端视觉——本轮截图均为桌面视口，未做小屏适配回归」。
 
@@ -23,7 +23,18 @@ from playwright.async_api import async_playwright
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
 OUT = "/tmp/mobile_probe.json"
-SHOT_DIR = os.environ.get("YJ_SHOT_DIR", "/workspace/云境-v4.08.0-截图")
+def _current_ver():
+    """截图目录跟随 studio.html 的 YJ_VER —— 发版后不再把新截图写进上一版目录。"""
+    try:
+        import re
+        p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "studio.html")
+        m = re.search(r"window\.YJ_VER = '([\d.]+)'", open(p, encoding="utf-8").read())
+        return m.group(1) if m else "unknown"
+    except Exception:
+        return "unknown"
+
+
+SHOT_DIR = os.environ.get("YJ_SHOT_DIR", "/workspace/云境-v%s-截图" % _current_ver())
 GENRE = os.environ.get("YJ_GENRE", "wangyou")
 
 BOOT = """(g)=>{
@@ -264,7 +275,7 @@ async def main():
         json.dump({"reports": reports, "issues": issues}, f, ensure_ascii=False, indent=2)
 
     print("=" * 68)
-    print("云境 v4.08.0 · 移动端小屏回归")
+    print("云境 v%s · 移动端小屏回归" % _current_ver())
     print("=" * 68)
     for rep in reports:
         m = rep["measure"]
