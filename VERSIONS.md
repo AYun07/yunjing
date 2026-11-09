@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **83** 个版本，从 `v3.55.7` 到 `v4.10.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **84** 个版本，从 `v3.55.7` 到 `v4.11.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.11.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) |
 | **v4.10.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
 | **v4.09.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
 | **v4.08.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |
@@ -97,6 +98,18 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.11.0 · 2026-11-09
+
+缺陷补完闭环 · 世界自运转内核修复 · 版本同源收口。
+
+- 缺陷补完：`wangyou` 原创主角回落；`ATLAS_ERAS` 补 6 个多时代界（时代层 10→16/38）；文风块 38 界内置兜底，38/38 非空。
+- 演化内核：`personality`/`ambition` 由「生成即冻结」改为按 bond / 势力覆灭 / 记忆事件在同池内因果迁移（敌对→冷硬·复仇、亲近→温热·忠诚、旧主倾覆→守护），有界低频、带冷却，并注入 `WorldAlive` 主笔提示词。
+- 版本同源收口：`studio.html`(YJ_VER/verDot/title)、`sw.js`(SW_VER)、`selftest.html`(ENGINE_VER)、`number-scrubber` 模块号、181 处 `?v=`、页面标题、`QUICKSTART`/`README`/`VERSIONS` 全量对齐 4.11.0；新增 `t_version_sync.cjs` 独立验收器固化防复发。
+- 全量回归：JS 语法 249/249、node vm 19/19、KB 6/6、注册表 9/9、文风 38/38、时代层 6/6、真浏览器 16/16、KB 括号平衡 0 失败、**版本同源 21/21**、零 pageerror。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.11.0)  [🔍 与 v4.10.0 差异](https://github.com/AYun07/yunjing/compare/v4.10.0...v4.11.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip)
+
 
 ## v4.10.0 · 2026-11-08
 
