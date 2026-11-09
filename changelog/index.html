@@ -292,7 +292,7 @@
             <div class="gold-divider"></div>
             <div class="log-note">
                 本页按 <b>新 → 旧</b> 排列，<b>最新版永远在最上方</b>。每一版都给出「<b>本版做了什么</b>」与「<b>相比上一版的变化</b>」；有 git 标签的版本还能直接看代码 diff。<br>
-                带标签的 86 版完整索引、完整包与发布页见 <a href="../VERSIONS.md">版本页 VERSIONS.md</a>；更早的功能资料按版本归档在版本页<a href="../VERSIONS.md#legacy">附录</a>。
+                带标签的 86 版完整索引、完整包与发布页见 <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md">版本页 VERSIONS.md（GitHub 渲染）</a> 或 <a href="../VERSIONS.md">本地副本</a>；更早的功能资料按版本归档在版本页<a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy">附录</a>。
             </div>
         </div>
 
@@ -2387,7 +2387,7 @@
                 <p>🛡 <b>安全设计</b>：全部新交互仍走既有第六接口与消毒链路；评论 / 关注 / 点赞 / 分享计数均落在 App 分区数据，旧存档零迁移零报错；评论区 AI 生成失败时本地评论常驻兜底，<b>永不空白</b>；时代门控不变——2016 年前的故事里短视频 App 依旧不出现</p>
                 <p>✅ <b>验证</b>：新增拟真抖音专项回归 <b>39 项</b>（三页签过滤与本地兜底 / 瀑布流卡片字段 / 全屏播放与逐条切换 / 双击点赞与取消 / 评论区本地兜底 + AI 生成缓存 + 玩家发评论置顶 / 分享落卡 vshare + 近讯回流 + 计数 / 作者主页粉丝确定性 + 关注进页签取关移除 / vshare 气泡与预览接线），App 生态回归扩至 <b>121 项</b>，手机全套回归 <b>535 项</b>零失败</p>
             </div>
-                    <p class="ver-diff"><b>相比 v3.21.0 的变化</b>：沿革见上方正文；🐞 起因（玩家实测反馈）：「可以接抖音吗」——v3.21.0 的短视频只是一个单列竖滑流，能刷但不像抖音：没有页签、没有瀑布流首页、刷到好玩… · <a href="../VERSIONS.md#legacy-v3-22-0">本版引入的〈手机分身〉功能详解 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v3.21.0 的变化</b>：沿革见上方正文；🐞 起因（玩家实测反馈）：「可以接抖音吗」——v3.21.0 的短视频只是一个单列竖滑流，能刷但不像抖音：没有页签、没有瀑布流首页、刷到好玩… · <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy-v3-22-0">本版引入的〈手机分身〉功能详解 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="体验 沉浸 模块 扮演" style="--entry-hue:#8ac8e8;">
@@ -2711,7 +2711,7 @@
                 <p>🧵 <b>接线纪律</b>：协议注入走 <code>ai-message-builder</code> 装配层（15 界零改动全覆盖，演出四艺全关时零注入省 token）；演出标记（next / echo / gameover）在 <code>extractBody</code> 统一剥离保正文纯净；三个演出函数（扉页 / 回响 / 结算）自带开关纵深防御，直调亦零打扰</p>
                 <p>✅ <b>验证</b>：新增 98 项沉浸九艺回归测试（协议注入 / 标记解析与剥离 / 抉择判定 / 扉页触发与去重 / 殒命结算四态 / 记忆回响四态 / 张力曲线 SVG 与平淡预警 / 快捷键 / 渲染层接线 / 装配层注入 / 太虚阁接线 / studio 挂载与版本），全套 9 个回归套件 1275 项零失败</p>
             </div>
-                    <p class="ver-diff"><b>相比 v3.13.1 的变化</b>：沿革见上方正文；🔍 起因：应玩家「增加游玩质量和沉浸感」的诉求，从「读文字」升级为「看演出」——新增沉浸演出系统（js/immersion-plus.js）… · <a href="../VERSIONS.md#legacy-v3-14-0">本版引入的〈沉浸演出系统〉功能详解 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v3.13.1 的变化</b>：沿革见上方正文；🔍 起因：应玩家「增加游玩质量和沉浸感」的诉求，从「读文字」升级为「看演出」——新增沉浸演出系统（js/immersion-plus.js）… · <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy-v3-14-0">本版引入的〈沉浸演出系统〉功能详解 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="系统 稳定 体验" style="--entry-hue:#d8b8b8;">
@@ -2756,7 +2756,7 @@
                 <p>🔍 <b>画后质量自检</b>：出稿后程序化体检四项软指标——形状元素数（5-400）、纯色数（3-24）、渐变缺失；不合格自动<b>带反馈重画一次</b>（把问题清单连同初稿回传给画师），重画稿问题更少才采用，重画失败保留初稿绝不阻断出图</p>
                 <p>✅ <b>验证</b>：新增丹青精绘专项回归（调色板六套齐备 / 画师提示词锁色·骨架·铁律·范例注入 / 规划师提示词 / 两步构图调用序列与规划稿携带 / 单步直画降级 / 质量自检四指标 / 不合格带反馈重画与择优采用 / 精绘开关读写回环）；既有回归全通过</p>
             </div>
-                    <p class="ver-diff"><b>相比 v3.12.0 的变化</b>：沿革见上方正文；🖌 画质四重优化：直击文本模型手写 SVG 的三大通病——自创配色必脏、构图松散、硬画五官必崩。①锁死调色板：六种画风各配专属色值（水墨：宣… · <a href="../VERSIONS.md#legacy-v3-13-0">本版引入的〈插图引擎〉功能详解 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v3.12.0 的变化</b>：沿革见上方正文；🖌 画质四重优化：直击文本模型手写 SVG 的三大通病——自创配色必脏、构图松散、硬画五官必崩。①锁死调色板：六种画风各配专属色值（水墨：宣… · <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy-v3-13-0">本版引入的〈插图引擎〉功能详解 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="模块 接口 体验" style="--entry-hue:#c8b8e0;">
@@ -2817,7 +2817,7 @@
                 <p>🔍 <b>透明可查 + 隐藏 bug 顺手修</b>：润色稿随插图记录落档，插图卡下方折叠展示「✍ 实际生图提示词（工程师润色稿）」，TXT/MD 导出附「〔实际生图提示词〕」行，Token 按「提示词工程师」单独记账；顺手修复 v3.9.0 隐藏 bug——画风补充词曾被拼进存档 prompt 键导致回放缓存永不命中（现存档始终以原始描述为键，带画风补充词时回放稳命中）</p>
                 <p>✅ <b>验证</b>：新增提示词工程师专项回归（配置门控 / 缓存上限与容错 / 输出解析四策略 / 批量改写与预热 / 两段式状态 / 回退降级 / 导出附稿 / 第五卡接线）；既有回归全通过；studio 脚本挂载增至 34 项（新增 prompt-engineer.js），样式缓存升至 v3.10.0</p>
             </div>
-                    <p class="ver-diff"><b>相比 v3.9.0 的变化</b>：沿革见上方正文；✍ 专职提示词扩写层（js/prompt-engineer.js）：正文写完即开工——本章全部插图提示词先交由第五个文字模型一次批量润色扩写… · <a href="../VERSIONS.md#legacy-v3-10-0">本版引入的〈提示词工程师〉功能详解 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v3.9.0 的变化</b>：沿革见上方正文；✍ 专职提示词扩写层（js/prompt-engineer.js）：正文写完即开工——本章全部插图提示词先交由第五个文字模型一次批量润色扩写… · <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy-v3-10-0">本版引入的〈提示词工程师〉功能详解 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="模块 接口 体验" style="--entry-hue:#c9a8e0;">
@@ -3260,7 +3260,7 @@
                 <p>🎛 两世界专属系统面板：全职高手带「选手素质」六维（手速/意识/思维/天赋/人脉/声望）与状态仪表（状态/声望/危机）；斗破苍穹带「修炼资质」六维（体魄/悟性/气运/心性/灵魂/羁绊）与境界追踪（斗之气起步，逐境突破），动态世界推演同步接入</p>
                 <p>🏠 入口页升级「原著四界」：吞噬星空 / 遮天 / 全职高手 / 斗破苍穹四卡并列直达，各带专属色相与入场文案；studio 白名单与版本号全链路更新至 v1.10.0</p>
             </div>
-                    <p class="ver-diff"><b>相比 v1.9.1 的变化</b>：沿革见上方正文；🎮 新增全职高手开放世界（ configs/quanzhigaoshou-config.js + 电竞银蓝主题）：踏入蝴蝶蓝原著的荣耀电竞宇… · <a href="../VERSIONS.md#legacy-v1-10-0">本版引入的〈开放世界扮演〉功能详解 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v1.9.1 的变化</b>：沿革见上方正文；🎮 新增全职高手开放世界（ configs/quanzhigaoshou-config.js + 电竞银蓝主题）：踏入蝴蝶蓝原著的荣耀电竞宇… · <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy-v1-10-0">本版引入的〈开放世界扮演〉功能详解 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="稳定 模块" style="--entry-hue:#e8b98f;">
@@ -3572,7 +3572,7 @@
                 <p>第三模型每轮通读正文，把章节 / 字数 / 仪表盘 / NPC 档案 / 伏笔 / 道具 / 大事记登记成变量并入状态面板；提取失败出「重试登记」卡，连发指令串行排队不丢轮，发送前先等上一轮落库</p>
                 <p>⚙ 接口设置新增「变量AI」折叠区：第三接口独立配置（双格式、连通测试、模型拉取、低温 0.2），支持「同主接口 / 同额外API」一键复用，可开启登记回执卡（默认静默）</p>
             </div>
-                    <p class="ver-diff"><b>相比 v1.5.0 的变化</b>：沿革见上方正文；新增第三接口「状态登记官」（提取器分流架构）：主笔 AI 只写正文——系统提示词去掉变量语法铁律、历史消息剔除 (variable_upda… · <a href="../VERSIONS.md#legacy-v1-6-0">本版引入的〈变量AI〉功能详解 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v1.5.0 的变化</b>：沿革见上方正文；新增第三接口「状态登记官」（提取器分流架构）：主笔 AI 只写正文——系统提示词去掉变量语法铁律、历史消息剔除 (variable_upda… · <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy-v1-6-0">本版引入的〈变量AI〉功能详解 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="动态世界 模块" style="--entry-hue:#6f9fe8;">
@@ -3589,7 +3589,7 @@
                 <p>每隔 N 轮正文自动生成一层世界动态，远方 NPC 档案 / 伏笔 / 大事记自动并入状态面板；卡片可查推演思路、可重试，楼层随存档持久化</p>
                 <p>⚙ 接口设置新增「额外 API」折叠区：第二接口独立配置（可与主笔不同厂商），支持连通测试 / 模型拉取 / 间隔与提示词自定义</p>
             </div>
-                    <p class="ver-diff"><b>相比 v1.4.2 的变化</b>：沿革见上方正文；新增「🌍 动态世界」：由独立第二 API 模型在幕后推演&quot;主角视线之外正在发生的事&quot;——势力动向 / 远方传闻 / 伏笔暗流 · <a href="../VERSIONS.md#legacy-v1-5-0">本版引入的〈动态世界〉功能详解 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v1.4.2 的变化</b>：沿革见上方正文；新增「🌍 动态世界」：由独立第二 API 模型在幕后推演&quot;主角视线之外正在发生的事&quot;——势力动向 / 远方传闻 / 伏笔暗流 · <a href="https://github.com/AYun07/yunjing/blob/main/VERSIONS.md#legacy-v1-5-0">本版引入的〈动态世界〉功能详解 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="扮演 设定" style="--entry-hue:#6f9fe8;">
