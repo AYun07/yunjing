@@ -3128,6 +3128,13 @@ textarea.wiz-input { resize: vertical; min-height: 58px; line-height: 1.6; }
     justify-content: flex-end;
     padding: 13px 21px;
     border-top: 1px solid var(--line);
+    /* 玩家实测（v4.12.1）：接口设置弹窗模板嵌套导致 footer 落在 .modal-body 滚动区内，
+       「保存全部配置」按钮初始位于 1927px（视口 900），玩家需下滚千余像素才找得到。
+       sticky 让页脚无论作为滚动区子元素还是 modal-box 兄弟节点都常驻可视底部。 */
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background: var(--panel);
 }
 
 /* ==================== 知识库 / DLC 知识包 ==================== */

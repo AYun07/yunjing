@@ -2,16 +2,19 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **85** 个版本，从 `v3.55.7` 到 `v4.12.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **86** 个版本，从 `v3.55.7` 到 `v4.12.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+>
+> **版本分层（v4.12.1 口径）**：首行 **v4.12.1 为当前版本**；其余 **85 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-## 版本速查（新→旧）
+## 版本速查（新→旧 · 首行为当前版本，其余 85 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.12.1** | 2026-11-09（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
 | **v4.12.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
 | **v4.11.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) |
 | **v4.10.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
@@ -99,6 +102,16 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.12.1 · 2026-11-09（当前版本）
+
+真实玩家闭环 · 视觉化验证修复版。
+
+- 以限定测试夹具 `agnes-3.0-flash` 完成大厅 → 接口配置 → 开局 → 三轮真实出文的全链路验证，逐屏截图目视审查。
+- 修复：开屏淡出期水印压住分组说明、世界时钟药丸遮挡顶栏品牌文字（含 `color-mix(in srut)` 拼写错误）、开局系统指令被渲染成玩家发言、`st-import` 把 `boot` 误作 YJWait 检查函数、截断续写下 `(status)` 圆括号块与未闭合 `<selection>` 泄漏进正文、SW 预缓存清单 79 项重复。
+- 版本同源全量对齐（含 `SW_VER` 递增，PWA 老客户端可拿到修复）。
+
+- [📂 该版文件](https://github.com/AYun07/yunjing/tree/v4.12.1)  [🔍 与 v4.12.0 差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.12.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip)
 
 ## v4.12.0 · 2026-11-09
 

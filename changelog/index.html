@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.12.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.12.1">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 修复 玩家验证" style="--entry-hue:#4aa3a0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.12.1</span>
+                <span class="entry-date">2026-11-09</span>
+            </div>
+            <h3 class="entry-title">真实玩家闭环 · 六类可见问题修复</h3>
+            <p class="entry-text">以限定夹具模型走完大厅→接口配置→开局→三轮真实出文，逐屏截图目视审查：开屏淡出期半透明大字压住分组说明且未禁用指针、世界时钟药丸 top:10px 盖住顶栏品牌文字（「创作」被盖成「]作」）且 color-mix(in srut) 拼写错误致边框不渲染、开局把系统开场指令当作玩家消息渲染（界面出现 variable_update 等工程话术）、st-import 把 boot 误作 YJWait 检查函数导致重试 40 次并误报功能不启用、截断续写下模型自创 (status) 圆括号状态块与未闭合 &lt;selection&gt; 泄漏进玩家正文、SW 预缓存清单 79 项重复 全部修复；版本同源全量对齐并递增 SW_VER，PWA 可拿到修复</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布 模型" style="--entry-hue:#4aa3a0;">
             <div class="entry-head">

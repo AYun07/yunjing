@@ -188,7 +188,14 @@
     console.log('[KB] 条目开关就绪');
   }
   /* v3.55.29：改为有界等待（原为每 800ms 无限自轮询） */
-  if (window.YJWait) YJWait.for(boot, null, { name: 'st-import.kbtoggle', base: 200, max: 40 });
+  /* check 只判依赖就绪，boot 作为回调执行一次。
+     旧版把 boot 当 check 传入：boot 返回 undefined 恒为假 → 重试 40 次、每次重复包装
+     KM 方法（层层嵌套）并误报「相关功能本次会话不启用」。 */
+  if (window.YJWait) YJWait.for(
+    function () { var KM = window.StoryKnowledge || window.KnowledgeManager; return !!(KM && KM.knowledgeBase); },
+    boot,
+    { name: 'st-import.kbtoggle', base: 200, max: 40 }
+  );
   else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 /* ---- v1.3 PNG角色卡导入 + 导出为ST世界书 ---- */

@@ -1,31 +1,237 @@
 # 云境 · AI 短篇小说生成器
 
+## 云境是什么 · 当前版本全览（v4.12.1）
+
+> 本节写于 2026-11-09，是 **v4.12.1 的权威现状说明**。下方「版本列表」按当前版 / 旧版本分层列全全部 86 版；再往下的大量章节写于 v1.x–v3.x 时期，属于**旧版本沿革存档**。凡与本节冲突的，一律以本节为准。
+
+**一句话**：云境是打开网页就能用的 **AI 互动小说 + 开放世界扮演平台**。纯前端静态站点，无构建、无后端、无账号；AI 接口由玩家自己填，故事与 API Key 只留在本机浏览器。
+
+### 能做什么
+
+| 玩法 | 说明 |
+|---|---|
+| **创作工坊** | 设定视角 / 文风 / 时代 / 母题 / 开篇 / 技法 / 六维，与 AI 逐章共创，导出 TXT / Markdown |
+| **开放世界扮演** | 捏身份（姓名 · 出身 · 时代 · 资质 · 入场事件）踏进原著世界自由漫游；身份三态 = 原著主角 / 原著配角 / 完全原创 |
+
+**38 个世界**：原著同人 30 · 真实地球 1 · 自由创作 6 · 原创网游大世界 1（寰宇纪元，由失落叶网游三部曲合流）。
+
+逐轮推进或快捷指令放养；状态面板 60+ 字段、角色卡、好感度、伏笔、时间线与分支、章节导航；多层可缩放舆图（势力实时上图、玩家自建势力按驻地落图）；**六个接口分工**——主笔写正文 / 动态世界推演视线之外的远方事件 / 变量AI 登记状态 / 插图引擎 / 提示词工程师润色插图提示词 / 手机分身（微信与朋友圈，仅现实地球界）。
+
+知识库按界独立、可增删改查，九类原创设计模板（势力 / 人物 / 道具 / 功法 / 地点 / 血脉 / 事件 / 伏笔 / 自定义），检索走 **BM25 → 向量 → 精排**并逐级降级，任一环挂掉都不卡住写作。与 SillyTavern 互通：预设 / 正则 / 世界书可整份导入导出；内置「云起预设」支持一键云端同步。
+
+多存档槽隔离、导入导出、老存档自动补新条目。落地方式：Windows / Mac 双击启动器；手机同一 WiFi 打开提示网址 →「添加到主屏幕」即全屏 App；可离线 PWA；另有独立安卓工程可出 APK。
+
+### 它最不一样的地方
+
+1. **世界自己会走**：世界时钟自转，NPC 的性格 / 理想 / 情绪按结仇、势力覆灭、共同记忆做有界低频因果迁移；势力兴衰、机缘、委托隔几天换一批；玩家的选择会回写进世界，并注入下一轮主笔提示词。
+2. **按界考据**：38 界各自独立的世界书 + 专名铁律表，专治小模型写错原著人物、跳境界、凭空编宗门。
+3. **数值白名单**：模型自编的等级 / 金币 / 经验会被确定性从正文剔除，玩家与 AI 看同一份账。
+4. **模型无关 + 按实际输出自适应**：任意 OpenAI 兼容端点（官方直连 / 中转 / 自建网关 / 本地部署）都能填；按接口特征与模型名初判档位，再按每轮真实输出双向升降档（连续稳定升全功能档，复读崩塌降求稳档），也可手动指定。
+5. **六个接口各干各的**：主笔只写正文，状态登记、远方推演、插图交给别的模型，成本自己配。
+6. **不被锁住**：预设、正则、世界书、原创设定、存档都能导入导出；Key 不上传、不随存档导出。
+7. 一个**不用安装、断网也能跑的网页**，里面却跑着一整套会自己长大、还会记账的世界。
+
+### 数据规模（2026-11-09 代码实跑统计）
+
+| 项目 | 数量 |
+|---|---|
+| 世界 | 38 界 |
+| 世界书内置条目（core + ext） | 24,940 条 |
+| 玩家进界后面板实际条目 | 32,312 条（每界再挂 194 条通用常识库） |
+| 跨题材通用常识库 | 194 条 |
+| 专名铁律表 | 38 界共 204 条 |
+| 世界书种子库 | 38 界共 489 条（独立链路，不计入面板） |
+| 内置云起预设 | 86 块（启用 50 / 关闭 36） |
+| 内置正则 | 33 条（其中 16 条为「云起·XX美化」） |
+| 导出给酒馆的正则 | 40 条（多 7 条为酒馆卡片美化专用） |
+| 内置文风块 | 42 项（38 界 + 4 通用别名） |
+
+> 旧文案里的「预设 230 块」「正则 30 条」「知识库 24,910 条」均为**旧版本遗留数字**，以上表以当前代码实跑为准。
+
+### 模型口径（重要）
+
+云境**不预置、不限制、不锁定任何玩家模型**。历史版本记录里出现的「模型准入：只允许 agnes-3.0-flash / agnes-image-2.5-flash / agnes-video-2.5-flash」是**开发方回归测试用的三个夹具模型**，只约束 `yunjing-test/` 下的测试脚本，**从来不是产品运行时对玩家的限制**，且自 v4.12.0 起已明确废弃。玩家可填各厂商官方直连 / 中转 / 自建网关 / 本地部署 / 任意 OpenAI 兼容端点。
+
+### 当前状态（v4.12.1）
+
+| 项 | 结果 |
+|---|---|
+| 最终综合回归 | **27/27 PASS** |
+| 版本同源验收 | **19/19 通过**（`YJ_VER` / `SW_VER` / `ENGINE_VER` / `number-scrubber` / 181 处 `?v=` / 文档抬头同号） |
+| 全量静态扫描 | 338 个 JS + 4 个 HTML + 12 段内联脚本，**0 语法错误** |
+| 四页真浏览器 | 0 pageerror / 0 console error·warning / 0 HTTP≥400 |
+| 真实模型闭环 | 大厅 → 创作室 → 接口配置 → 仙逆界开局 → 3 轮真实出文 + 截断续写，4 次 POST 全部 200 |
+
+作为**可发布、可验收、可回滚的成品**已经收口。仍有边界，如实列出：
+
+- 真实闭环只跑过一支测试夹具模型，**没有真实玩家、各渠道各能力模型的长线存档数据**。
+- 模型能力判定依据输出形态（长度 / 结构标记 / 崩塌特征），**是启发式，不是语义级理解**；语义判定层尚未上升为运行时强制链路。
+- PWA 对 JS/CSS 采用 cache-first + `ignoreSearch`，版本更新时存在「新 HTML + 旧 JS」短窗口；HTML 已 network-first，`SW_VER` 递增会清掉整代旧缓存作为缓解。
+- 离线涓流预热约 30 秒铺满；核心资源在 install 时已同步预缓存，不影响首屏。
+- 个别视觉细节（保存提示字形、章节过场页）尚未打磨。
+
+### 快速开始
+
+```bash
+cd yunjing
+python3 -m http.server 8899
+# 浏览器打开 http://127.0.0.1:8899/index.html
+```
+
+Windows 双击 `start-windows.bat`、Mac 双击 `start-mac.command`；手机与电脑同一 WiFi，按启动器提示的网址打开 →「添加到主屏幕」。**不要直接双击 `index.html`**：`file://` 下一致性自检、离线 PWA 与部分存档功能会失效。首次使用进「☰ 工具 → ⚙ 接口设置」填自己的模型。
+
+**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) · [🔍 与 v4.12.0 的差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.12.1) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
+
 <!-- YJ_CHANGELOG_START -->
 
-> **📢 关于模型（请先看这一段）· v4.11.1 口径声明**：云境是**纯前端、模型无关**的作品，**不预置、不限制、不锁定任何玩家模型**。历史更新记录里出现的「模型准入：只允许 agnes-3.0-flash / agnes-image-2.5-flash / agnes-video-2.5-flash」指的是**开发方做回归测试时用的三个夹具模型**（约束仅作用于 `yunjing-test/` 内的测试脚本：并发 1、间隔 ≥4s、不额外付费），**从来不是产品运行时对玩家的限制**。你在「⚙ 接口设置」里可以填自己的任意模型——各厂商官方直连 / 中转 / 自建网关 / 本地部署 / 任意 OpenAI 兼容端点，用哪个、换哪个完全由你决定。不同模型能力不一样，云境的「模型能力自适应」会按接口特征、模型名与每轮实际输出**自动双向升降档**（连续输出稳定完整即升全功能档，复读崩塌则降求稳档），尽量让每个模型都跑到它能稳定驾驭的最丰富体验；设置里也可手动指定「求全 / 求稳」。
+## 🆕 当前版本：v4.12.1（2026-11-09 · 唯一当前版）
 
-## 🆕 当前版本：v4.12.0（2026-11-09）
+| 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
+|---|---|---|---|---|
+| **v4.12.1** | 2026-11-09 | **当前** | 真实玩家视觉化验证闭环修复版：以限定夹具模型跑通大厅 → 配置 → 开局 → 三轮真实出文，修复开屏水印遮挡、世界时钟药丸压住顶栏品牌文字、开局把系统指令渲染成玩家发言、保存按钮初始离屏、截断续写下 `(status)` 块与残 `<selection>` 泄漏进正文、`YJWait` 依赖等待误用导致 KBToggle 超时、SW 预缓存清单 79 项重复；升版本同源至 4.12.1 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
 
-> **缺陷补完闭环 · 世界自运转内核修复 · 版本同源收口**：把 v4.10.0 缺陷报告中列为「待确认/非缺陷」的缺失项全部补齐，修复「性格/理想/情绪自治演化内核」，并把发版时遗漏的全部版本锚点（studio / sw / selftest / 181 处缓存参数 / 页面标题 / 三份文档）统一收口到同号——这是首个名副其实的全量同源成品版本。
+## 🧭 版本列表（当前版 / 旧版本）
 
-**这一版做了什么**
+> 共 **86** 个版本，从 `v3.55.7`（2026-10-29）到 **v4.12.1**（2026-11-09，当前版）。除当前版外，下面列出的 **85 个版本均为旧版本**；每版都有独立 git tag、发布页与完整内容包。完整索引见 [VERSIONS.md](VERSIONS.md)。
 
-- **缺陷补完闭环**：v4.10.0 报告里列为「待确认/非缺陷」的缺失项全部落地——① `wangyou` 原创网游界主角回落为「原创主角」；② `ATLAS_ERAS` 时代层补 6 个多时代界（仙逆位面阶梯 / 道诡异仙表里双线 / 重生之都市修仙前世今生 / 轮回乐园多衍生世界 / 全球冰封灾变前后 / 帝霸万古棋局），覆盖 10→16/38；③ 文风块 38 界内置兜底（预设无按界分档时回退「本世界文风适配」），38/38 非空。
-- **世界自运转内核修复**：`personality` / `ambition` 此前生成时定一次即冻结，现改为在同池内按 bond / 势力覆灭 / 记忆事件做因果迁移——敌对→冷硬簇·复仇簇、亲近→温热簇·忠诚簇、旧主倾覆→守护簇，每 4–5 日低频演化且有冷却，全程有界（每 tick ≤3 人、每人冷却 2 日）；真源与 `WorldAlive` 主笔提示词注入性格/理想，NPC 言行随因果真实漂移。
-- **版本同源收口（本轮）**：v4.11.0 首轮发版只改了 `index.html` + changelog 两点，其余锚点滞留 4.10.0。本轮把 `studio.html` 的 `YJ_VER`/`verDot`/页面标题、`sw.js` 的 `SW_VER`、`selftest.html` 的 `ENGINE_VER`、`number-scrubber` 模块号、181 处 `?v=` 缓存参数、`QUICKSTART`/`README`/`VERSIONS` 抬头全部对齐到 4.11.0；`SW_VER` 变化同时让 PWA 老客户端能正确换取新版代码。新增独立验收器 `t_version_sync.cjs`，把「版本同源」固化为可复跑测试，防再次复发。
-- **验收证据**：全量 JS 语法 249/249、node vm 复现 19/19（0 缺陷）、KB 加载 6/6（38 界 32312 条、零 pageerror）、注册表 9/9、文风兜底 38/38、性格演化内核 vm 实测通过、时代层合并 6/6、真浏览器端到端 16/16（0 缺陷、零 pageerror）、KB 括号平衡 76 文件 24984 条 0 失败、**版本同源 21/21**。缺陷清单见 `yunjing-test/DEFECTS-v4.10.0.md`，交付报告见 `云境-v4.11.0-交付报告.md`。
+### 旧版本完整清单（85 版 · 均为已归档旧版本）
 
-**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) · [🔍 与 v4.10.0 的差异](https://github.com/AYun07/yunjing/compare/v4.11.0...v4.12.0) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
+> 下表把 **全部 85 个旧版本**逐一列出，不再折叠。每版都有独立 git tag、发布页与完整内容包。
+> 版本「改了什么」的详细沿革见下一节；完整索引另见 [VERSIONS.md](VERSIONS.md)。
 
-## 📋 逐版更新记录（新 → 旧，共 72 版）
+#### v4.12 – v4.08（模型自适应与成品收口期）（5 版）
+
+| 版本 | 日期 | 状态 | 完整包 / 发布页 |
+|---|---|---|---|
+| `v4.12.0` | 2026-11-09 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
+| `v4.11.0` | 2026-11-09 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) |
+| `v4.10.0` | 2026-11-08 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
+| `v4.09.0` | 2026-11-08 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
+| `v4.08.0` | 2026-11-08 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |
+
+#### v4.07 – v4.00（沙盒化与数值引擎期）（11 版）
+
+| 版本 | 日期 | 状态 | 完整包 / 发布页 |
+|---|---|---|---|
+| `v4.07.2` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.07.2) |
+| `v4.07.1` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.07.1) |
+| `v4.07.0` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.07.0) |
+| `v4.06.0` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.06.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.06.0) |
+| `v4.05.0` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.05.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.05.0) |
+| `v4.04.0` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.04.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.04.0) |
+| `v4.03.0` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.03.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.03.0) |
+| `v4.02.0` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.02.0) |
+| `v4.01.0` | 2026-11-07 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.01.0) |
+| `v4.00.1` | 2026-11-06 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.00.1) |
+| `v4.00.0` | 2026-11-06 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.00.0) |
+
+#### v3.99 – v3.90（12 版）
+
+| 版本 | 日期 | 状态 | 完整包 / 发布页 |
+|---|---|---|---|
+| `v3.99.0` | 2026-11-06 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.99.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.99.0) |
+| `v3.98.0` | 2026-11-06 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.98.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.98.0) |
+| `v3.97.0` | 2026-11-06 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) |
+| `v3.96.1` | 2026-11-06 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
+| `v3.96.0` | 2026-11-06 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) |
+| `v3.95.0` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
+| `v3.94.0` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.94.0) |
+| `v3.93.0` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.93.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.93.0) |
+| `v3.92.1` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.92.1) |
+| `v3.92.0` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.92.0) |
+| `v3.91.0` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.91.0) |
+| `v3.90.0` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
+
+#### v3.89 – v3.80（13 版）
+
+| 版本 | 日期 | 状态 | 完整包 / 发布页 |
+|---|---|---|---|
+| `v3.89.0` | 2026-11-05 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
+| `v3.88.0` | 2026-11-04 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
+| `v3.87.0` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
+| `v3.86.0` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
+| `v3.85.0` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.85.0) |
+| `v3.84.0` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.84.0) |
+| `v3.82.0` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.82.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.82.0) |
+| `v3.81.4` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.4.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.4) |
+| `v3.81.3` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.3.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.3) |
+| `v3.81.2` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.2.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.2) |
+| `v3.81.1` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.1) |
+| `v3.81.0` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.81.0) |
+| `v3.80.0` | 2026-11-03 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.80.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.80.0) |
+
+#### v3.79 – v3.70（10 版）
+
+| 版本 | 日期 | 状态 | 完整包 / 发布页 |
+|---|---|---|---|
+| `v3.79.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.79.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.79.0) |
+| `v3.78.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.78.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.78.0) |
+| `v3.77.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.77.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.77.0) |
+| `v3.76.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.76.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.76.0) |
+| `v3.75.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.75.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.75.0) |
+| `v3.74.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.74.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.74.0) |
+| `v3.73.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.73.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.73.0) |
+| `v3.72.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.72.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.72.0) |
+| `v3.71.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.71.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.71.0) |
+| `v3.70.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.70.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.70.0) |
+
+#### v3.69 – v3.60（12 版）
+
+| 版本 | 日期 | 状态 | 完整包 / 发布页 |
+|---|---|---|---|
+| `v3.69.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.69.0) |
+| `v3.68.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.68.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.68.0) |
+| `v3.67.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.67.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.67.0) |
+| `v3.66.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.66.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.66.0) |
+| `v3.65.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.65.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.65.0) |
+| `v3.64.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.64.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.64.0) |
+| `v3.63.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.63.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.63.0) |
+| `v3.62.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.62.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.62.0) |
+| `v3.61.1` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.61.1) |
+| `v3.61.0` | 2026-11-02 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.61.0) |
+| `v3.60.1` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.60.1) |
+| `v3.60.0` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.60.0) |
+
+#### v3.59 – v3.50（22 版）
+
+| 版本 | 日期 | 状态 | 完整包 / 发布页 |
+|---|---|---|---|
+| `v3.59.1` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.59.1) |
+| `v3.59.0` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.59.0) |
+| `v3.58.0` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.58.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.58.0) |
+| `v3.57.1` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.57.1) |
+| `v3.57.0` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.57.0) |
+| `v3.56.2` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.2.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.56.2) |
+| `v3.56.1` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.56.1) |
+| `v3.55.30` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.30) |
+| `v3.55.29` | 2026-11-01 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.29.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.29) |
+| `v3.55.28` | 2026-10-31 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.28.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.28) |
+| `v3.55.23` | 2026-10-31 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.23.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.23) |
+| `v3.55.22` | 2026-10-31 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.22.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.22) |
+| `v3.55.21` | 2026-10-31 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.21.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.21) |
+| `v3.55.19` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.19.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.19) |
+| `v3.55.18` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.18.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.18) |
+| `v3.55.17` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.17.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.17) |
+| `v3.55.12` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.12.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.12) |
+| `v3.55.11` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.11.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.11) |
+| `v3.55.10` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.10.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.10) |
+| `v3.55.9` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
+| `v3.55.8` | 2026-10-30 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
+| `v3.55.7` | 2026-10-29 | 旧版本 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+## 📋 逐版沿革详情（旧版本说明）
+
+> 上节「版本列表」是**版本号索引**；本节是各版「改了什么」的详细沿革，最近 12 版默认展开，其余在折叠区。
+> 这些条目写于各自版本当时，**属于旧版本资料**；其中 v4.05.0 / v4.04.0 的「模型准入只允许 agnes 三模型」为**已废弃政策**，见文末归档声明。
 
 <details open>
 <summary><b>最近 12 版</b>（默认展开，完整历史见下方折叠区）</summary>
 
 | 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|
-| **v4.12.0** | 2026-11-09 | 模型无关自适应重做：修正把「开发期测试夹具 agnes 三模型」误当产品边界的认知，产品运行时对玩家模型零限制 修复 auto 只看域名不看模型名 + 单向锁 lite 的缺陷，改为按接口特征+模型名初判、按每轮实际输出双向升降档（连续 2 轮稳定完整→升 full，崩塌→降 lite），自定义域名/中转/本地部署的强模型也能拿到全功能；设置界面文案、README/QUICKSTART/MODEL_WHITELIST 口径同步澄清 新增 t_model_adaptive.cjs（12 项）与 t_model_adaptive_browser.py（8 项）固化验收 全量回归：JS 249/249、node vm 19/19、真浏览器 16/16+8/8+12/12、版本同源 19/19、零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
-| **v4.11.0** | 2026-11-09 | 缺陷补完闭环：wangyou 原创主角回落、ATLAS_ERAS 补 6 个多时代界（覆盖 10→16/38）、文风块 38 界内置兜底 38/38 非空 世界自运转内核修复：性格/理想按 bond·势力覆灭·记忆事件因果迁移（有界低频）并注入主笔提示词 版本同源收口：studio/sw/selftest/181 处 ?v=/页面标题/README/VERSIONS/QUICKSTART 全量对齐 4.11.0，新增独立版本同源验收器 全量回归：JS 语法 249/249、node vm 19/19、KB 6/6、注册表 9/9、文风 38/38、真浏览器 16/16、版本同源 21/21、零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
+| **v4.12.1** | 2026-11-09 | 真实玩家闭环修复版：以限定夹具模型完成大厅→配置→开局→三轮真实出文的全链路视觉验证，修复开屏水印遮挡、世界时钟药丸压住顶栏品牌文字、开局把系统指令渲染成玩家发言、YJWait 依赖等待误用导致 KBToggle 超时、截断续写下 (status) 块与残 <selection> 泄漏进正文、SW 预缓存清单 79 项重复等 6 类问题 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
+| **v4.12.0** | 2026-11-09 | 模型无关自适应重做：修正把「开发期测试夹具 agnes 三模型」误当产品边界的认知，产品运行时对玩家模型零限制 修复 auto 只看域名不看模型名 + 单向锁 lite 的缺陷，改为按接口特征+模型名初判、按每轮实际输出双向升降档（连续 2 轮稳定完整→升 full，崩塌→降 lite），自定义域名/中转/本地部署的强模型也能拿到全功能；设置界面文案、README/QUICKSTART/MODEL_WHITELIST 口径同步澄清 新增 t_model_adaptive.cjs（12 项）与 t_model_adaptive_browser.py（8 项）固化验收 全量回归：JS 249/249、node vm 19/19、真浏览器 16/16+8/8+12/12、版本同源 19/19、零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
+| **v4.11.0** | 2026-11-09 | 缺陷补完闭环：wangyou 原创主角回落、ATLAS_ERAS 补 6 个多时代界（覆盖 10→16/38）、文风块 38 界内置兜底 38/38 非空 世界自运转内核修复：性格/理想按 bond·势力覆灭·记忆事件因果迁移（有界低频）并注入主笔提示词 版本同源收口：studio/sw/selftest/181 处 ?v=/页面标题/README/VERSIONS/QUICKSTART 全量对齐 4.11.0，新增独立版本同源验收器 全量回归：JS 语法 249/249、node vm 19/19、KB 6/6、注册表 9/9、文风 38/38、真浏览器 16/16、版本同源 21/21、零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
 | **v4.10.0** | 2026-11-08 | 第三方审查 v4.09.0 全量复现并根治：F1-F12 与 P1-P2 确定性缺陷清零 数据治理：物理清除 413 条源码/提示词回灌、131 条斗破库《大主宰》倒灌、展开 34 条 wangyou 嵌套地点，运行时再过滤，KB 污染归零 38 界按界注册表全补全：界名/画风/氛围/印章/原著主角/大势节点/原著配角五新界与四小说界全部就位 清洗层与持久化、并发、判定器延续 v4.08/v4.09 已验证的稳健底座 全量回归：JS 语法 249/249、数值清洗 5/5、node vm 复现 19/19、KB 加载 6/6、注册表 9/9、正文清洗 15/15，真浏览器零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
 | **v4.09.0** | 2026-11-08 | 把 v4.08.0 第七节列出的全部已知限制，在现有硬约束内做成确定性工程解法 新建 js/number-scrubber.js 数值真值白名单清洗，玩家所见正文确定性根除小模型自编经济/面板数值，23 条正反样本 + 4 变异体全检出并用浏览器真实快照复验 新建 semantic_judge.py 语义判定层，白名单模型做 A/B/C/D 四类二次复核，只追加告警不放宽规则层 新建 t_concurrency.py 平台级并发压测（本地桩，不调模型）5/5 通过；t_persist.py 按存档三分类，38 界真丢失 0 38 界 × 3 步 = 114 次真实模型广度旅程，闭环 6 个问题（含 J-1 修复自身引入的短正文回归，靠复跑探针抓出） 新增 t_scrub_effect.py / t_final_audit.py / t_body_probe.py 诚实量化并全量离线复判，不额外消耗模型请求 验收：297 JS 语法 0 失败、委托 37/37、长程 300 轮、38 界功能与压力探测 0 问题、移动端双视口 0 溢出、正文回归 11/11 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
 | **v4.08.0** | 2026-11-08 | 五条未闭环项攻坚：网络延迟放大器根除（AbortError 误重试 / 超时后二次完整请求 / 主笔并发门闩 / isProcessing 卡死兜底）；新建 SlotRegistry 统一 20+ 处存档键名拼接，修删档残留 / 副档认领摧毁主档 / 清档无效 / 界键恒 default / 面板崩溃 9 项；长时运行三处数组封顶 + 切档关页前强制落盘；移动端 375/414 双视口 4 界面零溢出；判定器升级为真值差分校验（34 条自检 + 17 变异灵敏度全检出）；真实模型复跑修 7 类确定性缺陷（D-27 重演交付动作从未真跑 / 系统块换壳 / 思维链泄漏 / 装备面板块 / 孤立协议标签 / 数值契约 / SW 预缓存漏两模块）。验收：38 界功能与压力探测 0 问题、委托 37/37、长程 300 轮、293 JS 语法 0 失败。详见 DEFECTS-v4.08.0.md 与交付报告。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |
@@ -121,8 +327,8 @@
 </details>
 
 > 每版的完整说明、验收数据与差异对比见 [VERSIONS.md](VERSIONS.md)；本板块由 `scripts/update-readme.mjs` 从 VERSIONS.md 自动生成，发版跑一次即同步。
-
 <!-- YJ_CHANGELOG_END -->
+
 
 > **本仓库是云境的完整源码**（纯前端，浏览器打开 `index.html` 即用，无需构建、无需后端）。
 > 云起预设与云起正则随仓库发布在 [`releases/`](releases/)，见文末「云起预设」一节。
@@ -130,6 +336,25 @@
 > 仓库地址：<https://github.com/AYun07/yunjing>
 > —— GitHub 仓库名不接受中文（写「云境」会被过滤成 `-`），所以用拼音 `yunjing`；
 > 项目中文名仍然是**云境**。
+
+## 📦 以下为历史版本资料（旧版本沿革存档）
+
+> 从本节起至文末的章节，**按写作年代归档**：标题里的 `v1.x` / `v3.x` 是该功能**首次引入的版本号**，不代表功能已废弃；多数功能在当前版仍然生效。**当前产品现状一律以本文开头「云境是什么 · 当前版本全览」为准。**
+>
+> 下表中的说法写于旧版本时期，**已明确过时或废弃**，列出以免误读：
+
+| 旧版本说法 | 出现位置 | 当前口径（v4.12.1） |
+|---|---|---|
+| 模型准入：只允许 agnes-3.0-flash / image / video 三个模型 | v4.05.0、v4.04.0 条目、`yunjing-test/MODEL_WHITELIST.md` | **已废弃**。三个 agnes 模型只是开发期测试夹具，产品对玩家模型零限制（v4.12.0 起） |
+| `python3 -m http.server 8080` / `localhost:8080` | 旧「快速开始」段 | 启动器 / `8899` 端口，见开头「快速开始」 |
+| 余弦相似度检索、阈值 12%、命中前 3 条 | 旧「知识库」段 | BM25 → 向量 → 精排，逐级降级（v1.6.9 起重铸） |
+| 四大创作工坊 / 原著二十界 / 5 大工坊 | 旧功能章节 | **38 界**，四大分类（原著同人 30 / 真实地球 1 / 自由创作 6 / 网游大世界 1） |
+| 预设 230 块 / 正则 30 条 + 14 条美化 | `QUICKSTART.txt` 旧文案 | 预设 **86 块**、正则 **33 条**（导出酒馆版 40 条） |
+| 全库 24,572 / 24,910 / 25,045 条等 | 各历史版本条目 | 内置 **24,940** 条、面板 **32,312** 条 |
+| localStorage 截断至最近 80 条历史、推荐长上下文模型等 | 旧「已知边界」段 | 见开头「当前状态」小节的边界清单 |
+| 共 73 版 | 旧「逐版更新记录」标题 | 共 **86 版**，见上方「版本列表」 |
+
+> 版本「改了什么」的逐版详细沿革完整保留在上一节与文末「版本记录」，属于历史资料，不删除、不改写。
 
 ## 致敬
 
@@ -300,10 +525,10 @@ GITHUB_TOKEN=<你的 token> node scripts/release.mjs 3.92.1 "一句话标题" "�
 GITHUB_TOKEN=<你的 token> node scripts/sync-releases.mjs
 ```
 
-## 快速开始
+## 快速开始（旧版本操作说明 · 历史存档）
 
-1. **启动（唯一方式）**：在项目根目录执行 `python3 -m http.server 8080`，浏览器打开 `http://localhost:8080`。
-   - Windows 双击 `start-windows.bat`、Mac/Linux 双击 `start-mac.command`，二者启动的都是同一个 8080 本地服务。
+1. **启动（唯一方式）**：在项目根目录执行 `python3 -m http.server 8899`，浏览器打开 `http://127.0.0.1:8899`。
+   - Windows 双击 `start-windows.bat`、Mac/Linux 双击 `start-mac.command`，二者启动的都是同一个 8899 本地服务。
    - 不要直接双击 `index.html`：`file://` 下浏览器会拦截本地文件读取，一致性自检、离线 PWA 与部分存档功能会失效。
 2. **配置接口**：进入任一工坊 → 右上角 `⚙ 接口设置`
    - 接口类型：OpenAI 兼容格式（DeepSeek / Kimi / 通义 / one-api 等）或 Gemini 格式
@@ -343,7 +568,7 @@ node test/alive-acceptance.mjs     # 活世界 A–H 逻辑验收，29 个检查
 
 人工验收（浏览器）：
 
-1. `python3 -m http.server 8080` → 打开 `http://localhost:8080/studio.html?genre=free`
+1. `python3 -m http.server 8899` → 打开 `http://127.0.0.1:8899/studio.html?genre=free`
 2. 右下进入「世界」面板，静置约 1 分钟看自转：势力声望涨跌、活跃事件更替、机缘候选刷新
 3. 正文里做一次明确针对某势力的选择，看该势力声望与恩怨是否变化、关系图是否出现方向箭头与 ↑↓
 4. 反复自转若干天，看是否出现势力覆灭（进「大势」账本）与新势力崛起
@@ -525,7 +750,9 @@ tension: +15
 3. 新建 `css/mygenre-style.css`（覆盖 CSS 变量即可）
 4. 在 `studio.html` 的 `validGenres` 数组中加入 `'mygenre'`，入口页加一个按钮
 
-## 已知边界
+## 已知边界（旧版本边界 · 当前口径见本文开头）
+
+> ⚠ 以下三条写于早期版本，仅作沿革存档；当前限制见开头「当前状态」小节。
 
 - 纯前端直连 API 需服务商允许 CORS；不支持时可本地跑 one-api / new-api 代理
 - localStorage 存档自动截断至最近 80 条历史，完整作品请及时「导出TXT」
