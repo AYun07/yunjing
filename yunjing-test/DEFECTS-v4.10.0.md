@@ -116,4 +116,5 @@
 ### 6.4 版本与发版
 
 - `window.YJ_VER`：`4.10.0` → `4.11.0`（`index.html` 同源徽标 + 静态兜底同步）；`changelog/index.html` 新增 v4.11.0 条目、`yunjing-theme.css?v=` 缓存参数同步。
-- 经 Git Data API 兜底推送至 `origin/main`，打 tag `v4.11.0`。
+- 经 Git Data API 兜底推送至 `origin/main`：远端新 commit `2d50d3d…`、`new_tree` `42600129…` 与本地 `52c290f^{tree}` 同源（逐 blob 字节级等价）；`PATCH main` 200、`POST refs/tags/v4.11.0` 201；临时凭据已清理。
+- **发版推送 SOP**：见《云境-v4.11.0-交付报告.md》第 6.2 节——不走 git 协议（网关阻断），走 `api.github.com` + 平台/用户 `ghp_` PAT 或已连接的 GitHub 连接器，blob→tree→commit→PATCH main→POST tag，内容本地读盘、凭据用完即删。
