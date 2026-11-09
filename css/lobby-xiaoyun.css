@@ -97,8 +97,11 @@ html body.page-index .stars i:nth-child(7){top:46%;left:54%;animation-delay:1.4s
 /* —— 开屏 —— */
 #splash{position:fixed;inset:0;z-index:50;display:grid;place-content:center;text-align:center;
   background:radial-gradient(120% 100% at 50% 30%,var(--bg1),var(--bg0));
-  transition:opacity .6s,visibility .6s;}
-#splash.hidden{opacity:0;visibility:hidden;}
+  transition:opacity .45s,visibility 0s linear .45s;}
+/* 淡出期间不再拦截点击；开屏大字先收起，避免半透明水印压在下方分组说明上 */
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+#splash .splash-mark,#splash .splash-sub,#splash .splash-line,#splash .splash-hint{transition:opacity .18s;}
+#splash.hidden .splash-mark,#splash.hidden .splash-sub,#splash.hidden .splash-line,#splash.hidden .splash-hint{opacity:0;}
 .splash-mark{font-size:64px;font-weight:700;letter-spacing:.24em;color:var(--ink);
   text-shadow:0 0 24px color-mix(in srgb,var(--accent) 60%,transparent);}
 .splash-sub{margin-top:10px;color:var(--ink-dim);letter-spacing:.3em;font-size:14px;}

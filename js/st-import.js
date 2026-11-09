@@ -1,6 +1,6 @@
-/* 云境 · SillyTavern 导入 v1.0.0
+/* 云境 · 常见前端工具 导入 v1.0.0
    支持:世界书/Lorebook(.json)、角色卡 v2/v3(.json)、对话预设(prompts)
-   用法:知识库面板点「导入 SillyTavern」或控制台 STImport.pick() */
+   用法:知识库面板点「导入 常见前端工具」或控制台 STImport.pick() */
 (function () {
   'use strict';
   function ent(title, content, category, tags, alwaysInclude, priority) {
@@ -107,14 +107,14 @@
       if (!row || row.querySelector('[data-st-import]')) return;
       var btn = document.createElement('button');
       btn.setAttribute('data-st-import', '1');
-      btn.textContent = '📥 导入SillyTavern';
+      btn.textContent = '📥 导入常见前端工具';
       btn.style.cssText = 'padding:8px 12px;border-radius:10px;border:1px solid rgba(224,168,76,.45);background:rgba(224,168,76,.14);color:#e0a84c;cursor:pointer;font-size:13px;min-height:38px';
       btn.onclick = function () { try { pick(); } catch (e) { alert('导入功能异常:' + e.message); } };
       if (anchor.nextSibling) row.insertBefore(btn, anchor.nextSibling); else row.appendChild(btn);
     } catch (e) {}
   }MoUtils.pollUntil(function () { try { tryMount(); } catch (e) {} }, { interval: 2500, max: 80 });
   window.STImport = { pick: pick, parse: parseST, importEntries: importEntries };
-  console.log('[STImport] SillyTavern 导入就绪(世界书/角色卡/预设)');
+  console.log('[STImport] 常见前端工具 导入就绪(世界书/角色卡/预设)');
 })();
 
 /* ---- v1.1 知识库条目独立开/关(关闭=不进检索不进常驻,条目保留) ---- */
@@ -188,7 +188,14 @@
     console.log('[KB] 条目开关就绪');
   }
   /* v3.55.29：改为有界等待（原为每 800ms 无限自轮询） */
-  if (window.YJWait) YJWait.for(boot, null, { name: 'st-import.kbtoggle', base: 200, max: 40 });
+  /* check 只判依赖就绪，boot 作为回调执行一次。
+     旧版把 boot 当 check 传入：boot 返回 undefined 恒为假 → 重试 40 次、每次重复包装
+     KM 方法（层层嵌套）并误报「相关功能本次会话不启用」。 */
+  if (window.YJWait) YJWait.for(
+    function () { var KM = window.StoryKnowledge || window.KnowledgeManager; return !!(KM && KM.knowledgeBase); },
+    boot,
+    { name: 'st-import.kbtoggle', base: 200, max: 40 }
+  );
   else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 /* ---- v1.3 PNG角色卡导入 + 导出为ST世界书 ---- */
@@ -226,7 +233,7 @@
         var fr = new FileReader();
         fr.onload = function () {
           var card = pngCard(fr.result);
-          if (!card) { alert('这张 PNG 里没有角色卡数据(需要 SillyTavern 导出的卡)'); return; }
+          if (!card) { alert('这张 PNG 里没有角色卡数据(需要 常见前端工具 导出的卡)'); return; }
           var core = card.data || card;
           var es = window.STImport.parse(JSON.stringify(core));
           if (!es.length) { alert('卡内无可导入字段'); return; }

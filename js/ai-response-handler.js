@@ -129,6 +129,15 @@ const StoryResponseHandler = {
        优先匹配闭合块；未闭合时按「思维链特征行」逐行剥离，避免吃掉后面真正文。 */
     body = this._stripThinkingChain(body);
     body = body.replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, "").replace(/【variable_update】[\s\S]*?【\/variable_update】/gi, "").replace(/<variable_update>[\s\S]*?<\/variable_update>/gi, "");
+    /* 真实模型实测（第 3 轮截断续写）：模型会自创圆括号/方括号状态块 (status)…(/status)，
+       预设正则只认成对的 <status>（那类由 YunqiPresetRegex 抽成折叠卡片，此处不动），
+       圆括号块内的「tension 45 / 执念[…]」等内部字段便原样泄漏进玩家正文。 */
+    body = body.replace(/\(status\)[\s\S]*?\(\/status\)/gi, "")
+               .replace(/【status】[\s\S]*?【\/status】/gi, "");
+    /* 输出被 maxTokens 截断时 <selection> 常缺闭合标签，其后的残选项行已不属于正文 */
+    if (/<selection>/i.test(body) && !/<\/selection>/i.test(body)) {
+      body = body.replace(/<selection>[\s\S]*$/i, "");
+    }
     body = this._stripUnclosedVarBlock(body);
     if (window.ImmersionPlus && window.ImmersionPlus.stripHookMarkers) {
       body = window.ImmersionPlus.stripHookMarkers(body);

@@ -193,9 +193,11 @@
     const pill = document.createElement("div");
     pill.id = "worldClockPill";
     pill.title = "世界时钟：脱离玩家操作，世界自行演化";
-    pill.style.cssText = "position:fixed;left:10px;top:10px;z-index:9000;display:none;align-items:center;gap:6px;" +
+    /* 落点下移到顶栏之外：top:10px 会压住顶栏左侧品牌文字（实测「创作」被盖成「]作」）。
+       --topbar-h 桌面 54px / 移动端 50px，用变量自适应。 */
+    pill.style.cssText = "position:fixed;left:12px;top:calc(var(--topbar-h, 54px) + 6px);z-index:9000;display:none;align-items:center;gap:6px;" +
       "padding:5px 9px;border-radius:18px;cursor:pointer;font-size:12px;color:#e8dcc0;" +
-      "background:rgba(20,16,30,.82);border:1px solid color-mix(in srut #c9a86a 22%,transparent);" +
+      "background:rgba(20,16,30,.82);border:1px solid color-mix(in srgb, #c9a86a 22%, transparent);" +
       "box-shadow:0 2px 10px rgba(0,0,0,.4);user-select:none;backdrop-filter:blur(6px)";
     const dot = document.createElement("span");
     dot.style.cssText = "width:8px;height:8px;border-radius:50%;background:#8fd9a8;box-shadow:0 0 6px #8fd9a8";
@@ -218,7 +220,6 @@
     document.body.appendChild(pill);
     update();
     try { const fw = window.storyFramework; if (fw && fw.storyState) { (fw.storyState._clockPillSync = update); } } catch (e) {}
-    if (window.StoryStatusRenderer) { const _r = window.StoryStatusRenderer.renderHistory; }
   }
   function tryMount() { try { if (document.body) mountToggle(); else setTimeout(tryMount, 300); } catch (e) {} }
 

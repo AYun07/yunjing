@@ -915,7 +915,7 @@ const StorySetupWizard = {
     fw.saveStory();
     const entryInstruction = config.buildOpeningInstruction ? config.buildOpeningInstruction(setup) : `【入场】玩家角色「${playerName}」（${setup.identity}）踏入《${config.genreName}》原著世界（${setup.timeline}）。请主持世界开场：呈现时代氛围与主角处境，引入首批原著人物或事件，结尾附(variable_update)变量块（玩家角色卡+登场NPC卡）与3-4个行动选项。`;
     const safeEntry = window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()) ? window.VariableAI.sanitizePrompt(entryInstruction) : entryInstruction;
-    await window.StoryInput.send(safeEntry);
+    await window.StoryInput.send(safeEntry, { silent: true });
   },
   /* ================================================================
      自由世界 · 四步创世台（worldForge 模式，v3.24.0）
@@ -1443,7 +1443,7 @@ const StorySetupWizard = {
     fw.saveStory();
     const entryInstruction = config.buildOpeningInstruction ? config.buildOpeningInstruction(setup) : `【创世入场】玩家角色「${playerName}」降生于玩家亲笔创造的世界。请主持世界开场：按世界宪法呈现生活切片，结尾附(variable_update)变量块与3-4个【行动选项】。`;
     const safeEntry = window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()) ? window.VariableAI.sanitizePrompt(entryInstruction) : entryInstruction;
-    await window.StoryInput.send(safeEntry);
+    await window.StoryInput.send(safeEntry, { silent: true });
   },
   renderStatsGrid() {
     const fw = window.storyFramework;

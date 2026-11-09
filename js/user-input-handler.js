@@ -1,6 +1,6 @@
 const StoryInput = {
-  /** 发送主流程 */
-  async send(text) {
+  /** 发送主流程；opts.silent=true 时只把指令发给模型，不在玩家对话区渲染成一条「玩家发言」 */
+  async send(text, opts) {
     const fw = window.storyFramework;
     const input = document.getElementById("userInput");
     const message = (text !== void 0 ? text : input ? input.value : "").trim();
@@ -18,7 +18,7 @@ const StoryInput = {
     }
     if (input) input.value = "";
     fw.pushTurnSnapshot(message);
-    window.StoryResponseHandler.renderUserMessage(message);
+    if (!(opts && opts.silent)) window.StoryResponseHandler.renderUserMessage(message);
     fw.storyState.conversationHistory.push({ role: "user", content: message });
     await this.requestAI(message);
   },

@@ -1994,7 +1994,7 @@
         var ls = document.querySelectorAll('link[rel="stylesheet"]');
         for (var i = 0; i < ls.length; i++) if ((ls[i].href || '').indexOf('rpg-suite.css') >= 0) return;
         var l = document.createElement('link');
-        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.12.0'; l.setAttribute('data-rpg-suite', '1');
+        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=4.12.1'; l.setAttribute('data-rpg-suite', '1');
         document.head.appendChild(l);
       } catch (e) {}
     })();
