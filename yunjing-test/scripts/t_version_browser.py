@@ -6,9 +6,15 @@ DOM 里不存在残留旧号；并确认 SW 脚本本身返回 200（SW_VER 已�
 """
 from playwright.sync_api import sync_playwright
 
+import re, os
 BASE = "http://127.0.0.1:8899"
-VER = "4.11.0"
-OLD = "4.10.0"
+# 期望版本从 index.html 的 YJ_VER 动态读取，避免每次升版本都要手改测试脚本
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_m = re.search(r"window\.YJ_VER = '([\d.]+)'", open(os.path.join(_ROOT, "index.html"), encoding="utf-8").read())
+VER = _m.group(1) if _m else "0.0.0"
+# 旧号：取比当前次版号低一号的常见值即可，这里只用于"可见文本不应残留旧号"的兜底扫描
+_parts = VER.split(".")
+OLD = _parts[0] + "." + str(max(0, int(_parts[1]) - 1)) + ".0" if len(_parts) >= 2 else "0.0.0"
 
 results = []
 def rec(tag, ok, detail):

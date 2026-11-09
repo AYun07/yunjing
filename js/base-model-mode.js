@@ -1,30 +1,39 @@
 /* =====================================================================
    云境 · 模型能力自适应（v3.55.11 重做）
    ---------------------------------------------------------------------
-   目标：无论玩家用什么模型，都能「不出任何问题地畅玩」；用强模型的，
-   只会在这个基础上输出更完美的内容。
+   目标：模型无关（model-agnostic）。玩家在「⚙ 接口设置」里填自己的任意模型——
+   各厂商直连 / 中转 / 自建网关 / 本地部署 / 任意 OpenAI 兼容端点，能力参差。
+   本模块只按「这个模型此刻的实际表现」分流，不按域名或渠道一刀切，让每个模型
+   都拿到它当下能稳定驾驭的最丰富体验：弱模型稳得住，强模型不被压。
+
+   ⚠️ 口径澄清（v4.11.1）：开发期用来做回归测试的 agnes-3.0-flash 等只是「测试夹具」，
+   绝非产品运行时允许的型号限制。产品对玩家模型零限制、零白名单；下方实测观察
+   仅用于设计 lite 兜底，不代表玩家被限定在这些型号上。
 
    三档：
-   · auto  （默认，零配置）系统按接口特征 + 首轮自检自动判断走 lite 还是 full
+   · auto  （默认，零配置）按接口特征 + 模型名做保守初判，再按实际输出双向升降
    · lite  （低端/基础/免费大模型）安全档：参数锁 + 轻量协议 + 辅助AI静默 + 复读自检
    · full  （高端大模型）全功能档：全量云起预设 + 变量/舞台/灵感/沉浸全开，原汁原味
+   · 手动档（lite / full）永远优先于 auto，玩家可随时强制指定
 
-   auto 判定（安全优先，零额外请求）：
-   ① 域名初判：命中已知强模型官方/知名网关 → 初判 full；自定义/免费/未知 → 初判 lite；
-   ② 首轮自检：开场回复若被 detectCollapse 判为「复读崩塌」→ 永久降级 lite（按
-      endpoint+model 缓存，换模型重新判定）；
-   ③ 判定结果缓存 7 天，避免每轮重判、避免重复浪费请求。
+   auto 判定（零额外请求、双向可纠正，v4.11.1 重做）：
+   ① 初判：endpoint 命中知名强网关，或玩家填的 model 名含旗舰特征 → full；
+      两者都未知 → lite（保守起步，避免小模型被全量协议压垮）。初判只是起点，
+      不再「一次判定锁 7 天」。
+   ② 降级：detectCollapse 判为复读崩塌 → 立即降 lite（换模型重新判定）。
+   ③ 升级：连续 2 轮「结构完整、不崩塌」的正常回复 → 自动升 full，让跑在
+      自定义域名 / 中转 / 本地部署上的强模型也能拿到全功能（本次修复核心）。
+   ④ 缓存按 endpoint|model 隔离，可被升级/降级刷新；换模型即重新判定。
 
    所有档位共享的安全基线（已在 callStoryAI 全档生效）：
    · 复读自检：任意档检测到同义堆砌崩塌都自动降温重发一次（用户无感）；
    · 截断续写：MoNetGuard 防截断续写对所有档生效（不在这里管）。
 
-   实测结论（agnes-3.0-flash 凡人修仙传新档 6 轮+，来自 v3.55.10）：
+   lite 档针对以下四点兜底（观察自开发期测试夹具，非产品型号约束）：
    ① 温度 0.9 时小模型「复读崩塌」开篇一路同义堆砌到上万字；
    ② 输出上限 <8000 时正文被截断、续写泄漏格式自言自语；
    ③ 变量AI「主笔兜底登记」每轮额外发一次请求，免费档必 429；
    ④ 全量云起预设（数万字协议）小模型注意力扛不住、协议遵从率低。
-   lite 档即针对这四点兜底。
    ===================================================================== */
 (function () {
   'use strict';
@@ -43,6 +52,20 @@
     'openrouter.ai', 'cohere', 'mistral', 'ai21', 'groq', 'fireworks.ai',
     'qwen', 'kimi', 'stepfun', 'anthropic', 'x.ai', 'meta.ai',
     'nvidia'            // NVIDIA 托管网关：旗下多为强力对话模型（如 nemotron 系列），初判 full 走全功能
+  ];
+
+  /* v4.11.1 模型名旗舰特征：与厂商/渠道无关，纯能力线索。
+     玩家用自建网关/中转/本地部署时，endpoint 往往不在上面任何名单里，
+     但 model 名常直接是 gpt-4o / claude-… / qwen-max / 70b 这类强模型。
+     若只看域名就会把他们误判为弱模型、砍掉全功能。命中即 full 起步，
+     之后仍由 noteStable/noteCollapse 按实际输出纠正（起步不等于定死）。 */
+  const STRONG_MODEL_HINTS = [
+    'gpt-4', 'gpt-5', 'gpt-6', 'o1-', 'o3-', 'o4-',
+    'claude-', 'gemini-2.5-pro', 'gemini-2-pro', 'gemini-ultra',
+    'deepseek-r1', 'deepseek-reasoner', 'qwen-max', 'qwen3-235', 'qwen2.5-72',
+    'ernie-4', 'glm-4-plus', 'grok-3', 'grok-4', 'step-2', 'step-3',
+    'llama-3.1-405', 'llama-4', '405b', '235b', '72b', '70b', '671b',
+    'doubao-seed-1-6', 'kimi-k2', 'minimax-m1'
   ];
 
   function fwApiConfig() {
@@ -91,14 +114,16 @@
 
   function isAuto() { return getTier() === 'auto'; }
 
-  /* ---------- 域名初判 ---------- */
+  /* ---------- 初判（endpoint + 玩家填的模型名，模型无关的保守起点） ---------- */
   function initialGuess() {
     const cfg = fwApiConfig();
     if (!cfg) return 'lite';
     const ep = (cfg.endpoint || '').toLowerCase();
-    if (!ep) return 'lite'; // 无 endpoint（本地/占位）→ 保守
     for (const k of STRONG_KEYWORDS) if (ep.indexOf(k) !== -1) return 'full';
-    return 'lite';
+    /* endpoint 未知不代表模型弱：再看玩家手填的 model 名 */
+    const mn = (cfg.model || '').toLowerCase();
+    if (mn) for (const k of STRONG_MODEL_HINTS) if (mn.indexOf(k) !== -1) return 'full';
+    return 'lite';                       // 两者都未知 → 保守起步，交给实测纠正
   }
 
   /* ---------- 解析实际档位（auto 时结合缓存+初判） ---------- */
@@ -141,15 +166,36 @@
     } catch (e) {}
   }
 
-  /* 首轮自检回调：auto 档下根据开场回复质量缓存判定 */
-  function noteCollapse() {
-    if (!isAuto()) return;
-    cacheResolved('lite');
+  /* ---------- 输出质量探针（v4.11.1，模型无关：只看这一轮回复本身） ----------
+     不崩塌 + 正文够长 + 有完整协议块（选项/变量/状态任一），视为「这个模型驾驭得住」。
+     连续 2 轮达标即升 full。连通测试的短回复、报错、结构残缺都不计入，避免误升。 */
+  function looksCapable(reply) {
+    if (typeof reply !== 'string') return false;
+    const t = reply.trim();
+    if (t.length < 400) return false;
+    if (detectCollapse(t)) return false;
+    return /【行动选项】|<selection>|<status>|\(variable_update\)|(?:^|\n)\s*[1-6][\.、．]/m.test(t);
   }
-  function noteStable() {
+
+  let goodStreak = 0, probeKey = '';
+  /* 首轮自检回调：auto 档下按「实际输出质量」双向纠正档位（不再单向锁 lite） */
+  function noteCollapse() {
+    goodStreak = 0;
+    if (!isAuto()) return;
+    cacheResolved('lite');               // 崩塌立即降级（覆盖旧缓存）
+  }
+  function noteStable(reply) {
     if (!isAuto()) return;
     const key = epModelKey();
-    if (key && !readResolved(key)) cacheResolved(initialGuess());
+    if (key !== probeKey) { probeKey = key; goodStreak = 0; }   // 换模型重新观察
+    const cur = key ? readResolved(key) : null;
+    if (key && !cur) cacheResolved(initialGuess());             // 无缓存时先落保守起点
+    if (cur === 'full') return;                                // 已全功能，无需再升
+    if (looksCapable(reply)) {
+      if (++goodStreak >= 2) { cacheResolved('full'); goodStreak = 0; }
+    } else {
+      goodStreak = 0;                     // 断连续，但不降级（避免把稳模型误压）
+    }
   }
 
   function isLite() { return resolveTier() === 'lite'; }
@@ -332,6 +378,7 @@
     isEnabled: isLite,                 // 兼容旧布尔语义（=是否走裁剪档）
     isEnabledRaw: getTier,
     clampParams, buildLitePreset, compactSystemPrompt, detectCollapse,
-    noteCollapse, noteStable, install
+    noteCollapse, noteStable, install, looksCapable,
+    _resetProbe: function () { goodStreak = 0; probeKey = ''; clearResolvedCache(); }
   };
 })();

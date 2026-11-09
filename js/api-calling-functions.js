@@ -616,8 +616,10 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
         if (r2 && !(bmm.detectCollapse && bmm.detectCollapse(r2))) reply = r2;
         else console.warn('[模型自适应] 重发仍未达标，保留原回复');
       } catch (e) { console.warn('[模型自适应] 重发失败，保留原回复', e); }
-    } else if (bmm && bmm.noteStable && bmm.isAuto && bmm.isAuto()) {
-      bmm.noteStable();
+    } else if (bmm && bmm.noteStable && bmm.isAuto && bmm.isAuto() && !isTest) {
+      /* v4.11.1 双向自适应：把本轮真实回复交给质量探针，连续 2 轮结构完整即自动升 full；
+         连通测试(isTest)的短回复不参与判定，避免把「连接成功」误当稳定输出。 */
+      bmm.noteStable(reply);
     }
     // v3.47.14 防截断：被 max_tokens 掐断时自动续写（最多 2 轮，可从接口设置关闭）
     if (!isTest && window.MoNetGuard && fw.apiConfig.autoContinue !== false) {
