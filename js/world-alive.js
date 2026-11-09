@@ -250,7 +250,7 @@
     function push(n) {
       if (!n || !n.name || seen[n.name]) return;
       if (n.faction === "离队" || n.status === "离队") return;
-      if (n.goal || n.goals || n.emotion) { seen[n.name] = 1; out.push(n); }
+      if (n.goal || n.goals || n.emotion || n.personality || n.ambition) { seen[n.name] = 1; out.push(n); }
     }
     /* 主笔人物真源（v.characters）——人格可改写层首要来源 */
     try {
@@ -259,14 +259,14 @@
       Object.keys(chars).forEach(function (name) {
         var c = chars[name];
         if (!c || c.origin === "玩家") return;
-        push({ name: name, goal: c.goal, goals: c.goal, emotion: c.emotion, trust: c.trust });
+        push({ name: name, goal: c.goal, goals: c.goal, emotion: c.emotion, trust: c.trust, personality: c.personality, ambition: c.ambition });
       });
     } catch (e) {}
     try {
       var list = window.WorldRuntime && window.WorldRuntime.NPC ? WorldRuntime.NPC.list() : [];
       list.forEach(function (n) {
         if (n.faction === "离队") return;
-        if (n.goals || n.emotion) push({ name: n.name, goal: n.goals, goals: n.goals, emotion: n.emotion, trust: n.trust });
+        if (n.goals || n.emotion || n.personality || n.ambition) push({ name: n.name, goal: n.goals, goals: n.goals, emotion: n.emotion, trust: n.trust, personality: n.personality, ambition: n.ambition });
       });
     } catch (e) {}
     return out.slice(0, 3);
@@ -342,13 +342,17 @@
           var bits = [];
           if (n.goals) bits.push("目标：" + n.goals);
           if (n.emotion) bits.push("情绪：" + n.emotion);
+          if (n.personality) bits.push("性格：" + n.personality);
+          if (n.ambition) bits.push("理想：" + n.ambition);
           bits.push("信任：" + (n.trust != null ? n.trust : 50));
           parts.push("· " + n.name + " —— " + bits.join(" ｜ "));
         });
       }
     } else if (nChanged.length) {
       parts.push("【人物行为约束·本轮变化】" + nChanged.map(function (n) {
-        return n.name + "（目标：" + (n.goals || "—") + "／情绪：" + (n.emotion || "—") + "／信任：" + (n.trust != null ? n.trust : 50) + "）";
+        var t = "目标：" + (n.goals || "—") + "／情绪：" + (n.emotion || "—") + "／信任：" + (n.trust != null ? n.trust : 50);
+        if (n.personality || n.ambition) t += "／性格：" + (n.personality || "—") + "／理想：" + (n.ambition || "—");
+        return n.name + "（" + t + "）";
       }).join(" ｜ ") + "；其余人物仍按上一轮目标与情绪行动，不得 OOC。");
     } else if (npcs.length) {
       parts.push("【人物行为约束】人物目标与情绪本轮无变化，仍按上一轮约束行动，不得 OOC。");

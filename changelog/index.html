@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.10.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.11.0">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#c0a85a;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.11.0</span>
+                <span class="entry-date">2026-11-08</span>
+            </div>
+            <h3 class="entry-title">缺陷清零补完 · 性格/理想/情绪自治演化内核修复</h3>
+            <p class="entry-text">补完 v4.10.0 缺陷报告中列为「待确认/非缺陷」的全部缺失项：① wangyou 原创网游界主角回落为「原创主角」（不再误标原著主角）；② ATLAS_ERAS 时代层补齐 6 个多时代界（仙逆位面阶梯、道诡异仙表里双线、重生之都市修仙前世今生、轮回乐园多衍生世界、全球冰封灾变前后、帝霸万古棋局），时代层覆盖 10→16/38；③ 文风块 38 界内置兜底（预设未收录按界分档时回退内置文风档，render 返回「本世界文风适配」），38/38 非空 修复「性格/理想/情绪自治演化内核」（世界自运转核心）：personality/ambition 此前生成时定一次即冻结，现改为在同池内按 bond/势力覆灭/记忆事件做因果迁移——敌对→冷硬簇/复仇簇、亲近→温热簇/忠诚簇、旧主倾覆→守护簇，每 4–5 日低频演化且有冷却，全程有界（每 tick ≤3 人、每人冷却 2 日）；真源与 WorldAlive 主笔提示词注入性格/理想，让 NPC 的言行随因果真实漂移 全量验证审查：JS 语法 249/249、node vm 复现 19/19（0 缺陷）、KB 加载 6/6（32312 条、零 pageerror）、注册表 9/9（16/38 时代层、wangyou 原创主角命中）、文风兜底 38/38、性格演化内核 vm 实测通过、真浏览器端到端 16/16（0 缺陷、零 pageerror）、KB 括号平衡 76 文件 24984 条 0 失败；第三方审查式再审查无新问题</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">

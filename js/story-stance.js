@@ -70,7 +70,8 @@
     quanzhifashi: "莫凡", lunhuileyuan: "苏晓", shengxu: "楚风",
     shenmifusu: "杨间", limingzhijian: "高文", xianni: "王林",
     guzhenren: "方源", jianlai: "陈平安",
-    dazhuzai: "牧尘", wanxiangzhiwang: "李洛", wudongqiankun: "林动", yuanzun: "周元"
+    dazhuzai: "牧尘", wanxiangzhiwang: "李洛", wudongqiankun: "林动", yuanzun: "周元",
+    wangyou: "原创主角"
   };
 
   /* ---------- 大势节点（hero 态锁死的「不可改」清单）---------- */

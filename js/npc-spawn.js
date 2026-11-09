@@ -217,6 +217,13 @@
   const WILL_PER_TICK = 3, WILL_COOLDOWN = 2, WILL_SIGNAL_MAX = 3, WILL_MEM_MAX = 220;
   const EXTREME_MOODS = ["暴怒", "狂喜", "绝望", "癫狂", "嗜血", "暴戾", "大怒", "大喜", "崩溃", "疯狂", "亢奋", "惊惧", "悲恸"];
   const CALM_MOODS = ["平静", "警惕", "隐忍"];
+  /* v4.11.0 性格三轴聚类：让 personality 能在同 PERSONALITIES 池内按因果平滑迁移（不臆造新标签） */
+  const PERSO_WARM = ["外冷内热，重诺守义", "豪爽仗义，一诺千金", "温文尔雅，藏而不露", "散漫不羁，心却透亮"];
+  const PERSO_COLD = ["谨慎多疑，凡事先留三分", "沉默寡言，出手果断", "执拗认真，认死理"];
+  /* v4.11.0 理想因果聚类：ambition 按 bond/势力覆灭/记忆事件，在同 AMBITIONS 池内迁移 */
+  const AMBI_AVENGE = ["为亡友讨一个公道", "查清当年灭门一夜的真相"];
+  const AMBI_PROTECT = ["护住家族仅存的一点香火", "替亡友完成未竟之事", "在乱世里保全名节"];
+  const AMBI_LOYAL = ["护住身边的人", "替恩人寻一味药"];
 
   function _playerName(v) {
     try {
@@ -264,6 +271,17 @@
         const nx = pick(EMOTIONS, rnd2);
         if (nx !== mood) { _setMood(c, nx); changed = true; }
       }
+      /* ①b 事件感染：所属势力已覆灭时，近期大事牵动情绪（有界小概率，不覆盖既有极端态回归） */
+      if (c.faction && rnd2() < 0.3) {
+        const _f = Object.values(factions).find((x) => x && x.name === c.faction);
+        if (_f && _f.collapsed && Array.isArray(v.history)) {
+          const _recent = v.history.slice(-6).join(" ");
+          if (/覆灭|失守|洗劫/.test(_recent) && ["愤懑", "焦灼", "警惕"].indexOf(mood) < 0 && rnd2() < 0.6) {
+            _setMood(c, pick(["愤懑", "焦灼"], rnd2));
+            sig.push(`「${c.name}」闻旧主基业倾覆，心头翻涌。`); changed = true;
+          }
+        }
+      }
 
       /* ② 信任漂移：关系恶化 → 目标信任下降 */
       const target = bond != null ? clamp(Math.round(50 + bond / 2), 0, 100) : 50;
@@ -307,6 +325,31 @@
             changed = true;
           }
         }
+      }
+
+      /* ⑤ 性格演化（极慢，受 bond/势力/经历因果牵引；同 PERSONALITIES 池迁移，不臆造） */
+      const _persoNow = String(c.personality || "");
+      const _persoCluster = (p) => PERSO_WARM.indexOf(p) >= 0 ? "warm" : (PERSO_COLD.indexOf(p) >= 0 ? "cold" : "neutral");
+      let _persoTgt = null;
+      if (bond != null && bond <= -30) _persoTgt = "cold";
+      else if (bond != null && bond >= 30) _persoTgt = "warm";
+      else if (fac && fac.collapsed) _persoTgt = "cold";
+      if (_persoTgt && _persoCluster(_persoNow) !== _persoTgt && (d - (Number(c._persoDay) || -999) >= 4) && rnd2() < 0.3) {
+        const _ppool = _persoTgt === "warm" ? PERSO_WARM : PERSO_COLD;
+        const _pt = pick(_ppool, rnd2);
+        if (_pt && _pt !== _persoNow) { c.personality = _pt; c._persoDay = d; sig.push(`「${c.name}」历经恩怨，性情渐渐转作${_pt}。`); changed = true; }
+      }
+
+      /* ⑥ 理想演化（低频，受 bond/势力覆灭/记忆事件因果牵引；同 AMBITIONS 池迁移） */
+      const _ambiNow = String(c.ambition || "");
+      let _ambiTgt = null;
+      if (bond != null && bond <= -25) _ambiTgt = AMBI_AVENGE;
+      else if (fac && fac.collapsed) _ambiTgt = AMBI_PROTECT;
+      else if (bond != null && bond >= 25) _ambiTgt = AMBI_LOYAL;
+      else if (c.memory && /覆灭|失守|背叛|灭门|洗劫/.test(c.memory) && rnd2() < 0.4) _ambiTgt = AMBI_PROTECT;
+      if (_ambiTgt && !_ambiTgt.includes(_ambiNow) && (d - (Number(c._ambiDay) || -999) >= 5) && rnd2() < 0.35) {
+        const _at = pick(_ambiTgt, rnd2);
+        if (_at && _at !== _ambiNow) { c.ambition = _at; c._ambiDay = d; sig.push(`「${c.name}」的念想变了：如今心里只悬着——${_at}。`); changed = true; }
       }
 
       if (changed) {

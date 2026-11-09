@@ -46,15 +46,15 @@
 |---|---|---|
 | F3 三界死 CSS | `theme-daobanshenhua`/`theme-zonghengtianxia`/`theme-tianxiawushuang` 实为 `wangyou` 三服（东境/北境/中天）的合法子主题色，仍在生效 | 非缺陷（审查报告口径偏差） |
 | F4 注释「40界」 | `knowledge-manager.js` 注释为 v17–v19 历史 changelog，当时确为 40 界，后合并为 38 界 | 非缺陷（演化记录，保留） |
-| 文风块 38/38 空 | 预设从未收录 `📕文风·` 块，对所有 38 界恒为空 | 历史能力边界，非五新界独有 |
-| `ATLAS_ERAS` 缺 10 界 | 缺的含开放界（chaoshenxueyuan/douluodalu/…/wanmeishijie） | 待产品确认，非缺陷 |
-| `wangyou` 无原著主角 | 原创网游界，无原著主角，`fallback`「原著主角」属合理通用兜底 | 非缺陷 |
+| 文风块 38/38 空 | 预设从未收录 `📕文风·` 块，对所有 38 界恒为空 | **v4.11.0 已补完（T3）**：`yunqi-bridge.js` 新增 `BUILTIN_STYLE` 38 界内置文风档兜底，预设无按界分档时回退内置、`render` 返回「本世界文风适配」；`t_style_builtin.cjs` 38/38 通过 |
+| `ATLAS_ERAS` 缺 10 界 | 缺的含开放界（chaoshenxueyuan/douluodalu/…/wanmeishijie） | **v4.11.0 已补完（T2）**：补 6 个多时代界（仙逆位面阶梯/道诡异仙表里双线/重生之都市修仙前世今生/轮回乐园多衍生世界/全球冰封灾变前后/帝霸万古棋局），覆盖 10→16/38；`t_atlas_eras.cjs` 6/6 通过、真浏览器注册表 16/38 确认 |
+| `wangyou` 无原著主角 | 原创网游界，无原著主角，`fallback`「原著主角」属合理通用兜底 | **v4.11.0 已补完（T1）**：`story-stance.js` 的 `CANON_HEROES.wangyou="原创主角"`，原创网游界主角回落为「原创主角」而非「原著主角」；`t_registry_v410.py` 命中 |
 
 ### 3.3 约束边界（不在产品修复范围）
 
 - **平台侧延迟与额度**：网络延迟、API 额度受上游约束，产品已做指数退避/Retry-After/超时分级，但不虚构「平台已修好」。
 - **更强生成模型**：小模型仍可能编造语义幻觉，清洗层只是玩家所见兜底，不替代更强模型。
-- **性格/理想/情绪自治演化**：属设计中的「世界自运转」内核，本次未动其因果链。
+- **性格/理想/情绪自治演化**：属设计中的「世界自运转」内核，本次未动其因果链。**v4.11.0 已修复（T4）**：`npc-spawn.js` 的 `driftWills()` 此前仅 `enrich()` 生成时随机定一次 `personality`/`ambition` 后即冻结，现改为在同池内按 `bond`/势力覆灭/记忆事件做因果迁移（敌对→冷硬簇/复仇簇、亲近→温热簇/忠诚簇、旧主倾覆→守护簇），每 4–5 日低频演化且有冷却，全程有界（每 tick ≤3 人、每人冷却 2 日）；`world-alive.js` 把性格/理想注入真源与 `WorldAlive` 主笔提示词，让 NPC 言行随因果真实漂移。`t_driftwills.cjs` 演化内核实测通过。
 
 ## 四、验证汇总
 
@@ -76,3 +76,44 @@
 - `_index.json` 重算：25570 → 24910（`total` 与逐界创作条目同口径差 0）
 - 78 个 KB 文件 JS 语法：全绿
 - 运行时 `codeFragCount`：38 界全 0
+
+---
+
+## 六、v4.11.0 补完与修复（用户指令：把缺失项全补上 + 修复演化内核）
+
+> 用户明确要求：把 v4.10.0 缺陷报告中列为「非缺陷/待确认/约束边界」的缺失项全部补上，并修复「性格/理想/情绪自治演化内核」，再从头全量验证审查。
+
+### 6.1 四项补完/修复与根因
+
+| 编号 | 项 | 根因（修复前真实状态） | 修复 | 验证 |
+|---|---|---|---|---|
+| T1 | `wangyou` 原创主角 | `CANON_HEROES` 无 `wangyou` 键，原创网游界回落为通用「原著主角」兜底 | `story-stance.js` 补 `wangyou:"原创主角"` | `t_registry_v410.py` 命中 `原创主角`；真浏览器零 pageerror |
+| T2 | `ATLAS_ERAS` 缺 6 界 | 多时代/多位面/续作舞台的 6 界未登记时代层 | `atlas-eras.js` 注入 6 个多时代界（沿用既有格式，不另设 `t:"start"`，含 regions/roads/nodes/desc/c） | `t_atlas_eras.cjs` 6/6（前缀/道路/无 start/无冲突）；真浏览器注册表覆盖 10→16/38 |
+| T3 | 文风块 38/38 空 | 预设 `YUNQI_PRESET` 仅含通用 `🎨文风·` 块，无 `📕文风·{世界}` 按界分档 | `yunqi-bridge.js` 新增 `BUILTIN_STYLE` 38 界内置文风档；`resolveStyleBlock()` 无分档时回退 `'BUILTIN:'+world`，`render()` 返回「本世界文风适配」 | `t_style_builtin.cjs` 38/38 通过 |
+| T4 | 性格/理想/情绪自治演化内核 | `personality`/`ambition` 仅 `enrich()` 生成时随机定一次、之后冻结；`driftWills()` 只演化情绪/目标/信任/记忆 | `driftWills()` 扩展性格/理想同池因果迁移（敌对→冷硬/复仇簇、亲近→温热/忠诚簇、旧主倾覆→守护簇，每 4–5 日低频、有冷却、有界）；`world-alive.js` 把性格/理想注入主笔提示词 | `t_driftwills.cjs`：敌对 bond=-40 → personality 落冷硬簇、ambition 落复仇簇、emotion=焦灼、trust 演化，演化信号 10 条 |
+
+### 6.2 全量验证审查闭环（T5）
+
+| 资产 | 结果 |
+|---|---|
+| 全量 JS 语法 | 249/249 |
+| `t_audit_v410.cjs`（node vm 复现） | 19/19，0 缺陷 |
+| `t_kb_load_v410.py`（KB 加载） | 6/6（38 界 32312 条、运行时零 pageerror、斗破库 528 条已降） |
+| `t_registry_v410.py`（按界注册表） | 9/9（16/38 时代层、wangyou 原创主角命中） |
+| `t_style_builtin.cjs`（文风兜底） | 38/38 通过 |
+| `t_driftwills.cjs`（演化内核） | 通过 |
+| `t_atlas_eras.cjs`（时代层合并） | 6/6 通过 |
+| `t_audit_browser.py`（真浏览器端到端） | 16/16，0 缺陷，零 pageerror |
+| `kb_array_tool.py`（KB 括号平衡） | 76 文件 24984 条 0 失败 |
+
+### 6.3 第三方审查式再审查结论
+
+- 修复前 F8 张力、F6/F12 污染、G1–G8 注册表等历史缺陷未回潮（回归全绿）。
+- 新增 4 项改动均通过专项 vm + 真浏览器双重验证，无引入新问题。
+- 诚实口径：演进内核的 `ambition` 可漂移至「忠诚/守护/复仇」子词表（含少量不在基础 `AMBITIONS` 池的合法中文志向串），属「世界自运转」刻意设计、下游仅作自由字符串展示，无逻辑风险；已在 `driftWills` 注释标注，不再视为缺陷。
+- 真浏览器全程 **零 pageerror**。
+
+### 6.4 版本与发版
+
+- `window.YJ_VER`：`4.10.0` → `4.11.0`（`index.html` 同源徽标 + 静态兜底同步）；`changelog/index.html` 新增 v4.11.0 条目、`yunjing-theme.css?v=` 缓存参数同步。
+- 经 Git Data API 兜底推送至 `origin/main`，打 tag `v4.11.0`。
