@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **84** 个版本，从 `v3.55.7` 到 `v4.11.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **85** 个版本，从 `v3.55.7` 到 `v4.12.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v4.12.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
 | **v4.11.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) |
 | **v4.10.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
 | **v4.09.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
@@ -98,6 +99,17 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v4.12.0 · 2026-11-09
+
+模型无关自适应重做 · 口径澄清。
+
+- **认知更正**：三个 agnes flash 模型只是开发方做回归测试的夹具（只约束 `yunjing-test/` 开发期脚本），**不是玩家能用的型号限制**；产品运行时对玩家模型零限制、零白名单，各厂商/中转/自建网关/本地部署/任意 OpenAI 兼容端点均可。
+- **真实修复**：`base-model-mode.js` 旧版 auto 只看 endpoint 域名且单向锁 lite，自建中转/本地/新厂商上的强模型被误判为弱模型、砍掉全功能。改为按接口特征+模型名初判、按每轮实际输出双向升降档（连续 2 轮结构完整稳定→升 full，复读崩塌→降 lite），手动档仍优先、换模型缓存隔离。`api-calling-functions.js` 传入真实回复并排除连通测试短回复；设置界面文案改为「模型零限制」。
+- **口径同步**：交付报告/交付卡更正错误的「模型硬上限」表述；README 顶部、QUICKSTART、MODEL_WHITELIST 加权威声明。历史版本条目保持史实不动。
+- **验收**：`t_model_adaptive.cjs` 12/12、`t_model_adaptive_browser.py` 8/8、node vm 19/19、真浏览器 16/16、JS 语法 249/249、版本同源 19/19、零 pageerror。
+
+- [📂 该版文件](https://github.com/AYun07/yunjing/tree/v4.12.0)  [🔍 与 v4.11.0 差异](https://github.com/AYun07/yunjing/compare/v4.11.0...v4.12.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip)
 
 ## v4.11.0 · 2026-11-09
 

@@ -2,7 +2,9 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v4.11.0（2026-11-09）
+> **📢 关于模型（请先看这一段）· v4.11.1 口径声明**：云境是**纯前端、模型无关**的作品，**不预置、不限制、不锁定任何玩家模型**。历史更新记录里出现的「模型准入：只允许 agnes-3.0-flash / agnes-image-2.5-flash / agnes-video-2.5-flash」指的是**开发方做回归测试时用的三个夹具模型**（约束仅作用于 `yunjing-test/` 内的测试脚本：并发 1、间隔 ≥4s、不额外付费），**从来不是产品运行时对玩家的限制**。你在「⚙ 接口设置」里可以填自己的任意模型——各厂商官方直连 / 中转 / 自建网关 / 本地部署 / 任意 OpenAI 兼容端点，用哪个、换哪个完全由你决定。不同模型能力不一样，云境的「模型能力自适应」会按接口特征、模型名与每轮实际输出**自动双向升降档**（连续输出稳定完整即升全功能档，复读崩塌则降求稳档），尽量让每个模型都跑到它能稳定驾驭的最丰富体验；设置里也可手动指定「求全 / 求稳」。
+
+## 🆕 当前版本：v4.12.0（2026-11-09）
 
 > **缺陷补完闭环 · 世界自运转内核修复 · 版本同源收口**：把 v4.10.0 缺陷报告中列为「待确认/非缺陷」的缺失项全部补齐，修复「性格/理想/情绪自治演化内核」，并把发版时遗漏的全部版本锚点（studio / sw / selftest / 181 处缓存参数 / 页面标题 / 三份文档）统一收口到同号——这是首个名副其实的全量同源成品版本。
 
@@ -13,16 +15,17 @@
 - **版本同源收口（本轮）**：v4.11.0 首轮发版只改了 `index.html` + changelog 两点，其余锚点滞留 4.10.0。本轮把 `studio.html` 的 `YJ_VER`/`verDot`/页面标题、`sw.js` 的 `SW_VER`、`selftest.html` 的 `ENGINE_VER`、`number-scrubber` 模块号、181 处 `?v=` 缓存参数、`QUICKSTART`/`README`/`VERSIONS` 抬头全部对齐到 4.11.0；`SW_VER` 变化同时让 PWA 老客户端能正确换取新版代码。新增独立验收器 `t_version_sync.cjs`，把「版本同源」固化为可复跑测试，防再次复发。
 - **验收证据**：全量 JS 语法 249/249、node vm 复现 19/19（0 缺陷）、KB 加载 6/6（38 界 32312 条、零 pageerror）、注册表 9/9、文风兜底 38/38、性格演化内核 vm 实测通过、时代层合并 6/6、真浏览器端到端 16/16（0 缺陷、零 pageerror）、KB 括号平衡 76 文件 24984 条 0 失败、**版本同源 21/21**。缺陷清单见 `yunjing-test/DEFECTS-v4.10.0.md`，交付报告见 `云境-v4.11.0-交付报告.md`。
 
-**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) · [🔍 与 v4.10.0 的差异](https://github.com/AYun07/yunjing/compare/v4.10.0...v4.11.0) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
+**立即获取**：[⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) · [🔍 与 v4.10.0 的差异](https://github.com/AYun07/yunjing/compare/v4.11.0...v4.12.0) · [📚 全部版本](VERSIONS.md) · [🗞 更新日志](changelog/index.html)
 
-## 📋 逐版更新记录（新 → 旧，共 71 版）
+## 📋 逐版更新记录（新 → 旧，共 72 版）
 
 <details open>
 <summary><b>最近 12 版</b>（默认展开，完整历史见下方折叠区）</summary>
 
 | 版本 | 日期 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|
-| **v4.11.0** | 2026-11-09 | 缺陷补完闭环：wangyou 原创主角回落、ATLAS_ERAS 补 6 个多时代界（覆盖 10→16/38）、文风块 38 界内置兜底 38/38 非空 世界自运转内核修复：性格/理想按 bond·势力覆灭·记忆事件因果迁移（有界低频）并注入主笔提示词 版本同源收口：studio/sw/selftest/181 处 ?v=/页面标题/README/VERSIONS/QUICKSTART 全量对齐 4.11.0，新增独立版本同源验收器 全量回归：JS 语法 249/249、node vm 19/19、KB 6/6、注册表 9/9、文风 38/38、真浏览器 16/16、版本同源 21/21、零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) |
+| **v4.12.0** | 2026-11-09 | 模型无关自适应重做：修正把「开发期测试夹具 agnes 三模型」误当产品边界的认知，产品运行时对玩家模型零限制 修复 auto 只看域名不看模型名 + 单向锁 lite 的缺陷，改为按接口特征+模型名初判、按每轮实际输出双向升降档（连续 2 轮稳定完整→升 full，崩塌→降 lite），自定义域名/中转/本地部署的强模型也能拿到全功能；设置界面文案、README/QUICKSTART/MODEL_WHITELIST 口径同步澄清 新增 t_model_adaptive.cjs（12 项）与 t_model_adaptive_browser.py（8 项）固化验收 全量回归：JS 249/249、node vm 19/19、真浏览器 16/16+8/8+12/12、版本同源 19/19、零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
+| **v4.11.0** | 2026-11-09 | 缺陷补完闭环：wangyou 原创主角回落、ATLAS_ERAS 补 6 个多时代界（覆盖 10→16/38）、文风块 38 界内置兜底 38/38 非空 世界自运转内核修复：性格/理想按 bond·势力覆灭·记忆事件因果迁移（有界低频）并注入主笔提示词 版本同源收口：studio/sw/selftest/181 处 ?v=/页面标题/README/VERSIONS/QUICKSTART 全量对齐 4.11.0，新增独立版本同源验收器 全量回归：JS 语法 249/249、node vm 19/19、KB 6/6、注册表 9/9、文风 38/38、真浏览器 16/16、版本同源 21/21、零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
 | **v4.10.0** | 2026-11-08 | 第三方审查 v4.09.0 全量复现并根治：F1-F12 与 P1-P2 确定性缺陷清零 数据治理：物理清除 413 条源码/提示词回灌、131 条斗破库《大主宰》倒灌、展开 34 条 wangyou 嵌套地点，运行时再过滤，KB 污染归零 38 界按界注册表全补全：界名/画风/氛围/印章/原著主角/大势节点/原著配角五新界与四小说界全部就位 清洗层与持久化、并发、判定器延续 v4.08/v4.09 已验证的稳健底座 全量回归：JS 语法 249/249、数值清洗 5/5、node vm 复现 19/19、KB 加载 6/6、注册表 9/9、正文清洗 15/15，真浏览器零 pageerror | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
 | **v4.09.0** | 2026-11-08 | 把 v4.08.0 第七节列出的全部已知限制，在现有硬约束内做成确定性工程解法 新建 js/number-scrubber.js 数值真值白名单清洗，玩家所见正文确定性根除小模型自编经济/面板数值，23 条正反样本 + 4 变异体全检出并用浏览器真实快照复验 新建 semantic_judge.py 语义判定层，白名单模型做 A/B/C/D 四类二次复核，只追加告警不放宽规则层 新建 t_concurrency.py 平台级并发压测（本地桩，不调模型）5/5 通过；t_persist.py 按存档三分类，38 界真丢失 0 38 界 × 3 步 = 114 次真实模型广度旅程，闭环 6 个问题（含 J-1 修复自身引入的短正文回归，靠复跑探针抓出） 新增 t_scrub_effect.py / t_final_audit.py / t_body_probe.py 诚实量化并全量离线复判，不额外消耗模型请求 验收：297 JS 语法 0 失败、委托 37/37、长程 300 轮、38 界功能与压力探测 0 问题、移动端双视口 0 溢出、正文回归 11/11 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
 | **v4.08.0** | 2026-11-08 | 五条未闭环项攻坚：网络延迟放大器根除（AbortError 误重试 / 超时后二次完整请求 / 主笔并发门闩 / isProcessing 卡死兜底）；新建 SlotRegistry 统一 20+ 处存档键名拼接，修删档残留 / 副档认领摧毁主档 / 清档无效 / 界键恒 default / 面板崩溃 9 项；长时运行三处数组封顶 + 切档关页前强制落盘；移动端 375/414 双视口 4 界面零溢出；判定器升级为真值差分校验（34 条自检 + 17 变异灵敏度全检出）；真实模型复跑修 7 类确定性缺陷（D-27 重演交付动作从未真跑 / 系统块换壳 / 思维链泄漏 / 装备面板块 / 孤立协议标签 / 数值契约 / SW 预缓存漏两模块）。验收：38 界功能与压力探测 0 问题、委托 37/37、长程 300 轮、293 JS 语法 0 失败。详见 DEFECTS-v4.08.0.md 与交付报告。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |

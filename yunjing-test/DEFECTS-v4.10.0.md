@@ -135,3 +135,21 @@
 **保护项（明确豁免，未误伤）**：`changelog/index.html` 里 v3.96.1 历史叙述中的 `?v=4.10.0`、第三方库自身版本号（`?v=1.7.3` / `0.1.18` 等）、js 注释里「v4.10.0 修 XXX」历史修复记录。
 
 **发版终验（收口后）**：本地 `c32cfc3`（tree `e79f35e…`）→ 远端 `dd44fcb`（tree `e79f35e…`）逐 blob 同源；`main` 与 `tag v4.11.0` 同指该 commit；成品包 `git archive` 独立验收（解压→服务→验收器 19/19 + 真浏览器 12/12 + 三页 200）。详见《云境-v4.11.0-交付报告.md》第七节与《云境-v4.11.0-成品交付卡.md》。
+
+### 6.6 模型无关自适应（v4.12.0 · 认知更正 + 真实缺陷修复）
+
+> 用户重申：三个 agnes 模型是**开发方做回归测试的夹具**，不是玩家模型；玩家用自己的、来自各渠道的任意模型，要求「尽可能达到最好的游玩效果」。核对确认产品运行时本就零限制（`MODEL_WHITELIST.md` 原文「绝不注入产品运行时」），前几版交付文档误写成「模型硬上限/锁死 flash」属于认知错误，已更正。
+
+| 编号 | 问题 | 性质 | 修复 | 验证 |
+|---|---|---|---|---|
+| M1 | `initialGuess()` 只看 endpoint 域名、不看玩家填的 model 名 | **真实缺陷**：自建中转/本地部署/新厂商/企业网关上的强模型被误判 lite，砍掉全功能 | 新增 `STRONG_MODEL_HINTS`，初判兼顾接口特征 + 模型名 | `t_model_adaptive.cjs` ①①b；`t_model_adaptive_browser.py` 自定义域名+旗舰=full |
+| M2 | auto **单向锁**：`noteStable` 缓存 lite 7 天、只有崩塌降级、无稳定升档 | **真实缺陷**：未知域名强模型永远升不回 full | `noteStable(reply)` 双向：连续 2 轮结构完整→升 full；`noteCollapse` 崩塌降 lite；换模型重新观察；手动档优先 | `t_model_adaptive.cjs` ③④⑤⑦；真浏览器 lite→full→lite |
+| M3 | 调用点 `noteStable()` 不传回复、连通测试短回复可能污染判定 | 缺陷 | 传真实 `reply` + `!isTest` 保护；`looksCapable` 400 字下限免疫短回复 | `t_model_adaptive.cjs` ⑥⑧⑨ |
+| M4 | 设置界面文案「免费/自定义接口走安全档」把偏见写给玩家 | 体验/口径 | 改为「云境对模型零限制……按每轮实际表现自动升降档」 | 真浏览器文案 2 项 |
+| M5 | 交付报告/交付卡/README/QUICKSTART/MODEL_WHITELIST 口径错误或缺失 | 认知错误 | 更正错误表述 + 加权威声明；历史版本条目保持史实 | 文档审查 |
+
+**新增验收资产**：`t_model_adaptive.cjs`（12/12，node vm 真加载）、`t_model_adaptive_browser.py`（8/8，真 chromium）、`t_model_tier_effect.cjs`（7/7，档位对提示词装配的真实影响：升 full 后世界设定从压缩 2218 字恢复全量原文、参数解锁，lite 压缩仍守铁律）。
+
+**开发中 2 项失败的根因（记录以防误判为产品缺陷）**：Python 测试样本 372 字 < `looksCapable` 的 400 字阈值（vm 样本 415 字）；`configModal` 需 `open()` 后才注入 DOM。修正测试样本与打开面板后全绿，**未降低产品阈值、未改产品逻辑迁就测试**。
+
+**版本**：功能批次升 v4.11.0 → v4.12.0，`scripts/_bump412.mjs` 幂等对齐 181 处 `?v=` + 11 处常量，版本同源 19/19；`t_version_browser.py` 改为动态读 `YJ_VER` 消除写死版本号的隐性债务。全量回归 JS 249/249、node vm 19/19、真浏览器 16/16+8/8+12/12、逐行配对 191 对无误伤、零 pageerror。

@@ -250,7 +250,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.11.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.12.0">
 </head>
 
 <body class="page-changelog">
@@ -283,6 +283,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布 模型" style="--entry-hue:#4aa3a0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.12.0</span>
+                <span class="entry-date">2026-11-09</span>
+            </div>
+            <h3 class="entry-title">模型无关自适应 · 让任意模型都跑到最好的游玩效果</h3>
+            <p class="entry-text">口径澄清：三个 agnes flash 模型只是开发方做回归测试的夹具（仅约束开发期测试脚本），绝非玩家能用的型号限制；产品运行时对玩家模型零限制，各厂商官方/中转/自建网关/本地部署/任意 OpenAI 兼容端点都能填 修复真实缺陷：模型能力自适应旧版 auto 只看 endpoint 域名、不看玩家填的模型名，且单向锁 lite（只有崩塌降级、没有稳定升档），导致跑在自定义域名/中转/本地部署上的强模型被误判为弱模型、砍掉全量预设与辅助功能。现改为按接口特征+模型名初判、按每轮实际输出双向升降档：连续 2 轮结构完整稳定→自动升 full，复读崩塌→立即降 lite，手动档优先、换模型缓存隔离、连通测试短回复不误判 设置界面文案、README 顶部、QUICKSTART、MODEL_WHITELIST 与交付报告/交付卡口径同步更正，历史版本条目保持史实 新增 t_model_adaptive.cjs（12 项）与 t_model_adaptive_browser.py（8 项）固化验收 全量回归：JS 语法 249/249、node vm 19/19、真浏览器端到端 16/16、自适应真浏览器 8/8、版本同源 19/19、零 pageerror</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#c0a85a;">
             <div class="entry-head">
