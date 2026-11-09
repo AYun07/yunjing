@@ -118,3 +118,20 @@
 - `window.YJ_VER`：`4.10.0` → `4.11.0`（`index.html` 同源徽标 + 静态兜底同步）；`changelog/index.html` 新增 v4.11.0 条目、`yunjing-theme.css?v=` 缓存参数同步。
 - 经 Git Data API 兜底推送至 `origin/main`：远端新 commit `2d50d3d…`、`new_tree` `42600129…` 与本地 `52c290f^{tree}` 同源（逐 blob 字节级等价）；`PATCH main` 200、`POST refs/tags/v4.11.0` 201；临时凭据已清理。
 - **发版推送 SOP**：见《云境-v4.11.0-交付报告.md》第 6.2 节——不走 git 协议（网关阻断），走 `api.github.com` + 平台/用户 `ghp_` PAT 或已连接的 GitHub 连接器，blob→tree→commit→PATCH main→POST tag，内容本地读盘、凭据用完即删。
+
+### 6.5 版本同源收口（v4.11.0 成品轮 · 新发现并修复）
+
+> 背景：v4.11.0 首轮发版只改了 `index.html` + changelog 两点即打 tag，未走项目 `VERSIONS.md` 自定的「版本同源」规则。本轮从头审查发现并根治。
+
+| 编号 | 问题 | 性质 | 修复 | 验证 |
+|---|---|---|---|---|
+| V1 | `sw.js SW_VER` 滞留 `yunjing-v4.10.0` | **真实功能缺陷**：PWA 老客户端 activate 阶段不清旧缓存 → 拿不到 v4.11.0 代码 | 换代 `yunjing-v4.11.0` | `t_version_browser.py` sw.js 200 + SW_VER 同号 |
+| V2 | `studio.html` `YJ_VER`/`verDot`/`<title>` 滞留 4.10.0 | 工作室显示旧号、与首页双号不一致 | 全部对齐 4.11.0 | 真浏览器双页一致性 12/12 |
+| V3 | 181 处 `?v=` 缓存参数滞留 4.10.0 | 静态资源缓存击穿未刷新 | 全量对齐，逐行配对审查 189 对仅差版本号 | `t_version_sync.cjs` 19/19；静态资源 155/155 存在 |
+| V4 | `selftest ENGINE_VER`、`number-scrubber` 模块号、两处页面 `<title>` 滞留 | 版本不同源 | 全部对齐 | `t_version_sync.cjs` |
+| V5 | README / VERSIONS / QUICKSTART 抬头与逐版记录缺失 v4.11.0 | 交付文档漂移 | 抬头、计数（83→84 / 70→71）、速查行、详情段、下载链接补齐 | 文档审查 |
+| V6 | 无独立防复发验收（v3.96.1 / v4.11.0 两次踩坑） | 工程治理债 | 新增 `t_version_sync.cjs`（19 项锚点 + 灵敏度反验）与 `t_version_browser.py`（真浏览器 12 项）；`scripts/_align411.mjs` 幂等对齐脚本 | 反向注入旧号抓出 13 项，还原后 19/19 |
+
+**保护项（明确豁免，未误伤）**：`changelog/index.html` 里 v3.96.1 历史叙述中的 `?v=4.10.0`、第三方库自身版本号（`?v=1.7.3` / `0.1.18` 等）、js 注释里「v4.10.0 修 XXX」历史修复记录。
+
+**发版终验（收口后）**：本地 `c32cfc3`（tree `e79f35e…`）→ 远端 `dd44fcb`（tree `e79f35e…`）逐 blob 同源；`main` 与 `tag v4.11.0` 同指该 commit；成品包 `git archive` 独立验收（解压→服务→验收器 19/19 + 真浏览器 12/12 + 三页 200）。详见《云境-v4.11.0-交付报告.md》第七节与《云境-v4.11.0-成品交付卡.md》。
