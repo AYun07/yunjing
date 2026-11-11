@@ -150,7 +150,8 @@ const DynamicWorld = {
       var _a2, _b2, _c, _d;
       const data = await this._readBody(response2.json(), fullMs);
       const msg = (_b2 = (_a2 = data.choices) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.message;
-      return ((_d = (_c = msg == null ? void 0 : msg.content) != null ? _c : msg == null ? void 0 : msg.reasoning_content) != null ? _d : "").trim();
+      /* v4.13.0：不再回退到 reasoning_content —— 推理模型的思考不能当成世界事件解析 */
+      return (window.extractAssistantText ? window.extractAssistantText(msg) : String((msg && msg.content) || "")).trim();
     };
     try {
       const response2 = await doFetch(true);
@@ -166,9 +167,9 @@ const DynamicWorld = {
           firstIdleMs: firstMs,
           idleMs: fullMs,
           extract: (json) => {
-            var _a2;
             const d = json.choices && json.choices[0] && json.choices[0].delta;
-            return d && ((_a2 = d.content) != null ? _a2 : d.reasoning_content) || "";
+            /* v4.13.0：流式只取 content；reasoning_content 不得进入世界事件 */
+            return (d && typeof d.content === "string") ? d.content : "";
           }
         });
         if (text && text.trim()) return text.trim();

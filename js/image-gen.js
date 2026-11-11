@@ -651,7 +651,8 @@ window.StoryImageGen = {
     if (!res.ok) throw new Error(await this._errText(res));
     const data = await withTimeoutMs(res.json(), ms);
     const msg = (_b = (_a = data.choices) == null ? void 0 : _a[0]) == null ? void 0 : _b.message;
-    const text = (_d = (_c = msg == null ? void 0 : msg.content) != null ? _c : msg == null ? void 0 : msg.reasoning_content) != null ? _d : "";
+    /* v4.13.0：不再回退到 reasoning_content（思考里出现的 URL 不是生成结果） */
+    const text = window.extractAssistantText ? window.extractAssistantText(msg) : String((msg && msg.content) || "");
     let m = String(text).match(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/);
     if (m) return m[1];
     m = String(text).match(/https?:\/\/[^\s"'<>]+\.(?:png|jpe?g|webp|gif)(?:\?[^\s"'<>]*)?/i);
@@ -1104,7 +1105,8 @@ ${this._inkExemplar()}
     if (!res.ok) throw new Error(await this._errText(res, "文墨画师请求失败"));
     const data = await withTimeoutMs(res.json(), ms);
     const msg = (_f = (_e = data == null ? void 0 : data.choices) == null ? void 0 : _e[0]) == null ? void 0 : _f.message;
-    return String((_h = (_g = msg == null ? void 0 : msg.content) != null ? _g : msg == null ? void 0 : msg.reasoning_content) != null ? _h : "").trim();
+    /* v4.13.0：不再回退到 reasoning_content（思维链里可能夹带 <svg> 示意，会污染出图） */
+    return String((window.extractAssistantText ? window.extractAssistantText(msg) : (msg && msg.content)) || "").trim();
   },
   /** 从模型回复中提取 SVG：剥代码围栏后取首个 <svg 到末个 </svg>（容错前后杂文） */
   _inkExtractSvg(raw) {

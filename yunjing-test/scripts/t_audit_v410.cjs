@@ -203,17 +203,41 @@ function test_KB() {
   rec("F6 斗破库《大主宰》倒灌", dz.length === 0,
     "倒灌条目 " + dz.length + " ｜ 其中 alwaysInclude " + dzAlways.length);
 
-  // F12：源码 / 系统提示词回灌（复用运行时 KB_isCodeFragment 精确判据，非宽正则误伤）
-  let junk = 0; const junkByGenre = {};
+  // F12：源码 / 系统提示词回灌
+  // v4.13.0 修正用例自身的方法学缺陷：此前这里直接调用**被测函数** KB_isCodeFragment 当判据，
+  //   属循环自证（tautological）——旧过滤器实测对 247 条碎片拦截 0 条，本用例却照样全绿报 0。
+  //   现在改为**独立实现**（不引用生产代码），并额外比对生产过滤器，二者不一致即判失败。
+  const looksLikeCode = (e) => {
+    if (!e || typeof e !== "object") return false;
+    const t = String(e.title || "").trim();
+    const c = String(e.content || "").trim();
+    const cjk = /[\u4e00-\u9fff]/;
+    const frag = t.replace(/^(?:世界观铁律|世界观设定)\s*·\s*/, "");
+    if (/^(?:const\s|let\s|var\s|function\b|=>|if\s*\(|return\b|document\.|window\.|console\.|<\/?script|[\{\}])/.test(frag)) return true;
+    if (/^(?:世界观铁律|世界观设定)\s*·/.test(t) && frag && !cjk.test(frag) && /^[A-Za-z_$][\w$]*$/.test(frag) && !cjk.test(c)) return true;
+    if (!cjk.test(c) && c) {
+      if (/^(?:const|let|var|function|if|return|document\.|window\.|console\.)\b/.test(c)) return true;
+      if (/^[A-Za-z_$][\w$]*\s*[:,=]/.test(c) && /[:=\(\[\{`>]|=>/.test(c)) return true;
+      if (/^[\[\{'`]/.test(c) && /[:=\(\[\{`>]|=>/.test(c) && /[;,}\]\)]\s*$/.test(c)) return true;
+      if (/[;{}]\s*$/.test(c) && /[=\(\)\{\}\[\]]/.test(c) && /[A-Za-z_]/.test(c)) return true;
+    }
+    return false;
+  };
+  let junk = 0, prodJunk = 0; const junkByGenre = {}; const mismatch = [];
   for (const g of genres) {
-    const arr = kb[g] || [];
-    for (const e of arr) {
+    for (const e of (kb[g] || [])) {
       if (!e) continue;
-      if (KB_isCodeFragment(e)) { junk++; junkByGenre[g] = (junkByGenre[g] || 0) + 1; }
+      const mine = looksLikeCode(e);
+      const prod = KB_isCodeFragment(e);
+      if (mine) { junk++; junkByGenre[g] = (junkByGenre[g] || 0) + 1; }
+      if (prod) prodJunk++;
+      if (mine !== prod && mismatch.length < 8) mismatch.push(g + ': "' + String(e.title || "").slice(0, 26) + '" 独立=' + mine + ' 生产=' + prod);
     }
   }
-  rec("F12 源码/提示词回灌知识库", junk === 0,
+  rec("F12 源码/提示词回灌知识库（独立判据）", junk === 0,
     "疑似条目 " + junk + " 条 ｜ 涉及 " + Object.keys(junkByGenre).length + "/" + genres.length + " 界");
+  rec("F12b 生产过滤器与独立判据一致", mismatch.length === 0,
+    "生产命中 " + prodJunk + " 条 ｜ 不一致 " + mismatch.length + (mismatch.length ? " -> " + mismatch.join(" ｜ ") : ""));
 
   // P2 wangyou.ext Array(34) 结构破损
   let nonObj = 0, arrElem = 0;
@@ -270,15 +294,28 @@ function test_docs() {
   rec("F4 knowledge-manager 注释 40 界漂移", true,
     "「40 界」出现 " + forties + " 处（v17~v19 历史 changelog，当时确为 40 界，非运行缺陷）SKIP");
 
-  // P3：_index.json 计数（逐界 title 去重创作口径）与原始创作条目之和一致
-  //     注：运行时加载态含共享层（_common 等）注入，不计入 _index 声明口径，故用 collectRaw 同口径统计
+  // P3：_index.json 计数与生产者（scripts/refresh-kb-index.mjs）口径一致。
+  //     v4.13.0 修正本用例的口径错误：此前这里把 _index 声明值（生产者：**整文件** "title":
+  //     出现次数，按其文件头注释有意涵盖 YJ_CODEX 设定速查 / YJ_GENRE_INDEX 专名索引 /
+  //     YJ_EARTH_FACTS 地球事实 / YJ_SEQUEL 续作段）与 collectRaw（**仅解析 KB 数组**并
+  //     按 title 去重）直接比较——两者是不同集合，此前数值相等纯属巧合。一旦 KB 数据变动，
+  //     本用例就会误报缺陷（实测物理清除 247 条碎片后立刻出现 116 的假差额）。
+  //     现改为按生产者的真实口径复算，并额外报告 KB 条目口径供参考。
   const idx = JSON.parse(read("js/kb/_index.json"));
   const declared = idx.total || idx.count || 0;
-  let rawSum = 0;
-  for (const g of Object.keys(idx.genres || {})) rawSum += collectRaw(g);
-  rec("P3 _index.json 计数与创作条目一致", declared === rawSum,
-    "声明 " + declared + " ｜ 原始创作条目(逐界去重) " + rawSum + " ｜ 差 " + (declared - rawSum)
-    + "（运行时加载态含共享层注入，不计入声明口径）");
+  const countTitlesAll = (p) => {
+    if (!fs.existsSync(p)) return 0;
+    return (fs.readFileSync(p, "utf8").match(/"title"\s*:/g) || []).length;
+  };
+  let prodSum = 0, kbSum = 0;
+  for (const g of Object.keys(idx.genres || {})) {
+    prodSum += countTitlesAll(path.join(ROOT, "js/kb", g + ".core.js"))
+             + countTitlesAll(path.join(ROOT, "js/kb", g + ".ext.js"));
+    kbSum += collectRaw(g);
+  }
+  rec("P3 _index.json 计数与生产口径一致", declared === prodSum,
+    "声明 " + declared + " ｜ 复算(整文件 title) " + prodSum + " ｜ 差 " + (declared - prodSum)
+    + " ｜ 另：KB 数组条目(逐界去重) " + kbSum + "（不同集合，仅参考）");
 }
 
 /* ==================================================================== 汇总 */
