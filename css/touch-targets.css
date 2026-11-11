@@ -1,0 +1,79 @@
+/* 云境 · 移动端触控目标补丁 v1.0.0（v4.13.0）
+ *
+ * 背景（第三方审查 + 真机尺寸实测 375×812）：
+ *   一批可点元素的高度远低于可用性下限，单手操作误触率高。实测最严重的几个：
+ *     · 「身高 / 好感 / 存粮」行内链接   24×16 px
+ *     · 「创作日志 · 独立成册」          113×17 px
+ *     · 版本徽标 ver-badge               104×28 px
+ *     · 大厅快捷键 .xy-q                  99×22 px
+ *     · 顶栏工具键 .top-btn             29–37×42 px
+ *
+ * 策略：**只在窄屏（≤640px）生效**，只抬「最小可点尺寸」，不改视觉层级、配色与排版。
+ *   参考 WCAG 2.2 SC 2.5.8（目标 ≥24×24）与移动平台惯例（≥44×44），此处取 44px 为下限。
+ *   行内文本链接触及不到 44px 高度，用 `::after` 撑出**透明命中层**——
+ *   这是给不能变大的行内元素做触控扩展的标准做法：垂直方向扩展，水平不加宽，
+ *   因此并列的小链接（身高/好感/存粮）不会互相抢点击。
+ */
+
+@media (max-width: 640px) {
+  /* 1) 按钮类：保证 44px 最小高度 */
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  .btn,
+  .btn-solid,
+  .btn-ghost,
+  .top-btn,
+  .quick-btn,
+  .dice-btn,
+  .fate-btn,
+  .sa-btn,
+  .xy-q,
+  .xy-mod,
+  .xy-f,
+  .ws-ctl-btn,
+  .ts-item,
+  .typing-stop,
+  .yj-st-cog,
+  .wiz-exit,
+  .wiz-stance-btn,
+  .char-add-btn,
+  .char-cf-add,
+  .char-cf-edit,
+  .char-del-btn {
+    min-height: 44px;
+  }
+
+  /* 2) 方形图标键：高度达标还不够，宽度也要够 */
+  .top-btn,
+  .sa-btn,
+  .char-cf-add,
+  .char-cf-edit,
+  .char-del-btn {
+    min-width: 44px;
+  }
+
+  /* 3) 行内小链接：撑出透明命中层（垂直扩展、水平不加宽，避免相邻链接互相抢点击） */
+  a:not([class*="card"]):not([class*="world"]):not([class*="ws-"]) {
+    position: relative;
+  }
+  a:not([class*="card"]):not([class*="world"]):not([class*="ws-"])::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 44px;
+    min-height: 44px;
+    transform: translateY(-50%);
+  }
+
+  /* 4) 版本徽标单独收口：它是页脚装饰性链接，直接给足尺寸最稳 */
+  .ver-badge {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}

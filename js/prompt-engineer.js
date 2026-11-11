@@ -223,7 +223,9 @@ window.StoryPromptEngineer = {
     if (!res.ok) throw new Error(await this._errText(res));
     const data = await this._readBody(res.json(), ms);
     const msg = (_h = (_g = data == null ? void 0 : data.choices) == null ? void 0 : _g[0]) == null ? void 0 : _h.message;
-    return String((_j = (_i = msg == null ? void 0 : msg.content) != null ? _i : msg == null ? void 0 : msg.reasoning_content) != null ? _j : "").trim();
+    /* v4.13.0：连通测试/提示词工程调用。这里保留兜底（推理模型只回思考时也要能证明「接口通了」），
+       但一律经安全提取器：内容读起来像原始推演时不会冒充正文。 */
+    return String((window.extractAssistantText ? window.extractAssistantText(msg, { allowReasoningFallback: true }) : (msg && msg.content)) || "").trim();
   },
   /** 连通测试：一句话对话，返回模型回复文本 */
   async testApi(cfgOverride) {

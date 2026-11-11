@@ -1,4 +1,18 @@
-﻿# dev temp scripts (not part of the web app)
+# dev temp scripts (not part of the web app)
+#
+# v4.13.0：补上下划线开头的临时脚本规则。
+#   背景：feat/world-alive-v4 分支的 .gitignore 一直带有下面这 6 条，
+#   但它们**从未合并回 main**。后果是切到 main 后，磁盘上遗留的探针脚本
+#   （_dump*.txt / _t*.js / _probe*.mjs 等）突然全部暴露为「未提交」，
+#   把分支切换、审阅与提交都搅乱（实测一次暴露出 59 个文件）。
+#   这里统一补齐，并覆盖本项目实际会用到的全部扩展名（含 .mjs/.cjs）。
+_*.js
+_*.py
+_*.txt
+_*.json
+_*.mjs
+_*.cjs
+
 check_video_in_project.py
 find_v15.py
 fix_missing*.py

@@ -332,11 +332,13 @@ const StoryInput = {
          并给出下一步动作，而不是甩一段原始报错 */
       const raw = String((err && err.message) || err || "");
       let hint = "本轮现场已还原，指令已放回输入框，可直接重发。";
-      if (/40[13]/.test(raw) || /unauthor|invalid.*key|api key/i.test(raw)) hint = "接口拒绝了这把 Key（401/403）。到「接口设置」核对 API Key 与地址是否属于同一家服务商。";
+      /* v4.13.0：推理模型「只思考没正文」的分诊（见 api-calling-functions.js 文件头） */
+      if (err && err.isReasoningOnly) hint = "这个模型是「推理模型」：它的思考过程占满了输出上限，导致没有正文。到「接口设置」把最大输出 token 调大到 8192 以上（建议 16384；长章 32768），或换用非推理模型。为保证正文纯净，系统不会把思考过程当成小说正文。";
+      else if (/40[13]/.test(raw) || /unauthor|invalid.*key|api key/i.test(raw)) hint = "接口拒绝了这把 Key（401/403）。到「接口设置」核对 API Key 与地址是否属于同一家服务商。";
       else if (/404|model.*not.*(exist|found)|does not exist/i.test(raw)) hint = "模型名不存在（404）。到「接口设置」点「拉取模型列表」，从列表里选一个可用模型。";
       else if (/429|rate.?limit|quota/i.test(raw)) hint = "触发限流或余额不足（429）。等一分钟再试，或换一把 Key。";
       else if (/超时|timeout|AbortError|无任何数据返回/i.test(raw)) hint = "接口长时间没有回任何内容。检查网络/中转站，或到「接口设置」把超时秒数调大（长章建议 600）。";
-      else if (/Failed to fetch|NetworkError|network/i.test(raw)) hint = "请求发不出去（网络中断 / 跨域 / 地址写错）。确认地址以 /v1 结尾且能在外网访问。";
+      else if (/Failed to fetch|NetworkError|network|CORS|Access-Control/i.test(raw)) hint = "请求发不出去。常见两种原因：①地址写错（确认以 /v1 结尾、外网可访问）；②**该接口不允许浏览器跨域（CORS）**——云境是纯前端应用，只有开放跨域的接口/中转站才能直连；官方直连（如 api.openai.com、integrate.api.nvidia.com 等）通常会被浏览器拦下，请在「接口设置」改用支持跨域的中转站地址。";
       else if (/5\d\d/.test(raw)) hint = "服务端 5xx，是对方接口的问题。稍后重试，或换一个模型/中转。";
       window.StoryResponseHandler.renderSystemMessage(`⚠ AI 调用失败：${raw}\n${hint}`, "error");
     } finally {

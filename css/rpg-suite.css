@@ -1,13 +1,15 @@
-/* RPG Suite v2.1.0 — 网游三部曲共用皮肤（v4.05.0）
+/* RPG Suite v2.2.0 — 网游大世界共用皮肤（v4.13.0）
  * 七标签角色面板 / 四态 / 品级色阶 / HP·MP·EXP 动效 / 扫描线底纹
- * 三界通过 body.theme-<genre> 下的 --rpg-accent 区分主题色。
- * 保留并增强 daobanshenhua/zonghengtianxia/tianxiawushuang-style.css 里的 .rpg-* 基础类。
- */
-
-/* ---------------- 主题色：三界各自不同 ---------------- */
-body.theme-daobanshenhua   { --rpg-accent: #79c0e0; --rpg-accent-2: #4a90b8; --rpg-accent-soft: #79c0e022; }
-body.theme-zonghengtianxia { --rpg-accent: #8fd0c0; --rpg-accent-2: #4fa08c; --rpg-accent-soft: #8fd0c022; }
-body.theme-tianxiawushuang { --rpg-accent: #d9a35e; --rpg-accent-2: #b87a30; --rpg-accent-soft: #d9a35e22; }
+ *
+ * v4.13.0 清理死规则（第三方审查 F3）：
+ *   旧版此处有三条 `body.theme-daobanshenhua` / `body.theme-zonghengtianxia`
+ *   / `body.theme-tianxiawushuang` 的主题色规则。经全仓复核，它们**从未生效**：
+ *     ① 三个界名（道半神话 / 纵横天下 / 天下无双）已不在 38 界清单中；
+ *     ② 全仓只有本文件定义过 `--rpg-accent:`，没有任何 JS 往 `body` 加过这三个类；
+ *     ③ 应用的主题机制是把 `theme-<genre>` 加在**页面容器**（#page-studio）上，
+ *        并且走的是 `data-theme` 属性（见 js/lobby-themes.js），与 `body.theme-*` 类均不匹配。
+ *   因 `.rpg-panel` 取色为 `var(--rpg-accent, #c9a86a)`（自带兜底），删除这三条**行为中性**。
+ *   如需按界配色，请以 `#page-studio.theme-<genre>` 选择器 + 本文件的 --rpg-accent 变量扩展。 */
 
 /* ---------------- 面板根 / 变量 / 扫描线 ---------------- */
 .rpg-panel {

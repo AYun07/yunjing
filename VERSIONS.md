@@ -2,21 +2,22 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **86** 个版本，从 `v3.55.7` 到 `v4.12.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **87** 个版本，从 `v3.55.7` 到 `v4.13.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v4.12.1 口径）**：首行 **v4.12.1 为当前版本**；其余 **85 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v4.13.0 口径）**：首行 **v4.13.0 为当前版本**；其余 **86 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；86 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；87 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
 
-## 版本速查（新→旧 · 首行为当前版本，其余 85 版为旧版本）
+## 版本速查（新→旧 · 首行为当前版本，其余 86 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
-| **v4.12.1** | 2026-11-09（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
+| **v4.13.0** | 2026-11-11（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.13.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.13.0) |
+| **v4.12.1** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
 | **v4.12.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
 | **v4.11.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) |
 | **v4.10.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
@@ -105,7 +106,22 @@
 
 ---
 
-## v4.12.1 · 2026-11-09（当前版本）
+## v4.13.0 · 2026-11-11（当前版本）
+
+> **相比 v4.12.1 的变化**：推理模型防护 · 数据治理闭环 · 移动端触达；以真 API 当玩家实玩（大厅 → 建角 → 原著界三态立场 → 真出文 → 存档重载）时发现：推理模型的 provider 级 `reasoning_content` 会被旧逻辑兜底成正文与情节选项，并可能经变量 AI / 动态世界写进存档。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.12.1...v4.13.0)
+
+**本版做了什么**
+
+推理模型防护 + 数据治理闭环 + 移动端触达。
+
+- **P0 · 推理模型思维链泄漏**：推理模型把思考写在 provider 级字段 `reasoning_content`（不是正文里的 `<thinking>` 标签，故 `stripAIThink` 正则管不到），而思考与正文**共享 `max_tokens`**——预算被思考吃掉时 `content` 为空（实测 `glm-5.3-flash`：`max_tokens=400` → `content` 0 字 / `reasoning_tokens=400` / `finish=length`）。旧逻辑在 `content` 为空时用 `reasoning_content` 兜底，导致**整段英文思维链被当成正文与情节选项**（实测出现「Reconciliation A/B/C」推演与「①陆青崖 is 太玄门外门记名弟子 NOW」这类选项）；同一兜底散落在 `variable-ai` / `dynamic-world` / `prompt-engineer` / `image-gen` / `phone-panel` 共 8 处以上，思维链还可能被当成**变量与世界事件写进存档**。新增 `extractAssistantText` / `looksLikeRawReasoning` / `isReasoningModel` 三个全局判据：`content` 为空一律不拿思维链顶替；推理模型自动抬高出力下限至 8192；空正文时翻倍预算重试一次；仍为空则抛出可读中文错误并写入失败分诊。仅保留「中转站只回 reasoning 且内容不像推演」这一条窄兜底。
+- **数据治理闭环**：**物理清除 33 界 247 条源码碎片**（78 个 KB 文件语法全通过），并重做 `KB_isCodeFragment` 判据——旧版只看 `title` 且用白名单 token，而实际 title 被切碎脚本截断成 20 字符（`defaultDynamicWorl`），对 247 条碎片**拦截 0 条（0.0%）**；新版改为 title + content 双判的反向判据。验收用例 `t_audit_v410.cjs` 的 F12 项**改用独立实现**（旧用例直接调用被测函数当判据，属循环自证，故一直误报「0 条」全绿）。`js/kb/_index.json` 按生成脚本重算。
+- **文档与脚手架订正**：`names.js` 头部「36 界 / 2574 条」订正为实测「38 界 / 3004 条」，并删去不可自动校验的「每条都能在该界知识库里 grep 到」绝对表述；`sw.js` 注释「phone-* 全库零引用」失实（`phone-panel.js` 确实动态加载三者），**并补回预缓存**（此前离线必 404）；`t_atlas_eras.cjs` 改用 `__dirname` 解析路径（原先只在仓库根可跑）；`.gitignore` 补 `_*.mjs` / `_*.cjs` 及下划线临时脚本规则（这几条只在 feat 分支存在、从未合并回 main，导致切到 main 后一次暴露 59 个遗留脚本）。
+- **视觉与触控**：删除 3 条从未生效的死 CSS 主题规则（旧选择器选中 `body` 且界名已下线，应用实际把 `theme-<genre>` 加在页面容器上）；移动端触控目标 `top-btn` / `back-link` 由 42 → 44px，新增 `css/touch-targets.css` 窄屏补丁（行内小链接用 `::after` 撑命中层）；清洗器剥离面板后不再留下悬空标点（「他的 ，快撑不住了。」→「他的快撑不住了。」，判据收窄到「汉字 + 空格 + 顿逗号 + 汉字」不误伤合法逗号）。
+
+---
+
+## v4.12.1 · 2026-11-09
 
 > **相比 v4.12.0 的变化**：真实玩家闭环 · 六类可见问题修复；以限定测试夹具 agnes-3.0-flash 完成大厅 → 接口配置 → 开局 → 三轮真实出文的全链路验证，逐屏截图目视审查。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.12.1)
 
