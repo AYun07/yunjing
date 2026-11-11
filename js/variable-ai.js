@@ -164,7 +164,8 @@ const VariableAI = {
       var _a2, _b2, _c2, _d;
       const data = await this._readBody(response2.json(), fullMs);
       const msg = (_b2 = (_a2 = data.choices) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.message;
-      const content = (_d = (_c2 = msg == null ? void 0 : msg.content) != null ? _c2 : msg == null ? void 0 : msg.reasoning_content) != null ? _d : "";
+      /* v4.13.0：不再回退到 reasoning_content —— 推理模型的思考不能当变量写进存档 */
+      const content = window.extractAssistantText ? window.extractAssistantText(msg) : String((msg && msg.content) || "");
       return (content || "").trim().slice(0, AUX_MAX);
     };
     /* v3.55.14 辅助AI输出硬上限：防个别模型无视 max_tokens 无限复读（曾实测 197KB/254KB 失控） */
@@ -184,9 +185,9 @@ const VariableAI = {
           idleMs: fullMs,
           maxChars: AUX_MAX,
           extract: (json) => {
-            var _a2;
             const d = json.choices && json.choices[0] && json.choices[0].delta;
-            return d && ((_a2 = d.content) != null ? _a2 : d.reasoning_content) || "";
+            /* v4.13.0：流式只取 content；reasoning_content 不得进入变量解析 */
+            return (d && typeof d.content === "string") ? d.content : "";
           }
         });
         if (text && text.trim()) return text.trim();

@@ -151,6 +151,67 @@ window.stripAIThink = function(text) {
   _thinkCacheKeys.push(s); _thinkCacheMap[s] = out;
   return out;
 };
+
+/* ==================== v4.13.0 · 推理模型（reasoning）防护 ====================
+   发现来源：第三方全量审查 + 真实玩家实测（z-ai/glm-5.3-flash / Nemotron / o 系等）。
+
+   问题：推理模型把思考写在 **provider 级字段 reasoning_content**，而不是正文里的
+   `<thinking>` 标签——所以 stripAIThink() 的正则完全管不到它。而思考与正文**共享
+   max_tokens**，预算被思考吃掉时 content 就是空的。实测 glm-5.3-flash：
+     max_tokens=400  → content 0 字 / reasoning_tokens=400 / finish=length
+   旧代码在 content 为空时用 reasoningBuf / reasoning_content 兜底，后果是：
+     ① 英文思维链被当成**正文**渲染（实测出现「Reconciliation A/B/C」整段推演）；
+     ② 思维链里的编号行被解析成**情节走向选项**（①陆青崖 is 太玄门外门记名弟子 NOW）；
+     ③ 同一兜底散落在 8 处以上（variable-ai / dynamic-world / prompt-engineer /
+        image-gen / phone-panel），思维链还会被当成**变量与世界事件写进存档**。
+   这与「模型无关自适应」的产品承诺直接冲突，故按 P0 处理。
+
+   策略：content 为空时**一律不拿思维链顶替**；改由调用方①给推理模型抬高出力下限、
+   ②在空正文时翻倍预算重试一次、③仍为空则明确报错，让玩家知道发生了什么。
+   仅在「中转站只回 reasoning_content 且内容读起来不像推演」时才允许兜底（默认关）。 */
+
+/* 判断文本是否「像未加标签的原始思维链」。宁缺毋滥：不确定就当思维链。 */
+window.looksLikeRawReasoning = function (text) {
+  var s = String(text == null ? "" : text).trim();
+  if (!s) return false;
+  if (s.length > 4000) return true;                        /* 超长推演几乎必是思维链 */
+  var head = s.slice(0, 900);
+  /* 英文推演开场（本应用是中文创作场景，正文不该以这些开头） */
+  if (/^(?:we need|we must|let me|let's|i need|i should|i'll|first,? i|okay|hmm|so how|the user wants|reconciliation|analysis:|reasoning:|step \d)/i.test(head)) return true;
+  if (/\b(?:the user wants|we need to|let me (?:write|think|reconsider|check)|reconciliation [abc]|must avoid|clich[eé]|max_tokens|system prompt|输出要求)\b/i.test(head)) return true;
+  /* 中英混排：中文语境里成段英文推演 */
+  var cjk = (s.match(/[\u4e00-\u9fff]/g) || []).length;
+  var latin = (s.match(/[A-Za-z]/g) || []).length;
+  if (cjk > 0 && latin > cjk * 1.5 && latin > 120) return true;
+  /* 纯英文长文本（本应用全中文） */
+  if (cjk === 0 && latin > 200) return true;
+  return false;
+};
+
+/* 已知推理模型家族：content 可能为空，且需要更大的输出预算。
+   仅用于「抬高出力下限 / 空正文时重试」，不影响任何路由决策。 */
+window.isReasoningModel = function (name) {
+  var n = String(name || "").toLowerCase().trim();
+  if (!n) return false;
+  return /(?:^|[\/\-_.])(?:o1|o3|o4|o5)(?:$|[\-_.])|reason|thinking|(?:^|[\/\-_.])r1(?:$|[\-_.])|qwq|glm-?[5-9]|kimi-k2|nemotron|deepseek-(?:r\d|v[4-9])|gpt-5|magistral|seed-oss|step-?5|minimax-m[2-9]|grok-[4-9]|ernie-?[5-9]/.test(n);
+};
+
+/* 统一正文提取：content 优先；**绝不用未加标签的思维链顶替正文**。
+   opts.allowReasoningFallback=true 时才在「内容不像推演」的前提下兜底（默认关）。 */
+window.extractAssistantText = function (msg, opts) {
+  if (!msg || typeof msg !== "object") return "";
+  var c = msg.content;
+  if (Array.isArray(c)) {
+    c = c.map(function (p) { return typeof p === "string" ? p : (p && (p.text || p.content)) || ""; }).join("");
+  }
+  if (typeof c === "string" && c.trim()) return window.stripAIThink(c);
+  var r = typeof msg.reasoning_content === "string" ? msg.reasoning_content : "";
+  if (!r.trim()) return "";
+  if (opts && opts.allowReasoningFallback && !window.looksLikeRawReasoning(r)) {
+    return window.stripAIThink(r);
+  }
+  return "";
+};
 async function readSSEStream(response, opts = {}) {
   const { onDelta, extract, idleMs = 3e5, firstIdleMs } = opts;
   /* v3.55.14 防跑飞：辅助AI（变量/舞台/记忆）在部分模型上会无视 max_tokens 无限复读，
@@ -309,7 +370,7 @@ async function fetchGeminiModels(baseEndpoint, apiKey) {
   }
   return [];
 }
-async function callOpenAI(messages, opts = {}, cfgOverride) {
+async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
   var _a, _b;
   const fw = window.storyFramework;
   const cfg = cfgOverride || fw.apiConfig;
@@ -365,9 +426,14 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
           if (!sawContent && typeof d.reasoning_content === "string") reasoningBuf += d.reasoning_content;
           return "";
         },
-        finish: (f) => f && f.trim() ? f : reasoningBuf
+        /* v4.13.0：旧实现 `finish: (f) => f && f.trim() ? f : reasoningBuf` 会在
+           content 为空时把**原始思维链**当正文交出去（详见文件头「推理模型防护」）。
+           现在只有「内容读起来不像推演」时才兜底，否则返回空，交由上层抬预算重试。 */
+        finish: (f) => (f && f.trim()) ? f : (reasoningBuf && !window.looksLikeRawReasoning(reasoningBuf) ? reasoningBuf : "")
       });
       if (full && full.trim()) return window.stripAIThink(full);
+      /* 空正文：可能是推理模型把预算耗在思考上，记下以便上层抬预算重试 */
+      if (reasoningBuf) _emptyContentReasoningFlag = true;
     } else {
       return parseOpenAIJson(await withTimeoutMs(response.json(), fullMs));
     }
@@ -385,6 +451,48 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
     }
   }
   return await callOpenAINonStream(messages, cfg, fullEndpoint, fullMs, opts);
+}
+
+/* v4.13.0 · 主笔与通用调用的「推理模型包装层」（详见文件头「推理模型防护」）。
+   ① 已知推理模型 → 抬高出力下限（思考与正文共享 max_tokens，给太小必然「只思考不落笔」）；
+   ② 正文为空且本次确实收到过 reasoning_content → 翻倍预算重试一次；
+   ③ 仍为空 → 抛出可读错误，**绝不把思维链当正文**交给下游。 */
+var _emptyContentReasoningFlag = false;
+async function callOpenAI(messages, opts = {}, cfgOverride) {
+  const cfg = cfgOverride || (window.storyFramework && window.storyFramework.apiConfig) || {};
+  const baseMax = Number((opts && opts.maxTokens) || cfg.maxTokens || 16384);
+  const reasonModel = window.isReasoningModel(cfg.model);
+  const effMax = reasonModel ? Math.max(baseMax, 8192) : baseMax;
+  const run = async (mt) => {
+    _emptyContentReasoningFlag = false;
+    return await callOpenAIOnce(messages, Object.assign({}, opts, { maxTokens: mt }), cfgOverride);
+  };
+  let out = await run(effMax);
+  if (typeof out === "string" && out.trim()) return out;
+  const hadReasoning = _emptyContentReasoningFlag;
+  let retryErr = null;
+  if (reasonModel && effMax < 32768) {
+    try {
+      out = await run(Math.min(effMax * 2, 32768));
+      if (typeof out === "string" && out.trim()) return out;
+    } catch (e) {
+      retryErr = e;
+    }
+  }
+  /* 重试遇到真正的接口/超时错误时，那个错误比「只思考没正文」更可操作，优先抛出 */
+  if (retryErr) {
+    const nm = String((retryErr && retryErr.name) || "");
+    if (retryErr.isHttpError || nm === "AbortError" || nm === "TimeoutError") throw retryErr;
+  }
+  if (hadReasoning || reasonModel) {
+    const e = new Error(
+      "模型只输出了思考过程、没有正文（reasoning_content 占满了输出上限）。"
+      + "推理模型的「思考」与「正文」共享 max_tokens：请在接口设置里把最大输出 token 调大"
+      + "（建议 8192 以上），或换用非推理模型。系统不会把思考过程当成正文。");
+    e.isReasoningOnly = true;
+    throw e;
+  }
+  return out;
 }
 async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts) {
   var _a, _b;
@@ -411,9 +519,16 @@ async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts)
   return parseOpenAIJson(await withTimeoutMs(response.json(), timeoutMs));
 }
 function parseOpenAIJson(data) {
-  var _a, _b, _c, _d;
+  var _a, _b;
   const msg = (_b = (_a = data.choices) == null ? void 0 : _a[0]) == null ? void 0 : _b.message;
-  return window.stripAIThink((_d = (_c = msg == null ? void 0 : msg.content) != null ? _c : msg == null ? void 0 : msg.reasoning_content) != null ? _d : "");
+  /* v4.13.0：旧实现 `msg.content ?? msg.reasoning_content` 会把 reasoning_content
+     当正文（content 为 null 时）。现在统一走 extractAssistantText —— 只有内容读起来
+     不像推演时才兜底（详见文件头「推理模型防护」）。 */
+  const out = window.extractAssistantText(msg, { allowReasoningFallback: true });
+  if (!out && msg && typeof msg.reasoning_content === "string" && msg.reasoning_content.trim()) {
+    _emptyContentReasoningFlag = true;
+  }
+  return out;
 }
 async function callGemini(messages, opts = {}, cfgOverride) {
   var _a, _b;
@@ -749,5 +864,7 @@ async function testApiConnection(endpoint, apiKey, model, type, maxTokens) {
   }
   const data = await withTimeoutMs(response.json(), 3e4);
   const msg = (_d = (_c = data.choices) == null ? void 0 : _c[0]) == null ? void 0 : _d.message;
-  return (_f = (_e = msg == null ? void 0 : msg.content) != null ? _e : msg == null ? void 0 : msg.reasoning_content) != null ? _f : "";
+  /* v4.13.0：连通测试。保留兜底（推理模型只回思考时也要能判定「接口通了」），
+     但经安全提取器，内容像原始推演时不会冒充模型回复。 */
+  return window.extractAssistantText(msg, { allowReasoningFallback: true });
 }

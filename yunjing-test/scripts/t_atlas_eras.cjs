@@ -3,9 +3,13 @@
 const fs = require("fs");
 const vm = require("vm");
 const assert = require("assert");
+const path = require("path");
 
-const ROOT = process.cwd();
-const erasSrc = fs.readFileSync(ROOT + "/js/atlas-eras.js", "utf8");
+// v4.13.0 修：原用 process.cwd() 当仓库根，只有在仓库根目录启动才跑得起来
+// （从别处执行会 ENOENT 找 …/js/atlas-eras.js，看起来像产品缺陷，其实是脚手架脆弱）。
+// 现改为按脚本自身位置解析：yunjing-test/scripts/ → 上两级 = 仓库根。
+const ROOT = path.resolve(__dirname, "..", "..");
+const erasSrc = fs.readFileSync(path.join(ROOT, "js", "atlas-eras.js"), "utf8");
 
 // 1) 加载真实 ATLAS_ERAS
 const sandbox = { window: {}, console };

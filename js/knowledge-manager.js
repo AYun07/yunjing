@@ -10,14 +10,33 @@ const KB_GENRE = new URLSearchParams(location.search).get("genre") || "free";
    行」形态才剔除。判据刻意收窄到 title 前缀 + 明确 JS token，避免误伤
    「速查 / 条文汇编 / 总纲 / 档案」这类 content 里恰好引用了字段名的合法设定文本。
    数据文件本身不物理删除（可逆、可审计），过滤层同时兜住未来再次生成的同类脏数据。 */
+/* v4.13.0 · 判据重做（第三方审查 F12 复核）。
+   旧版为什么形同虚设：① 只看 title，不看 content —— 而 content 才是 JS 语句；
+   ② 用「白名单 token」判断，且白名单写的是完整串 `defaultDynamicWorldPrompt`，
+      实际 title 被切碎脚本**截断成 20 字符**（`defaultDynamicWorl`）→ 永远匹配不上。
+   实测：对 247 条「纯代码无中文」碎片，旧判据拦截 0 条（0.0%）。
+   新版改为**反向判据**：不枚举坏 token，而是要求「规则类条目的标题必须是人类可读短语」，
+   并同时检查 content。宁可用 title+content 双判可读性，也不依赖易漏的白名单。 */
 function KB_isCodeFragment(entry) {
   if (!entry || typeof entry !== "object") return false;
   var t = String(entry.title || "").trim();
-  /* 必须形如「世界观铁律 · <代码>」或「世界观设定 · <代码>」 */
-  if (!/^(?:世界观铁律|世界观设定)\s*·/.test(t)) return false;
+  var c = String(entry.content || "").trim();
+  var hasCJK = /[\u4e00-\u9fff]/.test(c);
   var frag = t.replace(/^(?:世界观铁律|世界观设定)\s*·\s*/, "");
-  /* 片段必须是明确的 JS 源码 token（被截断的源码行） */
-  return /^(?:const\s|let\s|var\s|function\b|=>|defaultSystemPrompt|defaultDynamicWorldPrompt|getElementById|document\.|window\.|onInit\b|on[A-Z]|build[A-Z]|[A-Za-z_]+\w*StoryConfig|[A-Za-z_]+\w*\s*[:=]\s*[\(\{`]|[A-Za-z_]+\w*\s*\(|if\s*\(|return\b|[\{\}])/.test(frag);
+  /* ① 标题本身就是一句 JS 语句 */
+  if (/^(?:const\s|let\s|var\s|function\b|=>|if\s*\(|return\b|document\.|window\.|console\.|<\/?script|[\{\}])/.test(frag)) return true;
+  /* ② 标题形如「世界观铁律 · <纯 JS 标识符>」且内容无中文
+        （合法条目如「世界观设定 · 诺登斯 Nodens」的内容一定有中文说明） */
+  if (/^(?:世界观铁律|世界观设定)\s*·/.test(t) && frag && !/[\u4e00-\u9fff]/.test(frag)
+      && /^[A-Za-z_$][\w$]*$/.test(frag) && !hasCJK) return true;
+  /* ③ content 是一段裸 JS（无中文 + 具备语句/表达式形状）——补上旧判据完全没看 content 的洞 */
+  if (!hasCJK && c) {
+    if (/^(?:const|let|var|function|if|return|document\.|window\.|console\.)\b/.test(c)) return true;
+    if (/^[A-Za-z_$][\w$]*\s*[:,=]/.test(c) && /[:=\(\[\{`>]|=>/.test(c)) return true;
+    if (/^[\[\{'`]/.test(c) && /[:=\(\[\{`>]|=>/.test(c) && /[;,}\]\)]\s*$/.test(c)) return true;
+    if (/[;{}]\s*$/.test(c) && /[=\(\)\{\}\[\]]/.test(c) && /[A-Za-z_]/.test(c)) return true;
+  }
+  return false;
 }
 /* v3.53.0：按「原创设计」需要补齐分类——势力与组织分开（势力有地盘与立场，组织偏职能），
    道具与技能/功法分开（一个拿在手上，一个会长在人身上），另补血脉、种族、关系、伏笔。
