@@ -143,7 +143,15 @@ const VariableAI = {
     const full = /\/(chat\/completions|completions)$/.test(base) ? base : `${base}/chat/completions`;
     const fullMs = this._toMs(cfg.timeout, 90);
     const firstMs = Math.min(6e4, fullMs);
-    const doFetch = (stream) => {
+    /* v4.14.0：登记官（变量AI / 主笔兜底）也要给推理模型留出「思考」的额度。
+       实测缺陷：nvidia/nemotron-3-ultra-550b-a55b 走主笔兜底时 maxTokens 被写成 2048，
+       推理模型先思考、把预算吃光 → content 为空 → 结构完整返回的正文里
+       伏笔/道具等条目**静默登记不上**（100 轮长会话中两者全程为 0，
+       而人物/关系/历史因主笔自带变量块而正常）。
+       修法：① 推理模型把额度抬到至少 8192；② 正文为空时翻倍额度重试一次。 */
+    const reasonModel = window.isReasoningModel ? !!window.isReasoningModel(cfg.model) : false;
+    const baseMax = cfg.maxTokens || 4096;
+    const doFetch = (stream, maxTok) => {
       var _a2;
       return this.fetchWithTimeout(full, {
         method: "POST",
@@ -155,7 +163,7 @@ const VariableAI = {
           model: cfg.model,
           messages,
           temperature: (_a2 = cfg.temperature) != null ? _a2 : 0.2,
-          max_tokens: cfg.maxTokens || 4096,
+          max_tokens: maxTok,
           ...stream ? { stream: true } : {}
         })
       }, stream ? firstMs : fullMs);
@@ -164,45 +172,63 @@ const VariableAI = {
       var _a2, _b2, _c2, _d;
       const data = await this._readBody(response2.json(), fullMs);
       const msg = (_b2 = (_a2 = data.choices) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.message;
-      /* v4.13.0：不再回退到 reasoning_content —— 推理模型的思考不能当变量写进存档 */
+      /* v4.14.0：不再回退到 reasoning_content —— 推理模型的思考不能当变量写进存档 */
       const content = window.extractAssistantText ? window.extractAssistantText(msg) : String((msg && msg.content) || "");
       return (content || "").trim().slice(0, AUX_MAX);
     };
     /* v3.55.14 辅助AI输出硬上限：防个别模型无视 max_tokens 无限复读（曾实测 197KB/254KB 失控） */
     const AUX_MAX = 20000;
-    try {
-      const response2 = await doFetch(true);
-      if (!response2.ok) {
-        const t = await this._readBody(response2.text(), 15e3).catch(() => "");
-        const e = new Error(`变量AI请求失败: ${response2.status} ${response2.statusText} ${t.slice(0, 180)}`);
-        e.isHttpError = true;
-        throw e;
+    /* v4.14.0：两轮尝试。第 2 轮把额度翻倍——推理模型常见的「思考吃光预算」能被这一轮救回。 */
+    const attempts = reasonModel ? 2 : 1;
+    let lastEmpty = "";
+    for (let ai = 0; ai < attempts; ai++) {
+      const maxTok = Math.min(
+        ai === 0 ? Math.max(baseMax, reasonModel ? 8192 : baseMax) : Math.max(baseMax, reasonModel ? 8192 : baseMax) * 2,
+        65536
+      );
+      try {
+        const response2 = await doFetch(true, maxTok);
+        if (!response2.ok) {
+          const t = await this._readBody(response2.text(), 15e3).catch(() => "");
+          const e = new Error(`变量AI请求失败: ${response2.status} ${response2.statusText} ${t.slice(0, 180)}`);
+          e.isHttpError = true;
+          throw e;
+        }
+        const ct = response2.headers && response2.headers.get && response2.headers.get("content-type") || "";
+        if (/text\/event-stream/i.test(String(ct)) && response2.body && response2.body.getReader && window.readSSEStream) {
+          const text = await window.readSSEStream(response2, {
+            firstIdleMs: firstMs,
+            idleMs: fullMs,
+            maxChars: AUX_MAX,
+            extract: (json) => {
+              const d = json.choices && json.choices[0] && json.choices[0].delta;
+              /* v4.14.0：流式只取 content；reasoning_content 不得进入变量解析 */
+              return (d && typeof d.content === "string") ? d.content : "";
+            }
+          });
+          if (text && text.trim()) return text.trim();
+          lastEmpty = "流式返回空正文";
+        } else {
+          const got = await parseJson(response2);
+          if (got && got.trim()) return got;
+          lastEmpty = "非流式返回空正文";
+        }
+      } catch (e) {
+        if (e && e.isHttpError) throw e;
       }
-      const ct = response2.headers && response2.headers.get && response2.headers.get("content-type") || "";
-      if (/text\/event-stream/i.test(String(ct)) && response2.body && response2.body.getReader && window.readSSEStream) {
-        const text = await window.readSSEStream(response2, {
-          firstIdleMs: firstMs,
-          idleMs: fullMs,
-          maxChars: AUX_MAX,
-          extract: (json) => {
-            const d = json.choices && json.choices[0] && json.choices[0].delta;
-            /* v4.13.0：流式只取 content；reasoning_content 不得进入变量解析 */
-            return (d && typeof d.content === "string") ? d.content : "";
-          }
-        });
-        if (text && text.trim()) return text.trim();
-      } else {
-        return await parseJson(response2);
+      const response = await doFetch(false, maxTok);
+      if (!response.ok) {
+        const t = await this._readBody(response.text(), 15e3).catch(() => "");
+        throw new Error(`变量AI请求失败: ${response.status} ${response.statusText} ${t.slice(0, 180)}`);
       }
-    } catch (e) {
-      if (e && e.isHttpError) throw e;
+      const got2 = await parseJson(response);
+      if (got2 && got2.trim()) return got2;
+      lastEmpty = "非流式返回空正文";
     }
-    const response = await doFetch(false);
-    if (!response.ok) {
-      const t = await this._readBody(response.text(), 15e3).catch(() => "");
-      throw new Error(`变量AI请求失败: ${response.status} ${response.statusText} ${t.slice(0, 180)}`);
-    }
-    return await parseJson(response);
+    /* 两轮都空：明确报出原因，别让登记静默失败（旧的静默路径会让伏笔/道具一直为 0 且无人察觉） */
+    const e3 = new Error(`变量AI${lastEmpty}（已重试 ${attempts} 次）。若用推理模型，请到「接口设置」把最大输出 token 调大到 8192 以上。`);
+    e3.isReasoningOnly = reasonModel;
+    throw e3;
   },
   /** 测试第三接口连通性（cfgOverride 支持未保存的表单值） */
   async testVarApi(cfgOverride) {
@@ -396,7 +422,9 @@ const VariableAI = {
       endpoint: a.endpoint,
       apiKey: a.apiKey,
       model: a.model,
-      maxTokens: 1200,
+      /* v4.14.0：推理模型要留出「思考」额度（同登记官通道）。
+         旧值 1200 对推理模型必然被思考吃光 → 前情提要静默为空。 */
+      maxTokens: (window.isReasoningModel && window.isReasoningModel(a.model)) ? 8192 : 1200,
       temperature: 0.3,
       timeout: 90
     };

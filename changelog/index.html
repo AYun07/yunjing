@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.13.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.14.0">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,26 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 修复 跨域 玩家验证" style="--entry-hue:#4aa3a0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.14.0</span>
+                <span class="entry-date">2026-11-11</span>
+            </div>
+            <h3 class="entry-title">跨域彻底解决 · 本地代理 · 首次配置崩溃修复</h3>
+            <p class="entry-text"><b>① 彻底解决「官方接口在浏览器里用不了」这个老问题。</b>云境是纯前端应用，浏览器只允许直连<b>返回跨域许可</b>的接口；而 <code>integrate.api.nvidia.com</code>、<code>api.openai.com</code>、<code>api.anthropic.com</code> 这类官方端点不返回该头，玩家只看到「请求发不出去」，根本不知道是被同源策略挡了。这不是云境的 bug，但<b>没有后端就绕不过去</b>——现在项目自带一条零依赖的本地转发通道：新增 <code>tools/cors-proxy.mjs</code>（只用 Node 内置模块，只监听 127.0.0.1，支持流式 SSE 逐块透传、带退避重试、上游主机白名单）与 <code>start-proxy-windows.bat</code> / <code>start-proxy-mac.command</code> 启动器；「接口设置」新增「🛡 本地代理」区块，可一键把接口地址包成 <code>&lt;代理&gt;/&lt;原地址&gt;</code>、亦可一键还原直连。配套新增 <code>js/cors-guard.js</code>：保存配置时对已知不给跨域头的主机预警；连通测试失败时改用<b>真探测</b>把原因细分成「跨域被拦 / Key 错 / 模型名错 / 限流 / 服务端 5xx / 超时 / 连不上」并各给一条可执行下一步——探测用 <code>no-cors</code> 二次请求区分「网络不通」与「网络通但被同源策略拦下」。实测五步全通过：直连判定为跨域（216ms）✓ 一键接入 ✓ 经代理连通成功 ✓ 还原直连 ✓ 保存预警 ✓。<b>② 顺带修掉一个存量致命缺陷：新玩家第一次配置 API 时，一打开「接口设置」就整块崩</b>（控制台 <code>TypeError: Cannot read properties of undefined (reading 'saves')</code>，位置 <code>renderVaultSection → fillForm → open</code>）。根因是 <code>vault.js</code> 为懒加载模块，未加载时 <code>window.YunjingVault</code> 是 lazy-boot 的<b>影子桩</b>，桩上取值一律同步返回 undefined——而项目自身的设计约定就写着「未就绪时调用方按自己的降级分支处理」，<code>renderVaultSection</code> 没做降级。现按约定补齐：桩状态先占位并轮询等真模块到位后补渲染，真对象到位后再包一层 try；同型的 <code>renderThemeSection</code> / <code>renderVecSection</code> 一并加统一守卫（它们此前会把桩返回的 undefined 直接写进 innerHTML，界面上渲染出字面量「undefined」）。<b>③ 本地代理加入带退避重试</b>：上游 502/503/504 与连接层 ECONNRESET 会自动重试（最多 3 次、退避 1s/3.5s），4xx 不重试——实测一次压测中 100 请求有 52 次 reset、13 次 503，重试能救回相当一部分。失败分诊文案同步指向本地代理。</p>
+                    <p class="ver-diff"><b>相比 v4.13.0 的变化</b>：跨域彻底解决 · 本地代理 · 首次配置崩溃修复；新增 tools/cors-proxy.mjs 本地转发代理与 js/cors-guard.js 跨域守卫（预判 / 真探测细分失败原因 / 代理地址互转）… · <a href="https://github.com/AYun07/yunjing/compare/v4.13.0...v4.14.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
+        <article class="log-entry" data-tags="版本 修复 玩家验证 模型" style="--entry-hue:#3b7d6f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.14.0</span>
+                <span class="entry-date">2026-11-12</span>
+            </div>
+            <h3 class="entry-title">跨域彻底解决 · 本地代理 · 首次配置崩溃修复 · 全量回归实测</h3>
+            <p class="entry-text"><b>纯前端的 CORS 限制彻底解决</b>：云境是纯前端应用，浏览器只允许直连<b>返回跨域许可</b>的接口；<code>integrate.api.nvidia.com</code> / <code>api.openai.com</code> / <code>api.anthropic.com</code> 这类官方端点不返回该头，玩家只看到「请求发不出去」，完全不知道是被同源策略挡了——这不是云境的 bug，但没有后端就绕不过去。现新增 <code>tools/cors-proxy.mjs</code>（只用 Node 内置模块、只监听 127.0.0.1、SSE 流式逐块透传、上游主机白名单、带退避重试）与 <code>start-proxy-windows.bat</code> / <code>start-proxy-mac.command</code> 启动器；「接口设置 → 🛡 本地代理」可一键把接口地址包成<code>&lt;代理&gt;/&lt;原地址&gt;</code>，也可一键还原直连。新增 <code>js/cors-guard.js</code> 跨域守卫：保存配置时对已知不给跨域头的主机预警；连通测试失败时改用<b>真探测</b>把原因细分成「跨域被拦 / Key 错 / 模型名错 / 限流 / 服务端 5xx / 超时 / 连不上」，并用 <code>no-cors</code> 二次请求区分「网络不通」与「网络通但被同源策略拦下」。实测五步全通过（直连判定为跨域 216ms、一键接入、经代理连通成功、还原直连、保存预警）。<b>修掉存量致命缺陷</b>：新玩家第一次配置 API 时，一打开「接口设置」就整块崩（<code>Cannot read properties of undefined (reading 'saves')</code> at <code>renderVaultSection → fillForm → open</code>）——根因是 <code>vault.js</code> 为懒加载模块，未加载时 <code>window.YunjingVault</code> 是 lazy-boot 的<b>影子桩</b>，桩上取值一律同步返回 undefined，而项目自身的设计约定就写着「未就绪时调用方按自己的降级分支处理」，<code>renderVaultSection</code> 没做降级；同型的 <code>renderThemeSection</code> / <code>renderVecSection</code> 一并加统一守卫（此前会把桩返回的 undefined 直接写进 innerHTML，界面渲染出字面量「undefined」）。<b>新增语种守卫</b>：38 界真模型实测发现某 550B 推理模型会退化输出<b>多语种 token 汤</b>（<code>Enemy capacité tanksせční</code>、<code>MaterialsText ContrTextSystem^(W)</code>…），中文占比掉到 44%–57%，而既有失控判据只看「无标点长串」与「n-gram 复读」，对「标点齐全但根本不是中文」完全无感；现补语种维度（长度 ≥240 字且汉字占比 &lt;55% 即判失控，走既有自动重写通道）。<b>全量回归实测</b>（真模型，全程单并发 + 15s 冷却）：跨模型矩阵 12 格 —— 经本地代理 5/6 正常出文、思维链泄漏 0；官方直连 0/6 全被 CORS 拦（反证问题真实）；38 界逐个真跑 —— 36/38 可玩、思维链泄漏 0；100 轮长会话 —— 世界确实在长（人物 1→5、势力 6→10、关系 2→18、大事记 0→41、地点 0→5），存档 374KB→2.1MB 单调增长且重载后进度完好（turn=84 / words=25585），重载后 DOM 卡片由 276 降到 61 属<b>虚拟化设计</b>（chat-virtualizer.js 的 WINDOW=60），完整历史仍在存档中。本地代理加退避重试后，1495 次请求成功 1434 次（96%，此前无限流保护时仅 34%）。</p>
+                    <p class="ver-diff"><b>相比 v4.13.0 的变化</b>：跨域彻底解决 · 本地代理 · 首次配置崩溃修复 · 全量回归实测；新增零依赖本地转发代理与跨域守卫（预判 / 真探测细分失败原因 / 代理地址互转）… · <a href="https://github.com/AYun07/yunjing/compare/v4.13.0...v4.14.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
 
         <article class="log-entry" data-tags="版本 修复 玩家验证 模型" style="--entry-hue:#c0563f;">
             <div class="entry-head">

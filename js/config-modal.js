@@ -324,6 +324,28 @@ const ConfigModal = {
                         </div>
                         <div id="cfg_testResult" class="test-result"></div>
                         <button type="button" class="btn-ghost dw-test-btn" onclick="ConfigModal.testConnection()">测试主接口连通</button>
+
+                        <!-- v4.14.0 · 本地跨域代理：纯前端绕开浏览器同源策略的正解 -->
+                        <div class="form-tip" style="margin-top:14px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px;">
+                            <b>🛡 本地代理（被跨域拦住时用）</b><br>
+                            云境是纯前端页面，浏览器只允许直连<b>返回跨域许可</b>的接口。像
+                            <code>api.openai.com</code>、<code>integrate.api.nvidia.com</code> 这类官方端点不给跨域头，
+                            直连必被拦下（控制台报 CORS、页面只看到「请求发不出去」）——这不是云境的问题，
+                            但没有后端就绕不过去。项目自带一个<b>零依赖的本地转发代理</b>
+                            （<code>tools/cors-proxy.mjs</code>），在本机把请求转发出去，同源策略就不再生效。<br><br>
+                            1️⃣ 双击项目根目录的 <code>start-proxy-windows.bat</code>（Mac 用 <code>start-proxy-mac.command</code>）<br>
+                            2️⃣ 确认下面的代理地址，点【接入本地代理】<br>
+                            3️⃣ 再点上面的「测试主接口连通」
+                        </div>
+                        <div class="form-row" style="margin-top:8px;">
+                            <label>代理地址</label>
+                            <input id="cfg_proxyBase" type="text" value="http://127.0.0.1:8799" placeholder="http://127.0.0.1:8799">
+                            <i>代理只监听本机 127.0.0.1，不对外网暴露；关掉那个黑窗口即停止。</i>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                            <button type="button" class="btn-ghost dw-test-btn" onclick="ConfigModal.applyProxy()">🛡 接入本地代理</button>
+                            <button type="button" class="btn-ghost dw-test-btn" onclick="ConfigModal.revertProxy()">↩ 还原直连</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1206,13 +1228,47 @@ const ConfigModal = {
     if (caret) caret.textContent = open ? "▾" : "▸";
     if (open) this.renderVaultSection();
   },
+  /* v4.14.0 修：懒加载模块未就绪时的崩溃（第三方审查 · 玩家路径实测）
+     现象：**还没开局的新玩家一打开「接口设置」就整块崩**，控制台
+       TypeError: Cannot read properties of undefined (reading 'saves')
+       at renderVaultSection → fillForm → open
+     原因：vault.js 是懒加载模块。它未加载时 window.YunjingVault 是 lazy-boot 的
+       **影子桩**——读属性/调方法一律**同步返回 undefined**（见 lazy-boot.js 第 146-149 行的
+       设计说明：「取值一律留给真实对象，未就绪时调用方按自己的降级分支处理」）。
+       旧代码直接 `s.saves`，既没降级也没等待，于是必然抛错。
+     修法：遵循项目自身约定——桩状态先给占位文案并轮询等真对象到位后补渲染；
+       真对象到位后再包一层 try，任何异常都只影响这一小块，不再拖垮整个设置面板。 */
   renderVaultSection() {
     const host = document.getElementById("vaultPanelHost");
     const chip = document.getElementById("vt_stateChip");
-    if (host && window.YunjingVault) host.innerHTML = window.YunjingVault.panelHTML();
-    if (chip && window.YunjingVault) {
-      const s = window.YunjingVault.stats();
-      chip.textContent = `${s.saves} 档 · ${s.cfg} 项配置`;
+    const V = window.YunjingVault;
+    if (!V || V.__yjLazyShadow) {
+      if (chip) chip.textContent = "读取中…";
+      if (host) host.innerHTML = '<div class="yj-vault-loading" style="padding:10px;opacity:.75;">正在读取本地存档与配置…</div>';
+      if (!this._vaultRetry) {
+        let n = 0;
+        this._vaultRetry = setInterval(() => {
+          const R = window.YunjingVault;
+          if (R && !R.__yjLazyShadow) {
+            clearInterval(this._vaultRetry); this._vaultRetry = null; this.renderVaultSection();
+          } else if (++n > 20) {
+            clearInterval(this._vaultRetry); this._vaultRetry = null;
+            if (chip) chip.textContent = "存档与配置";
+          }
+        }, 300);
+      }
+      return;
+    }
+    try {
+      if (host) host.innerHTML = V.panelHTML();
+      if (chip) {
+        const s = V.stats() || {};
+        chip.textContent = `${s.saves || 0} 档 · ${s.cfg || 0} 项配置`;
+      }
+    } catch (e) {
+      if (chip) chip.textContent = "存档与配置";
+      if (host) host.innerHTML = '<div class="yj-vault-loading" style="padding:10px;opacity:.75;">存档面板读取失败：'
+        + String((e && e.message) || e).slice(0, 80) + '</div>';
     }
   },
   /** 折叠 / 展开「主题工坊」 */
@@ -1226,12 +1282,48 @@ const ConfigModal = {
     if (open) this.renderThemeSection();
   },
   /** 渲染主题工坊（内嵌版，与独立弹窗共用同一份数据） */
+  /* v4.14.0：懒加载模块「真对象是否已就绪」的统一判定。
+     lazy-boot 的影子桩会把 __yjLazyShadow 置为 true（见 js/lazy-boot.js:170），
+     桩上任何取值都是 undefined —— 直接拿去做 innerHTML 会渲染出字面量「undefined」。
+     凡是要读懒模块数据/HTML 的地方，先过这一关。 */
+  _lazyOk(name) {
+    const O = window[name];
+    return !!(O && !O.__yjLazyShadow);
+  },
+  /* v4.14.0：占位 + 轮询补渲染。影子桩的那次读已触发真模块下载，这里等它到位。
+     key 区分不同区块，避免多个区块共用一个定时器。 */
+  _lazyPlaceholder(host, chip, name, placeholder, onReady) {
+    if (chip) chip.textContent = "读取中…";
+    if (host) host.innerHTML = '<div style="padding:10px;opacity:.75;">' + placeholder + '</div>';
+    if (!this._lazyRetry) this._lazyRetry = {};
+    if (this._lazyRetry[name]) return;
+    let n = 0;
+    this._lazyRetry[name] = setInterval(() => {
+      if (this._lazyOk(name)) {
+        clearInterval(this._lazyRetry[name]); delete this._lazyRetry[name];
+        try { onReady(); } catch (e) {}
+      } else if (++n > 20) {
+        clearInterval(this._lazyRetry[name]); delete this._lazyRetry[name];
+        if (chip) chip.textContent = "—";
+      }
+    }, 300);
+  },
   renderThemeSection() {
     const host = document.getElementById("themePanelHost");
     const chip = document.getElementById("th_stateChip");
-    const t = window.ThemeStudio && window.ThemeStudio.current ? window.ThemeStudio.current() : null;
-    if (chip) chip.textContent = t ? t.icon + " " + t.name : "—";
-    if (host && window.ThemeStudio) host.innerHTML = window.ThemeStudio.panelHTML();
+    if (!this._lazyOk("ThemeStudio")) {
+      this._lazyPlaceholder(host, chip, "ThemeStudio", "正在载入主题工坊…", () => this.renderThemeSection());
+      return;
+    }
+    try {
+      const t = window.ThemeStudio.current ? window.ThemeStudio.current() : null;
+      if (chip) chip.textContent = t ? t.icon + " " + t.name : "—";
+      const html = window.ThemeStudio.panelHTML();
+      if (host) host.innerHTML = html == null ? "" : html;
+    } catch (e) {
+      if (chip) chip.textContent = "—";
+      if (host) host.innerHTML = "";
+    }
   },
   /** ThemeStudio 切换主题后回调（保持内嵌面板同步） */
   refreshThemeSection() {
@@ -1255,7 +1347,17 @@ const ConfigModal = {
   /** 渲染向量检索面板（每次打开设置都按最新配置重建） */
   renderVecSection() {
     const host = document.getElementById("vecPanelHost");
-    if (host && window.KBVector) host.innerHTML = window.KBVector.buildPanelHTML("cfgVec", { flat: true });
+    const chip = document.getElementById("vc_stateChip");
+    if (!this._lazyOk("KBVector")) {
+      this._lazyPlaceholder(host, chip, "KBVector", "正在载入向量检索面板…", () => this.renderVecSection());
+      return;
+    }
+    try {
+      const html = window.KBVector.buildPanelHTML("cfgVec", { flat: true });
+      if (host) host.innerHTML = html == null ? "" : html;
+    } catch (e) {
+      if (host) host.innerHTML = "";
+    }
   },
 
   /** 折叠 / 展开「主笔 AI」配置区 */
@@ -3188,6 +3290,22 @@ const ConfigModal = {
     const fw = window.storyFramework;
     fw.apiConfig = { ...fw.apiConfig, ...this.readForm() };
     fw.saveApiConfig();
+    /* v4.14.0：保存时对「已知不给跨域头」的官方端点给出预警。
+       不阻止保存（真有中转站复用同域名也能用），只提前把代价说清楚——
+       免得玩家配好后开局，才发现请求根本发不出去、还以为是云境坏了。 */
+    try {
+      if (window.CorsGuard) {
+        const ep = fw.apiConfig.endpoint || "";
+        if (window.CorsGuard.isProxied(ep)) {
+          this.setTestResult("info", "🛡 已通过本地代理接入，跨域不再受限。");
+        } else if (window.CorsGuard.isKnownNoCors(ep)) {
+          this.setTestResult("error",
+            `⚠ 这个地址（<code>${window.CorsGuard.hostOf(ep)}</code>）通常<b>不返回跨域许可</b>，`
+            + `浏览器直连会被拦下，正文将无法生成。<br>请向下滚动到「🛡 本地代理」点【接入本地代理】`
+            + `（需先双击 <code>start-proxy-windows.bat</code>），或改用支持跨域的中转站地址。`);
+        }
+      }
+    } catch (e) {}
     /* v3.51.1：设置页里的向量检索也随「保存全部配置」一起落盘，
        免得改完忘了点那块小号的「保存」 */
     if (window.KBVector && document.getElementById("cfgVecKey")) {
@@ -3266,10 +3384,64 @@ const ConfigModal = {
       const reply = await testApiConnection(cfg.endpoint, cfg.apiKey, cfg.model, cfg.type, cfg.maxTokens);
       result.className = "test-result success";
       result.textContent = `✓ 连接成功，模型回复：${String(reply).slice(0, 40)}`;
+      return;
     } catch (err) {
+      /* v4.14.0：失败不再只甩一句报错。先用跨域守卫把原因分细——
+         是「被浏览器同源策略拦了」，还是 Key 错 / 模型名错 / 限流 / 超时 / 连不上，
+         并给出可执行下一步（本地代理 or 换中转站）。 */
+      if (window.CorsGuard && cfg.endpoint) {
+        result.className = "test-result loading";
+        result.textContent = "⏳ 连接失败，正在判定原因…";
+        let p = null;
+        try { p = await window.CorsGuard.probeCors(cfg.endpoint, cfg.apiKey); } catch (e) { p = null; }
+        if (p && p.kind && p.kind !== 'ok') {
+          result.className = "test-result error";
+          result.innerHTML = `✕ ${String(err.message || err).slice(0, 130)}<br><br>`
+            + window.CorsGuard.verdictHtml(p.kind)
+            + `<br><span style="opacity:.65;font-size:12px;">（探测结论：${p.detail}${p.http ? ' · HTTP ' + p.http : ''} · ${p.ms}ms）</span>`;
+          return;
+        }
+      }
       result.className = "test-result error";
-      result.textContent = `✕ ${err.message}（注意浏览器直连需接口允许 CORS，或使用本地 one-api/new-api 代理）`;
+      result.textContent = `✕ ${err.message}（浏览器直连要求接口允许跨域；可用项目自带的本地代理 tools/cors-proxy.mjs）`;
     }
+  },
+  /* v4.14.0 · 本地代理一键接入 / 还原
+     纯前端页面无法直连不给跨域头的官方端点；项目自带 tools/cors-proxy.mjs，
+     在本机起一个有 CORS 头的转发服务，把接口地址包成 <proxy>/<原地址> 即可。 */
+  _proxyBase() {
+    const el = document.getElementById("cfg_proxyBase");
+    const v = el && el.value ? String(el.value).trim() : "";
+    return v || (window.CorsGuard ? window.CorsGuard.PROXY_DEFAULT : "http://127.0.0.1:8799");
+  },
+  applyProxy() {
+    if (!window.CorsGuard) return;
+    const ep = document.getElementById("cfg_endpoint");
+    if (!ep) return;
+    const base = this._proxyBase();
+    if (window.CorsGuard.isProxied(ep.value)) {
+      this.setTestResult("info", "当前已经是代理地址，无需重复接入。点【还原直连】可退回原始地址。");
+      return;
+    }
+    const up = String(ep.value || "").trim();
+    if (!up) { this.setTestResult("error", "请先填写接口地址，再接入本地代理。"); return; }
+    ep.value = window.CorsGuard.toProxy(up, base);
+    this.setTestResult("info",
+      `🛡 已接入本地代理：${base}<br>请确认已运行 <code>start-proxy-windows.bat</code>（Mac: <code>start-proxy-mac.command</code>），然后点「测试主接口连通」。`);
+  },
+  revertProxy() {
+    if (!window.CorsGuard) return;
+    const ep = document.getElementById("cfg_endpoint");
+    if (!ep) return;
+    if (!window.CorsGuard.isProxied(ep.value)) { this.setTestResult("info", "当前不是代理地址。"); return; }
+    ep.value = window.CorsGuard.fromProxy(ep.value);
+    this.setTestResult("info", "已还原为直连地址。若该端点不给跨域头，直连会被浏览器拦下。");
+  },
+  setTestResult(kind, html) {
+    const r = document.getElementById("cfg_testResult");
+    if (!r) return;
+    r.className = "test-result " + (kind === "error" ? "error" : kind === "ok" ? "success" : "loading");
+    r.innerHTML = html;
   }
 };
 window.ConfigModal = ConfigModal;

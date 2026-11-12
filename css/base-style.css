@@ -3128,7 +3128,7 @@ textarea.wiz-input { resize: vertical; min-height: 58px; line-height: 1.6; }
     justify-content: flex-end;
     padding: 13px 21px;
     border-top: 1px solid var(--line);
-    /* 玩家实测（v4.13.0）：接口设置弹窗模板嵌套导致 footer 落在 .modal-body 滚动区内，
+    /* 玩家实测（v4.12.1）：接口设置弹窗模板嵌套导致 footer 落在 .modal-body 滚动区内，
        「保存全部配置」按钮初始位于 1927px（视口 900），玩家需下滚千余像素才找得到。
        sticky 让页脚无论作为滚动区子元素还是 modal-box 兄弟节点都常驻可视底部。 */
     position: sticky;
@@ -4227,7 +4227,7 @@ body.mobile #gameTitle {
 }
 body.mobile .ver-dot { flex: 0 0 auto; font-size: 0; width: 9px; height: 9px; padding: 0; }
 body.mobile .back-link {
-    /* v4.13.0：42 → 44px。移动端触控目标下限取 44（与下方设定台输入框口径一致，也与
+    /* v4.14.0：42 → 44px。移动端触控目标下限取 44（与下方设定台输入框口径一致，也与
        css/touch-targets.css 的补丁一致）；42px 单手操作时误触率明显偏高。 */
     flex: 0 0 auto; min-height: 44px;
     display: inline-flex; align-items: center; gap: 4px;
@@ -4235,7 +4235,7 @@ body.mobile .back-link {
 /* v3.27.3 补全：旧段（上行 3031/3145）仍藏着「大厅」二字，此处显式恢复——
    手机端返回键带文字，玩家不再找不到回大厅的路 */
 body.mobile .back-link .txt { display: inline; }
-/* v4.13.0：min-height 42 → 44px（触控目标下限，与 css/touch-targets.css 统一口径） */
+/* v4.14.0：min-height 42 → 44px（触控目标下限，与 css/touch-targets.css 统一口径） */
 body.mobile .top-btn { padding: 8px 10px; min-height: 44px; }
 body.mobile .top-btn .ico { font-size: 15px; }
 body.mobile .top-btn .txt { font-size: 10.5px; }
@@ -4317,7 +4317,7 @@ body.mobile * { -webkit-tap-highlight-color: transparent; }
     body .top-bar { flex-wrap: nowrap; gap: 7px; }
     body #gameTitle { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     body .ver-dot { flex: 0 0 auto; font-size: 0; width: 9px; height: 9px; padding: 0; }
-    /* v4.13.0：42 → 44px（触控目标下限；与 body.mobile 段及 css/touch-targets.css 口径一致） */
+    /* v4.14.0：42 → 44px（触控目标下限；与 body.mobile 段及 css/touch-targets.css 口径一致） */
     body .back-link { flex: 0 0 auto; min-height: 44px; display: inline-flex; align-items: center; gap: 4px; }
     body .back-link .txt { display: inline; }
     body .top-btn { padding: 8px 10px; min-height: 44px; }

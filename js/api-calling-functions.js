@@ -152,7 +152,7 @@ window.stripAIThink = function(text) {
   return out;
 };
 
-/* ==================== v4.13.0 · 推理模型（reasoning）防护 ====================
+/* ==================== v4.14.0 · 推理模型（reasoning）防护 ====================
    发现来源：第三方全量审查 + 真实玩家实测（z-ai/glm-5.3-flash / Nemotron / o 系等）。
 
    问题：推理模型把思考写在 **provider 级字段 reasoning_content**，而不是正文里的
@@ -426,7 +426,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
           if (!sawContent && typeof d.reasoning_content === "string") reasoningBuf += d.reasoning_content;
           return "";
         },
-        /* v4.13.0：旧实现 `finish: (f) => f && f.trim() ? f : reasoningBuf` 会在
+        /* v4.14.0：旧实现 `finish: (f) => f && f.trim() ? f : reasoningBuf` 会在
            content 为空时把**原始思维链**当正文交出去（详见文件头「推理模型防护」）。
            现在只有「内容读起来不像推演」时才兜底，否则返回空，交由上层抬预算重试。 */
         finish: (f) => (f && f.trim()) ? f : (reasoningBuf && !window.looksLikeRawReasoning(reasoningBuf) ? reasoningBuf : "")
@@ -453,7 +453,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
   return await callOpenAINonStream(messages, cfg, fullEndpoint, fullMs, opts);
 }
 
-/* v4.13.0 · 主笔与通用调用的「推理模型包装层」（详见文件头「推理模型防护」）。
+/* v4.14.0 · 主笔与通用调用的「推理模型包装层」（详见文件头「推理模型防护」）。
    ① 已知推理模型 → 抬高出力下限（思考与正文共享 max_tokens，给太小必然「只思考不落笔」）；
    ② 正文为空且本次确实收到过 reasoning_content → 翻倍预算重试一次；
    ③ 仍为空 → 抛出可读错误，**绝不把思维链当正文**交给下游。 */
@@ -521,7 +521,7 @@ async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts)
 function parseOpenAIJson(data) {
   var _a, _b;
   const msg = (_b = (_a = data.choices) == null ? void 0 : _a[0]) == null ? void 0 : _b.message;
-  /* v4.13.0：旧实现 `msg.content ?? msg.reasoning_content` 会把 reasoning_content
+  /* v4.14.0：旧实现 `msg.content ?? msg.reasoning_content` 会把 reasoning_content
      当正文（content 为 null 时）。现在统一走 extractAssistantText —— 只有内容读起来
      不像推演时才兜底（详见文件头「推理模型防护」）。 */
   const out = window.extractAssistantText(msg, { allowReasoningFallback: true });
@@ -864,7 +864,7 @@ async function testApiConnection(endpoint, apiKey, model, type, maxTokens) {
   }
   const data = await withTimeoutMs(response.json(), 3e4);
   const msg = (_d = (_c = data.choices) == null ? void 0 : _c[0]) == null ? void 0 : _d.message;
-  /* v4.13.0：连通测试。保留兜底（推理模型只回思考时也要能判定「接口通了」），
+  /* v4.14.0：连通测试。保留兜底（推理模型只回思考时也要能判定「接口通了」），
      但经安全提取器，内容像原始推演时不会冒充模型回复。 */
   return window.extractAssistantText(msg, { allowReasoningFallback: true });
 }
