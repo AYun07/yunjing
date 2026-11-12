@@ -1,7 +1,7 @@
-/* RPG Suite v2.2.0 — 网游大世界共用皮肤（v4.13.0）
+/* RPG Suite v2.2.0 — 网游大世界共用皮肤（v4.14.0）
  * 七标签角色面板 / 四态 / 品级色阶 / HP·MP·EXP 动效 / 扫描线底纹
  *
- * v4.13.0 清理死规则（第三方审查 F3）：
+ * v4.14.0 清理死规则（第三方审查 F3）：
  *   旧版此处有三条 `body.theme-daobanshenhua` / `body.theme-zonghengtianxia`
  *   / `body.theme-tianxiawushuang` 的主题色规则。经全仓复核，它们**从未生效**：
  *     ① 三个界名（道半神话 / 纵横天下 / 天下无双）已不在 38 界清单中；

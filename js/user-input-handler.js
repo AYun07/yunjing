@@ -196,10 +196,29 @@ const StoryInput = {
       /* v3.47.8 文本失控检测（词表狂奔/标点消失/复读循环——弱模型在长中文创作上的解码退化）：
          ① 连续 160+ 非空白字符无任何标点/换行；② 4~12 字 n-gram 去重后剩余率 <70%（复读/同义词循环）。
          命中即视为失控正文，走与空正文相同的自动重写通道。 */
+      /* v4.14.0 新增「语种健全性」判定（第三方审查 · 38 界真模型实测发现）：
+         实测某 550B 推理模型在部分界（道诡异仙 / 帝霸 / 玄鉴仙族…）退化输出**多语种 token 汤**：
+           「Enemy capacité tanksせční」「MaterialsText ContrTextSystem^(W)」…
+         全篇中文占比掉到 44%–57%，而旧的失控判据只看「无标点长串」与「n-gram 复读」，
+         对这类「标点齐全、读起来却根本不是中文」的输出完全无感——
+         于是乱码被当成正文渲染、还进了存档。这里补上语种维度：
+         中文创作场景下，正文理应绝大概率是汉字；汉字占比过低即判为失控，走既有自动重写通道。 */
+      const cjkRatioOf = (s) => {
+        const cjk = (s.match(/[\u4e00-\u9fff]/g) || []).length;
+        const latin = (s.match(/[A-Za-z]/g) || []).length;
+        const cyr = (s.match(/[\u0400-\u04FF]/g) || []).length;
+        const kana = (s.match(/[\u3040-\u30ff]/g) || []).length;
+        const hangul = (s.match(/[\uac00-\ud7af]/g) || []).length;
+        const other = latin + cyr + kana + hangul;
+        const tot = cjk + other;
+        return tot ? cjk / tot : 1;
+      };
       const isRunawayText = (r) => {
         const body = String(RH.extractBody(r, RH.extractOptions(r)) || "");
         if (body.replace(/\s/g, "").length < 200) return false;
         const flat = body.replace(/\s/g, "");
+        /* 语种健全性：够长的正文里汉字占比 < 55% 视为退化（中文创作场景的正常下限远高于此） */
+        if (flat.length >= 240 && cjkRatioOf(flat) < 0.55) return true;
         let maxRun = 0, run = 0;
         for (const ch of flat) {
           if (/[，。！？；：、“”‘’…—,.!?;:\n]/.test(ch)) { run = 0; } else { run += 1; if (run > maxRun) maxRun = run; }
@@ -241,10 +260,13 @@ const StoryInput = {
         return false;
       };
       if (needsRewrite()) {
-        const why = bodyLenOf(reply) < 15 ? "未输出可识别的正文（可能只回了变量块、或正文被格式标记吞掉）" : "正文疑似解码失控（词表狂奔/标点消失/复读循环）";
+        const why = bodyLenOf(reply) < 15 ? "未输出可识别的正文（可能只回了变量块、或正文被格式标记吞掉）"
+          : (cjkRatioOf(String(RH.extractBody(reply, RH.extractOptions(reply)) || "").replace(/\s/g, "")) < 0.55
+              ? "正文疑似模型退化（出现多语种乱码，汉字占比过低）"
+              : "正文疑似解码失控（词表狂奔/标点消失/复读循环）");
         window.StoryResponseHandler.notice(`模型${why}，正在自动重写一次…`, "warn", 9000);
         try {
-          const rewriteMsg = message + "\n\n（系统纠偏：你上一轮回复的正文不合格——或为空，或出现词表狂奔/复读循环/整段无标点的失控文本。本轮必须用规范的中文标点与完整句子重新完整输出小说正文——纯叙事散文、不要放进代码块，之后再在结尾按协议输出 (variable_update) 变量更新块与【行动选项】。禁止同义词罗列式推进，禁止省略标点。）";
+          const rewriteMsg = message + "\n\n（系统纠偏：你上一轮回复的正文不合格——或为空，或出现词表狂奔/复读循环/整段无标点，或掺入了外文与乱码片段。本轮必须重新完整输出小说正文：**全文必须是通顺的简体中文**，用规范中文标点与完整句子，纯叙事散文、不要放进代码块；禁止夹带英文/法文/俄文/日文等外文词与无意义字符，禁止同义词罗列式推进，禁止省略标点。之后再在结尾按协议输出 (variable_update) 变量更新块与【行动选项】。）";
           const body0 = bodyLenOf(reply);
           const reply2 = await callOnce(rewriteMsg);
           if (bodyLenOf(reply2) > body0 && (body0 < 15 ? true : !isRunawayText(reply2))) reply = reply2;
@@ -332,13 +354,13 @@ const StoryInput = {
          并给出下一步动作，而不是甩一段原始报错 */
       const raw = String((err && err.message) || err || "");
       let hint = "本轮现场已还原，指令已放回输入框，可直接重发。";
-      /* v4.13.0：推理模型「只思考没正文」的分诊（见 api-calling-functions.js 文件头） */
+      /* v4.14.0：推理模型「只思考没正文」的分诊（见 api-calling-functions.js 文件头） */
       if (err && err.isReasoningOnly) hint = "这个模型是「推理模型」：它的思考过程占满了输出上限，导致没有正文。到「接口设置」把最大输出 token 调大到 8192 以上（建议 16384；长章 32768），或换用非推理模型。为保证正文纯净，系统不会把思考过程当成小说正文。";
       else if (/40[13]/.test(raw) || /unauthor|invalid.*key|api key/i.test(raw)) hint = "接口拒绝了这把 Key（401/403）。到「接口设置」核对 API Key 与地址是否属于同一家服务商。";
       else if (/404|model.*not.*(exist|found)|does not exist/i.test(raw)) hint = "模型名不存在（404）。到「接口设置」点「拉取模型列表」，从列表里选一个可用模型。";
       else if (/429|rate.?limit|quota/i.test(raw)) hint = "触发限流或余额不足（429）。等一分钟再试，或换一把 Key。";
       else if (/超时|timeout|AbortError|无任何数据返回/i.test(raw)) hint = "接口长时间没有回任何内容。检查网络/中转站，或到「接口设置」把超时秒数调大（长章建议 600）。";
-      else if (/Failed to fetch|NetworkError|network|CORS|Access-Control/i.test(raw)) hint = "请求发不出去。常见两种原因：①地址写错（确认以 /v1 结尾、外网可访问）；②**该接口不允许浏览器跨域（CORS）**——云境是纯前端应用，只有开放跨域的接口/中转站才能直连；官方直连（如 api.openai.com、integrate.api.nvidia.com 等）通常会被浏览器拦下，请在「接口设置」改用支持跨域的中转站地址。";
+      else if (/Failed to fetch|NetworkError|network|CORS|Access-Control/i.test(raw)) hint = "请求发不出去。①先确认地址以 /v1 结尾且外网可达；②若地址没问题，多半是**该接口不允许浏览器跨域（CORS）**——云境是纯前端页面，只有返回跨域许可的接口/中转站能直连，像 api.openai.com、integrate.api.nvidia.com 这类官方端点会被浏览器拦下。**解决办法**：双击项目根目录的 start-proxy-windows.bat（Mac 用 start-proxy-mac.command）启动自带的本地代理，然后到「接口设置 → 🛡 本地代理」点【接入本地代理】即可；也可以改用支持跨域的中转站地址。";
       else if (/5\d\d/.test(raw)) hint = "服务端 5xx，是对方接口的问题。稍后重试，或换一个模型/中转。";
       window.StoryResponseHandler.renderSystemMessage(`⚠ AI 调用失败：${raw}\n${hint}`, "error");
     } finally {

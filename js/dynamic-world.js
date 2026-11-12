@@ -150,7 +150,7 @@ const DynamicWorld = {
       var _a2, _b2, _c, _d;
       const data = await this._readBody(response2.json(), fullMs);
       const msg = (_b2 = (_a2 = data.choices) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.message;
-      /* v4.13.0：不再回退到 reasoning_content —— 推理模型的思考不能当成世界事件解析 */
+      /* v4.14.0：不再回退到 reasoning_content —— 推理模型的思考不能当成世界事件解析 */
       return (window.extractAssistantText ? window.extractAssistantText(msg) : String((msg && msg.content) || "")).trim();
     };
     try {
@@ -168,7 +168,7 @@ const DynamicWorld = {
           idleMs: fullMs,
           extract: (json) => {
             const d = json.choices && json.choices[0] && json.choices[0].delta;
-            /* v4.13.0：流式只取 content；reasoning_content 不得进入世界事件 */
+            /* v4.14.0：流式只取 content；reasoning_content 不得进入世界事件 */
             return (d && typeof d.content === "string") ? d.content : "";
           }
         });
@@ -306,7 +306,7 @@ const DynamicWorld = {
     const date = [v.date, v.日期, v.year].map((x) => String(x || "").trim()).find((x) => x && x !== "未上报") || "";
     return { era, date };
   },
-  /** 构建发给额外API的消息序列（模仿觅长生 buildOptimizedMessages 的分层策略） */
+  /** 构建发给额外API的消息序列（模仿某文字游戏框架 buildOptimizedMessages 的分层策略） */
   buildMessages(s) {
     const fw = window.storyFramework;
     const v = fw.storyState.variables;

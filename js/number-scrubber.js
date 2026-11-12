@@ -182,7 +182,7 @@
     return s.replace(/[，,]\s*([。！？；;])/g, "$1")
       .replace(/[，,]{2,}/g, "，")
       .replace(/(^|\n)\s*[，,、；;]\s*/g, "$1")
-      /* v4.13.0 悬空标点（第三方审查 N5）：
+      /* v4.14.0 悬空标点（第三方审查 N5）：
          面板/数值被整段剥离后，会留下孤立的顿逗号，例如
            「他的 HP：３４６／４７０，快撑不住了。」→「他的 ，快撑不住了。」
          判据刻意收窄：**汉字 + 空白 + 顿逗号 + 汉字** 才算残留——正常中文行文不会在
@@ -226,7 +226,7 @@
   }
 
   return {
-    version: "4.13.0",
+    version: "4.14.0",
     legalNumbers: legalNumbers,
     legalMoney: legalMoney,
     legalPairs: legalPairs,
