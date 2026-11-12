@@ -169,11 +169,30 @@
   /* ---------- 输出质量探针（v4.11.1，模型无关：只看这一轮回复本身） ----------
      不崩塌 + 正文够长 + 有完整协议块（选项/变量/状态任一），视为「这个模型驾驭得住」。
      连续 2 轮达标即升 full。连通测试的短回复、报错、结构残缺都不计入，避免误升。 */
+  /* ---------- 语种退化检测（v4.15.0 · 第三方审查 38 界实测发现） ----------
+     弱模型/超载模型会退化输出「多语种 token 汤」：Enemy capacité tanksせční、
+     MaterialsText ContrTextSystem^(W)…——标点齐全、长度充足，唯独根本不是中文。
+     detectCollapse 只看「无标点长串 / n-gram 复读」，对这类输出完全无感，
+     于是乱码被当正文渲染并入库。这里补上语种维度，与崩塌同等对待。 */
+  function cjkRatio(text) {
+    const s = String(text || "");
+    const cjk = (s.match(/[\u4e00-\u9fff]/g) || []).length;
+    const other = (s.match(/[A-Za-z\u0400-\u04FF\u3040-\u30ff\uac00-\ud7af]/g) || []).length;
+    const tot = cjk + other;
+    return tot ? cjk / tot : 1;
+  }
+  function detectDegeneration(text) {
+    const flat = String(text || '').replace(/\s/g, '');
+    if (flat.length < 240) return false;      // 太短不作判：短句里夹英文是正常的
+    return cjkRatio(flat) < 0.55;
+  }
+
   function looksCapable(reply) {
     if (typeof reply !== 'string') return false;
     const t = reply.trim();
     if (t.length < 400) return false;
     if (detectCollapse(t)) return false;
+    if (detectDegeneration(t)) return false;   // v4.15.0：退化输出不算「驾驭得住」
     return /【行动选项】|<selection>|<status>|\(variable_update\)|(?:^|\n)\s*[1-6][\.、．]/m.test(t);
   }
 
@@ -181,9 +200,19 @@
   /* 首轮自检回调：auto 档下按「实际输出质量」双向纠正档位（不再单向锁 lite） */
   function noteCollapse() {
     goodStreak = 0;
+    degenStreak = 0;
     if (!isAuto()) return;
     cacheResolved('lite');               // 崩塌立即降级（覆盖旧缓存）
   }
+  /* v4.15.0：语种退化单独计streak——单轮乱码可能只是瞬时抽风（上游抖动/采样失手），
+     立刻把强模型压到 lite 是误伤；连续 2 轮退化才认定为「这个模型驾驭不住当前档位」。 */
+  let degenStreak = 0;
+  function noteDegenerate() {
+    goodStreak = 0;
+    if (!isAuto()) return;
+    if (++degenStreak >= 2) { degenStreak = 0; cacheResolved('lite'); }
+  }
+  function noteDegenerationRecovered() { degenStreak = 0; }
   function noteStable(reply) {
     if (!isAuto()) return;
     const key = epModelKey();
@@ -378,7 +407,9 @@
     isEnabled: isLite,                 // 兼容旧布尔语义（=是否走裁剪档）
     isEnabledRaw: getTier,
     clampParams, buildLitePreset, compactSystemPrompt, detectCollapse,
-    noteCollapse, noteStable, install, looksCapable,
+    detectDegeneration, cjkRatio,
+    noteCollapse, noteStable, noteDegenerate, noteDegenerationRecovered,
+    install, looksCapable,
     _resetProbe: function () { goodStreak = 0; probeKey = ''; clearResolvedCache(); }
   };
 })();

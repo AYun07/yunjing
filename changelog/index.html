@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.14.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.15.0">
 </head>
 
 <body class="page-changelog">
@@ -316,14 +316,14 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
-        <article class="log-entry" data-tags="版本 修复 跨域 玩家验证" style="--entry-hue:#4aa3a0;">
+        <article class="log-entry" data-tags="版本 修复 模型 玩家验证" style="--entry-hue:#7a5fa8;">
             <div class="entry-head">
-                <span class="entry-ver">v4.14.0</span>
-                <span class="entry-date">2026-11-11</span>
+                <span class="entry-ver">v4.15.0</span>
+                <span class="entry-date">2026-11-12</span>
             </div>
-            <h3 class="entry-title">跨域彻底解决 · 本地代理 · 首次配置崩溃修复</h3>
-            <p class="entry-text"><b>① 彻底解决「官方接口在浏览器里用不了」这个老问题。</b>云境是纯前端应用，浏览器只允许直连<b>返回跨域许可</b>的接口；而 <code>integrate.api.nvidia.com</code>、<code>api.openai.com</code>、<code>api.anthropic.com</code> 这类官方端点不返回该头，玩家只看到「请求发不出去」，根本不知道是被同源策略挡了。这不是云境的 bug，但<b>没有后端就绕不过去</b>——现在项目自带一条零依赖的本地转发通道：新增 <code>tools/cors-proxy.mjs</code>（只用 Node 内置模块，只监听 127.0.0.1，支持流式 SSE 逐块透传、带退避重试、上游主机白名单）与 <code>start-proxy-windows.bat</code> / <code>start-proxy-mac.command</code> 启动器；「接口设置」新增「🛡 本地代理」区块，可一键把接口地址包成 <code>&lt;代理&gt;/&lt;原地址&gt;</code>、亦可一键还原直连。配套新增 <code>js/cors-guard.js</code>：保存配置时对已知不给跨域头的主机预警；连通测试失败时改用<b>真探测</b>把原因细分成「跨域被拦 / Key 错 / 模型名错 / 限流 / 服务端 5xx / 超时 / 连不上」并各给一条可执行下一步——探测用 <code>no-cors</code> 二次请求区分「网络不通」与「网络通但被同源策略拦下」。实测五步全通过：直连判定为跨域（216ms）✓ 一键接入 ✓ 经代理连通成功 ✓ 还原直连 ✓ 保存预警 ✓。<b>② 顺带修掉一个存量致命缺陷：新玩家第一次配置 API 时，一打开「接口设置」就整块崩</b>（控制台 <code>TypeError: Cannot read properties of undefined (reading 'saves')</code>，位置 <code>renderVaultSection → fillForm → open</code>）。根因是 <code>vault.js</code> 为懒加载模块，未加载时 <code>window.YunjingVault</code> 是 lazy-boot 的<b>影子桩</b>，桩上取值一律同步返回 undefined——而项目自身的设计约定就写着「未就绪时调用方按自己的降级分支处理」，<code>renderVaultSection</code> 没做降级。现按约定补齐：桩状态先占位并轮询等真模块到位后补渲染，真对象到位后再包一层 try；同型的 <code>renderThemeSection</code> / <code>renderVecSection</code> 一并加统一守卫（它们此前会把桩返回的 undefined 直接写进 innerHTML，界面上渲染出字面量「undefined」）。<b>③ 本地代理加入带退避重试</b>：上游 502/503/504 与连接层 ECONNRESET 会自动重试（最多 3 次、退避 1s/3.5s），4xx 不重试——实测一次压测中 100 请求有 52 次 reset、13 次 503，重试能救回相当一部分。失败分诊文案同步指向本地代理。</p>
-                    <p class="ver-diff"><b>相比 v4.13.0 的变化</b>：跨域彻底解决 · 本地代理 · 首次配置崩溃修复；新增 tools/cors-proxy.mjs 本地转发代理与 js/cors-guard.js 跨域守卫（预判 / 真探测细分失败原因 / 代理地址互转）… · <a href="https://github.com/AYun07/yunjing/compare/v4.13.0...v4.14.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <h3 class="entry-title">弱模型适配 · 确定性兜底登记 · 语种退化防护</h3>
+            <p class="entry-text"><b>目标：让用得起强模型的玩家零问题，也让只能用小模型的玩家玩得下去。</b>云境对模型零限制（官方 / 中转 / 自建 / 本地部署 / 任意 OpenAI 兼容端点都能填），但<b>穷玩家与富玩家的模型能力差距是真实存在的</b>——本版专门补上「弱模型也玩得好」这一侧。<b>① 确定性兜底登记（最关键的一处）</b>：状态登记官要求输出 30+ 种指令的复杂协议，弱模型几乎无法稳定做到，实测会出现「变量AI返回了空内容」→ <b>整轮状态不落库 → 世界停止生长</b>（38 界真测中表现为人物恒为 1、大事记恒为 0；玩家没配第三个接口时更是完全无登记）。现改为：登记官空返回或失败时，从正文里抽出<b>确凿存在</b>的事实——字数、章节推进、张力（关键词推算）、天气 / 时辰（仅正文明写时）、新登场人物（仅「」内且出现 ≥2 次）——合成一个 <code>(variable_update)</code> 块交给<b>同一个解析器</b>，零新解析代码、零语义冲突，UI 标为「🛟 保底登记」而非失败（如实告诉玩家登记官没干活，但状态没丢）。<b>不猜、不编造</b>是硬约束。<b>② 语种退化检测 + 自动降档</b>：弱模型 / 超载模型会退化输出「多语种 token 汤」（<code>Enemy capacité tanksせční</code>、<code>MaterialsText ContrTextSystem^(W)</code>…），标点齐全、长度充足，唯独根本不是中文——已有失控判据只看「无标点长串 / n-gram 复读」，对这类输出完全无感。现补语种维度（长度 ≥240 字且汉字占比 &lt;55% 判退化）并接进已有的「降温重发」机制；同时接到自适应档位：<b>崩塌 → 立即降 lite；退化 → 连续 2 轮才降</b>（单轮乱码可能只是上游抖动，立刻把强模型压到 lite 是误伤），达标 2 轮可升回 full。<b>③ 强模型路径未被削弱</b>：full 档依然尊重用户参数不锁、探针依然要连续 2 轮结构完整才升级、连通测试短回复依然不参与判定。<b>实测证明（同一模型、同一界、修前 vs 修后）</b>：<code>daoguiyixian</code> 用 <code>nemotron-3-ultra-550b-a55b</code> 跑 20 轮——修前 2 章 / 558 字 / 人物 2 / 大事记 2 / <b>中文占比 57.5%（乱码）</b>；修后 <b>21 章 / 45,605 字 / 人物 21 / 势力 10 / 关系 18 / 大事记 52 / 伏笔 24 / 道具 2 / 中文占比 99.6% / 超时 0 / pageerror 0</b>，存档 1.24MB 重载后进度完好。判据回归：法语混排 0.197 命中、道诡异仙样本命中、正常中文 1.000 放行、中文夹少量英文 0.890 放行、短句夹英文不误判。</p>
+                    <p class="ver-diff"><b>相比 v4.14.0 的变化</b>：弱模型适配 · 确定性兜底登记 · 语种退化防护；登记官空返回不再让整轮状态丢失，退化输出会被识别、重发并自动降档，弱模型实测从 57.5% 中文乱码提升到 99.6% 正常出文… · <a href="https://github.com/AYun07/yunjing/compare/v4.14.0...v4.15.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="版本 修复 玩家验证 模型" style="--entry-hue:#3b7d6f;">

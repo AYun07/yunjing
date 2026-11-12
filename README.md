@@ -49,13 +49,13 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v4.14.0（2026-11-09 · 唯一当前版）
+## 🆕 当前版本：v4.15.0（2026-11-09 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v4.14.0** | 2026-11-09 | **当前** | 真实玩家闭环 · 视觉化验证修复版。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.14.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.14.0) |
+| **v4.15.0** | 2026-11-09 | **当前** | 真实玩家闭环 · 视觉化验证修复版。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.15.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.15.0) |
 
-**看版本**：[📚 版本页（86 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v4.12.0 的差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.14.0) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.14.0)
+**看版本**：[📚 版本页（86 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v4.12.0 的差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.15.0) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.15.0)
 
 > 逐版沿革、历史功能说明与验收数据统一由 [VERSIONS.md](VERSIONS.md) 维护；本板块由 `scripts/update-readme.mjs` 自动生成，**主页不再展开版本列表**。新增版本请插到 VERSIONS.md 最上方。
 

@@ -79,6 +79,21 @@ window.TokenUsage = {
   }
 };
 const STREAM_FIRST_MS = 6e4;
+/* v4.15.0：推理模型的「首字节超时」必须放宽。
+   推理模型的思考发生在**首字节之前**——实测 z-ai/glm-5.3-flash 在这条上游单次
+   要 231~520 秒才吐第一个字节；而旧逻辑一律 min(60s, 用户超时)，
+   于是这类模型在流式模式下必然被应用自己掐断（玩家只看到反复超时、永不成功）。
+   非推理模型仍保留 60 秒下限（它们本就该秒回，卡住说明链路有问题）。 */
+const STREAM_FIRST_MS_REASON = 3e5;   // 推理模型首字节给到 300 秒
+
+/* 首字节超时的统一取值：推理模型 300s，其余 60s；且永不超过用户设定的总超时。
+   注意仍保留「不超过 fullMs」——玩家把总超时调小是明确意图，要尊重。 */
+function firstByteMs(cfg, fullMs) {
+  var reason = false;
+  try { reason = !!(window.isReasoningModel && cfg && window.isReasoningModel(cfg.model)); } catch (e) { }
+  var base = reason ? STREAM_FIRST_MS_REASON : STREAM_FIRST_MS;
+  return Math.min(base, fullMs);
+}
 function fetchWithTimeout(url, opts = {}, timeoutMs = 3e5, guardOpts = {}) {
   const ms = timeoutMs && timeoutMs > 0 ? timeoutMs : 3e5;
   /** 单次尝试：独立 AbortController，避免重试共用已 abort 的 signal */
@@ -152,7 +167,7 @@ window.stripAIThink = function(text) {
   return out;
 };
 
-/* ==================== v4.14.0 · 推理模型（reasoning）防护 ====================
+/* ==================== v4.15.0 · 推理模型（reasoning）防护 ====================
    发现来源：第三方全量审查 + 真实玩家实测（z-ai/glm-5.3-flash / Nemotron / o 系等）。
 
    问题：推理模型把思考写在 **provider 级字段 reasoning_content**，而不是正文里的
@@ -379,7 +394,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
   if (cfg.stream === false) {
     return await callOpenAINonStream(messages, cfg, fullEndpoint, fullMs, opts);
   }
-  const firstMs = Math.min(STREAM_FIRST_MS, fullMs);
+  const firstMs = firstByteMs(cfg, fullMs);
   let sawDelta = false;
   try {
     const response = await fetchWithTimeout(fullEndpoint, {
@@ -426,7 +441,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
           if (!sawContent && typeof d.reasoning_content === "string") reasoningBuf += d.reasoning_content;
           return "";
         },
-        /* v4.14.0：旧实现 `finish: (f) => f && f.trim() ? f : reasoningBuf` 会在
+        /* v4.15.0：旧实现 `finish: (f) => f && f.trim() ? f : reasoningBuf` 会在
            content 为空时把**原始思维链**当正文交出去（详见文件头「推理模型防护」）。
            现在只有「内容读起来不像推演」时才兜底，否则返回空，交由上层抬预算重试。 */
         finish: (f) => (f && f.trim()) ? f : (reasoningBuf && !window.looksLikeRawReasoning(reasoningBuf) ? reasoningBuf : "")
@@ -453,7 +468,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
   return await callOpenAINonStream(messages, cfg, fullEndpoint, fullMs, opts);
 }
 
-/* v4.14.0 · 主笔与通用调用的「推理模型包装层」（详见文件头「推理模型防护」）。
+/* v4.15.0 · 主笔与通用调用的「推理模型包装层」（详见文件头「推理模型防护」）。
    ① 已知推理模型 → 抬高出力下限（思考与正文共享 max_tokens，给太小必然「只思考不落笔」）；
    ② 正文为空且本次确实收到过 reasoning_content → 翻倍预算重试一次；
    ③ 仍为空 → 抛出可读错误，**绝不把思维链当正文**交给下游。 */
@@ -521,7 +536,7 @@ async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts)
 function parseOpenAIJson(data) {
   var _a, _b;
   const msg = (_b = (_a = data.choices) == null ? void 0 : _a[0]) == null ? void 0 : _b.message;
-  /* v4.14.0：旧实现 `msg.content ?? msg.reasoning_content` 会把 reasoning_content
+  /* v4.15.0：旧实现 `msg.content ?? msg.reasoning_content` 会把 reasoning_content
      当正文（content 为 null 时）。现在统一走 extractAssistantText —— 只有内容读起来
      不像推演时才兜底（详见文件头「推理模型防护」）。 */
   const out = window.extractAssistantText(msg, { allowReasoningFallback: true });
@@ -552,7 +567,7 @@ async function callGemini(messages, opts = {}, cfgOverride) {
   if (cfg.stream === false) {
     return await callGeminiNonStream(base, toContents(), systemInstruction, genConfig, cfg, fullMs);
   }
-  const firstMs = Math.min(STREAM_FIRST_MS, fullMs);
+  const firstMs = firstByteMs(cfg, fullMs);
   let sawDelta = false;
   try {
     const streamEndpoint = `${base}/models/${cfg.model}:streamGenerateContent?alt=sse&key=${cfg.apiKey}`;
@@ -719,18 +734,33 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
     let reply = await callOnce(messages, opts);
     /* v3.55.11 复读自检（全档安全基线）：任意档检测到「复读崩塌」自动降温重发一次；
        auto 档首轮若崩→降级 lite 并缓存，首轮稳→缓存初判，均用户无感 */
-    if (bmm && bmm.detectCollapse && bmm.detectCollapse(reply)) {
-      if (bmm.noteCollapse) bmm.noteCollapse();
-      console.warn('[模型自适应] 检测到复读崩塌，降温重发一次');
+    /* v4.15.0：把「语种退化」（多语种 token 汤）与「复读崩塌」同等对待——
+       两者都是模型没驾驭住的表现，都走同一套「降温重发一次 + auto 档降级」机制。
+       这样弱模型在退化的瞬间就会被自动压到更省力、更易驾驭的档位，而不是持续吐乱码。 */
+    const badOut = reply && bmm && (
+      (bmm.detectCollapse && bmm.detectCollapse(reply)) ||
+      (bmm.detectDegeneration && bmm.detectDegeneration(reply))
+    );
+    if (badOut) {
+      const isDegen = bmm.detectDegeneration && bmm.detectDegeneration(reply) && !(bmm.detectCollapse && bmm.detectCollapse(reply));
+      /* 崩塌 → 立即降档；退化 → 连续 2 轮才降档（单轮乱码可能只是瞬时抽风，不宜误伤强模型） */
+      if (isDegen) { if (bmm.noteDegenerate) bmm.noteDegenerate(); }
+      else if (bmm.noteCollapse) bmm.noteCollapse();
+      console.warn('[模型自适应] 检测到' + (isDegen ? '语种退化（多语种乱码）' : '复读崩塌') + '，降温重发一次');
       try {
         const retryCfg = (bmm.isLite && bmm.isLite()) ? bmm.clampParams(fw.apiConfig) : Object.assign({}, fw.apiConfig);
         retryCfg.temperature = Math.max(0.5, (retryCfg.temperature || 0.75) - 0.2);
         const r2 = fw.apiConfig.type === "gemini"
           ? await callGemini(messages, opts, retryCfg)
           : await callOpenAI(messages, opts, retryCfg);
-        if (r2 && !(bmm.detectCollapse && bmm.detectCollapse(r2))) reply = r2;
+        const stillBad = r2 && ((bmm.detectCollapse && bmm.detectCollapse(r2)) || (bmm.detectDegeneration && bmm.detectDegeneration(r2)));
+        if (r2 && !stillBad) reply = r2;
         else console.warn('[模型自适应] 重发仍未达标，保留原回复');
       } catch (e) { console.warn('[模型自适应] 重发失败，保留原回复', e); }
+    } else if (bmm && bmm.noteDegenerationRecovered) {
+      /* 本轮输出正常 → 清零退化连续计数 */
+      bmm.noteDegenerationRecovered();
+      if (bmm.noteStable && bmm.isAuto && bmm.isAuto() && !isTest) bmm.noteStable(reply);
     } else if (bmm && bmm.noteStable && bmm.isAuto && bmm.isAuto() && !isTest) {
       /* v4.11.1 双向自适应：把本轮真实回复交给质量探针，连续 2 轮结构完整即自动升 full；
          连通测试(isTest)的短回复不参与判定，避免把「连接成功」误当稳定输出。 */
@@ -752,8 +782,18 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
       if (error.userAborted || error.streamPhase === "user" || (window.__aiMainLatch && window.__aiMainLatch.userAborted)) {
         throw new Error("已停止本次生成。");
       }
-      const phase = error.streamPhase === "first" ? "首字节" : "流中";
-      throw new Error(`AI 响应超时（${phase}阶段 ${Math.round(secsToMs(fw.apiConfig.timeout, 300) / 1e3)} 秒内无数据返回）：网络或中转站无响应。可尝试：①接口设置里加大超时秒数 ②更换模型或中转站 ③关闭流式开关后重试。`);
+      /* v4.15.0：旧文案一律报「${用户总超时} 秒内无数据返回」，但首字节阶段实际用的是
+         firstByteMs（非推理 60s / 推理 300s）——玩家会看到 60 秒就失败却被告知等了 300 秒，
+         诊断方向完全错。现按阶段报真实秒数，并针对推理模型给出准确建议。 */
+      const phaseFirst = error.streamPhase === "first";
+      const phase = phaseFirst ? "首字节" : "流中";
+      const totalMs = secsToMs(fw.apiConfig.timeout, 300);
+      const actualMs = phaseFirst ? firstByteMs(fw.apiConfig, totalMs) : totalMs;
+      const isReason = !!(window.isReasoningModel && window.isReasoningModel(fw.apiConfig.model));
+      const advice = phaseFirst
+        ? `①这类模型${isReason ? "是推理模型，思考发生在首字节之前，本来就慢" : "在首字节前的等待上限为 " + Math.round(actualMs / 1e3) + " 秒"}——到接口设置把「超时（秒）」调大即可放宽（推理模型首字节上限随总超时放宽至 300 秒） ②更换更快的模型或中转站 ③保持流式开启（关闭流式是硬超时，反而更容易失败）`
+        : "①接口设置里加大超时秒数 ②更换模型或中转站 ③关闭流式开关后重试";
+      throw new Error(`AI 响应超时（${phase}阶段 ${Math.round(actualMs / 1e3)} 秒内无数据返回）：网络或中转站无响应。可尝试：${advice}。`);
     }
     /* v3.99.0 上下文超限自适应：小模型（或推断不出窗口的中转端点）最容易撞这个墙。
        捕获到就把预算压到 55%，重新装配消息后自动重试一次——玩家只会觉得「慢了一拍」，
@@ -864,7 +904,7 @@ async function testApiConnection(endpoint, apiKey, model, type, maxTokens) {
   }
   const data = await withTimeoutMs(response.json(), 3e4);
   const msg = (_d = (_c = data.choices) == null ? void 0 : _c[0]) == null ? void 0 : _d.message;
-  /* v4.14.0：连通测试。保留兜底（推理模型只回思考时也要能判定「接口通了」），
+  /* v4.15.0：连通测试。保留兜底（推理模型只回思考时也要能判定「接口通了」），
      但经安全提取器，内容像原始推演时不会冒充模型回复。 */
   return window.extractAssistantText(msg, { allowReasoningFallback: true });
 }

@@ -204,7 +204,7 @@ function test_KB() {
     "倒灌条目 " + dz.length + " ｜ 其中 alwaysInclude " + dzAlways.length);
 
   // F12：源码 / 系统提示词回灌
-  // v4.14.0 修正用例自身的方法学缺陷：此前这里直接调用**被测函数** KB_isCodeFragment 当判据，
+  // v4.15.0 修正用例自身的方法学缺陷：此前这里直接调用**被测函数** KB_isCodeFragment 当判据，
   //   属循环自证（tautological）——旧过滤器实测对 247 条碎片拦截 0 条，本用例却照样全绿报 0。
   //   现在改为**独立实现**（不引用生产代码），并额外比对生产过滤器，二者不一致即判失败。
   const looksLikeCode = (e) => {
@@ -295,7 +295,7 @@ function test_docs() {
     "「40 界」出现 " + forties + " 处（v17~v19 历史 changelog，当时确为 40 界，非运行缺陷）SKIP");
 
   // P3：_index.json 计数与生产者（scripts/refresh-kb-index.mjs）口径一致。
-  //     v4.14.0 修正本用例的口径错误：此前这里把 _index 声明值（生产者：**整文件** "title":
+  //     v4.15.0 修正本用例的口径错误：此前这里把 _index 声明值（生产者：**整文件** "title":
   //     出现次数，按其文件头注释有意涵盖 YJ_CODEX 设定速查 / YJ_GENRE_INDEX 专名索引 /
   //     YJ_EARTH_FACTS 地球事实 / YJ_SEQUEL 续作段）与 collectRaw（**仅解析 KB 数组**并
   //     按 title 去重）直接比较——两者是不同集合，此前数值相等纯属巧合。一旦 KB 数据变动，
