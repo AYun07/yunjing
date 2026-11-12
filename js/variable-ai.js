@@ -143,7 +143,7 @@ const VariableAI = {
     const full = /\/(chat\/completions|completions)$/.test(base) ? base : `${base}/chat/completions`;
     const fullMs = this._toMs(cfg.timeout, 90);
     const firstMs = Math.min(6e4, fullMs);
-    /* v4.14.0：登记官（变量AI / 主笔兜底）也要给推理模型留出「思考」的额度。
+    /* v4.15.0：登记官（变量AI / 主笔兜底）也要给推理模型留出「思考」的额度。
        实测缺陷：nvidia/nemotron-3-ultra-550b-a55b 走主笔兜底时 maxTokens 被写成 2048，
        推理模型先思考、把预算吃光 → content 为空 → 结构完整返回的正文里
        伏笔/道具等条目**静默登记不上**（100 轮长会话中两者全程为 0，
@@ -172,13 +172,13 @@ const VariableAI = {
       var _a2, _b2, _c2, _d;
       const data = await this._readBody(response2.json(), fullMs);
       const msg = (_b2 = (_a2 = data.choices) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.message;
-      /* v4.14.0：不再回退到 reasoning_content —— 推理模型的思考不能当变量写进存档 */
+      /* v4.15.0：不再回退到 reasoning_content —— 推理模型的思考不能当变量写进存档 */
       const content = window.extractAssistantText ? window.extractAssistantText(msg) : String((msg && msg.content) || "");
       return (content || "").trim().slice(0, AUX_MAX);
     };
     /* v3.55.14 辅助AI输出硬上限：防个别模型无视 max_tokens 无限复读（曾实测 197KB/254KB 失控） */
     const AUX_MAX = 20000;
-    /* v4.14.0：两轮尝试。第 2 轮把额度翻倍——推理模型常见的「思考吃光预算」能被这一轮救回。 */
+    /* v4.15.0：两轮尝试。第 2 轮把额度翻倍——推理模型常见的「思考吃光预算」能被这一轮救回。 */
     const attempts = reasonModel ? 2 : 1;
     let lastEmpty = "";
     for (let ai = 0; ai < attempts; ai++) {
@@ -202,7 +202,7 @@ const VariableAI = {
             maxChars: AUX_MAX,
             extract: (json) => {
               const d = json.choices && json.choices[0] && json.choices[0].delta;
-              /* v4.14.0：流式只取 content；reasoning_content 不得进入变量解析 */
+              /* v4.15.0：流式只取 content；reasoning_content 不得进入变量解析 */
               return (d && typeof d.content === "string") ? d.content : "";
             }
           });
@@ -422,7 +422,7 @@ const VariableAI = {
       endpoint: a.endpoint,
       apiKey: a.apiKey,
       model: a.model,
-      /* v4.14.0：推理模型要留出「思考」额度（同登记官通道）。
+      /* v4.15.0：推理模型要留出「思考」额度（同登记官通道）。
          旧值 1200 对推理模型必然被思考吃光 → 前情提要静默为空。 */
       maxTokens: (window.isReasoningModel && window.isReasoningModel(a.model)) ? 8192 : 1200,
       temperature: 0.3,
@@ -521,6 +521,122 @@ ${text}` }
   get pending() {
     return this._pending || null;
   },
+  /* ==================== v4.15.0 确定性兜底登记 ====================
+   *
+   * 为什么需要
+   *   状态登记官要求输出 30+ 种指令的复杂协议，弱模型（廉价 flash 类）几乎无法稳定做到，
+   *   实测会出现「变量AI返回了空内容」→ 整轮状态不落库 → 世界停止生长
+   *   （38 界真测中表现为：人物恒为 1、大事记为 0）。玩家没配第三个接口时更是完全无登记。
+   *
+   * 怎么做
+   *   兜底**不猜、不编造**——只登记正文里**确凿存在**的事实，且复用现有解析器
+   *   （生成一个合成 (variable_update) 块交给 VariableInstructionParser），
+   *   因此不引入任何新的解析分支，也不会与既有语义冲突：
+   *     · wordCount —— 正文实际字数（纯事实）
+   *     · chapter:+1 —— 一轮完成即一章推进（纯事实）
+   *     · tension —— 由关键词强度推算（该字段本就是 UI 绘图用的估计值）
+   *     · weather / time —— 仅在正文**明写**时才登记
+   *     · 新人物首次登场 —— 仅在「」内且出现 ≥2 次（保守，避免把路人甲或叹词当人名）
+   *
+   * 这样即使玩家用最弱的模型、甚至完全不配登记官，世界也仍在累积。
+   * ==================== */
+  _fallbackTension(body) {
+    const t = String(body || "");
+    const hi = (t.match(/[杀血死战爆裂崩断怒喝嘶吼刀剑枪炮陷阱追杀危在旦夕千钧一发]/g) || []).length;
+    const lo = (t.match(/[静坐闲聊走去看看沉默微笑点头吃饭休息睡]/g) || []).length;
+    const v = 30 + hi * 6 - lo * 3;
+    return Math.max(5, Math.min(95, Math.round(v)));
+  },
+  _fallbackWeather(body) {
+    const t = String(body || "");
+    const M = [[/雷暴|炸雷|电闪雷鸣/, "雷暴"], [/大雪|鹅毛|飞雪|雪片/, "雪"], [/暴雨|倾盆|大雨/, "雨"], [/小雨|细雨|毛毛雨|雨丝/, "雨"],
+    [/大雾|浓雾|雾霭|白雾/, "雾"], [/风沙|扬沙|黄沙/, "风沙"], [/狂风|大风|风口/, "大风"], [/阴天|阴云|阴沉/, "阴"],
+    [/晴空|晴朗|日头正好/, "晴"], [/夜色|夜里|月上|星子/, "夜色"]];
+    for (const [re, name] of M) if (re.test(t)) return name;
+    return "";
+  },
+  _fallbackTime(body) {
+    const t = String(body || "");
+    const M = [[/黎明|破晓|天将亮|鱼肚白/, "05:30·破晓"], [/清晨|一早|早上|晨光/, "07:00·清晨"], [/上午|日上三竿/, "10:00·上午"],
+    [/正午|晌午|中午/, "12:00·正午"], [/午后|下午|黄昏前/, "15:00·午后"], [/黄昏|日落|夕阳|暮色/, "18:30·黄昏"],
+    [/傍晚|入夜|天黑|夜幕/, "20:00·入夜"], [/深夜|子夜|午夜|后半夜/, "01:00·深夜"], [/月夜|夜半/, "23:00·夜"]];
+    for (const [re, name] of M) if (re.test(t)) return name;
+    return "";
+  },
+  /** 保守抽人名：必须在「」引号内出现，且「」内容不含标点（是纯名字），全文出现 ≥2 次 */
+  _fallbackNames(body) {
+    const t = String(body || "");
+    const seen = new Map();
+    const re = /「([\u4e00-\u9fff]{2,4})」/g;
+    let m;
+    while ((m = re.exec(t))) {
+      const n = m[1];
+      /* 排除明显不是人名的（叹词/动词短语/时间词） */
+      if (/^[一二三四五六七八九十百千万]+$/.test(n)) continue;
+      if (/^(为什么|怎么|什么|哪里|谁|不会|可以|好的|真的|不是|已经|还是|我们|你们|他们)$/.test(n)) continue;
+      seen.set(n, (seen.get(n) || 0) + 1);
+    }
+    const out = [];
+    for (const [n, c] of seen) {
+      if (c < 2) continue;
+      if (n.length < 2 || n.length > 4) continue;
+      out.push(n);
+      if (out.length >= 3) break;
+    }
+    return out;
+  },
+  /** 合成一个 (variable_update) 块，只含确凿事实；交给既有解析器处理 */
+  buildFallbackBlock(body) {
+    const flat = String(body || "").replace(/\s/g, "");
+    const lines = [];
+    if (flat.length > 0) lines.push("wordCount: +" + flat.length);
+    lines.push("chapter: +1");
+    lines.push("tension: " + this._fallbackTension(body));
+    const w = this._fallbackWeather(body); if (w) lines.push("weather: " + w);
+    const tm = this._fallbackTime(body);   if (tm) lines.push("time: " + tm);
+    const names = this._fallbackNames(body);
+    names.forEach((n) => lines.push(n + ".note: 保底登记（正文「」内出现 ≥2 次）"));
+    return { block: "(variable_update)\n" + lines.join("\n") + "\n(/variable_update)", names };
+  },
+  /** 兜底登记：走同一个解析器与落库路径，UI 标记为「保底登记」而非失败 */
+  applyFallback(body, turnIdx) {
+    try {
+      const fw = window.storyFramework;
+      const parser = window.VariableInstructionParser;
+      if (!fw || !parser || !body || !String(body).trim()) return false;
+      const { block, names } = this.buildFallbackBlock(body);
+      const base = fw.storyState.variables;
+      const { newVariables, updateBlock } = parser.parse(block, base, { storyRegistration: true });
+      if (!updateBlock) return false;
+      fw.storyState.variables = newVariables;
+      fw.updateStatusPanel();
+      fw.saveStory();
+      const card = document.querySelector(".va-card.va-error");
+      if (card) card.remove();
+      this.renderFallbackCard(updateBlock, turnIdx, names);
+      window.YJ_DEBUG && console.log("[变量AI] 保底登记完成（" + (names.length ? "含新登场：" + names.join("、") : "仅基础事实") + "）");
+      return true;
+    } catch (e) {
+      console.warn("[变量AI] 保底登记失败:", e);
+      return false;
+    }
+  },
+  /** 保底登记卡片：与「登记失败」区分，玩家一眼能看出状态仍被保住了 */
+  renderFallbackCard(updateBlock, turnIdx, names) {
+    try {
+      const host = document.getElementById("varAiCards") || document.getElementById("vaCards");
+      if (!host) return;
+      const el = document.createElement("div");
+      el.className = "va-card";
+      el.dataset.turnIdx = turnIdx == null ? "" : String(turnIdx);
+      const nLines = String(updateBlock).split("\n").filter(Boolean).length;
+      el.innerHTML = '<span class="va-badge">🛟 保底登记</span>'
+        + '<span class="va-label">登记官没给出可用的状态块，已用确定性兜底保住本轮状态（' + nLines + ' 条：字数 / 章节 / 张力'
+        + (names && names.length ? ' / 新登场 ' + names.join("、") : '') + '）</span>';
+      host.appendChild(el);
+    } catch (e) { }
+  },
+
   /* ==================== 提取主链路 ==================== */
   async extract(reply, manual = false, turnIdx = null) {
     var _a, _b, _c, _d;
@@ -540,7 +656,13 @@ ${text}` }
         var _a2;
         return (_a2 = window.TokenUsage) == null ? void 0 : _a2.recordOutput(t, "登记·主笔兜底"), t;
       })) : await this.callAPI(messages);
-      if (!out || !out.trim()) throw new Error("变量AI返回了空内容");
+      /* v4.15.0：登记官空返回不再是死路——先用确定性兜底把本轮确凿事实落库，
+         世界继续生长；同时仍把「登记官没干活」这件事如实告诉玩家（不假装成功）。 */
+      if (!out || !out.trim()) {
+        const saved = this.applyFallback(body, turnIdx);
+        console.warn("[变量AI] 登记官返回空内容，已走确定性兜底：" + (saved ? "成功" : "失败"));
+        return;
+      }
       const driftLines = [];
       const cleaned = String(out).split(/\r?\n/).filter((l) => {
         const m = l.trim().match(/^!!drift[:：]\s*(.+)$/i);
@@ -575,7 +697,15 @@ ${text}` }
       console.error("[变量AI] 登记失败:", err);
       const via = this.isFallbackActive();
       const friendly = err && err.name === "AbortError" ? new Error(via ? "主笔接口响应超时（登记兜底）。稍后点「重试登记」即可；频繁超时可到接口设置里换更快的模型。" : "第三接口响应超时（默认 90 秒）。请确认变量AI接口地址 / Key 可用后点「重试登记」。") : err;
+      /* v4.15.0：登记取数失败时，先用确定性兜底把「字数 / 章节 / 张力 / 新登场」这些
+         确凿事实落库，再显示失败卡（让玩家知道登记官没干活，但状态没丢）——弱模型与
+         未配第三接口的玩家因此也能持续积累世界，而不是每轮状态归零。 */
+      let rescued = false;
+      try { rescued = this.applyFallback(this._lastBody || "", turnIdx); } catch (e2) { rescued = false; }
       this.renderFailCard(friendly, turnIdx);
+      if (rescued) {
+        try { this.renderFallbackCard("(保底登记)", turnIdx, this._fallbackNames(this._lastBody || "")); } catch (e3) { }
+      }
     } finally {
       this._busy = false;
     }

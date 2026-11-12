@@ -325,7 +325,7 @@ const ConfigModal = {
                         <div id="cfg_testResult" class="test-result"></div>
                         <button type="button" class="btn-ghost dw-test-btn" onclick="ConfigModal.testConnection()">测试主接口连通</button>
 
-                        <!-- v4.14.0 · 本地跨域代理：纯前端绕开浏览器同源策略的正解 -->
+                        <!-- v4.15.0 · 本地跨域代理：纯前端绕开浏览器同源策略的正解 -->
                         <div class="form-tip" style="margin-top:14px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px;">
                             <b>🛡 本地代理（被跨域拦住时用）</b><br>
                             云境是纯前端页面，浏览器只允许直连<b>返回跨域许可</b>的接口。像
@@ -592,7 +592,7 @@ const ConfigModal = {
                     </div>
                 </div>
 
-                <!-- 🔗 多连接配置（Connection Profiles · v3.55.30） -->
+                <!-- 🔗 多连接配置（多连接配置 · v3.55.30） -->
                 <div class="dw-config api-card">
                     <div class="dw-config-head api-card-head" id="cpSectionHead" onclick="ConfigModal.toggleCPSection()">
                         <span class="api-head-left">
@@ -604,7 +604,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="cpSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            借鉴酒馆 Connection Profiles：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
+                            借鉴酒馆 多连接配置：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
                             主笔只管写正文，机械活（状态登记 / 滚动摘要）交给廉价跟随模型——声线一致、还省钱。
                         </div>
                         <div id="cp_profileList" class="cp-profile-list"></div>
@@ -1031,7 +1031,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="mmSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            云境工坊原创内置预设（SillyTavern 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 SillyTavern 预设整份替换。
+                            云境工坊原创内置预设（常见前端工具 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 常见前端工具 预设整份替换。
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">📦 当前预设 <span class="api-role-chip" id="mmPresetChip"></span></div>
@@ -1043,7 +1043,7 @@ const ConfigModal = {
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
-                                支持 SillyTavern 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
+                                支持 常见前端工具 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
                                 导入后整份替换内置预设，旧的逐条开关会自动清空；随时可一键恢复内置。
                             </div>
                         </div>
@@ -1228,7 +1228,7 @@ const ConfigModal = {
     if (caret) caret.textContent = open ? "▾" : "▸";
     if (open) this.renderVaultSection();
   },
-  /* v4.14.0 修：懒加载模块未就绪时的崩溃（第三方审查 · 玩家路径实测）
+  /* v4.15.0 修：懒加载模块未就绪时的崩溃（第三方审查 · 玩家路径实测）
      现象：**还没开局的新玩家一打开「接口设置」就整块崩**，控制台
        TypeError: Cannot read properties of undefined (reading 'saves')
        at renderVaultSection → fillForm → open
@@ -1282,7 +1282,7 @@ const ConfigModal = {
     if (open) this.renderThemeSection();
   },
   /** 渲染主题工坊（内嵌版，与独立弹窗共用同一份数据） */
-  /* v4.14.0：懒加载模块「真对象是否已就绪」的统一判定。
+  /* v4.15.0：懒加载模块「真对象是否已就绪」的统一判定。
      lazy-boot 的影子桩会把 __yjLazyShadow 置为 true（见 js/lazy-boot.js:170），
      桩上任何取值都是 undefined —— 直接拿去做 innerHTML 会渲染出字面量「undefined」。
      凡是要读懒模块数据/HTML 的地方，先过这一关。 */
@@ -1290,7 +1290,7 @@ const ConfigModal = {
     const O = window[name];
     return !!(O && !O.__yjLazyShadow);
   },
-  /* v4.14.0：占位 + 轮询补渲染。影子桩的那次读已触发真模块下载，这里等它到位。
+  /* v4.15.0：占位 + 轮询补渲染。影子桩的那次读已触发真模块下载，这里等它到位。
      key 区分不同区块，避免多个区块共用一个定时器。 */
   _lazyPlaceholder(host, chip, name, placeholder, onReady) {
     if (chip) chip.textContent = "读取中…";
@@ -1658,7 +1658,7 @@ const ConfigModal = {
       // v3.27.6
     };
   },
-  /* ==================== 🔗 多连接配置（Connection Profiles · v3.55.30） ==================== */
+  /* ==================== 🔗 多连接配置（多连接配置 · v3.55.30） ==================== */
   toggleCPSection() {
     const body = document.getElementById("cpSectionBody");
     const caret = document.getElementById("cpCaret");
@@ -3290,7 +3290,7 @@ const ConfigModal = {
     const fw = window.storyFramework;
     fw.apiConfig = { ...fw.apiConfig, ...this.readForm() };
     fw.saveApiConfig();
-    /* v4.14.0：保存时对「已知不给跨域头」的官方端点给出预警。
+    /* v4.15.0：保存时对「已知不给跨域头」的官方端点给出预警。
        不阻止保存（真有中转站复用同域名也能用），只提前把代价说清楚——
        免得玩家配好后开局，才发现请求根本发不出去、还以为是云境坏了。 */
     try {
@@ -3386,7 +3386,7 @@ const ConfigModal = {
       result.textContent = `✓ 连接成功，模型回复：${String(reply).slice(0, 40)}`;
       return;
     } catch (err) {
-      /* v4.14.0：失败不再只甩一句报错。先用跨域守卫把原因分细——
+      /* v4.15.0：失败不再只甩一句报错。先用跨域守卫把原因分细——
          是「被浏览器同源策略拦了」，还是 Key 错 / 模型名错 / 限流 / 超时 / 连不上，
          并给出可执行下一步（本地代理 or 换中转站）。 */
       if (window.CorsGuard && cfg.endpoint) {
@@ -3406,7 +3406,7 @@ const ConfigModal = {
       result.textContent = `✕ ${err.message}（浏览器直连要求接口允许跨域；可用项目自带的本地代理 tools/cors-proxy.mjs）`;
     }
   },
-  /* v4.14.0 · 本地代理一键接入 / 还原
+  /* v4.15.0 · 本地代理一键接入 / 还原
      纯前端页面无法直连不给跨域头的官方端点；项目自带 tools/cors-proxy.mjs，
      在本机起一个有 CORS 头的转发服务，把接口地址包成 <proxy>/<原地址> 即可。 */
   _proxyBase() {

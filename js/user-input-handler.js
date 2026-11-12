@@ -196,7 +196,7 @@ const StoryInput = {
       /* v3.47.8 文本失控检测（词表狂奔/标点消失/复读循环——弱模型在长中文创作上的解码退化）：
          ① 连续 160+ 非空白字符无任何标点/换行；② 4~12 字 n-gram 去重后剩余率 <70%（复读/同义词循环）。
          命中即视为失控正文，走与空正文相同的自动重写通道。 */
-      /* v4.14.0 新增「语种健全性」判定（第三方审查 · 38 界真模型实测发现）：
+      /* v4.15.0 新增「语种健全性」判定（第三方审查 · 38 界真模型实测发现）：
          实测某 550B 推理模型在部分界（道诡异仙 / 帝霸 / 玄鉴仙族…）退化输出**多语种 token 汤**：
            「Enemy capacité tanksせční」「MaterialsText ContrTextSystem^(W)」…
          全篇中文占比掉到 44%–57%，而旧的失控判据只看「无标点长串」与「n-gram 复读」，
@@ -354,7 +354,7 @@ const StoryInput = {
          并给出下一步动作，而不是甩一段原始报错 */
       const raw = String((err && err.message) || err || "");
       let hint = "本轮现场已还原，指令已放回输入框，可直接重发。";
-      /* v4.14.0：推理模型「只思考没正文」的分诊（见 api-calling-functions.js 文件头） */
+      /* v4.15.0：推理模型「只思考没正文」的分诊（见 api-calling-functions.js 文件头） */
       if (err && err.isReasoningOnly) hint = "这个模型是「推理模型」：它的思考过程占满了输出上限，导致没有正文。到「接口设置」把最大输出 token 调大到 8192 以上（建议 16384；长章 32768），或换用非推理模型。为保证正文纯净，系统不会把思考过程当成小说正文。";
       else if (/40[13]/.test(raw) || /unauthor|invalid.*key|api key/i.test(raw)) hint = "接口拒绝了这把 Key（401/403）。到「接口设置」核对 API Key 与地址是否属于同一家服务商。";
       else if (/404|model.*not.*(exist|found)|does not exist/i.test(raw)) hint = "模型名不存在（404）。到「接口设置」点「拉取模型列表」，从列表里选一个可用模型。";
