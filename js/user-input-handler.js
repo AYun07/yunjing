@@ -4,6 +4,8 @@ const StoryInput = {
     const fw = window.storyFramework;
     const input = document.getElementById("userInput");
     const message = (text !== void 0 ? text : input ? input.value : "").trim();
+    /* v4.16.0：记下玩家本次输入，供「按玩家语言判退化」推断期望语种（写英文就不按中文要求） */
+    try { window.__yjLastUserInput = message; } catch (e) { }
     if (!message) return;
     /* v3.55.3：生成中点击不再静默吞掉——给出可见反馈，避免"按钮没反应"的错觉 */
     if (fw.isProcessing) {
@@ -196,7 +198,7 @@ const StoryInput = {
       /* v3.47.8 文本失控检测（词表狂奔/标点消失/复读循环——弱模型在长中文创作上的解码退化）：
          ① 连续 160+ 非空白字符无任何标点/换行；② 4~12 字 n-gram 去重后剩余率 <70%（复读/同义词循环）。
          命中即视为失控正文，走与空正文相同的自动重写通道。 */
-      /* v4.15.0 新增「语种健全性」判定（第三方审查 · 38 界真模型实测发现）：
+      /* v4.16.0 新增「语种健全性」判定（第三方审查 · 38 界真模型实测发现）：
          实测某 550B 推理模型在部分界（道诡异仙 / 帝霸 / 玄鉴仙族…）退化输出**多语种 token 汤**：
            「Enemy capacité tanksせční」「MaterialsText ContrTextSystem^(W)」…
          全篇中文占比掉到 44%–57%，而旧的失控判据只看「无标点长串」与「n-gram 复读」，
@@ -218,7 +220,14 @@ const StoryInput = {
         if (body.replace(/\s/g, "").length < 200) return false;
         const flat = body.replace(/\s/g, "");
         /* 语种健全性：够长的正文里汉字占比 < 55% 视为退化（中文创作场景的正常下限远高于此） */
-        if (flat.length >= 240 && cjkRatioOf(flat) < 0.55) return true;
+        /* v4.16.0：优先用 BaseModelMode 的「按玩家输入推断语种」统一判据——
+           写英文小说的玩家不会被中文占比误杀；取不到模块才退回本地中文判据。 */
+        const BMM = window.BaseModelMode;
+        if (BMM && BMM.detectDegeneration) {
+          let sample = "";
+          try { sample = String(window.__yjLastUserInput || (typeof message !== "undefined" ? message : "") || ""); } catch (e) { sample = ""; }
+          if (BMM.detectDegeneration(body, sample)) return true;
+        } else if (flat.length >= 240 && cjkRatioOf(flat) < 0.55) return true;
         let maxRun = 0, run = 0;
         for (const ch of flat) {
           if (/[，。！？；：、“”‘’…—,.!?;:\n]/.test(ch)) { run = 0; } else { run += 1; if (run > maxRun) maxRun = run; }
@@ -354,7 +363,7 @@ const StoryInput = {
          并给出下一步动作，而不是甩一段原始报错 */
       const raw = String((err && err.message) || err || "");
       let hint = "本轮现场已还原，指令已放回输入框，可直接重发。";
-      /* v4.15.0：推理模型「只思考没正文」的分诊（见 api-calling-functions.js 文件头） */
+      /* v4.16.0：推理模型「只思考没正文」的分诊（见 api-calling-functions.js 文件头） */
       if (err && err.isReasoningOnly) hint = "这个模型是「推理模型」：它的思考过程占满了输出上限，导致没有正文。到「接口设置」把最大输出 token 调大到 8192 以上（建议 16384；长章 32768），或换用非推理模型。为保证正文纯净，系统不会把思考过程当成小说正文。";
       else if (/40[13]/.test(raw) || /unauthor|invalid.*key|api key/i.test(raw)) hint = "接口拒绝了这把 Key（401/403）。到「接口设置」核对 API Key 与地址是否属于同一家服务商。";
       else if (/404|model.*not.*(exist|found)|does not exist/i.test(raw)) hint = "模型名不存在（404）。到「接口设置」点「拉取模型列表」，从列表里选一个可用模型。";

@@ -157,9 +157,33 @@ class StoryFramework {
             if (!this._saveDirty) return;   // clearSave 已取消：本次合并写作废
             this._saveDirty = false;
             try { this._saveStoryNow(); } catch (e) { console.error('[StoryFramework] 存档异常:', e); }
+            try { this._checkQuotaHint(); } catch (e) { }
         };
         if (typeof queueMicrotask === 'function') queueMicrotask(run);
         else Promise.resolve().then(run);
+    }
+
+    /** v4.16.0 配额前瞻提示：**撞墙之前**先告知，而不是等满了才降级。
+     *  说明：作者原有的配额梯队已能逐级保命（撤备份 → 插图骨架化 → 立绘转 IndexedDB →
+     *  整档转 IndexedDB），且每一级都有玩家可见提示，不存在静默丢档。
+     *  这里补的是「还没满、但已不宽裕」时的提前预警——每会话最多提示一次，不打扰。 */
+    _checkQuotaHint() {
+        if (this._quotaHinted) return;
+        try {
+            let chars = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (!k) continue;
+                const v = localStorage.getItem(k);
+                chars += k.length + (v ? v.length : 0);
+            }
+            /* localStorage 普遍以 ~5,000,000 字符为限（按 UTF-16 计） */
+            const usedMB = chars / 1048576;
+            if (usedMB >= 3.75) {                 // ≈ 75%，提前预警
+                this._quotaHinted = true;
+                window.showToast?.('💾 本地存储已用 ' + usedMB.toFixed(1) + ' MB（上限约 5 MB）。继续长篇前建议先「导出存档」留一份备份', 'info');
+            }
+        } catch (e) { }
     }
 
     /** 立即冲刷挂起的合并写（切档 reload 前等紧急场景可显式调用；平时无需） */

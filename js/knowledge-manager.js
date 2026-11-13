@@ -10,7 +10,7 @@ const KB_GENRE = new URLSearchParams(location.search).get("genre") || "free";
    行」形态才剔除。判据刻意收窄到 title 前缀 + 明确 JS token，避免误伤
    「速查 / 条文汇编 / 总纲 / 档案」这类 content 里恰好引用了字段名的合法设定文本。
    数据文件本身不物理删除（可逆、可审计），过滤层同时兜住未来再次生成的同类脏数据。 */
-/* v4.15.0 · 判据重做（第三方审查 F12 复核）。
+/* v4.16.0 · 判据重做（第三方审查 F12 复核）。
    旧版为什么形同虚设：① 只看 title，不看 content —— 而 content 才是 JS 语句；
    ② 用「白名单 token」判断，且白名单写的是完整串 `defaultDynamicWorldPrompt`，
       实际 title 被切碎脚本**截断成 20 字符**（`defaultDynamicWorl`）→ 永远匹配不上。

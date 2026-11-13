@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.15.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.16.0">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,16 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 修复 发布 文档" style="--entry-hue:#4a7ba8;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.16.0</span>
+                <span class="entry-date">2026-11-13</span>
+            </div>
+            <h3 class="entry-title">版本归档补全 · 创作语种豁免 · 存储配额前瞻</h3>
+            <p class="entry-text"><b>① 补上一个我自己造成的严重疏漏：三个版本没有 tag / Release。</b>v4.13.0 / v4.14.0 / v4.15.0 发布时只推了代码，<b>漏了打 git 标签与建 Release</b>——而 VERSIONS.md 第一行就承诺「每个版本都已打 git 标签，并在 Releases 建了对应发布页」，速查表里也给了 <code>archive/refs/tags/&lt;版本&gt;.zip</code> 下载链接。结果这三个版本的下载链接<b>全部 404</b>，版本页对我的最后三个版本说了假话。现已补齐三个 tag 与三个 Release，并<b>逐个下载 zip 校验内容</b>（确认 <code>studio.html</code> 里的 <code>YJ_VER</code> 与标签一致：25,712 / 25,733 / 25,739 KB）。补的过程中还发现 GitHub 建 Release 时若不指定目标提交，会把 tag 打在<b>当前 main HEAD</b> 上——于是 v4.13.0.zip 里装的会是 v4.15.0 的代码；已把三个 tag 全部移到各自版本的提交。<b>② 创作语种豁免</b>：上一版加的语种守卫（汉字占比 &lt;55% 判退化）对中文创作正确，但会<b>误杀写英文小说的玩家</b>——整篇英文必然汉字占比接近 0，会被反复判为退化、反复重写。现不再硬编码中文：从<b>玩家自己最近的输入</b>推断期望语种，中文要求汉字主导、拉丁要求「像人写的散文」（拉丁字母主导 + 有正常分词 + 含常见功能词）。判据回归 6/6：英文正文 + 英文玩家放行、英文正文 + 中文玩家判退化、中文正文均放行、<b>token 汤 + 英文玩家仍被判退化（豁免没有开洞）</b>。<b>③ 存储配额前瞻提示</b>：澄清一处此前的误判——作者<b>早已实现完整的配额梯队</b>（撤备份 → 插图骨架化 → 立绘转 IndexedDB → 整档转 IndexedDB），且每一级都有玩家可见提示，<b>不存在静默丢档</b>；真正缺的只是「撞墙之前没有预警」。现补一个前瞻提示：本地存储用量达约 75% 时提示一次（每会话最多一次，不打扰）。<b>④ 手机端跨域指引分流</b>：本地代理需在电脑上跑 Node，<b>手机跑不了</b>——而此前的跨域提示不分平台，会让手机玩家照着桌面教程去双击 .bat，永远走不通。现按平台分流：桌面给「本地代理 / 中转站」两条路，手机明确告知只能用支持跨域的中转站地址。<b>⑤ 文档口径订正</b>：VERSIONS.md 的「版本分层」写「v4.15.0 口径」却说「首行 v4.14.0 为当前版本」的自相矛盾已修；过期数字「内置 24,940 条」订正为实测 <code>_index.json</code> 的 <b>24,779</b> 条；「当前口径（v4.12.1）」更新为 v4.16.0。</p>
+                    <p class="ver-diff"><b>相比 v4.15.0 的变化</b>：版本归档补全（补 v4.13.0/v4.14.0/v4.15.0 的 tag 与 Release，修失效下载链接）· 创作语种豁免 · 存储配额前瞻 · 手机端跨域指引分流 · 文档口径订正… · <a href="https://github.com/AYun07/yunjing/compare/v4.15.0...v4.16.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
 
         <article class="log-entry" data-tags="版本 修复 模型 玩家验证" style="--entry-hue:#7a5fa8;">
             <div class="entry-head">
