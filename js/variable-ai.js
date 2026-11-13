@@ -143,7 +143,7 @@ const VariableAI = {
     const full = /\/(chat\/completions|completions)$/.test(base) ? base : `${base}/chat/completions`;
     const fullMs = this._toMs(cfg.timeout, 90);
     const firstMs = Math.min(6e4, fullMs);
-    /* v4.15.0：登记官（变量AI / 主笔兜底）也要给推理模型留出「思考」的额度。
+    /* v4.16.0：登记官（变量AI / 主笔兜底）也要给推理模型留出「思考」的额度。
        实测缺陷：nvidia/nemotron-3-ultra-550b-a55b 走主笔兜底时 maxTokens 被写成 2048，
        推理模型先思考、把预算吃光 → content 为空 → 结构完整返回的正文里
        伏笔/道具等条目**静默登记不上**（100 轮长会话中两者全程为 0，
@@ -172,13 +172,13 @@ const VariableAI = {
       var _a2, _b2, _c2, _d;
       const data = await this._readBody(response2.json(), fullMs);
       const msg = (_b2 = (_a2 = data.choices) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.message;
-      /* v4.15.0：不再回退到 reasoning_content —— 推理模型的思考不能当变量写进存档 */
+      /* v4.16.0：不再回退到 reasoning_content —— 推理模型的思考不能当变量写进存档 */
       const content = window.extractAssistantText ? window.extractAssistantText(msg) : String((msg && msg.content) || "");
       return (content || "").trim().slice(0, AUX_MAX);
     };
     /* v3.55.14 辅助AI输出硬上限：防个别模型无视 max_tokens 无限复读（曾实测 197KB/254KB 失控） */
     const AUX_MAX = 20000;
-    /* v4.15.0：两轮尝试。第 2 轮把额度翻倍——推理模型常见的「思考吃光预算」能被这一轮救回。 */
+    /* v4.16.0：两轮尝试。第 2 轮把额度翻倍——推理模型常见的「思考吃光预算」能被这一轮救回。 */
     const attempts = reasonModel ? 2 : 1;
     let lastEmpty = "";
     for (let ai = 0; ai < attempts; ai++) {
@@ -202,7 +202,7 @@ const VariableAI = {
             maxChars: AUX_MAX,
             extract: (json) => {
               const d = json.choices && json.choices[0] && json.choices[0].delta;
-              /* v4.15.0：流式只取 content；reasoning_content 不得进入变量解析 */
+              /* v4.16.0：流式只取 content；reasoning_content 不得进入变量解析 */
               return (d && typeof d.content === "string") ? d.content : "";
             }
           });
@@ -422,7 +422,7 @@ const VariableAI = {
       endpoint: a.endpoint,
       apiKey: a.apiKey,
       model: a.model,
-      /* v4.15.0：推理模型要留出「思考」额度（同登记官通道）。
+      /* v4.16.0：推理模型要留出「思考」额度（同登记官通道）。
          旧值 1200 对推理模型必然被思考吃光 → 前情提要静默为空。 */
       maxTokens: (window.isReasoningModel && window.isReasoningModel(a.model)) ? 8192 : 1200,
       temperature: 0.3,
@@ -521,7 +521,7 @@ ${text}` }
   get pending() {
     return this._pending || null;
   },
-  /* ==================== v4.15.0 确定性兜底登记 ====================
+  /* ==================== v4.16.0 确定性兜底登记 ====================
    *
    * 为什么需要
    *   状态登记官要求输出 30+ 种指令的复杂协议，弱模型（廉价 flash 类）几乎无法稳定做到，
@@ -656,7 +656,7 @@ ${text}` }
         var _a2;
         return (_a2 = window.TokenUsage) == null ? void 0 : _a2.recordOutput(t, "登记·主笔兜底"), t;
       })) : await this.callAPI(messages);
-      /* v4.15.0：登记官空返回不再是死路——先用确定性兜底把本轮确凿事实落库，
+      /* v4.16.0：登记官空返回不再是死路——先用确定性兜底把本轮确凿事实落库，
          世界继续生长；同时仍把「登记官没干活」这件事如实告诉玩家（不假装成功）。 */
       if (!out || !out.trim()) {
         const saved = this.applyFallback(body, turnIdx);
@@ -697,7 +697,7 @@ ${text}` }
       console.error("[变量AI] 登记失败:", err);
       const via = this.isFallbackActive();
       const friendly = err && err.name === "AbortError" ? new Error(via ? "主笔接口响应超时（登记兜底）。稍后点「重试登记」即可；频繁超时可到接口设置里换更快的模型。" : "第三接口响应超时（默认 90 秒）。请确认变量AI接口地址 / Key 可用后点「重试登记」。") : err;
-      /* v4.15.0：登记取数失败时，先用确定性兜底把「字数 / 章节 / 张力 / 新登场」这些
+      /* v4.16.0：登记取数失败时，先用确定性兜底把「字数 / 章节 / 张力 / 新登场」这些
          确凿事实落库，再显示失败卡（让玩家知道登记官没干活，但状态没丢）——弱模型与
          未配第三接口的玩家因此也能持续积累世界，而不是每轮状态归零。 */
       let rescued = false;

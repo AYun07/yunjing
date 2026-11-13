@@ -169,7 +169,7 @@
   /* ---------- 输出质量探针（v4.11.1，模型无关：只看这一轮回复本身） ----------
      不崩塌 + 正文够长 + 有完整协议块（选项/变量/状态任一），视为「这个模型驾驭得住」。
      连续 2 轮达标即升 full。连通测试的短回复、报错、结构残缺都不计入，避免误升。 */
-  /* ---------- 语种退化检测（v4.15.0 · 第三方审查 38 界实测发现） ----------
+  /* ---------- 语种退化检测（v4.16.0 · 第三方审查 38 界实测发现） ----------
      弱模型/超载模型会退化输出「多语种 token 汤」：Enemy capacité tanksせční、
      MaterialsText ContrTextSystem^(W)…——标点齐全、长度充足，唯独根本不是中文。
      detectCollapse 只看「无标点长串 / n-gram 复读」，对这类输出完全无感，
@@ -181,9 +181,47 @@
     const tot = cjk + other;
     return tot ? cjk / tot : 1;
   }
-  function detectDegeneration(text) {
-    const flat = String(text || '').replace(/\s/g, '');
+  /* ---------- v4.16.0：按「玩家自己用什么语言写」判断期望语种 ----------
+     上一版只用「汉字占比 <55%」判退化——对中文创作正确，但**写英文小说的玩家会被误杀**
+     （整篇英文必然汉字占比接近 0，会被反复判为退化、反复重写）。
+     现在不再硬编码中文：从玩家最近的输入推断期望语种，再用对应的健全性判据。
+     中文 → 汉字须占主导；拉丁 → 须是「像人写的散文」而不只是拉丁字母多。
+     两者都能抓住「多语种 token 汤」，但都不误杀合法的另一种语言创作。 */
+  function expectedScript(sample) {
+    const s = String(sample || "");
+    const cjk = (s.match(/[\u4e00-\u9fff]/g) || []).length;
+    const latin = (s.match(/[A-Za-z]/g) || []).length;
+    if (!cjk && !latin) return 'cjk';         // 推断不出（纯符号/数字）→ 按产品默认（中文）
+    return latin > cjk ? 'latin' : 'cjk';
+  }
+  /* 拉丁散文健全性：拉丁字母须主导、须有正常分词、须含常见功能词。
+     token 汤（MaterialsText ContrTextSystem capacité tanksせční）的特点是：
+     大写单词乱拼 + 几乎不出现 the/and/of 这类功能词 + 常混入假名/西里尔。 */
+  const LATIN_FUNC = /\b(the|and|of|to|in|is|was|that|it|he|she|they|you|i|a|an|for|with|on|at|as|but|not|his|her|their|had|have|were|been|from|this|which|or|by|be|are)\b/gi;
+  function looksLikeLatinProse(text) {
+    const s = String(text || "");
+    const latin = (s.match(/[A-Za-z]/g) || []).length;
+    const foreign = (s.match(/[\u0400-\u04FF\u3040-\u30ff\uac00-\ud7af\u0600-\u06FF]/g) || []).length;
+    const cjk = (s.match(/[\u4e00-\u9fff]/g) || []).length;
+    const tot = latin + foreign + cjk;
+    if (!tot) return true;
+    if (latin / tot < 0.72) return false;                  // 拉丁未主导 → 混排异常
+    if (foreign > latin * 0.06) return false;              // 掺入过多假名/西里尔 → 退化
+    const words = (s.match(/[A-Za-z]{2,}/g) || []);         // 有分词的词
+    if (words.length < 25) return false;                   // 词太少 → 不是正常段落
+    const funcs = (s.match(LATIN_FUNC) || []).length;
+    return funcs / words.length >= 0.08;                    // 功能词占比过低 → token 汤
+  }
+  /**
+   * @param {string} text    待判定的模型输出
+   * @param {string} [sample] 玩家最近的输入（用于推断期望语种）；省略则按中文
+   */
+  function detectDegeneration(text, sample) {
+    const raw = String(text || '');
+    const flat = raw.replace(/\s/g, '');
     if (flat.length < 240) return false;      // 太短不作判：短句里夹英文是正常的
+    const expect = expectedScript(sample);
+    if (expect === 'latin') return !looksLikeLatinProse(raw);
     return cjkRatio(flat) < 0.55;
   }
 
@@ -192,7 +230,7 @@
     const t = reply.trim();
     if (t.length < 400) return false;
     if (detectCollapse(t)) return false;
-    if (detectDegeneration(t)) return false;   // v4.15.0：退化输出不算「驾驭得住」
+    if (detectDegeneration(t)) return false;   // v4.16.0：退化输出不算「驾驭得住」
     return /【行动选项】|<selection>|<status>|\(variable_update\)|(?:^|\n)\s*[1-6][\.、．]/m.test(t);
   }
 
@@ -204,7 +242,7 @@
     if (!isAuto()) return;
     cacheResolved('lite');               // 崩塌立即降级（覆盖旧缓存）
   }
-  /* v4.15.0：语种退化单独计streak——单轮乱码可能只是瞬时抽风（上游抖动/采样失手），
+  /* v4.16.0：语种退化单独计streak——单轮乱码可能只是瞬时抽风（上游抖动/采样失手），
      立刻把强模型压到 lite 是误伤；连续 2 轮退化才认定为「这个模型驾驭不住当前档位」。 */
   let degenStreak = 0;
   function noteDegenerate() {
@@ -407,7 +445,7 @@
     isEnabled: isLite,                 // 兼容旧布尔语义（=是否走裁剪档）
     isEnabledRaw: getTier,
     clampParams, buildLitePreset, compactSystemPrompt, detectCollapse,
-    detectDegeneration, cjkRatio,
+    detectDegeneration, cjkRatio, expectedScript, looksLikeLatinProse,
     noteCollapse, noteStable, noteDegenerate, noteDegenerationRecovered,
     install, looksCapable,
     _resetProbe: function () { goodStreak = 0; probeKey = ''; clearResolvedCache(); }

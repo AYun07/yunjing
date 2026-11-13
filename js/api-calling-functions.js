@@ -79,7 +79,7 @@ window.TokenUsage = {
   }
 };
 const STREAM_FIRST_MS = 6e4;
-/* v4.15.0：推理模型的「首字节超时」必须放宽。
+/* v4.16.0：推理模型的「首字节超时」必须放宽。
    推理模型的思考发生在**首字节之前**——实测 z-ai/glm-5.3-flash 在这条上游单次
    要 231~520 秒才吐第一个字节；而旧逻辑一律 min(60s, 用户超时)，
    于是这类模型在流式模式下必然被应用自己掐断（玩家只看到反复超时、永不成功）。
@@ -167,7 +167,7 @@ window.stripAIThink = function(text) {
   return out;
 };
 
-/* ==================== v4.15.0 · 推理模型（reasoning）防护 ====================
+/* ==================== v4.16.0 · 推理模型（reasoning）防护 ====================
    发现来源：第三方全量审查 + 真实玩家实测（z-ai/glm-5.3-flash / Nemotron / o 系等）。
 
    问题：推理模型把思考写在 **provider 级字段 reasoning_content**，而不是正文里的
@@ -441,7 +441,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
           if (!sawContent && typeof d.reasoning_content === "string") reasoningBuf += d.reasoning_content;
           return "";
         },
-        /* v4.15.0：旧实现 `finish: (f) => f && f.trim() ? f : reasoningBuf` 会在
+        /* v4.16.0：旧实现 `finish: (f) => f && f.trim() ? f : reasoningBuf` 会在
            content 为空时把**原始思维链**当正文交出去（详见文件头「推理模型防护」）。
            现在只有「内容读起来不像推演」时才兜底，否则返回空，交由上层抬预算重试。 */
         finish: (f) => (f && f.trim()) ? f : (reasoningBuf && !window.looksLikeRawReasoning(reasoningBuf) ? reasoningBuf : "")
@@ -468,7 +468,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
   return await callOpenAINonStream(messages, cfg, fullEndpoint, fullMs, opts);
 }
 
-/* v4.15.0 · 主笔与通用调用的「推理模型包装层」（详见文件头「推理模型防护」）。
+/* v4.16.0 · 主笔与通用调用的「推理模型包装层」（详见文件头「推理模型防护」）。
    ① 已知推理模型 → 抬高出力下限（思考与正文共享 max_tokens，给太小必然「只思考不落笔」）；
    ② 正文为空且本次确实收到过 reasoning_content → 翻倍预算重试一次；
    ③ 仍为空 → 抛出可读错误，**绝不把思维链当正文**交给下游。 */
@@ -536,7 +536,7 @@ async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts)
 function parseOpenAIJson(data) {
   var _a, _b;
   const msg = (_b = (_a = data.choices) == null ? void 0 : _a[0]) == null ? void 0 : _b.message;
-  /* v4.15.0：旧实现 `msg.content ?? msg.reasoning_content` 会把 reasoning_content
+  /* v4.16.0：旧实现 `msg.content ?? msg.reasoning_content` 会把 reasoning_content
      当正文（content 为 null 时）。现在统一走 extractAssistantText —— 只有内容读起来
      不像推演时才兜底（详见文件头「推理模型防护」）。 */
   const out = window.extractAssistantText(msg, { allowReasoningFallback: true });
@@ -734,15 +734,22 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
     let reply = await callOnce(messages, opts);
     /* v3.55.11 复读自检（全档安全基线）：任意档检测到「复读崩塌」自动降温重发一次；
        auto 档首轮若崩→降级 lite 并缓存，首轮稳→缓存初判，均用户无感 */
-    /* v4.15.0：把「语种退化」（多语种 token 汤）与「复读崩塌」同等对待——
+    /* v4.16.0：把「语种退化」（多语种 token 汤）与「复读崩塌」同等对待——
        两者都是模型没驾驭住的表现，都走同一套「降温重发一次 + auto 档降级」机制。
        这样弱模型在退化的瞬间就会被自动压到更省力、更易驾驭的档位，而不是持续吐乱码。 */
+    /* 用「玩家自己最近的输入」推断期望语种：玩家写英文就不该拿中文占比去要求它 */
+    let langSample = "";
+    try {
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i] && messages[i].role === "user") { langSample = String(messages[i].content || ""); break; }
+      }
+    } catch (e) { }
     const badOut = reply && bmm && (
       (bmm.detectCollapse && bmm.detectCollapse(reply)) ||
-      (bmm.detectDegeneration && bmm.detectDegeneration(reply))
+      (bmm.detectDegeneration && bmm.detectDegeneration(reply, langSample))
     );
     if (badOut) {
-      const isDegen = bmm.detectDegeneration && bmm.detectDegeneration(reply) && !(bmm.detectCollapse && bmm.detectCollapse(reply));
+      const isDegen = bmm.detectDegeneration && bmm.detectDegeneration(reply, langSample) && !(bmm.detectCollapse && bmm.detectCollapse(reply));
       /* 崩塌 → 立即降档；退化 → 连续 2 轮才降档（单轮乱码可能只是瞬时抽风，不宜误伤强模型） */
       if (isDegen) { if (bmm.noteDegenerate) bmm.noteDegenerate(); }
       else if (bmm.noteCollapse) bmm.noteCollapse();
@@ -782,7 +789,7 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
       if (error.userAborted || error.streamPhase === "user" || (window.__aiMainLatch && window.__aiMainLatch.userAborted)) {
         throw new Error("已停止本次生成。");
       }
-      /* v4.15.0：旧文案一律报「${用户总超时} 秒内无数据返回」，但首字节阶段实际用的是
+      /* v4.16.0：旧文案一律报「${用户总超时} 秒内无数据返回」，但首字节阶段实际用的是
          firstByteMs（非推理 60s / 推理 300s）——玩家会看到 60 秒就失败却被告知等了 300 秒，
          诊断方向完全错。现按阶段报真实秒数，并针对推理模型给出准确建议。 */
       const phaseFirst = error.streamPhase === "first";
@@ -904,7 +911,7 @@ async function testApiConnection(endpoint, apiKey, model, type, maxTokens) {
   }
   const data = await withTimeoutMs(response.json(), 3e4);
   const msg = (_d = (_c = data.choices) == null ? void 0 : _c[0]) == null ? void 0 : _d.message;
-  /* v4.15.0：连通测试。保留兜底（推理模型只回思考时也要能判定「接口通了」），
+  /* v4.16.0：连通测试。保留兜底（推理模型只回思考时也要能判定「接口通了」），
      但经安全提取器，内容像原始推演时不会冒充模型回复。 */
   return window.extractAssistantText(msg, { allowReasoningFallback: true });
 }

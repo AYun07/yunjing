@@ -1,4 +1,4 @@
-/* 云境 · 跨域守卫 v1.0.0（v4.15.0）
+/* 云境 · 跨域守卫 v1.0.0（v4.16.0）
  *
  * 背景
  *   云境是**纯前端**应用：浏览器直接向 LLM 接口发请求。相当多官方端点
@@ -119,7 +119,7 @@
     }
 
     /* 用最小代价探：优先打 /models（GET，不消耗生成额度）。
-       v4.15.0 修：旧写法只在地址以 /chat/completions 结尾时才改写，而玩家在设置里
+       v4.16.0 修：旧写法只在地址以 /chat/completions 结尾时才改写，而玩家在设置里
        通常只填到 `/v1`（应用自己再拼 /chat/completions）——于是探测去打裸 `/v1`，
        拿到 404 并把结论误判成「模型名不存在」。现在两种情况都正确落到 /models。 */
     var tryUrl = /\/chat\/completions\s*$/i.test(url)
@@ -150,11 +150,27 @@
       });
   }
 
+  /* 移动端判定：手机上无法运行 Node 本地代理，跨域只能靠中转站——
+     指引必须分平台给，否则手机玩家会照着桌面教程去双击 .bat，永远走不通。 */
+  function isMobile() {
+    try {
+      if (document.body && document.body.classList.contains('mobile')) return true;
+      if (window.matchMedia && window.matchMedia('(max-width: 820px)').matches) return true;
+      return /Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i.test(navigator.userAgent || '');
+    } catch (e) { return false; }
+  }
+
   /* 给玩家看的下一步（与探测结论一一对应） */
   function verdictHtml(kind) {
     switch (kind) {
       case 'ok': return '✅ 接口可达（跨域与网络都没问题）。';
       case 'cors':
+        if (isMobile()) {
+          return '🛡 <b>被浏览器同源策略拦下了</b>：这个端点没有返回跨域许可，纯前端页面无法直连。<br>'
+               + '📱 <b>你现在用的是手机</b>——本地代理需要在电脑上运行 Node，手机跑不了。<br>'
+               + '手机端的办法：<b>改用一个「支持跨域」的中转站地址</b>（不少中转站会返回跨域许可，'
+               + '把它的地址填进接口设置即可）。回到电脑上玩时，才可以用项目自带的本地代理。';
+        }
         return '🛡 <b>被浏览器同源策略拦下了</b>：这个端点没有返回跨域许可，纯前端页面无法直连。<br>'
              + '两条路：<b>①（推荐）</b>向下滚动到「🛡 本地代理」，双击项目里的 <code>start-proxy-windows.bat</code>'
              + '（Mac 用 <code>start-proxy-mac.command</code>）后点【接入本地代理】；'
@@ -182,6 +198,7 @@
     toProxy: toProxy,
     fromProxy: fromProxy,
     probeCors: probeCors,
-    verdictHtml: verdictHtml
+    verdictHtml: verdictHtml,
+    isMobile: isMobile
   };
 })();
