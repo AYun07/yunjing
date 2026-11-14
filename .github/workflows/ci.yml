@@ -1,0 +1,71 @@
+# 云境 · 持续集成（v4.17.0）
+#
+# 为什么有它
+#   本项目长期没有 CI，全部靠人记。已经因此出过这几次事故：
+#     · v4.13.0 / v4.14.0 / v4.15.0 漏打 git tag 与 Release（版本页承诺的下载链接全部 404）
+#     · 发版脚本用全局替换把 changelog / VERSIONS 的**历史版本号**也改了（两个文件被写坏）
+#     · QUICKSTART.txt 的版本号漏改（.txt 不在替换白名单里，142 处）
+#     · js/phone-alive.js 等被误判「零引用」而从预缓存清单移除，离线必 404
+#     · css/touch-targets.css 被页面引用却没进预缓存清单
+#   这些都不是「不小心」，而是**流程缺兜底**。本工作流把可机械校验的部分全部自动化。
+#
+# 四道闸
+#   ① 语法      —— 全量 JS/MJS 过一遍 node --check（12 万行手写 JS 的第一道网）
+#   ② 版本同源  —— scripts/sync-version.mjs --check（单一来源派生，杜绝漏改）
+#   ③ 预缓存    —— scripts/sync-precache.mjs（清单 vs 文件系统 vs HTML 引用三方对齐）
+#   ④ 离线测试  —— yunjing-test/run-all.mjs（统一入口，9 个纯 Node 测试，秒级）
+#
+# 需要浏览器/外部接口的 27 个脚本不在这里跑（见 run-all.mjs --all），
+# 它们要么需要 Playwright 浏览器，要么需要真实的 LLM 接口，不适合每次提交都跑。
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: '① 全量 JS 语法检查'
+        shell: bash
+        run: |
+          fail=0; n=0
+          while IFS= read -r f; do
+            n=$((n+1))
+            if ! node --check "$f" >/dev/null 2>&1; then
+              echo "::error file=$f::语法检查失败"
+              node --check "$f" 2>&1 | head -5
+              fail=1
+            fi
+          done < <(find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) \
+                   -not -path './node_modules/*' -not -path './libs/*' -not -path './.git/*')
+          echo "语法检查：$((n)) 个文件"
+          if [ "$fail" != "0" ]; then echo "存在语法错误"; exit 1; fi
+          echo "✓ 语法全部通过"
+
+      - name: '② 版本号全站同源'
+        run: node scripts/sync-version.mjs --check
+
+      - name: '③ 预缓存清单一致性'
+        run: node scripts/sync-precache.mjs
+
+      - name: '④ 离线测试套件'
+        run: node yunjing-test/run-all.mjs
+        env:
+          PYTHON: python3
+          PYTHONIOENCODING: utf-8

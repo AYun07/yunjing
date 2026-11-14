@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.16.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.0">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,16 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 工程化 架构 修复" style="--entry-hue:#8a6d3b;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.17.0</span>
+                <span class="entry-date">2026-11-14</span>
+            </div>
+            <h3 class="entry-title">工程化补课 · 输出闸门 · 请求预算 · 首屏瘦身 35%</h3>
+            <p class="entry-text"><b>这一版修的不是功能，是「工程配套没跟上规模」</b>——云境已有 652 个文件、33.5 万行手写 JS（自有 340 个 JS 文件 / 12 万行），却一直靠人记：手工改版本号、手工跑测试、手工对齐离线清单、手工写版本页。本会话数起事故（<b>v4.13.0 / v4.14.0 / v4.15.0 漏打 tag 与 Release 导致版本页下载链接全部 404</b>、发版脚本把 changelog 与 VERSIONS 的历史版本号一并改坏、QUICKSTART 版本号漏改）都是同一个根因。<b>① 工程化四件套</b>：<code>yunjing-test/run-all.mjs</code> 把 37 个散装测试脚本收成一条命令（离线套件 9 个、秒级、带退出码）；新增 <code>.github/workflows/ci.yml</code> 四道闸（全量 JS 语法 340 个文件 / 版本号同源 / 预缓存一致性 / 离线测试）——**这些闸门在本地已实测能拦住上述每一类事故**；<code>scripts/sync-version.mjs</code> 把「一个版本号要手工改 33 个文件 258 处」收敛为**单一来源**（studio.html 的 YJ_VER 派生其余全部），并带 <code>--check</code> 供 CI 查漂移；<code>scripts/sync-precache.mjs</code> 用「清单 vs 文件系统 vs HTML 引用」三方对齐守住离线预缓存。<b>② 顺带抓出并修掉的真缺陷</b>：<code>css/touch-targets.css</code> 被页面引用却从未进预缓存清单（**离线必 404、窄屏命中层失效**）；<code>t_quests_v407.js</code> 硬编码了作者机器的绝对路径（换环境必然 ENOENT）；<code>semantic_judge.py</code> 在 Windows 控制台因 GBK 打印 ⚠ 直接崩；<code>QUICKSTART.txt</code> 版本号漏改 142 处。<b>③ AI 输出统一闸门</b>（<code>js/ai-output-gate.js</code>）：本项目最要紧的一类缺陷根因都是「AI 输出没经校验就进正文与存档」，而判定此前散在 4 个文件 23 处。现收敛为唯一裁决处（完整性 / 语种 / 协议 / 失控 / 思维链），返回 <code>accept / rewrite / fallback / error</code>。修的过程中又发现一个真实缺陷：<code>looksLikeRawReasoning</code> 的「纯英文长文本即思维链」规则会**误杀用英文写小说的玩家**（与 v4.16.0 修的语种守卫是同一类问题，当时漏改了这处），已按玩家输入推断语种一并修正。<b>④ 每轮请求总预算</b>（<code>js/turn-budget.js</code>）：对同一次玩家操作的重试散在**四层互不知情**（内部翻倍预算重试 / 自检降温重发 / 纠偏重写 / 截断续写），最坏一次点击会向上游发 6+ 次请求——这是本会话实测把 API 打到 503 成片的原因之一。现每次重试前先问总预算（默认 6 次，可用 <code>turnBudget</code> 配置），用完即停并给出可读原因。<b>⑤ 存档格式版本号与正式迁移</b>：此前存档无任何版本标记，老档遇新结构只能靠可选字段侥幸兼容。现写入 <code>_schema</code> 并按 <code>SAVE_MIGRATIONS</code> 逐级升级（第 0 版为历史上所有无版本号的老档做统一归位）。<b>⑥ 首屏瘦身 35%</b>：舆图三件套（<code>atlas-supplement</code> 509KB + <code>atlas-potato</code> 88KB + <code>atlas-eras</code> 55KB）此前每次打开页面都同步下载，却**只有舆图面板会读**；改为懒加载后首屏从 <b>1,865KB 降到 1,212KB（省 653KB / 35%）</b>，真浏览器确认首屏不再加载任何 <code>atlas-*</code>，打开舆图时按需取得且结果一致。<b>⑦ 提示词编译入口与留痕</b>（<code>js/prompt-compiler.js</code>）：拼装本已集中在 <code>ai-message-builder.js</code>（此前判断「分散」过重），真正缺的是统一入口与可观测性——现在能随时回答「这一轮系统层多少字、用了哪个档位、注入了什么」。<b>⑧ 请求预算之外的无障碍补课</b>：<code>studio.html</code> 此前 <code>aria-*</code> 为 0、4 个图标按钮无可访问名、4 个 <code>div+onclick</code> **键盘完全够不到**；现补 aria/role/tabindex 与 Enter/Space 激活。<b>⑨ KB 数据治理</b>：<code>js/kb/*.js</code> 长期是「整个数组挤在一行」（<code>wangyou.ext.js</code> 895KB / 32 行，diff 完全不可读）。用带**深度校验**的重排器（新旧都在 VM 里跑一遍 + 深比较，不等则拒绝写入）重排 74 个文件：<code>wangyou.ext.js</code> 由 32 行变 <b>1,277 行</b>，数据零变更、全部可 review。</p>
+                    <p class="ver-diff"><b>相比 v4.16.0 的变化</b>：工程化补课（CI 四道闸 / 统一测试入口 / 版本号单一来源 / 预缓存三方对齐）· AI 输出统一闸门 · 每轮请求预算 · 存档正式迁移 · 首屏瘦身 35% · 提示词编译留痕 · 无障碍补课 · KB 重排版… · <a href="https://github.com/AYun07/yunjing/compare/v4.16.0...v4.17.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
 
         <article class="log-entry" data-tags="版本 修复 发布 文档" style="--entry-hue:#4a7ba8;">
             <div class="entry-head">
@@ -562,7 +572,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.10.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

@@ -202,6 +202,10 @@ class StoryFramework {
             ? { ...this.storyState.dynamicWorld, isProcessing: false }
             : undefined;
         const data = {
+            /* v4.17.0：存档**格式版本号**。此前没有任何版本标记，老存档遇到新结构只能靠
+               「可选字段 + 兜底」侥幸兼容，没有正式的迁移路径。现在写入版本号，
+               读档时按 SAVE_MIGRATIONS 依次升级（见 loadSave）。 */
+            _schema: StoryFramework.SAVE_SCHEMA,
             variables: this.storyState.variables,
             conversationHistory: this.storyState.conversationHistory.slice(-80), // 防止超出localStorage上限
             isStoryStarted: this.storyState.isStoryStarted,
@@ -333,6 +337,34 @@ class StoryFramework {
         window.showToast?.('⚠ 存档失败：浏览器本地存储空间不足或被禁用，本轮回合未落盘。请导出存档备份，或清理本站数据后重试', 'error');
     }
 
+    /** v4.17.0 存档迁移：把任意历史版本的存档升级到当前 SAVE_SCHEMA。
+     *  设计：
+     *    · 无 `_schema` 的老档视为第 0 版（本项目此前从未写过版本号）；
+     *    · 逐级执行 SAVE_MIGRATIONS[n]（n → n+1），每级都是幂等的补字段/改结构；
+     *    · 任一级抛错都不阻断读档——保留已完成的迁移并按原样继续，同时告警。
+     *  这样「老玩家的存档在新版打开」有了正式路径，而不是靠可选字段侥幸兼容。 */
+    _migrateSave(data) {
+        if (!data || typeof data !== 'object') return data;
+        const cur = typeof data._schema === 'number' ? data._schema : 0;
+        const target = StoryFramework.SAVE_SCHEMA || 0;
+        if (cur >= target) return data;
+        let d = data;
+        console.log(`[StoryFramework] 存档格式 v${cur} → v${target}，开始迁移`);
+        for (let v = cur; v < target; v++) {
+            const fn = (StoryFramework.SAVE_MIGRATIONS || {})[v];
+            if (typeof fn !== 'function') continue;
+            try {
+                d = fn(d) || d;
+                d._schema = v + 1;
+            } catch (e) {
+                console.warn(`[StoryFramework] 存档迁移 v${v}→v${v + 1} 失败，保留原样继续：`, e);
+                try { window.showToast?.('⚠ 存档来自更早的版本，部分新功能可能需重新设置', 'info'); } catch (e2) { }
+                break;
+            }
+        }
+        return d;
+    }
+
     loadSave() {
         const read = (key) => {
             const saved = localStorage.getItem(key);
@@ -347,6 +379,10 @@ class StoryFramework {
             fromBak = !!data;
         }
         if (data) {
+            /* v4.17.0：按存档格式版本号迁移。老档（无 _schema 字段）视为第 0 版，
+               逐级升级到当前版本；每一级迁移都是**纯函数式补字段/改结构**，幂等。
+               迁移失败不阻断读档——保留原样并告警，总比让玩家打不开强。 */
+            data = this._migrateSave(data);
             this.storyState = { ...this.storyState, ...data, lastVariables: {} };
             // v3.27.5：读档即自愈（旧档 items 等容器可能已被历史版本的行式指令污染）
             try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e) { }
@@ -674,6 +710,55 @@ class StoryFramework {
 
 // 导出框架类
 window.StoryFramework = StoryFramework;
+
+/* v4.17.0 · 存档格式版本与迁移表
+ *
+ * 为什么需要
+ *   此前存档里**没有任何格式版本号**。玩家跨越多个版本续玩时，新代码遇到老结构只能靠
+ *   「可选字段 + 兜底」侥幸兼容——一旦某个字段的**含义或形态**变了（而不只是新增），
+ *   老档就会静默错乱，而且没有任何地方能判定「这是老档，需要升级」。
+ *
+ * 怎么用
+ *   存档写入时带 `_schema: SAVE_SCHEMA`；读档时 `_migrateSave` 从老版本逐级升到当前版本。
+ *   每次**改变存档结构语义**时做两件事：
+ *     1) SAVE_SCHEMA += 1
+ *     2) 在 SAVE_MIGRATIONS 里补一条 `旧版本号: (data) => 新data`（必须幂等）
+ *   只新增可选字段不必升版本（老档缺字段由兜底处理即可）。
+ *
+ * 表里第 0 条是给**历史上所有无版本号的老档**做的统一归位：
+ * 把本项目早期以行式指令污染过的容器自愈一遍，并把缺失的顶层容器补齐，
+ * 让它们与当前结构对齐（等价于 v3.27.5 起在读档处做的自愈，此处固化为正式迁移）。
+ */
+StoryFramework.SAVE_SCHEMA = 1;
+StoryFramework.SAVE_MIGRATIONS = {
+    /* v0（无版本号的老档）→ v1：补齐顶层容器 + 容器自愈 */
+    0: function (data) {
+        const d = Object.assign({}, data);
+        if (!d.variables || typeof d.variables !== 'object') d.variables = {};
+        if (!Array.isArray(d.conversationHistory)) d.conversationHistory = [];
+        if (!Array.isArray(d.turns)) d.turns = [];
+        if (typeof d.turnCount !== 'number') d.turnCount = 0;
+        if (typeof d.isStoryStarted !== 'boolean') d.isStoryStarted = !!d.isStoryStarted;
+        if (d.setup == null) d.setup = {};
+        try {
+            const v = d.variables;
+            if (v.characters && !Array.isArray(v.characters) && typeof v.characters === 'object') {
+                Object.keys(v.characters).forEach((k) => {
+                    const c = v.characters[k];
+                    if (!c || typeof c !== 'object') return;
+                    ['items', 'skills', 'relations'].forEach((f) => {
+                        if (c[f] && !Array.isArray(c[f])) c[f] = [c[f]];
+                    });
+                });
+            }
+            ['items', 'foreshadowings', 'history', 'places'].forEach((f) => {
+                if (v[f] != null && !Array.isArray(v[f])) v[f] = [v[f]];
+            });
+        } catch (e) { /* 自愈失败不阻断迁移 */ }
+        d._schema = 1;
+        return d;
+    }
+};
 
 /**
  * 全局轻提示 Toast：任何界面阶段（含设定台）都可见，解决"点了没反应"

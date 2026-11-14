@@ -245,9 +245,17 @@
         { role: 'assistant', content: text },
         { role: 'system', content: '【续写指令】上一段输出因长度上限被截断。请**直接从截断处接着写**：不要重复已写内容，不要重新开头，不要加任何说明或道歉。保持同样的文风、人称与节奏。结尾处同理补全 (variable_update) 块与【行动选项】。\n\n上一段结尾是（仅供你定位，勿重抄）："…' + tailText + '"' }
       ]);
+      /* v4.17.0：续写是四层重试里最容易叠乘的一层（最多 2 次）。
+         先问「每轮请求总预算」，用完了就停手——续写救不回来的情况，
+         继续打只会烧额度并让玩家等更久。 */
+      if (window.YJTurnBudget && window.YJTurnBudget.allow && !window.YJTurnBudget.allow()) {
+        notify('已达本轮请求预算上限，停止续写。可到「接口设置」把最大输出 token 调大以减少截断。', 'info');
+        break;
+      }
       notify('✂ 检测到输出被长度上限截断，正在续写（' + (i + 1) + '/' + max + '）…', 'info');
       var more = '';
       try {
+        if (window.YJTurnBudget && window.YJTurnBudget.spend) window.YJTurnBudget.spend('截断续写');
         more = await callFn(contMsg, { isContinuation: true });
       } catch (e) {
         console.warn('[云境·续写] 失败：', e);

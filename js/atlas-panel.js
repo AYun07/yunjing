@@ -17287,6 +17287,30 @@
     try { injectSupplement(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 舆图补录失败:", e); }
     /* v4.00.0 补录落位后立刻松弛一次，否则同一锚点下的几十条补录会叠成一团白雾 */
     try { relaxSupp(); } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 舆图松弛失败:", e); }
+    /* v4.17.0 首屏瘦身：舆图三件套（ATLAS_SUPPLEMENT 509KB / ATLAS_POTATO 88KB / ATLAS_ERAS 55KB，
+       合计约占首屏 35%）改为懒加载，**只有打开舆图才会下载**。
+       代价是首次进入时数据可能尚未到位（上面的同步合并会跳过），故这里补一次异步补做：
+       数据到达后重跑「土豆宇宙合并 → 补录落位 → 松弛」，结果与同步加载完全一致。
+       两步都是幂等的（已合并/已落位的条目会被去重跳过），重复执行不会产生重复地标。 */
+    try {
+      const need = ["ATLAS_SUPPLEMENT", "ATLAS_POTATO", "ATLAS_ERAS"].filter((g) => window.YJLazy && !window.YJLazy.has(g));
+      if (need.length && window.YJLazy && window.YJLazy.ensureAll) {
+        window.YJLazy.ensureAll(need).then(() => {
+          try {
+            const POT = window.ATLAS_POTATO || {};
+            Object.keys(POT).forEach((g) => {
+              if (!ATLAS_DATA[g] && POT[g] && Array.isArray(POT[g].layers)) ATLAS_DATA[g] = POT[g];
+            });
+          } catch (e) { }
+          try { fitLayers(); } catch (e) { }
+          try { packRegions(); } catch (e) { }
+          try { injectSupplement(); } catch (e) { }
+          try { relaxSupp(); } catch (e) { }
+          try { if (state.genre) load(state.genre); } catch (e) { }
+          if (window.YJ_DEBUG) console.log("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
+        }).catch(() => { });
+      }
+    } catch (e) { }
     const genre = new URLSearchParams(location.search).get("genre");
     if (genre) {
       if (!ATLAS_DATA[genre]) ensureGenreData(genre);
