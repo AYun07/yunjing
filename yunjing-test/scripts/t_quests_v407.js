@@ -13,7 +13,11 @@
  */
 const fs = require('fs');
 const vm = require('vm');
-const ROOT = process.env.YJ_ROOT || '/workspace/yunjing';
+/* v4.17.0 修：旧默认值是硬编码的 '/workspace/yunjing'（作者机器上的路径），
+   换任何环境都会以 ENOENT 失败——统一改成从脚本位置解析仓库根。
+   （同类问题在别的脚本里也出现过：t_atlas_eras.cjs 此前用 process.cwd()，
+   只在仓库根启动才跑得通，也已改为 __dirname。） */
+const ROOT = process.env.YJ_ROOT || require('path').resolve(__dirname, '..', '..');
 const CORE = ROOT + '/js/rpg-core.js';
 const QUESTS = ROOT + '/js/rpg-quests.js';
 const coreCode = fs.readFileSync(CORE, 'utf8');

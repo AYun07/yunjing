@@ -185,21 +185,46 @@ window.stripAIThink = function(text) {
    ②在空正文时翻倍预算重试一次、③仍为空则明确报错，让玩家知道发生了什么。
    仅在「中转站只回 reasoning_content 且内容读起来不像推演」时才允许兜底（默认关）。 */
 
-/* 判断文本是否「像未加标签的原始思维链」。宁缺毋滥：不确定就当思维链。 */
-window.looksLikeRawReasoning = function (text) {
+/* 判断文本是否「像未加标签的原始思维链」。
+ *
+ * v4.17.0 修（本会话实测发现的真实缺陷）：
+ *   旧版最后一条是 `cjk === 0 && latin > 200 → 判为思维链`，注释写着「本应用全中文」。
+ *   但云境对玩家**零语言限制**——用英文写小说的玩家，正文必然是纯拉丁字母，
+ *   于是会被这条规则整篇判成思维链：反复重写、永远出不了文。
+ *   这与「写英文的玩家不该被中文规则误杀」是同一个必须修的问题
+ *   （语种守卫在 v4.16.0 已按玩家输入推断语种，这里当时漏改了）。
+ *   现在把「纯英文长文本」这条也改为**按玩家自己用什么语言写**来判断：
+ *   玩家用中文而模型回英文 → 可疑（保留拦）；玩家用英文 → 正常（放行）。
+ * @param {string} text   待判定文本
+ * @param {string} [sample] 玩家最近的输入，用于推断期望语种
+ */
+window.looksLikeRawReasoning = function (text, sample) {
   var s = String(text == null ? "" : text).trim();
   if (!s) return false;
   if (s.length > 4000) return true;                        /* 超长推演几乎必是思维链 */
   var head = s.slice(0, 900);
-  /* 英文推演开场（本应用是中文创作场景，正文不该以这些开头） */
+  /* 英文推演开场 —— 这些词无论玩家用什么语言都不像小说正文开场，照拦 */
   if (/^(?:we need|we must|let me|let's|i need|i should|i'll|first,? i|okay|hmm|so how|the user wants|reconciliation|analysis:|reasoning:|step \d)/i.test(head)) return true;
   if (/\b(?:the user wants|we need to|let me (?:write|think|reconsider|check)|reconciliation [abc]|must avoid|clich[eé]|max_tokens|system prompt|输出要求)\b/i.test(head)) return true;
-  /* 中英混排：中文语境里成段英文推演 */
+
   var cjk = (s.match(/[\u4e00-\u9fff]/g) || []).length;
   var latin = (s.match(/[A-Za-z]/g) || []).length;
-  if (cjk > 0 && latin > cjk * 1.5 && latin > 120) return true;
-  /* 纯英文长文本（本应用全中文） */
-  if (cjk === 0 && latin > 200) return true;
+
+  /* 玩家期望语种：有样本就按样本推断，没有样本时保守按中文（产品默认） */
+  var expectLatin = false;
+  try {
+    var smp = String(sample == null ? "" : sample);
+    if (smp) {
+      var sc = (smp.match(/[\u4e00-\u9fff]/g) || []).length;
+      var sl = (smp.match(/[A-Za-z]/g) || []).length;
+      expectLatin = sl > sc;
+    }
+  } catch (e) { }
+
+  /* 中英混排：中文语境里成段英文推演（玩家用英文时不适用） */
+  if (!expectLatin && cjk > 0 && latin > cjk * 1.5 && latin > 120) return true;
+  /* 纯英文长文本：**仅当玩家自己写的是中文**时才可疑 */
+  if (!expectLatin && cjk === 0 && latin > 200) return true;
   return false;
 };
 
@@ -482,12 +507,19 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
     _emptyContentReasoningFlag = false;
     return await callOpenAIOnce(messages, Object.assign({}, opts, { maxTokens: mt }), cfgOverride);
   };
+  /* v4.17.0：计入「每轮请求总预算」。四层重试（内部/自检/纠偏/续写）此前互不知情，
+     一次点击最坏会向上游发 6+ 次请求；现在每次请求都记账，超预算就停手。 */
+  const BUD = window.YJTurnBudget;
+  if (BUD && BUD.spend) BUD.spend("主笔·首轮");
   let out = await run(effMax);
   if (typeof out === "string" && out.trim()) return out;
   const hadReasoning = _emptyContentReasoningFlag;
   let retryErr = null;
-  if (reasonModel && effMax < 32768) {
+  /* 重试前先问预算：用完了就不再打，直接带着已有信息走下面的错误分支 */
+  const canRetry = !BUD || !BUD.allow || BUD.allow();
+  if (reasonModel && effMax < 32768 && canRetry) {
     try {
+      if (BUD && BUD.spend) BUD.spend("主笔·空正文翻倍预算重试");
       out = await run(Math.min(effMax * 2, 32768));
       if (typeof out === "string" && out.trim()) return out;
     } catch (e) {
@@ -714,7 +746,13 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
         /* v4.08.0：buildStoryMessages 移入 try 块。此前它在 try 之外 await，
            一旦装配阶段抛错（知识库/变量引擎异常），finally 不会执行 →
            门闩永久卡在 busy=true，之后所有主笔请求都被拒绝。 */
-        messages = await buildStoryMessages(userMessage);
+        /* v4.17.0：走「提示词编译」唯一入口——它在委托 buildStoryMessages 之外，
+           额外记录这次编译的组成快照（各层字符数 / 档位 / 模型 / 开关），
+           使「这一轮到底发出去了什么」可复盘（此前拼完不留痕）。
+           取不到 PromptCompiler 时退回直接调用，行为不变。 */
+        messages = (window.PromptCompiler && window.PromptCompiler.compile)
+          ? await window.PromptCompiler.compile(userMessage)
+          : await buildStoryMessages(userMessage);
       }
       (_a = window.TokenUsage) == null ? void 0 : _a.recordRequest(messages, "主笔");
     } else {
@@ -754,6 +792,8 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
       if (isDegen) { if (bmm.noteDegenerate) bmm.noteDegenerate(); }
       else if (bmm.noteCollapse) bmm.noteCollapse();
       console.warn('[模型自适应] 检测到' + (isDegen ? '语种退化（多语种乱码）' : '复读崩塌') + '，降温重发一次');
+      /* v4.17.0：自检重发也要走每轮预算，不能与其它三层叠乘 */
+      if (window.YJTurnBudget && window.YJTurnBudget.spend) window.YJTurnBudget.spend('自检重发');
       try {
         const retryCfg = (bmm.isLite && bmm.isLite()) ? bmm.clampParams(fw.apiConfig) : Object.assign({}, fw.apiConfig);
         retryCfg.temperature = Math.max(0.5, (retryCfg.temperature || 0.75) - 0.2);

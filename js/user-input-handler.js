@@ -6,6 +6,10 @@ const StoryInput = {
     const message = (text !== void 0 ? text : input ? input.value : "").trim();
     /* v4.16.0：记下玩家本次输入，供「按玩家语言判退化」推断期望语种（写英文就不按中文要求） */
     try { window.__yjLastUserInput = message; } catch (e) { }
+    /* v4.17.0：玩家发起的这一次操作开一个新的「请求预算」周期。
+       此后主笔首轮、空正文重试、自检重发、纠偏重写、截断续写都从这一份额度里扣，
+       避免四层各自重试叠乘把额度打爆（本会话实测 503/ECONNRESET 成片的主因之一）。 */
+    try { window.YJTurnBudget && window.YJTurnBudget.begin(message.slice(0, 24) || '玩家操作'); } catch (e) { }
     if (!message) return;
     /* v3.55.3：生成中点击不再静默吞掉——给出可见反馈，避免"按钮没反应"的错觉 */
     if (fw.isProcessing) {
@@ -216,6 +220,16 @@ const StoryInput = {
         return tot ? cjk / tot : 1;
       };
       const isRunawayText = (r) => {
+        /* v4.17.0：先问「AI 输出统一校验闸门」——它是完整性/语种/协议/失控的唯一判定处。
+           闸门判 rewrite/error 即视为需要重写。闸门不可用时才走下面的本地判据（降级路径）。 */
+        try {
+          if (window.AIOutputGate && window.AIOutputGate.evaluate) {
+            let smp = "";
+            try { smp = String(window.__yjLastUserInput || ""); } catch (e2) { smp = ""; }
+            const v = window.AIOutputGate.evaluate(r, { sample: smp });
+            if (!v.ok && (v.action === "rewrite" || v.action === "error")) return true;
+          }
+        } catch (e) { }
         const body = String(RH.extractBody(r, RH.extractOptions(r)) || "");
         if (body.replace(/\s/g, "").length < 200) return false;
         const flat = body.replace(/\s/g, "");
@@ -273,16 +287,30 @@ const StoryInput = {
           : (cjkRatioOf(String(RH.extractBody(reply, RH.extractOptions(reply)) || "").replace(/\s/g, "")) < 0.55
               ? "正文疑似模型退化（出现多语种乱码，汉字占比过低）"
               : "正文疑似解码失控（词表狂奔/标点消失/复读循环）");
+        /* v4.17.0：纠偏重写前先问每轮预算——四层重试叠乘是实测到的额度杀手。 */
+        if (window.YJTurnBudget && window.YJTurnBudget.allow && !window.YJTurnBudget.allow()) {
+          window.StoryResponseHandler.notice(
+            `模型${why}，但本轮请求预算已用完，不再重写。` +
+            `可到「接口设置」把本轮预算调大，或换更稳的模型。`, "warn", 12000);
+        } else {
         window.StoryResponseHandler.notice(`模型${why}，正在自动重写一次…`, "warn", 9000);
         try {
-          const rewriteMsg = message + "\n\n（系统纠偏：你上一轮回复的正文不合格——或为空，或出现词表狂奔/复读循环/整段无标点，或掺入了外文与乱码片段。本轮必须重新完整输出小说正文：**全文必须是通顺的简体中文**，用规范中文标点与完整句子，纯叙事散文、不要放进代码块；禁止夹带英文/法文/俄文/日文等外文词与无意义字符，禁止同义词罗列式推进，禁止省略标点。之后再在结尾按协议输出 (variable_update) 变量更新块与【行动选项】。）";
+          /* 纠偏文案优先用统一闸门给出的（与裁决一一对应，避免各处自己拼） */
+          let gateHint = "";
+          try {
+            const gv = window.AIOutputGate && window.AIOutputGate.evaluate(reply, { sample: String(window.__yjLastUserInput || "") });
+            if (gv) gateHint = window.AIOutputGate.rewriteHint(gv, String(window.__yjLastUserInput || ""));
+          } catch (e0) { }
+          const rewriteMsg = message + (gateHint || "\n\n（系统纠偏：你上一轮回复的正文不合格——或为空，或出现词表狂奔/复读循环/整段无标点，或掺入了外文与乱码片段。本轮必须重新完整输出小说正文：**全文必须是通顺的简体中文**，用规范中文标点与完整句子，纯叙事散文、不要放进代码块；禁止夹带英文/法文/俄文/日文等外文词与无意义字符，禁止同义词罗列式推进，禁止省略标点。之后再在结尾按协议输出 (variable_update) 变量更新块与【行动选项】。）");
           const body0 = bodyLenOf(reply);
+          if (window.YJTurnBudget && window.YJTurnBudget.spend) window.YJTurnBudget.spend('纠偏重写');
           const reply2 = await callOnce(rewriteMsg);
           if (bodyLenOf(reply2) > body0 && (body0 < 15 ? true : !isRunawayText(reply2))) reply = reply2;
           else if (body0 < 15 && bodyLenOf(reply2) > body0) reply = reply2;
         } catch (e2) {
           console.warn("[云境] 空正文自动重写失败，沿用原回复：", e2);
         }
+        }   /* v4.17.0：结束「预算允许才重写」的 else 分支 */
       }
       /* v3.53.0 格式守卫重构：正文在，但缺 (variable_update) 变量块或【行动选项】段。
          旧版做法是把整篇正文回贴给模型"补全"，等于让它把一两千字重写一遍——

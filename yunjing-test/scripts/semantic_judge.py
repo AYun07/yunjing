@@ -17,6 +17,15 @@
   YJ_TEST_KEY=<key> python3 semantic_judge.py --real --limit 30
 """
 import argparse, glob, json, os, re, sys, time
+
+# v4.17.0 修：Windows 控制台默认 GBK，本脚本会打印 ⚠ ✓ 等符号，直接崩在 UnicodeEncodeError。
+# 统一把 stdout/stderr 拉成 UTF-8（并在无法编码时替换而不是抛错），保证任何终端都能跑。
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
+
 import requests
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
