@@ -719,6 +719,13 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
      lightContext 走极简双消息，其余路径完全不变。 */
   const lightContext = !!opts.lightContext;
   if (lightContext) { const clean = { ...opts }; delete clean.lightContext; opts = clean; }
+  /* v4.17.0 每轮预算**硬拦截**：同一玩家操作内若已被反复重入（首轮/自检/纠偏/续写叠乘），
+     预算用尽后必须真的停手，否则预算只是记账。
+     实测教训：只记账不拦时，一轮仍会打到 7 次（上限 6）——本测试亲自抓到。
+     首轮不受影响：此时 _used 为 0，guard 必然放行。 */
+  if (!isTest && !lightContext && window.YJTurnBudget && window.YJTurnBudget.guard) {
+    window.YJTurnBudget.guard('callStoryAI');
+  }
   /* v4.08.0 并发门闩：非辅助、非并发、非常规测试的请求走独占门闩 */
   const needsLatch = !isTest && !lightContext && !opts.parallel;
   if (needsLatch) {

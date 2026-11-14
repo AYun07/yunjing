@@ -34,6 +34,7 @@
   var _used = 0;
   var _max = DEFAULT_MAX;
   var _log = [];
+  var _warned = false;
 
   function cfgMax() {
     try {
@@ -47,18 +48,40 @@
   function begin(label) {
     _turn++;
     _used = 0;
+    _warned = false;
     _max = cfgMax();
     _log = [];
     if (label) _log.push('开始：' + label);
   }
 
+  /** 记录一次上游请求。返回 false 表示**已超预算**。
+   *  注意：调用方必须**真的据此停手**，否则预算只是记账、拦不住任何人
+   *  （v4.17.0 实测踩到：只记账不拦，一次玩家操作仍冲到 7 次、超出上限 6）。 */
   function spend(why) {
     _used++;
     _log.push('#' + _used + ' ' + (why || '请求'));
+    if (_used > _max && !_warned) {
+      _warned = true;
+      try {
+        window.showToast?.(explain(), 'warn');
+      } catch (e) { }
+      try { console.warn('[YJTurnBudget] 超出每轮预算：', trace()); } catch (e) { }
+    }
     return _used <= _max;
   }
 
   function allow() { return _used < _max; }
+
+  /** 硬拦截：超预算时抛错。用于「还可以选择不打」的位置（重试/续写/重写）。
+   *  首轮请求不调用它——第一次请求永远该发出去，否则玩家点了没反应。 */
+  function guard(why) {
+    if (_used >= _max) {
+      const e = new Error(explain());
+      e.isBudgetExhausted = true;
+      e.budgetWhy = why || '';
+      throw e;
+    }
+  }
   function used() { return _used; }
   function max() { return _max; }
   function remaining() { return Math.max(0, _max - _used); }
@@ -76,6 +99,7 @@
     DEFAULT_MAX: DEFAULT_MAX,
     begin: begin,
     spend: spend,
+    guard: guard,
     allow: allow,
     used: used,
     max: max,
