@@ -289,6 +289,21 @@ const ConfigModal = {
                                 <select id="cfg_modelSelect" class="model-select" style="display:none" onchange="ConfigModal.pickModel(this.value)"></select>
                                 <div class="form-tip" id="cfg_modelHint" style="display:none"></div>
                             </div>
+                            <!-- v4.17.2 推理强度：紧贴「链接模型」下方，因为它与模型强相关。
+                                 会思考的模型（deepseek-v4.1-flash / gemini-3.5+ / claude-3+ 这一档）
+                                 思考长度可达正文的 3～19 倍——太长会挤掉正文、变慢、更贵，
+                                 太短又会在复杂剧情上变笨。这个取舍交给玩家，因为同档位不同模型差 3 倍以上。 -->
+                            <div class="form-row">
+                                <label>推理强度 (Reasoning)</label>
+                                <select id="cfg_reasoningEffort" class="model-select" onchange="ConfigModal.onReasoningChange()">
+                                    <option value="off">关闭思考</option>
+                                    <option value="low">弱思考</option>
+                                    <option value="medium" selected>中思考（推荐）</option>
+                                    <option value="high">高思考</option>
+                                    <option value="max">完全思考</option>
+                                </select>
+                                <div class="form-tip" id="cfg_reasoningHint"></div>
+                            </div>
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🎛 高级参数</div>
@@ -3238,6 +3253,21 @@ const ConfigModal = {
       hint.textContent = "";
     }
   },
+  /* v4.17.2 推理强度：切换时更新提示，并把「该档位建议的输出额度」告知玩家。
+     不同厂商参数名不同（OpenAI 用 reasoning_effort、Claude 用 thinking.budget_tokens、
+     Gemini 用 thinkingConfig、DeepSeek/GLM 用 thinking.type），具体由
+     js/reasoning-effort.js 按端点+模型名自动映射，玩家不需要知道这些差别。 */
+  onReasoningChange() {
+    const sel = document.getElementById("cfg_reasoningEffort");
+    const tip = document.getElementById("cfg_reasoningHint");
+    if (!sel || !tip || !window.ReasoningEffort) return;
+    const lv = sel.value;
+    const R = window.ReasoningEffort;
+    let v = '自动适配：';
+    try { v = '将按接口地址与模型名自动适配该厂商的参数（' + R.vendorOf(document.getElementById("cfg_endpoint").value, document.getElementById("cfg_model").value) + '）｜'; } catch (e) { }
+    tip.textContent = v + R.hint(lv) + '　建议最大Tokens ≥ ' + R.tokenFloor(lv) + '（思考与正文共享额度，额度太小会导致正文为空）';
+  },
+
   fillForm() {
     var _a;
     const fw = window.storyFramework;
@@ -3253,6 +3283,13 @@ const ConfigModal = {
     /* v3.55.11 模型能力档位回填（apiConfig 优先，其次 localStorage；默认 auto） */
     const tierVal = (typeof c.baseModelMode === 'string' && (c.baseModelMode === 'auto' || c.baseModelMode === 'lite' || c.baseModelMode === 'full')) ? c.baseModelMode : (window.BaseModelMode && BaseModelMode.getTier ? BaseModelMode.getTier() : 'auto');
     document.getElementById("cfg_baseMode").value = tierVal;
+    /* v4.17.2 推理强度回填（默认中思考） */
+    try {
+      const re = document.getElementById("cfg_reasoningEffort");
+      if (re) re.value = (typeof c.reasoningEffort === 'string' && window.ReasoningEffort
+        && ReasoningEffort.LEVELS.indexOf(c.reasoningEffort) >= 0) ? c.reasoningEffort : 'medium';
+      this.onReasoningChange();
+    } catch (e) { }
     this.updateProviderUI("cfg");
     this.fillDynamicWorldForm();
     this.fillVarAIForm();
@@ -3286,7 +3323,14 @@ const ConfigModal = {
       timeout: clamp(document.getElementById("cfg_timeout").value, 60, 1800, 300),
       stream: document.getElementById("cfg_stream").checked,
       /* v3.55.11 模型能力档位随「保存」落盘 */
-      baseModelMode: document.getElementById("cfg_baseMode").value
+      baseModelMode: document.getElementById("cfg_baseMode").value,
+      /* v4.17.2 推理强度随「保存」落盘。缺失/非法一律回落 medium——它是最平衡的档位。 */
+      reasoningEffort: (() => {
+        try {
+          const v = document.getElementById("cfg_reasoningEffort").value;
+          return (window.ReasoningEffort && ReasoningEffort.LEVELS.indexOf(v) >= 0) ? v : 'medium';
+        } catch (e) { return 'medium'; }
+      })()
     };
   },
   save() {
@@ -3294,6 +3338,22 @@ const ConfigModal = {
     const fw = window.storyFramework;
     fw.apiConfig = { ...fw.apiConfig, ...this.readForm() };
     fw.saveApiConfig();
+    /* v4.17.2 推理强度：额度自查。思考与正文**共享** max_tokens —— 玩家把档位调到
+       「高/完全思考」却仍留着 4096 额度，结果会是正文一直为空（实测推理模型思考可达
+       正文的 3～19 倍）。这里只提醒、不擅自改玩家的值，把选择权留给他。 */
+    try {
+      const R = window.ReasoningEffort;
+      const lv = fw.apiConfig.reasoningEffort;
+      if (R && lv && R.isOn(lv)) {
+        const floor = R.tokenFloor(lv);
+        const cur = fw.apiConfig.maxTokens || 0;
+        if (cur < floor) {
+          this.setTestResult("info",
+            `💡 当前推理强度「${R.label(lv)}」建议最大Tokens ≥ <b>${floor}</b>，你设的是 ${cur}。`
+            + `思考与正文共享这份额度，额度偏小会导致<b>正文为空</b>（推理模型的思考常是正文的 3～19 倍）。`);
+        }
+      }
+    } catch (e) { }
     /* v4.16.0：保存时对「已知不给跨域头」的官方端点给出预警。
        不阻止保存（真有中转站复用同域名也能用），只提前把代价说清楚——
        免得玩家配好后开局，才发现请求根本发不出去、还以为是云境坏了。 */

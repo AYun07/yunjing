@@ -410,6 +410,36 @@ async function fetchGeminiModels(baseEndpoint, apiKey) {
   }
   return [];
 }
+/* v4.17.2 流式请求体：抽成函数，好让「推理参数不被支持时自动退回」能重建一份干净的体 */
+function _streamBody(messages, cfg, opts) {
+  var _a, _b;
+  const b = {
+    model: cfg.model,
+    messages,
+    temperature: Number.isFinite(cfg.temperature) ? cfg.temperature : 0.9, /* v3.68.0 falsy修复：用户明确设 0 不再被吞 */
+    // v3.47.10 反狂奔：实测 0.4/0.3 会加剧中文同义词罗列与标点消失，降至 0.15/0.1（cfg 可覆盖，设为 0 即禁用）
+    frequency_penalty: (_a = cfg.frequencyPenalty) != null ? _a : 0.15,
+    presence_penalty: (_b = cfg.presencePenalty) != null ? _b : 0.1,
+    /* v3.53.0：opts.maxTokens 允许单次调用压小上限（补协议块 / 轻量纠偏），
+       不再被迫跟着全局 16384 跑满——中转站慢时这一点尤其重要 */
+    max_tokens: (opts && opts.maxTokens) || cfg.maxTokens || 16384,
+    stream: true
+  };
+  try {
+    if (window.ReasoningEffort && cfg.reasoningEffort) {
+      window.ReasoningEffort.apply(b, cfg.reasoningEffort, { endpoint: cfg.endpoint, model: cfg.model });
+    }
+  } catch (e) { }
+  return b;
+}
+
+/** v4.17.2：某端点因推理参数报 400/422 时，去掉该参数重发一次并**记住**该端点不支持。
+ *  宁可玩家拿不到思考档位，也不能因为加了个参数让他直接发不出请求。 */
+function _looksLikeParamReject(status, text) {
+  if (status !== 400 && status !== 422) return false;
+  return /reasoning_effort|thinking|thinking_budget|thinkingConfig|enable_thinking|unknown|unrecognized|invalid|not support|不支持/i.test(String(text || ''));
+}
+
 async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
   var _a, _b;
   const fw = window.storyFramework;
@@ -419,6 +449,7 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
   if (cfg.stream === false) {
     return await callOpenAINonStream(messages, cfg, fullEndpoint, fullMs, opts);
   }
+  /* 预判：若该端点已被标记不支持推理参数，_streamBody 内部会自动跳过（见 ReasoningEffort.isUnsupported） */
   const firstMs = firstByteMs(cfg, fullMs);
   let sawDelta = false;
   try {
@@ -428,21 +459,17 @@ async function callOpenAIOnce(messages, opts = {}, cfgOverride) {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${cfg.apiKey}`
       },
-      body: JSON.stringify({
-        model: cfg.model,
-        messages,
-        temperature: Number.isFinite(cfg.temperature) ? cfg.temperature : 0.9, /* v3.68.0 falsy修复：用户明确设 0 不再被吞 */
-        // v3.47.10 反狂奔：实测 0.4/0.3 会加剧中文同义词罗列与标点消失，降至 0.15/0.1（cfg 可覆盖，设为 0 即禁用）
-        frequency_penalty: (_a = cfg.frequencyPenalty) != null ? _a : 0.15,
-        presence_penalty: (_b = cfg.presencePenalty) != null ? _b : 0.1,
-        /* v3.53.0：opts.maxTokens 允许单次调用压小上限（补协议块 / 轻量纠偏），
-           不再被迫跟着全局 16384 跑满——中转站慢时这一点尤其重要 */
-        max_tokens: (opts && opts.maxTokens) || cfg.maxTokens || 16384,
-        stream: true
-      })
+      body: JSON.stringify(_streamBody(messages, cfg, opts))
     }, firstMs, { label: "主笔", throttleKey: "主笔", signal: opts && opts.signal });
     if (!response.ok) {
       const errText = await readErrBody(response);
+      /* v4.17.2 自适应退回：端点不认识推理参数（reasoning_effort / thinking / …）时，
+         标记它并**去掉该参数重发一次**。玩家宁可没有思考档位，也不能直接发不出请求。 */
+      if (cfg.reasoningEffort && window.ReasoningEffort && _looksLikeParamReject(response.status, errText)) {
+        window.ReasoningEffort.markUnsupported(cfg.endpoint);
+        console.warn('[推理强度] 该端点拒绝推理参数，已自动去掉并重发（之后不再附加）：', cfg.endpoint);
+        return await callOpenAIOnce(messages, opts, cfgOverride);
+      }
       const e = new Error(`API请求失败: ${response.status} ${response.statusText} ${errText.slice(0, 200)}`);
       e.isHttpError = true;
       throw e;
@@ -502,7 +529,18 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
   const cfg = cfgOverride || (window.storyFramework && window.storyFramework.apiConfig) || {};
   const baseMax = Number((opts && opts.maxTokens) || cfg.maxTokens || 16384);
   const reasonModel = window.isReasoningModel(cfg.model);
-  const effMax = reasonModel ? Math.max(baseMax, 8192) : baseMax;
+  /* v4.17.2：推理模型出力下限 8192 → 16384。
+     实测（4 个推理模型真实调用）：思考长度是正文的 3～19 倍 ——
+       nemotron-3-ultra-550b  正文 233 字 / 思考 3997 字
+       minimax-m3.1-flash     正文 253 字 / 思考 3938 字
+       glm-5.3-flash          正文 207 字 / 思考 1428 字
+       step-5-preview         正文 235 字 / 思考 1178 字
+     而云境一轮要求写 2000+ 字正文（≈3000 token），加上 ~4000 token 思考 = 约 7000 token，
+    8192 只是勉强够，稍长就被思考吃光 → content 为空 → 再翻倍重试才成功。
+     目标档位（deepseek-v4.1-flash / gemini-3.5+ / claude-3+ 这类）**全是推理模型**，
+     所以那一次白跑的重试是「每个玩家每一回合都在付」的成本。
+     抬到 16384 让第一发就够，省掉绝大多数重试；上限仍受 32768 的翻倍重试保护。 */
+  const effMax = reasonModel ? Math.max(baseMax, 16384) : baseMax;
   const run = async (mt) => {
     _emptyContentReasoningFlag = false;
     return await callOpenAIOnce(messages, Object.assign({}, opts, { maxTokens: mt }), cfgOverride);
@@ -543,24 +581,37 @@ async function callOpenAI(messages, opts = {}, cfgOverride) {
 }
 async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts) {
   var _a, _b;
+  /* v4.17.2 推理强度：按厂商把玩家选的思考档位写进请求体（详见 js/reasoning-effort.js） */
+  const _rBody = {
+    model: cfg.model,
+    messages,
+    temperature: Number.isFinite(cfg.temperature) ? cfg.temperature : 0.9, /* v3.68.0 falsy修复：用户明确设 0 不再被吞 */
+    // v1.11.1 反八股 L1：与流式路径保持一致
+    frequency_penalty: (_a = cfg.frequencyPenalty) != null ? _a : 0.15,
+    presence_penalty: (_b = cfg.presencePenalty) != null ? _b : 0.1,
+    max_tokens: (opts && opts.maxTokens) || cfg.maxTokens || 16384
+  };
+  try {
+    if (window.ReasoningEffort && cfg.reasoningEffort) {
+      window.ReasoningEffort.apply(_rBody, cfg.reasoningEffort, { endpoint: fullEndpoint, model: cfg.model });
+    }
+  } catch (e) { }
   const response = await fetchWithTimeout(fullEndpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${cfg.apiKey}`
     },
-    body: JSON.stringify({
-      model: cfg.model,
-      messages,
-      temperature: Number.isFinite(cfg.temperature) ? cfg.temperature : 0.9, /* v3.68.0 falsy修复：用户明确设 0 不再被吞 */
-      // v1.11.1 反八股 L1：与流式路径保持一致
-      frequency_penalty: (_a = cfg.frequencyPenalty) != null ? _a : 0.15,
-      presence_penalty: (_b = cfg.presencePenalty) != null ? _b : 0.1,
-      max_tokens: (opts && opts.maxTokens) || cfg.maxTokens || 16384
-    })
+    body: JSON.stringify(_rBody)
   }, timeoutMs, { label: "主笔", throttleKey: "主笔", signal: opts && opts.signal });
   if (!response.ok) {
     const errText = await readErrBody(response);
+    /* v4.17.2 自适应退回（与非流式路径同口径）：端点不认识推理参数时去掉并重发一次 */
+    if (cfg.reasoningEffort && window.ReasoningEffort && _looksLikeParamReject(response.status, errText)) {
+      window.ReasoningEffort.markUnsupported(cfg.endpoint);
+      console.warn('[推理强度] 该端点拒绝推理参数，已自动去掉并重发（之后不再附加）：', cfg.endpoint);
+      return await callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts);
+    }
     throw new Error(`API请求失败: ${response.status} ${response.statusText} ${errText.slice(0, 200)}`);
   }
   return parseOpenAIJson(await withTimeoutMs(response.json(), timeoutMs));
@@ -596,6 +647,15 @@ async function callGemini(messages, opts = {}, cfgOverride) {
     genConfig.frequencyPenalty = (_a = cfg.frequencyPenalty) != null ? _a : 0.15;
     genConfig.presencePenalty = (_b = cfg.presencePenalty) != null ? _b : 0.1;
   }
+  /* v4.17.2 推理强度：Gemini 用 generationConfig.thinkingConfig.thinkingBudget（0＝关闭思考）。
+     仅 Gemini 3 及以上认这个字段，2.x 传了会被拒，故按版本号守卫。 */
+  try {
+    if (window.ReasoningEffort && cfg.reasoningEffort && /gemini-[3-9]/i.test(cfg.model || "")) {
+      const lv = cfg.reasoningEffort;
+      const b = window.ReasoningEffort.BUDGET[lv];
+      genConfig.thinkingConfig = { thinkingBudget: lv === 'off' ? 0 : (b > 0 ? b : -1) };
+    }
+  } catch (e) { }
   if (cfg.stream === false) {
     return await callGeminiNonStream(base, toContents(), systemInstruction, genConfig, cfg, fullMs);
   }
