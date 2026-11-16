@@ -257,7 +257,8 @@ const StoryStatusRenderer = {
     const html = talentHTML + timeHTML + keys.map((k) => {
       const val = Math.max(0, Math.min(100, stats[k]));
       const color = this.statColor(val);
-      const star = strongSet.has(k) ? ' <span title="强项：该维度主导的行动天然占优" style="color:#e8b339">★</span>' : "";
+      /* v4.17.4 强项星标改用世界主色（旧值 #e8b339 是写死的固定金） */
+      const star = strongSet.has(k) ? ' <span title="强项：该维度主导的行动天然占优" style="color:var(--primary,#e8b339)">★</span>' : "";
       const sp = specMap[k];
       const spTag = sp ? `<span class="stat-spec" title="${this.esc(sp.bias || "")}">${this.esc(sp.name || "")}轴</span>` : "";
       const prev = typeof last[k] === "number" ? last[k] : null;
@@ -320,11 +321,22 @@ const StoryStatusRenderer = {
     tension: "张力",
     creativity: "创意"
   },
+  /* v4.17.4 贴合世界底色：进度条不再用固定金色，而是**取当前世界的主题色**。
+     每个界都有自己的 css/<genre>-style.css，定义了 --primary / --primary-glow /
+     --secondary。旧实现把 #e07856 / #e0a84c 写死，于是：
+       · 在克苏鲁（紫）里，进度条是金色
+       · 在道诡异仙（血红）里，进度条还是金色
+       · 在黎明之剑（蒸汽橙金）里，才是对的
+     看起来「不像这个世界的东西」。现改为按世界的 --primary 混出三档渐变：
+       高(≥80) = 主色 → 主色
+       中(≥60) = 主色淡 → 主色
+       低(≥40) = 次色 → 次色淡
+     全部走 CSS 变量，世界一换颜色自动跟着换；取不到变量时回退到旧色，行为不变。 */
   statColor(val) {
-    if (val >= 80) return "linear-gradient(90deg,#e07856,#e0a84c)";
-    if (val >= 60) return "linear-gradient(90deg,#e0a84c,#e8c97a)";
-    if (val >= 40) return "linear-gradient(90deg,#8ab4c8,#b8d4e2)";
-    return "#565b6b";
+    if (val >= 80) return "linear-gradient(90deg,var(--primary,#e0a84c),var(--primary,#e0a84c))";
+    if (val >= 60) return "linear-gradient(90deg,var(--primary-dim,rgba(224,168,76,.35)),var(--primary,#e0a84c))";
+    if (val >= 40) return "linear-gradient(90deg,var(--secondary,#8ab4c8),var(--secondary-dim,rgba(138,180,200,.35)))";
+    return "var(--muted,#565b6b)";
   },
   renderCharacters(chars) {
     var _a, _b, _c, _d;
