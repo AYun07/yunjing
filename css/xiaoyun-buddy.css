@@ -1,0 +1,171 @@
+/* 小云伙伴 · 大厅唯一交互角色（自包含，随版式注入） */
+.xy-buddy{position:fixed;right:26px;bottom:26px;z-index:9990;font-family:'Noto Sans SC','PingFang SC',sans-serif}
+.xy-orb{position:relative;width:96px;height:120px;cursor:pointer;transition:transform .3s;transform-origin:bottom center}
+.xy-orb:hover{transform:translateY(-6px) scale(1.04)}
+.xy-orb img{height:100%;width:auto;filter:drop-shadow(0 10px 24px rgba(10,10,30,.45));animation:xyFloat 3.2s ease-in-out infinite}
+@keyframes xyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.xy-tip{position:absolute;right:104px;top:8px;white-space:nowrap;background:#fff;color:#4a3f5c;font-size:13px;font-weight:600;
+  padding:9px 14px;border-radius:14px 14px 3px 14px;box-shadow:0 8px 22px rgba(20,15,50,.25);opacity:0;transform:translateX(6px);transition:.35s;pointer-events:none}
+.xy-tip.on{opacity:1;transform:none}
+.xy-tip::after{content:"";position:absolute;right:-5px;top:14px;border:5px solid transparent;border-left-color:#fff;border-top-color:#fff}
+/* 开发模式：造物工坊 */
+.xy-dev{position:fixed;inset:0;z-index:9995;background:rgba(8,7,20,.62);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif}
+.xy-dev.on{display:flex}
+.xy-dev-box{width:min(660px,92vw);max-height:88vh;overflow-y:auto;background:linear-gradient(170deg,rgba(30,26,54,.98),rgba(18,16,34,.99));
+  border:1px solid rgba(200,180,255,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.12);color:#efedfa;padding:22px 24px}
+.xy-dev h3{display:flex;align-items:center;gap:10px;font-size:17px;margin:0 0 4px;letter-spacing:.06em}
+.xy-dev h3 .x{margin-left:auto;cursor:pointer;color:#9a94c0;font-size:20px;padding:0 4px}
+.xy-dev h3 .x:hover{color:#fff}
+.xy-dev .sub{font-size:11px;color:#9a94c0;letter-spacing:.12em;margin-bottom:14px}
+.xy-dev fieldset{border:1px solid rgba(170,160,255,.22);border-radius:13px;padding:12px 14px;margin-bottom:13px}
+.xy-dev legend{font-size:12px;color:#cfc8f0;padding:0 8px;letter-spacing:.14em}
+.xy-dev .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.xy-dev select,.xy-dev input,.xy-dev textarea{background:rgba(255,255,255,.07);border:1px solid rgba(170,160,255,.3);border-radius:10px;
+  color:#fff;font-size:13px;padding:8px 11px;outline:none;font-family:inherit;width:100%;box-sizing:border-box}
+.xy-dev select{width:auto;flex:1}
+.xy-dev .row input{flex:1;min-width:150px}
+.xy-dev textarea{min-height:74px;resize:vertical;line-height:1.7}
+.xy-dev .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.xy-dev .chip{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.3);border-radius:999px;padding:4px 11px;cursor:pointer}
+.xy-dev .chip:hover{background:rgba(140,130,255,.3);color:#fff}
+.xy-dev .go{width:100%;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;
+  background:linear-gradient(120deg,#7e8cff,#b78cff,#ff8cc8);background-size:200% 100%;transition:.3s;letter-spacing:.1em}
+.xy-dev .go:hover{background-position:100% 0}
+.xy-dev .go:disabled{opacity:.5;cursor:wait}
+.xy-dev .status{font-size:12px;color:#9fe0c0;margin-top:9px;min-height:17px}
+.xy-dev .status.err{color:#ff9aa8}
+.xy-dev .prev{margin-top:12px;border:1px solid rgba(170,160,255,.3);border-radius:13px;overflow:hidden;display:none}
+.xy-dev .prev.on{display:block}
+.xy-dev .prev iframe{width:100%;height:320px;border:none;background:#fff;display:block}
+.xy-dev .prev .bar{display:flex;gap:8px;padding:9px 11px;background:rgba(140,130,255,.12);border-bottom:1px solid rgba(170,160,255,.22)}
+.xy-dev .prev .bar b{font-size:12px;align-self:center;margin-right:auto}
+.xy-dev .pbtn{font-size:12px;font-weight:600;color:#e6e2ff;background:rgba(140,130,255,.22);border:1px solid rgba(170,160,255,.4);border-radius:9px;padding:7px 13px;cursor:pointer}
+.xy-dev .pbtn:hover{background:rgba(140,130,255,.42)}
+.xy-dev .installed{list-style:none;margin:6px 0 0;padding:0}
+.xy-dev .installed li{display:flex;align-items:center;gap:9px;font-size:13px;padding:8px 10px;border-bottom:1px solid rgba(170,160,255,.14)}
+.xy-dev .installed li b{flex:1}
+.xy-dev .installed .pbtn{padding:5px 11px}
+.xy-dev .hint{font-size:11px;color:#8a84b0;line-height:1.8;margin-top:8px}
+
+.xy-panel{position:absolute;right:0;bottom:132px;width:340px;max-height:80vh;display:flex;flex-direction:column;
+  background:linear-gradient(170deg,rgba(28,24,48,.96),rgba(18,16,34,.97));border:1px solid rgba(200,180,255,.28);
+  border-radius:20px;box-shadow:0 24px 60px rgba(5,5,20,.6),inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden;
+  opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;transition:.32s;color:#efedfa}
+.xy-panel.on{opacity:1;transform:none;pointer-events:auto}
+.xy-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(90deg,rgba(126,140,255,.22),rgba(255,140,190,.14));border-bottom:1px solid rgba(200,180,255,.18)}
+/* v3.92.1：面板头改用云朵符号，不再放第二张小云头像——全站只有右下角一只立绘 */
+.xy-head .xy-cloud-mark{width:34px;height:34px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
+  font-size:20px;line-height:1;background:rgba(255,255,255,.16);color:#dcd2ff}
+.xy-head b{font-size:15px;letter-spacing:.06em}
+.xy-mood{margin-left:auto;font-size:11px;color:#cfc8f0;background:rgba(150,140,255,.18);padding:3px 10px;border-radius:999px}
+.xy-chat{flex:0 0 auto;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:80px;max-height:130px}
+.xy-msg{max-width:86%;font-size:13px;line-height:1.7;padding:9px 13px;border-radius:14px}
+.xy-msg.bot{align-self:flex-start;background:rgba(130,120,220,.2);border:1px solid rgba(170,160,255,.22);border-bottom-left-radius:4px}
+.xy-msg.me{align-self:flex-end;background:linear-gradient(120deg,#7e8cff,#b78cff);border-bottom-right-radius:4px;color:#fff}
+.xy-quick{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 14px 10px}
+.xy-q{font-size:12px;font-weight:600;color:#e6e2ff;background:rgba(140,130,255,.14);border:1px solid rgba(170,160,255,.3);
+  border-radius:11px;padding:8px 6px;cursor:pointer;text-align:center;transition:.2s}
+.xy-q:hover{background:rgba(140,130,255,.32);transform:translateY(-1px)}
+.xy-form{flex:0 0 auto;display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(200,180,255,.16)}
+.xy-form input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(170,160,255,.3);border-radius:11px;color:#fff;font-size:13px;padding:9px 12px;outline:none}
+.xy-form input::placeholder{color:#9a94c0}
+.xy-form button{background:linear-gradient(120deg,#7e8cff,#b78cff);border:none;border-radius:11px;color:#fff;font-weight:700;font-size:13px;padding:0 16px;cursor:pointer}
+.xy-forms{flex:0 0 auto;display:flex;gap:6px;padding:0 14px 13px;flex-wrap:wrap}
+.xy-f{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.28);background:transparent;border-radius:999px;padding:4px 11px;cursor:pointer;transition:.2s}
+.xy-f.on,.xy-f:hover{color:#fff;background:rgba(140,130,255,.35)}
+/* v3.92.1 模块区：让单只云灵也是全功能云灵（世界动态/手机/太虚阁/上下文/资料库/大势账本/行旅图鉴/灵宠/小队/身份/立场…） */
+/* v3.92.1 修正：此前模块区未声明 flex 收缩规则，在 70vh 面板里被压到接近 0（10 个按钮只剩一条）。
+   现固定其它分区不收缩，模块区独占剩余空间并保证最小可视高度，内部滚动可看全部入口。 */
+.xy-modules{flex:1 1 auto;min-height:160px;max-height:34vh;border-top:1px solid rgba(200,180,255,.16);padding:10px 14px 6px;overflow-y:auto}
+.xy-sec-title{font-size:12px;color:#cfc8f0;letter-spacing:.14em;margin-bottom:8px;font-weight:700}
+.xy-mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+/* v3.92.1 模块按钮紧凑化为单行：图标 + 名称，说明移到 title 悬浮提示，10 个入口首屏尽量全可见 */
+.xy-mod{display:flex;flex-direction:row;align-items:center;gap:7px;text-align:left;background:rgba(140,130,255,.12);border:1px solid rgba(170,160,255,.26);border-radius:10px;padding:7px 9px;cursor:pointer;transition:.2s;color:#efedfa;min-width:0}
+.xy-mod:hover{background:rgba(140,130,255,.3);transform:translateY(-1px)}
+.xy-mod-ico{font-size:15px;line-height:1;flex:0 0 auto}
+.xy-mod-name{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.xy-mod-note{display:none}
+@media(max-width:640px){.xy-panel{width:calc(100vw - 40px)}.xy-orb{width:78px;height:98px}
+  .xy-mod-grid{grid-template-columns:1fr}
+  /* v4.17.7 窄屏气泡不再横穿输入框：贴小云正上方、限宽折行、箭头朝下指向小云 */
+  .xy-tip{right:2px;top:-46px;white-space:normal;width:max-content;max-width:min(66vw,230px);font-size:12px;padding:8px 11px;border-radius:12px 12px 3px 12px}
+  .xy-tip::after{right:14px;top:auto;bottom:-5px;border-color:transparent transparent transparent #fff}}
+
+/* ==========================================================================
+   v3.92.1 · 纸本三套（手帐 / 水墨 / 瑞士）的小云面板适配
+   深紫玻璃面板放在米黄纸 / 宣纸 / 纯白底上是明显的风格断裂，这里换成纸本面板。
+   立绘仍只有右下角一只，面板头是云朵符号，不出现第二只小云。
+   ========================================================================== */
+html[data-theme="zine"] #xyBuddy .xy-panel,
+html[data-theme="ink"] #xyBuddy .xy-panel,
+html[data-theme="swiss"] #xyBuddy .xy-panel{
+  background:var(--panel);border:1px solid var(--ink-strong);border-radius:4px;
+  box-shadow:0 20px 48px rgba(60,50,35,.24);color:var(--ink-strong)}
+html[data-theme="zine"] #xyBuddy .xy-head,
+html[data-theme="ink"] #xyBuddy .xy-head,
+html[data-theme="swiss"] #xyBuddy .xy-head{
+  background:var(--group-bg);border-bottom:1px solid var(--rule)}
+html[data-theme="zine"] #xyBuddy .xy-cloud-mark,
+html[data-theme="ink"] #xyBuddy .xy-cloud-mark,
+html[data-theme="swiss"] #xyBuddy .xy-cloud-mark{background:var(--ink-strong);color:var(--paper-bg)}
+html[data-theme="zine"] #xyBuddy .xy-mood,
+html[data-theme="ink"] #xyBuddy .xy-mood,
+html[data-theme="swiss"] #xyBuddy .xy-mood{
+  color:var(--ink-mid);background:transparent;border:1px solid var(--rule);border-radius:2px}
+html[data-theme="zine"] #xyBuddy .xy-msg.bot,
+html[data-theme="ink"] #xyBuddy .xy-msg.bot,
+html[data-theme="swiss"] #xyBuddy .xy-msg.bot{
+  background:var(--group-bg);border:1px solid var(--rule);color:var(--ink-strong);border-radius:4px}
+html[data-theme="zine"] #xyBuddy .xy-msg.me,
+html[data-theme="ink"] #xyBuddy .xy-msg.me,
+html[data-theme="swiss"] #xyBuddy .xy-msg.me{
+  background:var(--ink-strong);color:var(--paper-bg);border-radius:4px}
+html[data-theme="zine"] #xyBuddy .xy-q,
+html[data-theme="ink"] #xyBuddy .xy-q,
+html[data-theme="swiss"] #xyBuddy .xy-q{
+  color:var(--ink-strong);background:var(--card-paper);border:1px solid var(--rule);border-radius:2px}
+html[data-theme="zine"] #xyBuddy .xy-q:hover,
+html[data-theme="ink"] #xyBuddy .xy-q:hover,
+html[data-theme="swiss"] #xyBuddy .xy-q:hover{background:var(--group-bg)}
+html[data-theme="zine"] #xyBuddy .xy-form,
+html[data-theme="ink"] #xyBuddy .xy-form,
+html[data-theme="swiss"] #xyBuddy .xy-form{border-top:1px solid var(--rule)}
+html[data-theme="zine"] #xyBuddy .xy-form input,
+html[data-theme="ink"] #xyBuddy .xy-form input,
+html[data-theme="swiss"] #xyBuddy .xy-form input{
+  background:var(--card-paper);border:1px solid var(--rule);border-radius:2px;color:var(--ink-strong)}
+html[data-theme="zine"] #xyBuddy .xy-form input::placeholder,
+html[data-theme="ink"] #xyBuddy .xy-form input::placeholder,
+html[data-theme="swiss"] #xyBuddy .xy-form input::placeholder{color:var(--ink-weak)}
+html[data-theme="zine"] #xyBuddy .xy-form button,
+html[data-theme="ink"] #xyBuddy .xy-form button,
+html[data-theme="swiss"] #xyBuddy .xy-form button{
+  background:var(--ink-strong);color:var(--paper-bg);border-radius:2px}
+html[data-theme="zine"] #xyBuddy .xy-f,
+html[data-theme="ink"] #xyBuddy .xy-f,
+html[data-theme="swiss"] #xyBuddy .xy-f{
+  color:var(--ink-mid);border:1px solid var(--rule);border-radius:2px}
+html[data-theme="zine"] #xyBuddy .xy-f.on,html[data-theme="zine"] #xyBuddy .xy-f:hover,
+html[data-theme="ink"] #xyBuddy .xy-f.on,html[data-theme="ink"] #xyBuddy .xy-f:hover,
+html[data-theme="swiss"] #xyBuddy .xy-f.on,html[data-theme="swiss"] #xyBuddy .xy-f:hover{
+  color:var(--paper-bg);background:var(--ink-strong)}
+html[data-theme="zine"] #xyBuddy .xy-modules,
+html[data-theme="ink"] #xyBuddy .xy-modules,
+html[data-theme="swiss"] #xyBuddy .xy-modules{border-top:1px solid var(--rule)}
+html[data-theme="zine"] #xyBuddy .xy-sec-title,
+html[data-theme="ink"] #xyBuddy .xy-sec-title,
+html[data-theme="swiss"] #xyBuddy .xy-sec-title{color:var(--ink-mid)}
+html[data-theme="zine"] #xyBuddy .xy-mod,
+html[data-theme="ink"] #xyBuddy .xy-mod,
+html[data-theme="swiss"] #xyBuddy .xy-mod{
+  color:var(--ink-strong);background:var(--card-paper);border:1px solid var(--rule);border-radius:2px}
+html[data-theme="zine"] #xyBuddy .xy-mod:hover,
+html[data-theme="ink"] #xyBuddy .xy-mod:hover,
+html[data-theme="swiss"] #xyBuddy .xy-mod:hover{background:var(--group-bg)}
+html[data-theme="zine"] #xyBuddy .xy-tip,
+html[data-theme="ink"] #xyBuddy .xy-tip,
+html[data-theme="swiss"] #xyBuddy .xy-tip{
+  background:var(--card-paper);color:var(--ink-strong);border:1px solid var(--rule);border-radius:4px}
+
+/* v3.92.1 · 图鉴打开时小云退场：面板占满右侧，招呼气泡会压住地图详情与节点说明 */
+body.atlas-open #xyBuddy{opacity:0;pointer-events:none;transform:translateY(10px) scale(.9);transition:opacity .18s ease,transform .18s ease}

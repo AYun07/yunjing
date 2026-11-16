@@ -1,0 +1,2069 @@
+# 云境 · 版本总览（VERSIONS）
+
+> 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
+
+> 共 **95** 个版本，从 `v3.55.7` 到 `v4.18.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+>
+> **版本分层（v4.18.0 口径）**：首行 **v4.18.0 为当前版本**；其余 **94 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+
+> **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
+
+---
+
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；95 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+
+## 版本速查（新→旧 · 首行为当前版本，其余 94 版为旧版本）
+
+| 版本 | 日期 | 完整包（zip） | 发布页 |
+|---|---|---|---|
+| **v4.17.5** | 2026-11-16（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.5) |
+| **v4.17.4** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.4) |
+| **v4.17.3** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.3) |
+| **v4.17.2** | 2026-11-15 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.2) |
+| **v4.17.1** | 2026-11-14 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.1) |
+| **v4.17.0** | 2026-11-14 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.0) |
+| **v4.16.0** | 2026-11-13 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.16.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.16.0) |
+| **v4.15.0** | 2026-11-12 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.15.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.15.0) |
+| **v4.14.0** | 2026-11-12 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.14.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.14.0) |
+| **v4.13.0** | 2026-11-11 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.13.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.13.0) |
+| **v4.12.1** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.1) |
+| **v4.12.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.12.0) |
+| **v4.11.0** | 2026-11-09 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.11.0) |
+| **v4.10.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.10.0) |
+| **v4.09.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.09.0) |
+| **v4.08.0** | 2026-11-08 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.08.0) |
+| **v4.07.2** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.2) |
+| **v4.07.1** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.1) |
+| **v4.07.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.07.0) |
+| **v4.06.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.06.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.06.0) |
+| **v4.05.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.05.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.05.0) |
+| **v4.04.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.04.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.04.0) |
+| **v4.03.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.03.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.03.0) |
+| **v4.02.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.02.0) |
+| **v4.01.0** | 2026-11-07 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.01.0) |
+| **v4.00.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.1) |
+| **v4.00.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.00.0) |
+| **v3.99.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.99.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.99.0) |
+| **v3.98.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.98.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.98.0) |
+| **v3.97.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.97.0) |
+| **v3.96.1** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.1) |
+| **v3.96.0** | 2026-11-06 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.96.0) |
+| **v3.95.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.95.0) |
+| **v3.94.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.94.0) |
+| **v3.93.0** * | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.93.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.93.0) |
+| **v3.92.1** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.1) |
+| **v3.92.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.92.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.92.0) |
+| **v3.91.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.91.0) |
+| **v3.90.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.90.0) |
+| **v3.89.0** | 2026-11-05 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.89.0) |
+| **v3.88.0** | 2026-11-04 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.88.0) |
+| **v3.87.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.87.0) |
+| **v3.86.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.86.0) |
+| **v3.85.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.85.0) |
+| **v3.84.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.84.0) |
+| **v3.82.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.82.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.82.0) |
+| **v3.81.4** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.4) |
+| **v3.81.3** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.3) |
+| **v3.81.2** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.2) |
+| **v3.81.1** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.1) |
+| **v3.81.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.81.0) |
+| **v3.80.0** | 2026-11-03 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.80.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.80.0) |
+| **v3.79.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.79.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.79.0) |
+| **v3.78.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.78.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.78.0) |
+| **v3.77.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.77.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.77.0) |
+| **v3.76.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.76.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.76.0) |
+| **v3.75.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.75.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.75.0) |
+| **v3.74.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.74.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.74.0) |
+| **v3.73.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.73.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.73.0) |
+| **v3.72.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.72.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.72.0) |
+| **v3.71.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.71.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.71.0) |
+| **v3.70.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.70.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.70.0) |
+| **v3.69.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.69.0) |
+| **v3.68.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.68.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.68.0) |
+| **v3.67.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.67.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.67.0) |
+| **v3.66.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.66.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.66.0) |
+| **v3.65.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.65.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.65.0) |
+| **v3.64.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.64.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.64.0) |
+| **v3.63.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.63.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.63.0) |
+| **v3.62.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.62.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.62.0) |
+| **v3.61.1** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.61.1) |
+| **v3.61.0** | 2026-11-02 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.61.0) |
+| **v3.60.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.60.1) |
+| **v3.60.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.60.0) |
+| **v3.59.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.59.1) |
+| **v3.59.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.59.0) |
+| **v3.58.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.58.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.58.0) |
+| **v3.57.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.57.1) |
+| **v3.57.0** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.57.0) |
+| **v3.56.2** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.56.2) |
+| **v3.56.1** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.56.1) |
+| **v3.55.30** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.30) |
+| **v3.55.29** | 2026-11-01 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.29.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.29) |
+| **v3.55.28** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.28.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.28) |
+| **v3.55.23** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.23.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.23) |
+| **v3.55.22** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.22.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.22) |
+| **v3.55.21** | 2026-10-31 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.21.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.21) |
+| **v3.55.19** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.19.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.19) |
+| **v3.55.18** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.18.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.18) |
+| **v3.55.17** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.17.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.17) |
+| **v3.55.12** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.12.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.12) |
+| **v3.55.11** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.11.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.11) |
+| **v3.55.10** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.10.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.10) |
+| **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
+| **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
+| **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
+## v4.17.6 · 2026-11-17（当前版本）
+
+> **相比 v4.17.5 的变化**：新增小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 批量重构影响面分析），FileBridge 暴露全量文件清单，小云提示词与工具箱接入研发能力；全量真浏览器视觉审查并修复小云遮挡状态面板 / 工具箱条目。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.5...v4.17.6)
+
+**本版做了什么**
+
+小云功能强化（重中之重）+ 全量界面视觉审查。
+
+- **小云研发中枢 `js/mo-devtools.js`**：补齐四项此前缺失的研发能力 —— `scanProject()` 自主巡检全项目源码（语法 / 引用缺失 / 重复 id / 版本不一致，带 P0/P1/P2 严重度，补足旧自检只扫 80 文件的上限）；`moduleMap()` 模块地图（全局暴露 / 依赖 / 悬空引用 / 孤岛模块）；`verify()` 自我验证（改完自跑全量检查，给 PASS/WARN/BLOCK）；`refactorImpact()` 批量重构影响面分析（改名 / 迁移前先算涉及文件与处数）。全部基于 FileBridge 本地访问，纯本机无外发。
+- **FileBridge**：新增 `listFiles()` 暴露全量可读文件清单，供巡检与模块地图使用。
+- **小云接入**：系统提示词注入研发能力说明与「巡检 → 看地图 → 打补丁 → 自验 → 复述」闭环；工具箱与快捷指令新增「自主巡检 / 自我验证」入口。
+- **视觉审查与修复**：真浏览器逐屏审查大厅、创作室、状态面板、字段设置、工具箱、接口设置、舆图、手机面板、快照面板。修复 `#xyBuddy` 小云立绘默认压住 330px 状态面板「关键道具」字段与 toast 的问题 —— 桌面宽屏让开面板，抽屉 / 弹窗打开时自动隐身（`:has()` 零侵入），玩家拖动后位置完全自定。
+- **已复核达标**：38 界实测 38 种主色、每界 14 个专属状态字段（≥12 达标）、字段设置弹窗 14 字段可编辑、舆图 101 地标、接口弹窗保存按钮常驻可见。四道闸全绿（语法 345/345、版本同源、预缓存一致、离线 9/9）。
+
+---
+
+## v4.17.5 · 2026-11-16
+
+> **相比 v4.17.4 的变化**：修复世界专属状态字段「写得进、读不出」的三层根因；新增 `keysForLabel` 写法容错（中文 label 优先，「/」「·」简称与去标点都认）。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.4...v4.17.5)
+
+**本版做了什么**
+
+修复状态栏填表链路。
+
+- **症状**：每界 14 个专属状态字段**永远读不出值**，状态栏空白。
+- **三层根因**（缺一层都修不好）：① `readField()` 只按英文 keys 找值，而上报契约要求模型用中文 label 上报 → 写的和读的对不上；② `buildReportDirective()` 把自定义字段渲染成 `道基/灵根(daoji)`，等于叫模型填英文 key；③ `activeGroups()` 组装自定义组时又把 keys 覆盖回 `[f.k]`，把前两层修复抹掉。
+- **修法**：新增 `keysForLabel(label, k)` —— 中文 label 优先，容忍 `道基/灵根`→「道基」「灵根」、`途径·序列`→「途径序列」，英文 k 兜底；三处统一改用它。
+- **已验证**：中文 label 上报可读 ／ 简称可读 ／ 去标点可读 ／ 英文 key 兜底可读 ／ 契约不再附英文 key。
+
+---
+
+## v4.17.4 · 2026-11-16
+
+> **相比 v4.17.3 的变化**：每界状态栏预设字段扩到 14 个（实际显示 55~58）· 进度条与强项星标改用世界主色 · 38 界零报错复扫。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.3...v4.17.4)
+
+**本版做了什么**
+
+状态栏内容扩充 + 配色贴合世界底色。
+
+- **每界状态栏扩到 12 个以上专属字段**：九个世界原型全部扩到 **14 个专属字段**，加内置通用字段后每界实际可显示 **55~58 个**（全 38 界实测不足 12 的为 0 个）。
+- **进度条改用世界主色**：渲染层此前把 #e07856 / #e0a84c 硬编码，导致所有世界进度条同为金色；现走 ar(--primary) / ar(--secondary)，实测仙逆紫 / 网游青 / 克苏鲁幽紫 / 道诡异仙血红 / 蒸汽橙金各自不同。
+- **核实更正**：38 套世界主题一直正常（38 界 38 种主色），此前判断「从未生效」是读错了 CSS 变量所在元素。
+
+---
+
+## v4.17.3 · 2026-11-16
+
+> **相比 v4.17.2 的变化**：生图来源多样化（新增 ComfyUI 原生，共五路）· 手机功能改为按时代判定（近现代可用 / 古代不可用，并补电报与无线电档位）· 插件运行时（补上「小云能写插件但没人加载」这一断环）· 每个世界专属状态栏（组开关 + 专属字段 + 字段改名）。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.2...v4.17.3)
+
+**本版做了什么**
+
+生图五路来源 · 手机限近现代 · 插件运行时 · 每界专属状态栏。
+
+- **生图来源多样化**：新增 **ComfyUI 原生**（两阶段异步：提交工作流 → 轮询 /history → /view 取图；支持玩家自己的工作流，用 `{{PROMPT}}` 标记注入点，或使用内置 SD1.5 默认工作流）。至此共五路：OpenAI 兼容（agnes / 个人端点 / 中转站）/ ComfyUI / NovelAI / 对话式 / 文墨 SVG。
+- **手机功能限近现代世界**：移除两道硬编码门（此前只有「真实地球」能用手机），改为按**时代判定**自动放行 —— 全 38 界实测：16 个现代/近现代世界可用，22 个古代玄幻世界自动不可用，0 不符。并补 **电报时代(1844+)** 与 **无线电时代(1920+)** 两个档位，使诡秘之主、克苏鲁、黎明之剑这些同属近现代的世界也有通讯界面。
+- **插件运行时** `js/plugin-runtime.js`：查证发现 FileBridge 早已让小云能写文件，但全库**没有任何插件加载机制**，写出来的插件永远不会被执行。现补 7 个扩展点、6 种能力声明与运行时校验、清单校验、**插件出错自动停用且不影响主流程**。小云提示词同步升级为「改动 / 建插件 / 做 DLC」三种工作方式。
+- **每个世界专属状态栏** `js/status-presets.js`：此前状态表是全宇宙通用（全库无 `genre`）。现按世界给出专属的组开关 + 专属字段 + 字段改名：修真=境界/道基/功法/灵石/因果，网游=等级/公会/装备/副本，都市=社会阶层/职业/资产/人脉，克苏鲁=途径序列/理智/污染/禁忌，武侠=内力/招式/兵器/恩怨，蒸汽=魔导等级/学派/造物，科幻=权限等级/舰船/能量。自由创作世界不套预设。
+- **修掉两个自身缺陷**：字段跨世界累积（现按 genre 过滤，其它世界的字段保留但不渲染）；Anthropic 推理档位倒挂。
+
+---
+
+## v4.17.2 · 2026-11-15
+
+> **相比 v4.17.1 的变化**：推理强度五档（跨厂商参数自动映射）· 推理模型额度下限 8192→16384 · 保存时额度自查 · 修 Anthropic 档位倒挂。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.1...v4.17.2)
+
+**本版做了什么**
+
+推理强度五档 + 推理模型额度适配。
+
+- **推理强度五档**：关闭思考 / 弱思考 / 中思考 / 高思考 / 完全思考，放在「链接模型」下方。按端点+模型名自动映射到各厂商参数（
+easoning_effort / 	hinking.budget_tokens / 	hinkingConfig / enable_thinking / 	hinking.type），玩家不需要知道差别。
+- **自适应退回**：不认识推理参数的端点报 400 时，自动记住并去掉该参数重发——宁可没有档位，也不能让玩家发不出请求。
+- **推理模型额度下限 8192→16384**：实测思考长度是正文的 3～19 倍，一轮 2000+ 字正文 + 约 4000 token 思考已逼近 8192，导致白跑一次重试。
+- **保存时额度自查**：高/完全思考档配小额度时提醒（不擅自改值）。
+- **修 Anthropic 档位倒挂**：max 档曾因 udget:-1 落成 8192，小于 high 的 16384；现为 32768，顺序递增。
+- **核查确认**：小云改玩家源码的能力（js/file-bridge.js）早已存在且链路完整，本版未改动。
+
+---
+
+## v4.17.1 · 2026-11-14
+
+> **相比 v4.17.0 的变化**：修复每轮请求预算只记账不拦截（实测上限 6 次却打到 7 次仍在继续，现 6/6 封顶）。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.0...v4.17.1)
+
+**本版做了什么**
+
+修复预算拦截。
+
+- **修复：每轮请求预算只记账、没拦截**。v4.17.0 的 spend() 只记录不阻止，调用方看到 false 也没停手，预算形同虚设。真浏览器实玩一轮即抓到上限 6 次实际打到 7 次。现补 guard() 硬拦截：超预算直接抛出可读错误并停止重入。
+- **同时如实记录一个未被消除的机制性事实**：在输出反复被判定截断时，一次玩家操作仍会用满 6 次预算（主笔→续写→自检重发→续写→主笔→纠偏）。预算是「上限」而非「常态」，弱模型每回合吃满额度是真实成本。
+
+---
+
+## v4.17.0 · 2026-11-14
+
+> **相比 v4.16.0 的变化**：工程化补课 · AI 输出统一闸门 · 每轮请求预算 · 存档正式迁移 · 首屏瘦身 35% · 提示词编译留痕 · 无障碍补课 · KB 重排版；本版修的不是功能，是「工程配套没跟上规模」——此前靠人记的环节（改版本号、跑测试、对齐离线清单、写版本页）全部自动化并加上 CI 兜底。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.16.0...v4.17.0)
+
+**本版做了什么**
+
+工程化补课 · 输出闸门 · 请求预算 · 首屏瘦身 35%。
+
+- **工程化四件套**：`yunjing-test/run-all.mjs` 统一测试入口（37 个散装脚本 → 一条命令，离线套件秒级带退出码）；`.github/workflows/ci.yml` 四道闸（全量语法 / 版本同源 / 预缓存一致性 / 离线测试）；`scripts/sync-version.mjs` 版本号单一来源（一处改、其余派生，带 `--check`）；`scripts/sync-precache.mjs` 预缓存三方对齐。**本会话的数起事故（漏打 tag / 写坏版本页 / QUICKSTART 漏改）都由这些闸门覆盖。**
+- **同批抓出并修掉的真缺陷**：`css/touch-targets.css` 被引用却未进预缓存（离线 404）；`t_quests_v407.js` 硬编码绝对路径；`semantic_judge.py` Windows 下 GBK 崩溃；`QUICKSTART.txt` 版本号漏改 142 处。
+- **AI 输出统一闸门** `js/ai-output-gate.js`：把散在 4 个文件 23 处的「完整性 / 语种 / 协议 / 失控 / 思维链」判定收敛为唯一裁决处，返回 `accept / rewrite / fallback / error`。顺带修正 `looksLikeRawReasoning` 误杀英文创作的问题。
+- **每轮请求总预算** `js/turn-budget.js`：四层互不知情的重试（内部 / 自检 / 纠偏 / 续写）最坏会发 6+ 次请求，现统一记账、用完即停。
+- **存档格式版本与迁移**：写入 `_schema`，按 `SAVE_MIGRATIONS` 逐级升级，老档（无版本号）统一归位。
+- **首屏瘦身 35%**：舆图三件套（509+88+55KB）改为懒加载，首屏 1,865KB → **1,212KB**。
+- **提示词编译入口与留痕** `js/prompt-compiler.js`：统一入口 + 组成快照（各层字符数 / 档位 / 模型 / 开关）。
+- **无障碍补课**：补 `aria-*` / `role` / `tabindex`，图标按钮补可访问名，`div+onclick` 补键盘激活。
+- **KB 数据治理**：带深度校验的重排器把 74 个 KB 文件的「整个数组一行」改成一条一行（`wangyou.ext.js` 32 行 → 1,277 行），数据零变更。
+
+---
+
+## v4.16.0 · 2026-11-13
+
+> **相比 v4.15.0 的变化**：版本归档补全 · 创作语种豁免 · 存储配额前瞻 · 手机端跨域指引分流 · 文档口径订正；补齐 v4.13.0 / v4.14.0 / v4.15.0 的 git tag 与 Release（此前漏打，导致版本页的下载链接全部 404），并修掉版本页自身的口径矛盾与过期数字。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.15.0...v4.16.0)
+
+**本版做了什么**
+
+版本归档补全 · 创作语种豁免 · 存储配额前瞻 · 手机端跨域指引分流。
+
+- **版本归档补全（修我自己造成的疏漏）**：v4.13.0 / v4.14.0 / v4.15.0 发布时只推了代码、**漏了 git tag 与 GitHub Release**，而本页开头就承诺「每版都有独立 tag、发布页与完整内容包」，速查表里的 `archive/refs/tags/<版本>.zip` 因此**全部 404**。现已补齐三个 tag 与三个 Release，并**逐个下载 zip 校验内容**（确认包内 `studio.html` 的 `YJ_VER` 与标签一致）。中途还发现 GitHub 建 Release 不指定目标提交时会把 tag 打在**当前 main HEAD** 上（那样 v4.13.0.zip 里会是 v4.15.0 的代码），已把三个 tag 全部移到各自版本的提交。
+- **创作语种豁免**：语种守卫不再硬编码中文，改为从**玩家自己的输入**推断期望语种——中文要求汉字主导，拉丁要求「像人写的散文」（拉丁字母主导 + 正常分词 + 含常见功能词）。写英文小说的玩家不再被反复误判为模型退化；而多语种 token 汤（含英文场景）仍会被拦住。
+- **存储配额前瞻提示**：澄清一处误判——配额梯队早已完整（撤备份 → 插图骨架化 → 立绘转 IndexedDB → 整档转 IndexedDB），每级都有玩家可见提示，**不存在静默丢档**；本版补的是「撞墙之前」的预警：用量达约 75% 时提示一次。
+- **手机端跨域指引分流**：本地代理需在电脑上运行 Node，手机跑不了；此前提示不分平台，手机玩家会照着桌面教程去双击 `.bat` 而永远走不通。现按平台分流：桌面给「本地代理 / 中转站」两条路，手机明确告知只能用支持跨域的中转站地址。
+- **文档口径订正**：修掉「版本分层（v4.15.0 口径）：首行 v4.14.0 为当前版本」的自相矛盾；过期数字「内置 24,940 条」订正为实测 `_index.json` 的 **24,779** 条；表头「当前口径（v4.18.0）」更新为 v4.16.0。
+
+---
+
+## v4.15.0 · 2026-11-12
+
+> **相比 v4.14.0 的变化**：弱模型适配 · 确定性兜底登记 · 语种退化防护；登记官空返回不再让整轮状态丢失，退化输出会被识别、重发并自动降档，弱模型实测从 57.5% 中文乱码提升到 99.6% 正常出文。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.14.0...v4.15.0)
+
+**本版做了什么**
+
+弱模型适配 · 确定性兜底登记 · 语种退化防护。
+
+- **确定性兜底登记**：登记官要求输出 30+ 种指令的复杂协议，弱模型无法稳定做到，实测「变量AI返回了空内容」→ 整轮状态不落库 → 世界停止生长。现于登记官空返回或失败时，从正文抽出**确凿存在**的事实（字数 / 章节推进 / 张力 / 明写的天气时辰 / 「」内出现 ≥2 次的新人物），合成 `(variable_update)` 块交给同一个解析器落库，UI 标为「🛟 保底登记」。**不猜、不编造**。
+- **语种退化检测**：长度 ≥240 字且汉字占比 <55% 判为退化（多语种 token 汤），接进既有「降温重发」机制，并接入自适应档位——崩塌立即降 lite，退化连续 2 轮才降（单轮乱码可能是上游抖动，不误伤强模型），达标 2 轮可升回 full。
+- **强模型路径不变**：full 档尊重用户参数不锁、探针连续 2 轮结构完整才升级、连通测试短回复不参与判定。
+- **实测（同一模型同一界，修前 vs 修后）**：`daoguiyixian` + `nemotron-3-ultra-550b-a55b` 20 轮 —— 修前 2 章 / 558 字 / 人物 2 / 大事记 2 / **中文 57.5%（乱码）**；修后 **21 章 / 45,605 字 / 人物 21 / 势力 10 / 关系 18 / 大事记 52 / 伏笔 24 / 道具 2 / 中文 99.6% / 超时 0 / pageerror 0**，存档 1.24MB 重载完好。
+
+---
+
+## v4.14.0 · 2026-11-12
+
+> **相比 v4.13.0 的变化**：跨域彻底解决 · 本地代理 · 首次配置崩溃修复 · 全量回归实测；新增 `tools/cors-proxy.mjs` 零依赖本地转发代理与 `js/cors-guard.js` 跨域守卫（预判 / 真探测细分失败原因 / 代理地址互转），「接口设置」新增「🛡 本地代理」一键接入与还原；并补上模型退化（多语种乱码）的语种守卫。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.13.0...v4.14.0)
+
+**本版做了什么**
+
+跨域彻底解决 · 本地代理 · 首次配置崩溃修复。
+
+- **纯前端的 CORS 限制，彻底解决**：云境是纯前端应用，浏览器只允许直连**返回跨域许可**的接口；`integrate.api.nvidia.com` / `api.openai.com` / `api.anthropic.com` 这类官方端点不返回该头，玩家只看到「请求发不出去」，不知道是被同源策略挡了。这不是云境的 bug，但没有后端就绕不过去——现新增 `tools/cors-proxy.mjs`（只用 Node 内置模块、只监听 `127.0.0.1`、支持流式 SSE 逐块透传、带退避重试、上游主机白名单）与 `start-proxy-windows.bat` / `start-proxy-mac.command` 启动器；「接口设置 → 🛡 本地代理」可一键把接口地址包成 `<代理>/<原地址>`，也可一键还原直连。
+- **跨域守卫 `js/cors-guard.js`**：保存配置时对已知不给跨域头的主机预警；连通测试失败时改用**真探测**把原因细分成「跨域被拦 / Key 错 / 模型名错 / 限流 / 服务端 5xx / 超时 / 连不上」，各给一条可执行下一步。探测用 `no-cors` 二次请求区分「网络不通」与「网络通但被同源策略拦下」。实测五步全通过：直连判定为跨域（216ms）、一键接入、经代理连通成功、还原直连、保存预警。
+- **修掉存量致命缺陷**：新玩家第一次配置 API 时，一打开「接口设置」就整块崩（`TypeError: Cannot read properties of undefined (reading 'saves')` at `renderVaultSection → fillForm → open`）。根因是 `vault.js` 为懒加载模块，未加载时 `window.YunjingVault` 是 lazy-boot 的**影子桩**，桩上取值一律同步返回 `undefined`——而项目自身的设计约定就写着「未就绪时调用方按自己的降级分支处理」，`renderVaultSection` 没做降级。现按约定补齐；同型的 `renderThemeSection` / `renderVecSection` 一并加统一守卫（它们此前会把桩返回的 `undefined` 直接写进 `innerHTML`，界面渲染出字面量「undefined」）。
+- **本地代理带退避重试**：上游 502/503/504 与连接层 ECONNRESET 自动重试（最多 3 次，退避 1s / 3.5s），4xx 不重试。实测一次压测中 100 次请求有 52 次 reset、13 次 503；加上重试与节流后，1495 次请求成功 1434 次（96%）。
+- **新增语种守卫（模型退化防护）**：38 界真模型实测发现，某 550B 推理模型在部分界会退化输出**多语种 token 汤**（`Enemy capacité tanksせční`、`MaterialsText ContrTextSystem^(W)`…），中文占比掉到 44%–57%，而既有失控判据只看「无标点长串」与「n-gram 复读」，对「标点齐全但根本不是中文」完全无感，乱码被当正文渲染并入库。现补上语种维度：正文长度 ≥240 字且汉字占比 <55% 即判为失控，走既有自动重写通道；纠偏指令也明确要求「全文必须是通顺的简体中文，禁止夹带外文词与无意义字符」。判据用实测样本回归：法语混排 19.7% 命中、道诡异仙样本 6.8% 命中、正常中文 100% 通过、中文夹少量英文 89% 通过。
+- **全量回归实测（真模型）**：跨模型矩阵 12 格（6 模型 × 代理/直连）——经本地代理 5/6 正常出文、**思维链泄漏 0**；官方直连 0/6 全部被 CORS 拦下（反证跨域问题真实存在）。38 界逐个真跑——36/38 可玩、**思维链泄漏 0**；100 轮长会话——世界确实在长（人物 1→5、势力 6→10、关系 2→18、大事记 0→41、地点 0→5），存档 374KB→2.1MB 单调增长且重载后进度完好（`turn=84`、`words=25585`）；重载后 DOM 卡片由 276 降到 61 属**虚拟化设计**（`chat-virtualizer.js` 的 `WINDOW=60`），完整历史仍在存档中。
+
+---
+
+## v4.13.0 · 2026-11-11
+
+> **相比 v4.12.1 的变化**：推理模型防护 · 数据治理闭环 · 移动端触达；以真 API 当玩家实玩（大厅 → 建角 → 原著界三态立场 → 真出文 → 存档重载）时发现：推理模型的 provider 级 `reasoning_content` 会被旧逻辑兜底成正文与情节选项，并可能经变量 AI / 动态世界写进存档。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.12.1...v4.13.0)
+
+**本版做了什么**
+
+推理模型防护 + 数据治理闭环 + 移动端触达。
+
+- **P0 · 推理模型思维链泄漏**：推理模型把思考写在 provider 级字段 `reasoning_content`（不是正文里的 `<thinking>` 标签，故 `stripAIThink` 正则管不到），而思考与正文**共享 `max_tokens`**——预算被思考吃掉时 `content` 为空（实测 `glm-5.3-flash`：`max_tokens=400` → `content` 0 字 / `reasoning_tokens=400` / `finish=length`）。旧逻辑在 `content` 为空时用 `reasoning_content` 兜底，导致**整段英文思维链被当成正文与情节选项**（实测出现「Reconciliation A/B/C」推演与「①陆青崖 is 太玄门外门记名弟子 NOW」这类选项）；同一兜底散落在 `variable-ai` / `dynamic-world` / `prompt-engineer` / `image-gen` / `phone-panel` 共 8 处以上，思维链还可能被当成**变量与世界事件写进存档**。新增 `extractAssistantText` / `looksLikeRawReasoning` / `isReasoningModel` 三个全局判据：`content` 为空一律不拿思维链顶替；推理模型自动抬高出力下限至 8192；空正文时翻倍预算重试一次；仍为空则抛出可读中文错误并写入失败分诊。仅保留「中转站只回 reasoning 且内容不像推演」这一条窄兜底。
+- **数据治理闭环**：**物理清除 33 界 247 条源码碎片**（78 个 KB 文件语法全通过），并重做 `KB_isCodeFragment` 判据——旧版只看 `title` 且用白名单 token，而实际 title 被切碎脚本截断成 20 字符（`defaultDynamicWorl`），对 247 条碎片**拦截 0 条（0.0%）**；新版改为 title + content 双判的反向判据。验收用例 `t_audit_v410.cjs` 的 F12 项**改用独立实现**（旧用例直接调用被测函数当判据，属循环自证，故一直误报「0 条」全绿）。`js/kb/_index.json` 按生成脚本重算。
+- **文档与脚手架订正**：`names.js` 头部「36 界 / 2574 条」订正为实测「38 界 / 3004 条」，并删去不可自动校验的「每条都能在该界知识库里 grep 到」绝对表述；`sw.js` 注释「phone-* 全库零引用」失实（`phone-panel.js` 确实动态加载三者），**并补回预缓存**（此前离线必 404）；`t_atlas_eras.cjs` 改用 `__dirname` 解析路径（原先只在仓库根可跑）；`.gitignore` 补 `_*.mjs` / `_*.cjs` 及下划线临时脚本规则（这几条只在 feat 分支存在、从未合并回 main，导致切到 main 后一次暴露 59 个遗留脚本）。
+- **视觉与触控**：删除 3 条从未生效的死 CSS 主题规则（旧选择器选中 `body` 且界名已下线，应用实际把 `theme-<genre>` 加在页面容器上）；移动端触控目标 `top-btn` / `back-link` 由 42 → 44px，新增 `css/touch-targets.css` 窄屏补丁（行内小链接用 `::after` 撑命中层）；清洗器剥离面板后不再留下悬空标点（「他的 ，快撑不住了。」→「他的快撑不住了。」，判据收窄到「汉字 + 空格 + 顿逗号 + 汉字」不误伤合法逗号）。
+
+---
+
+## v4.12.1 · 2026-11-09
+
+> **相比 v4.12.0 的变化**：真实玩家闭环 · 六类可见问题修复；以限定测试夹具 agnes-3.0-flash 完成大厅 → 接口配置 → 开局 → 三轮真实出文的全链路验证，逐屏截图目视审查。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.12.1)
+
+**本版做了什么**
+
+真实玩家闭环 · 视觉化验证修复版。
+
+- 以限定测试夹具 `agnes-3.0-flash` 完成大厅 → 接口配置 → 开局 → 三轮真实出文的全链路验证，逐屏截图目视审查。
+- 修复：开屏淡出期水印压住分组说明、世界时钟药丸遮挡顶栏品牌文字（含 `color-mix(in srut)` 拼写错误）、开局系统指令被渲染成玩家发言、`st-import` 把 `boot` 误作 YJWait 检查函数、截断续写下 `(status)` 圆括号块与未闭合 `<selection>` 泄漏进正文、SW 预缓存清单 79 项重复。
+- 版本同源全量对齐（含 `SW_VER` 递增，PWA 老客户端可拿到修复）。
+
+- [📂 该版文件](https://github.com/AYun07/yunjing/tree/v4.12.1)  [🔍 与 v4.12.0 差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.12.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.1.zip)
+
+
+## v4.12.0 · 2026-11-09
+
+> **相比 v4.11.0 的变化**：模型无关自适应 · 让任意模型都跑到最好的游玩效果；认知更正：三个 agnes flash 模型只是开发方做回归测试的夹具（只约束 yunjing-test/ 开发期脚本），不是玩家能用的型号… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.11.0...v4.12.0)
+
+**本版做了什么**
+
+模型无关自适应重做 · 口径澄清。
+
+- **认知更正**：三个 agnes flash 模型只是开发方做回归测试的夹具（只约束 `yunjing-test/` 开发期脚本），**不是玩家能用的型号限制**；产品运行时对玩家模型零限制、零白名单，各厂商/中转/自建网关/本地部署/任意 OpenAI 兼容端点均可。
+- **真实修复**：`base-model-mode.js` 旧版 auto 只看 endpoint 域名且单向锁 lite，自建中转/本地/新厂商上的强模型被误判为弱模型、砍掉全功能。改为按接口特征+模型名初判、按每轮实际输出双向升降档（连续 2 轮结构完整稳定→升 full，复读崩塌→降 lite），手动档仍优先、换模型缓存隔离。`api-calling-functions.js` 传入真实回复并排除连通测试短回复；设置界面文案改为「模型零限制」。
+- **口径同步**：交付报告/交付卡更正错误的「模型硬上限」表述；README 顶部、QUICKSTART、MODEL_WHITELIST 加权威声明。历史版本条目保持史实不动。
+- **验收**：`t_model_adaptive.cjs` 12/12、`t_model_adaptive_browser.py` 8/8、node vm 19/19、真浏览器 16/16、JS 语法 249/249、版本同源 19/19、零 pageerror。
+
+- [📂 该版文件](https://github.com/AYun07/yunjing/tree/v4.12.0)  [🔍 与 v4.11.0 差异](https://github.com/AYun07/yunjing/compare/v4.11.0...v4.12.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.12.0.zip)
+
+
+## v4.11.0 · 2026-11-09
+
+> **相比 v4.10.0 的变化**：缺陷清零补完 · 性格/理想/情绪自治演化内核修复；缺陷补完：wangyou 原创主角回落；ATLAS_ERAS 补 6 个多时代界（时代层 10→16/38）；文风块 38 界内置兜底，38… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.10.0...v4.11.0)
+
+**本版做了什么**
+
+缺陷补完闭环 · 世界自运转内核修复 · 版本同源收口。
+
+- 缺陷补完：`wangyou` 原创主角回落；`ATLAS_ERAS` 补 6 个多时代界（时代层 10→16/38）；文风块 38 界内置兜底，38/38 非空。
+- 演化内核：`personality`/`ambition` 由「生成即冻结」改为按 bond / 势力覆灭 / 记忆事件在同池内因果迁移（敌对→冷硬·复仇、亲近→温热·忠诚、旧主倾覆→守护），有界低频、带冷却，并注入 `WorldAlive` 主笔提示词。
+- 版本同源收口：`studio.html`(YJ_VER/verDot/title)、`sw.js`(SW_VER)、`selftest.html`(ENGINE_VER)、`number-scrubber` 模块号、181 处 `?v=`、页面标题、`QUICKSTART`/`README`/`VERSIONS` 全量对齐 4.11.0；新增 `t_version_sync.cjs` 独立验收器固化防复发。
+- 全量回归：JS 语法 249/249、node vm 19/19、KB 6/6、注册表 9/9、文风 38/38、时代层 6/6、真浏览器 16/16、KB 括号平衡 0 失败、**版本同源 21/21**、零 pageerror。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.11.0)  [🔍 与 v4.10.0 差异](https://github.com/AYun07/yunjing/compare/v4.10.0...v4.11.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.11.0.zip)
+
+
+
+## v4.10.0 · 2026-11-08
+
+> **相比 v4.09.0 的变化**：网游大世界补全 · 38界全就位 · 第三方审查闭环 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.09.0...v4.10.0)
+
+**本版做了什么**
+
+第三方审查 v4.09.0 全量复现并根治：F1-F12 与 P1-P2 确定性缺陷清零
+
+数据治理：物理清除 413 条源码/提示词回灌、131 条斗破库《大主宰》倒灌、展开 34 条 wangyou 嵌套地点，运行时再过滤，KB 污染归零
+
+38 界按界注册表全补全：界名/画风/氛围/印章/原著主角/大势节点/原著配角五新界与四小说界全部就位
+
+清洗层与持久化、并发、判定器延续 v4.08/v4.09 已验证的稳健底座
+
+全量回归：JS 语法 249/249、数值清洗 5/5、node vm 复现 19/19、KB 加载 6/6、注册表 9/9、正文清洗 15/15，真浏览器零 pageerror
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.10.0)  [🔍 与 v4.09.0 差异](https://github.com/AYun07/yunjing/compare/v4.09.0...v4.10.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.10.0.zip)
+
+
+## v4.09.0 · 2026-11-08
+
+> **相比 v4.08.0 的变化**：能力边界攻坚：数值真值清洗 + 语义判定层 + 38 界广度旅程 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.08.0...v4.09.0)
+
+**本版做了什么**
+
+把 v4.08.0 第七节列出的全部已知限制，在现有硬约束内做成确定性工程解法
+
+新建 js/number-scrubber.js 数值真值白名单清洗，玩家所见正文确定性根除小模型自编经济/面板数值，23 条正反样本 + 4 变异体全检出并用浏览器真实快照复验
+
+新建 semantic_judge.py 语义判定层，白名单模型做 A/B/C/D 四类二次复核，只追加告警不放宽规则层
+
+新建 t_concurrency.py 平台级并发压测（本地桩，不调模型）5/5 通过；t_persist.py 按存档三分类，38 界真丢失 0
+
+38 界 × 3 步 = 114 次真实模型广度旅程，闭环 6 个问题（含 J-1 修复自身引入的短正文回归，靠复跑探针抓出）
+
+新增 t_scrub_effect.py / t_final_audit.py / t_body_probe.py 诚实量化并全量离线复判，不额外消耗模型请求
+
+验收：297 JS 语法 0 失败、委托 37/37、长程 300 轮、38 界功能与压力探测 0 问题、移动端双视口 0 溢出、正文回归 11/11
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.09.0)  [🔍 与 v4.08.0 差异](https://github.com/AYun07/yunjing/compare/v4.08.0...v4.09.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.09.0.zip)
+
+
+## v4.08.0 · 2026-11-08
+
+> **相比 v4.07.2 的变化**：五条未闭环项攻坚 · 真值差分判定器 · 存档槽统一注册表 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.07.2...v4.08.0)
+
+**本版做了什么**
+
+网络延迟放大器根除（AbortError 误重试 / 超时后二次完整请求 / 主笔并发门闩 / isProcessing 卡死兜底）
+
+多存档槽隔离根治：新建 SlotRegistry 统一 20+ 处键名拼接，修删档残留/副档认领摧毁主档/清档无效/界键恒 default/面板崩溃等 9 项
+
+长时运行稳定性：buffs·suspects·owned 三处封顶、dayEvents 回收、静默写失败改可见提示、切档关页前强制落盘
+
+移动端小屏回归：375/414 双视口 4 界面，修 box-sizing 与 [class*=quick] 误伤等 4 项布局缺陷
+
+判定器升级为真值差分校验：引擎真值快照差分 + KB 全文合法名单 + 运行时真值 + 跨轮次一致性，34 条自检与 17+ 变异灵敏度全检出
+
+真实模型复跑修 7 类确定性缺陷：测试器交付动作从未真跑（D-27 重演）、系统块换壳、思维链泄漏、整块装备面板、孤立协议标签、数值契约措辞、SW 预缓存漏两模块
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.08.0)  [🔍 与 v4.07.2 差异](https://github.com/AYun07/yunjing/compare/v4.07.2...v4.08.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.08.0.zip)
+
+
+## v4.07.2 · 2026-11-07
+
+> **相比 v4.07.1 的变化**：玩家视角实测驱动的全界缺陷修复 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.07.1...v4.07.2)
+
+**本版做了什么**
+
+修复 13 界专属模块被静默顶掉的加载竞态——玄鉴仙族界模块数从 3 恢复到 18，本界专属机制（符种坛/牲祭坛/族谱位阶）全部回归
+
+修复常驻状态板在孤寒/玄剑/剑来/诡秘四界整体空白——模块工厂把状态函数接错协议键，且异常被空 catch 静默吞掉
+
+引擎结算结果首次回流 AI：上一轮动作的掉落/经验/等级变化随提示词下发，AI 与玩家看同一份真相，修掉「经验 80/62」这类自相矛盾与「Lv.2 了」这类编造升级
+
+战斗结算不再向正文泄漏野怪等级与 HP，并强制禁止给野怪标注等级
+
+数值型动作校验输入，非数字 payload 不再把状态写成 NaN
+
+新增 WorldExt.moduleList() 模块清单接口与 wr_rpg 24 个动作声明，供自动化全量探测覆盖
+
+功能探测覆盖从 50 个动作提升到 380+，38 界零死按钮零异常
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.07.2)  [🔍 与 v4.07.1 差异](https://github.com/AYun07/yunjing/compare/v4.07.1...v4.07.2)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.2.zip)
+
+
+## v4.07.1 · 2026-11-07
+
+> **相比 v4.07.0 的变化**：角色名片重构 · 舆图界心补全 · 文案与货币口径统一 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.07.0...v4.07.1)
+
+**本版做了什么**
+
+角色页顶部 2×2 卡片改为 6 格「角色名片」：位置·称号 / 职业 / 金币 / 声望 / 世界日·回合 / 委托；等级下移至六维属性标题，与常驻状态栏错位——原先 Lv、职业、金币在两处各说一遍
+
+修复局势文案重复动词：原渲染为「兽潮正在正在侵袭」，因 verb 字段本身带动词短语而模板又拼了一次「正在」
+
+状态栏同名货币歧义：万能市集的货币标签原为「金币」，与 RPG 金币重名且数值不同，现改为「市集」
+
+世界日口径统一为「第 1 日」起算，名片、任务页、回合日志三处同源（原先显示「第 0 日」）
+
+舆图标题随图层变化：切到放大层后，面板大标题会同步为「寰宇纪元 · 东境 · 月恒服 · 放大」，原先恒显界名，与图内标题对不上
+
+全境总览层中央空白补全：新增 5 个原创「界心」地点（折叠渡口 / 中枢环廊·第零层 / 寂静回廊·停摆区 / 旧王座·空位 / 万界棋盘·残局），节点 132 → 137，地标 45 → 50，资料库同步补 5 条原创条目（总 25565 → 25570 条）
+
+真实模型实测 6/6 全部通过：agnes-3.0-flash，并发 1、间隔 ≥4s，覆盖沙盒不强推主线、委托数字一致、玩家势力名原样使用、隐藏职业解锁、对照界不串味
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.07.1)  [🔍 与 v4.07.0 差异](https://github.com/AYun07/yunjing/compare/v4.07.0...v4.07.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.1.zip)
+
+
+## v4.07.0 · 2026-11-07
+
+> **相比 v4.06.0 的变化**：沙盒大世界 · 动态委托 · 二十隐藏职业 · 超大世界地图 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.06.0...v4.07.0)
+
+**本版做了什么**
+
+沙盒化重构：网游大世界改为纯粹玩家自由沙盒，提供双轨玩法——「剧情路线」走失落叶网游三部曲主线章节，「沙盒路线」无强制主线；两者可随时切换，切换即刻刷新任务板
+
+新增动态委托系统 js/rpg-quests.js：12 类委托模板（讨伐/采集/侦察/护送/悬赏/清剿/竞技/锻造/救援/夺回/军需/例行），委托由当下世界局势实时生成——每 8 回合过一天，跨日局势轮换、委托板换批，委托有时限、到期失效；推进钩子覆盖击杀、采集、抵达、竞技场胜场四条通路，在委托指定地点推进效率翻倍
+
+世界时钟统一：剧情推进与手动结束回合都算一回合，跨 8 回合进入新的一天（此前世界日只挂在手动回合上，长程模拟 300 轮仍是第 0 日）
+
+隐藏职业从 8 个扩到 20 个：新增 12 个全原创职业（织梦人/拾影者/观星者/逐风者/恒誓者/噬魂者/器灵师/影行者/音刃者/归墟行者/灵枢使/铸魂者），解锁条件从「只看等级」扩展为等级+声望+击杀+竞技场胜场+行会贡献五维门槛，每个分区都有专属隐藏职业
+
+舆图重建为一整张超大世界地图：全境总览层 45 节点（一层装下三大区与中枢的全部地点），四大分区各一层放大视图，终局一层；全界节点 72 → 132，补入 22 个原创地点与 12 条原创隐藏职业设定入资料库，132 个节点全部补齐别名（详情页「亦作」可显示）
+
+玩家势力实时上图：新增「自立门户」，玩家创建的势力写入世界实体并按驻地锚定到舆图对应位置，影响力随贡献与声望变化实时更新，离开势力则撤除据点
+
+修复势力数据表结构缺陷：FACTION_ATLAS.wangyou 原为数组，anchors/names 取不到，导致新势力无法按位置落图；已改为对象结构（62 据点 / 132 地名 / 42 势力）
+
+大厅维持四大分类：原著同人世界 30 界、真实地球世界 1 界、自由创作世界 6 界、网游大世界 1 界，全站 38 界
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.07.0)  [🔍 与 v4.06.0 差异](https://github.com/AYun07/yunjing/compare/v4.06.0...v4.07.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.07.0.zip)
+
+
+## v4.06.0 · 2026-11-07
+
+> **相比 v4.05.0 的变化**：网游大世界合流 · 大厅四分类 · 寰宇纪元 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.05.0...v4.06.0)
+
+**本版做了什么**
+
+三部曲三界（网游之盗版神话／网游之纵横天下／网游之天下无双）合并为一个原创网游大世界《寰宇纪元》：三界不再是三个并列入口，而是同一款网游的三大服务器分区——东境·月恒服、北境·灵恸服、中天·天纵服，合流赛季再开第四区寰宇中枢·神域
+
+零丢失合并：知识库 1262 条 → 1489 条（三部曲 54 条核心 + 1208 条扩展索引全量并入，另加 17 条原创核心条目与 6 层舆图图志）；专名表 70 人 / 71 地 / 42 势力 / 95 法器 / 16 品级；战斗阵容 12 敌人 + 9 技能；时代事件 18 条；行会势力 42 个；三部曲所有人物、职业、隐藏职业与机制全部保留并按东境／北境／中天归属归档
+
+数值引擎升级：品级链统一为十六阶（补入鬼器，容纳灵恸与天纵两套叫法并给出对照表）；隐藏职业从 5 个扩到 8 个（新增中枢专属召唤师与铭器师）；新增分区机制——分区决定第二资源名（怒气／魔法值／神力值／寰宇能）与品级口头叫法，跨区传送即同步切换；主线由三幕扩为六幕（开服→主城→秘境首杀→跨服会战→隐藏职业觉醒→神域终局），幕数自适应门槛保证终幕在正常游玩长度内可达
+
+舆图重绘：新界 6 层 72 节点 102 条道路（三部曲真实地标 + 分区化网游设施各 48 处），旧三界 3×12 节点合并为一张超大开放世界图；大厅重构为四大分类——原著同人世界 30 界、真实地球世界 1 界、自由创作世界 6 界、网游大世界 1 界，全站 40 界 → 38 界
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.06.0)  [🔍 与 v4.05.0 差异](https://github.com/AYun07/yunjing/compare/v4.05.0...v4.06.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.06.0.zip)
+
+
+## v4.05.0 · 2026-11-07
+
+> **相比 v4.04.0 的变化**：全40界舆图细节化 · 网游真实逻辑 · 模型白名单收敛 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.04.0...v4.05.0)
+
+**本版做了什么**
+
+舆图细节化：新增悬停速览、8 类地标图例、道路主路/支路/小径三档分级、本层统计条、图廓刻度、详情别名与方位与古道里程；未到访标签对比度由 0.86 提到 0.96，解决深底图上地名发灰看不清；40 界 123 层逐层实测节点<10 层 0、压字 0、越界 0，375px 全界零横向溢出
+
+地理志回库：把地图结构写成舆图层志与区域详录条目，明确标注引擎整理口径非原著逐字，层名与区域名 100% 可检索；知识库 24604 增至 25045 条，常驻条目数不变，预置版本升到 v19 让老存档自动补入
+
+网游真实化：装备十槽全部可掉落可穿戴、强化成功率随强化等级递减、主线任务进度与竞技场胜场解耦、竞技场生成对手实体并记录连胜、组队公会宠物实体化、技能结算不再凭空产生金币，全部动作保持确定性并兼容老存档
+
+模型准入：严格只允许 agnes-3.0-flash、agnes-image-2.5-flash、agnes-video-2.5-flash 三个模型；校验脚本改枚举法，任何未登记 agnes 模型自动判违规；历史 tiny 档脚本留底禁用
+
+视觉：新增独立网游面板视觉增强皮肤，补质感与悬停按压反馈，尊重系统减少动效设置，不改布局尺寸
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.05.0)  [🔍 与 v4.04.0 差异](https://github.com/AYun07/yunjing/compare/v4.04.0...v4.05.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.05.0.zip)
+
+
+## v4.04.0 · 2026-11-07
+
+> **相比 v4.03.0 的变化**：全 40 界舆图美化 · 网游世界全套功能 · 免费模型准入门禁 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.03.0...v4.04.0)
+
+**本版做了什么**
+
+全 40 界舆图美化：根治「很多地方没显示」——未到访节点不再套 agFog 高斯模糊与 opacity 0.58，浏览器逐层实测 40 界 123 层共 2622 节点全部清晰可见；补录地标由 scale(0.62) 小菱形升级为 8 类可辨迷你图标，标签常显比例由 1/3 提到 1/2；清理 14 条带 / 的合并地名（拆为主名 + aliases）
+
+两张舆图纹章由 agnes-image-2.5-flash（免费档）生成并接入面板，网游三界用赛博罗盘、其余界用羊皮纸罗盘，已加入离线预缓存
+
+三个网游界舆图每层补到 12 个正式节点，含明确标注「引擎口径、非原著逐字地名」的传送阵/拍卖行/铁匠铺/公会大厅/竞技场/副本入口等真实网游功能地标
+
+为 32 界补类型通用地标补录并同步写知识库索引条目，123 层节点全部 >=10；图廓标题与比例尺加入标签避让障碍，区域名牌同步避让，逐层体检标签压字 0 / 越界 0 / 无 pageerror
+
+网游三部曲重写数值面板：新增买药/卖装/传送/强化/宠物坐骑/组队公会/竞技场 PK/Buff/任务与成就领取等 14 个动作，七标签（角色/背包/技能/任务/地图/社交/战斗）多标签 UI 与四态完备，三界主题色各异，375px 无横向溢出；数值引擎保持确定性
+
+建立 yunjing-test/MODEL_WHITELIST.md 与可失败校验脚本：只准 agnes-3.0-flash / agnes-image-2.5-flash / agnes-video-2.5-flash 三个免费档，所有 pro 收费模型调用数为 0，并发=1 且间隔>=2s；禁用历史含收费模型的评估脚本
+
+selftest 71→72 全通过，全量 JS 语法 0 失败，网游引擎单测 84/84、浏览器 48/48
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.04.0)  [🔍 与 v4.03.0 差异](https://github.com/AYun07/yunjing/compare/v4.03.0...v4.04.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.04.0.zip)
+
+
+## v4.03.0 · 2026-11-07
+
+> **相比 v4.02.0 的变化**：全 40 界舆图补齐 · 三层覆盖率治理 · 网游知识库扩容 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.02.0...v4.03.0)
+
+**本版做了什么**
+
+补齐 6 界缺失主舆图：dazhuzai / wudongqiankun / yuanzun / wanxiangzhiwang / free / freeworld 此前走「只有 1 个启程之地」的兜底图；现 40/40 界均有 3 层主舆图，每层 12 个工整节点，6 图几何体检重叠 0 / 越界 0 / 重复 0 / 标签溢出 0
+
+40 界各补一条「舆图地名索引」，739 个舆图节点名 100% 可在知识库内检索（模型只看知识库，不看舆图数据文件）
+
+专名铁律治理：为 earth / cthulhu / wanmeishijie 及另外 7 界共 74 个「已注入模型但知识库查不到」的专名补核对条目，补 free 的 tpl 专名表；非模板 33 界命中率最低 96%
+
+完美世界 10 个可疑专名经联网查证均为原著真实存在（战天歌、麒麟步、上苍劫光、日月神印等），判定为知识库缺条目而非专名污染，只补条目不删表
+
+网游三部曲知识库由 79 / 97 / 98 扩至 384 / 432 / 428 条：原著核对条目 + 明确标注为「引擎通用口径、非原著」的职业模板、技能、等级段经验、装备品级与槽位、副本、系统词、变量结算协议
+
+补齐 FACTION_ATLAS 缺的 4 个土豆宇宙界；为 free / freeworld / mystery 写类型通用地名补录；清理顶层两个畸形空目录
+
+全库 24572 条，重内容 0、超长 0、脏标题 0，常驻条目与常驻字符不变；selftest 71/71；tiny / small 真实模型实测通过
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.03.0)  [🔍 与 v4.02.0 差异](https://github.com/AYun07/yunjing/compare/v4.02.0...v4.03.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.03.0.zip)
+
+
+## v4.02.0 · 2026-11-07
+
+> **相比 v4.01.0 的变化**：网游三部曲三界 · 网游数值面板 · 资料库治理 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.01.0...v4.02.0)
+
+**本版做了什么**
+
+新增失落叶网游三部曲三界：网游之盗版神话（月恒·林凡/青菜白玉汤）、网游之纵横天下（灵恸·丁舒升/轻狂书生）、网游之天下无双（天纵·陆尘/折戟沉沙）；每界配 core+ext 世界书 79/98/97 条、专名铁律表、专属舆图与势力谱系、三件套配置与皮肤
+
+新增网游数值引擎与角色面板：等级/经验(80×Lv^1.55)/HP·MP/六维/攻防/暴击/攻速确定性计算，13 个职业模板（含元素弓箭手、龙语者、死灵剑士、死亡剑术宗师等隐藏职业），10 个装备槽、技能冷却与耗蓝、掉落按等级结算、加点与转职；常驻状态栏 + 浮标个人面板 + 每轮数值快照注入模型，桌面与移动端均不溢出
+
+资料库治理：合并完美世界/全职高手/克苏鲁 33 条原著核对详录，修正「石中天是祖父非父亲」「秦昊是同父同母亲弟非月宫竞争者」等 3 条事实错误；全库删除 258 条内容完全重复条目，把 741 条「条目N」切碎残句整理成 35 条条文汇编，脏标题与重复内容清零；_presetVersion v15→v16 保证老存档自动补入
+
+舆图补录扩编：三界地名按原著地图索引逐条拆分合并名，节点 4→10/31/28，全界重叠 0 / 重复 0 / 越界 0
+
+真实 agnes 三档模型实测 6+3 轮：修复网游界与全局「严禁数值面板」格式契约冲突，根治 full 档输出思维链分析、模型自编 Lv.8 数值与续写坏段；复测三档 analysisStart/fakeLevel/badPunct 全为 0
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.02.0)  [🔍 与 v4.01.0 差异](https://github.com/AYun07/yunjing/compare/v4.01.0...v4.02.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.02.0.zip)
+
+
+## v4.01.0 · 2026-11-07
+
+> **相比 v4.00.1 的变化**：舆图分层纠错 · 地名扩编 · 真实模型实测 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.00.1...v4.01.0)
+
+**本版做了什么**
+
+修掉舆图最严重的一处错：无锚点补录一律挂到含起点节点的层，遮天「地球·起点」上因此标满轮回海/紫微星域/冰雪宫/大雷音寺——玩家看到的是「泰山旁边挨着天璇圣地」。改为按层名与区域名语义匹配，匹配不上才在非起点层之间分摊
+
+标签越界回拉此前一直是失效的：bx 是相对节点的偏移，却拿去和画布边界 97.6 比，单位对不上条件永不成立，earth「悉尼·植物学湾」右侧溢出 84px。改用绝对坐标判定后 37 界零越界
+
+标签宽度按 DOM 实测重算：旧公式每块少算 2.2 单位（「北京·燕京」实际占位 13.83、按 11.63 布局），这是「判定放得下、画出来压住」的数学根源；内边距 1.6→3.8
+
+区域名与起点节点同名时让位，吞噬星空「江南基地市」、圣墟「大漠古道」不再一个名字写两遍
+
+地名扩编：从 33 界知识库逐条回库校验，补录 805→1286 条（+60%），每界平均 15→24 个地点；剔除泛称（掌教/巅峰/三大族）、他作地名（慕兰帝国/天蛇帝国/邪神之渊）与句子截断名
+
+修正知识库源头 7 处「慕兰帝国」「天蛇帝国」——原著是慕兰谷与天蛇府，此前被写成了帝国
+
+真实模型实测（agnes 系列）：8K 档输出上限 1400→2000。旧值下模型写不到收尾就触发续写，拼接处丢标点，单轮出现 14 处共 403 字无标点长段；改后 0 处，9 轮对局全部正常收束
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.01.0)  [🔍 与 v4.00.1 差异](https://github.com/AYun07/yunjing/compare/v4.00.1...v4.01.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.01.0.zip)
+
+
+## v4.00.1 · 2026-11-06
+
+> **相比 v4.00.0 的变化**：舆图标签治理 · 区域名内置 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.00.0...v4.00.1)
+
+**本版做了什么**
+
+舆图标签重排：区域名从疆域边界外挪进疆域内部上方，不再与据点标签争一条横带；区域名牌的碰撞盒补上两侧菱形端点与引线宽度（此前少算 4 单位，导致「七宝琉璃宗」末字被「魂兽地界」的菱形压掉）
+
+修掉一处长期存在的静默重叠：标签布局判定「放不下」时不给位置，而绘制函数遇到没有位置会退回默认位照样画——所有挤不下的标签都在偷偷叠字。现在未获位置即不画，另给常显标签一次降字号重试（2.2→1.85）塞回缝里
+
+同名去重：区域名与据点同名时（斗罗「猎魂森林」「武魂殿」）只保留区域名，据点仍可点开看详情，不再出现「同一名字写两遍」
+
+像素级兜底把区域名牌纳入冲突集合，区域名优先保留；标签布局新增渲染前硬校验，与区域名牌相交的据点标签直接让路
+
+斗罗、斗破、诡秘、遮天四界截图复核：可见标签零重叠，区域名完整可读
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.00.1)  [🔍 与 v4.00.0 差异](https://github.com/AYun07/yunjing/compare/v4.00.0...v4.00.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.1.zip)
+
+
+## v4.00.0 · 2026-11-06
+
+> **相比 v3.99.0 的变化**：舆图重绘 · 专名铁律 · 三档模型预算 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.99.0...v4.00.0)
+
+**本版做了什么**
+
+舆图引擎重写：地形改为纹样铺陈＋多变体笔触，城池/宗门/秘境图标重绘，地名加引线标注与越界回拉，疆域做圆填充松弛与自动铺满，补录节点用力导向摊平——斗罗 11 片疆域不再互相穿插，单层可见地名从 7 个增至 30+
+
+新增 35 界专名铁律表（2011 条人物/地名/势力/功法/境界链），作为最高优先级段注入，专门治小模型把「萧炎」写错、把「斗宗」跳「斗帝」、给原著不存在宗门编名字
+
+低配档按上下文分三档：8K 模型请求体 7487→3915 字符、输出上限锁 1400，16K 档 7151，都留足输出空间；低配档不再砍掉生图与沉浸，改用 70 字精简协议
+
+高配档历史窗口按窗口放开：32K→20 轮、64K→28 轮、128K→40 轮（原固定 16 轮），长线「过完一生」接得住；知识库前景预算上限 24000 字符
+
+补录落位改为「描述命中区域→名称命中→哈希分摊」，斗破 38 条补录不再全堆在乌坦城一角
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.00.0)  [🔍 与 v3.99.0 差异](https://github.com/AYun07/yunjing/compare/v3.99.0...v4.00.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.00.0.zip)
+
+
+## v3.99.0 · 2026-11-06
+
+> **相比 v3.98.0 的变化**：极低参数模型适配 · 37 界 OOC 红线 · 四界舆图补厚 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.98.0...v3.99.0)
+
+**本版做了什么**
+
+**极低参数模型适配 · 37 界 OOC 红线 · 四界舆图补厚**
+
+低配档重做：知识库改为「按预算生成 ＋ 超长条目压成标题与铁律句」而非整段丢弃，世界骨架在裁剪后仍存活；系统提示词按 `##` 分段压到 2.1–2.7k 字（原 7.3–8.7k，去掉约七成）；历史窗口减半；服务端报上下文超限自动降到 8000 字符并重试一次。
+
+设置面板的预算档位由「8 万/11 万/15 万/20 万字符」改为「8K/16K/32K/64K/128K 上下文」——旧档位最小 8 万字符，用小模型的玩家根本调不下来。
+
+37 界全部补上集中式「OOC 红线清单」常驻条目（每界 6–7 条具体到人名/境界名的易错点），其中 31 界为新增；四界核心库 14 条重写为 100 条，常驻从 96/59 条收敛到 7–13 条，全站常驻均值 4702 字。
+
+四界舆图补专属配色（此前一直套兜底色，与世界观不符）与节点：2–4 个补到 10–13 个，13 层共 148 个节点、同层最小间距 12.2；修正最外层区域标签压地图边框。
+
+验收：专项 15 项 ＋ 回归 25 项 ＋ 低配档 20 项全部通过，298 个 JS 语法通过，知识库 24,239 条。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.99.0)  [🔍 与 v3.98.0 差异](https://github.com/AYun07/yunjing/compare/v3.98.0...v3.99.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.99.0.zip)
+
+
+## v3.98.0 · 2026-11-06
+
+> **相比 v3.97.0 的变化**：天蚕土豆宇宙 · 四界拆分 · 资料库补厚与原著勘误 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.97.0...v3.98.0)
+
+**本版做了什么**
+
+把《大主宰》从斗破续作段拆为独立世界，新增武动乾坤/大主宰/元尊/万相之王四界（全站共 37 界）
+
+四界资料库从 109–126 条补到 586–612 条，新增逐项原著百科 1913 条（人物/势力/地理/境界/功法器物/事件/设定），全站知识库 21928 → 23864 条
+
+大千世界宇宙五界互引、辰东三部曲三界互引、斗罗大陆一至五部按时代分层联动——同世界观才联，不同世界观不硬凑
+
+原著勘误 10 处：血神族归位、慕芊芊改大魔门宗主之女、苍玄宗改七峰、苍玄七术一峰一术、境界链改伪法域—伪圣—准神、源术品阶改普通/玄/天/圣、无双侯改十柱金台、李太玄改天龙相、姜青娥改十品光明相、苍渊改初二莲后破三莲
+
+斗罗时代层修复水晶城节点误插 era 数组导致图鉴整层打不开；四界舆图与五张斗罗时代图零重叠、零控制台错误
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.98.0)  [🔍 与 v3.97.0 差异](https://github.com/AYun07/yunjing/compare/v3.97.0...v3.98.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.98.0.zip)
+
+
+## v3.97.0 · 2026-11-06
+
+> **相比 v3.96.1 的变化**：续作资料库布满 · 时代舆图分卷 · 地图内容校勘与美化；点名两界补全：斗破苍穹补《大主宰》大千世界 26 条（位面关系、灵力境界与苍穹榜主宰境、无尽火域／武境／牧府三大势力、牧尘洛璃九幽等人物、地… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.96.1...v3.97.0)
+
+**本版做了什么**
+
+斗破苍穹补全《大主宰》大千世界 26 条、斗罗大陆补全全五部与外传 28 条，连同辰东三部曲、诡秘之主→宿命之环等 30 界同世界观与续作设定共 172 条入库，静态资料库 21,299 → 21,471 条。
+
+为 10 个世界新增 13 张时代独立舆图：大千世界、斗罗Ⅱ–Ⅴ、仙域与成仙路、乱古九天十地、阴阳界、宿命之环因蒂斯、北寒仙域、龙族日本与北欧、神河宇宙、宇宙海起源大陆；共 110 个据点、81 条通路，每个据点都标原著出处与所属区域，切层即换图。
+
+纪元说明并入左上标题牌成「主标题＋时代」两行，左下角不再与提示文字挤成重影；桌面与移动双视口可见标签零重叠、放大后屏幕字号恒定、控制台零错误。
+
+舆图补录清洗描述性短语误抽 16 处，拆分《吞噬星空》被误合的「紫月圣地·东帝圣地」为两个独立据点；新增时代层内容结构校验（字段、坐标、通路端点、专名合并）0 问题。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.97.0)  [🔍 与 v3.96.1 差异](https://github.com/AYun07/yunjing/compare/v3.96.1...v3.97.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.97.0.zip)
+
+- **点名两界补全**：斗破苍穹补《大主宰》大千世界 **26 条**（位面关系、灵力境界与苍穹榜主宰境、无尽火域／武境／牧府三大势力、牧尘洛璃九幽等人物、地理总览、事件年表，并衔接《武动乾坤》《元尊》）；斗罗大陆补全 **28 条**（五部总时间线、各部时代背景／魂环魂灵斗铠体系／主角／势力／地标，含《神界传说》《唐门英雄传》两部外传）。
+- **30 界同世界观与续作全线补齐**：辰东三部曲（遮天／完美世界／圣墟各 12 条）、诡秘之主→宿命之环、凡人修仙传→仙界篇、龙族全系列、超神学院→雄兵连、吞噬星空后期等共 **172 条**，写入 `YJ_SEQUEL` 幂等段；另给克苏鲁／武侠／悬疑／科幻 4 个题材世界补题材体系底座（非续作，单列口径）。静态索引 **21,299 → 21,471 条**，运行时 33 界合计 **21,453 条**，抽样专名命中 **99/99**。
+- **按时代分卷做地图**：10 个世界新增 **13 张时代独立舆图** —— 大千世界、斗罗Ⅱ绝世唐门／Ⅲ龙王传说／Ⅳ终极斗罗／Ⅴ重生唐三、遮天仙域与成仙路、完美世界乱古九天十地、圣墟阴阳界、宿命之环因蒂斯、凡人北寒仙域、龙族Ⅲ–Ⅴ日本与北欧、雄兵连神河宇宙、吞噬星空宇宙海起源大陆。共 **110 个据点、81 条通路**，每个据点都带原著出处与所属区域，切层即换图。
+- **地图美化与适配**：纪元说明并入左上标题牌成「主标题＋时代」两行（初版放左下角，实拍发现与提示文字挤成重影后修正），左下恢复干净；桌面／移动双视口实测可见标签重叠 **0**、1× 与放大后屏幕字号恒定、控制台 0 错误。缩放 LOD、势力覆灭动态链路原样保留。
+- **地图内容校勘（和原著对上）**：舆图补录清洗描述性短语误抽 **16 处**（814 → 805 条），如「坐落圣丹城」→「圣丹城」、「守护幻梦境圣地」→「幻梦境」；拆分《吞噬星空》被误合的「紫月圣地·东帝圣地」为两个独立据点；新增时代层内容结构校验（字段、坐标、通路端点、专名合并）**0 问题**。「瑶池圣地」「圣地亚哥」等原著／真实专名未误删。
+- **验收证据**：`verify-eras.mjs` 7/7 全过（13 层／110 节点／81 通路／10 界全 tab／桌面＋移动／零重叠／字号恒定／纪元牌可见／控制台 0 错误）；`verify-v396.mjs` 全量回归通过（33 界、每界通用常识 194 条、earth 事实 503 条、标题无重复、16 个地图用例零重叠、字号三档恒定、LOD 0/1/2）。
+- **版本同源再收口**：`release.mjs` 补进 `selftest.html` 的 `ENGINE_VER` 同步规则（3.96.1 发版后仍停在 3.96.0）；本版 `YJ_VER`／`ENGINE_VER`／`SW_VER`／页面标题／静态徽标／全部 `?v=` 参数／`QUICKSTART.txt`／`VERSIONS.md`／`changelog`／`README` 统一 3.97.0。
+
+
+## v3.96.1 · 2026-11-06
+
+> **相比 v3.96.0 的变化**：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标仍写死 v3.93.0、studio.html 顶栏徽标写死 v3.87.0（平时靠内联 JS… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1)
+
+**本版做了什么**
+
+版本同源根因修复 · 静态文案与缓存参数不再漏网
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.96.1)  [🔍 与 v3.96.0 差异](https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.1.zip)
+
+- **静态残留清零**：`index.html` 页脚徽标仍写死 v3.93.0、`studio.html` 顶栏徽标写死 v3.87.0（平时靠内联 JS 覆盖成当前号，JS 未执行就会显示旧号）、`QUICKSTART.txt` 标题停在 v3.96.0、`changelog/index.html` 的 CSS 缓存参数停在 v3.91.0（长期没被击穿）。本版四处全部对齐 3.96.1。
+- **防复发（根因）**：`scripts/release.mjs` 新增四条同源替换规则（两处静态徽标、说明页标题、changelog 页资源参数），并把**版本速查表**纳入自动发版；日期改按北京时间记，避免 UTC 让当天凌晨发的版比上一版早一天。以后每次发版自动同步，不再靠人工记得改。
+- **全量同源**：170 处 `?v=` 参数、`YJ_VER` / `SW_VER` / 页面标题 / 版本徽标 / `README.md` / `VERSIONS.md` / `changelog/index.html` 统一到 3.96.1；第三方库自有版本号（0.1.18 / 1.7.3）与历史文档里的旧号引用原样保留，不误改。
+- **本版只收口版本同源缺陷，不含功能改动**；v3.96.0 的地图焕新、标签零重叠、缩放分级、33 界资料库布满与真实地球事实库成果原样保留。
+
+
+## v3.96.0 · 2026-11-06
+
+> **相比 v3.95.0 的变化**：地图焕新 · 标签零重叠 · 缩放分级 · 33 界资料库布满 · 真实地球事实库；地图焕新 · 名字不再挤在一起：重做标签排布——常显组与 814 条补录地标分组避让（旧版补录节点虽透明却占满避让位置，是压字根因）、12… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.95.0...v3.96.0)
+
+**本版做了什么**
+
+地图焕新 · 标签零重叠 · 缩放分级 · 33 界资料库布满 · 真实地球事实库
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.96.0)  [🔍 与 v3.95.0 差异](https://github.com/AYun07/yunjing/compare/v3.95.0...v3.96.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.96.0.zip)
+
+- **地图焕新 · 名字不再挤在一起**：重做标签排布——常显组与 814 条补录地标分组避让（旧版补录节点虽透明却占满避让位置，是压字根因）、12 个候选位、越界候选弃用、pill 圆角底衬与统一字号、规整等距底格、纸纹与云雾噪声下调、地图底色提亮减费眼；再加一道运行时像素级去重兜底，冲突标签自动收起（只留圆点、点开详情有全名）。8 界 × 桌面/移动双视口 × 三档缩放实测**可见标签重叠 0**。
+- **比例放大缩小做完整**：按钮 / Ctrl+滚轮 / 双击 / 双指捏合 / 复位全通道，倍率实时显示（最大 6×）；标签与节点符号按 1/k 反向缩放，**字号三档恒定 17px**不随放大发虚；LOD 分级 1× 只显常显地名、1.8× 加一级补录、3× 全部，放大地名逐级变多；高倍率自动摘除会被拉成糊块的 feGaussianBlur 滤镜，回到 1× 原样恢复。
+- **资料库布满（不依赖小模型自身记忆）**：`build-codex.mjs` 升级为 `##` 与 `【】` 双分节、章节级跳过提示词工程（257 个输出规范/指令/检查清单章节不入库）、行级去噪、幂等累加净化；新增 `build-genre-index.mjs` 为 33 界生成**章节速查卡 + 专名索引卡**（提到一个名字就能检索到设定）。索引统计总量 **21,281 条**，抽样专名命中 **99/99**，标题无重复。
+- **真实地球资料库**：新增 `build-earth-facts.mjs` 生成 **503 条**真实世界事实——七大洲、150 国与首都、90 座主要城市经纬度、山川河海湖岛海峡沙漠雨林、历史纪年与文明、时代科技（通讯/交通/医疗/物价按年代）、语言宗教与地理常识；中国香港/中国澳门/中国台湾按中国领土表述。earth 运行时知识库 **1,360 条**。
+- **跨题材通用常识**：`build-common-facts.mjs` 把 `_common.js` 从 59 条扩到 **194 条**（古代官制科举、世界史、地理科学、题材通识、叙事写作、经济日常、小模型兜底），并入全部 33 界。33 界运行时知识库 **704–1,360 条/界**。
+- 验收：`unit-v394` 23/23、势力舆图动态链路 10/10、真实浏览器 16 用例（8 界 × 双视口 × 三档）零重叠 / 字号恒定 / LOD 0→1→2 / 控制台 0 错误、33 界知识库加载 0 错误、全量 JS 语法 0 错误、版本同源 3.96.0。
+- **未验证项（单列）**：真实模型主动写 `(world_update)` 的完整链路、玩家主导硬约束对抗性复测、全量 33 界真实 API 评测仍未跑（按「别再花钱」约束，本版全部本地桩与浏览器验收）；放大后放不下的补录地名只留圆点、点开详情看全名，未强行显示以免压字。
+
+
+## v3.95.0 · 2026-11-05
+
+> **相比 v3.94.0 的变化**：资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复；README 每版更新一眼可见：顶部新增「当前版本 + 逐版更新记录」，64 版每版一句话、完整包 / 发布页 / 差异链接，最近 12 版… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.94.0...v3.95.0)
+
+**本版做了什么**
+
+资料库完备化 · 逐版更新可见 · 地图详尽度 20%→61% · 省 token 与体验回归修复
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.95.0)  [🔍 与 v3.94.0 差异](https://github.com/AYun07/yunjing/compare/v3.94.0...v3.95.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.95.0.zip)
+
+- **README 每版更新一眼可见**：顶部新增「当前版本 + 逐版更新记录」，64 版每版一句话、完整包 / 发布页 / 差异链接，最近 12 版展开、其余折叠；由 `scripts/update-readme.mjs` 从 `VERSIONS.md` 自动生成，发版跑一次即同步，不再出现「主页还是老内容」。
+- **资料库完备化（面向小参数模型）**：从 33 份 `configs` 逐行抽出 **4,739 条**「原著设定速查」（境界 / 势力 / 地理 / 人物 / 事件 / 铁律），追加到各 `js/kb/<界>.ext.js`；新增 **59 条**跨题材通用常识（`js/kb/_common.js`：神话 / 历史 / 地理 / 修真 / 西幻 / 科幻 / 都市 / 叙事），接入世界书加载与 SW 离线预缓存。知识库总量 **18,048 条**，`_index.json` 统计由过时的 1410 修正。小模型记不住背景时按剧情检索注入，不依赖模型自身记忆。
+- **地图准确与详尽**：第三批严格审定补录 **625 条**（章节限定抽取 + 词干虚词过滤 + 原著出处行校验 + 每界上限 50），补录总量 **814 条**；earth 另加 **41 座真实城市经纬度**落点（共 47 座）。全 33 界口径覆盖率 **20% → 61%**（925/1510），原著 26 界口径 **72%**；两个口径并列披露，6 个抽象 / 类型世界与 earth 标为「不适用」，未从分母偷偷剔除。
+- **地图体验不打折**：补录节点标签默认收起、悬停显现，覆灭 / 当前 / 起点等关键状态强制常显；覆灭节点标签被避让隐藏的回归已修复。曾尝试把补录按层轮转均摊，但会改变「覆灭势力 ↔ 地图节点」的匹配层、导致废墟态在当前层不出现（势力链路 10→8），已回滚，核心动态链路优先。
+- **已知限制**：无锚点的第三批补录集中在含起点节点的层，个别界该层节点较密（圆点悬停看名称），其余层较疏；跨层均摊留待下一批在不破坏势力链路的前提下重做。
+- **继续省 token**：补协议辅助请求改走极简上下文（`lightContext`），system 从约 26,000 字符压到 **43 字符**；势力变更上报协议改成「照抄一行」的极简格式，降低小模型遵从成本。
+- 验收：`unit-v394` 23/23、势力舆图 10/10、真实浏览器 7/7（地图渲染 / 知识库每界 508-617 条 / 通用 59 条 / 覆灭标签 / 精简请求 / 控制台 0 错误）、改动 JS 语法全过、版本同源 3.95.0。
+- **未验证项（单列）**：真实模型主动写 `(world_update)` 的完整链路仍未跑通；玩家主导硬约束缺真实对抗性复测；未重跑全量 33 界真实 API 评测（按「别再花钱」约束只做本地桩与最小探针）。
+
+
+## v3.94.0 · 2026-11-05
+
+> **相比 v3.93.0 的变化**：玩家主导 · 势力真实演化 · 选项鲁棒化 · 省请求 · 测试模型边界对齐；玩家主导硬约束：全模式注入「玩家宣告不可否决、不得擅自快进、不替玩家写心理与台词」，未授权时间跳变给可见提示 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.93.0...v3.94.0)
+
+**本版做了什么**
+
+玩家主导 · 势力真实演化 · 选项鲁棒化 · 省请求 · 测试模型边界对齐
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.94.0)  [🔍 与 v3.93.0 差异](https://github.com/AYun07/yunjing/compare/v3.93.0...v3.94.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.94.0.zip)
+
+- **玩家主导硬约束**：全模式注入「玩家宣告不可否决、不得擅自快进、不替玩家写心理与台词」，未授权时间跳变给可见提示
+- **势力演化三通道**：玩家宣告直驱落图（不再依赖模型写 `(world_update)`）、剧情文本强／弱两档兜底（弱信号标 waning 而非误判覆灭）、散装 `faction.名.collapse` 行识别
+- **选项鲁棒化**：重写 `extractOptions()`，兼容数字编号／混排／无分隔符圈码／无标题连续编号块，不足六类由中性模板本地补齐
+- **省请求**：VariableAI 启用时不再每轮白补一次完整 system，世界状态改差分注入；真实单界 prompt 9.5 万 → 7.4 万（-22%）
+- **地图补录**：第二批 42 条逐条人工审定，earth 大洲／地区改按真实经纬度 `geoXY()` 投影，移除随机落点
+- **慢响应反馈**：45 / 90 / 150 秒分级读秒
+- **模型边界对齐**（用户澄清）：Agnes／硅基流动模型限制只作用于开发期测试脚本，产品运行时玩家自由配置自己的模型；据此回滚误加在配置面板／生图／向量链路的运行时门禁，策略清单移至 `yunjing-test/model-policy.js`。测试脚本默认单并发、1800ms 最小间隔、429/5xx 指数退避、请求数与 token 熔断
+- 验收：12 个 JS 语法 OK、修复用例 23/23、速率与准入 11/11、势力舆图 10/10、33 界全功能链路 33/33、控制台错误 0；真实 API 仅用 `agnes-3.0-flash` 跑 1 界 3 轮最小探针，未重跑全量 33 界以免重复消耗
+- 版本同源 3.94.0（`YJ_VER` / `SW_VER` / 标题 / 徽标 / `?v=` 全部对齐）
+
+
+## v3.93.0 · 2026-11-05
+
+> **相比 v3.92.1 的变化**：33 界势力动态舆图 · 原著地图补录 · 真实玩家实测揪出的接线修复；地图准确与详尽：新增 faction-atlas-data.js（33 界静态据点表）与 atlas-supplement.js（147 条… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.92.1...v3.93.0)
+
+**本版做了什么**
+
+33 界势力动态舆图 · 原著地图补录 · 真实玩家实测（33 界 × 3 轮）
+
+> 本版与 v3.94.0 同批发布、共用同一份快照。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.93.0)  [🔍 与 v3.92.1 差异](https://github.com/AYun07/yunjing/compare/v3.92.1...v3.93.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.93.0.zip)
+
+- **地图准确与详尽**：新增 `faction-atlas-data.js`（33 界静态据点表）与 `atlas-supplement.js`（147 条原著补录地标），开局即锚定真实地标落图，解决懒加载未就绪时落点退化成数字的问题
+- **势力动态演化与覆灭实时体现**：`vars.entities.factions` 为真源，新势力按本界据点落图并随影响力演化；覆灭即时灰化／划线／标废墟，新增不随切层消失的「覆灭势力榜」跨层双保险；复兴自动标注
+- **真实玩家实测**：33 界逐界各 3 轮共 99 轮，含重试 181 次请求 / 289 万 prompt tokens / 105 分钟；实测暴露 9 类问题（AI 推翻玩家决定、擅自快进、慢且贵、势力不演化、地图覆盖率低、选项不稳等），已在 v3.94.0 逐条整改
+- 版本同源 3.93.0
+
+
+## v3.92.1 · 2026-11-05
+
+> **相比 v3.92.0 的变化**：图鉴层级修复：手机端世界时钟条压在图鉴标题上；图鉴遮罩 / 面板 z-index 88/89 → 9100/9101，盖过世界时钟条（9000），不再两条标题叠在一起 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.92.0...v3.92.1)
+
+**本版做了什么**
+
+图鉴层级修复：手机端「世界自转 · 第 X 日」状态条压在图鉴标题上
+
+- 图鉴遮罩 / 面板 z-index 88/89 → 9100/9101，盖过世界时钟条（9000），不再两条标题叠在一起
+- 全站 208 处版本号同步 3.92.1；回归 50/50
+
+
+## v3.92.0 · 2026-11-05
+
+> **相比 v3.91.0 的变化**：33 界全量体检 · 地球界换成真实世界地图 · 图鉴视觉修复 · Token 抓包实测；33 界全量体检（真实浏览器逐界开图）：配置齐备、知识库 13,309 条、图鉴 491 节点、道路端点闭合、坐标合规、控制台零错误，并逐界… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.91.0...v3.92.0)
+
+**本版做了什么**
+
+33 界全量体检 + 地球界换成真实世界地图 + 图鉴视觉修复 + Token 抓包实测
+
+- **33 界全量体检**（真实浏览器逐界开图）：配置齐备、知识库 13,309 条、图鉴 491 节点、道路端点闭合、坐标合规、控制台零错误，并逐界验证「AI 报位置 → 定位到节点 → 小场所自动落图 → 跨层切换」，33/33 通过
+- **地球界真实世界地图**：弃用抽象椭圆色块，改用 Natural Earth 1:110m 真实陆地轮廓（1606 点 / 16KB 内嵌）、等距圆柱投影、24 座城市按真实经纬度落点，合成一张「世界 · 七洲四洋」；保留缩放/拖拽/足迹/动态落图
+- **图鉴视觉修复**：开图时小云退场（此前招呼气泡压住详情）、节点标签四向避让（此前欧洲与中国区叠成一片）、资料库小节标题不再当节点上图、迷雾印章移位降透明度、起点旗标糊块移除、斩神界补起点并加兜底
+- **Token 实测与省流**：抓包确认每轮 1 次请求、系统提示词 26,466 字符、稳定前缀 68.7%；按回合裁掉「入场指令」「档案 18 字段示范」，系统提示词降到 25,983（第 2 轮起）
+- 回归：功能 50/50、唯一小云 13/13、自检 63/63、33 界 33/33、JS 语法 263/263、离线清单 158 路径零缺失、版本同源 3.92.0
+
+
+## v3.91.0 · 2026-11-05
+
+> **相比 v3.90.0 的变化**：大厅收束为六套原创风格 · 吉祥物删除 · 全站唯一小云 · 三轮实拍视觉复验 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.90.0...v3.91.0)
+
+**本版做了什么**
+
+大厅收束为六套原创风格：只保留同一批做出来的六种设计稿，删掉其余八套深紫玻璃版式；大厅吉祥物删除、全站唯一小云；三轮实拍视觉复验
+
+保留清单（用户口径「就是最后同一时间创造出来的手账那几个风格」）：壹·雲境志（杂志编辑）/ 贰·拼贴手帐 / 叁·Y2K 未来 / 肆·国风水墨 / 伍·瑞士极简 / 陆·终端 Code，从 v3.84.0 的原稿恢复落地；v3.90.0 的 colorful / compass / carousel / film / hero / scroll / sidebar / avatar 八套全部移除，切换坞只剩 6 项，旧 localStorage 与 ?theme= 旧 id 自动回退到默认手帐
+
+六套各有真实骨架而非换配色：12 列不对称编辑网格 + 点线目录 / 米黄方格纸拍立得墙 + 胶带荧光笔 / 铬金属字 + 复古窗口 + 网格地平线跑马灯 / 宣纸竖排墨字 + 朱印 + 细线卷轴条目 / 纯白 4px 黑规则线 + 120px 特粗字 + 编号规则行 / CRT 扫描线 + ASCII banner + 命令行菜单。皮肤层覆盖 33 界分组、初来乍到、沉浸扮演、页脚、切换坞与小云面板，整页风格统一
+
+删除大厅顶部吉祥物立绘；面板头第二张小云头像换成 ☁ 符号。唯一小云严格验收 13 个场景（六套首屏 / 点开面板 / 切性格 / 旧 id 回退 / 创作室首屏 / 创作室交互后 demand 懒加载 / 手机面板）13/13：mascot=0、小云立绘=1、面板头头像=0、MoChibi DOM=0
+
+视觉测试按「实拍 → 找违和 → 优化 → 再实拍」走了三轮（6 套 × 桌面 1440 + 手机 390 + 切换坞 + 创作室 = 每轮 15 张）：第一轮记下 12 项违和（版本徽标压正文、小云压入坊文字、手机胶囊换行、杂志描边水印被裁压字、手帐 4+1 孤卡与批注被切、水墨竖排胶囊碎字、瑞士入坊两行、终端对比不足等）；第二轮修后复拍发现杂志水印仍像残字、手帐手机仍单列（卡片未 box-sizing 致 46% 撑成 185px）、水墨水印穿过入场文字；第三轮再修并复拍收敛。详见 test/VISUAL-REVIEW-v3.91.0.md
+
+版本徽标移入页脚不再 fixed 悬浮；手机端六套统一收起胶囊；小云缩到 76×96（手机 scale .68）减少遮挡；全仓 178 处 3.90.0 → 3.91.0，?v= / YJ_VER / SW_VER / 标题 / 徽标同源
+
+验收：功能 50/50、唯一小云 13/13、自检 63/63、4 页零 404 零错误、六套骨架 6/6 两两不同、33 界跳转各 33/33、JS 语法 263/263、离线清单 158 路径零缺失
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.91.0)  [🔍 与 v3.90.0 差异](https://github.com/AYun07/yunjing/compare/v3.90.0...v3.91.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.91.0.zip)
+
+
+## v3.90.0 · 2026-11-05
+
+> **相比 v3.89.0 的变化**：大厅版式整改：8 套主题从「换配色」升级为「换版式骨架」 + 建立视觉合理性验收口径 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.89.0...v3.90.0)
+
+**本版做了什么**
+
+大厅版式整改：只认实际视觉生效，把「8 套主题 = 8 套配色」升级为「8 套主题 = 8 种版式骨架」
+
+根因取证：从 git 恢复 v3.55.7 / v3.84.0 / v3.89.0 三方对照，确认主界面骨架自项目首个版本起从未变过（吉祥物 + 标题 + 胶囊 + 5 张等大卡片），只换过配色；v3.84.0 起的 14 套异构概念稿一直只躺在 demo 页，v3.89.0 还把它们当散页删掉。结论是换皮没换版式。
+
+恢复 11-04 八套新稿的真实布局骨架，新增 css/lobby-layouts.css，用 html[data-theme] body.page-index .container > .workshops 严格限定（不影响 9 个 33 界分组与跳转）：彩云主演 3 大形象卡 + 2 小卡、幻海罗盘环形 5 节点、星轨轮播横向 scroll-snap 大画幅、胶片映画胶片条 + 齿孔、巨幕主角 1 巨幕 + 4 行列表、卷轴长廊纵向逐屏左右交替、侧栏书页固定 248px 侧栏 + 3+2 网格、形象馆竖长人物卡；8 套骨架指纹两两不同
+
+按视觉合理性口径（V1–V8：焦点/辨识度/留白密度/层级/形态比例/对齐遮挡/可读性/可发现性）对 8 套 × 桌面 1440×900 + 手机 390×844 共 16 张真实首屏逐张审查，修正 P0 共通问题 2 项与逐套问题 10 项：大厅不再自动轮播小云气泡（消除跨 8 套的卡片遮挡）、入坊按钮归位、carousel 标题不再竖排断行、scroll 首屏露出完整入口并加向下展卷提示、compass 罗盘缩小上移使 5 节点全可见、hero 巨幕填充空白、colorful 大卡改大形象位、sidebar 消掉 4+1 孤卡并移开切换器、横滑区补提示与滚动条、手机端孤卡跨列与侧栏回退 2 列
+
+离线缓存加入 css/lobby-layouts.css，SW_VER 递增；全仓 195 处 3.89.0 → 3.90.0，?v= / YJ_VER / SW_VER / 标题 / 徽标同源
+
+验收：8 套骨架 8/8 不同、33 界跳转各 33/33、?theme= 记忆、自检 63/63、4 页零 404 零错误、JS 语法 263/263、离线 0 缺失；视觉审查修正后气泡遮挡 0 / 竖排断行 0 / 孤卡 0 / 首屏无完整入口 0 套。详见 test/VISUAL-REVIEW-v3.90.0.md 与 test/LIVE-TEST-v3.90.0.md
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.90.0)  [🔍 与 v3.89.0 差异](https://github.com/AYun07/yunjing/compare/v3.89.0...v3.90.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.90.0.zip)
+
+
+## v3.89.0 · 2026-11-05
+
+> **相比 v3.88.0 的变化**：v3.88 全量整改：主界面收束 · 单一全功能小云 · 8 套新主题 · 云境图标 · 自检与离线修复 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.88.0...v3.89.0)
+
+**本版做了什么**
+
+v3.88 全量整改：只认实际运行生效的代码，收束主界面、单一全功能小云、只留新主题、换云境图标、修自检与离线缓存
+
+大厅主题收束：删 9 套 disabled 旧版式、14 个 demo 散页与 ?lobby= 死参数，新增 8 套新主题（css/lobby-themes.css + js/lobby-themes.js），可见可切可记忆、两两真实不同
+
+单一全功能小云：MoChibi 降为纯 API 兼容层（不再渲染第二只小云/还原按钮/扇形菜单），say() 转发唯一 #xyBuddy；模块入口迁入小云面板 2 列网格，按钮紧凑单行零重叠，懒加载落地后自动补齐全部入口
+
+图标全部替换为云境自有 assets/yj-*，删除早期源码基础遗留 icon-192/512、apple-touch-icon、favicon 与 chibi-preview.html；补齐各页 icon link，消除创作室 favicon 404
+
+一致性自检 file:// 下不再抛 TypeError 全挂，改为明确 HTTP 启动引导；HTTP 下 63/63 通过
+
+启动方式收束为唯一 8080 本地服务：删 start-lan.bat 与两个旧版式对照台散页，README/QUICKSTART 去掉互相矛盾的「任选其一 / 直接双击也能跑」
+
+离线缓存完整性：补齐大厅基础/新主题 CSS 与切换器、首屏吉祥物图及 6 个创作室脚本，CORE/CORE2 静态 153 条 + 派生 166 条路径全部 200，页面静态引用零缺失
+
+版本号全仓统一：168 处 ?v= 与 YJ_VER / SW_VER / 页面标题 / 徽标同源到 3.89.0，修掉徽标写死与 YJ_VER 相互覆盖导致显示旧号
+
+验收：结构 33/33、真实 API 生成 33/33（50,276 字，变量块与世界状态变化各 33/33）、自检 63/63、活世界逻辑 29/29、灵宠 14/14、小队 18/18、身份 19/19、唯一小云 9/9、8 主题两两不同、4 页零 404；详见 test/LIVE-TEST-v3.89.0.md
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.89.0)  [🔍 与 v3.88.0 差异](https://github.com/AYun07/yunjing/compare/v3.88.0...v3.89.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.89.0.zip)
+
+
+## v3.88.0 · 2026-11-04
+
+> **相比 v3.87.0 的变化**：活世界因果化：世界自转由玩家恩怨驱动 + 各世界势力取自真实知识库 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.87.0...v3.88.0)
+
+**本版做了什么**
+
+世界自转因果化：修掉'只打最弱者、最强永不衰减、与玩家零耦合'；改为兴衰势能/强者受制/弱者颓势/玩家恩怨/势力间关系/活跃事件/张力冲突多因子驱动
+
+势力名取自本界真实知识库，去掉 33 界共用的静态 3 名表
+
+人物自治：玩家不推剧情时 NPC 也会自己行动（情绪/目标/信任/记忆四维漂移）
+
+补齐 earth/guimi/freeworld 事件类目与 cthulhu/mystery/scifi/wuxia 四界世界书种子
+
+新增端到端验收测试，全仓 224 个 js 文件语法通过
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.88.0)  [🔍 与 v3.87.0 差异](https://github.com/AYun07/yunjing/compare/v3.87.0...v3.88.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.88.0.zip)
+
+
+## v3.87.0 · 2026-11-03
+
+> **相比 v3.86.0 的变化**：仓库瘦身 92M→41M · 缓存版本号全量归一 · 版本序列规范化（整改工作单 P3-1/P3-3） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.86.0...v3.87.0)
+
+**本版做了什么**
+
+仓库瘦身 92M→41M（filter-repo 剥离 9.5MB 旧知识库整包的两个历史版本，共 18.1MB）+ 缓存版本号归一（189 处 `?v=` 从 3.55.29/3.68.0/3.72.0/3.84.0/3.86.0 五个世代统一到 3.87.0）+ 版本序列规范化（补齐 v3.85.0/v3.86.0/v3.87.0 标签与登记，本文件自此与 tag 同步）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.87.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.87.0.zip)  [🔍 与 v3.86.0 差异](https://github.com/AYun07/yunjing/compare/v3.86.0...v3.87.0)
+
+
+## v3.86.0 · 2026-11-03
+
+> **相比 v3.85.0 的变化**：活世界第二轮整改：机缘涌现 · 势力兴衰 · 伙伴意志 · 关系有向（整改工作单 P0-2/P1-2/P1-4/P1-5… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.85.0...v3.86.0)
+
+**本版做了什么**
+
+活世界第二轮整改：机缘涌现（按世界状态滚动候选，有代价有时限，落实入正史）/ 人物情绪·记忆·目标 / 恩怨单一真源 / 关系图有向带趋势 / 势力兴衰生命周期 / 导演冲突焦点与节拍 / AI 自创装备登记 / 伙伴立场与叛变 / 知识库补厚 / 删 9.5MB 冗余整包改懒加载
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.86.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.86.0.zip)  [🔍 与 v3.85.0 差异](https://github.com/AYun07/yunjing/compare/v3.85.0...v3.86.0)
+
+
+## v3.85.0 · 2026-11-03
+
+> **相比 v3.84.0 的变化**：活世界双向桥 WorldAlive · 世界真正「活」起来（整改工作单 P0-1/P0-3/P0-4/P1-1/P1-3… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.84.0...v3.85.0)
+
+**本版做了什么**
+
+活世界双向桥 WorldAlive：世界状态上行注入主笔、AI 回报下行回写势力/恩怨/关系/阶段/张力，选择真正改变世界；世界时钟默认自转；恩怨账本落盘；四类串档键按存档槽隔离
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.85.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.85.0.zip)  [🔍 与 v3.84.0 差异](https://github.com/AYun07/yunjing/compare/v3.84.0...v3.85.0)
+
+
+## v3.84.0 · 2026-11-03
+
+> **相比 v3.82.0 的变化**：世界书全量 418 条 · 小云全能化 · 第三方预设适配自检 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.82.0...v3.84.0)
+
+**本版做了什么**
+
+世界书全量扩充+小云全能化：①世界书种子库外置 worldbook-seeds.js——29 界 418 条（26 个小说世界按原著公认设定还原，修复 guzhenren 错装诡秘之主条目并归正为蛊真人；earth 真实地球 30 条覆盖天文/地理/历史/文明/文化/社会/科技；freeworld 14 条「让世界活过来」；free 工坊 6 条创作锚点），种子标记升 v3 老档自动补落；②小云技能中枢 xiaoyun-ops.js——世界书增删查/一键归档、预设导入还原、正则、存档槽、变量体检、正文格式修复、工坊体检等全部云境能力注册为可调用工具；③小云伙伴升级——快捷面板 8 项直达，接入大模型 API 后支持 ⟦tool⟧ 工具循环（最多2轮），可自主补世界书条目/修格式/查变量/管存档/换预设；④第三方预设适配自检——导入即体检（空块/未知宏/代码围栏/超长块），引擎宏零泄漏层兜底，不掉格式；⑤修复造物工坊预览 iframe 从未挂载的旧 bug。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.84.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.84.0.zip)  [🔍 与 v3.83.1 差异](https://github.com/AYun07/yunjing/compare/v3.83.1...v3.84.0)
+
+
+## v3.82.0 · 2026-11-03
+
+> **相比 v3.81.4 的变化**：大厅再添两套异构版式：E「千字云海」/ F「云格Bento」 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.81.4...v3.82.0)
+
+**本版做了什么**
+
+大厅版式 E「千字云海」(暗夜极光+超大字浮动+跑马灯字带+霓虹顶条) / F「云格Bento」(浅暖Bento主次格+彩墨晕染+彩色字徽)；修复 --ws-hue 十六进制不可入 hsl() 致色相 accent 静默失效，对照台增至 7 版式
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.82.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.82.0.zip)  [🔍 与 v3.81.4 差异](https://github.com/AYun07/yunjing/compare/v3.81.4...v3.82.0)
+
+
+## v3.81.4 · 2026-11-03
+
+> **相比 v3.81.3 的变化**：全员轮廓晕圈衰减：浅底灰边清零 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.81.3...v3.81.4)
+
+**本版做了什么**
+
+全员轮廓晕圈衰减：贴边浅灰带(18.3万px/60张)alpha降至35%，浅底灰边清零，双底验收流程确立
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.4)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.4.zip)  [🔍 与 v3.81.3 差异](https://github.com/AYun07/yunjing/compare/v3.81.3...v3.81.4)
+
+
+## v3.81.3 · 2026-11-03
+
+> **相比 v3.81.2 的变化**：浅底验收补盲：发间/腿间死灰空隙残留清零 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.81.2...v3.81.3)
+
+**本版做了什么**
+
+浅底验收补盲：发间/腿间死灰空隙残留清零(20处约1.69万px,含chibi-luo腿间竖条)，发丝暗面正常画法甄别保留
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.3)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.3.zip)  [🔍 与 v3.81.2 差异](https://github.com/AYun07/yunjing/compare/v3.81.2...v3.81.3)
+
+
+## v3.81.2 · 2026-11-03
+
+> **相比 v3.81.1 的变化**：立绘全量逐张精修：60 张游离像素全检，13 处深灰残条清零 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.81.1...v3.81.2)
+
+**本版做了什么**
+
+立绘全量逐张精修：60张90处游离像素逐处定性，13处深灰残条清零(约1432px)，动作线/星星/发丝零损伤
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.2)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.2.zip)  [🔍 与 v3.81.1 差异](https://github.com/AYun07/yunjing/compare/v3.81.1...v3.81.2)
+
+
+## v3.81.1 · 2026-11-03
+
+> **相比 v3.81.0 的变化**：立绘像素级精修：残影清零 + 全员白毛边压暗 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.81.0...v3.81.1)
+
+**本版做了什么**
+
+立绘像素级精修：keai/kusa-battle残余半透明阴影清零+60张全员白毛边压暗(11.2万px)，特效发梢描边AA全保留
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.1.zip)  [🔍 与 v3.81.0 差异](https://github.com/AYun07/yunjing/compare/v3.81.0...v3.81.1)
+
+
+## v3.81.0 · 2026-11-03
+
+> **相比 v3.80.0 的变化**：立绘全量回滚：撤销 v3.80 误伤，只定向清两处地面阴影 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.80.0...v3.81.0)
+
+**本版做了什么**
+
+立绘全量回滚：撤销 v3.80 误伤清理(60张恢复原图,逐张核验零缺块)，仅定向清除 keai-battle/kusa-battle 腿间地面阴影白块(测地膨胀+羽化,深浅双底验收)，大厅四套版式对照台保留待选
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.81.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.81.0.zip)  [🔍 与 v3.80.0 差异](https://github.com/AYun07/yunjing/compare/v3.80.0...v3.81.0)
+
+
+## v3.80.0 · 2026-11-03
+
+> **相比 v3.79.0 的变化**：小云 12 形态抠图残留全量根修 + 大厅四套原创版式对照台 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.79.0...v3.80.0)
+
+**本版做了什么**
+
+小云12形态抠图残留全量根修(60余张)+大厅四套原创版式对照台(暗夜星辉/暮金画报/薄荷汽水/墨线编辑)
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.80.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.80.0.zip)  [🔍 与 v3.79.0 差异](https://github.com/AYun07/yunjing/compare/v3.79.0...v3.80.0)
+
+
+## v3.79.0 · 2026-11-02
+
+> **相比 v3.78.0 的变化**：立绘脏阴影根修 +「流光」玻璃质感 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.78.0...v3.79.0)
+
+**本版做了什么**
+
+立绘脏阴影根修(去drop-shadow)+流光玻璃质感：三色光斑背景/渐变云境字/玻璃卡片
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.79.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.79.0.zip)  [🔍 与 v3.78.0 差异](https://github.com/AYun07/yunjing/compare/v3.78.0...v3.79.0)
+
+
+## v3.78.0 · 2026-11-02
+
+> **相比 v3.77.0 的变化**：「晨青·楷变」：楷体艺术字 + 版式破格 + 修小云色块 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.77.0...v3.78.0)
+
+**本版做了什么**
+
+晨青·楷变：楷体艺术字标题(错落双色+金圆印)+工坊波浪错落+沉浸段两栏卡化+修小云白色色块
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.78.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.78.0.zip)  [🔍 与 v3.77.0 差异](https://github.com/AYun07/yunjing/compare/v3.77.0...v3.78.0)
+
+
+## v3.77.0 · 2026-11-02
+
+> **相比 v3.76.0 的变化**：大厅重设计「晨青」：告别墨怪，明亮雅致 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.76.0...v3.77.0)
+
+**本版做了什么**
+
+大厅重设计「晨青」：晨白+青瓷+暖金，去滤镜去做旧，干净大字门面+精致卡阵+青墨金沉浸段
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.77.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.77.0.zip)  [🔍 与 v3.76.0 差异](https://github.com/AYun07/yunjing/compare/v3.76.0...v3.77.0)
+
+
+## v3.76.0 · 2026-11-02
+
+> **相比 v3.75.0 的变化**：原创SVG艺术字标(洇墨滤镜+朱砂错版套印)+字体全面自托管(文楷切片/宋体Cormorant子集)，移除境外CDN字体链 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.75.0...v3.76.0)
+
+**本版做了什么**
+
+原创SVG艺术字标(洇墨滤镜+朱砂错版套印)+字体全面自托管(文楷切片/宋体Cormorant子集)，移除境外CDN字体链
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.76.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.76.0.zip)  [🔍 与 v3.75.0 差异](https://github.com/AYun07/yunjing/compare/v3.75.0...v3.76.0)
+
+
+## v3.75.0 · 2026-11-02
+
+> **相比 v3.74.0 的变化**：大厅全面重设计「纸本」：宣纸墨字朱砂三色系统/目录式工坊行列表(hover反白)/墨色巨字+朱砂方印+竖排副题/沉浸段墨色反白出血，告别深夜蓝金 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.74.0...v3.75.0)
+
+**本版做了什么**
+
+大厅全面重设计「纸本」：宣纸墨字朱砂三色系统/目录式工坊行列表(hover反白)/墨色巨字+朱砂方印+竖排副题/沉浸段墨色反白出血，告别深夜蓝金
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.75.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.75.0.zip)  [🔍 与 v3.74.0 差异](https://github.com/AYun07/yunjing/compare/v3.74.0...v3.75.0)
+
+
+## v3.74.0 · 2026-11-02
+
+> **相比 v3.73.0 的变化**：大厅排版大改「卷首·字有千钧」：字体三件套(霞鹜文楷/思源宋体900/Cormorant)+门面左对齐杂志式+五大工坊一主四辅非对称栅格 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.73.0...v3.74.0)
+
+**本版做了什么**
+
+大厅排版大改「卷首·字有千钧」：字体三件套(霞鹜文楷/思源宋体900/Cormorant)+门面左对齐杂志式+五大工坊一主四辅非对称栅格
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.74.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.74.0.zip)  [🔍 与 v3.73.0 差异](https://github.com/AYun07/yunjing/compare/v3.73.0...v3.74.0)
+
+
+## v3.73.0 · 2026-11-02
+
+> **相比 v3.72.0 的变化**：大厅焕新「鎏金云海」：金霞天幕/衬线大字门面/工坊卡与33界卡按--ws-hue琉璃化/分组暖金化/卷首语横幅电影化，css/lobby-refresh.css 可整体回滚 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.72.0...v3.73.0)
+
+**本版做了什么**
+
+大厅焕新「鎏金云海」：金霞天幕/衬线大字门面/工坊卡与33界卡按--ws-hue琉璃化/分组暖金化/卷首语横幅电影化，css/lobby-refresh.css 可整体回滚
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.73.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.73.0.zip)  [🔍 与 v3.72.0 差异](https://github.com/AYun07/yunjing/compare/v3.72.0...v3.73.0)
+
+
+## v3.72.0 · 2026-11-02
+
+> **相比 v3.71.0 的变化**：四套主界面板式可选：水墨卷轴(?theme=ink)/星穹HUD(star)/鎏金殿阁(gold)/云白卡片Bento(cloud)+对照台style-lab.html，默认不启用 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.71.0...v3.72.0)
+
+**本版做了什么**
+
+四套主界面板式可选：水墨卷轴(?theme=ink)/星穹HUD(star)/鎏金殿阁(gold)/云白卡片Bento(cloud)+对照台style-lab.html，默认不启用
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.72.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.72.0.zip)  [🔍 与 v3.71.0 差异](https://github.com/AYun07/yunjing/compare/v3.71.0...v3.72.0)
+
+
+## v3.71.0 · 2026-11-02
+
+> **相比 v3.70.0 的变化**：主界面视觉升级：设定台/顶栏/状态面板精致化（作用域 .page-studio，可整体回滚） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.70.0...v3.71.0)
+
+**本版做了什么**
+
+主界面视觉升级：设定台/顶栏/状态面板精致化（作用域 .page-studio，可整体回滚）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.71.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.71.0.zip)  [🔍 与 v3.70.0 差异](https://github.com/AYun07/yunjing/compare/v3.70.0...v3.71.0)
+
+
+## v3.70.0 · 2026-11-02
+
+> **相比 v3.69.0 的变化**：性能与瘦身专项：云起预设渲染缓存/去AI味与正文提取去重/手机面板整屏重绘合并为每帧一次 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.69.0...v3.70.0)
+
+**本版做了什么**
+
+性能与瘦身专项：云起预设渲染缓存/去AI味与正文提取去重/手机面板整屏重绘合并为每帧一次
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.70.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.70.0.zip)  [🔍 与 v3.69.0 差异](https://github.com/AYun07/yunjing/compare/v3.69.0...v3.70.0)
+
+
+## v3.69.0 · 2026-11-02
+
+> **相比 v3.68.0 的变化**：预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
+
+**本版做了什么**
+
+预设品牌去第三方化：某预设引擎/桥/正则重命名为云起(Yunqi)系，删除第三方兜底引用与旧文件名，全局对象 旧预设对象→YunqiPreset
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.69.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.69.0.zip)  [🔍 与 v3.68.0 差异](https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0)
+
+
+## v3.68.0 · 2026-11-02
+
+> **相比 v3.67.0 的变化**：全项目审计修复：串档槽位隔离/清档删槽补灵宠小队/存档迁移、driftNotes与wordCount与竞态与温度0等核心循环修复、图鉴XSS转义、SW预缓存修复+HTML网络优先… · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.67.0...v3.68.0)
+
+**本版做了什么**
+
+全项目审计修复：串档槽位隔离/清档删槽补灵宠小队/存档迁移、driftNotes与wordCount与竞态与温度0等核心循环修复、图鉴XSS转义、SW预缓存修复+HTML网络优先、灵宠小队战斗接线+applyEvent接战斗、面板互斥+版本徽标+日记字段等UI修缮（40+项）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.68.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.68.0.zip)  [🔍 与 v3.67.0 差异](https://github.com/AYun07/yunjing/compare/v3.67.0...v3.68.0)
+
+
+## v3.67.0 · 2026-11-02
+
+> **相比 v3.66.0 的变化**：世界书完全丰富(P1)：freeworld+20条世界实质/free+10条运行设施；开放界设施补齐(P9)：free界恩怨账/委托板/据点/势力谱四模块 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.66.0...v3.67.0)
+
+**本版做了什么**
+
+世界书完全丰富(P1)：freeworld+20条世界实质/free+10条运行设施；开放界设施补齐(P9)：free界恩怨账/委托板/据点/势力谱四模块
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.67.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.67.0.zip)  [🔍 与 v3.66.0 差异](https://github.com/AYun07/yunjing/compare/v3.66.0...v3.67.0)
+
+
+## v3.66.0 · 2026-11-02
+
+> **相比 v3.65.0 的变化**：主界面焕新·天光玻璃：极光天幕+玻璃拟态卡片+字徽发光+hover光泽扫过+渐入动效，老内核回退 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.65.0...v3.66.0)
+
+**本版做了什么**
+
+主界面焕新·天光玻璃：极光天幕+玻璃拟态卡片+字徽发光+hover光泽扫过+渐入动效，老内核回退
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.66.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.66.0.zip)  [🔍 与 v3.65.0 差异](https://github.com/AYun07/yunjing/compare/v3.65.0...v3.66.0)
+
+
+## v3.65.0 · 2026-11-02
+
+> **相比 v3.64.0 的变化**：属性引擎实时事件化：受伤扣减/疗伤加回事件化直接落表+审计账本statLog+专长映射凸显+即时闪动反馈 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.64.0...v3.65.0)
+
+**本版做了什么**
+
+属性引擎实时事件化：受伤扣减/疗伤加回事件化直接落表+审计账本statLog+专长映射凸显+即时闪动反馈
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.65.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.65.0.zip)  [🔍 与 v3.64.0 差异](https://github.com/AYun07/yunjing/compare/v3.64.0...v3.65.0)
+
+
+## v3.64.0 · 2026-11-02
+
+> **相比 v3.63.0 的变化**：小队系统 + v3.63.0 灵宠妖兽伙伴系统：契约/养成/随队/编队/协同技，接入主笔与战斗prompt · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.63.0...v3.64.0)
+
+**本版做了什么**
+
+小队系统 + v3.63.0 灵宠妖兽伙伴系统：契约/养成/随队/编队/协同技，接入主笔与战斗prompt
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.64.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.64.0.zip)  [🔍 与 v3.63.0 差异](https://github.com/AYun07/yunjing/compare/v3.63.0...v3.64.0)
+
+
+## v3.63.0 `*` · 2026-11-02
+
+> **相比 v3.62.0 的变化**：灵宠·妖兽·伙伴系统（与 v3.64.0 同批发布） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.62.0...v3.63.0)
+
+**本版做了什么**
+
+灵宠·妖兽·伙伴系统（与 v3.64.0 同批发布）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.63.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.63.0.zip)  [🔍 与 v3.62.0 差异](https://github.com/AYun07/yunjing/compare/v3.62.0...v3.63.0)
+
+
+## v3.62.0 · 2026-11-02
+
+> **相比 v3.61.1 的变化**：玩家身份三态重做：原著主角(大势不可改小势可调)/原著配角/完全原创 + 开局向导三态卡片+配角速选 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.61.1...v3.62.0)
+
+**本版做了什么**
+
+玩家身份三态重做：原著主角(大势不可改小势可调)/原著配角/完全原创 + 开局向导三态卡片+配角速选
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.62.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.62.0.zip)  [🔍 与 v3.61.1 差异](https://github.com/AYun07/yunjing/compare/v3.61.1...v3.62.0)
+
+
+## v3.61.1 · 2026-11-02
+
+> **相比 v3.61.0 的变化**：小云连招健壮性：外部动作打断未完成连招 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.61.0...v3.61.1)
+
+**本版做了什么**
+
+小云连招健壮性：外部动作打断未完成连招
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.61.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.1.zip)  [🔍 与 v3.61.0 差异](https://github.com/AYun07/yunjing/compare/v3.61.0...v3.61.1)
+
+
+## v3.61.0 · 2026-11-02
+
+> **相比 v3.60.1 的变化**：动态小云·全态可交互动画引擎：12态×3动作姿态关键帧+交叉淡入+CSS动效+playAction API · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.60.1...v3.61.0)
+
+**本版做了什么**
+
+动态小云·全态可交互动画引擎：12态×3动作姿态关键帧+交叉淡入+CSS动效+playAction API
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.61.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.61.0.zip)  [🔍 与 v3.60.1 差异](https://github.com/AYun07/yunjing/compare/v3.60.1...v3.61.0)
+
+
+## v3.60.1 · 2026-11-01
+
+> **相比 v3.60.0 的变化**：chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2) · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.60.0...v3.60.1)
+
+**本版做了什么**
+
+chore: unify version to v3.60.1 + kb-vector on-demand (opt #2 + #4) (#2)
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.60.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.1.zip)  [🔍 与 v3.60.0 差异](https://github.com/AYun07/yunjing/compare/v3.60.0...v3.60.1)
+
+
+## v3.60.0 · 2026-11-01
+
+> **相比 v3.59.1 的变化**：动态小云：行为引擎+亲密度+剧情感知+视线跟随；3张半身立绘补全身 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.59.1...v3.60.0)
+
+**本版做了什么**
+
+动态小云：行为引擎+亲密度+剧情感知+视线跟随；3张半身立绘补全身
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.60.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.60.0.zip)  [🔍 与 v3.59.1 差异](https://github.com/AYun07/yunjing/compare/v3.59.1...v3.60.0)
+
+
+## v3.59.1 · 2026-11-01
+
+> **相比 v3.59.0 的变化**：小云十二形态：AI 生图全线换装(萝莉/御姐/校花/清纯/邻家/酷飒/温柔/傲娇/可爱/搞怪/幼态/知性)，移除SVG手绘 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.59.0...v3.59.1)
+
+**本版做了什么**
+
+小云十二形态：AI 生图全线换装(萝莉/御姐/校花/清纯/邻家/酷飒/温柔/傲娇/可爱/搞怪/幼态/知性)，移除SVG手绘
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.1.zip)  [🔍 与 v3.59.0 差异](https://github.com/AYun07/yunjing/compare/v3.59.0...v3.59.1)
+
+
+## v3.59.0 · 2026-11-01
+
+> **相比 v3.58.0 的变化**：晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
+
+**本版做了什么**
+
+晓云天光：主界面换肤(告别早期源码基础风) + 小云五形态换装(校花/青春/邻家 SVG 立绘) + 形象选择面板
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.59.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.59.0.zip)  [🔍 与 v3.58.0 差异](https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0)
+
+
+## v3.58.0 · 2026-11-01
+
+> **相比 v3.57.1 的变化**：世界自活：众生谱(原创人物/势力/地点繁衍上图) + 势力动态演化 + 档案完善 + 自由人生 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.57.1...v3.58.0)
+
+**本版做了什么**
+
+世界自活：众生谱(原创人物/势力/地点繁衍上图) + 势力动态演化 + 档案完善 + 自由人生
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.58.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.58.0.zip)  [🔍 与 v3.57.1 差异](https://github.com/AYun07/yunjing/compare/v3.57.1...v3.58.0)
+
+
+## v3.57.1 · 2026-11-01
+
+> **相比 v3.57.0 的变化**：E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关系连线角色池失效） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.57.0...v3.57.1)
+
+**本版做了什么**
+
+E2E 抓漏：EntityStore 单复数归一修复 list('characters') 恒空（关系连线角色池失效）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.57.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.1.zip)  [🔍 与 v3.57.0 差异](https://github.com/AYun07/yunjing/compare/v3.57.0...v3.57.1)
+
+
+## v3.57.0 · 2026-11-01
+
+> **相比 v3.56.2 的变化**：让世界活起来引擎全套：统一填表 + 推演引擎 + 自主世界时钟 + 剧情规划 + 小云工具箱（P2-P5） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.56.2...v3.57.0)
+
+**本版做了什么**
+
+让世界活起来引擎全套：统一填表 + 推演引擎 + 自主世界时钟 + 剧情规划 + 小云工具箱（P2-P5）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.57.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.57.0.zip)  [🔍 与 v3.56.2 差异](https://github.com/AYun07/yunjing/compare/v3.56.2...v3.57.0)
+
+
+## v3.56.2 · 2026-11-01
+
+> **相比 v3.56.1 的变化**：世界基座自测修复：upsert/link 解耦全局 + remove 级联清关系边（23 项断言全过） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.56.1...v3.56.2)
+
+**本版做了什么**
+
+世界基座自测修复：upsert/link 解耦全局 + remove 级联清关系边（23 项断言全过）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.2)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.2.zip)  [🔍 与 v3.56.1 差异](https://github.com/AYun07/yunjing/compare/v3.56.1...v3.56.2)
+
+
+## v3.56.1 · 2026-11-01
+
+> **相比 v3.55.30 的变化**：世界基座：统一实体模型 Entity + 变量模板 Schema + 校验器 SchemaValidator（P1 地基） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.56.1)
+
+**本版做了什么**
+
+世界基座：统一实体模型 Entity + 变量模板 Schema + 校验器 SchemaValidator（P1 地基）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.56.1)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.56.1.zip)  [🔍 与 v3.55.30 差异](https://github.com/AYun07/yunjing/compare/v3.55.30...v3.56.1)
+
+
+## v3.55.30 · 2026-11-01
+
+> **相比 v3.55.29 的变化**：多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
+
+**本版做了什么**
+
+多连接配置(多连接配置) + extractBody 误重写修复 + 契约校验熔断 + 酒馆调研落库
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.30)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.30.zip)  [🔍 与 v3.55.29 差异](https://github.com/AYun07/yunjing/compare/v3.55.29...v3.55.30)
+
+
+## v3.55.29 · 2026-11-01
+
+> **相比 v3.55.28 的变化**：定时器炸弹拆除 + 界专属模块复活 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.28...v3.55.29)
+
+**本版做了什么**
+
+定时器炸弹拆除 + 界专属模块复活
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.29)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.29.zip)  [🔍 与 v3.55.28 差异](https://github.com/AYun07/yunjing/compare/v3.55.28...v3.55.29)
+
+
+## v3.55.28 · 2026-10-31
+
+> **相比 v3.55.23 的变化**：分层加载与世界书瘦身 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.23...v3.55.28)
+
+**本版做了什么**
+
+分层加载与世界书瘦身
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.28)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.28.zip)  [🔍 与 v3.55.23 差异](https://github.com/AYun07/yunjing/compare/v3.55.23...v3.55.28)
+
+
+## v3.55.23 · 2026-10-31
+
+> **相比 v3.55.22 的变化**：大势可改+地图落实：大势演化账本+行旅图鉴动态化 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.22...v3.55.23)
+
+**本版做了什么**
+
+大势可改+地图落实：大势演化账本+行旅图鉴动态化
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.23)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.23.zip)  [🔍 与 v3.55.22 差异](https://github.com/AYun07/yunjing/compare/v3.55.22...v3.55.23)
+
+
+## v3.55.22 · 2026-10-31
+
+> **相比 v3.55.21 的变化**：千楼长卷：虚拟化渲染+全量transcript落IDB+分层记忆+双通道召回+格式契约 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.21...v3.55.22)
+
+**本版做了什么**
+
+千楼长卷：虚拟化渲染+全量transcript落IDB+分层记忆+双通道召回+格式契约
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.22)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.22.zip)  [🔍 与 v3.55.21 差异](https://github.com/AYun07/yunjing/compare/v3.55.21...v3.55.22)
+
+
+## v3.55.21 · 2026-10-31
+
+> **相比 v3.55.19 的变化**：玩家身份(穿越者/土著)+主角关系(同伴/敌对/陌路)+本界资料库（修复注入） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.19...v3.55.21)
+
+**本版做了什么**
+
+玩家身份(穿越者/土著)+主角关系(同伴/敌对/陌路)+本界资料库（修复注入）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.21)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.21.zip)  [🔍 与 v3.55.19 差异](https://github.com/AYun07/yunjing/compare/v3.55.19...v3.55.21)
+
+
+## v3.55.19 · 2026-10-30
+
+> **相比 v3.55.18 的变化**：世界是活的：叙事立场三选一 + 机缘归属账本 + 剧情上下文面板 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.18...v3.55.19)
+
+**本版做了什么**
+
+世界是活的：叙事立场三选一 + 机缘归属账本 + 剧情上下文面板
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.19)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.19.zip)  [🔍 与 v3.55.18 差异](https://github.com/AYun07/yunjing/compare/v3.55.18...v3.55.19)
+
+
+## v3.55.18 · 2026-10-30
+
+> **相比 v3.55.17 的变化**：酒馆正则导入防护（清空全文类规则不再误伤正文） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.17...v3.55.18)
+
+**本版做了什么**
+
+酒馆正则导入防护（清空全文类规则不再误伤正文）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.18)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.18.zip)  [🔍 与 v3.55.17 差异](https://github.com/AYun07/yunjing/compare/v3.55.17...v3.55.18)
+
+
+## v3.55.17 · 2026-10-30
+
+> **相比 v3.55.12 的变化**：稳固三修：核心契约与预设解耦 / 上下文预算按模型自适应 / 存储配额兜底 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.12...v3.55.17)
+
+**本版做了什么**
+
+稳固三修：核心契约与预设解耦 / 上下文预算按模型自适应 / 存储配额兜底
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.17)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.17.zip)  [🔍 与 v3.55.12 差异](https://github.com/AYun07/yunjing/compare/v3.55.12...v3.55.17)
+
+
+## v3.55.12 · 2026-10-30
+
+> **相比 v3.55.11 的变化**：补丁 · 修正 UI 版本号显示残留 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.11...v3.55.12)
+
+**本版做了什么**
+
+补丁 · 修正 UI 版本号显示残留
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.12)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.12.zip)  [🔍 与 v3.55.11 差异](https://github.com/AYun07/yunjing/compare/v3.55.11...v3.55.12)
+
+
+## v3.55.11 · 2026-10-30
+
+> **相比 v3.55.10 的变化**：三档自适应：低端自动稳，高端全功能 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.10...v3.55.11)
+
+**本版做了什么**
+
+三档自适应：低端自动稳，高端全功能
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.11)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.11.zip)  [🔍 与 v3.55.10 差异](https://github.com/AYun07/yunjing/compare/v3.55.10...v3.55.11)
+
+
+## v3.55.10 · 2026-10-30
+
+> **相比 v3.55.9 的变化**：基础小模型适配：参数安全锁/轻量协议块/辅助AI静默/复读自检 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.55.10)
+
+**本版做了什么**
+
+基础小模型适配：参数安全锁/轻量协议块/辅助AI静默/复读自检
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.10)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.10.zip)  [🔍 与 v3.55.9 差异](https://github.com/AYun07/yunjing/compare/v3.55.9...v3.55.10)
+
+
+## v3.55.9 · 2026-10-30
+
+> **相比 v3.55.8 的变化**：云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
+
+**本版做了什么**
+
+云起预设 v3 重构（云心人格锚 + 破甲 + 思维链深化 + 行文禁令）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.9)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip)  [🔍 与 v3.55.8 差异](https://github.com/AYun07/yunjing/compare/v3.55.8...v3.55.9)
+
+
+## v3.55.8 · 2026-10-30
+
+> **相比 v3.55.7 的变化**：云起预设重构（内容加深 + 文风按类型整合） · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
+
+**本版做了什么**
+
+云起预设重构（内容加深 + 文风按类型整合）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.8)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip)  [🔍 与 v3.55.7 差异](https://github.com/AYun07/yunjing/compare/v3.55.7...v3.55.8)
+
+
+## v3.55.7 · 2026-10-29
+
+> **相比上一版的变化**：这是仓库最早有 git 标签的版本，无上一版可比。
+
+**本版做了什么**
+
+云端同步与开源
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v3.55.7)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip)  （最早有记录的版本，无上一版可比）
+
+---
+
+<a id="legacy"></a>
+
+## 附录 · 早期版本功能沿革（v1.x – v3.55.6，无独立 git tag）
+
+> 本附录收录**旧版本时期写的功能说明**，原本散落在 README 主页，现按各自版本归到版本页。标题里的 `v1.x` / `v3.x` 是该功能**首次引入的版本号**，不代表功能已废弃；多数功能在当前版仍然生效。**当前产品现状一律以 [README 主页](README.md) 为准。**
+>
+> 这些版本早于仓库最早标签 `v3.55.7`，没有独立 tag / 发布页，故统一归在版本页末尾——**最新版仍在最上方**。原文一字未删，仅把标题层级下调一级以纳入本页结构。
+
+### 按版本索引
+
+| 首次引入版本 | 功能 | 跳到原文 |
+|---|---|---|
+| `v1.5.0` | 🌍 动态世界 | [查看](#legacy-v1-5-0) |
+| `v1.6.0` | 🧾 变量AI | [查看](#legacy-v1-6-0) |
+| `v1.10.0` | 开放世界扮演 | [查看](#legacy-v1-10-0) |
+| `v3.10.0` | ✍ 提示词工程师 | [查看](#legacy-v3-10-0) |
+| `v3.13.0` | 🖼 插图引擎 | [查看](#legacy-v3-13-0) |
+| `v3.14.0` | 🎭 沉浸演出系统 | [查看](#legacy-v3-14-0) |
+| `v3.22.0` | 📱 手机分身 | [查看](#legacy-v3-22-0) |
+| — | 跨版本通用资料（架构对照 / 目录结构 / 自测验收 / 变量块语法 / 已知边界 / 版本记录等） | [查看](#legacy-common) |
+
+<a id="legacy-common"></a>
+
+### 📦 以下为历史版本资料（旧版本沿革存档）
+
+> 从本节起至文末的章节，**按写作年代归档**：标题里的 `v1.x` / `v3.x` 是该功能**首次引入的版本号**，不代表功能已废弃；多数功能在当前版仍然生效。**当前产品现状一律以本文开头「云境是什么 · 当前版本全览」为准。**
+>
+> 下表中的说法写于旧版本时期，**已明确过时或废弃**，列出以免误读：
+
+| 旧版本说法 | 出现位置 | 当前口径（v4.16.0） |
+|---|---|---|
+| 模型准入：只允许 agnes-3.0-flash / image / video 三个模型 | v4.05.0、v4.04.0 条目、`yunjing-test/MODEL_WHITELIST.md` | **已废弃**。三个 agnes 模型只是开发期测试夹具，产品对玩家模型零限制（v4.12.0 起） |
+| `python3 -m http.server 8080` / `localhost:8080` | 旧「快速开始」段 | 启动器 / `8899` 端口，见开头「快速开始」 |
+| 余弦相似度检索、阈值 12%、命中前 3 条 | 旧「知识库」段 | BM25 → 向量 → 精排，逐级降级（v1.6.9 起重铸） |
+| 四大创作工坊 / 原著二十界 / 5 大工坊 | 旧功能章节 | **38 界**，四大分类（原著同人 30 / 真实地球 1 / 自由创作 6 / 网游大世界 1） |
+| 预设 230 块 / 正则 30 条 + 14 条美化 | `QUICKSTART.txt` 旧文案 | 预设 **86 块**、正则 **33 条**（导出酒馆版 40 条） |
+| 全库 24,572 / 24,910 / 25,045 条等 | 各历史版本条目 | 内置 **24,779** 条（`js/kb/_index.json` 实测值）、面板 **32,312** 条 |
+| localStorage 截断至最近 80 条历史、推荐长上下文模型等 | 旧「已知边界」段 | 见开头「当前状态」小节的边界清单 |
+| 共 73 版 | 旧「逐版更新记录」标题 | 共 **86 版**，见上方「版本列表」 |
+
+> 版本「改了什么」的逐版详细沿革见本页上方各版本段，属于历史资料，不删除、不改写。
+
+### 致敬
+
+云境站在别人的肩膀上，两处来处在此记名：
+
+| 来源 | 与云境的关系 |
+|---|---|
+| **早期源码基础** | 云境最初的源码基础（来自 某社区平台 社区分享）。完整署名见 [CREDITS.md](CREDITS.md) |
+| **某文字游戏框架** · AI 文字游戏框架 | 整体架构的参照对象：入口大厅 / 框架类 / 配置驱动 / 变量块语法逐项对照（见下方架构对照表） |
+
+> 早期源码基础原作者的准确署名待补 —— 来源链接需登录 某社区平台 才可见，云境这边拿不到，
+> 也不愿凭空代填一个名字。确认后会补进 [CREDITS.md](CREDITS.md) 并同步提交。
+
+### 云起预设（云境原创 · 酒馆可导入 · 云端可同步）
+
+云起是云境自己的默认预设与正则，全部由云境独立撰写（第三方预设只作功能面参照，仓库内不含其原文）。
+
+| 文件 | 用途 |
+|---|---|
+| `releases/yunqi-latest.json` | **一键导入单文件**：预设 76 块（启用 39）+ 正则 37 条 + 生成参数。酒馆四个入口都能吃（导入预设 / 扩展→正则 / 导入用户设置 / 角色卡导入） |
+| `releases/yunqi-regex.json` | 只有正则的那一份（扩展 → 正则 → 导入） |
+| `releases/yunqi-version.json` | 版本信息（470 字节，云境比对用） |
+
+**参数（按小说创作 + 非流式）**：回复上限 `65535`、上下文 `2000000`（并解锁上下文上限）、
+**流式关闭**、`temperature 0.9` / `top_p 0.95` / `min_p 0.05` / `top_k·top_a 关` /
+`frequency·presence 0.3` / `repetition 1.05`。
+
+**在云境里更新（不用重新导入）**：设置 → 云起预设 → **☁ 云端同步** → 点「⬇ 同步最新版」。
+先比对 470 字节的版本文件，已是最新就不下载全量；四个源依次回退
+（jsDelivr → raw.githubusercontent → ghproxy → gh-proxy），国内外网络谁通走谁；
+拉到先校验再落盘，失败不动本机数据。想指向自己的 fork 或镜像就点「⚙ 仓库」。
+
+
+模仿「某文字游戏框架」AI 文字游戏框架构建的配置驱动式短篇小说创作工坊。
+
+### 架构对照（本工坊 ↔ 某文字游戏框架框架）
+
+| 某文字游戏框架框架 | 云境工坊 | 说明 |
+|---|---|---|
+| `index.html`（世界入口大厅） | `index.html`（工坊大厅） | 墨夜流金暗色风、流光开屏、五大工坊卡、移动端自适应 |
+| `game-framework.js`（GameFramework 类） | `story-framework.js`（StoryFramework 类） | 状态管理 / localStorage 持久化 / onInit 回调 |
+| `*-config.js`（世界配置） | `configs/*-config.js`（类型配置） | 系统提示词 / 开篇模式 / 写作技法 / 仪表盘 |
+| `game-xxx.html`（各世界游戏页） | `studio.html?genre=xxx` | 单页 + 动态装配主题与配置 |
+| 角色创建（六维 + 出身 + 天赋） | 故事设定台（视角/文风/篇幅/时代/母题 + 开篇模式 + 写作技法 + 六维） | 100 点分配，出身/技法带修正；v1.3.6 起每坊 60+ 选项，全维注入 AI 指令 |
+| `(variable_update)` 变量块 | `(variable_update)` 变量块 | 同一套语法，解析器兼容 |
+| NPC 28 字段档案 | 角色档案卡（18 字段：role/realm/faction/goal/impression/…） | 持续补全机制 |
+| 动态世界系统 | 灵感引擎 | 定期注入支线灵感，一键采纳 |
+| **额外API动态世界**（`js/dynamic-world-functions.js` + extraApi） | **🌍 动态世界**（`js/dynamic-world.js`） | 第二模型幕后推演远方事件，(variable_update) 登记远方NPC/伏笔/大事记并入主变量表，楼层随存档持久化 |
+| **变量提取分流**（常见前端工具 式 extractor / 总结器副模型思路） | **🧾 变量AI**（`js/variable-ai.js`） | 第三模型专职状态登记：主笔免登记（提示词去铁律、历史剔变量块），每轮提取合并，串行排队防丢轮 |
+| **生图接口**（OpenAI images / 对话式生图 / NovelAI 原生） | **🖼 插图引擎**（`js/image-gen.js`） | 第四接口独立生图：主笔在正文输出 `(image: 提示词)` 标记（提示词常驻正文可见），系统自动生图插入正文对应位置；廿六界内置画风库（自由世界画风由玩家亲笔的世界之魂动态派生），插图随存档持久化；v3.11.0 新增 NAI 原生模式直连 V3-V5 全系模型 |
+| **提示词改写器**（AI 帮我写提示词思路） | **✍ 提示词工程师**（`js/prompt-engineer.js`） | 第五模型润色插图提示词：正文写完即开工，整章提示词一次批量扩写（细节/镜头/光影/色调），本地缓存同词不重复调用，失败回退原文 |
+| 静态知识库 + 向量检索（supply.js） | `js/knowledge-manager.js` 知识库模块 | 常驻/检索双模式，关键词向量相似度检索 |
+| DLC 知识包管理（dlc-manager.js + dlc-ui-full.js） | `js/dlc-manager.js` DLC 模块 | 成套知识打包，激活注入 / 停用移出 |
+| `js/` 功能模块 | `js/` 功能模块 | API 双格式 / 消息构建 / 响应处理 / 输入处理 |
+| 每世界一个 CSS 主题 | 每类型一个 CSS 主题 | 仅覆盖 CSS 变量 |
+
+### 目录结构
+
+```
+yunjing/
+├── index.html                 # 工坊大厅（入口页）
+├── studio.html                # 创作室（?genre= 动态装配配置）
+├── story-framework.js         # 通用框架类
+├── configs/                   # 类型配置（一个文件 = 一个文学世界，共 33 个，详见 configs/ 目录）
+│   ├── mystery-config.js      # 悬疑推理
+│   ├── scifi-config.js        # 科幻未来
+│   ├── wuxia-config.js        # 武侠仙侠
+│   ├── cthulhu-config.js      # 克苏鲁恐怖
+│   ├── free-config.js         # 自由创作（任意题材）
+│   ├── swallowedstar-config.js # 吞噬星空（开放世界扮演）
+│   ├── shrouding-config.js    # 遮天（开放世界扮演）
+│   ├── quanzhigaoshou-config.js # 全职高手（开放世界扮演·v1.10.0）
+│   ├── doupocangqiong-config.js # 斗破苍穹（开放世界扮演·v1.10.0）
+│   ├── wanmeishijie-config.js # 完美世界（开放世界扮演·v1.11.0）
+│   ├── douluodalu-config.js  # 斗罗大陆（开放世界扮演·v1.11.0）
+│   ├── daoguiyixian-config.js # 道诡异仙（开放世界扮演·v3.3.0，双世界引擎）
+│   ├── zhongshengdushi-config.js # 重生之都市修仙（开放世界扮演·v3.3.0，重生者引擎）
+│   ├── dibao-config.js       # 帝霸（开放世界扮演·v3.8.0，万古棋局引擎）
+│   ├── longzu-config.js      # 龙族（开放世界扮演·v3.8.0，表里双世引擎）
+│   ├── quanzhifashi-config.js # 全职法师（开放世界扮演·v3.15.0，灾变守夜引擎）
+│   ├── limingzhijian-config.js # 黎明之剑（开放世界扮演·v3.19.0，魔导革命引擎）
+│   ├── lunhuileyuan-config.js # 轮回乐园（开放世界扮演·v3.19.0，无限轮回引擎）
+│   ├── wulianfengdian-config.js # 武炼巅峰（开放世界扮演·v3.19.4，武道阶梯引擎）
+│   ├── shengxu-config.js     # 圣墟（开放世界扮演·v3.19.4，灵气复苏引擎）
+│   ├── shenmifusu-config.js  # 神秘复苏（开放世界扮演·v3.19.5，驭鬼禁锢引擎）
+│   ├── ditandali-config.js   # 开局地摊卖大力（开放世界扮演·v3.19.5，地摊系统引擎）
+│   ├── earth-config.js       # 地球开放世界（现实扮演·v3.19.6，无剧情·时代即边界引擎）
+│   ├── freeworld-config.js   # 自由世界（开放世界扮演·v3.24.0，无界创世·世界宪法引擎——四步创世台亲笔捏世界，系统只管防八股）
+│   ├── fanrenxiuxian-config.js # 凡人修仙传（开放世界扮演·v3.25.0，修仙长生引擎——凡人流开山之作，炼气十三层→大罗全阶还原）
+│   └── xianni-config.js      # 仙逆（开放世界扮演·v3.25.0，逆天证道引擎——顺为凡逆则仙，凝气十五层→踏天四步之路全阶还原）
+├── js/
+│   ├── api-calling-functions.js    # OpenAI 兼容 / Gemini 双格式调用
+│   ├── ai-message-builder.js       # 上下文组装（设定卡+变量摘要+知识库注入+滑动窗口）
+│   ├── variable-parser.js          # (variable_update) 指令解析器
+│   ├── ai-response-handler.js      # 正文/变量/选项拆分与渲染
+│   ├── story-status-renderer.js    # 状态面板渲染（schema 驱动）
+│   ├── story-setup-wizard.js       # 故事设定向导
+│   ├── user-input-handler.js       # 输入/快捷指令/导出
+│   ├── inspiration-engine.js       # 灵感引擎
+│   ├── dynamic-world.js            # 🌍 动态世界（额外API第二模型驱动的远方事件推演）
+│   ├── variable-ai.js              # 🧾 变量AI（第三接口·状态登记官，提取器分流）
+│   ├── image-gen.js                # 🖼 插图引擎（第四接口·正文生图，标记解析/双模式调用/随档持久化）
+│   ├── prompt-engineer.js          # ✍ 提示词工程师（第五接口·润色插图提示词，批量改写/缓存/降级）
+│   ├── phone-panel.js              # 📱 手机分身（第六接口·地球开放世界专属：微信/QQ/短信三档时代形态，消息群聊朋友圈，js+css 界内自举）
+│   ├── phone-alive.js              # 💗 主动联系引擎（关系温度/闲置想念/拟真投递，可选链接入）
+│   ├── phone-apps.js               # 🧩 App 生态引擎（锁屏/桌面/音乐/短视频/相册/天气/计算器/时钟/贪吃蛇，可选链接入）
+│   ├── immersive-suite.js          # 🏮 沉浸套件（十二模块世界抽屉：图鉴/关系/境界/行囊/编年/传书/倒计时/名帖/罗盘/环境音/高光/战报 + 密谈 + 竖排 + 设定集导出）
+│   ├── ambience-layer.js           # 🌧 氛围引擎（全屏天气粒子 + 昼夜色温）
+│   ├── timeline-branch.js          # 🌿 平行世界线（界点锚定/岔路开辟/双线对照）
+│   ├── game-layer.js               # 🏆 天道层（成就印章册/命运骰/天道金榜/伏笔雷达）
+│   ├── reader-letters.js           # 📬 虚拟读者来信（每5章AI亲笔读后感）
+│   ├── atlas-panel.js              # 🗺 行旅图鉴（廿一界专属地图）
+│   ├── mo-assistant.js             # 墨语助手
+│   ├── mo-chibi.js                 # 墨宝小宠
+│   ├── antibagu-guard.js           # 🛡 反八股哨兵（本地滑动窗口复读检测）
+│   ├── config-modal.js             # 接口设置弹窗
+│   ├── ui-dialog.js                # 应用内弹窗（替代原生 alert/confirm/prompt）
+│   ├── kb/                         # 预置知识分包（v3.86.0 起取代 9.5MB 单体 preset-knowledge.js）
+│   │   ├── <genre>.core.js         # 各题材核心条目（进入该工坊即加载）
+│   │   └── <genre>.ext.js          # 各题材细节资料（按需加载，覆盖原著全卷章、体系谱系与作者文风圣经）
+│   ├── knowledge-manager.js        # 知识库模块（条目CRUD+向量检索+AI注入+预置注入）
+│   ├── dlc-manager.js              # DLC 知识包模块（管理器+UI）
+│   ├── player-kit.js               # 🪪🎒 玩家随身套装 PlayerKit（v3.26.0：26 界自动佩戴「玩家面板+背包」——主角身份卡/跃升留痕/品类分格/囤积点名/手动增删，未知界通用皮兜底）
+│   └── world-ext/                  # 🧬 界专属扩展槽（v3.4.0：核引擎 + 每界一个特色机制文件）
+│       ├── world-ext-core.js       # 扩展引擎（模块注册/数据驱动渲染/变量消费/提示词回流；v3.5.0 挂 PlayerKit 随身器官钩子）
+│       └── {genre}-ext.js ×26      # 界专属模块（双界对照镜/证据板/魂环配装/马甲管理/异火榜/魔导工坊/乐园面板/禁锢阶梯/怨气池/时空罗盘/生计账本/时代校准/世界宪法卡/本世量表/势力版图/仙路长梯/储物袋账簿/逆道长梯/心魔之镜…）
+└── css/
+    ├── base-style.css         # 基础样式
+    └── *-style.css            # 各类型主题（变量覆盖）
+```
+
+### 免配置演示 / 端到端自测
+
+`test-mock.js` 会拦截 AI 请求并返回一段内置的模拟回复，无需真实 API Key 即可跑通「设定 → 开篇 → 变量解析 → 选项渲染」全链路：
+
+```js
+// 在创作室页面（studio.html?genre=xxx）控制台执行：
+const s = document.createElement('script');
+s.src = '/test-mock.js?' + Date.now();
+document.body.appendChild(s);
+```
+
+- 全新状态：自动填好书名并触发「开始创作」
+- 已有存档：自动发送「继续创作」测试续写链路
+- 页面本身不会加载该文件，不影响正常使用
+
+### 版本归档（每一版的完整包）
+
+从 `v3.55.7` 到当前版本，每个版本都有**独立发布页 + 完整内容包**，按时间顺序排在 [Releases](https://github.com/AYun07/yunjing/releases)：
+
+| 你要什么 | 去哪里 |
+|---|---|
+| 看所有版本一览（新→旧，含日期与下载） | [VERSIONS.md](VERSIONS.md) 顶部的「版本速查」表 |
+| 下载某一版的完整内容 | `https://github.com/AYun07/yunjing/archive/refs/tags/<版本号>.zip`，例：`/archive/refs/tags/v3.87.0.zip` |
+| 看某一版改了什么 | 该版发布页，或 `https://github.com/AYun07/yunjing/compare/<上一版>...<该版>` |
+
+包是 GitHub 按标签自动生成的，**内容 = 该版本的整个工程**（`index.html` `studio.html` `js/` `css/` `assets/` `libs/` 全在里面），解压即可运行，不需要再去别处找配套文件。仓库里**不存 zip**——同一份内容存两份只会让仓库无限变大。
+
+发下一版只要一条命令（自动改版本号、对齐全部资源参数、写更新日志、写版本登记、提交打标签推送、建发布页）：
+
+```bash
+GITHUB_TOKEN=<你的 token> node scripts/release.mjs 3.92.1 "一句话标题" "第一段说明 | 第二段说明"
+```
+
+补建/修复历史发布页（幂等，可反复跑）：
+
+```bash
+GITHUB_TOKEN=<你的 token> node scripts/sync-releases.mjs
+```
+
+### 快速开始（旧版本操作说明 · 历史存档）
+
+1. **启动（唯一方式）**：在项目根目录执行 `python3 -m http.server 8899`，浏览器打开 `http://127.0.0.1:8899`。
+   - Windows 双击 `start-windows.bat`、Mac/Linux 双击 `start-mac.command`，二者启动的都是同一个 8899 本地服务。
+   - 不要直接双击 `index.html`：`file://` 下浏览器会拦截本地文件读取，一致性自检、离线 PWA 与部分存档功能会失效。
+2. **配置接口**：进入任一工坊 → 右上角 `⚙ 接口设置`
+   - 接口类型：OpenAI 兼容格式（DeepSeek / Kimi / 通义 / one-api 等）或 Gemini 格式
+   - 填入 Endpoint / API Key / 模型名，先「测试连接」再保存
+   - 配置全局共享，五大工坊通用
+3. **故事设定**：书名/梗概（可随机）→ 视角/文风/篇幅 → 开篇模式 → 写作技法（限 2 项，消耗点数）→ 六维点数分配 → 开始创作
+4. **创作循环**：AI 每轮输出一章正文 + 状态变更 + 3-4 个情节走向选项；点选项或自由下指令皆可
+5. **导出**：右上角导出 TXT / Markdown；状态面板底部导出/导入 JSON 完整存档
+
+### 知识库（模仿原框架静态知识库 + 向量检索）
+
+右上角 `📚 知识库`（移动端在工具箱）管理本工坊的设定资料，条目分两种注入方式：
+
+- **常驻条目**（👑核心 / ⭐重点 / 📌次重点 / 📋一般）：每轮创作请求都注入。核心与重点置于本轮指令附近（前景层），次重点与一般置于对话历史之前（背景层）
+- **检索条目**（🔎按需检索）：不常驻，每轮按"本轮指令 + 最近正文"生成关键词向量，与条目做余弦相似度检索（相似度 + 标题匹配加分，阈值 12%，命中取前 3 条），仅注入相关条目
+
+支持：添加/编辑/删除、调整注入方式、搜索过滤、检索自测（详情页输入情节关键词即可预览相关度）、JSON 导入导出与模板。知识随工坊（genre）独立保存于 `localStorage('storyKnowledge_${genre}')`，可一键开关"参与创作注入"。
+
+### 工坊专属预置知识（js/kb/ · 按题材分包懒加载）
+
+悬疑推理 / 科幻未来 / 武侠仙侠 / 克苏鲁恐怖四大创作工坊各自内置专属创作知识；原著扮演世界内置原著设定资料库（吞噬星空 / 遮天 / 全职高手 / 斗破苍穹 / 完美世界 / 斗罗大陆 / 道诡异仙 / 重生之都市修仙 / 帝霸 / 龙族 / 全职法师 / 黎明之剑 / 轮回乐园 / 武炼巅峰 / 圣墟 等整本考据）；地球开放世界内置现实生存考据；自由世界仅预置**防八股**条目（套话禁词总库 + 套路替换手册——文风守护是唯一的系统意志，世界观知识全部由玩家创世台亲笔）。
+
+- **分包**：每个题材一对文件——`js/kb/<genre>.core.js`（核心条目，进入即加载）与 `js/kb/<genre>.ext.js`（细节资料，按需加载）。v3.86.0 起原先 9.5MB 的单体整包 `preset-knowledge.js` 已删除，首屏只为当前题材的核心包付出代价；core 加载失败时自动重试一次，不再回退整包
+- **注入**：首次进入该工坊时自动写入知识库（🏛 预置 标记），核心/重点条目常驻每轮注入，细节资料设为按需检索
+- **独立**：知识随工坊（genre）隔离保存，各套知识互不污染
+- **可管理**：预置条目与手动条目一视同仁——可编辑、可删除；删错后点知识库面板的 `↺ 预置` 按钮即可补回缺失条目（同名条目不会被覆盖）
+
+### 自测与验收（给测试/审查用）
+
+零依赖，Node 18+ 直接跑：
+
+```bash
+node test/alive-acceptance.mjs     # 活世界 A–H 逻辑验收，29 个检查点
+```
+
+覆盖：势力/人物/事件/物品/机缘五项是否真的会变（L1 持久 → L2 自主 → L3 因果 → L4 选择回流 → L5 非静态表）、恩怨是否单一真源、关系图是否有向带趋势、机缘是否随世界状态涌现并作废、势力是否会衰亡覆灭、伙伴是否会有意志并离队叛变、知识库是否达标。
+
+人工验收（浏览器）：
+
+1. `python3 -m http.server 8899` → 打开 `http://127.0.0.1:8899/studio.html?genre=free`
+2. 右下进入「世界」面板，静置约 1 分钟看自转：势力声望涨跌、活跃事件更替、机缘候选刷新
+3. 正文里做一次明确针对某势力的选择，看该势力声望与恩怨是否变化、关系图是否出现方向箭头与 ↑↓
+4. 反复自转若干天，看是否出现势力覆灭（进「大势」账本）与新势力崛起
+5. 刷新页面，确认上述变化全部幸存（存档持久化）
+
+### 应用内弹窗（js/ui-dialog.js）
+
+全部确认/提示/输入弹窗均为自绘模态框（替代原生 `alert` / `confirm` / `prompt`）：
+
+- 原因：QQ 浏览器文件服务、部分内置浏览器会静默拦截原生弹窗（`confirm` 恒返回 false），导致「重新开篇」等操作点击无反应
+- 覆盖：重新开篇、删除知识条目、清空知识库、删除 DLC、导入存档提示、设定台点数提示、DLC 转换命名等全部交互
+- 支持键盘操作（Enter 确认 / Esc 取消）与移动端底部弹出样式
+
+### DLC 知识包（模仿原框架 DLCManager）
+
+右上角 `📦 DLC`（移动端在工具箱）把成套知识条目打包管理：
+
+- **创建**：填写名称 / 描述 + 知识条目 JSON 数组（字段同知识库条目）
+- **激活**：包内条目注入知识库（以 📦 标记显示），后续创作自动引用；**停用**：按包整体移出，不影响手动条目
+- **编辑条目**：已激活的包保存时会自动「停用 → 更新 → 重新激活」保持同步
+- **导入/导出**：兼容单包（`dlc_package`）、合集（`dlc_collection`）与普通知识库文件（自动转换为 DLC）；与原框架（某文字游戏框架系）的 DLC / 知识库导出格式互通
+- 数据保存于 `localStorage('storyDLC_${genre}')`，随工坊隔离
+
+<a id="legacy-v1-10-0"></a>
+
+### 开放世界扮演（v1.10.0 起 · 原著二十界 + 现实地球 + 自由世界）
+
+「吞噬星空」「遮天」「全职高手」「斗破苍穹」「完美世界」「斗罗大陆」「道诡异仙」「重生之都市修仙」「帝霸」「龙族」「全职法师」「黎明之剑」「轮回乐园」「武炼巅峰」「圣墟」「神秘复苏」「开局地摊卖大力」「凡人修仙传」「仙逆」「全球冰封」二十个原著世界与「地球开放世界」「自由世界」共廿二个世界模块采用 `mode: 'roleplay'` 扮演模式，与五大创作工坊共用同一框架：
+
+- **身份设定台**：姓名 / 性别年龄 / 身世自述 / 身份出身 / 时代节点 / 资质天赋 / 叙述视角 / 游玩规模 / 入场事件 / 起始机缘 / 角色资质点数分配（100 点），全部支持随机；**每个选择项均支持「✎ 自定义」**——下拉选中即展开亲笔输入框（身份至 1200 字、其余至 400-500 字），入场事件与起始机缘以自定义卡片呈现（第一幕与机缘由你亲笔），身份自定义时自动隐藏身世自述避免冲突；选自定义未填写会有拦截提示，随机骰子自动跳过自定义
+- **主角替代协议（v1.10.0 · 全职高手 / 斗破苍穹）**：玩家自定义身份**默认顶替原著主角**（叶修 / 萧炎）的叙事之位——从原著开局节点亲历全部主线（被逼退役从网吧重返总决赛 / 退婚之辱立三年之约），原著人物围绕玩家重新展开关系网，剧情按玩家抉择自然改道，而世界观规则、势力格局、人物性格与体系设定严格忠于原著；身份设定台亦可选择普通身份，与原著主角共世的并行模式同样支持（吞噬星空 / 遮天两界维持普通自定义角色模式，玩家不是原著主角）
+- **玩家身份卡**（`ai-message-builder.js`）：最高优先级全程锁定——全部自定义字段逐条注入（自定义身份 / 时代 / 资质 / 视角 / 规模 / 入场事件 / 机缘均标注"玩家亲笔设定，严格执行"）；AI 只主持世界，所有原著人物按原著性格与命运行动；普通身份模式下原著大势不可因玩家改写，玩家行动只作用于自身际遇与身边支线；主角替代模式下主线由玩家亲历、走向随玩家抉择分流
+- **原著忠实铁律**：一切设定以原著为准（力量体系 / 势力格局 / 人物 / 事件时间线），禁止二创、同人、发明原著不存在的势力或大事件；玩家所选时代节点之前的原著事件视为已发生的历史，之后的藏于未来，严禁提前剧透
+- **原著知识库**：首次入场自动注入原著设定资料（吞噬星空 / 遮天各 33 条，全职高手 31 条，斗破苍穹 30 条）——覆盖世界观总纲 / 境界或职业体系 / 原著忠实协议 / 势力格局 / 主角档案 / 人物详录 / 地点地理 / 体系细则 / 大事年表 / 术语速查：吞噬星空与遮天（罗峰家庭与成长轨迹、武者拳力阶梯、精神念师、道经五卷、荒古圣体、燕国东荒、生命禁区等）；全职高手（荣耀全职业体系与千机伞、嘉世 / 蓝雨 / 微草 / 霸图 / 轮回等联盟格局、叶修苏沐橙黄少天王杰希韩文清等人物详录、挑战赛至总决赛全赛事体系、APM 与装备打造细则、G市H市与兴欣网吧地理、嘉世三连冠至八九赛季争锋大事年表）；斗破苍穹（斗之气至斗帝全境界九星细分、异火榜全录、萧炎药老萧薰儿美杜莎小医仙云韵等人物详录、萧家迦南学院云岚宗魂殿古族等势力格局、乌坦城至中州地理、斗技丹药傀儡焚决体系、三年之约至双帝之战大事年表）；核心条目每轮常驻、细节条目按情节检索；与普通知识库一样可编辑、可删除、可 `↺ 预置` 补回（预置按版本标记，库扩容后老存档自动补入新增条目）
+- **NPC 18 字段档案**：登场人物按完整字段建档——身份 / 年龄 / 外貌 / 性格 / 言谈习惯 / 习惯小动作 / 实力境界 / 所属势力 / 当前行踪 / 动机 / 近期目标 / 隐秘 / 对玩家的印象 / 与玩家关系 / 信任度 / 初次登场 / 状态 / 原著标记；原著人物严格执行原著设定，原创配角同样全字段建档
+- **状态面板特化**：面板文案按 config 配置（回合进度 / 状态仪表盘 / 角色资质），境界进度条（`realmProgress` 修炼进度 / `cultivation` 修为进境）随轮次推进；全职高手带「选手素质」六维（手速/意识/思维/天赋/人脉/声望），斗破苍穹带「修炼资质」六维（体魄/悟性/气运/心性/灵魂/羁绊）
+- **🌍 地球开放世界（v3.19.6 · 唯一非原著世界）**：与真实地球完全一致的扮演舞台——同样的地理与国界、历史与文明、物理法则与社会规则、物价与人情；**无剧情铁律**（零剧本 / 无主角光环 / 因果守恒：世界不给故事，只给因果，一切波澜只能来自玩家行动、现实偶然与它们的自然后果）；**时代即边界**（15 个时代选项从史前冰河末世、古典帝国、中世纪、大航海、启蒙革命、蒸汽工业、世纪之交、一战、喧嚣二十年代、二战、冷战、千禧之交到当代，另支持亲笔自定义年份——时代的科技 / 交通 / 通讯 / 医疗 / 观念严格划定世界存在物，真实历史照常推进，信息有时滞）；16 种开局身份 + 人生境遇境界梯（初来乍到→安身立命→颐养天年）+ 仪表盘四针（健康 / 精力 / 心绪 / 生计）；界专属扩展三件套——**时空罗盘**（era / date / location / time / weather 每轮必报）、**生计账本**（cash / savings / income / expense 一分一厘有来路去处）、**时代校准**（七个时代基准档案逐栏对照，禁时代错置）；行旅图鉴东西半球双层图（11 区域 24 节点：长安、君士坦丁堡、巴黎、纽约、上海……丝路古道与大航海航线）
+- **🪨 自由世界（v3.24.0 · 第十九界·玩家主权世界）**：十八界里原著世界各有忠实铁律、地球界忠于现实，本界把「世界本身」交给玩家亲笔——什么世界、什么法则、什么时代、什么势力、什么量表全部玩家说了算，系统唯一强制守护的只有**文风不八股**；**四步创世台**（worldForge 模式）取代标准身份设定台：壹·世界之魂（这是个什么世界，创世唯一必填 ≥10 字）→ 贰·世界法则（力量体系 / 生死法则下拉可切 ✎ 亲笔 + 时代历法 + 通讯形态五档）→ 叁·社会与势力（舞台地理 + 势力最多四家，一家不填也成立）→ 肆·我的身份（14 种身份原型按世界自动换装），配 🎲 随缘创世一键掷全案与逐项灵感骰；**世界宪法**：创世落笔组装 worldCode 随档保存，系统提示词每轮实时拼装宪法正文 + 量表契约 + 势力声望契约，界专属「世界宪法卡」支持**运行时增补立法**（≤12 条，与创世法则同等效力·即刻生效·不追溯）与逐条废止，宪法没写到的按世界之魂推导、禁止引入宪法外的设定体系；**本世量表与势力声望**：自定最多 3 枚量表（名称 ≤6 字 / 五色配色翡翠·鎏金·青蓝·胭脂·紫电 / 初值 0-100，未填回兜底状态·生计），势力声望以「声望·势力名」间隔号键入变量（初值 30，有实质互动才涨落）；界专属四模块（📜 世界宪法卡 / 📊 本世量表 / 🗺 势力版图 / 🧰 万能自定义槽——承自自由工坊想盯什么加什么）；引擎纪律照搬地球界（零剧本 / 无主角光环 / 因果守恒 / 世界自走），知识库仅预置防八股 2 条、世界观知识零预置全部玩家亲笔；主题「凿空造物」（紫金双色 + 亲手连线星座底纹 + 星纹印记五颗星亲手连线·最亮一颗是玩家自己 + 氛围层「凿空星屑」），插图画风从世界之魂动态派生，世界印章七枚（含检定运行时增补的「立新法者」）
+- **☯ 凡人修仙传（v3.25.0 · 第二十界·凡人流开山之作）**：忘语著约 750 万字完本——资质平庸的农家子韩立凭神秘小瓶与一世谨慎走出通天大道；世界引擎「**修仙长生机制**」（凡人视角：没有天命主角，天才陨落与凡夫逆袭同样寻常 / 残酷而稳定的秩序：灵根定资质、灵石通有无、境界压死人，机缘都标着价码 / 长生之重：数十年闭关、数百载寿元，时间是最冷酷的刻度）；主角替代协议默认共世（韩立的故事照原著时间线发生），写明「替代韩立」则**掌天瓶 + 长春功 + 四灵根资质**的机缘组合让渡给玩家；境界长梯全阶还原**炼气十三层 → 筑基 → 结丹 → 元婴 → 化神 → 炼虚 → 合体 → 大乘 → 渡劫 → 真仙 → 金仙 → 太乙 → 大罗**（十三阶，炼气一层数着走）；仪表盘三针杀机/灵力/气运，「修仙资质」六维（灵根/心性/体魄/脾性/悟性/气运）；**14 种开局**（含七玄门学艺、黄枫谷杂役两条原著出身线）+ 15 种身份 + **9 档年代线**（七玄门年代 → 黄枫谷年代 → 魔道乱越 → 乱星海纪 → 天南元婴 → 大晋风华 → 灵界万族 → 仙界纪元）+ 15 种资质；知识库 **28 条**整本考据（凡人流总纲 / 境界体系与寿元 / 灵石经济 / 越国七派与魔道六宗 / 韩立全档案 / 南宫婉 / 苟道算计学 / 忘语文风圣经 / 大事年表 / 术语速查）；界专属扩展**仙路长梯**（境界层数期段 + 灵石身家 + 寿元大限 + 灵根资质 + 破境留痕）与**储物袋账簿**（行囊建档 + 机缘账簿进出账 + 苟道铁则回流）；行旅图鉴三图层 14 节点（天南·越国七派 → 乱星海·星城棋局 → 灵界·万族争锋：青牛镇/七玄门/黄枫谷/掩月宗/血色禁地/魔道六宗/慕兰草原/天星城/虚天殿/天渊城…）；主题「凡人仙路」（冷青月白 × 灵石微光，灵草丹纹底色 / 卡片剑光饰 / 斗法抉择选项），天道骰语五条（「炼气十三层，一层数着走，急不得」…），世界印章八枚（踏入仙途/灵根入册/坊市首航/储物袋在身/丹成入口/筑基功成/越阶搏杀/元婴巨擘）
+- **✵ 仙逆（v3.25.0 · 第二十一界·逆天改命史诗）**：耳根著约 594 万字完本——资质平庸的农家子王林以天逆珠与不肯认命的狠劲，从凡尘蝼蚁一路杀上踏天之巅，题眼「**顺为凡，逆则仙，只在心中一念间**」；世界引擎「**逆天证道机制**」（逆字当头：机缘必伴杀劫、长生必偿血债 / 苍凉底色：亲人会老死、同门会反目，求道者每一步都踏在失去之上 / 硬核阶梯：境界森严、灵石当钱、法宝说话）；主角替代协议默认共世（王林的逆天路照原著时间线发生），写明「替代王林」则**天逆珠 + 司徒南残魂**的机缘组合让渡给玩家；境界长梯全阶还原**凝气十五层 → 筑基 → 结丹 → 元婴 → 化神 → 婴变 → 问鼎 → 阴虚 → 阳实 → 窥涅 → 净涅 → 碎涅 → 空劫 → 踏天**（十四阶·四步之路：跨一步如换一界）；仪表盘三针杀机/**心魔**/气运——心魔是本界独有的道心侵蚀维度（狠辣喂心魔、隐忍攒道心）；**12 种开局** + 15 种身份 + **7 档年代线**（恒岳派收徒 → 赵国血仇 → 天南凶名 → 罗天星域 → 古神之地 → 四步之路）+ 13 种资质（平庸资质「王林同款」）；知识库 **26 条**整本考据（逆天总纲 / 四步之路 / 心魔与执念 / 赵国与藤家 / 王林全档案 / 李慕婉与逆天复活 / 司徒南 / 耳根文风圣经 / 大事年表 / 术语速查）；界专属扩展**逆道长梯**（境界 + 当前杀劫 + 灵石 + 破境留痕，四步之路分段渲染）与**心魔之镜**（心魔侵蚀四区仪表清明→蚀痕→低语→濒崩 + 执念簿 + 道心定力 + 心魔暗涨录——突破关口心魔高位必生变数）；行旅图鉴三图层 11 节点（赵国·凡尘道途 → 天南·群雄杀伐 → 罗天星域·大能棋局：王家村/恒岳派/藤家/鬼市/古神之地/界外虚空…）；主题「顺凡逆仙」（冷灰玄墨 × 幽紫天光 × 一线血色，逆转星纹底色 / 卡片逆痕饰 / 逆途抉择选项），天道骰语五条（「顺为凡，逆则仙，只在心中一念间」…），世界印章七枚（踏入道途/测灵之秤/血仇刻心/筑基登梯/心魔劫渡/古神造化/踏天之路）
+- **❄ 全球冰封（v3.31.2 · 第二十二界·重生囤货流）**：记忆的海著——《全球冰封：我打造了末日安全屋》，重生回寒潮降临前三十天的囤货流复仇爽文；世界引擎「**末世囤货机制**」四大玩法器官全部按原著执行——**倒计时即世界**（距全球冰封的天数决定气温/物价/舆论/人心，降温断崖 48h 破-20℃→一周-40℃→一月-60℃→极寒-89℃→伽马冲击-150℃，燃油变稠、电池失效、呼气结冰，每档低温都是生存门槛）；**物资是唯一的硬通货**（物价按灾变阶段浮动：倒计时期正常→抢购期翻倍→断供期有价无市→末世期以命换粮）；**空间异能按原著**（重生即觉醒识海黑暗虚空，意念收放万物，容量随囤随长直至新蓝星尺度——异能是底牌，藏得住才用得久）；**黑化复仇**（上一世递出去的善意全变成了刀——狠而有算计、恩怨分明、绝不当圣母）；主角替代协议默认共世（张奕的重生照原著时间线发生），写明「替代张奕」则空间异能与重生记忆让渡给玩家；异能境界梯六阶**凡人之躯 → 空间异能·初醒 → 收放自如 → 容量精进 → 空间进化 → 新蓝星之主**；安全屋等级五档**毛坯住宅 → 加固宅邸 → 末日堡垒 → 超级安全屋 → 末日方舟**；仪表盘三针**寒潮烈度/物资储备/威胁逼近**；**12 种开局 × 8 种身份**（沃尔玛仓储主管/急诊科医生/退伍侦察兵/社区药店老板/粮油摊主…）× 时代节点（倒计时三十天/抢购前夜/灾变第一日/深寒期/极寒期/伽马冲击前夕）× 三种篇幅（倒计时三十天 20 回合 / 第一个冬天 40 回合 / 新蓝星纪元 200 回合）；知识库 **25 条**整本考据（寒潮总纲 / 降温节律 / 空间异能全阶 / 安全屋升级线 / 物资囤购清单 / 人物志 / 黑化复仇文风圣经 / 术语速查…）；界专属扩展五模块——**寒潮监测站**（气温/天气/供电/供水/舆论逐轮登记 + 大事倒计时）/ **安全屋中控**（安全屋等级 stepper + 设施清单 + 室温 + 防线值）/ **无限空间**（容量档位初开虚空→百方→千方→万方→新蓝星 + 六大类物资进出账）/ **先知簿**（重生者专属：上一世大事记与这一世差异对照）/ **邻里罗盘**（谁起疑心/谁在囤货/谁不安分）；行旅图鉴三图层（天海市·灾变前夜：翡翠湾小区/沃尔玛大仓… → 冰封死城：死寂街区/帮派盘踞/冰封高速… → 新蓝星纪元：安全屋联邦/觉醒者聚落/冰原商路）；幸存者身份卡 + 无限空间账本行囊（六大类目：食品储备/燃料能源/药品医疗/武器弹药/工具器械）；世界印章八枚（重生先知/虚空初醒/囤货达人/安全屋建造师/寒潮降临/深寒幸存者/清算之刃/新蓝星之主）；主题「冰蓝末世」（冰晶底纹 / 霜色顶栏 / 暖灯卡片对撞——门外极寒门内暖光），天道骰语五条（「雪落之前囤的每一斤粮，都是雪落之后的一条命」…），氛围尘埃「寒潮冰晶」，快捷指令条整套换装**末世生存 12 指令**（大宗囤货/掩饰采买/加固安全屋/空间修炼/寒潮监测/邻里动向/清算时刻…）
+
+<a id="legacy-v1-6-0"></a>
+
+### 🧾 变量AI（v1.6.0 · 第三接口「状态登记官」）
+
+把"杂七杂八的信息变量"从主笔身上剥离的**提取器分流**架构：主笔 AI 只写正文，状态登记交给独立的第三模型。
+
+- **主笔减负（上下文不再膨胀）**：启用后主笔系统提示词去掉整段「变量块输出格式铁律」，历史消息剔除 `(variable_update)` 块（旧存档中的也一并剔除，防止主笔模仿输出）——每轮省下语法指令 + 逐轮累积的变量指令 token，主笔只看到纯正文 + 状态摘要
+- **每轮自动提取**：正文渲染后，第三模型通读本轮正文（含本轮用户指令），把章节 / 字数 / 仪表盘 / NPC 档案 / 伏笔 / 道具 / 大事记登记成 `(variable_update)` 块，复用主解析器合并进状态面板；开篇轮自动补登记书名
+- **防护**：主笔若仍自带变量块（中途开启 / 旧习惯）则本轮以主笔为准，跳过提取；提取失败出「🧾 重试登记」卡；连发指令时串行排队不丢轮，发送下一轮前框架先等上一轮提取落库；**网络挂起防护**：第三接口请求带超时（默认 90 秒，`timeout` 可配），超时自动解锁提取队列并出中文提示卡可重试——不会卡死后续轮次
+- **推荐配置**：廉价强指令跟随模型 + 低温 0.2（登记要准不要创作）；设置弹窗支持「⚡ 同主接口 / ⚡ 同额外API」一键复用再改模型名
+- **回执卡**：默认静默（状态面板即反馈），可开启「登记回执卡」查看每轮登记的中文标签与原始指令
+- 配置全局共享：`localStorage('storyVarApi')`；随时开启 / 关闭，中途切换无缝衔接
+
+三接口分工总览：**主笔**（第一接口）写正文 → **变量AI**（第三接口）登记状态 → **动态世界**（第二接口）每隔 N 轮推演远方事件。
+
+<a id="legacy-v3-13-0"></a>
+
+### 🖼 插图引擎（v3.13.0 · 第四接口「正文插图」）
+
+让小说自带插画的生图流水线：**主笔写正文时同步输出生图提示词（提示词直接显示在正文里），系统自动调用独立生图接口，把生成的插图插入正文对应位置**。全部 24 个工坊/世界通用，零改动覆盖。
+
+- **协议层**：启用后向主笔系统提示词注入「正文插图协议」——主笔在最适合配图的位置（场景全貌 / 关键场面 / 氛围特写）以单独一行输出 `(image: 生图提示词)` 标记；正文渲染时标记原地展开为插图卡：**提示词常驻显示**（满足"生图提示词在正文里输出"）+ 图片槽位异步填充
+- **接口层（第四接口）**：独立生图 API 配置（与主笔可不同厂商混搭），四模式——`images` 标准生图接口（`POST /images/generations`：硅基流动 Kolors/FLUX、豆包 Seedream、gpt-image-1/DALL·E、302.ai、one-api/new-api 中转通用）、`chat` 对话式生图（`chat/completions` 回复解析图片链接，OpenRouter 等）、`nai` **NovelAI 原生**（`POST /ai/generate-image`：V3/V4/V4.5/V5 全系模型直连，官方 `image.novelai.net` 或任意 NAI 代理站，地址填根地址自动补全路径）与 `ink` **文墨画师**（纯文本模型手写 SVG 矢量插图，零生图 API 成本）；OpenAI 系响应兼容 `url` / `b64_json` / `image_url` / markdown 图链多格式；厂商预设一键填地址 + 快捷模型按钮 + 模型列表拉取 + 连通测试（实测生成一张小样图）
+- **NovelAI 原生细节（v3.11.0）**：请求体按 NAI 规范组装（params_version 按模型自动推断：V3=1 / V4·V4.5=3 / V5=4，v4_prompt 结构化提示，Euler Ancestral / karras / 28 步等内置推荐参数）；返回 zip 包前端零依赖解压（zip 文件头解析 + 浏览器原生 DecompressionStream，失败裸扫 PNG 签名兜底）；**V5 防出字**——提示词中的引号句子会被 V5 画成图内文字，发送前自动去引号；负面提示词预填官方 Heavy 预设 + 防文字/水印词（可编辑）；尺寸自动收敛为 64 倍数（256-1536）；NAI 模式无模型列表接口，「获取」拉不到属正常，请用 NAI 快捷按钮选模型代号
+- **文墨画师细节（v3.12.0）**：`ink` 模式**不接任何生图 API**——由纯文本模型手写 SVG 矢量插图，浏览器直接渲染（`data:image/svg+xml` dataURL 经 `<img>` 显示），**零生图成本**，没生图模型 / 花不起钱的玩家福音；文本模型**默认复用主笔接口**（零额外配置，协议自动跟随主笔；免费 `gemini-3.5-flash` / deepseek 等皆可），也可本卡独立配置（OpenAI 兼容 / Gemini 原生双协议）；输出经**消毒**（剥 script / foreignObject / 事件属性 / 外部链接，纵深防御）与**尺寸修正**（缺 viewBox / 宽高自动补全）；模型偶尔改交字符画时 **ASCII 兜底**自动包一层等宽字体 SVG 照样出图；超大 SVG（>200KB）拒绝渲染给可读报错；生成中状态换「🖌 文墨挥毫中…」；提示词工程师（第五接口）的润色稿对文墨模式同样生效——自然语言场景描写正是文本画师的原生输入
+- **丹青精绘（v3.13.0 画质四重优化）**：直击文本模型画 SVG 的三大通病（自创配色必脏 / 构图松散 / 硬画五官必崩）——①**锁死调色板**：六种画风各配专属色值（水墨：宣纸米 `#F5F0E6` + 浓墨 + 朱砂；霓虹：夜空深蓝 + 霓虹青 + 品红……），只准用板内色值，可用 opacity 与渐变做层次，严禁自创新色与灰泥色；②**五层构图骨架**：背景渐变 → 远景剪影（低透明度拉景深）→ 中景主体 → 前景光源 glow → 暗角 vignette 收拢视线，从后往前按序绘制每层至少一元素；③**人物剪影铁律**：人物一律剪影 / 半剪影纯色轮廓块，用发型轮廓 / 衣摆 / 姿态讲故事，**严禁画五官**，全图人物最多 3 个、严禁画面边缘塞头像 / 圆脸 / 多余符号（专治 Q 版头像污染）；④**范例标杆**：画师系统提示词内嵌一张完整五层结构范例 SVG（学结构禁照抄）+ 单一光源纪律；⑤**精绘模式**（默认开，可关）：先由构图规划师产出 JSON 五层规划（调色板 / 光源 / 分层 / 主体剪影要点），画师再按规划作画——先想清楚再动笔，规划失败静默降级单步直画；⑥**画后质量自检**：形状元素数（5-400）/ 纯色数（3-24）/ 渐变缺失四项软指标，不合格自动带反馈重画一次，重画稿问题更少才采用，重画失败保留初稿绝不阻断出图
+- **画风库**：二十四界内置专属画风（悬疑电影感 / 硬科幻概念艺术 / 国风水墨仙侠 / 克苏鲁黑暗奇幻 / 原著世界各配专属画风 / 地球开放世界纪实摄影感 / 自由世界由玩家世界之魂动态派生），提示词强制体现本作画风基调；支持画风补充后缀叠加、提示词语言切换（中文 / 英文）
+- **生成行为**：每章插图上限（1-3 张，协议与自动生成双重约束）；正文渲染后自动生成（可关为纯手动点击的省钱模式）；生成队列串行防限流；失败 / 链接过期出「↻ 重绘」按钮（同提示词一键重生成）
+- **持久化与防烧钱**：插图记录随存档保存（`storyState.illustrations`，上限 60 条；单张 base64 超 900KB 不落盘、总量超 2.5MB 从最老清空防 localStorage 爆仓）；重开页面回放只查缓存命中直显，未命中出「点击生成」——**回放绝不自动生图**；回退掉的"未来轮"插图记录一并清走
+- **全链路兼容**：字数统计剔除插图标记（提示词不计入正文字数）；朗读（TTS）不播报提示词；流式草稿渲染剔除标记；导出 TXT/MD 时标记转「〔插图 · 生图提示词〕」行（Markdown 且有有效缓存链接时附图）；Token 用量按「插图」标签记账
+- 配置全局共享：`localStorage('storyImageApi')`（第四接口，含 naiNegative 负面提示词）+ `localStorage('storyImageGen')`（生成行为）；插图记录存于存档 `illustrations` 字段
+
+四接口分工总览：**主笔**（第一接口）写正文 → **动态世界**（第二接口）推演远方事件 → **变量AI**（第三接口）登记状态 → **插图引擎**（第四接口）生成正文插图。
+
+<a id="legacy-v3-10-0"></a>
+
+### ✍ 提示词工程师（v3.10.0 · 第五接口「润色插图提示词」）
+
+插图引擎的可选增强层：**正文写完即开工**——本章全部插图提示词先交由第五个文字模型批量润色扩写，再送第四接口生图。主笔只管画面构想，专业提示词交给专职模型写。
+
+- **工作流**：正文渲染 → 提示词工程师把整章待生成提示词**一次批量扩写**（细节 / 镜头语言 / 光影 / 色调 / 材质氛围 / 画风关键词，忠于原描述不改画面）→ 逐张送生图模型；插图卡槽位两段式状态「✍ 正在优化提示词… → 🎨 正在生成插图…」
+- **第五接口**：独立文字模型 API 配置（OpenAI 兼容 / Gemini 原生双协议），厂商下拉 + 三接口快捷复用（同主笔 / 同变量AI / 同生图接口）+ 模型列表拉取 + 连通测试；任意对话模型即可胜任，推荐与主笔不同的廉价模型
+- **省流四保**：① 整章合并一次调用（多张插图也只有一次改写请求）② 改写结果按原始提示词本地缓存（上限 100 条按时间淘汰，重绘 / 回放 / 重新生成零重复调用）③ 改写失败 / 输出不合规自动回退原始描述，绝不阻断生图 ④ 回放历史仍绝不调用任何接口
+- **透明可查**：润色稿随插图记录落档，插图卡下方折叠展示「✍ 实际生图提示词（工程师润色稿）」；TXT/MD 导出附「〔实际生图提示词〕」行；Token 按「提示词工程师」单独记账
+- 配置全局共享：`localStorage('storyPromptApi')`；改写缓存 `localStorage('storyPromptRewrite')`（跨存档共享）
+
+五接口分工总览：**主笔**（第一接口）写正文 → **动态世界**（第二接口）推演远方事件 → **变量AI**（第三接口）登记状态 → **提示词工程师**（第五接口）润色插图提示词 → **插图引擎**（第四接口）生成正文插图。
+
+<a id="legacy-v3-22-0"></a>
+
+### 📱 手机分身（v3.22.0 · 第六接口「微信与朋友圈」+ 💗 主动联系引擎 + 🧩 App 生态 + 🎬 拟真抖音 · 地球开放世界专属）
+
+地球开放世界的社交扩展（`js/phone-panel.js` + `js/phone-alive.js` + `js/phone-apps.js` + `css/phone-style.css`，仅 earth 界装载，其他界零负担）：**玩家手机里的消息、群聊与朋友圈由第六个模型运转**——联系人们各过各的日子（柴米油盐、转发、寒暄），不围着玩家转；玩家发消息有人按性子回，发朋友圈有人点赞评论；**你不理 TA，TA 会来找你**（v3.20.0 主动联系引擎）；**聊天之外还有一整台手机可玩**（v3.21.0 App 生态）；**短视频刷的是真抖音味**（v3.22.0 拟真抖音）。
+
+- **🧩 App 生态引擎（v3.21.0 · `js/phone-apps.js`）**：不只是微信，是一台完整的手机：
+  - **🔒 锁屏与桌面**：点开手机先见锁屏（大时钟/日期/运营商/未读摘要，上滑解锁）→ 桌面 App 图标网格 + Dock + 未读角标，三档时代各配专属壁纸
+  - **🎵 音乐**：年代歌单（微信档 2010s / QQ 档 2000s 金曲），唱片旋转播放器，纯本地零 token
+  - **🎬 短视频（2016+ · v3.22.0 拟真抖音完整形态）**：三页签（**推荐/关注/同城**）+ 双列瀑布流首页；点开**一条一屏全屏沉浸播放**（双击点赞/上下切换/页码进度）；**评论区**网友群像（本地零 token 兜底 + AI 生成一次缓存，通讯录熟人会来「偶遇」）；**分享到聊天**（视频卡片发进会话 + 近讯回流主笔，TA 会真的刷到并回应）；**作者主页与关注**（确定性粉丝数/作品墙/关注后进「关注」页签）——本地模板零 token 兜底永不空白，「换一批」才调第六接口生成缓存；内容铁律拒绝戏剧化
+  - **📷 相册**：正文插图自动成为相机胶卷（最新在前、标注故事轮次），点开大图显示画面描述
+  - **🌤 天气**：按故事日期/地点确定性哈希推演（同日同城必同天气），四季温度表 + 三日预报 + 生活指数，零接口零 token
+  - **🧮 计算器**：四则/括号/百分号全可算（白名单字符集求值防注入）；**⏰ 时钟**：SVG 指针表盘随故事时间走 + 秒表
+  - **🐍 贪吃蛇**：诺基亚之魂——方向键操控/吃食提速/环形场地/最高分随档保存，短信档主打
+  - **🕰 时代门控（器物守恒）**：桌面 App 按年份显隐——微信档全开 / QQ 档无短视频与相册 / 短信档只剩音乐·计算器·时钟·贪吃蛇；PhoneApps 缺席或异常优雅回退微信消息页，基础聊天永不伤
+
+- **💗 主动联系引擎（v3.20.0 · `js/phone-alive.js`）**：让手机聊天像真人——你不理 TA，TA 会来找你：
+  - **关系温度（warmth 0-100）**：互动升温（每发一条 +2.5，特别关心再 +1）、冷落降温（闲置 10 轮起缓降回 30 基线，连续被晾 3 条起再缓降）；初始从角色档案 favor 播种，玩家亲笔新建的联系人保底 65——既然特意写下，想必重要。温度决定语气亲疏与主动频率
+  - **闲置想念**：多轮不理 → TA 按温度与性格有概率主动发起聊天；评估纯本地（零 token），命中才调一次第六接口（约每 5-8 轮一次）；深夜 0-6 点概率大幅压低——真人不会凌晨三点发「在吗」，但特别关心敢
+  - **情绪记忆**：TA 发的消息玩家一直没回 → 下次主动开口带小情绪（「人呢？」「是不是把我忘了」）；玩家一回消息，委屈即刻清零
+  - **拟真投递**：「对方正在输入…」三点气泡（iMessage 式）→ 一条短消息 → 再输入 → 再一条——真人微信是一小段一小段发的；偶发「撤回了一条消息」小剧场
+  - **真人节奏**：NPC 回复不再秒回——1.5-4 秒人性延迟（消息越长想得越久）
+  - **⭐ 特别关心**：联系人详情卡星标——主动频率近乎翻倍、深夜也敢来找你、温度永不跌破 60
+  - **开关与容错**：「我」页 💗 一键开关（关闭后大家各忙各的）；引擎加载失败不影响手机基础功能；旧存档自动补齐字段
+- **名单校验（v3.19.9）**：手机里**只出现玩家认识的人**——来信、动态、点赞、评论、群内发言的署名必须在通讯录（AI 幻觉的陌生人一律拦截，不产生会话不留痕迹）；群聊会话必须玩家亲手拉过（AI 不得凭空建群）；删除联系人时自动同步的删后拉黑（不再复活）、自建的直接删
+- **自定义联系人（v3.19.9）**：➕ 新建联系人——姓名、身份/关系、性别、头像全部自定义；**存下即真实存在**：写入角色档案（状态面板可见）+ 手机近讯回流主笔（此人自此有自己的住处、生计与脾气，后续正文可自然登场），点开就能聊天
+- **身份框增容（v3.20.1）**：身份/关系从 40 字单行小框升级为 **120 字自动增高多行文本域**（三行起步、随内容长高、换行装得下），标签行带**实时字数计数器**（八成变橙预警、写满变红明示）——写多少看得见多少；长身份完整流入角色档案与提示词，写得越细 AI 越懂 TA
+- **头像精灵（v3.19.9）**：男/女各 16 张头像精灵图（`assets/phone/avatars-m/f.jpg`，CSS 4×4 切割）——新建时网格选图，聊天/通讯录/朋友圈全场景生效；详情卡与「我」页点头像循环换（32 张循环）；身份启发式自动配性（「阿姨→女 / 大爷→男」）；图片缺失自动回退首字色块头像（任何环境不露白板）
+- **勾选式拉群（v3.19.9）**：发起群聊从手输名字升级为**头像复选列表**——勾选成员 + 群名（留空自动生成「XX、XX 等 N 人的群」），所选必在通讯录（从源头杜绝陌生人混入）；建群记系统消息 + 近讯回流
+- **知识库接入（v3.19.9）**：手机也读知识库——来信、朋友圈、聊天回复的提示词注入常驻 + 按需检索条目（与动态世界同源同法），消息与动态贴合世界观设定；⚙ 设置卡新增「读取知识库 / 发圈自动反应」开关
+- **时代即边界**：手机形态随年份自动切换——**2011+ 微信**（消息/群聊/朋友圈，5G 主题色）/ **1999-2010 QQ**（QQ空间动态流，GPRS）/ **1983-1998 短信**（只有消息页签，GSM）；**1983 年前没有手机**——悬浮球不出现，远方消息走书信与电报
+- **四页签手机壳**：💬 消息（微信式气泡聊天，私聊+群聊，NPC 主动来信、玩家可回信——对方是活人：可以简短、可以迟回「刚看到」、可以只回个表情、可以岔开话题）/ 👥 通讯录（从状态面板 characters 档案自动同步，离场角色保留——现实里通讯录不会自动删人；手动刷新前也会先同步新认识的人）/ 🌙 朋友圈（发帖/点赞/评论，NPC 晒娃吐槽转发深夜emo；短信年代自动隐藏）/ 👤 我（玩家档案 + 个性签名 + 立即刷新 + 接口设置）
+- **✕ 收起按钮（v3.19.8）**：手机右上角常驻 ✕「收起手机，回到正文」——移动端全屏也不会被困住；配合聊天页 ‹ 返回与遮罩点击，三条收起路径
+- **消息页增富（v3.19.8）**：搜索框（按会话名/末条消息模糊过滤，即时过滤保持焦点）/ 一键全部已读 / 红包转账语音表情消息专属预览摘要
+- **聊天页增富（v3.19.8）**：表情快捷条（微信档 emoji、QQ 档 ^_^ 系年代表情、短信档无）/ 🧧 红包与转账（微信时代专属：橙色红包卡 + 绿色转账卡，**金额回流主笔记账**——「正文须如实记入玩家的现金/存款变动」；对方按关系真实反应）/ 清空会话；NPC 富形态消息——[语音] 8''、[表情：捂脸]、【红包】¥8.88、【转账】¥200（金额自动提取成卡片）
+- **通讯录页增富（v3.19.8）**：➕ 发起群聊（微信/QQ 时代，从通讯录选 ≥2 人，群由第六接口运转；短信档时代守恒拒绝）/ ⓘ 联系人详情卡（头像/角色/会话统计 + 发消息 + 红包入口）
+- **朋友圈增富（v3.19.8）**：📰 公众号/新闻推送流（微信时代公众号「XX本地生活」、QQ 时代门户「腾讯新闻」，金色边条卡片不可点赞；SMS 档无推送，时代校准深入提示词层）
+- **第六接口**：⚙ 接口设置新增第六张配置卡（仅地球界渲染），**默认复用主笔接口零配置开箱即用**，也可独立配置廉价模型——厂商下拉自动带地址 / 拉模型列表 / 三路快捷复用（同主接口·同变量AI·同额外API）/ 连通测试（复用主笔时代测主笔）/ 刷新间隔 1-20 轮可调（默认 3）
+- **提示词四铁律**：平凡即默认（不制造戏剧，生活是流水不是剧情）/ 语气拟真（妈妈发养生链接、同事只回「收到」、群里斗图刷屏）/ 时代感严格（用语、梗、表情、APP、资费按年代校准，禁止时代错置）/ 拒绝巧合轰炸
+- **因果回流**：手机动静经【手机近讯】注记注入主笔提示词（取后即清）——已为玩家所知的事正文自然衔接（见面可提及、约饭可呼应），但不复述消息原文、不替玩家决定如何回应；NPC 言行与手机世界保持一致；红包转账金额强制回流记账（因果守恒）
+- **随档保存**：联系人/聊天/朋友圈/未读/待回流近讯/个性签名存于存档 `phone` 字段，读档自动恢复并报「📱 手机已恢复」；每轮自动同步通讯录 + 悬浮球未读徽标
+- 配置全局共享：`localStorage('storyPhoneApi')`（第六接口）+ `localStorage('storyPhone')`（行为设置）；Token 按「手机」单独记账
+
+六接口分工总览（地球开放世界）：**主笔**（第一接口）写正文 → **动态世界**（第二接口）推演远方事件 → **变量AI**（第三接口）登记状态 → **提示词工程师**（第五接口）润色插图提示词 → **插图引擎**（第四接口）生成正文插图 → **手机分身**（第六接口）运转微信消息与朋友圈。
+
+<a id="legacy-v3-14-0"></a>
+
+### 🎭 沉浸演出系统（v3.14.0 · 沉浸九艺）
+
+游玩质量与沉浸感的演出层（`js/immersion-plus.js`）：九项演出全部可独立开关（太虚阁 ⚙ 设置页统一管理），全模块 try-catch 包裹，演出系统任何故障绝不伤主流程。
+
+- **① 事件音效**：复用太虚阁 AudioBox 合成引擎，新增「翻纸 / 低鼓」两枚音色——章节扉页翻纸 · 关键抉择低鼓 · 金榜刷新落雷，零音频文件
+- **② 章节扉页**：章号翻新时全屏扉页卡（章回标题 · 时辰天象 · 卷首引语取正文首句），点击 / Esc / 4 秒自动入卷；同章不重复，回退重生成不打扰
+- **③ 键盘快捷键**：`1-9` 选选项 · `Ctrl+Enter` 发送 · `Esc` 逐层关浮层（扉页→结算→工具箱→弹窗→阅读态）· `Backspace` 二次确认回退本轮 · `R` 切阅读态；输入框内不劫持按键，处理中锁定的选项不触发
+- **④ 张力曲线**：变量AI 每轮必报 `tension` 绝对值 0-100（日常≤20 / 暗流 30-50 / 冲突 60-80 / 生死 90+），编年史页绘 SVG 折线 + 面积图（最近 24 点滚动窗口），近三章极差 ≤6 弹「波澜不惊」平淡预警，旧档读入自动补字段
+- **⑤ 抉择时刻**：主笔在重大转折把选项标题写成「【关键抉择】」，系统启用聚光演出——径向聚光背景 + 选项逐个浮现（错峰动画）+ 低鼓音
+- **⑥ 沉浸阅读态**：顶栏 📖 按钮或 `R` 键一键隐去顶栏侧栏，正文居中全宽纯读书态，Esc / 悬浮按钮退出
+- **⑦ 下回预告**：主笔章末输出 `(next: 25字悬念钩子)`，消息卡底部以悬念样式呈现；标记自动从正文 / 导出 / 朗读剥离
+- **⑧ 记忆回响**：主笔回望旧事输出 `(echo: 名场面名称)` 或正文字面命中旧名场面（≥2 章前，防剧透重复），正文后插「记忆碎片」毛玻璃卡（章号 + 摘录），同一场面只回响一次
+- **⑨ 殒命结算**：主笔输出 `(gameover: 死因)` 或主角变量现死亡字样（NPC 阵亡不误报），全屏结算卡——死因 + 行囊遗物清单 + 回退改写命运 / 读快照 / 继续观书三选，同章只结算一次
+
+协议注入走 `ai-message-builder` 装配层（15 界零改动全覆盖，演出四艺全关时零注入省 token）；演出标记（next / echo / gameover）在 `extractBody` 统一剥离保正文纯净；配置 `localStorage('immPlusCfg')` 全局共享。
+
+<a id="legacy-v1-5-0"></a>
+
+### 🌍 动态世界（v1.5.0 · 额外 API 第二模型驱动）
+
+模仿「某文字游戏框架」`dynamic-world-functions.js` + extraApi 架构：**主笔 AI 写正文，第二个模型每隔 N 轮在幕后推演"主角视线之外正在发生的事"**——势力动向 / 远方传闻 / 伏笔暗流 / 环境变化。
+
+- **双 API 架构**：主接口负责正文；额外 API（第二接口）独立配置（可与主笔不同厂商，推荐廉价长文本模型，也可复用同一接口换个模型），支持 OpenAI 兼容 / Gemini 双格式、连通测试、模型列表拉取
+- **自动触发**：每隔 N 轮正文（默认 5，可调 1-20）自动生成一层「世界动态」，聊天流仅出现一行可点通知，完整内容进入「🌍 世界动态」独立抽屉模块（桌面右侧滑入 / 手机底部滑出）；异步不阻塞正文，自动模式失败静默
+- **变量合并**：第二模型以 `(variable_update)` 块登记远方 NPC 档案（角色名.字段: 值）/ 伏笔（+名称）/ 大事记（>>大事记:），复用主解析器合并进状态面板——远方人物、伏笔、编年史与主线共用一张变量表；铁律禁止触碰主角既有数值
+- **防自相矛盾**：最近 N 层世界动态（默认 5，可调）作为 assistant 上下文随行携带；知识库常驻/检索条目可注入，让远方事件贴合工坊世界观（扮演模式严格遵循原著设定）
+- **时代锚定（v3.19.7）**：发给第二接口的【当前故事状态】快照带「故事时代/时间线 + 当前游戏内日期」，并附**时代铁律**——远方事件必须严格处于该时代之内（科技、器物、称谓、物价、事件类型一律对表，时代错置即重大违规）。取种链与手机分身同源同链（`v.era → v.时代 → setup.customTimeline → timelineDesc → timeline`），开局首帧 era 未上报时自动落到玩家亲笔选的时代；无时代设定的世界零负担不注入。修复实测反馈：地球开放世界玩家选 2026 年，世界动态却自行脑补出民国戏——根因是快照从未传过时代，第二模型不知今夕何夕
+- **楼层时代徽标（v3.19.7）**：每层生成时登记本层所属时代与日期（与提示词同帧捕获，不串层），楼层卡头部直接显示「2026年·智能时代 · 2026年9月1日」式徽标；真实生成时间降级为悬浮提示；旧档历史层优雅回退原时间戳；时代推进后新层如实跟随（2026 玩到 2031，世界动态跟着走进 2031）
+- **楼层持久化**：历史按楼层随存档保存（上限 60 层防溢出），重开页面自动回放；每张卡片可展开查看「🧠 世界推演」思路与「📈 世界变量登记」原文
+- **重试 / 面板**：抽屉内每层均可「↻ 重试本层」（该层及之后截断重生成，主正文不受影响）、「⚡ 立即生成一层」；未读徽标同步顶栏按钮与手机端右下角浮动球
+- **可定制**：触发间隔 / 上下文层数 / 单层最少字数 / 是否展示推演 / 是否注入知识库 / 世界推演提示词（留空用工坊默认，可一键恢复）
+- 配置全局共享（工坊通用）：`localStorage('storyExtraApi')`（第二接口）+ `localStorage('storyDynamicWorld')`（生成行为）；运行态存于存档 `dynamicWorld` 字段
+
+### 变量块语法（与原框架一致）
+
+AI 每轮回复附 `(variable_update)...(/variable_update)` 块：
+
+```
+(variable_update)
+chapter: +1
+wordCount: 1180
+tension: +15
++消失的怀表
+-外祖父手稿的缺页
+沈曼.trust: +10
+沈曼.secret: 她案发当晚回过书房
+>>沈曼.history: 在码头与主角对峙，袖口沾着盐渍
+>>大事记: 主角发现第二封威胁信
+(/variable_update)
+```
+
+### 新增一个类型工坊（模仿原框架扩展方式）
+
+1. 复制 `configs/free-config.js` 为 `configs/mygenre-config.js`
+2. 修改：`genreKey / genreName`、系统提示词、`setupMeta`、`openings`、`techniques`、`gauges`、`statKeys`、`nameSeeds`
+3. 新建 `css/mygenre-style.css`（覆盖 CSS 变量即可）
+4. 在 `studio.html` 的 `validGenres` 数组中加入 `'mygenre'`，入口页加一个按钮
+
+### 已知边界（旧版本边界 · 当前口径见本文开头）
+
+> ⚠ 以下三条写于早期版本，仅作沿革存档；当前限制见开头「当前状态」小节。
+
+- 纯前端直连 API 需服务商允许 CORS；不支持时可本地跑 one-api / new-api 代理
+- localStorage 存档自动截断至最近 80 条历史，完整作品请及时「导出TXT」
+- 正文质量对模型文笔与上下文长度敏感，推荐长上下文模型
+
+### 版本记录
+
+> v1.6.6 起创作日志独立成册（`changelog/index.html`，含标签筛选与全量沿革），本节只留重点摘录。
+
+- v3.31.3 🧩 亲笔格子听劝版——玩家自定义表格 AI 可改写（托管三轨齐通）· 同名双轨自动同步 · 回退连前情提要一起还原：直击玩家反馈「自己加的表格 AI 不能改写」与「回退次数多了出问题，之前说好的筑基中期」。①**🧾 登记官协议新增自定义命名空间**——`自定义.字段名: 新值` 指令（数值可带 +/- 增量）入协议，并立「玩家自定义追踪铁律」：正文里这些状态确凿变化（突破/受伤/得失/涨落）时必须如实登记；状态快照新增「玩家自定义追踪」栏，三轨归并带出（`vars.自定义` 嵌套对象 + 平铺「自定义.字段」键 + 设定台种子），登记官从此知道玩家在盯什么。②**🔓 加格第三问**——状态面板新增自定义格时弹「交给谁管？」：🔓 AI 托管（推荐，随剧情自动演化）/ 🔒 玩家亲笔（锁定，AI 严禁改写），之后点锁随时切换；旧档默认仍为亲笔不惊扰老档。③**🔁 同名双轨自动同步**——格子名与标准字段同义时（境界↔realm、身份↔role、位置↔location 等 `CELL_ALIAS` 同义表），AI 改了任一轨、另一轨（未锁定）跟着走，玩家锁定的轨道绝不被动；旧档两轨不一致读入后第一次登记即自愈（以标准字段为准）。④**↻ 回退连前情提要一起还原**——轮次快照收录前情提要与漂移注记（`digestBefore / driftBefore`）随轮回滚，根治「摘要里仍写着被回退掉的事件、AI 按旧摘要与面板新值打架」；在飞滚动摘要完成后比对回退代际（`_rollbackEpoch`），跨回退落库的结果直接丢弃。⑤**🎭 措辞自适应**——pkCustom 与设定台提示词按登记官分流架构自适应，变更卡为自定义指令加 🧩 专属标签。附玩家反馈修复回归测试 51 项 + 廿二界冒烟 38 项全通过
+- v3.31.2 ❄ 全球冰封新开——重生囤货流 + 空间异能 + 末日安全屋 + 黑化复仇，廿一界扩为廿二界：新增第二十二位开放世界**《全球冰封：我打造了末日安全屋》**（记忆的海，`configs/quanqiubingfeng-config.js` + `css/quanqiubingfeng-style.css` + `js/world-ext/quanqiubingfeng-ext.js`，roleplay 模式），四大玩法器官全部按原著执行——**倒计时即世界**（距全球冰封的天数决定气温/物价/舆论/人心，降温断崖 48h 破-20℃→一周-40℃→一月-60℃→极寒-89℃→伽马冲击-150℃，每档低温都是生存门槛：燃油变稠、电池失效、呼气结冰）；**物资是唯一的硬通货**（物价按灾变阶段浮动：倒计时期正常→抢购期翻倍→断供期有价无市→末世期以命换粮）；**空间异能按原著**（重生即觉醒识海黑暗虚空，意念收放万物，容量随囤随长直至新蓝星尺度——异能是底牌，藏得住才用得久）；**黑化复仇**（上一世递出去的善意全变成了刀——狠而有算计、恩怨分明、绝不当圣母）。主角替代协议默认共世（张奕的重生照原著时间线发生），写明「替代张奕」则空间异能与重生记忆让渡给玩家。知识库 25 条整本考据；异能境界梯六阶（凡人之躯→空间异能·初醒→收放自如→容量精进→空间进化→新蓝星之主）；安全屋等级五档（毛坯住宅→加固宅邸→末日堡垒→超级安全屋→末日方舟）；仪表盘三针（寒潮烈度/物资储备/威胁逼近）；三种篇幅（倒计时三十天 20 回合 / 第一个冬天 40 回合 / 新蓝星纪元 200 回合）。界专属扩展五模块（寒潮监测站/安全屋中控/无限空间/先知簿/邻里罗盘）；行旅图鉴三层图（天海市·灾变前夜→冰封死城→新蓝星纪元）；幸存者身份卡 + 无限空间账本行囊六大类目；界专属成就八枚（重生先知/虚空初醒/囤货达人/安全屋建造师/寒潮降临/深寒幸存者/清算之刃/新蓝星之主）；冰蓝末世主题（冰晶底纹/冷暖对撞——门外极寒门内暖光）；天道骰批语、氛围尘埃「寒潮冰晶」、插图画风、末世生存快捷指令 12 条全部按界定制；大厅新增「末世寒潮」分组。附界接入冒烟测试 38 项全通过
+- v3.27.7 ✍️ 档案编辑版——NPC/玩家档案全字段亲笔可编、🔒玩家锁定 AI 不可覆盖、自由增删角色：状态面板角色卡、微信联系人详情卡、玩家面板（主角卡）三处同开「✎ 编辑档案」——弹出编辑模态可亲笔改 14 项标准字段（身份/年龄/外貌/性格/言谈习惯/动机/近期目标/位置/近况/秘密/关系/印象/信任度/好感度）+ 任意条自定义格子（可增可删），并支持新增角色建档与删除角色（连带清理微信联系人与会话）。**玩家锁定机制**：每字段旁「🔓 AI 可更新 / 🔒 玩家锁定」一键切换，玩家亲笔写定的内容 AI 无权改写——解析器三路径（JSON 合并/行式指令/数值增减）全拦截，AI 伪造的清锁指令一律丢弃；主笔上下文对锁定字段单独点名并标注「须严格遵守」；输入即认领（编辑过的字段自动上锁），角色卡与微信档案行内 🔒 徽标点击即解锁（不清值）。附 59 项专项测试（`test-profile-v3277.js`）
+- v3.27.6 📋 NPC 登记修复版——正文人物必建档、微信通讯录同步正文角色、档案自定义格子：根治「状态面板和微信通讯录里只有动态世界的远方 NPC，正文登场人物一个不登记」。三管齐下：①**主笔兜底登记**——登记官架构下每轮提取触发点只查「第三接口已启用」，没配变量AI 的用户永远不触发登记（主笔提示词又已剥离变量协议，无人登记）；现在第三接口未启用时自动用主笔接口跑同一套登记官提示词（低温强指令、token 单独记「登记·主笔兜底」道、失败可重试、接口设置可关），发送等待/触发/质检钩子同步认兜底；②**人物登记铁律**——登记官提示词要求凡开口说话/被指名/有互动的人物一律登记，新登场者必须一次报足 role/age/appearance/personality/speechPattern/motivation/status 七项（未明示的按剧情推断补全），附完整示例；③**档案全量展示 + 自定义格子**——状态面板角色卡展示 AI 登记的全部字段（旧版白名单外字段入库不渲染），每卡可「＋ 自定义格子」（口头禅/弱点等玩家亲笔设定，注入主笔并标最高优先级），微信联系人详情卡新增完整档案面板与加格子入口；附「自定义」幽灵角色自愈（旧版把「自定义.字段」误建角色卡，读档自动迁移）。附 35 项专项测试（`test-npc-v3276.js`）
+- v3.27.5 🩹 道具管线急救版——根治「AI 调用失败：items.map is not a function」连环复发：模型偶发行式变量指令「items: 剑x1、丹药x3」，解析器当普通键值整体赋值，items 数组被覆盖成字符串，下一轮组装上下文 `.map` 崩溃且每轮复发（API 本身连通正常）。三层修复：①保留容器（items/伏笔/大事记/角色等含中文别名）禁用行式整体覆盖，只能走 +/- 登记、>> 追记、JSON 合并正规路径；②读档与每轮解析入口自动自愈——被污染的字符串/对象容器原样解析回数组（「剑x1、丹药x3」恢复成道具清单），老档不重开也能救回；③消息组装全容器改 Array.isArray 守卫，残余脏数据最多丢一条摘要绝不卡死 AI 调用。附 22 项专项测试（`test-itemsfix.js`）
+- v3.27.4 📱 安卓深度适配审计版——全链路体检手机端：原生 confirm/prompt/alert 全部迁自绘 UIDialog（WebView 弹窗阻塞与样式割裂根治，4 文件 10 处）；地图集新增双指捏合缩放/单指平移/双击放大（`atlas-panel.js` 触控矩阵变换）；插图生成内置看图查看器（长按存图走系统下载，不出 App）；触控目标 ≥44px、dvh 视口单元、safe-area 安全区、overflow 滚动链、touch-action 手势冲突、z-index 层级全面整治（`css/base-style.css`）；补齐 PWA manifest 与 favicon/icon-192/icon-512 缺失资源（控制台 404 噪音清零）
+- v3.27.3 📱 手机适配完善版 · APK 装机与浏览器布局对齐——返回键带「大厅」字样、设定台返厅按钮入包、白闪根治
+- v3.27.2 📱 手机适配版 · 安卓 APK 装机布局全面整治——顶栏/设定台/抽屉页签/墨娘/悬浮器手机端各就各位
+- v3.27.1 📱 主屏安装版 · iOS「加入主屏幕」全屏运行 + 离线可玩——iPhone 不装 App 也有原生体验（`manifest.webmanifest` + apple-touch-icon + PWA 元数据）
+- v3.27.0 ✎ 全自定义版 · 五大工坊设定台所有开局选项补「✎ 自定义」——每个选项都能亲笔，写多细 AI 执行多细
+
+- v3.26.0 🪪🎒 玩家随身套装 · PlayerKit——廿六界全员自动佩戴「玩家面板 + 背包」，道具不再拿了就忘：响应实测反馈「没有玩家面板和背包」。新增 `js/player-kit.js`（PlayerKit v1.0.0，寄生 WorldExt 同委托模式），**26 界全员自动佩戴两个随身器官，每界各有各的皮**。①**🪪 玩家面板（pkPanel）**：主角识别三通道（`setup.playerName` → `characters[k].isPlayer` → 平铺「某.location」兜底，与沉浸套件同源）；身份卡陈列境界/所在/身心近况/伤势/身份/所属势力/钱囊 + 界专属附加字段（斗罗的武魂、悬疑的秘密……），嵌套键与平铺键双轨兼容；**跃升留痕**（境界每进一步记账一行）；所在未报点名；每轮契约教 AI 如实上报，伤势未愈强制回流提示词。②**🎒 背包（pkBag）**：主账本 `items[]` 整表对账三态（非空=权威增删对账 / 空表=明说清空 / 无键=不动）；界专属清单只增补不误删；「＋品名 xN / －品名 xN」账目行自动入账簿；**品类分格**（26 界专属品类：法器丹药功法符箓 / 魂导器魂骨魂环 / 证据线索证件钥匙……未匹配入杂物格）；**囤积点名**（N 轮没动过的东西提醒 AI「别让道具睡死」+ 面板 ⏳ 警示标——直击「道具拿了就忘」痛点）；**手动增删**与主账本双向同步（藏宝阁同源）；品名规整（剥括号注释入品类匹配）。③**🗺 26 界专属定制表**：修士名牌/逆修名牌/魂师名牌/调查员卡/选手卡/轮回者面板/驭鬼人档案……储物袋账簿/乾坤袋/纳戒账簿/随身提包/账号装备仓/随身百宝囊……各配品类格、货币标签（灵石/金魂币/金币/现金）、囤积阈值（悬疑 8 轮从严）与界味横幅；**未知界兜底**——用户自建世界自动佩戴通用皮，不裸奔。④**🔌 WorldExt v3.5.0 接线**：`define()` 挂 `PlayerKit.augment` 钩子，随身器官插界特色模块之前，幂等不双挂、kit 故障不连坐；无扩展文件世界 `init()` 兜底补挂；凡人修仙传旧「储物袋账簿」整体移交 kit 背包避免双背包。⑤**✅ 验证**：新增 `test-playerkit.js` 专项回归 **135 项**（引擎全链路 / 26 界遍历 / 定制表完整性），**全量 23 套件 4308 项零失败**
+
+- v3.25.0 ☯ 仙路双开版 · 凡人修仙传 / 仙逆两界新开，原著十七界扩为十九界：大厅新增「仙侠修真」分组，扮演世界十九界扩为**廿一界**。①**☯ 凡人修仙传（fanrenxiuxian · 第二十界）**：忘语著约 750 万字完本的凡人流开山之作（`configs/fanrenxiuxian-config.js` + `css/fanrenxiuxian-style.css` + `js/world-ext/fanrenxiuxian-ext.js`，世界引擎「修仙长生机制」——凡人视角 + 残酷而稳定的秩序 + 长生之重）；主角替代协议默认共世，写明「替代韩立」则掌天瓶 + 长春功 + 四灵根资质的机缘组合让渡给玩家；境界长梯全阶还原炼气十三层 → 筑基 → 结丹 → 元婴 → 化神 → 炼虚 → 合体 → 大乘 → 渡劫 → 真仙 → 金仙 → 太乙 → 大罗（十三阶）；仪表盘杀机/灵力/气运；14 种开局（含七玄门学艺、黄枫谷杂役原著出身线）+ 15 身份 + 9 档年代线（七玄门年代→仙界纪元）+ 15 资质；知识库 28 条整本考据；界专属扩展**仙路长梯**（境界层数期段+灵石身家+寿元大限+灵根资质+破境留痕）与**储物袋账簿**（行囊建档+机缘账簿进出账+苟道铁则回流）；行旅图鉴三图层 14 节点（天南·越国七派→乱星海·星城棋局→灵界·万族争锋）；主题「凡人仙路」（冷青月白×灵石微光），世界印章八枚。②**✵ 仙逆（xianni · 第二十一界）**：耳根著约 594 万字完本的逆天改命史诗（题眼「顺为凡，逆则仙」，世界引擎「逆天证道机制」——逆字当头 + 苍凉底色 + 硬核阶梯）；主角替代协议默认共世，写明「替代王林」则天逆珠 + 司徒南残魂的机缘组合让渡给玩家；境界长梯全阶还原凝气十五层 → 筑基 → 结丹 → 元婴 → 化神 → 婴变 → 问鼎 → 阴虚 → 阳实 → 窥涅 → 净涅 → 碎涅 → 空劫 → 踏天（十四阶·四步之路）；仪表盘杀机/**心魔**/气运（心魔为本界独有的道心侵蚀维度）；12 开局 + 15 身份 + 7 档年代线（恒岳派收徒→四步之路）+ 13 资质；知识库 26 条整本考据；界专属扩展**逆道长梯**（境界+当前杀劫+灵石+破境留痕，四步分段渲染）与**心魔之镜**（心魔侵蚀四区仪表+执念簿+道心定力+心魔暗涨录）；行旅图鉴三图层 11 节点（赵国·凡尘道途→天南·群雄杀伐→罗天星域·大能棋局）；主题「顺凡逆仙」（冷灰玄墨×幽紫天光×一线血色），世界印章七枚。③**🎨 全链路按界定制**：主题 CSS / 沉浸套件两界主题（含仙逆专属「逆纹」印章绘制分支）/ 氛围尘埃（灵尘·逆星）/ 天道骰语各 5 条 / 插图画风 / 世界印章全部按界定制；知识库注入版本升至 v12 旧档自动补入。④**✅ 验证**：`test-newworlds.js` 扩至 1538 项（新增 K 段两界专项），界数断言同步（世界印章 26 界 / 大厅廿一界标题），**全量 22 套件 4173 项零失败**
+
+- v3.24.0 🪨 自由世界·无界创世版——四步创世台亲笔捏世界，世界宪法至上，系统只管防八股：新增第十九位开放世界、也是**第一个玩家主权世界**（`configs/freeworld-config.js` + `css/freeworld-style.css` + `js/world-ext/freeworld-ext.js`，roleplay 模式，代号「自由世界」freeworld，主题「凿空造物」）——十八界里原著世界各有忠实铁律、地球界忠于现实，本界把「世界本身」交给玩家亲笔：什么世界、什么法则、什么时代、什么势力、什么量表全部玩家说了算，系统唯一强制守护的只有**文风不八股**。①**🧭 四步创世台（worldForge 模式）**：向导改走四步里程碑卡——壹·世界之魂（这是个什么世界，创世唯一必填 ≥10 字）／贰·世界法则（力量体系 / 生死法则下拉可切 ✎ 亲笔 + 时代历法 + 通讯形态五档：无远距通讯·消息靠腿 / 书信与信使 / 即时通讯 / 新旧并存 / 未约定）／叁·社会与势力（舞台地理 + 势力最多四家·一家不填也成立）／肆·我的身份（14 种身份原型按世界自动换装）；配 🎲 随缘创世一键掷全案与逐项灵感骰（世界之魂 8 池 / 力量 6 / 生死 4 / 历法 6 / 地理 6 / 势力名 10 / 势力立场 8 / 量表四组预配）。②**📜 世界宪法 + 运行时立法**：创世落笔组装 `worldCode`（世界之魂/法则/历法/地理/通讯/势力/量表）随档保存，系统提示词经 `systemPrompt()` **每轮实时拼装**宪法正文 + 本世量表契约 + 势力声望契约（增补即刻回流 AI 脑中，不遗漏不重复）；界专属「世界宪法卡」支持**运行时增补立法**（玩法中途随时立新法，≤12 条，与创世法则同等效力·即刻生效·不追溯已发生剧情）与逐条废止；宪法四铁律：宪法即现实 / 一致性自检 / 玩家亲笔至上 / 运行时增补——宪法没写到的按世界之魂推导，禁止引入宪法之外的设定体系。③**📊 本世量表与势力声望（全自定义度量衡）**：自定最多 **3 枚量表**（名称 ≤6 字 / 五色配色翡翠·鎏金·青蓝·胭脂·紫电 / 初值 0-100，未填回兜底两枚状态·生计——任何世界都成立）；势力声望以「声望·势力名」间隔号键入变量（避免与角色卡点号冲突），初值 30，有实质互动才涨落；界专属四模块齐备：**世界宪法卡 / 本世量表 / 势力版图 / 万能自定义槽**（承自自由工坊，想盯什么加什么）。④**🎨 凿空造物主题**：紫金双色系 + **亲手连线星座底纹**（SVG 星点连线）+ 四步里程碑卡与侧栏轨道 + 量表行/势力行专属栅格 + 顶栏凿刻压边；沉浸套件本界专属（人生境遇九阶：初来乍到→此生无憾 / 星纹印记**专属绘制分支**——五颗星亲手连线、最亮一颗是玩家自己 / 世界罗盘）；氛围层「凿空星屑」粒子；天道骰语五条世界中性词条；插图画风经 `imageStyle` getter **从玩家亲笔的世界之魂动态派生**——画风随世界走，世界随玩家走；世界印章「亲手星座」七枚（落笔成世/立锥之地/一技傍身/他乡故知/小有名气/**立新法者**——检定运行时增补/此生无憾）。⑤**🧠 知识库极简主义 + 安全设计**：本界仅预置全员防八股两条（套话禁词总库 + 套路替换手册，均 alwaysInclude + priority top），世界观知识零预置、全部来自玩家亲笔；引擎照搬地球界无剧情纪律（零剧本 / 无主角光环 / 因果守恒 / 世界自走）；所有玩家输入过 sanitize 清洗（量表空名丢弃·同名去重·超长截断·初值 clamp / 势力名 ≤6 字·立场 ≤24 字·最多 4 家）；旧档兼容静默回兜底不炸；宪法卡 `read()` 恒 false——宪法是玩家主权，不由 AI 变量改写；行旅图鉴对无预设地图世界自动隐藏（世界地理本就由玩家亲笔）。附 `test-freeworld.js` 专项回归 **200 项**（锻炉纯函数边界 47 / 配置结构 60 / 宪法动态注入三链路 15 / 创世入场指令 21 / 提示词铁律全文 25 / 向导源码契约 23 / 知识库极简 9），界专属扩展回归扩至 16 界，世界印章界数断言同步二十四界，**全量 22 套件 3836 项零失败**
+
+- v3.23.0 🧧 聊天闭环版 · 红包能领能退：直击微信拟真「最后一公里」的四处一眼假（`js/phone-panel.js` + `css/phone-style.css`）。①**🧧 红包/转账全闭环（钱真的能进兜）**：状态机 pending（待领取）→ claimed/received（已领取/已收款）→ refunded（24 小时未领退回）——TA 发来的可点击领取（入账回流主笔·收入）；TA 回消息可带 `"claim":true` 协议领玩家的红包（按关系真实反应，账记支出）；每轮纯本地巡检（零 token）满 12 轮未领自动退回（玩家侧退回零钱记账回流、TA 侧原路退回，各补居中灰字系统行）；**转账/红包备注不再被正则丢弃**（「还你的」「恭喜发财」随消息落库上卡）；卡片文案全套微信式（副标「恭喜发财，大吉大利」/「微信转账」，状态行「领取红包/待对方领取/已收款/已退回你的零钱」，已结清降饱和灰卡）。②**🎤 语音真实化**：AI 语音带文字稿 `[语音|想说的话] 8''`（秒数可省按字数推）；微信式「▽ 转文字」按钮展开/收起文字稿；点击播放（微信绿波形呼吸动效）；玩家也能发语音（🎤 钮，大意回流主笔）；会话预览「[语音] 8″」带秒数；旧格式完全兼容。③**🕐 聊天时间分隔条**：相邻消息故事时间 ≥10 分钟（跨夜折算）或现实间隔 ≥3 分钟插微信式居中灰字时间条。④**🛡 群成员校验收紧**（修复：此前只校验通讯录，群外人可被 AI 安排进群插话）——群消息只许群成员发言，旧档从建群系统消息反推成员回填，无法反推回退通讯录校验不阻断；同步链/回复链同步注入「只许成员发言」名单。⑤**💗 温度与情绪记忆入回复链**：私聊回复注入关系温度四档（≥80 无话不谈可撒娇 / ≥60 熟络随意 / ≥40 讲分寸 / <40 客气有距离）+ 被晾情绪记忆（可带小在意但不阴阳怪气）。⑥**小闭环修补**：短视频分享卡可点开一起看（跳短视频 App 沉浸播放）、清空会话二次确认（手滑不毁回忆）。手机增富回归扩至 173 项（新增归一化/状态机/时间分隔/群校验/语音/协议六段 60 项），手机全套 612 项、全量 21 套件 3635 项零失败
+
+- v3.22.0 🎬 拟真抖音·完整形态：响应实测反馈「可以接抖音吗」——短视频从单列竖滑流升级为抖音完整形态（`js/phone-apps.js`）。①**🗂 三页签 + 双列瀑布流首页**：推荐/关注/同城；关注页只看已关注作者（空时本地确定性补齐），同城页按故事城市过滤。②**🎬 全屏沉浸播放**：一条一屏、双击点赞、上下逐条切换、页码进度、右侧点赞/评论/分享/主页四键。③**💬 评论区**：本地模板零 token 即刻可见，点开才 AI 生成 6-8 条缓存（网友玩梗 + 通讯录熟人「偶遇」）；玩家发评论置顶标「（我）」随档保存。④**↗️ 分享到聊天**：视频卡片（vshare）发进会话 + 会话预览 [视频] 摘要 + 近讯回流主笔——TA 会真的刷到并回应。⑤**👤 作者主页与关注**：确定性粉丝数/获赞数、作品墙、＋关注后作品进「关注」页签，随档保存。时代门控不变（2016 前无短视频 App）。新增专项回归 39 项，App 生态回归扩至 121 项，手机全套回归 535 项零失败
+
+- v3.21.0 🧩 App 生态引擎 · PhoneApps——不只是微信，是一台完整的手机：响应实测反馈「还有没有其他功能加入，我感觉现在还是很简陋」。此前手机分身本质只是聊天工具套手机壳，本次把「聊天之外的一整台手机」补齐（`js/phone-apps.js`，面板视图委托接入，缺席或异常优雅回退微信消息页）。①**🔒 锁屏与桌面**：开机先见锁屏（大时钟/日期/运营商/未读摘要，上滑解锁）→ 桌面 App 图标网格 + Dock + 未读角标，三档时代专属壁纸渐变。②**🎵 音乐**：年代歌单（微信档 2010s / QQ 档 2000s 金曲），唱片旋转播放器，纯本地零 token。③**🎬 短视频（2016+）**：抖音式竖滑信息流——本地模板零 token 兜底永不空白，「换一批」才调第六接口生成缓存，内容铁律拒绝戏剧化。④**📷 相册**：正文插图自动成为相机胶卷（最新在前、标注故事轮次、大图显示画面描述）。⑤**🌤 天气**：按故事日期/地点确定性哈希推演（同日同城必同天气），四季温度表 + 三日预报 + 生活指数，零接口零 token。⑥**🧮 计算器**（白名单求值防注入）+ **⏰ 时钟**（SVG 指针表盘随故事时间走 + 秒表）。⑦**🐍 贪吃蛇**：诺基亚之魂，方向键/吃食提速/环形场地/最高分随档。⑧**🕰 时代门控（器物守恒）**：桌面 App 按年份显隐——微信档全开 / QQ 档无短视频与相册 / 短信档只剩音乐·计算器·时钟·贪吃蛇。新增 `test-apps.js` 专项回归 82 项，手机全套回归 496 项零失败；v3.21.1 顺手修复天气 ISO 日期月份解析被年份数字带偏、贪吃蛇重开引用断裂两处缺陷
+
+- v3.20.1 ✍️ 自定义身份框增容：响应实测反馈「自定义身份框做大一点，写满上限了看不懂字在哪里」——40 字单行小框升级 **120 字自动增高多行文本域**（三行起步随内容长高），实时字数计数器（八成变橙预警、写满变红明示），长身份完整流入角色档案与提示词。专项回归 14 项，手机全套 294 项零失败
+
+- v3.20.0 💗 主动联系引擎 · 关系温度：响应实测反馈「跟真人一样的聊天，你不理她她会主动找你」——关系温度（warmth 0-100，互动升温冷落降温）/ 闲置想念（多轮不理按温度与性格概率主动发起，评估纯本地零 token）/ 情绪记忆（被晾有委屈）/ 拟真投递（「正在输入…」+ 连环短消息 + 偶发撤回）/ 真人节奏（1.5-4 秒人性延迟）/ ⭐ 特别关心（星标频率翻倍温度不破 60）。引擎独立成 `js/phone-alive.js` 可选链接入。专项回归 21 项，手机全套 399 项零失败
+
+- v3.19.9 📱 手机真实化 · 陌生人与亲笔之人：修复实测反馈「手机里老是出现不认识的人，应该只出现正文里和我有过交谈的人」，并把手机从「模拟器」升级为「真能活在世界里」。①**名单校验**：来信/动态/点赞/评论/群内发言的署名必须在通讯录（AI 幻觉的陌生人一律拦截，不留会话不留痕迹），私聊只许对方本人发言；群聊会话必须玩家亲手拉过（AI 不得凭空建群）；手动刷新前先同步角色档案（新认识的人当轮即可来信）。②**自定义联系人**：➕ 新建联系人（姓名/身份/性别/头像自定义）——**存下即真实存在**：写入角色档案 + 手机近讯回流主笔（「此人自此真实存在于这个世界」），正文可自然登场，手机里随时聊天；重名拒绝 / 上限 40。③**头像精灵**：男/女各 16 张精灵图（CSS 4×4 切割）全场景生效——新建网格选图、详情卡与「我」页点头像循环换（32 张）、身份启发式自动配性（阿姨→女/大爷→男）、图片缺失回退首字色块（不露白板）。④**勾选式拉群**：手输名字升级为头像复选列表，群名留空自动生成，所选必在通讯录。⑤**知识库接入**：三链提示词注入常驻+检索条目（与动态世界同源同法），⚙ 新增「读取知识库/发圈自动反应」开关。⑥**删除联系人**：同步的删后拉黑不复活、自建的直接删。`test-phone.js` 扩至 279 项 + `test-phone-rich.js` 98 项（H 段重写为勾选式），全量套件零失败
+
+- v3.19.8 ✕ 手机增富版 · 收起按钮修复：修复实测反馈「没有返回正文界面的按钮，还有功能不够丰富」。①**✕ 常驻收起按钮**：手机右上角新增收起按钮（「收起手机，回到正文」），移动端全屏不再被困住——配合聊天页 ‹ 与遮罩点击共三条收起路径。②**消息页**：搜索框（会话名/末条消息模糊过滤）/ 一键全部已读 / 红包转账语音表情专属预览。③**聊天页**：表情快捷条（微信 emoji / QQ ^_^ 系 / 短信无）/ 🧧 红包与转账（微信时代专属，金额**回流主笔记账**——因果守恒）/ 清空会话 / NPC 富形态消息（[语音] 8''、[表情：捂脸]、【红包】¥8.88、【转账】¥200 自动成卡片）。④**通讯录**：➕ 发起群聊（微信/QQ 时代，短信档拒绝）/ ⓘ 联系人详情卡。⑤**朋友圈**：📰 公众号/新闻推送流（微信公众号 / QQ 门户新闻，SMS 档无）。⑥**我**：个性签名可编辑 + 群聊/私聊分列统计。新增 `test-phone-rich.js` 专项回归 90 项，手机全套 321 项、全量 20 套件零失败
+
+- v3.19.7 ⏳ 时代锚定除障 · 动态世界时代漂移修复：修复实测反馈「明明我的时间线 2026 年，动态世界时间线都不是」——地球开放世界玩家选 2026 年，🌍 世界动态却推演出一整套民国戏（梅县匪患 / 上海公共租界 / 江浙战事 / 闸北罢工）。根因：`dynamic-world.js` 发给第二接口的【当前故事状态】快照只有章节 / 登场人物 / 状态仪表三项，**从未传过时代与游戏内日期**，第二模型不知今夕何夕只能自行脑补年代。修复双管齐下——①**时代注入快照**：新增 `storyTimeline()` 时代快照函数（取种链与手机分身 `detectTier()` 同源同链：`v.era → v.时代 → setup.customTimeline → timelineDesc → timeline`，日期同链，「未上报」占位过滤），快照新增「故事时代/时间线」「当前游戏内日期」两行，严格要求区新增**时代铁律**（远方事件必须严格处于该时代之内，科技 / 器物 / 称谓 / 物价 / 事件类型一律对表，时代错置即重大违规），「此时此刻」锚定游戏内日期；开局首帧 era 未上报时落到玩家亲笔时代；无时代世界零负担不注入不报错。②**楼层时代徽标**：每层生成时登记本层时代与日期（与提示词同帧捕获不串层），楼层卡头部显示「2026年·智能时代 · 2026年9月1日」式徽标，真实生成时间降级悬浮提示（此前只显示本机时钟，恰与玩家年代撞车极易误读）；旧档优雅回退；时代推进后新层如实跟随；附 `test-dynworld.js` 专项回归 43 项（取种链八用例 / 提示词注入 / 逐层登记与 2026→2031 漂移跟随 / 徽标与 XSS 转义 / 双引擎同链静态接线），全套 18 个 Node 回归套件零失败——「时代即边界」自此覆盖主笔 / 手机分身 / 世界动态全部三个模型引擎
+
+- v3.19.6 🌍 地球开放世界 · 现实即世界：新增第十八位开放世界、也是**第一个非原著世界**（`configs/earth-config.js`，roleplay 模式）——与真实地球完全一致的扮演舞台（同样的地理与国界、历史与文明、物理法则与社会规则、物价与人情），玩家以自定义普通人的身份在选定时代过一段人生；**无剧情铁律**（零剧本：无预设情节 / 主线 / 隐藏危机，一切波澜只能来自玩家行动、真实世界偶然与自然后果，连续两次以上戏剧性巧合即违规；无主角光环：NPC 各有日程、时代名人不认识玩家；因果守恒：后果好坏皆然、可延迟显形但不会凭空消失）；**时代即边界为核心引擎**——15 个时代选项（史前·冰河末世 / 青铜·上古文明 / 古典·帝国时代 / 中世纪盛期 / 大航海·文艺复兴 / 启蒙·革命年代 / 蒸汽·工业时代 / 世纪之交·电气年代 / 大战·绞肉年代 / 喧嚣二十年代 / 至暗时刻 / 冷战·对峙年代 / 千禧之交 / 当代 / ✎ 自定义年份），时代的科技 / 交通 / 通讯 / 医疗 / 媒体 / 观念严格划定世界存在物（时代错置即重大违规），真实历史照常推进、信息有时滞；16 种开局身份（佃农小贩 / 学徒伙计 / 工人职员 / 军旅公门 / 行医教书 / 主妇持家 / 异乡人……）+ ✎ 自由开局；人生境遇为境界梯（初来乍到·立足未稳→勉强度日→安身立命→小有积蓄→成家立业→家业渐兴→一方乡望→功成名就→颐养天年）；仪表盘四针（健康 / 精力 / 心绪 / 生计），人生终章收束；知识库 22 条（世界观总纲 / 现实还原铁律 / 时代校准与信息时滞 / 物价生计 / 乱世生存 / 婚丧嫁娶 / 城乡地域 / 人情往来 / 法律司法 / 疾病医疗 等 + 人间烟火文风圣经 5 条）；界专属扩展三件套（🧭 时空罗盘——era/date/location/time/weather 每轮必报并记行程留痕 / 💰 生计账本——cash/savings/income/expense 收支流水 / ⚖️ 时代校准——七个时代基准档案科技交通通讯医疗观念逐栏对照）；行旅图鉴东西半球双层图（东半球·旧大陆六域：长安 / 君士坦丁堡 / 巴格达 / 罗马 / 巴黎 / 伦敦 / 莫斯科 / 德里 / 北京 / 上海 / 广州 / 开罗等丝路商埠；西半球·新大陆与七海五域：纽约 / 旧金山 / 墨西哥 / 利马 / 里约 / 布宜诺斯艾利斯 / 檀香山 / 悉尼等大航海航线——共 11 区域 24 节点 24 条商路）；沉浸套件十二模块（球纹印记 / 时空罗盘 / 亲笔书信 / 人生境遇阶梯）、天道骰语、氛围尘埃（经纬晨昏）、插图画风（纪实摄影感）、界专属成就（凡人一生六印）全部按界定制；大厅新增「现实寰宇」分组（原著十七界扩为十八界）；📱 **附手机分身第六接口**（`js/phone-panel.js` + `css/phone-style.css`，仅 earth 界装载——2011+ 微信 / 1999-2010 QQ / 1983-1998 短信三档时代形态，消息群聊朋友圈由第六模型运转，手机近讯回流正文，详见专节）；附 1201 项新世界回归测试（`test-newworlds.js` 扩容，非原著世界按「世界铁律」而非「原著忠实」校验）+ 231 项手机分身专项回归（`test-phone.js`，vm 沙箱全真模拟：时代档位 / 接口配置 / 消息朋友圈落库 / 提示词铁律 / 手机壳渲染 / 全链接线）；顺手补强沉浸套件境界拾取——顶层 realm 缺失时回退读玩家角色卡，惠及全部扮演世界
+
+- v3.19.5 🕯 双界入夜版 · 神秘复苏 / 开局地摊卖大力两界新开：新增第十六、十七位原著世界，原著十五界扩为十七界——**神秘复苏**（佛前献花，`configs/shenmifusu-config.js`）：**驭鬼禁锢机制**为世界引擎（鬼无法被杀死——能对付鬼的只有鬼：深夜的敲门声、末班车后排不存在的乘客、镜子里慢半拍的倒影、监控回放里多出来的影子，厉鬼复苏的人间如狱照旧运转），主角替代协议默认共世（杨间从教室黑板前那行人皮纸开始照原著时间线行动），写明「替代杨间」则人皮纸与鬼眼的机缘让渡给玩家，禁锢阶梯普通人→C级→B级→A级→S级四级拾级（S级须付出感官或肢体级别的永久代价），厉鬼等级S毁灭级/A灾难级/B危险级/C限制级，黄金配额硬通货（克数就是命），文风按佛前献花原著（规则怪谈的冰冷逻辑 / 凝练窒息的短句节奏 / 日常褶皱的渗人 / 知道得越多睡得越少）；**开局地摊卖大力**（弈青锋，`configs/ditandali-config.js`）：**地摊系统机制**为世界引擎（灵墟大门洞开二十年的高武现代：白天的地摊与夜里的灵墟，怨气值攒池抽奖——被坑得越惨燃料越旺，十连抽多半谢谢惠顾），主角替代协议默认共世（江南从江城一中灵武班的吊车尾到时代之巅照原著时间线行动），写明「替代江南」则破地摊布与最强地摊系统的机缘让渡给玩家，灵武等阶黑铁→青铜→白银→黄金→铂金→钻石→星耀→道天八阶长征（每阶九星），天赋评级E至SSS+与异能觉醒（空间系/火系/兽化系各有打法），文风按弈青锋原著（市井烟火的高武底色 / 群嘲式幽默 / 贫嘴与真章的反差 / 爽利节奏）；两界知识库各 21 条整本考据（世界观总纲 / 原著忠实铁律 / 力量体系 / 势力谱系 / 人物志 / 文风圣经 / 年表 / 术语速查，含人物语音库逐人还原口癖——杨间的结论式冷幽默 / 王小明的贱兮兮重情义 / 周正的临终一句；江南的贫嘴护身符 / 系统的冷漠播报 / 山猫的糙话裹关照），行旅图鉴（神秘复苏：大昌市灵异之城 + 各地灵异驭鬼网络 + 鬼域纵深人间之外三层图 / 开局地摊卖大力：江城夜市摊位街 + 复苏江城灵武纪元 + 时代棋局大门彼端三层图），沉浸套件十二模块、天道骰语、氛围尘埃（冥纸残烬 / 夜市灯屑）、插图画风、界专属成就全部按界定制；界专属扩展两席（神秘复苏·禁锢阶梯与黄金配额 + 灵异档案——四级禁锢拾级 stepper + 黄金克数 + 所驭厉鬼清单 + 厉鬼按「等级·规律·破绽」三栏建档 / 开局地摊卖大力·灵武九星与天赋评级 + 地摊系统怨气池——八阶九星 stepper + 天赋异能评级 + 怨气量表与系统奖池抽奖）；大厅折叠分组随之更新（诡秘无限组扩为道诡异仙/轮回乐园/神秘复苏三界 / 都市现代组扩为全职高手/重生之都市修仙/龙族/全职法师/开局地摊卖大力五界）；附 1042 项新世界回归测试（`test-newworlds.js` 全量扩容）+ 界专属扩展回归补两界用例，顺手修复禁锢阶梯模块两处缺陷（指引三元缺 else 分支的语法错误 / 厉鬼去重误调 `g.includes`）
+
+- v3.19.4 ⚔️ 武道双界版 · 武炼巅峰 / 圣墟两界新开：新增第十四、十五位原著世界，原著十三界扩为十五界——**武炼巅峰**（莫默，`configs/wulianfengdian-config.js`）：**武道阶梯机制**为世界引擎（挑战台上无父子、战书递出无回头的大千世界：凌霄阁演武场与玄铁矿脉、苍云邪地的凶险、中都八大家的博弈与恒罗商会的行情、无字黑书的传承之谜），主角替代协议默认共世（杨开从凌霄阁杂役弟子起步照原著时间线发生），写明「替代杨开」则无字黑书与开天境的因果让渡给玩家，武道境界淬体→开元→气动→离合→真元→神游→超凡→入圣→圣王→返虚→虚王→道源→帝尊→开天十四境长征，功法与武技分凡/玄/地/天四阶，文风按莫默原著（热血递进的爽利 / 战斗的狠劲 / 坊市烟火与江湖规矩 / 长征的孤独感）；**圣墟**（辰东，`configs/shengxu-config.js`）：**灵气复苏机制**为世界引擎（大劫之后山海经神话复苏的新纪元：大漠尽头一夜绽放的蓝色彼岸花、昆仑山体剥落露出的青铜本色、深夜里不合时宜的兽吼、异人组织与神话遗迹的博弈），主角替代协议默认共世（楚风从大漠拾得神秘石罐照原著时间线发生），写明「替代楚风」则神秘石罐的机缘与人王体的因果让渡给玩家，进化境界凡人→觉醒境→枷锁境→逍遥境→观想境→餐霞境→塑形境→金身境→亚圣境→圣者境→映照级→神照级→神祇级（枷锁境每挣断一道觉醒一种神通），呼吸法传承体系（盗引 / 大雷音 / 不死鸟 / 天神 / 梦古等各脉），文风按辰东原著（都市与神话的碰撞感 / 吐槽流的幽默呼吸 / 神话底蕴的厚重 / 悬念的钩子艺术）；两界知识库各 21 条整本考据（世界观总纲 / 原著忠实铁律 / 力量体系 / 势力谱系 / 人物志 / 文风圣经 / 年表 / 术语速查，含人物语音库逐人还原口癖），行旅图鉴（武炼巅峰：大汉王朝武路起点 + 苍云邪地六王之域 + 大千界海武道通天三层图 / 圣墟：大漠尽头彼岸花海 + 复苏蓝星异变之地 + 复苏棋局上古纵深三层图），沉浸套件十二模块、天道骰语、氛围尘埃、插图画风、界专属成就全部按界定制；界专属扩展两席（武炼巅峰·武道阶梯与功法行囊——十四境拾级 stepper + 功法武技集录 + 灵石身家 + 六维资质 / 圣墟·进化之路与呼吸传承——十三级进化 stepper + 觉醒段数与枷锁道数计数 + 呼吸法与神通集录）；大厅折叠分组随之更新（东方玄幻组扩为遮天/斗破/完美/斗罗/帝霸/武炼巅峰/圣墟七界）；附 827 项新世界回归测试（新增两界 221 项）
+
+- v3.19.0 🌅 万象扩展版 · 黎明之剑 / 轮回乐园两界新开 + 五件开源扩展齐装：新增第十二、十三位原著世界——**黎明之剑**（远瞳，`configs/limingzhijian-config.js`）：**魔导革命机制**为世界引擎（千年魔潮倒计时的洛伦大陆：领主城堡与领民田垄、刚点火的魔能机械与嗡鸣的符文阵列、教会的圣光与王国的权谋、废土深处沉睡的刚铎遗产），主角替代协议默认共世（高文·塞西尔揭棺而起照原著时间线发生），写明「替代高文」则千年之谜与魔导革命的因果让渡给玩家，法师等阶学徒→一级至九级→传奇法师，文风按远瞳原著（理性浪漫 / 时代巨物感 / 幽默的呼吸 / 群像的温度 / 危机的冷峻）；**轮回乐园**（那一只蚊子，`configs/lunhuileyuan-config.js`）：**无限轮回机制**为世界引擎（乐园在现世挑选濒死、绝望或适格的凡人缔结契约投入一个个衍生世界执行任务，完成即生、失败即真死——没有复活没有重来），主角替代协议默认共世（苏晓的故事照原著时间线发生），写明「替代苏晓」则屠戮尖兵的因果让渡给玩家，契约者阶位一阶→十阶→绝强者→至强者（属性总和划分，300 点壁障 + 突破考核），装备品质无品级→白色→绿色→蓝色→紫色→暗紫色→淡金色→金色→传说级→史诗级拾级而上；两界知识库各 21 条整本考据（世界观总纲 / 原著忠实铁律 / 力量体系 / 势力谱系 / 人物志 / 文风圣经 / 年表 / 术语速查，含人物语音库逐人还原口癖），行旅图鉴（黎明之剑：塞西尔领地 + 安苏王国 + 废土边境三层图 / 轮回乐园：现实世界 + 乐园空间 + 衍生世界三层图），沉浸套件十二模块、天道骰语、氛围尘埃、插图画风全部按界定制；界专属扩展两席（黎明之剑·魔导工坊与奥术阶梯 / 轮回乐园·乐园面板与品级阶梯）；另含五件开源扩展（存储扩容 localForage / 干支纪年 / 灵感骰子 / 庆典特效 / 人物关系网，详见 changelog）；附 606 项新世界回归测试
+
+- v3.15.0 🌟 星轨法界版 · 全职法师开放世界 + 十六界专属皮肤重做：新增第十一位原著世界「全职法师」（乱著，`configs/quanzhifashi-config.js`）——**灾变与守夜机制**为世界引擎（魔法取代科学的现代都市：结界之内的月考夜市与法阵霓虹，结界之外的魔物荒野与猎者悬赏，少年成长与灭城阴云同时压顶），主角替代协议默认共世（莫凡的故事照原著时间线发生），写明「替代莫凡」则双系天赋的因果让渡给玩家；知识库 23 条整本考据（世界观总纲 / 元素体系与双系铁律 / 法师等阶 / 势力谱系 / 人物志 / 文风圣经 / 年表 / 术语速查），行旅图鉴三层图（城内结界之下 / 城外荒野猎场 / 暗面黑教廷之地，28 处原著地点），沉浸套件十二模块、天道骰语、氛围尘埃、插图画风全部按界定制；界专属扩展「✨ 星辰法典 · 元素圣徽」——法师等阶拾级 stepper（学徒→禁咒每级都是质变）、星辉充沛仪表（精神续航，走低时施法必付代价）、元素圣徽集录（每次觉醒记下星辉）；**十六界专属 UI 皮肤全部重做**（`css/*-style.css` 全量翻新）：每界一套完整视觉语言——顶栏专属压边 / 正文卡专属装饰伪元素 / 章节徽章 / 选项按钮 / 面板 / 滚动条 / SVG 底纹纹理，十六界主色两两差异 ≥24 RGB 距离（星紫 / 雾蓝 / 幻紫 / 暖金 / 深空蓝 / 铜金 / 电竞青 / 异火红 / 翠野绿 / 魂环蓝紫 / 朱砂红 / 霓虹粉紫 / 帝金 / 钴蓝 / 荧光青 / 竹青），每界 SVG 底纹指纹互异；缓存版本升至 v3.15.0 击穿旧皮肤缓存；附 233 项全职法师专项回归 + 皮肤差异化矩阵校验
+
+- v3.14.0 🎭 沉浸九艺版 · 游玩质量与沉浸感九艺齐备：新增沉浸演出系统（`js/immersion-plus.js`），九项演出全部可在太虚阁 ⚙ 设置页独立开关——①**事件音效**：复用太虚阁 AudioBox 合成引擎新增「翻纸 / 低鼓」两枚音色（章节扉页翻纸 · 关键抉择低鼓 · 金榜刷新落雷，零音频文件）；②**章节扉页**：章号翻新时全屏扉页卡（章回标题 · 时辰天象 · 卷首引语取正文首句），点击 / Esc / 4 秒自动入卷，同章不重复、回退重生成不打扰；③**键盘快捷键**：1-9 选选项 · Ctrl+Enter 发送 · Esc 逐层关浮层（扉页→结算→工具箱→弹窗→阅读态）· Backspace 二次确认回退本轮 · R 切阅读态（输入框内不劫持、处理中锁定的选项不触发）；④**张力曲线**：变量AI 每轮必报 `tension` 绝对值 0-100（日常≤20 / 暗流 30-50 / 冲突 60-80 / 生死 90+），编年史页绘 SVG 折线 + 面积图（最近 24 点滚动窗口），近三章极差 ≤6 弹「波澜不惊」平淡预警，旧档自动补字段；⑤**抉择时刻**：主笔把重大转折的选项标题写成「【关键抉择】」，系统启用聚光演出——径向聚光背景 + 选项逐个浮现（错峰动画）+ 低鼓音；⑥**沉浸阅读态**：顶栏 📖 按钮或 R 键一键隐去顶栏侧栏，正文居中全宽纯读书态；⑦**下回预告**：主笔章末输出 `(next: 25字悬念钩子)`，消息卡底部悬念样式呈现，标记自动从正文 / 导出 / 朗读剥离；⑧**记忆回响**：主笔输出 `(echo: 名场面名称)` 或正文字面命中旧名场面（≥2 章前防剧透重复），正文后插「记忆碎片」毛玻璃卡（章号 + 摘录），同一场面只回响一次；⑨**殒命结算**：主笔输出 `(gameover: 死因)` 或主角变量现死亡字样（NPC 阵亡不误报），全屏结算卡——死因 + 行囊遗物清单 + 回退改写命运 / 读快照 / 继续观书三选，同章只结算一次；协议注入走 `ai-message-builder` 装配层（15 界零改动全覆盖，演出四艺全关时零注入省 token），演出标记（next / echo / gameover）在 `extractBody` 统一剥离保正文纯净；三个演出函数（扉页 / 回响 / 结算）自带开关纵深防御，直调亦零打扰；附 98 项沉浸九艺回归测试
+- v3.13.1 🛡 除障修缮版 · 玩家反馈专项：全模块深度排查（UI 交互 / 数据持久化 / AI 调用链三路并审）修复五处确凿 bug——①**桌面端点「状态面板」零反馈**（玩家反馈主诉）：桌面常驻布局下 `togglePanel()` 切换的 `.open`/`.show` 在桌面 CSS 无任何规则，点了毫无反应；现按 `getComputedStyle` 检测抽屉模式，桌面模式改为一次高亮脉冲动画指明面板位置（移动端抽屉开合照旧）；②**跨断点抽屉残留**：桌面宽窗点过状态面板后缩窗至 <900px 切入抽屉模式，残留 `.open` 让面板 / 遮罩凭空弹出挡屏——`fitMode` 检测断点切换自动清理；③**书架导出裸崩**：存档半损坏（配额截断 / 手改）时点「导出」`JSON.parse` 直接抛错、整函数崩掉无提示——加 try-catch 出可读报错；④**存档失败无感知**：配额满 / 隐私模式拦截时 `saveStory` 只打 console，用户以为存上了、刷新整章蒸发——加 toast 明确告警并指路导出备份；⑤**灵感引擎并发**：自动触发（每 3 轮）不检查 `isProcessing`，快速推进多轮时与手动按钮并行调 API 出重复卡——加 `_running` 并发锁；顺手：工具箱「字号调节」条目旧版点击零反应改为 1.0/1.15/1.3 三档循环、`loadSnapshot` 对损坏快照出提示、`syncMeta` 写失败出 console 告警；热修复回归扩至 101 项（新增 togglePanel 行为级验证：桌面 / 抽屉双模式真跑）
+- v3.13.0 🖌 丹青精绘版 · 文墨画师画质四重优化：直击文本模型画 SVG 的三大通病（自创配色必脏 / 构图松散 / 硬画五官必崩）——①**锁死调色板**：六种画风各配专属色值（`INK_PALETTES`：水墨宣纸米+浓墨+朱砂、霓虹夜空深蓝+霓虹青+品红等），只准用板内色值，可用 opacity 与渐变做层次，严禁自创新色与灰泥色；②**五层构图骨架**：背景渐变 → 远景剪影（低透明度拉景深）→ 中景主体 → 前景光源 glow → 暗角 vignette 收拢视线，从后往前按序绘制每层至少一元素；③**人物剪影铁律**：人物一律剪影 / 半剪影纯色轮廓块，用发型轮廓 / 衣摆 / 姿态讲故事，严禁画五官，全图人物最多 3 个、严禁画面边缘塞头像 / 圆脸 / 多余符号（专治 Q 版头像污染）；④**范例标杆**：画师系统提示词内嵌一张完整五层结构范例 SVG（学结构禁照抄）+ 单一光源纪律；⑤**精绘模式**（默认开，⚙ 文墨参数区可关）：先由构图规划师产出 JSON 五层规划（调色板 / 光源 / 分层 / 主体剪影要点），画师再按规划作画——先想清楚再动笔，规划失败静默降级单步直画；⑥**画后质量自检**：形状元素数（5-400）/ 纯色数（3-24）/ 渐变缺失四项软指标，不合格自动带反馈重画一次，重画稿问题更少才采用，重画失败保留初稿绝不阻断出图
+- v3.12.0 🖌 文墨画师 · 插图引擎第四协议「纯文本模型生图」：`ink` 模式**不接任何生图 API**——由纯文本模型手写 SVG 矢量插图，浏览器直接渲染（`data:image/svg+xml` dataURL 经 `<img>` 显示），**零生图成本**（没生图模型 / 花不起钱的玩家福音，免费 `gemini-3.5-flash` / deepseek 等皆可当画师）；文本模型**默认复用主笔接口**（零额外配置零额外成本，协议自动跟随主笔），也可本卡独立配置（OpenAI 兼容 / Gemini 原生双协议）；画师系统提示词注入画布规格 + 六种画风技法（扁平插画 / 水墨国风 / 极简剪影 / 暗黑氛围 / 柔彩绘本 / 霓虹夜色）+ 硬性约束（禁图内文字 / 禁外部资源 / 禁脚本 / 纯代码输出）；输出经**消毒**（剥 script / foreignObject / 事件属性 / 外部链接，纵深防御）与**尺寸修正**（缺 viewBox / 宽高自动补全）；模型偶尔改交字符画时 **ASCII 兜底**自动包等宽字体 SVG 照样出图；超大 SVG（>200KB）拒绝渲染；⚙ 接口模式新增「文墨画师」选项 + 文墨专属参数区（复用主笔开关 / 画风下拉 / 协议选择），生图厂商新增文墨画师预设，保存提示 ink 复用主笔时三件套可空不误报；生成中状态换「🖌 文墨挥毫中…」；提示词工程师润色稿对文墨模式同样生效
+- v3.11.0 🎨 NovelAI 原生模式 · 插图引擎第三协议：`nai` 模式直连 NovelAI 全系模型（V3 / V4 / V4.5 / V5，官方 `image.novelai.net` 或任意 NAI 代理站，地址填根地址自动补全 `/ai/generate-image`）——请求体按 NAI 规范组装（params_version 按模型自动推断 V3=1 / V4·V4.5=3 / V5=4，v4_prompt 结构化提示，Euler Ancestral / karras / 28 步内置推荐参数）；返回 zip 包前端零依赖解压（zip 本地文件头解析 + 浏览器原生 DecompressionStream，失败裸扫 PNG 签名兜底并按 IEND 收口）；**V5 防出字**——引号句子会被画成图内文字，发送前自动去引号；负面提示词预填官方 Heavy 预设 + 防文字/水印词（NAI 专属参数区可编辑）；尺寸自动收敛为 64 倍数（256-1536）；⚙ 接口模式新增「NovelAI 原生」选项，生图厂商新增 NovelAI 官方预设，NAI 专属参数区（7 个模型代号快捷按钮 / 5 档常用尺寸 / 负面提示词）；NAI 无模型列表接口，请用快捷按钮选模型代号
+- v3.10.0 ✍ 提示词工程师 · 第五接口「润色插图提示词」：正文写完即开工——本章全部插图提示词先由专职文字模型**一次批量润色扩写**（`js/prompt-engineer.js`：细节 / 镜头语言 / 光影 / 色调 / 材质氛围 / 画风关键词，忠于原描述不改画面），再送第四接口生图；插图卡槽位两段式状态「✍ 正在优化提示词… → 🎨 正在生成插图…」，生成后卡下方折叠展示「实际生图提示词（工程师润色稿）」；⚙ 接口设置新增第五张「✍ 提示词工程师」卡（启用开关 / 厂商下拉 / 同主笔·同变量AI·同生图接口三快捷复用 / 拉模型 / 温度超时 / 连通测试），OpenAI 兼容与 Gemini 双协议；**省流四保**——整章合并一次调用、改写结果按原始提示词缓存（上限 100 条，重绘 / 回放零重复调用）、失败自动回退原始描述绝不阻断生图、回放仍绝不调用任何接口；顺手修复 v3.9.0 隐藏 bug：画风补充词曾被拼进存档 prompt 键导致回放缓存永不命中（现存档始终以原始描述为键，回放稳命中）；TXT/MD 导出附「〔实际生图提示词〕」行，Token 按「提示词工程师」单独记账
+- v3.9.0 🖼 插图引擎 · 第四接口「正文插图」：新增全模块生图流水线（`js/image-gen.js`）——主笔写正文时按「正文插图协议」在最适合配图的位置输出 `(image: 生图提示词)` 单行标记（**提示词常驻显示在正文里**），系统解析标记把「提示词 + 图片」插图卡混排进正文流，图片由独立第四接口自动生成插入；十六界内置专属画风库（悬疑电影感 / 硬科幻 / 国风水墨仙侠 / 克苏鲁 / 十个原著世界各配画风），提示词强制体现本作画风，支持画风补充后缀与中英提示词语言切换；生图双模式——`images` 标准接口（硅基流动 Kolors/FLUX、豆包 Seedream、gpt-image-1/DALL·E、302.ai、one-api/new-api 中转）与 `chat` 对话式生图（OpenRouter 等），响应兼容 url/b64_json/image_url/markdown 图链，厂商预设一键填 + 模型拉取 + 连通测试（实测生成小样图）；⚙ 接口设置新增第四张「🖼 插图引擎」卡（启用开关 / 每章上限 1-3 / 自动生成开关 / 尺寸 / 超时 / 快捷复用三接口）；**防烧钱三闸**——回放历史绝不自动生图（只查缓存命中直显，未命中出点击生成）、单张 base64 超 900KB 不落盘、总量超 2.5MB 自动瘦身，插图记录随存档保存（上限 60 条）刷新自动回显，回退掉的"未来轮"记录一并清走；全链路兼容——字数统计剔除标记、朗读不播报提示词、流式草稿剔除标记、TXT/MD 导出转「〔插图·生图提示词〕」行（MD 有缓存链接时附图）、Token 按「插图」记账；15 个工坊/世界零改动全覆盖（协议由消息构建器统一注入）
+- v3.8.3 ✨ 收纳清爽版：极简顶栏——顶栏功能按钮（灵感引擎/来点灵感/世界动态/图鉴/TXT/MD/书架/前情/质检/通道/知识库/DLC/接口）全部收进 ☰ 工具箱，桌面 14 颗 / 移动 8 颗 → 仅留「📊 状态 + ☰ 工具」两颗，桌面与移动同构；阅读工具条（快照/朗读/字号 A±）整行收进工具箱，底部只留快捷指令 + 输入框；工具箱扩容至 20 项按场景分五组（创作辅助/面板与资料/阅读工具/书架与导出/系统），字号调节行内 A⁻A⁺ 即时生效；热修复回归扩至 72 项
+- v3.8.2 🛡 外挂页签复活：修复质检中心「责编自审/多候选择优」页签 `cur.html is not a function`——草稿实验室 registerTab 注册时渲染函数存成 htmlFn 字段、open() 却调 cur.html()，字段名错位使页签永远渲染不出（v3.8.1 前更是未捕获直接炸掉整个面板，正是「质检点不开」元凶之一）；现字段归一为 html（兼容 htmlFn 别名双回退），另为责编官链取值补防御；热修复回归增至 32 项
+- v3.8.1 🛡 双症同修版 · 时辰罗盘复活 · 面板点击防崩：修复两处实测 bug——①时辰罗盘永远「时辰未报」：启用变量AI后登记官指令清单缺 time/weather 字段（主笔不写变量块→罗盘无人喂数），现登记指令补齐 time（每轮必报）/weather/chapterTitle/角色好感，十界 config 的沉浸套件上报由「每轮酌情」升级为「时辰天象每轮必报」；②🔬质检面板与⛩太虚阁抽屉「点了没反应」：面板渲染抛错（AI 把 desc 等文本字段报成数字→.slice() TypeError）会让按钮 onclick 连带炸掉且此后永远点不开，现质检 open() 双层兜底、太虚阁 renderTab 逐页签兜底（13 页签互不连坐）、开门/切页入口全防崩，入库/读档/渲染三层清洗脏数据（旧档数字字段读档即洗净，无需清档）；附 28 项热修复回归
+- v3.8.0 🏯 十界同书版 · 帝霸 · 龙族：新增两个开放世界扮演模块（`configs/dibao-config.js` + 万古帝金主题 / `configs/longzu-config.js` + 雨夜屠龙主题），原著扮演世界由八界扩为十界，全部角色、剧情、体系与文风严格照搬原著——**帝霸**（厌笔萧生）：万古棋局机制为世界引擎（帝路争渡、诸帝遗泽、帝兵帝陵、禁区秘辛，每个大世都是上一局棋的残局，人命短促而万古悠悠），主角替代协议默认共世（普通修士另行其道，李七夜照原著时间线行动），写明「替代李七夜/承接帝师之位」则万古因果让渡给玩家，境界梯凡体武道→命宫→真命；**龙族**（江南）：表里双世机制为世界引擎（考试地铁便利店的日常与龙族屠龙者的隐秘战争随时重叠，末日倒计时被青春日常包裹），主角替代协议默认共世（普通混血种另行其道，路明非的故事照常发生），写明「替代路明非」则血统悬念让渡给玩家，境界梯未觉醒→C级→S级；两界知识库各 21 条整本考据（世界观总纲/原著忠实铁律/力量体系/势力谱系/人物志/文风圣经/年表/术语速查，含人物语音库逐人还原口癖），行旅图鉴新增 27 处原著地点（帝霸边荒+中域双层图 / 龙族表世界+里世界+沉睡之地三层图），沉浸套件十二模块、天道骰语、氛围尘埃全部按界定制；界专属扩展新增两席（帝霸·命宫罗盘与万古见闻录 / 龙族·血统秘档与言灵刻印）；附 380 项新世界回归测试
+- v3.3.0 🏯 八界同辉版 · 道诡异仙 · 重生之都市修仙：新增两个开放世界扮演模块（`configs/daoguiyixian-config.js` + 诡红纸灰主题 / `configs/zhongshengdushi-config.js` + 霓虹金紫主题），原著扮演世界由六界扩为八界，全部角色、剧情、体系与文风严格照搬原著——**道诡异仙**（狐尾的笔）：双世界机制为世界引擎（现代白塔医院与大傩清风观两线同时真实运转、跨界牵连、真假莫辨永不当面判定、疯癫即武器），主角替代协议默认顶替李火旺（心素体质、黑太岁苦药、白灵淼、丹阳子、腊月十八、牛心村白家祠堂、酆都、白玉京司命终局皆由玩家亲历），境界梯按原著三尸七轮至司命，罗盘用十二地支；**重生之都市修仙**（十里剑神）：重生者机制为世界引擎（北玄仙尊渡劫陨落重回十七岁高三、五百年修真记忆与凡人肉身的双轨、灵气将枯大势按原著节奏酝酿），主角替代协议默认顶替陈凡（金陵灯会初见方琼、沈君文、王城、昆仑、北琼立派、仙土现世皆由玩家亲历），境界梯照搬武道四境（外劲内劲化境神境）+ 修仙阶梯（筑基通玄神海先天金丹元婴化神返虚合道渡劫）；两界知识库各 20+ 条整本考据（世界观总纲/原著忠实铁律/力量体系/势力谱系/人物志/名场面/时间线），行旅图鉴新增 29 处原著地点（道诡异仙现代+大傩双层图 / 重生之都市修仙都市+隐秘+星空三层图），沉浸套件十二模块、天道骰语、氛围尘埃全部按界定制；附 200 项新世界回归测试
+- v3.2.0 🏮 万象归枢版 · 十重扩展：天象/密谈情报/命运骰批语回流主笔提示词（「场域氛围」注入，眼中景=文中景）；场景化音效（战鼓/落雷/印章/心跳）；成就印章册（全屏朱印动画）+ 命运骰（各世界专属批语语料）+ 天道金榜（角色自动排位）+ 伏笔雷达（超期黄牌）；虚拟读者来信（每 5 章 AI 亲笔读后感飞入传书匣）；古籍竖排模式（writing-mode 纵排书卷）；一键设定集导出（全部游玩档案纂成独立 HTML）；聊天流 content-visibility 虚拟渲染；附 44 项回归测试
+- v3.1.0 🌧 氛围引擎 · 角色密谈 · 平行世界线：全屏天气粒子 Canvas 层（`js/ambience-layer.js`，雨雪雷雾沙尘落英十类形态随 AI 报告天象自动切换 + 昼夜色温联动）；角色密谈（NPC 以自身口吻与玩家一对一私聊，角色档案+最近剧情+好感态度注入 system，情报可带回正文）；平行世界线（`js/timeline-branch.js`，关键抉择前锚定界点开辟岔路，整条世界状态快照复制为新线，树形时间轴 + 双线末章并排对照）；小门悬浮球可随意拖动（位置持久化/边界自锁/双击复位）；附 60 项回归测试
+- v3.0.0 🏮 沉浸套件 · 十二模块：`js/immersive-suite.js` + `css/immersive-style.css` 一套「世界抽屉」承载十二个沉浸模块（角色图鉴·程序化 SVG 立绘 / 关系图谱 / 境界阶梯 / 随身行囊 / 编年史 / 传书匣 / 大事倒计时 / 章节名帖 / 时辰罗盘·常驻 tab 栏 / 环境音·WebAudio 程序化 / 高光集锦 / 战报），全部按开放世界主题自动换肤，数据按界隔离（`imm_${genre}`）
+- v1.10.2 ✒ 四界原著文风还原 · 作者笔法注入：四个开放世界的系统提示词各注入对应作者的「原著文风还原」最高准则（我吃西红柿：白话短句+数据化修炼+家人温情；辰东：苍茫大气+长短句钟鸣+豪语点睛+悬念铺陈；蝴蝶蓝：轻快网感+对白驱动+吐槽玩梗+电竞质感；天蚕土豆：短段落快节奏+人情冷暖+蓄势爆发+招式名目），AI 落笔即按原作者笔法行文；设定台新增「⑧ 文风基调」选择（默认原著文风，另含爽点强化/沉浸慢热/赛事解说/洪荒大气/星空史诗/温情加重等变体与 ✎ 自定义），选择即注入开场指令；知识库新增四界「原著文风圣经」条目（笔法总纲+禁忌清单），预置知识升至 v6 老存档自动补入（吞噬星空 40 / 遮天 40 / 全职高手 35 / 斗破苍穹 36 条）
+- v1.10.1 📚 四界知识库整本扩容 · 原著考据修正：四个开放世界扮演模块的原著知识库扩至「整本覆盖」（吞噬星空 33→39 / 遮天 33→39 / 全职高手 30→34 / 斗破苍穹 28→35 条）——吞噬星空补入金角巨兽之战真相（六芒·虚空之塔·五强者灵魂献祭·夺舍双生体系）、摩云藤、宇宙崛起全录、鸿盟、坐山客与晋之神王、原祖与虚拟宇宙来历、界兽浩劫与起源大陆终局；遮天补入北斗五域与星空古路、黑暗动乱、叶凡成帝立天庭、帝尊与不死天皇、仙路终局与破碎仙域、姬紫月与小紫；全职高手补入孙翔转会轮回、嘉世落幕重组（夏仲天·邱非）、S10 夺冠之路、世界邀请赛终章；斗破苍穹补入帝都篇（岩枭）、云岚宗覆灭与萧家之难、天府联盟救药老、天墓萧玄、紫妍龙岛、药族之劫、战后新世与登临大千；同步修正金角巨兽等原著考据错误，双帝之战改为「异火恒古尺永久封印」，各界大事年表扩写至全书结局；预置知识版本升至 v5，老存档进入工坊自动补入新增条目
+- v1.10.0 🎭 四界扮演版 · 全职高手 · 斗破苍穹 · 主角替代协议：新增「全职高手」「斗破苍穹」两个开放世界扮演模块（`configs/quanzhigaoshou-config.js` + 电竞银蓝主题 / `configs/doupocangqiong-config.js` + 焚天赤焰主题），原著双界扩为四界；**主角替代协议**——玩家自定义身份默认顶替原著主角（叶修 / 萧炎）的叙事之位，从原著开局节点亲历全部主线，世界观 / 势力 / 人物 / 体系严格忠于原著，亦支持普通身份与主角共世的并行模式；原著知识库两界各 31 / 30 条（全职高手：荣耀全职业体系与千机伞、嘉世蓝雨微草霸图轮回联盟格局、叶修苏沐橙黄少天等人物详录、全赛事体系、APM 与装备打造、G市H市地理、嘉世三连冠至八九赛季大事年表；斗破苍穹：斗之气至斗帝全境界、异火榜全录、萧炎药老萧薰儿美杜莎等人物详录、萧家迦南学院云岚宗魂殿古族势力、乌坦城至中州地理、斗技丹药傀儡焚决体系、三年之约至双帝之战大事年表）；入口页升级「原著四界」四卡直达，studio 白名单与版本号全链路升至 v1.10.0
+- v1.6.9 🧾 检索重铸 · 用量透视 · 长篇记忆：知识检索从余弦相似度重铸为 BM25（`knowledge-manager.js`：旧算法对查询长度敏感，真实创作查询「密室诡计 时间线」这类命中率趋零、知识库形同虚设；现带 `cleanQuery` 查询清洗——剥离变量块与标点噪音，相对阈值只留得分 ≥ 首名 35% 的条目，抽查命中 0 → 2 条且首名 100% 相关）；wordCount 全线统一「增量语义」提示（七个工坊配置同步改写），`variable-parser.js` 加防双计守卫 `applyWordCount`（模型误报累计值时直接覆盖而非翻倍：旧值 5000 + 误报 +5800 → 落表 5800 而非 10800）、角色卡布尔/数值字段保型落表 `coerceFieldValue`（isCulprit 不再被字符串化成 "true"）、chapter 强制数值化 `applyChapter`（+1 增量式与绝对式都正确落表）；系统提示词瘦身——第 2 章起自动剔除「开篇模板」整段指令（`ai-message-builder.js` `stripOpeningTemplate`，600+ 字不再每轮空转注入），开篇指令在设定缺字数目标时不再出现「约 NaN 字」；新增 Token 用量透视（`api-calling-functions.js` `TokenUsage`：每次请求按系统层/历史层/输出分层记账，主笔/变量AI/灵感/动态世界分接口统计，`story-status-renderer.js` 面板实时显示最近请求与全书累计，随存档持久化）；长篇记忆——滚动摘要（`state.digest`：滑窗丢弃的早期章节自动压缩为「前情提要」常驻注入，长篇不再失忆）；扮演模式终章压力递增（`buildEndgamePressure`：按进度注入收束提示，剧情自然走向结局）；旁路系统轮号修正（`story-framework.js` `currentTurnIndex`：动态世界/变量AI/灵感卡片的轮次标签改在触发时刻捕获绝对轮号，异步返回时用户已发下一轮也不再标错轮，回退删除不再残留错标卡片）；灵感引擎开关状态持久化（`inspiration-engine.js` `init`：localStorage 存储，刷新不再回到关闭态）；附 63 项专项回归测试（解析器 24 + 消息构建 + v1.6.9 特性 39）
+- v1.6.8 🛡 深度自查 · 十六处修复：全库代码审计（三大 P0 / 六项 P1 / 其余批次）——① Gemini 丢弃多条 system 消息（`api-calling-functions.js`：buildStoryMessages 产出主提示词/设定卡/状态面板/知识库多条 system，旧代码只取第一条注入 systemInstruction，设定对 Gemini 完全不可见且无报错，现全量合并）；② SSE 流末收尾（`readSSEStream`：TextDecoder 冲洗多字节残字 + buffer 残行解析——服务器发完最后一帧不带尾随换行直接关连接时，最后的 delta 被静默丢弃、极端时触发非流式整单重发重复计费；异常路径 reader.cancel 防连接悬挂）；③ 损坏的 storyApiConfig 不再白屏（JSON.parse 崩溃中断 init，损坏即丢弃回默认）；④ 用户指令双注入修复（`ai-message-builder.js` 历史窗口 slice 尾恰含当前轮指令，指令在消息里出现两遍）；⑤ chapter XSS 转义（逐行协议可存任意字符串，全模块唯一 AI 可控值直拼 innerHTML 处）；⑥ 失败路径整轮还原 + 指令回填输入框（旧「半回滚」留孤儿卡片且失败指令凭空消失）；⑦ 超 40 轮后 data-turn 标签与绝对轮号永久脱钩（快照窗口滑动后回退按标签删卡永远落空）；⑧ 灵感采纳持久化；⑨ 动态世界楼层号重算（超 60 层后 floor 与下标脱钩）；⑩ 回退/重生成前等待在飞变量AI 提取落库（防回滚被静默复活）；⑪ 温度 0 不再被当"未设置"吞掉、温度/token 超界自动钳制；⑫ 解析器三连修（模型重复输出双变量块全量解析、JSON 负数仪表值按绝对值落表——旧版把 -10 当"减 10"增量、items 数值绝对语义防重复膨胀）；⑬ 面板容器字段损坏防御；⑭ 变量AI retry 入队执行（busy 时不再静默吞掉）；⑮ 三接口写回前漂移守卫（引用比对检测在飞期间状态被推进，基于最新表重解析，不回退进度）；⑯ 附 29 项专项回归测试
+- v1.6.7 🛡 超时归位：修复 v1.6.1 起的重大超时 bug——接口设置里超时以「秒」存储（如 300），`fetchWithTimeout` / 流式空闲计时却直接把秒数当「毫秒」用，填 300 秒实际 0.3 秒就掐断请求，接口完全正常也报「AI 响应超时」（v1.5.0 没有超时控制所以一切正常，这也是"换版本就坏"的根因）；三大接口（主笔 `secsToMs` / 动态世界 `_toMs` / 变量AI `_toMs`）全部统一秒→毫秒换算，旧存档无值自动回退默认秒数；流式零数据失败（首包 60 秒看门狗超时 / 连接被掐）自动静默换非流式重发一次（与 v1.5.0 同款请求路径，兜底不支持流式的中转），已收到部分正文的断流不重试防重复计费；响应体读取 `withTimeoutMs` 全链路带超时（正文 / 模型列表 / 连通测试 / 错误提示的每次 json()/text() 读取都设看门狗，服务器回了响应头却挂正文不再无限等待，辅接口经 `_readBody` 统一接入）；超时提示时长改为直读秒数并附三步自救指引
+- v1.6.6 📜 日志成册 · 扮演宣传：创作日志从游玩首页剥离，独立成册收进 `changelog/` 文件夹——每条版本记录带功能标签（流式 / 回退 / 接口 / 扮演 / 动态世界 / 变量AI / 设定 / 稳定 / 模块），点击标签可筛选同类改动，一册尽览全部沿革（含 README 版本记录的 v1.3.5-v1.6.4 全量合并收录）；入口页腾出的空间改为「沉浸扮演」宣传区：身份卡入场 / 原著铁律 / 世界在呼吸 / 万物皆入档 / 抉择即剧情 / 逐字登场六大卖点 + 双世界直达入场按钮；右下角版本徽标改为可点击，一键直达日志册；页脚新增「创作日志 · 独立成册」入口
+- v1.6.5 ⚡ 流式生成与正文回退：三大接口（主笔 / 动态世界 / 变量AI）全面支持 SSE 流式调用——正文边生成边以打字机效果写入页面（`js/api-calling-functions.js` 的 `readSSEStream`：OpenAI `choices[0].delta.content` 与 Gemini `streamGenerateContent?alt=sse` 双协议），兼容 one-api / new-api / gcli 等中转站「假流式」模型（必须 stream 请求才返回数据——正是"别的平台能用、这里超时"的根因），非 SSE 响应自动回退整包 JSON 解析、Gemini 404/405 自动回退非流式路径；超时语义改为「空闲超时」（收到数据即重置计时，默认 5 分钟，长正文不再误杀），设置可关闭流式兼容老接口；每张正文卡尾部新增「↻ 重新生成 / ↩ 回退本轮」轮次操作——重新生成还原本轮现场后用同一条指令换一种写法重写，回退本轮删除末轮正文及全部附属内容（变量登记 / 选项 / 世界动态通知 / 灵感卡），变量 / 历史 / 轮数整体回到该轮开始前；轮次快照系统（`story-framework.js` 的 `pushTurnSnapshot`/`restoreTurn`）：卡片渲染时打 `data-turn` 轮次标签，回退按标签整轮删除；页面重载 `replayHistory()` 回放时重校准快照（histLen 精确下标 + domLen 真实卡片数 + 回放游标打标签），回退永不删错；历史截断「只缩不扩」杜绝 undefined 空槽；`regenerate()` 后重臂快照可无限次重试；失败路径自动弹出空快照并回滚用户消息
+- v1.6.4 🏭 接口按厂商细分：「接口类型」下拉升级为「AI 厂商」下拉——DeepSeek / 通义千问 / Kimi / 智谱GLM / 硅基流动 / 火山方舟（豆包）/ OpenAI 官方 / Gemini 官方 / OpenRouter / 302.ai 每家独立选项，按「国内厂商直连 / 海外厂商直连 / 聚合站 / 自定义中转」四组 optgroup 分类；选定厂商自动填接口地址、自动派生运行协议（OpenAI 兼容 / Gemini 原生，用户不再手选协议），下方提示条显示该厂商 Key 申请入口与说明；每家附常见模型快捷按钮（点击直接填入模型名，省去翻文档），切厂商自动清空失效的已拉取模型列表；保留「OpenAI 兼容格式 · 自定义地址」「Gemini 格式 · 自定义地址」兜底（one-api / new-api / gcli 等中转）；旧存档无 provider 字段时打开弹窗自动按 endpoint 识别所属厂商；三接口快捷复用同步复制厂商；运行时协议字段 `type` 保持不变（openai / gemini），零破坏升级
+- v1.6.3 ⚙ 接口设置细化：⚙ 接口设置重构为三张统一接口卡（① 主笔写正文 / ② 动态世界推演远方 / ③ 变量AI登记状态），每卡细分「🏭 厂商预设 / 🔌 连接配置 / 🎛 高级参数 / 🎛 行为」分组——主笔接口从平铺改为与另两卡一致的折叠卡；卡头带角色徽标与就绪状态徽标（✓已就绪 / 启用但未配全 / 未启用，打开弹窗即自检三接口配置完整度）；新增厂商预设一键填（DeepSeek / 通义 / Kimi / 智谱 / 硅基流动 / OpenRouter / Gemini 官方——点击自动填接口格式与地址，悬浮提示常见模型名）；三接口超时秒数开放 UI 配置（主笔 60-1800s 默认 300、二三接口 30-600s 默认 90，此前只能改 localStorage）；快捷复用互通（动态世界加「同主接口 / 同变量AI」）；高级参数改三列布局（Tokens / 温度 / 超时），移动端自动回落单列
+- v1.6.2 📖 阅读体验：正文纯叙事化——扮演模式「行动选项」/ 创作模式「情节走向」等选项段一律从正文剥离（含无【】标题的冒号形态与结尾裸编号行兜底），选项只保留按钮区且按钮标题自适应本轮模型实际输出的标题词，正文与选项不再重复出现；「🌍 世界动态」重构为独立抽屉模块（`dynamic-world.js`）：聊天流只留一行紧凑通知，完整远方事件进抽屉——桌面右侧滑入 / 手机底部滑出，未读徽标同步顶栏与浮动球，内置立即推演 / 单层重试 / 推演思路查看，存档恢复不再回放大卡片
+- v1.6.1 🛡 稳定性加固（自检修复）：三接口全部补上网络挂起防护——主笔默认 5 分钟、变量AI / 动态世界默认 90 秒超时（`timeout` 可配），超时自动解锁并发出的串行队列与推演锁并出中文提示，杜绝"接口挂起导致应用假死 / 动态世界静默失效"；推理型模型（deepseek-reasoner / o1 类）`content` 为 null 时自动回退 `reasoning_content`，Gemini 多段 parts 全拼接不再截断；提示词消毒补漏：✅ 自检清单行与「【完整检查清单】」段落彻底剥离，剔除条目后编号断档自动重排；导出存档标识更新为 v1.6.1
+- v1.6.0 🧾 变量AI分流：新增第三接口「状态登记官」（`js/variable-ai.js`，提取器分流架构）——主笔 AI 只写正文：系统提示词去掉变量块语法铁律、历史消息剔除 (variable_update) 块（旧存档也剔除，防模仿输出），上下文显著瘦身、变量格式错误归零；第三模型每轮通读正文，把章节/字数/仪表盘/NPC档案/伏笔/道具/大事记登记成变量块并复用主解析器合并进状态面板（开篇轮自动补登书名）；主笔自带变量块时以主笔为准跳过提取，提取失败出「重试登记」卡，连发指令串行排队不丢轮、发送前先等上一轮落库；⚙ 接口设置新增「🧾 变量AI」折叠区：第三接口独立配置（OpenAI 兼容 / Gemini 双格式、连通测试、模型拉取、温度默认低温 0.2），支持「⚡ 同主接口 / ⚡ 同额外API」一键复用；可开启登记回执卡（默认静默）
+- v1.5.0 🌍 动态世界：新增额外 API（第二模型）驱动的动态世界模块（`js/dynamic-world.js`，模仿某文字游戏框架 extraApi + dynamic-world-functions.js 架构）——主笔 AI 写正文，第二模型每隔 N 轮在幕后推演"主角视线之外正在发生的事"（势力动向 / 远方传闻 / 伏笔暗流 / 环境变化）；以 🌍 卡片插入聊天区，远方 NPC / 伏笔 / 大事记经 (variable_update) 并入状态面板，楼层随存档持久化（上限 60 层），支持重试本层 / 立即生成 / 推演思路与变量登记折叠查看；⚙ 接口设置新增「🌍 动态世界 · 额外 API」折叠区：第二接口独立配置（OpenAI 兼容 / Gemini 双格式、连通测试、模型拉取），触发间隔 / 上下文层数 / 最少字数 / 提示词均可自定义；触发异步不阻塞正文，自动模式失败静默
+- v1.4.2 全维度自定义：身份设定台所有选择项开放「✎ 自定义」——身份出身 / 时代节点 / 资质天赋 / 叙述视角 / 游玩规模五个下拉选中即展开亲笔输入框，入场事件与起始机缘新增自定义卡片（第一幕与机缘由玩家亲笔，机缘消耗 10 点）；全部自定义内容逐条注入玩家身份卡与入场指令（标注"玩家亲笔设定，严格执行"）；下拉默认落在预设项，随机骰子跳过自定义，选自定义未填写有拦截提示
+- v1.4.1 自由开局·档案扩容：身份设定台新增「✎ 自定义身份」——玩家可亲笔书写开局身份的极致细节（至 1200 字），选中即展开、与身世自述互斥防冲突，入场指令与玩家身份卡逐条注入；NPC 档案由 10 字段扩至 18 字段（新增实力境界/所属势力/当前行踪/言谈习惯/习惯小动作/近期目标/对玩家的印象/与玩家关系，信任度全量展示），状态面板与上下文摘要同步支持；两世界原著知识库由 12 条扩至各 33 条（人物详录/地点地理/体系细则/势力详录/大事年表全覆盖），预置注入改为版本标记——老存档自动补入新增条目
+- v1.4.0 原著双界：新增「吞噬星空」「遮天」开放世界扮演模块——自定义身份入场、AI 主持原著世界；玩家身份卡全程锁定、原著忠实铁律拒绝二创同人；框架新增 `mode: 'roleplay'` 扮演模式与状态面板文案可配置
+- v1.3.6 千面工坊：五坊设定台全维扩充——视角 10 / 文风 11 / 篇幅 6 / 时代 7 / 母题 10 / 开篇 12 / 技法 14，技法上限 2→3；下拉新增动态说明；时代与母题注入 AI 设定卡；书名梗概种子扩容
+- v1.3.5 墨夜流金：知识库 + DLC 模块（模仿原框架 supply.js / dlc-manager.js）
+
+
+---
+
+### 说明
+
+- `v3.63.0`（灵宠·妖兽·伙伴系统）与 `v3.64.0`（小队系统）是在同一次提交中发布的，因此两者指向同一份代码快照，`*` 标记表示此情况。
+
+- 更早的版本（`v3.0.0`–`v3.55.6`）仅在更新日志中有记录，仓库未保留对应的 git 提交，故未在此列出标签。
+
+- 想看某个版本跑起来：进入该标签的文件树，下载 `studio.html` 与本仓库其余文件即可；或本地 `git clone` 后 `git checkout vX.Y.Z`。
+

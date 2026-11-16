@@ -1,0 +1,44 @@
+# dev temp scripts (not part of the web app)
+#
+# v4.13.0：补上下划线开头的临时脚本规则。
+#   背景：feat/world-alive-v4 分支的 .gitignore 一直带有下面这 6 条，
+#   但它们**从未合并回 main**。后果是切到 main 后，磁盘上遗留的探针脚本
+#   （_dump*.txt / _t*.js / _probe*.mjs 等）突然全部暴露为「未提交」，
+#   把分支切换、审阅与提交都搅乱（实测一次暴露出 59 个文件）。
+#   这里统一补齐，并覆盖本项目实际会用到的全部扩展名（含 .mjs/.cjs）。
+_*.js
+_*.py
+_*.txt
+_*.json
+_*.mjs
+_*.cjs
+
+check_video_in_project.py
+find_v15.py
+fix_missing*.py
+get_v15.py
+km-final.b64
+make_b64.py
+payload.json
+rebuild_v16.py
+repair_js.py
+repair_km.py
+run_selftest_local.py
+scan_js.py
+setup_git_path.ps1
+sync_repo*.py
+update_km.py
+update_payload*.json
+
+# 玩家本地造物模块（小云生成）——仅存本地，禁止提交到仓库/GitHub
+modules/
+xy-local-*.html
+
+# 验收实拍（本地留证，不入库）
+_shots_v398/
+_shots_v397/
+_shots_v399/
+
+# Python 字节码缓存
+__pycache__/
+*.pyc

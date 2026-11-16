@@ -1,0 +1,140 @@
+/* ============================================================
+   武侠仙侠主题 - 翠微松风（水墨卷轴 × 山岚翠色）
+   v3.15.0 每界专属 UI 皮肤重做：
+   水墨晕点底纹 · 顶栏卷轴压边 · 卡片轴头卷首饰 ·
+   选项朱批指引 · 面板古籍标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #9fbf8f;
+    --primary-dim: rgba(159, 191, 143, 0.12);
+    --primary-glow: rgba(159, 191, 143, 0.3);
+    --secondary: #e0a84c;
+    --accent: #8fae7f;
+    --panel-border: rgba(159, 191, 143, 0.18);
+    background-color: #111612;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(159, 191, 143, 0.08), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(224, 168, 76, 0.05), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='%239fbf8f' fill-opacity='0.05'%3E%3Cellipse cx='30' cy='40' rx='16' ry='7'/%3E%3Cellipse cx='110' cy='90' rx='20' ry='8'/%3E%3Cellipse cx='70' cy='140' rx='14' ry='6'/%3E%3C/g%3E%3Cg fill='none' stroke='%23c3dcb6' stroke-opacity='0.08'%3E%3Cpath d='M10 60 Q40 50 70 62 T130 58'/%3E%3Cpath d='M0 120 Q50 108 100 122 T160 116'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #c3dcb6, #9fbf8f); }
+body .progress-fill { background: linear-gradient(90deg, #9fbf8f, #c3dcb6); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #c3dcb6, #9fbf8f); }
+body .foreshadow-item.planted {
+    background: rgba(159, 191, 143, 0.08);
+    border-left-color: #9fbf8f;
+    color: #bcd2af;
+}
+body .char-status { color: #9fbf8f; border-color: rgba(159, 191, 143, 0.4); }
+
+/* ─────────── ① 顶栏：卷轴天杆 ─────────── */
+body.theme-wuxia .top-bar {
+    background: linear-gradient(180deg, rgba(20, 26, 20, 0.96), rgba(17, 22, 18, 0.92));
+    border-bottom: 1px solid rgba(159, 191, 143, 0.22);
+    box-shadow: inset 0 -3px 0 rgba(159, 191, 143, 0.06), 0 2px 14px rgba(0, 0, 0, 0.3);
+}
+body.theme-wuxia #gameTitle { letter-spacing: 5px; }
+
+/* ─────────── ② 正文卡：绢帛手卷 + 轴头饰 ─────────── */
+body.theme-wuxia .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 2px;
+    background:
+        linear-gradient(180deg, rgba(159, 191, 143, 0.07), transparent 14%, transparent 86%, rgba(159, 191, 143, 0.05)),
+        var(--panel);
+    border-top: 1px solid rgba(195, 220, 182, 0.25);
+    border-bottom: 1px solid rgba(159, 191, 143, 0.2);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+}
+/* 卷首轴头：左右两枚暗轴 */
+body.theme-wuxia .ai-card::before,
+body.theme-wuxia .ai-card::after {
+    content: '';
+    position: absolute;
+    top: 8px; bottom: 8px;
+    width: 2px;
+    pointer-events: none;
+}
+body.theme-wuxia .ai-card::before {
+    left: 4px;
+    background: linear-gradient(180deg, transparent, rgba(159, 191, 143, 0.35) 20% 80%, transparent);
+}
+body.theme-wuxia .ai-card::after {
+    right: 4px;
+    background: linear-gradient(180deg, transparent, rgba(195, 220, 182, 0.3) 20% 80%, transparent);
+}
+body.theme-wuxia .ai-card-header {
+    border-bottom: 1px solid rgba(159, 191, 143, 0.2);
+    border-image: linear-gradient(90deg, transparent, rgba(159, 191, 143, 0.35) 30% 70%, transparent) 1;
+}
+
+/* ─────────── ③ 章节徽章：朱印题签 ─────────── */
+body.theme-wuxia .chapter-badge {
+    letter-spacing: 2px;
+    border: 1px solid rgba(195, 220, 182, 0.5);
+    border-radius: 2px;
+}
+
+/* ─────────── ④ 选项按钮：朱批点墨 ─────────── */
+body.theme-wuxia .option-btn { border-radius: 2px; }
+body.theme-wuxia .option-btn::before { content: '◦ '; color: #c3dcb6; }
+body.theme-wuxia .option-btn:hover:not(:disabled) {
+    border-color: rgba(224, 168, 76, 0.5);
+    box-shadow: inset 0 -1px 0 rgba(224, 168, 76, 0.4);
+    background: rgba(159, 191, 143, 0.06);
+}
+body.theme-wuxia .options-title { letter-spacing: 6px; }
+body.theme-wuxia .options-title::before { content: '—— '; color: #8fae7f; }
+body.theme-wuxia .options-title::after { content: ' ——'; color: #8fae7f; }
+
+/* ─────────── ⑤ 输入区：砚边落笔 ─────────── */
+body.theme-wuxia #userInput { border-radius: 2px; }
+body.theme-wuxia #userInput:focus {
+    border-color: #9fbf8f;
+    box-shadow: 0 0 0 3px rgba(159, 191, 143, 0.13);
+}
+body.theme-wuxia #sendBtn { border-radius: 2px; letter-spacing: 2px; }
+
+/* ─────────── ⑥ 面板：古籍函套 ─────────── */
+body.theme-wuxia .panel-title { letter-spacing: 3px; }
+body.theme-wuxia .panel-title::before { content: '『'; color: #8fae7f; }
+body.theme-wuxia .panel-title::after { content: '』'; color: #8fae7f; }
+body.theme-wuxia .gauge-label { color: #a9c49c; letter-spacing: 1px; }
+body.theme-wuxia .gauge-fill {
+    box-shadow: 0 0 5px rgba(159, 191, 143, 0.25);
+    background-image: linear-gradient(90deg, transparent 50%, rgba(255, 255, 255, 0.06) 50%);
+    background-size: 8px 100%;
+}
+body.theme-wuxia .sheet-box { border-top: 2px solid rgba(159, 191, 143, 0.4); border-radius: 2px 2px 0 0; }
+body.theme-wuxia .modal-box { border-top: 2px solid rgba(159, 191, 143, 0.4); border-radius: 2px 2px 0 0; }
+
+/* ─────────── ⑦ 滚动条：竹帘细缝 ─────────── */
+body.theme-wuxia #chatMessages::-webkit-scrollbar-thumb,
+body.theme-wuxia #statusPanel::-webkit-scrollbar-thumb,
+body.theme-wuxia #setupWrap::-webkit-scrollbar-thumb { background: rgba(159, 191, 143, 0.28); }
+body.theme-wuxia #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(159, 191, 143, 0.45); }
+
+/* ─────────── ⑧ 扮演模式特化：侠客行囊 ─────────── */
+body.theme-wuxia .wizard-title { letter-spacing: 5px; }
+body.theme-wuxia .book-title-line { color: #9fbf8f; letter-spacing: 2px; }
+body.theme-wuxia .status-panel {
+    border-image: linear-gradient(180deg, rgba(159, 191, 143, 0.32), rgba(159, 191, 143, 0.08)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：剑穗钮 ─────────── */
+body.theme-wuxia .quick-btn { border-radius: 2px; letter-spacing: 1px; }
+body.theme-wuxia .quick-btn:hover {
+    border-color: rgba(159, 191, 143, 0.55);
+    background: rgba(159, 191, 143, 0.07);
+}
+
+/* ─────────── ⑩ 章节标题：碑刻大字 ─────────── */
+body.theme-wuxia .story-chapter-title {
+    letter-spacing: 10px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-wuxia.mobile .ai-card::before,
+body.theme-wuxia.mobile .ai-card::after { display: none; }

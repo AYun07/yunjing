@@ -1,0 +1,140 @@
+/* ============================================================
+   全职法师主题 - 星穹雷焰（魔法都市 × 星轨紫 × 雷焰金）
+   v3.15.0 每界专属 UI 皮肤重做：
+   星轨法阵底纹 · 顶栏星辉压边 · 卡片四角星芒饰 ·
+   选项雷光指引 · 面板圣徽标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #9d8cf0;
+    --primary-dim: rgba(157, 140, 240, 0.12);
+    --primary-glow: rgba(157, 140, 240, 0.32);
+    --secondary: #e8a25c;
+    --accent: #b8a8f8;
+    --panel-border: rgba(157, 140, 240, 0.18);
+    background-color: #0e0d18;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(157, 140, 240, 0.10), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(232, 162, 92, 0.06), transparent 60%),
+        radial-gradient(ellipse 420px 280px at 72% 24%, rgba(157, 140, 240, 0.05), transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%239d8cf0' stroke-opacity='0.045'%3E%3Ccircle cx='70' cy='70' r='56'/%3E%3Ccircle cx='70' cy='70' r='34'/%3E%3Ccircle cx='70' cy='70' r='15'/%3E%3C/g%3E%3Cg fill='%23b8a8f8' fill-opacity='0.10'%3E%3Ccircle cx='70' cy='14' r='1.4'/%3E%3Ccircle cx='126' cy='70' r='1'/%3E%3Ccircle cx='70' cy='126' r='1.4'/%3E%3Ccircle cx='14' cy='70' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #c8bcf8, #9d8cf0); }
+body .progress-fill { background: linear-gradient(90deg, #9d8cf0, #e8a25c); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #c8bcf8, #9d8cf0); }
+body .foreshadow-item.planted {
+    background: rgba(157, 140, 240, 0.08);
+    border-left-color: #9d8cf0;
+    color: #c0b8e8;
+}
+body .char-status { color: #9d8cf0; border-color: rgba(157, 140, 240, 0.4); }
+
+/* ─────────── ① 顶栏：星辉压边 ─────────── */
+body.theme-quanzhifashi .top-bar {
+    background: linear-gradient(180deg, rgba(20, 18, 34, 0.96), rgba(14, 13, 24, 0.92));
+    border-bottom: none;
+    box-shadow: inset 0 -1px 0 rgba(157, 140, 240, 0.28), 0 1px 14px rgba(157, 140, 240, 0.08);
+}
+body.theme-quanzhifashi #gameTitle {
+    letter-spacing: 3px;
+    text-shadow: 0 0 18px rgba(157, 140, 240, 0.45);
+}
+
+/* ─────────── ② 正文卡：星轨卡 + 四角星芒 ─────────── */
+body.theme-quanzhifashi .ai-card {
+    position: relative;
+    border-left: none;
+    border-image: linear-gradient(180deg, rgba(157, 140, 240, 0.55), rgba(232, 162, 92, 0.25), rgba(157, 140, 240, 0.1)) 1;
+    border-left: 3px solid transparent;
+    background:
+        linear-gradient(160deg, rgba(157, 140, 240, 0.06), transparent 42%),
+        var(--panel);
+    transition: box-shadow 0.25s ease;
+}
+body.theme-quanzhifashi .ai-card:hover { box-shadow: 0 4px 26px rgba(0, 0, 0, 0.34), 0 0 20px rgba(157, 140, 240, 0.07); }
+/* 四角星芒饰（左上/右下呼应） */
+body.theme-quanzhifashi .ai-card::before,
+body.theme-quanzhifashi .ai-card::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    pointer-events: none;
+    opacity: 0.55;
+}
+body.theme-quanzhifashi .ai-card::before {
+    top: 7px; right: 7px;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(157, 140, 240, 0.9) 0 1.2px, transparent 2px);
+    box-shadow: 0 0 8px rgba(157, 140, 240, 0.6);
+}
+body.theme-quanzhifashi .ai-card::after {
+    bottom: 7px; left: 10px;
+    width: 8px; height: 8px;
+    background: conic-gradient(from 0deg, rgba(232, 162, 92, 0.85) 0 25%, transparent 25% 100%);
+    border-radius: 50%;
+    opacity: 0.4;
+}
+body.theme-quanzhifashi .ai-card-header { border-bottom: 1px dashed rgba(157, 140, 240, 0.22); }
+
+/* ─────────── ③ 章节徽章：圣徽样式 ─────────── */
+body.theme-quanzhifashi .chapter-badge {
+    box-shadow: 0 0 12px rgba(157, 140, 240, 0.35);
+    border: 1px solid rgba(200, 188, 248, 0.5);
+}
+
+/* ─────────── ④ 选项按钮：雷光指引 ─────────── */
+body.theme-quanzhifashi .option-btn { border-radius: 9px; }
+body.theme-quanzhifashi .option-btn:hover:not(:disabled) {
+    border-color: rgba(157, 140, 240, 0.75);
+    box-shadow: inset 3px 0 0 #9d8cf0, 0 0 14px rgba(157, 140, 240, 0.14);
+    text-shadow: 0 0 8px rgba(157, 140, 240, 0.4);
+}
+body.theme-quanzhifashi .options-title { letter-spacing: 4px; }
+body.theme-quanzhifashi .options-title::before { content: '✦ '; color: #9d8cf0; }
+
+/* ─────────── ⑤ 输入区：施法台 ─────────── */
+body.theme-quanzhifashi #userInput:focus {
+    border-color: #9d8cf0;
+    box-shadow: 0 0 0 3px rgba(157, 140, 240, 0.16), 0 0 22px rgba(157, 140, 240, 0.12);
+}
+body.theme-quanzhifashi #sendBtn {
+    box-shadow: 0 0 14px rgba(157, 140, 240, 0.3);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板与抽屉：法典卷宗 ─────────── */
+body.theme-quanzhifashi .panel-title::before { content: '✧ '; color: #9d8cf0; }
+body.theme-quanzhifashi .gauge-label { color: #b8a8f8; }
+body.theme-quanzhifashi .gauge-fill { box-shadow: 0 0 6px rgba(157, 140, 240, 0.3); }
+body.theme-quanzhifashi .sheet-box { border-top: 2px solid rgba(157, 140, 240, 0.45); }
+body.theme-quanzhifashi .modal-box { border-top: 2px solid rgba(157, 140, 240, 0.45); }
+
+/* ─────────── ⑦ 滚动条：星辉细流 ─────────── */
+body.theme-quanzhifashi #chatMessages::-webkit-scrollbar-thumb,
+body.theme-quanzhifashi #statusPanel::-webkit-scrollbar-thumb,
+body.theme-quanzhifashi #setupWrap::-webkit-scrollbar-thumb {
+    background: rgba(157, 140, 240, 0.3);
+}
+body.theme-quanzhifashi #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(157, 140, 240, 0.5); }
+
+/* ─────────── ⑧ 扮演模式特化：觉醒测试台 ─────────── */
+body.theme-quanzhifashi .wizard-title { letter-spacing: 3px; text-shadow: 0 0 16px rgba(157, 140, 240, 0.35); }
+body.theme-quanzhifashi .book-title-line { color: #9d8cf0; }
+body.theme-quanzhifashi .status-panel {
+    border-image: linear-gradient(180deg, rgba(157, 140, 240, 0.35), rgba(232, 162, 92, 0.14)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：符文钮 ─────────── */
+body.theme-quanzhifashi .quick-btn:hover {
+    border-color: rgba(157, 140, 240, 0.6);
+    box-shadow: 0 0 10px rgba(157, 140, 240, 0.16);
+}
+
+/* ─────────── ⑩ 章节标题：星轨大字 ─────────── */
+body.theme-quanzhifashi .story-chapter-title {
+    letter-spacing: 8px;
+    text-shadow: 0 0 24px rgba(157, 140, 240, 0.35);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-quanzhifashi.mobile .ai-card::before,
+body.theme-quanzhifashi.mobile .ai-card::after { display: none; }
