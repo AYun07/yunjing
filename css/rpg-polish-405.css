@@ -1,0 +1,58 @@
+/* v4.05.0 网游面板视觉增强（独立文件，加载顺序在 rpg-suite.css 之后）
+   原则：只加质感与交互反馈，不改布局尺寸、不撑出横向滚动；
+   尊重 prefers-reduced-motion；只用已有类名，不新增结构依赖。
+   与 rpg-core.js 的 html() 解耦——后台成员改逻辑时本文件无需同步修改。
+*/
+.rpg-panel { position: relative; isolation: isolate; }
+.rpg-panel::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border-radius: inherit; opacity: .9;
+  background:
+    radial-gradient(120% 60% at 50% -12%, var(--rpg-accent-soft), transparent 70%),
+    linear-gradient(180deg, transparent 0, rgba(0, 0, 0, .22) 100%);
+}
+.rpg-top {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--rpg-accent) 30%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 22px rgba(0, 0, 0, .35);
+}
+.rpg-top::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rpg-accent), transparent);
+  opacity: .55; pointer-events: none;
+}
+.rpg-lv {
+  text-shadow: 0 0 10px color-mix(in srgb, var(--rpg-accent) 70%, transparent);
+  font-variant-numeric: tabular-nums; letter-spacing: .5px;
+}
+.rpg-tabs { position: relative; }
+.rpg-tab { transition: transform .16s ease, box-shadow .2s ease, color .2s ease, background .2s ease; }
+.rpg-tab:hover { transform: translateY(-1px); }
+.rpg-tab.on, .rpg-tab.active, .rpg-tab[data-on="1"], .rpg-tab[aria-selected="true"] {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rpg-accent) 55%, transparent),
+              0 4px 14px color-mix(in srgb, var(--rpg-accent) 22%, transparent);
+}
+.rpg-card { transition: transform .18s ease, border-color .2s ease, box-shadow .2s ease; }
+.rpg-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--rpg-accent) 48%, transparent);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .32);
+}
+.rpg-card-hd > i { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--rpg-accent) 45%, transparent)); }
+.rpg-slot {
+  position: relative;
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, .035), transparent 60%);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.rpg-slot:hover { border-color: var(--rpg-accent); box-shadow: inset 0 0 12px var(--rpg-accent-soft); }
+.rpg-tier { text-shadow: 0 0 8px currentColor; }
+.rpg-btn { transition: transform .12s ease, filter .18s ease, box-shadow .18s ease; }
+.rpg-btn:hover:not(:disabled) { filter: brightness(1.14); box-shadow: 0 0 10px var(--rpg-accent-soft); }
+.rpg-btn:active:not(:disabled) { transform: scale(.96); }
+.rpg-chip { transition: transform .16s ease; }
+.rpg-chip:hover { transform: translateY(-1px); }
+.rpg-crit { text-shadow: 0 0 8px rgba(224, 168, 76, .65); }
+@media (prefers-reduced-motion: reduce) {
+  .rpg-tab, .rpg-card, .rpg-btn, .rpg-chip, .rpg-slot { transition: none !important; }
+  .rpg-tab:hover, .rpg-card:hover, .rpg-chip:hover, .rpg-btn:active { transform: none !important; }
+}

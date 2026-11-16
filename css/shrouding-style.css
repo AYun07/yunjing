@@ -1,0 +1,147 @@
+/* ============================================================
+   遮天主题 - 青铜帝金（万古苍茫 × 帝者威压）
+   v3.15.0 每界专属 UI 皮肤重做：
+   云雷回纹底纹 · 顶栏青铜压边 · 卡片鎏金兽面饰 ·
+   选项古篆指引 · 面板帝器标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #c89a5a;
+    --primary-dim: rgba(200, 154, 90, 0.12);
+    --primary-glow: rgba(200, 154, 90, 0.3);
+    --secondary: #8fae9f;
+    --accent: #a8865a;
+    --panel-border: rgba(200, 154, 90, 0.18);
+    background-color: #14110c;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(200, 154, 90, 0.09), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(143, 174, 159, 0.05), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23c89a5a' stroke-opacity='0.055'%3E%3Cpath d='M20 20 H60 V60 H20 Z'/%3E%3Cpath d='M32 32 H48 V48 H32 Z'/%3E%3Cpath d='M90 90 H130 V130 H90 Z'/%3E%3Cpath d='M102 102 H118 V118 H102 Z'/%3E%3Cpath d='M100 20 H120 V40 H100'/%3E%3Cpath d='M20 100 H40 V120 H20'/%3E%3C/g%3E%3Cg fill='%23e0c08e' fill-opacity='0.09'%3E%3Ccircle cx='70' cy='70' r='1.4'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #e0c08e, #c89a5a); }
+body .progress-fill { background: linear-gradient(90deg, #c89a5a, #e0c08e); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #e0c08e, #c89a5a); }
+body .foreshadow-item.planted {
+    background: rgba(200, 154, 90, 0.08);
+    border-left-color: #c89a5a;
+    color: #d4ae7c;
+}
+body .char-status { color: #c89a5a; border-color: rgba(200, 154, 90, 0.4); }
+
+/* ─────────── ① 顶栏：青铜祭坛 ─────────── */
+body.theme-shrouding .top-bar {
+    background: linear-gradient(180deg, rgba(24, 20, 13, 0.97), rgba(20, 17, 12, 0.93));
+    border-bottom: none;
+    box-shadow: inset 0 -2px 0 rgba(200, 154, 90, 0.3), inset 0 -4px 0 rgba(200, 154, 90, 0.1), 0 2px 18px rgba(0, 0, 0, 0.4);
+}
+body.theme-shrouding #gameTitle {
+    letter-spacing: 6px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), 0 0 20px rgba(200, 154, 90, 0.3);
+}
+
+/* ─────────── ② 正文卡：青铜铭器 ─────────── */
+body.theme-shrouding .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 3px;
+    background:
+        linear-gradient(170deg, rgba(200, 154, 90, 0.08), transparent 45%),
+        var(--panel);
+    border-top: 2px solid rgba(200, 154, 90, 0.4);
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.38);
+}
+/* 兽面纹眼：左右对称双目 */
+body.theme-shrouding .ai-card::before,
+body.theme-shrouding .ai-card::after {
+    content: '';
+    position: absolute;
+    top: 11px;
+    width: 7px; height: 7px;
+    pointer-events: none;
+}
+body.theme-shrouding .ai-card::before {
+    right: 26px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: rgba(200, 154, 90, 0.4);
+    box-shadow: 0 0 6px rgba(200, 154, 90, 0.3);
+}
+body.theme-shrouding .ai-card::after {
+    right: 12px;
+    border-radius: 50% 50% 0 50%;
+    transform: rotate(-45deg);
+    background: rgba(224, 192, 142, 0.35);
+    box-shadow: 0 0 6px rgba(200, 154, 90, 0.25);
+}
+body.theme-shrouding .ai-card-header {
+    border-bottom: 1px solid rgba(200, 154, 90, 0.22);
+    border-image: repeating-linear-gradient(90deg, rgba(200, 154, 90, 0.4) 0 8px, transparent 8px 16px) 1;
+}
+
+/* ─────────── ③ 章节徽章：帝器铭文 ─────────── */
+body.theme-shrouding .chapter-badge {
+    letter-spacing: 3px;
+    border: 1px solid rgba(224, 192, 142, 0.5);
+    box-shadow: 0 0 12px rgba(200, 154, 90, 0.3), inset 0 0 8px rgba(200, 154, 90, 0.12);
+}
+
+/* ─────────── ④ 选项按钮：古道石阶 ─────────── */
+body.theme-shrouding .option-btn { border-radius: 3px; }
+body.theme-shrouding .option-btn::before { content: '卐 '; color: #a8865a; }
+body.theme-shrouding .option-btn:hover:not(:disabled) {
+    border-color: rgba(200, 154, 90, 0.65);
+    box-shadow: inset 0 2px 0 rgba(200, 154, 90, 0.5), inset 0 -1px 0 rgba(200, 154, 90, 0.3);
+    background: rgba(200, 154, 90, 0.06);
+}
+body.theme-shrouding .options-title { letter-spacing: 6px; }
+body.theme-shrouding .options-title::before { content: '◆ '; color: #a8865a; }
+body.theme-shrouding .options-title::after { content: ' ◆'; color: #a8865a; }
+
+/* ─────────── ⑤ 输入区：古卷题刻 ─────────── */
+body.theme-shrouding #userInput { border-radius: 3px; }
+body.theme-shrouding #userInput:focus {
+    border-color: #c89a5a;
+    box-shadow: 0 0 0 3px rgba(200, 154, 90, 0.14), inset 0 1px 0 rgba(200, 154, 90, 0.1);
+}
+body.theme-shrouding #sendBtn { border-radius: 3px; letter-spacing: 2px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
+
+/* ─────────── ⑥ 面板：帝藏典录 ─────────── */
+body.theme-shrouding .panel-title { letter-spacing: 4px; }
+body.theme-shrouding .panel-title::before { content: '⟡ '; color: #a8865a; }
+body.theme-shrouding .gauge-label { color: #b89a68; }
+body.theme-shrouding .gauge-fill {
+    box-shadow: 0 0 6px rgba(200, 154, 90, 0.28);
+    background-image: repeating-linear-gradient(-45deg, transparent 0 5px, rgba(255, 235, 190, 0.08) 5px 10px);
+}
+body.theme-shrouding .sheet-box { border-top: 3px double rgba(200, 154, 90, 0.4); border-radius: 3px 3px 0 0; }
+body.theme-shrouding .modal-box { border-top: 3px double rgba(200, 154, 90, 0.4); border-radius: 3px 3px 0 0; }
+
+/* ─────────── ⑦ 滚动条：鎏金古轨 ─────────── */
+body.theme-shrouding #chatMessages::-webkit-scrollbar-thumb,
+body.theme-shrouding #statusPanel::-webkit-scrollbar-thumb,
+body.theme-shrouding #setupWrap::-webkit-scrollbar-thumb { background: rgba(200, 154, 90, 0.3); }
+body.theme-shrouding #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(200, 154, 90, 0.5); }
+
+/* ─────────── ⑧ 扮演模式特化：修行古卷 ─────────── */
+body.theme-shrouding .wizard-title { letter-spacing: 5px; text-shadow: 0 0 18px rgba(200, 154, 90, 0.3); }
+body.theme-shrouding .book-title-line { color: #c89a5a; letter-spacing: 2px; }
+body.theme-shrouding .status-panel {
+    border-image: linear-gradient(180deg, rgba(200, 154, 90, 0.38), rgba(143, 174, 159, 0.1)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：古钮 ─────────── */
+body.theme-shrouding .quick-btn { border-radius: 3px; letter-spacing: 1px; }
+body.theme-shrouding .quick-btn:hover {
+    border-color: rgba(200, 154, 90, 0.6);
+    background: rgba(200, 154, 90, 0.07);
+    box-shadow: inset 0 1px 0 rgba(200, 154, 90, 0.25);
+}
+
+/* ─────────── ⑩ 章节标题：万古碑文 ─────────── */
+body.theme-shrouding .story-chapter-title {
+    letter-spacing: 12px;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), 0 0 26px rgba(200, 154, 90, 0.28);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-shrouding.mobile .ai-card::before,
+body.theme-shrouding.mobile .ai-card::after { display: none; }

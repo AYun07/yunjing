@@ -1,0 +1,830 @@
+(function() {
+  "use strict";
+  const VERSION = "v3.36.1";
+  const genre = (() => {
+    try {
+      return new URLSearchParams(location.search).get("genre") || "free";
+    } catch (e) {
+      return "free";
+    }
+  })();
+  /* v3.68.0 串档修复：界专属模块状态按存档槽隔离（主档裸键零迁移，副档 ~slotId）
+   * v4.08.0 修复（D3 · 求值时机脆弱）：原来这是 IIFE 顶层常量，脚本一加载就求值。
+   *   但 studio.html 里 story-framework.js 带 defer、world-ext-core.js 不带
+   *   → 后者先执行 → 此刻 window.storyFramework 仍是 undefined → 只能退到
+   *   localStorage['storyActiveSlot_'+genre] 兜底。两者目前恰好相等纯属巧合
+   *   （URL 的 genre 与 fw.genre 同值），一旦分叉就会静默串档。
+   *   现在改为**惰性求值**：每次用时重新解析 slotId。 */
+  const SLOT_SUFFIX = () => {
+    try {
+      const fw = window.storyFramework;
+      const sid = (fw && fw.slotId)
+        || localStorage.getItem("storyActiveSlot_" + ((fw && fw.genre) || genre))
+        || "main";
+      return sid && sid !== "main" ? "~" + sid : "";
+    } catch (e) { return ""; }
+  };
+  /* v4.10.0 修 P2「运行中切档仍写旧槽键」：
+     STORE 原是 IIFE 顶层常量，脚本加载时求值一次就冻结。起始在主档时它恒为
+     `worldExt_{genre}`（裸键），此后切到副档，所有进展仍落进主档裸键；而删副档时
+     purge 清的是 `worldExt_{genre}~{副档}` —— 那是空键，真正的数据留在主档清不掉。
+     SLOT_SUFFIX 本身已是惰性求值，问题只出在 STORE 把它在加载期固化了。
+     改为函数，每次读 / 写时重新解析当前槽位（与 SLOT_SUFFIX 的惰性口径一致）。 */
+  const STORE = () => `worldExt_${genre}${SLOT_SUFFIX()}`;
+  const $id = (i) => document.getElementById(i);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  function asArr(v) {
+    if (v == null) return [];
+    if (Array.isArray(v)) return v.map((x) => typeof x === "object" && x ? x.name || x.title || x.名称 || JSON.stringify(x) : String(x)).filter(Boolean);
+    if (typeof v === "string") return v.split(/[、,，;；\n]/).map((s) => s.trim()).filter(Boolean);
+    if (typeof v === "object") return Object.keys(v).map((k) => `${k}${v[k] && typeof v[k] === "string" && v[k].length <= 20 ? "：" + v[k] : ""}`);
+    return [];
+  }
+  function asObj(v) {
+    if (v && typeof v === "object" && !Array.isArray(v)) return v;
+    if (typeof v === "string") {
+      try {
+        const o = JSON.parse(v);
+        return o && typeof o === "object" ? o : {};
+      } catch (e) {
+        return {};
+      }
+    }
+    return {};
+  }
+  function asNum(v, dflt) {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : dflt;
+  }
+  function pick(vars, keys) {
+    if (!vars) return void 0;
+    for (const k of keys) if (vars[k] != null && vars[k] !== "") return vars[k];
+    return void 0;
+  }
+  function bar(v, color, label) {
+    const n = Math.max(0, Math.min(100, Number(v) || 0));
+    return `<div class="wx-bar"><i style="width:${n}%;background:${color};"></i></div>` + (label != null ? `<b class="wx-bar-num" style="color:${color};">${esc(label)}</b>` : "");
+  }
+  function gauge(v, zones, unit) {
+    let n = Math.max(0, Math.min(100, Number(v) || 0));
+    let z = zones[zones.length - 1];
+    for (const t of zones) {
+      if (n <= t.max) {
+        z = t;
+        break;
+      }
+    }
+    return {
+      zone: z,
+      html: `<div class="wx-gauge">
+                <div class="wx-gauge-zones">${zones.map((t) => `<span style="flex:${t.max - (t.min || 0)};background:${t.color};opacity:${t === z ? 1 : 0.28};" title="${esc(t.label)}"></span>`).join("")}</div>
+                <div class="wx-gauge-main"><div class="wx-bar big"><i style="width:${n}%;background:${z.color};"></i></div>
+                <b style="color:${z.color};">${n}${unit || ""}</b><em style="color:${z.color};">${esc(z.label)}</em></div>
+            </div>`
+    };
+  }
+  function kv(pairs) {
+    return `<div class="wx-kvs">` + pairs.filter((p) => p && p[1] != null && p[1] !== "").map((p) => `<div class="wx-kv"><span>${esc(p[0])}</span><b>${esc(p[1])}</b></div>`).join("") + `</div>`;
+  }
+  function chips(arr, color) {
+    const a = asArr(arr);
+    return a.length ? `<div class="wx-chips">${a.map((x) => `<i style="--wc:${color || "var(--ip,#c9a86a)"};">${esc(x)}</i>`).join("")}</div>` : "";
+  }
+  function empty(icon, msg, hint) {
+    return `<div class="wx-empty"><b>${icon}</b><p>${esc(msg)}</p><small>${esc(hint || "")}</small></div>`;
+  }
+  function card(title, inner, opts) {
+    const o = opts || {};
+    if (!inner) return "";
+    return `<div class="wx-card${o.grow ? " grow" : ""}">
+            <div class="wx-card-hd"><span>${o.icon || "◈"}</span><b>${esc(title)}</b>${o.tag ? `<i class="wx-tag">${esc(o.tag)}</i>` : ""}</div>
+            <div class="wx-card-bd">${inner}</div></div>`;
+  }
+  const H = { esc, asArr, asObj, asNum, pick, bar, gauge, kv, chips, empty, card };
+  let modules = [];
+  let mods = {};
+  let booted = false;
+  let ent = null;
+  let entMod = null;
+  let dayEvents = [];
+  let pending = [];
+  /* v4.08.0：写盘失败只提示一次，避免 toast 轰炸 */
+  let saveWarned = false;
+  function mergeDefs(base, extra) {
+    const out = base.slice();
+    for (const d of extra || []) {
+      const i = out.findIndex((m) => m && m.id === d.id);
+      if (i >= 0) out[i] = d;
+      else out.push(d);
+    }
+    return out;
+  }
+  function visible(m) {
+    try {
+      return !(window.ModuleSettings && ModuleSettings.isHidden(m.id));
+    } catch (e) {
+      return true;
+    }
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORE());
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d && d.mods) mods = d.mods;
+        if (d && d.ent && d.ent.ledger) ent = d.ent;
+      }
+    } catch (e) {
+      mods = {};
+      ent = null;
+    }
+  }
+  function save() {
+    try {
+      localStorage.setItem(STORE(), JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
+      if (saveWarned) { saveWarned = false; }
+    } catch (e) {
+      /* v4.08.0 修复（静默写失败）：
+         此前 catch 是空块 → 配额满（QuotaExceededError）时磁盘没落盘，
+         内存里的 mods/ent 已改，刷新即回档丢失，而玩家毫不知情。
+         现在：① 降级到 MoStore（IndexedDB）再试；② 仍失败则**明确提示玩家**
+         （同一个存档里连续提示，避免 toast 轰炸）；③ 控制台留痕。 */
+      if (!saveWarned) {
+        saveWarned = true;
+        console.warn("[WorldExt] 存档写入失败（可能是浏览器存储配额已满）：", e);
+        try {
+          if (window.MoStore && typeof window.MoStore.setItem === "function") {
+            window.MoStore.setItem(STORE(), JSON.stringify({ version: VERSION, mods, ent: ent || void 0 }));
+            saveWarned = false;
+          }
+        } catch (e2) { /* IndexedDB 兜底也失败 */ }
+      }
+      if (saveWarned) {
+        try {
+          if (window.showToast) {
+            window.showToast("⚠ 界内进度保存失败：浏览器存储空间已满，本次改动刷新后会丢失。请到「接口设置」清理旧数据或导出存档后再试。", "error");
+          }
+        } catch (e3) {}
+      }
+    }
+  }
+  function ensureState(mod) {
+    if (!(mod.id in mods)) {
+      try {
+        mods[mod.id] = mod.init ? mod.init() : {};
+      } catch (e) {
+        mods[mod.id] = {};
+      }
+    }
+    if (!mods[mod.id] || typeof mods[mod.id] !== "object") mods[mod.id] = {};
+    return mods[mod.id];
+  }
+  function injectStyle() {
+    if ($id("wxStyle")) return;
+    const st = document.createElement("style");
+    st.id = "wxStyle";
+    st.textContent = `
+.wx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.wx-card{background:rgba(255,255,255,.035);border:1px solid var(--ip,#c9a86a)30;border-radius:12px;padding:12px 14px;min-width:0}
+.wx-card.grow{grid-column:1/-1}
+.wx-card-hd{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.wx-card-hd span{font-size:15px}
+.wx-card-hd b{font-size:13.5px;color:var(--ip,#c9a86a);letter-spacing:1px}
+.wx-tag{margin-left:auto;font-size:10.5px;padding:1px 8px;border-radius:8px;background:var(--ip,#c9a86a)22;color:var(--ip,#c9a86a);font-style:normal}
+.wx-kvs{display:flex;flex-direction:column;gap:5px}
+.wx-kv{display:flex;gap:8px;font-size:12.5px;align-items:baseline}
+.wx-kv span{color:var(--imt,#9a8c6e);flex:0 0 62px}
+.wx-kv b{color:var(--itx,#e8dcc0);font-weight:500;word-break:break-all}
+.wx-bar{position:relative;height:6px;border-radius:3px;background:var(--ip,#c9a86a)1c;overflow:hidden;flex:1}
+.wx-bar i{display:block;height:100%;border-radius:3px;transition:width .5s}
+.wx-bar.big{height:10px}
+.wx-bar-num{font-size:12px;font-variant-numeric:tabular-nums}
+.wx-gauge{margin:4px 0}
+.wx-gauge-zones{display:flex;gap:2px;height:4px;border-radius:2px;overflow:hidden;margin-bottom:5px}
+.wx-gauge-zones span{display:block;height:100%}
+.wx-gauge-main{display:flex;align-items:center;gap:9px}
+.wx-gauge-main em{font-style:normal;font-size:11.5px;letter-spacing:1px}
+.wx-chips{display:flex;flex-wrap:wrap;gap:5px}
+.wx-chips i{font-style:normal;font-size:11.5px;padding:2px 9px;border-radius:9px;background:color-mix(in srgb,var(--wc) 15%,transparent);border:1px solid color-mix(in srgb,var(--wc) 45%,transparent);color:var(--wc,#c9a86a)}
+.wx-empty{text-align:center;padding:26px 12px;color:var(--imt,#9a8c6e)}
+.wx-empty b{font-size:26px;display:block;margin-bottom:8px;opacity:.7}
+.wx-empty p{font-size:13px;margin-bottom:5px;color:var(--itx,#d8cba8)}
+.wx-empty small{font-size:11px;opacity:.75;line-height:1.7;display:block}
+.wx-mirror{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:stretch}
+.wx-mirror-side{border:1px dashed var(--ip,#c9a86a)38;border-radius:10px;padding:10px;min-width:0}
+.wx-mirror-side h4{font-size:12.5px;color:var(--ip,#c9a86a);margin-bottom:7px;letter-spacing:1px}
+.wx-mirror-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:34px}
+.wx-mirror-mid b{font-size:17px}
+.wx-reson{animation:wxPulse 1.6s infinite}
+@keyframes wxPulse{0%,100%{opacity:.55}50%{opacity:1}}
+.wx-matrix-wrap{overflow-x:auto}
+table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420px}
+.wx-matrix th{color:var(--imt,#9a8c6e);font-weight:500;padding:5px 7px;text-align:left;white-space:nowrap}
+.wx-matrix th.sus{color:var(--ip,#c9a86a);cursor:pointer;max-width:92px;overflow:hidden;text-overflow:ellipsis}
+.wx-matrix td{padding:4px 7px;border-top:1px solid var(--ip,#c9a86a)1a}
+.wx-matrix td.cell{width:26px;height:22px;cursor:pointer;text-align:center;color:var(--ip,#c9a86a);user-select:none}
+.wx-matrix td.cell.on{background:var(--ip,#c9a86a)2e;border-radius:5px}
+.wx-accuse{margin:10px 0 2px;width:100%;padding:8px;border-radius:9px;border:1px solid #e0707055;background:#e0707018;color:#e8a0a0;font-size:12.5px;cursor:pointer;letter-spacing:1px}
+.wx-accuse:hover{background:#e0707028}
+.wx-banner{border:1px solid var(--ip,#c9a86a)45;border-radius:10px;padding:9px 12px;font-size:12.5px;background:var(--ip,#c9a86a)12;margin-top:9px;line-height:1.7}
+.wx-rings{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.wx-ring{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;color:#111;font-weight:700;border:2px solid rgba(0,0,0,.35)}
+.wx-ring.ghost{border:2px dashed var(--imt,#9a8c6e);color:var(--imt,#9a8c6e);background:none;font-weight:400}
+.wx-slot{display:flex;gap:6px;align-items:center;margin-top:9px}
+.wx-slot input,.wx-slot select{flex:1;background:rgba(0,0,0,.3);border:1px solid var(--ip,#c9a86a)38;color:var(--itx,#e8dcc0);border-radius:8px;padding:6px 9px;font-size:12px;outline:none;min-width:0}
+.wx-btn{border:1px solid var(--ip,#c9a86a)55;background:var(--ip,#c9a86a)18;color:var(--ip,#c9a86a);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;letter-spacing:1px}
+.wx-btn:hover{background:var(--ip,#c9a86a)2a}
+.wx-btn.danger{border-color:#e0707055;background:#e0707018;color:#e8a0a0}
+.wx-stepper{display:flex;gap:4px;align-items:center}
+.wx-step{flex:1;text-align:center;font-size:11.5px;padding:6px 2px;border-radius:8px;border:1px solid var(--ip,#c9a86a)25;color:var(--imt,#9a8c6e);position:relative}
+.wx-step.on{border-color:var(--ip,#c9a86a);color:var(--ip,#c9a86a);background:var(--ip,#c9a86a)16;font-weight:600}
+.wx-step.done{color:var(--itx,#d8cba8);border-color:var(--ip,#c9a86a)45}
+.wx-task{display:flex;gap:9px;align-items:baseline;border-top:1px dashed var(--imt,#9a8c6e)30;padding:8px 2px;font-size:12.5px}
+.wx-task:first-child{border-top:none}
+.wx-task b{color:var(--itx,#e8dcc0);font-weight:500;flex:1}
+.wx-task .st{font-size:10.5px;padding:1px 8px;border-radius:8px;white-space:nowrap}
+.wx-idx{display:inline-flex;width:22px;height:22px;border-radius:6px;background:var(--ip,#c9a86a)1e;color:var(--ip,#c9a86a);font-size:11px;align-items:center;justify-content:center;margin-right:3px}
+.wx-fire{display:inline-flex;flex-direction:column;align-items:center;gap:3px;width:64px;padding:7px 2px;border-radius:9px;border:1px solid var(--ip,#c9a86a)22;color:var(--imt,#9a8c6e);font-size:10px}
+.wx-fire.on{border-color:#e0707088;background:#e0707014;color:#e8b08a}
+.wx-fire b{font-size:10.5px;color:inherit;line-height:1.3;text-align:center}
+.wx-tip{font-size:11.5px;color:var(--imt,#9a8c6e);line-height:1.7;margin-bottom:10px}
+.wx-del{background:none;border:none;color:#e0707099;cursor:pointer;font-size:13px;padding:0 3px}
+/* v3.32.2 主界面常驻多模块状态板（ws-*）：第一行各界专属模块指标（summary 协议汇总），
+   第二行实体引擎家底——点击整卡直开界专属操作台（玩家反馈：模块功能埋抽屉太深、布局要美观） */
+#wxStrip{margin:0 0 8px}
+.ws-board{display:flex;flex-direction:column;gap:8px;padding:10px 14px;border-radius:14px;cursor:pointer;
+    border:1px solid color-mix(in srgb,var(--ip,#c9a86a) 32%,transparent);
+    background:linear-gradient(135deg,color-mix(in srgb,var(--ip,#c9a86a) 13%,transparent),color-mix(in srgb,var(--ip,#c9a86a) 4%,transparent));
+    transition:border-color .25s,transform .15s;user-select:none}
+.ws-board:hover{border-color:color-mix(in srgb,var(--ip,#c9a86a) 68%,transparent);transform:translateY(-1px)}
+.ws-board:active{transform:translateY(0)}
+.ws-mods{display:flex;flex-wrap:wrap;align-items:center;gap:10px;row-gap:6px}
+.ws-grp{display:inline-flex;align-items:center;gap:5px;cursor:inherit}
+.ws-gi{font-size:14px;line-height:1}
+.ws-gv{font-size:13px;font-weight:700;color:var(--itx,#e8dcc0);font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.ws-gv.cold{color:#7ad8e8}
+.ws-gv.warn{color:#e0a84c}
+.ws-gv.bad{color:#e07070}
+.ws-gv.ok{color:#8fd9a8}
+.ws-gl{font-size:11px;color:var(--imt,#9a8c6e);letter-spacing:.5px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws-div{width:1px;height:15px;background:color-mix(in srgb,var(--ip,#c9a86a) 26%,transparent);flex:0 0 auto}
+.ws-more{margin-left:auto;font-size:11px;color:var(--ip,#c9a86a);opacity:.75;letter-spacing:1px;white-space:nowrap;flex:0 0 auto;transition:opacity .2s}
+.ws-board:hover .ws-more{opacity:1}
+.ws-ent{display:flex;align-items:center;gap:10px;flex-wrap:wrap;row-gap:6px;padding-top:8px;
+    border-top:1px dashed color-mix(in srgb,var(--ip,#c9a86a) 20%,transparent)}
+.ws-hd{font-size:13px;font-weight:700;color:var(--ip,#c9a86a);letter-spacing:1px;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.ws-reswrap{display:flex;gap:7px;flex-wrap:wrap;flex:1;min-width:0}
+.ws-res{display:inline-flex;align-items:baseline;gap:4px;padding:2px 9px;border-radius:8px;font-size:11px;
+    background:rgba(0,0,0,.32);border:1px solid color-mix(in srgb,var(--ip,#c9a86a) 16%,transparent);white-space:nowrap}
+.ws-res b{color:var(--itx,#e8dcc0);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.ws-res.flash{animation:wsFlash .7s ease}
+@keyframes wsFlash{0%{background:color-mix(in srgb,var(--ip,#c9a86a) 45%,transparent)}100%{background:rgba(0,0,0,.32)}}
+.ws-tail{font-size:11.5px;color:var(--imt,#9a8c6e);white-space:nowrap;letter-spacing:.5px}
+.ws-tail b{color:var(--itx,#d8cba8);font-weight:600}
+@media(max-width:420px){.ws-board{gap:7px;padding:9px 11px}.ws-mods{gap:8px}.ws-res{padding:2px 7px}.ws-hd{font-size:12px}.ws-more{display:none}}`;
+    document.head.appendChild(st);
+  }
+  function define(g, defs) {
+    var _a;
+    if (g !== genre) return;
+    /* v4.07.2 修 D-30（define 整体覆盖，D-02 的镜像方向）：
+       原式 modules = defs 会把 init() 阶段 tryPlayerKit() 已挂上的随身器官
+       （面板 / 背包 / 自定义槽）整片顶掉。若此刻 PlayerKit 尚未就绪、
+       界扩展脚本又先于 YJWait 重试加载完成，随身器官就会在 define 之后、
+       tryPlayerKit 重试之前处于「消失」状态；一旦 YJWait 超时（60×150ms），
+       随身器官便永久缺失——玩家既没有背包也没有自定义槽。
+       改为合并：已挂模块保留，本界专属同名时以本界为准。 */
+    modules = mergeDefs(modules, (Array.isArray(defs) ? defs : []).filter((m) => m && m.id));
+    if (pending.length) modules = mergeDefs(modules, pending);
+    try {
+      if (window.PlayerKit && typeof window.PlayerKit.augment === "function") {
+        modules = window.PlayerKit.augment(g, modules);
+      }
+    } catch (e) {
+    }
+    load();
+    modules.forEach(ensureState);
+    entMod = modules.find((m) => m && (m.eeLedger || m.eeOps)) || null;
+    if (entMod && window.EE) {
+      if (!ent || !ent.ledger) ent = EE.blank();
+      try {
+        EE.Ledger.seed(ent, ((_a = entMod.eeLedger) == null ? void 0 : _a.start) || {}, null);
+      } catch (e) {
+      }
+      ent._modId = entMod.id;
+    }
+    try {
+      const fw = window.storyFramework;
+      if (fw && fw.storyState && fw.storyState.variables) onVars(fw.storyState.variables, Number(fw.storyState.variables.chapter) || 0);
+    } catch (e) {
+    }
+    console.log(`[WorldExt] ${genre} 界专属模块就位：${modules.map((m) => m.name).join(" / ")}${entMod ? "（实体引擎已挂载）" : ""}`);
+    mountStrip();
+  }
+  /* v3.55.29：PlayerKit 不可用（尚未加载 / 加载失败）时，原逻辑「这次不在就永远算了」——
+     界专属模块就此静默全废，外界只看到 hasModules() 恒 false。改为等到就绪再补挂。 */
+  /* v4.07.2 修 D-10：此处原为 modules = got（整体覆盖）。
+     竞态场景（实测复现于玄鉴仙族界）：init() 在 DOMContentLoaded 时 PlayerKit 往往尚未加载，
+     于是走 YJWait 延后重试；而界扩展的 define() 可能已先跑完并设好了本界专属模块。
+     重试成功时用覆盖写法 → 界专属模块被随身器官整片顶掉（实测丢失「符种坛/牲祭坛/族谱位阶」3 个），
+     且此后 module-forge 的注入只能合并进随身器官，本界专属模块永久消失。
+     改为合并：随身器官在前，本界专属模块保留（同名以本界为准）。 */
+  function tryPlayerKit() {
+    var PK = window.PlayerKit;
+    if (!PK || typeof PK.augment !== "function") return false;
+    var got = PK.augment(genre, []);
+    if (!Array.isArray(got)) return false;          /* 影子对象会返回 Promise，不能当数组用 */
+    modules = mergeDefs(got, modules);
+    load();
+    modules.forEach(ensureState);
+    console.log(`[WorldExt] ${genre} 随身器官已挂载：${got.map((m) => m.name).join(" / ")}｜本界模块共 ${modules.length} 个`);
+    return true;
+  }
+  /* 本界是否已挂随身器官（面板/背包/自定义槽） */
+  function hasPkModules() {
+    try {
+      return modules.some(function (m) {
+        return m && (m.id === "pkPanel" || m.id === "pkBag" || m.id === "custom");
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+  function init() {
+    injectStyle();
+    /* v4.07.2 修 D-31（存档恢复绑在懒加载上）：此前 load() 只在 define() 与 tryPlayerKit() 里调用，
+       而两者都依赖界扩展脚本 / PlayerKit 就绪——界扩展是懒加载的，
+       于是「刷新页面 → 界扩展加载完成」这段窗口里，模块状态全是初始值，
+       玩家会以为自己的委托、灵田、背包进度全没了（实测：reload 后立即读状态，
+       resources 与 cooldowns 已被清空，3 秒后才恢复）。
+       这里在 init() 里就先把存档读回来，与界扩展的加载时机解耦。 */
+    try { load(); } catch (e) { }
+    try {
+      /* v4.07.2：判断条件从「一个模块都没有」改为「缺随身器官」——
+         本界专属模块已就绪但 PlayerKit 晚到时，同样要把随身器官补挂上，
+         否则玩家在本界既没有面板也没有背包（模块不丢，但功能缺一半）。 */
+      if (!modules.length || !hasPkModules()) {
+        if (!tryPlayerKit() && window.YJWait) {
+          YJWait.for(tryPlayerKit, null, { name: "world-ext.playerkit", base: 150, max: 60 });
+        }
+      }
+    } catch (e) {
+    }
+    try {
+      if (pending.length) {
+        const before = modules.length;
+        modules = mergeDefs(modules, pending);
+        if (modules.length !== before) {
+          modules.forEach(ensureState);
+          console.log(`[WorldExt] ${genre} 界注入模块合流：${modules.map((m) => m.name).join(" / ")}`);
+          mountStrip();
+        }
+      }
+    } catch (e) {
+    }
+    booted = true;
+  }
+  function hasModules() {
+    return modules.length > 0;
+  }
+  function onVars(vars, round) {
+    if (!vars) return;
+    /* v3.56.1：每轮同步统一实体镜像（引用级，零破坏旧路径） */
+    try { if (window.EntityStore) window.EntityStore.bootstrap(vars); } catch (e) {}
+    if (!modules.length) return;
+    let dirty = false;
+    for (const m of modules) {
+      if (!visible(m)) continue;
+      try {
+        const s = ensureState(m);
+        if (m.read) {
+          if (m.read(s, vars, round)) dirty = true;
+        }
+      } catch (e) {
+        console.warn(`[WorldExt:${m.id}]`, e.message);
+      }
+    }
+    if (ent && entMod && window.EE) {
+      try {
+        const absorb = entMod.eeAbsorb ? entMod.eeAbsorb(vars) : null;
+        if (absorb) {
+          if (absorb.res && EE.Ledger.absorb(ent, absorb.res)) dirty = true;
+          if (absorb.residents && EE.Residents.absorb(ent, absorb.residents)) dirty = true;
+        }
+        const before = dayEvents.length;
+        EE.tick(ent, entMod.eeCfg, dayEvents);
+        if (dayEvents.length > before) {
+          dirty = true;
+          dayEvents.slice(before).forEach((ev) => {
+            var _a, _b, _c;
+            try {
+              (_a = window.showToast) == null ? void 0 : _a.call(window, `🏗 ${ev.text}`, "success");
+              (_c = (_b = window.Celebration) == null ? void 0 : _b.fire) == null ? void 0 : _c.call(_b, "seal");
+            } catch (e) {
+            }
+          });
+          /* v4.08.0 修复（无上限增长）：dayEvents 是模块级累积数组，从不被清空
+             → 每次 EE.tick 产生的完工事件永久堆积（纯内存泄漏，长时挂机时单调增长）。
+             事件只用于弹提示，处理完本批即清空。 */
+          dayEvents.length = 0;
+        }
+      } catch (e) {
+        console.warn("[WorldExt:ent]", e.message);
+      }
+    }
+    if (dirty) save();
+    refreshStrip();
+    try {
+      const body = $id("immBody");
+      if (body && body.dataset.wxTab === "1") {
+        body.innerHTML = panelHTML();
+      }
+    } catch (e) {
+    }
+  }
+  function panelHTML() {
+    if (!modules.length) return empty("🧬", "本界暂无专属模块", "界专属扩展按世界定制——自由工坊可自定义追踪字段");
+    injectStyle();
+    const secs = [];
+    for (const m of modules) {
+      if (!visible(m)) continue;
+      try {
+        const s = ensureState(m);
+        const inner = m.html ? String(m.html(s, H)) : "";
+        const nm = window.ModuleSettings && ModuleSettings.aliasOf ? ModuleSettings.aliasOf(m.id, m.name) : m.name;
+        const gearBtn = window.ModuleSettings && ModuleSettings.button ? ModuleSettings.button(m.id) : "";
+        secs.push(`<section class="wx-sec" style="margin-bottom:16px;">
+                    <div class="wx-sec-hd"><b>${m.icon || "◈"} ${esc(nm)}</b><span>${esc(m.tip || "")}</span>${gearBtn}</div>
+                    ${m.tip ? "" : ""}${inner || empty(m.icon || "◈", "尚无数据", "开篇后随 (variable_update) 上报自动填充")}
+                </section>`);
+      } catch (e) {
+        secs.push(empty("⚠️", `${m.name} 面板故障`, e.message));
+      }
+    }
+    return `<div class="wx-tip">🧬 玩家随身（面板/背包）+ 本界专属机制——数值与剧情互相咬合，此写彼应；背包可手动增删，点击模块内按钮可干预；模块右上角 ⚙ 可改名/隐藏/自定义数值</div>` + secs.join("");
+  }
+  function act(modId, action, payload) {
+    const m = modules.find((x) => x.id === modId);
+    if (!m) {
+      /* v4.07.2 修 D-24：模块不存在时原先静默 return —— 调用方（小云工具、脚本、自动化测试）
+         传错模块 id 时完全无从察觉，还以为动作「执行了但没效果」。
+         本轮玩家旅程实测就踩中了这个坑：把动作名当模块 id 传进来，
+         10 个步骤的动作一个都没真跑，却全程零报错。静默失败是这类缺陷最好的藏身处。 */
+      const msg = "未找到模块「" + modId + "」";
+      if (window.showToast) window.showToast(msg, "warn");
+      return msg;
+    }
+    try {
+      const s = ensureState(m);
+      if (action && String(action).startsWith("ee") && ent && window.EE) {
+        /* v4.07.2 修 D-22：ent 分支原先 entAct(...); return; —— 把 entAct 产出的提示文案丢了。
+           D-08 修的是 m.act 分支，这一条分支当时被漏掉，结果所有 ee* 动作（安全屋经营：
+           开工/取消/派工/请出/撤工单/确认/入账/收留）在任何以返回值驱动的调用方
+           （自动化探测、回归脚本、小云工具）眼里都是「点了没反应」。 */
+        return entAct(action, payload, s, m);
+      }
+      const toast = m.act(s, action, payload);
+      save();
+      const body = $id("immBody");
+      if (body) {
+        body.dataset.wxTab = "1";
+        body.innerHTML = panelHTML();
+      } else {
+      }
+      if (toast && window.showToast) window.showToast(String(toast), "success");
+      /* v4.07.2 修 D-08：此前本函数不返回任何值，模块 act() 的结果只喂给 toast 就丢了。
+         后果：① 自动化功能探测无法判断动作成功与否，只能靠状态快照猜，误报/漏报都多；
+                ② 任何以「返回值」驱动逻辑的调用方（脚本、小云工具、回归测试）都拿不到反馈。
+         world-runtime 的 act 本身就返回结果字符串——包装层丢弃它是接口契约不一致。
+         修法：把结果原样返回；toast 与返回值共用同一份文案，不新增第二套口径。 */
+      return toast;
+    } catch (e) {
+      console.warn(`[WorldExt:${modId}.act]`, e.message);
+      return undefined;
+    }
+  }
+  function entAct(action, payload, s, m) {
+    var _a, _b, _c, _d;
+    let toast = "";
+    try {
+      switch (action) {
+        case "eeStart": {
+          const def = (m.eeOps || []).find((o) => o.id === payload);
+          /* v4.07.2 修 D-22：早退路径原先是裸 return —— 不提示、不刷新面板，
+             用户点了没反应还以为程序卡了。改成给出可读提示。 */
+          if (!def) { toast = "未找到该工程，无法开工"; break; }
+          const r = EE.Projects.start(ent, def);
+          if (!r.ok) {
+            toast = r.msg;
+          } else {
+            const cost = Object.entries(def.cost || {}).map(([k, v]) => `${k}${v}`).join("/");
+            EE.Ops.add(ent, `启动工程「${def.name}」：消耗${cost}，工期${def.days || 1}天${((_a = def.yield) == null ? void 0 : _a.note) ? "，" + def.yield.note : ""}`);
+            toast = `🏗 ${def.name} 已开工——资源已扣，工期 ${def.days || 1} 天`;
+            try {
+              (_b = m.eeWrap) == null ? void 0 : _b.call(m, action, payload, r, s);
+            } catch (e) {
+            }
+          }
+          break;
+        }
+        case "eeCancel": {
+          const i = ent.projects.queue.findIndex((p2) => p2.id === payload);
+          if (i < 0) { toast = "队列中没有可取消的工程"; break; }
+          const p = ent.projects.queue.splice(i, 1)[0];
+          Object.entries(((_c = p.yield) == null ? void 0 : _c.refundCost) || {}).forEach(([k, v]) => EE.Ledger.move(ent, k, 0, "", "engine"));
+          const half = {};
+          Object.entries(((_d = (m.eeOps || []).find((o) => o.id === payload)) == null ? void 0 : _d.cost) || {}).forEach(([k, v]) => half[k] = -Math.floor(Number(v) / 2));
+          Object.entries(half).forEach(([k, v]) => EE.Ledger.move(ent, k, v, `工程「${p.name}」取消退款`, "player"));
+          toast = `已取消「${p.name}」（退回半数材料）`;
+          break;
+        }
+        case "eeJob": {
+          const [name, job] = String(payload).split("=");
+          const u = ent.residents.list.find((x) => x.name === name);
+          if (u) {
+            u.job = job;
+            EE.Ops.add(ent, `派工：${name} → ${job}`);
+            toast = `${name} 的分工已改为「${job}」`;
+          } else {
+            /* v4.07.2 修 D-22：名册里没这个人时原先静默无反馈 */
+            toast = name ? `名册中没有「${name}」` : "格式：姓名=分工，如 张三=守夜";
+          }
+          break;
+        }
+        case "eeLeave": {
+          if (EE.Residents.remove(ent, payload, "玩家请出")) {
+            EE.Ops.add(ent, `将 ${payload} 请出安全屋`);
+            toast = `${payload} 已离开安全屋`;
+          } else {
+            /* v4.07.2 修 D-22：不在名册里时原先静默无反馈 */
+            toast = `名册中没有「${payload}」，无需请出`;
+          }
+          break;
+        }
+        case "eeDropOp": {
+          /* v4.07.2 修 D-23（输入未校验致误操作）：原先直接 splice(Number(payload), 1)，
+             payload 非数字时 Number() 得 NaN，splice(NaN,1) 被当作 splice(0,1)
+             —— 会误删掉第一张待确认工单。必须先校验索引合法性。 */
+          const idx = Number(payload);
+          const n = (ent.ops.tickets || []).length;
+          if (!Number.isInteger(idx) || idx < 0 || idx >= n) {
+            toast = "工单序号无效（应为 1～" + n + "）";
+            break;
+          }
+          ent.ops.tickets.splice(idx, 1);
+          toast = "已撤销第 " + (idx + 1) + " 项待确认行动";
+          break;
+        }
+        case "eeConfirm": {
+          const items = EE.Ops.confirm(ent);
+          if (items) toast = `已确认 ${items.length} 项行动——本轮正文将据此演绎`;
+          break;
+        }
+        case "eeAddRes": {
+          const raw = String(payload || "").trim();
+          const [k, v] = raw.split(/[=＝]/);
+          if (k && Number.isFinite(Number(v))) {
+            EE.Ledger.move(ent, k.trim(), Math.round(Number(v)), "手工入账", "player");
+            toast = `账本入账：${k.trim()} ${Number(v) > 0 ? "+" : ""}${Math.round(Number(v))}`;
+          } else toast = "格式：资源名=数量，如 钢材=50";
+          break;
+        }
+        case "eeAddResident": {
+          const raw = String(payload || "").trim();
+          const [name, role] = raw.split(/[=＝]/);
+          if (name && EE.Residents.add(ent, { name: name.trim(), role: (role || "").trim() })) {
+            EE.Ops.add(ent, `收留 ${name.trim()}入住安全屋`);
+            toast = `${name.trim()} 已入住安全屋`;
+          } else toast = name ? "名册已满或姓名重复" : "格式：姓名=身份，如 刘阿姨=小区楼长";
+          break;
+        }
+      }
+    } catch (e) {
+      console.warn("[WorldExt:entAct]", e.message);
+    }
+    save();
+    refreshStrip();
+    const body = $id("immBody");
+    if (body) {
+      body.dataset.wxTab = "1";
+      body.innerHTML = panelHTML();
+    }
+    if (toast && window.showToast) window.showToast(toast, "success");
+    /* v4.07.2 修 D-22：把结果原样返回，与 m.act 分支同口径（调用方拿得到反馈） */
+    return toast;
+  }
+  function stripHTML() {
+    const groups = [];
+    for (const m of modules) {
+      if (!m.summary) continue;
+      if (!visible(m)) continue;
+      try {
+        const s = ensureState(m);
+        const raw = m.summary(s);
+        /* v4.07.2 修 D-01（第二半）：summary 协议约定返回数组，但第三方/旧模块可能返回字符串。
+           原实现直接 items.filter(...)，字符串没有 filter → TypeError → 被下面的空 catch
+           静默吞掉 → 整块状态板静默消失，用户看到「界面什么都没坏但就是空着」。
+           修法：字符串型 summary 包成单格；同时把 catch 从静默改为告警，让故障可观测。 */
+        let items = null;
+        if (Array.isArray(raw)) items = raw;
+        else if (typeof raw === "string" && raw.trim()) items = [{ i: m.icon, v: raw.trim() }];
+        if (!items || !items.length) continue;
+        const cells = items.filter((it) => it && it.v != null && String(it.v) !== "").map(
+          (it) => `${it.i ? `<span class="ws-gi">${esc(String(it.i))}</span>` : ""}<span class="ws-gv${it.tone ? " " + esc(String(it.tone)) : ""}">${esc(String(it.v))}</span>` + (it.l ? `<span class="ws-gl">${esc(String(it.l))}</span>` : "")
+        ).join("");
+        if (cells) groups.push(`<span class="ws-grp" title="${esc(m.name)}">${cells}</span>`);
+      } catch (e) {
+        console.warn("[WorldExt:stripHTML] 模块 " + (m && m.id) + " summary 异常：", e && e.message);
+      }
+    }
+    let entRow = "";
+    if (ent && entMod && window.EE) {
+      try {
+        const defs = entMod.eeLedger && entMod.eeLedger.defs || [];
+        const res = defs.map((d) => `<span class="ws-res" title="${esc(d.note || d.key)}">${d.icon || "📦"}<b>${EE.Ledger.get(ent, d.key)}</b></span>`).join("");
+        const q = ent.projects.queue;
+        const qTxt = q.map((p) => `${p.icon || "🏗"}${esc(p.name)}·余${p.left}天`).join(" ");
+        const people = ent.residents.list.length;
+        const doneN = ent.projects.done.length;
+        const tail = `${qTxt ? `<b>${qTxt}</b>` : ""}${people ? `${qTxt ? " " : ""}👥${people}人` : ""}${doneN ? ` ✅${doneN}` : ""} ›`;
+        entRow = `<div class="ws-ent">
+                    <span class="ws-hd">${entMod.icon || "🏠"} ${esc(entMod.name)}</span>
+                    <span class="ws-reswrap">${res}</span>
+                    <span class="ws-tail">${tail}</span>
+                </div>`;
+      } catch (e) {
+      }
+    }
+    if (!groups.length && !entRow) return null;
+    return `<div class="ws-board" onclick="ImmersiveSuite.openTab('ext')" title="打开界专属操作台">
+            ${groups.length ? `<div class="ws-mods">${groups.join('<span class="ws-div"></span>')}<span class="ws-more">🧬 界专属操作台 ›</span></div>` : ""}
+            ${entRow}
+        </div>`;
+  }
+  function mountStrip() {
+    const bar2 = $id("quickBar");
+    if (!bar2) return;
+    if (!$id("wxStrip")) {
+      if (!stripHTML()) return;
+      const el = document.createElement("div");
+      el.id = "wxStrip";
+      bar2.parentNode.insertBefore(el, bar2);
+    }
+    refreshStrip();
+  }
+  function refreshStrip() {
+    const el = $id("wxStrip");
+    if (!el) return;
+    const html = stripHTML();
+    if (html) {
+      el.innerHTML = html;
+      el.style.display = "";
+    } else {
+      el.style.display = "none";
+    }
+  }
+  function takeDirective() {
+    if (!modules.length) return null;
+    const contracts = [];
+    const directives = [];
+    for (const m of modules) {
+      if (!visible(m)) continue;
+      try {
+        const s = ensureState(m);
+        const c = typeof m.contract === "function" ? m.contract(s) : m.contract;
+        if (c) contracts.push(`· ${m.name}：${c}`);
+        if (m.directive) {
+          const d = m.directive(s);
+          if (d) directives.push(`· ${m.name}——${d}`);
+        }
+      } catch (e) {
+      }
+    }
+    let opsTicket = null;
+    if (ent && entMod && window.EE && ent.ops.tickets.length) {
+      opsTicket = EE.Ops.takeDirective(ent, true);
+    }
+    if (!contracts.length && !directives.length && !opsTicket) return null;
+    const parts = [];
+    if (opsTicket) parts.push(opsTicket);
+    if (contracts.length) parts.push(`【本界专属机制 · 变量上报契约】每轮在 (variable_update) 中如实更新以下字段（无变化可省）：
+${contracts.join("\n")}`);
+    if (directives.length) parts.push(`【本界专属机制 · 当前状态指引】
+${directives.join("\n")}
+——以上机制是本界玩法的器官：正文事件应推动这些数值变化，数值变化也应反过来改写剧情走向（此写彼应，禁止脱节）；不要向玩家复述数值面板本身。`);
+    return parts.join("\n\n");
+  }
+  function injectModules(g, defs) {
+    if (g !== genre) return false;
+    const list = (Array.isArray(defs) ? defs : []).filter((m) => m && m.id);
+    if (!list.length) return false;
+    pending = mergeDefs(pending, list);
+    if (modules.length) {
+      modules = mergeDefs(modules, list);
+      modules.forEach(ensureState);
+      save();
+      refreshStrip();
+      try {
+        const body = $id("immBody");
+        if (body && body.dataset.wxTab === "1") body.innerHTML = panelHTML();
+      } catch (e) {
+      }
+    }
+    return true;
+  }
+  window.WXH = H;
+  /* v4.08.0 卸载前落盘：此前 worldExt 的内存态只在 act()/onVars() 时落盘，
+     玩家在面板改完状态直接关页面 → 改动全丢（切档场景已在 SaveSlots.switchTo 里补冲盘，
+     但「关页面」这条路径仍然没有）。现挂 pagehide + beforeunload 双保险。 */
+  try {
+    if (typeof window.addEventListener === "function") {
+      window.addEventListener("pagehide", () => { try { save(); } catch (e) {} }, { capture: true });
+      window.addEventListener("beforeunload", () => { try { save(); } catch (e) {} }, { capture: true });
+    }
+  } catch (e) {}
+  window.WorldExt = {
+    version: VERSION,
+    genre,
+    define,
+    init,
+    hasModules,
+    onVars,
+    panelHTML,
+    act,
+    takeDirective,
+    /* v3.33.0 主界面常驻多模块状态板（快捷指令条上方，点击直开界专属操作台） */
+    mountStrip,
+    refreshStrip,
+    stripHTML,
+    injectModules,
+    persist: save,
+    /* v3.33.0 模块注入入口 + 异步落盘（通讯回信完成等场景） */
+    /* v3.32.0 实体引擎透出（界扩展/调试用） */
+    entState() {
+      return ent;
+    },
+    entModule() {
+      return entMod;
+    },
+    modState(id) {
+      const m = modules.find((x) => x.id === id);
+      return m ? ensureState(m) : null;
+    },
+    /* v4.07.2 模块清单枚举：此前 WorldExt 只有 modState(id) 单查，没有列表接口，
+       导致自动化功能探测只能靠正则猜模块 id（漏掉用单引号书写的 id），
+       「某界到底装了哪些模块」无法回答。补此接口后，探测与诊断都能读真实清单。
+       actions 取法：优先读模块对象自身（各 ext 用 WorldExt.define 直接注册原始对象，
+       actions 就挂在对象上），再回落到 WorldRuntime.registry()（走 WR.module 包装的模块，
+       其 actions 被列进 RESERVED 不会挂到对象上，只能从原始蓝图读）。 */
+    moduleList() {
+      const reg = (window.WorldRuntime && window.WorldRuntime.registry) ? window.WorldRuntime.registry() : {};
+      return modules.map((m) => {
+        const bp = (reg && reg[m.id]) || null;
+        const acts = (m.actions && m.actions.length) ? m.actions : ((bp && bp.actions) || []);
+        return {
+          id: m.id,
+          name: m.name,
+          icon: m.icon,
+          type: m.type,
+          actions: (acts || []).map((a) => (a && a.id) ? a.id : a).filter(Boolean),
+          hasSummary: typeof m.summary === "function",
+        };
+      });
+    },
+    /* v3.56.1 世界基座入口：当前变量模板 + 实体统计（供 P2 编辑器 / 小云诊断消费） */
+    schema() {
+      const g = genre;
+      const vs = window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables;
+      const ent = (vs && vs.entities) || null;
+      const counts = {
+        characters: ent && ent.characters ? Object.keys(ent.characters).length : 0,
+        items: ent && ent.items ? Object.keys(ent.items).length : 0,
+        factions: ent && ent.factions ? Object.keys(ent.factions).length : 0,
+        places: ent && ent.places ? Object.keys(ent.places).length : 0,
+        relations: ent && ent.relations ? ent.relations.length : 0
+      };
+      return { genre: g, schema: window.SchemaRegistry ? window.SchemaRegistry.get(g) : null, entityCounts: counts };
+    },
+    _reset() {
+      var _a;
+      mods = {};
+      ent = null;
+      modules.forEach(ensureState);
+      if (entMod && window.EE) {
+        ent = EE.blank();
+        ent._modId = entMod.id;
+        try {
+          EE.Ledger.seed(ent, ((_a = entMod.eeLedger) == null ? void 0 : _a.start) || {}, null);
+        } catch (e) {
+        }
+      }
+      save();
+    }
+  };
+  document.addEventListener("DOMContentLoaded", () => {
+    try {
+      init();
+    } catch (e) {
+    }
+  });
+})();
