@@ -166,3 +166,25 @@ input, select, textarea { font-size: 16px; } /* 防 iOS 聚焦自动放大 */
 .wr-hud.wr-hud-min { height: 26px !important; overflow: hidden !important; opacity: .75; }
 .wr-hud.wr-hud-min .wr-chip { display: none !important; }
 .wr-hud .wr-hud-toggle { order: -1; }
+
+/* ============================================================
+   v4.17.5 视觉精修 · 小云(#xyBuddy)不再压住状态面板
+   创作室右侧是 330px 常驻状态面板；小云默认 right:26px 会压住
+   「关键道具」等字段与 toast。桌面宽屏下把默认位置让开面板。
+   玩家一旦拖动，拖拽逻辑写入 inline right:auto + left/top，本规则自动失效，
+   不影响把小云放到任意位置。仅视觉层，可整体移除本文件回滚。
+   ============================================================ */
+@media (min-width: 1100px) {
+  body.page-studio #xyBuddy { right: 356px !important; }
+}
+
+/* v4.17.5：任何抽屉/弹窗打开时，小云自动隐身，绝不压住面板内容。
+   用 :has() 覆盖工具箱/快照(.sheet-overlay.show)与接口等弹窗(.modal-overlay)，
+   零侵入、无需改各面板 JS；舆图沿用已有的 body.atlas-open 机制。 */
+body:has(.sheet-overlay.show) #xyBuddy,
+body:has(.modal-overlay:not([style*="display: none"])) #xyBuddy {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(10px) scale(.9);
+  transition: opacity .18s ease, transform .18s ease;
+}

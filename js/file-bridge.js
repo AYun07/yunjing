@@ -459,6 +459,12 @@
     read: read,
     write: write,
     diagnose: diagnose,
+    /** v4.17.5：暴露全量可读文件清单（相对路径数组），供 MoDevtools 自主巡检 / 模块地图使用 */
+    listFiles: async function () {
+      if (!root) return [];
+      var idx = await index();
+      return idx ? Object.keys(idx) : [];
+    },
     parsePatches: parsePatches,
     checkPatch: checkPatch,
     undoAt: async function (i) {

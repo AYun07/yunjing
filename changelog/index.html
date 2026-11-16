@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.5">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.6">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,18 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <!-- ==================== v4.17.6 ==================== -->
+        <article class="log-entry" data-tags="功能 小云 视觉 巡检" style="--entry-hue:#4f7d6b;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.17.6</span>
+                <span class="entry-date">2026-11-17</span>
+            </div>
+            <h3 class="entry-title">小云研发中枢 · 全量视觉审查与小云遮挡修复</h3>
+            <p class="entry-text"><b>① 小云功能强化（重中之重）</b>：新增 <code>js/mo-devtools.js</code>「小云研发中枢」，补齐小云此前缺失的四项研发能力 —— <b>自主巡检</b>（<code>scanProject()</code> 全量扫源码，定位语法错 / 引用缺失 / 重复 id / 版本不一致，输出带 P0/P1/P2 严重度的问题清单，补足旧自检只扫 80 个文件的上限）、<b>模块地图</b>（<code>moduleMap()</code> 解析全局暴露与依赖，找出悬空引用与孤岛模块）、<b>自我验证</b>（<code>verify()</code> 改完自己跑全量检查，给 PASS/WARN/BLOCK 结论）、<b>批量重构影响面分析</b>（<code>refactorImpact()</code> 改名 / 迁移前先算清涉及哪些文件多少处）。全部基于 FileBridge 本地文件访问，纯本机无外发；FileBridge 新增 <code>listFiles()</code> 暴露全量文件清单。小云系统提示词注入研发能力说明与「巡检→看地图→打补丁→自验→复述」工作闭环；工具箱与快捷指令新增「自主巡检」「自我验证」入口。<b>② 全量视觉审查与修复</b>：真浏览器逐屏审查大厅、创作室、状态面板、字段设置、工具箱、接口设置、舆图、手机面板、快照面板。发现并修复一个真实遮挡问题 —— 小云立绘 <code>#xyBuddy</code> 默认停在右下角，正好压住 330px 状态面板的「关键道具」等字段与 toast；现桌面宽屏下把默认位置让开面板，且抽屉 / 弹窗（工具箱 / 快照 / 接口设置）打开时小云自动隐身（<code>:has()</code> 选择器，零侵入），玩家一旦拖动小云则位置完全自定、规则自动失效。<b>③ 已复核达标项</b>：38 界主题实测 38 种主色、每界 14 个专属状态字段（≥12 达标）、状态栏设置弹窗 14 字段可编辑、舆图 101 地标、接口弹窗保存按钮常驻可见。四道闸全绿：全量 JS 语法 345/345、版本同源、预缓存三方一致、离线测试 9/9。</p>
+                    <p class="ver-diff"><b>相比 v4.17.5 的变化</b>：新增小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 重构影响面）· FileBridge 暴露全量文件清单 · 小云提示词与工具箱接入研发能力 · 修复小云遮挡状态面板与工具箱条目 · 全量界面视觉审查… · <a href="https://github.com/AYun07/yunjing/compare/v4.17.5...v4.17.6" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
 
         <article class="log-entry" data-tags="修复 状态栏 填表" style="--entry-hue:#8f6b4f;">
             <div class="entry-head">
@@ -616,7 +628,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.5 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.6 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
