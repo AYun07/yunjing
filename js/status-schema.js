@@ -184,11 +184,60 @@
     if (v) { try { localStorage.setItem(K_BREAK, '1'); } catch (e) {} }
     else { try { localStorage.removeItem(K_BREAK); } catch (e) {} }
   }
+  /* v4.17.3：自定义字段按世界过滤。
+     世界专属预设会给字段打上 `genre` 标记；**只有本界的（或玩家自己加的、无标记的）
+     才生效**，其它世界的保留在库里但不渲染——玩家切回原世界时自动重现。
+     旧写法不过滤，导致换世界后字段不断累积（实测切 10 个世界累积 50+ 个）。 */
+  function currentGenre() {
+    try {
+      return new URLSearchParams(location.search).get('genre')
+        || (window.storyFramework && window.storyFramework.genre) || '';
+    } catch (e) { return ''; }
+  }
   function customFields() {
     var v = jget(K_CUSTOM, []);
-    return Array.isArray(v) ? v.filter(function (f) { return f && f.k && f.label; }) : [];
+    if (!Array.isArray(v)) v = [];
+    var g = currentGenre();
+    var base = v.filter(function (f) {
+      if (!f || !f.k || !f.label) return false;
+      if (!f.genre) return true;              // 玩家自己加的：跨世界通用
+      return !g || String(f.genre) === g;     // 世界预设：只认本界
+    });
+    /* v4.17.3：插件通过 status:extend 扩展点贡献的字段（去重，不覆盖已有键） */
+    try {
+      var P = window.PluginRuntime;
+      if (P && P.collectStatusFields) {
+        var have = {};
+        base.forEach(function (f) { have[f.k] = true; });
+        P.collectStatusFields().forEach(function (f) {
+          if (!f || !f.k || !f.label || have[f.k]) return;
+          have[f.k] = true;
+          base.push({ k: f.k, label: f.label, group: f.group || 'custom', keys: [f.k], custom: true, fromPlugin: true });
+        });
+      }
+    } catch (e) { }
+    return base;
   }
   function setCustom(list) { jset(K_CUSTOM, list); }
+
+  /** v4.17.3 字段改名表：由 StatusPresets 按**当前世界**给出
+   *  （修真世界把 realm 显示为「境界」、网游世界显示为「等级」、克苏鲁显示为「途径序列」…）。
+   *  取不到预设模块时返回空表，行为与旧版完全一致。 */
+  function relabelMap() {
+    try {
+      var P = window.StatusPresets;
+      return (P && P.relabelOf) ? (P.relabelOf() || {}) : {};
+    } catch (e) { return {}; }
+  }
+  /** 应用改名：只改显示名 label，不动键 k（上报契约仍用 k，AI 侧无需感知） */
+  function applyRelabel(fields) {
+    var m = relabelMap();
+    if (!m || !Object.keys(m).length) return fields;
+    return fields.map(function (f) {
+      var n = m[f.k];
+      return n ? Object.assign({}, f, { label: n, _baseLabel: f.label }) : f;
+    });
+  }
 
   /** 当前生效的组（含成人组门禁与自定义组） */
   function activeGroups() {
@@ -196,7 +245,7 @@
       if (isOff(g.id)) return false;
       if (g.adult && !(adultOn() && adultConfirmed())) return false;
       return true;
-    }).map(function (g) { return { id: g.id, name: g.name, icon: g.icon, tip: g.tip, adult: !!g.adult, fields: g.fields.slice() }; });
+    }).map(function (g) { return { id: g.id, name: g.name, icon: g.icon, tip: g.tip, adult: !!g.adult, fields: applyRelabel(g.fields.slice()) }; });
     var cs = customFields();
     if (cs.length) {
       out.push({

@@ -493,6 +493,30 @@ const ConfigModal = {
                                 文墨模式说明：不接任何生图 API——由文本模型（免费 gemini-3.5-flash / deepseek 等皆可）手写 SVG 矢量插图，浏览器直接渲染；画风偏几何构成与氛围表达，细节不及专业生图模型，但零成本可无限重画。提示词工程师（第五接口）的润色稿对它同样生效。
                             </div>
                         </div>
+                        <!-- v4.17.3 ComfyUI 专属参数（生图来源多样化：NAI / ComfyUI / OpenAI / 个人端点 / agnes 类） -->
+                        <div class="dw-subgroup" id="comfyParamsGroup" style="display:none">
+                            <div class="dw-sub-title">🧩 ComfyUI 专属参数</div>
+                            <div class="form-row">
+                                <label>工作流 JSON（可选 · 从 ComfyUI「保存(API格式)」导出）</label>
+                                <textarea id="img_comfyWorkflow" rows="4" placeholder="留空则用内置 SD1.5 默认工作流。粘贴工作流后，把提示词要落到的位置改成 {{PROMPT}} 即可自动注入。"></textarea>
+                                <div class="form-tip">ComfyUI 是<b>两阶段异步</b>接口：先提交工作流拿 prompt_id，再轮询 /history 取图。它不吃提示词字符串，吃的是节点图 JSON，所以要在这里提供工作流或用默认的。</div>
+                            </div>
+                            <div class="form-row three-col">
+                                <div>
+                                    <label>提示词节点 id（可选）</label>
+                                    <input id="img_comfyPromptNode" type="text" placeholder="留空自动找 CLIPTextEncode">
+                                </div>
+                                <div>
+                                    <label>检查点（默认工作流用）</label>
+                                    <input id="img_comfyCheckpoint" type="text" placeholder="v1-5-pruned-emaonly.safetensors">
+                                </div>
+                                <div>
+                                    <label>提示词占位符</label>
+                                    <input type="text" value="{{PROMPT}}" disabled>
+                                </div>
+                            </div>
+                            <div class="form-tip">地址请填 ComfyUI <b>根地址</b>（如 <code>http://127.0.0.1:8188</code>），不要带 <code>/prompt</code>。本地 ComfyUI 若与云境不同源，请用「🛡 本地代理」或在 ComfyUI 启动参数里加 <code>--enable-cors-header</code>。</div>
+                        </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🎛 生成行为</div>
                             <div class="form-row two-col">
@@ -611,7 +635,7 @@ const ConfigModal = {
                     </div>
                 </div>
 
-                <!-- 🔗 多连接配置（Connection Profiles · v3.55.30） -->
+                <!-- 🔗 多连接配置（多连接配置 · v3.55.30） -->
                 <div class="dw-config api-card">
                     <div class="dw-config-head api-card-head" id="cpSectionHead" onclick="ConfigModal.toggleCPSection()">
                         <span class="api-head-left">
@@ -623,7 +647,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="cpSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            借鉴酒馆 Connection Profiles：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
+                            借鉴酒馆 多连接配置：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
                             主笔只管写正文，机械活（状态登记 / 滚动摘要）交给廉价跟随模型——声线一致、还省钱。
                         </div>
                         <div id="cp_profileList" class="cp-profile-list"></div>
@@ -713,6 +737,7 @@ const ConfigModal = {
                                     <option value="images">标准生图接口（POST /images/generations）——绝大多数服务商</option>
                                     <option value="chat">对话式生图（chat/completions 回复带图片链接）——OpenRouter 等</option>
                                     <option value="nai">NovelAI 原生（POST /ai/generate-image）——NAI V3/V4/V4.5/V5 全系</option>
+                                    <option value="comfy">ComfyUI 原生（提交工作流 → 轮询取图）——本地/远程 ComfyUI</option>
                                     <option value="ink">文墨画师（纯文本模型手写 SVG 插图）——零生图 API 成本</option>
                                 </select>
                                 <div class="form-tip" id="img_modeTip">不确定就选「标准生图接口」；对话式生图模型（如 OpenRouter 上的生图模型）才需要 chat 模式。</div>
@@ -1050,7 +1075,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="mmSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            云境工坊原创内置预设（SillyTavern 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 SillyTavern 预设整份替换。
+                            云境工坊原创内置预设（常见前端工具 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 常见前端工具 预设整份替换。
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">📦 当前预设 <span class="api-role-chip" id="mmPresetChip"></span></div>
@@ -1062,7 +1087,7 @@ const ConfigModal = {
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
-                                支持 SillyTavern 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
+                                支持 常见前端工具 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
                                 导入后整份替换内置预设，旧的逐条开关会自动清空；随时可一键恢复内置。
                             </div>
                         </div>
@@ -1677,7 +1702,7 @@ const ConfigModal = {
       // v3.27.6
     };
   },
-  /* ==================== 🔗 多连接配置（Connection Profiles · v3.55.30） ==================== */
+  /* ==================== 🔗 多连接配置（多连接配置 · v3.55.30） ==================== */
   toggleCPSection() {
     const body = document.getElementById("cpSectionBody");
     const caret = document.getElementById("cpCaret");
@@ -1945,9 +1970,16 @@ const ConfigModal = {
     if (group) group.style.display = mode === "nai" ? "block" : "none";
     const inkGroup = document.getElementById("inkParamsGroup");
     if (inkGroup) inkGroup.style.display = mode === "ink" ? "block" : "none";
+    /* v4.17.3 ComfyUI 专属参数区（地址 / 工作流 JSON / 提示词节点 / 检查点） */
+    const comfyGroup = document.getElementById("comfyParamsGroup");
+    if (comfyGroup) comfyGroup.style.display = mode === "comfy" ? "block" : "none";
     const tip = document.getElementById("img_modeTip");
     if (tip) {
-      tip.textContent = mode === "nai" ? "NAI 模式：地址填站点根地址（自动补全 /ai/generate-image）或完整生图地址；模型无列表接口，请用 NAI 快捷按钮或手填代号（如 nai-diffusion-4-5-full）。" : mode === "ink" ? "文墨模式：不接生图 API——勾选「复用主笔接口」后下方地址 / Key / 模型可全部留空，用主笔的文本模型手写 SVG 插图；也可取消复用填任意文本模型。" : mode === "chat" ? "对话式生图模型（如 OpenRouter 上的生图模型）才需要 chat 模式。" : "不确定就选「标准生图接口」；对话式生图模型（如 OpenRouter 上的生图模型）才需要 chat 模式。";
+      tip.textContent = mode === "nai" ? "NAI 模式：地址填站点根地址（自动补全 /ai/generate-image）或完整生图地址；模型无列表接口，请用 NAI 快捷按钮或手填代号（如 nai-diffusion-4-5-full）。"
+        : mode === "comfy" ? "ComfyUI 模式：地址填 ComfyUI 根地址（如 http://127.0.0.1:8188）。可选填自己的工作流（ComfyUI 里「保存(API格式)」导出的 JSON，用 {{PROMPT}} 标记提示词位置）；不填则用内置 SD1.5 默认工作流。"
+        : mode === "ink" ? "文墨模式：不接生图 API——勾选「复用主笔接口」后下方地址 / Key / 模型可全部留空，用主笔的文本模型手写 SVG 插图；也可取消复用填任意文本模型。"
+        : mode === "chat" ? "对话式生图模型（如 OpenRouter 上的生图模型）才需要 chat 模式。"
+        : "标准生图接口：适用于 OpenAI images、agnes、以及一切兼容 /images/generations 的个人端点与中转站。";
     }
     const chips = document.getElementById("naiModelChips");
     if (chips) {
@@ -2010,7 +2042,7 @@ const ConfigModal = {
     const c = IG.get();
     const st = IG.getSettings();
     document.getElementById("img_provider").value = this.detectImgProvider(c);
-    document.getElementById("img_mode").value = ["chat", "nai", "ink"].includes(c.mode) ? c.mode : "images";
+    document.getElementById("img_mode").value = ["chat", "nai", "ink", "comfy"].includes(c.mode) ? c.mode : "images";
     document.getElementById("img_endpoint").value = c.endpoint || "";
     document.getElementById("img_key").value = c.apiKey || "";
     document.getElementById("img_model").value = c.model || "";
@@ -2021,6 +2053,13 @@ const ConfigModal = {
     document.getElementById("img_inkPlan").checked = c.inkPlan !== false;
     document.getElementById("img_inkStyle").value = window.StoryImageGen && window.StoryImageGen.INK_STYLES && window.StoryImageGen.INK_STYLES[c.inkStyle] ? c.inkStyle : "flat";
     document.getElementById("img_inkType").value = c.type === "gemini" ? "gemini" : "openai";
+    /* v4.17.3 ComfyUI 参数回填 */
+    if (document.getElementById("img_comfyWorkflow")) {
+      document.getElementById("img_comfyWorkflow").value = typeof c.comfyWorkflow === "string"
+        ? c.comfyWorkflow : (c.comfyWorkflow && typeof c.comfyWorkflow === "object" ? JSON.stringify(c.comfyWorkflow) : "");
+      document.getElementById("img_comfyPromptNode").value = c.comfyPromptNode || "";
+      document.getElementById("img_comfyCheckpoint").value = c.comfyCheckpoint || "";
+    }
     this.updateImgProviderUI();
     this.onImgModeChange();
     document.getElementById("img_enabled").checked = !!st.enabled;
@@ -2044,13 +2083,22 @@ const ConfigModal = {
         provider: document.getElementById("img_provider").value,
         type: modeRaw === "ink" && !inkUseMain && inkTypeRaw === "gemini" ? "gemini" : "openai",
         // ink 独立配置支持 Gemini 原生；其余三路均 OpenAI / NAI 兼容
-        mode: ["chat", "nai", "ink"].includes(modeRaw) ? modeRaw : "images",
+        mode: ["chat", "nai", "ink", "comfy"].includes(modeRaw) ? modeRaw : "images",
         endpoint: document.getElementById("img_endpoint").value.trim(),
         apiKey: document.getElementById("img_key").value.trim(),
         model: document.getElementById("img_model").value.trim(),
         size: /^\d{3,4}x\d{3,4}$/.test(sizeRaw) ? sizeRaw : "1024x1024",
         timeout: clamp(document.getElementById("img_timeout").value, 30, 600, 180),
         naiNegative: document.getElementById("img_naiNegative").value.trim(),
+        /* v4.17.3 ComfyUI 参数（工作流 JSON 只在能解析时才存，避免存进坏数据后每次生图都报错） */
+        comfyWorkflow: (() => {
+          const el = document.getElementById("img_comfyWorkflow");
+          const v = el ? el.value.trim() : "";
+          if (!v) return "";
+          try { JSON.parse(v); return v; } catch (e) { return ""; }
+        })(),
+        comfyPromptNode: (document.getElementById("img_comfyPromptNode") || {}).value ? document.getElementById("img_comfyPromptNode").value.trim() : "",
+        comfyCheckpoint: (document.getElementById("img_comfyCheckpoint") || {}).value ? document.getElementById("img_comfyCheckpoint").value.trim() : "",
         inkUseMain,
         inkPlan: document.getElementById("img_inkPlan").checked !== false,
         // v3.13.0 精绘模式（两步构图）
