@@ -194,14 +194,47 @@
         || (window.storyFramework && window.storyFramework.genre) || '';
     } catch (e) { return ''; }
   }
+
+  /* v4.17.5：中文 label → 可读取的 key 候选（顺序即优先级）。
+     模型按契约用中文 label 上报，所以要能把 label 本身当 key 找；
+     再容忍「/」拆开的简称（`道基/灵根` → 也认 `道基`、`灵根`）
+     与去标点写法（`途径·序列` → 也认 `途径序列`），最后才落到英文 k 兜底。 */
+  function keysForLabel(label, k) {
+    var out = [];
+    var L = String(label || '').trim();
+    if (L) {
+      out.push(L);
+      var noPunct = L.replace(/[\/·、,，\s]/g, '');
+      if (noPunct && noPunct !== L) out.push(noPunct);
+      if (L.indexOf('/') >= 0) {
+        L.split('/').forEach(function (p) { p = p.trim(); if (p && out.indexOf(p) < 0) out.push(p); });
+      }
+      if (L.indexOf('·') >= 0) {
+        L.split('·').forEach(function (p) { p = p.trim(); if (p && out.indexOf(p) < 0) out.push(p); });
+      }
+    }
+    if (k && out.indexOf(k) < 0) out.push(k);
+    return out;
+  }
   function customFields() {
     var v = jget(K_CUSTOM, []);
     if (!Array.isArray(v)) v = [];
     var g = currentGenre();
+    /* v4.17.5 修一个真 bug（用户追问「填表会不会出错」时查出来的）：
+       自定义字段的 keys 此前只放了英文 key（如 'daoji'），而 buildReportDirective()
+       明确要求模型「一律使用中文 label，严禁英文 key」。于是模型写的是
+       `道基/灵根：天灵根`，读取器却去找 `daoji` —— **永远读不到，状态栏永远空白**。
+       更矛盾的是契约本身还渲染成 `道基/灵根(daoji)`，等于直接叫模型用英文 key。
+       现改为：keys 里**中文 label 优先**，并容忍「/」两边的简称（道基、灵根都认），
+       英文 k 仅作兜底兼容。 */
     var base = v.filter(function (f) {
       if (!f || !f.k || !f.label) return false;
       if (!f.genre) return true;              // 玩家自己加的：跨世界通用
       return !g || String(f.genre) === g;     // 世界预设：只认本界
+    }).map(function (f) {
+      var keys = Array.isArray(f.keys) && f.keys.length ? f.keys.slice() : [];
+      keysForLabel(f.label, f.k).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
+      return Object.assign({}, f, { keys: keys, custom: true });
     });
     /* v4.17.3：插件通过 status:extend 扩展点贡献的字段（去重，不覆盖已有键） */
     try {
@@ -212,7 +245,7 @@
         P.collectStatusFields().forEach(function (f) {
           if (!f || !f.k || !f.label || have[f.k]) return;
           have[f.k] = true;
-          base.push({ k: f.k, label: f.label, group: f.group || 'custom', keys: [f.k], custom: true, fromPlugin: true });
+          base.push({ k: f.k, label: f.label, group: f.group || 'custom', keys: keysForLabel(f.label, f.k), custom: true, fromPlugin: true });
         });
       }
     } catch (e) { }
@@ -249,8 +282,11 @@
     var cs = customFields();
     if (cs.length) {
       out.push({
+        /* v4.17.5：**保留** customFields() 已经算好的 keys，不要覆盖成 [f.k]。
+           旧写法在这一步把 label 键全丢了，导致「模型按中文 label 上报、读取器只认英文 key」，
+           状态栏里 14 个自定义字段永远读不出值（实测「按中文 label 上报后读到 = {}」）。 */
         id: 'custom', name: '自定义', icon: '🧩', fields: cs.map(function (f) {
-          return { k: f.k, label: f.label, keys: [f.k], custom: true };
+          return { k: f.k, label: f.label, keys: (f.keys && f.keys.length ? f.keys : keysForLabel(f.label, f.k)), custom: true };
         })
       });
     }
@@ -465,6 +501,8 @@
     mount: mount,
     render: render,
     activeGroups: activeGroups,
+    readField: readField,
+    keysForLabel: keysForLabel,
     isOff: isOff,
     toggleGroup: function (id, on) {
       var cur = !isOff(id);
@@ -564,8 +602,12 @@
           var tag = f.label;
           if (CORE.indexOf(f.k) !== -1) core.push(tag);
         });
+        /* v4.17.5：自定义字段只写中文 label，**不再附英文 key**。
+           旧写法对自定义字段会渲染成 `道基/灵根(daoji)`，与本契约自己的
+           「一律使用中文 label，严禁英文 key」直接矛盾 —— 等于叫模型填英文。
+           内置字段保留 (key) 提示（它们的 key 是稳定的英文别名，有兼容价值）。 */
         var others = g.fields.filter(function (f) { return CORE.indexOf(f.k) === -1; })
-          .map(function (f) { return f.label + '(' + f.keys[0] + ')'; });
+          .map(function (f) { return f.custom ? f.label : (f.label + '(' + f.keys[0] + ')'); });
         if (others.length) rest.push('· ' + g.name + '：' + others.join(' / '));
       });
       var out = '【状态栏上报契约（每轮必报）】本轮结束时，在 (variable_update) 块内按下列字段如实上报；' +

@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.4">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.5">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,16 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="修复 状态栏 填表" style="--entry-hue:#8f6b4f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.17.5</span>
+                <span class="entry-date">2026-11-16</span>
+            </div>
+            <h3 class="entry-title">修复：世界专属状态字段「写得进、读不出」</h3>
+            <p class="entry-text">用户追问「填表会不会出错、每界的专属字段在不在表格里」时查出的真 bug：v4.17.3/v4.17.4 给每个世界加了 14 个专属状态字段，但**它们永远读不出值，状态栏一直空白**。根因有三层，缺一层都修不好：<b>①</b> <code>readField()</code> 只按 <code>f.keys</code> 找值，而自定义字段的 keys 是英文（<code>['daoji']</code>）；可上报契约却明确要求模型「<b>一律使用中文 label，严禁英文 key</b>」—— 模型写的是 <code>道基/灵根：先天道体</code>，读取器却去找 <code>daoji</code>，**写的和读的对不上**。<b>②</b> <code>buildReportDirective()</code> 还把自定义字段渲染成 <code>道基/灵根(daoji)</code>，**等于直接叫模型填英文 key**，与它自己那条规则自相矛盾。<b>③</b> 最隐蔽的一层：<code>activeGroups()</code> 组装「自定义」组时**又把 keys 覆盖回 <code>[f.k]</code>** —— 前两层即使修好也会在这一步被抹掉（实测修完前两层后仍是「按中文 label 上报后读到 = {}」）。<b>修法</b>：新增 <code>keysForLabel(label, k)</code>，给出中文 label 优先的键候选并容忍写法差异 —— <code>道基/灵根</code> 也认「道基」「灵根」，<code>途径·序列</code> 也认「途径序列」，英文 k 仅作兜底；三处全部改用它，并把它与 <code>readField</code> 一并导出以便复测。<b>实测验证</b>：按中文 label 上报 → <code>{"道基/灵根": "先天道体·单灵根"}</code> 读到 ✅ ｜ 写简称「道基」→ 读到 ✅ ｜ 写「途径序列」→ 读到 ✅ ｜ 英文 key 兜底 → 读到 ✅ ｜ 契约不再给自定义字段附英文 key ✅。</p>
+                    <p class="ver-diff"><b>相比 v4.17.4 的变化</b>：修复世界专属状态字段写得进读不出（三层根因）· 新增 keysForLabel 写法容错 · 导出 readField/keysForLabel 便于复测… · <a href="https://github.com/AYun07/yunjing/compare/v4.17.4...v4.17.5" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
 
         <article class="log-entry" data-tags="视觉 状态栏 主题" style="--entry-hue:#6b5b8f;">
             <div class="entry-head">
@@ -606,7 +616,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.4 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.5 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
