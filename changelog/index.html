@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.3">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.4">
 </head>
 
 <body class="page-changelog">
@@ -316,7 +316,15 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
-        <article class="log-entry" data-tags="功能 生图 插件 状态栏 手机" style="--entry-hue:#5a7d4f;">
+        <article class="log-entry" data-tags="视觉 状态栏 主题" style="--entry-hue:#6b5b8f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.17.4</span>
+                <span class="entry-date">2026-11-16</span>
+            </div>
+            <h3 class="entry-title">状态栏每界 12+ 字段 · 进度条贴合世界底色</h3>
+            <p class="entry-text"><b>① 每界状态栏扩到 12 个以上专属字段</b>：用户要求「每个世界的状态栏最起码要显示十二个以上的预设内容」。v4.17.3 只给了 4～7 个，本版把九个世界原型全部扩到 <b>14 个专属字段</b>，加上内置通用字段后每界实际可显示 <b>55～58 个</b>（全 38 界实测：字段数不足 12 的界 <b>0 个</b>）。例如修真界现在有：境界 / 道基灵根 / 主修功法 / 神通秘术 / 法宝本命物 / 灵石资源 / 丹药补给 / 道心 / 杀伐因果 / 当前瓶颈 / 宗门师承 / 道侣同修 / 仇家宿敌 / 气运福缘 / 底牌护身；克苏鲁有：理智值 / 污染疯狂度 / 途径序列 / 魔药消化 / 灵性灵感 / 隐秘知识 / 已知禁忌 / 掌握的仪式 / 非凡物品 / 信仰神明 / 密教结社 / 线人合作者 / 已掌握线索 / 梦魇低语。<b>② 进度条不再写死金色，改用世界主色</b>：实测发现状态栏渲染层的进度条渐变把 <code>#e07856 / #e0a84c</code> <b>硬编码</b>了 —— 于是在克苏鲁（幽紫）里进度条是金色、在道诡异仙（血红）里还是金色、在世界观完全不同的界里全都一样，看起来「不像这个世界的东西」。现改为按 CSS 变量 <code>var(--primary)</code> / <code>var(--secondary)</code> 混出三档渐变，并给强项星标也用主色。**实测各界解析结果**：仙逆 <code>rgb(157,134,208)</code> 紫 ｜ 网游 <code>rgb(111,201,216)</code> 青 ｜ 克苏鲁 <code>rgb(183,168,232)</code> 幽紫 ｜ 道诡异仙 <code>rgb(201,88,74)</code> 血红 ｜ 蒸汽 <code>rgb(216,160,76)</code> 橙金 —— 世界一换颜色自动跟着换，取不到变量时回退旧值、行为不变。<b>③ 顺带核实了两件此前判断错的事</b>：其一，我曾以为「38 套世界专属主题从未生效」——<b>这是错的</b>，主题一直正常，只是我把 <code>--primary</code> 定义在 <code>body</code> 上而读成了 <code>documentElement</code>；实测 38 个界有 <b>38 种不同的主色</b>，每界主题确实独立。其二，上一版真测里 <code>earth</code> 报过 1 个 pageerror，本版 38 界复扫 <b>0 报错</b>（未能复现，已记录）。</p>
+                    <p class="ver-diff"><b>相比 v4.17.3 的变化</b>：每界状态栏预设字段 4~7 → 14（实际显示 55~58）· 进度条与强项星标改用世界主色 · 38 界零报错复扫… · <a href="https://github.com/AYun07/yunjing/compare/v4.17.3...v4.17.4" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>        <article class="log-entry" data-tags="功能 生图 插件 状态栏 手机" style="--entry-hue:#5a7d4f;">
             <div class="entry-head">
                 <span class="entry-ver">v4.17.3</span>
                 <span class="entry-date">2026-11-16</span>
@@ -598,7 +606,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.3 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.4 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

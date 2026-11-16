@@ -28,47 +28,70 @@
 
   /* ---- 世界类型原型。每个原型给出：关掉的组、追加字段、字段改名 ---- */
   var ARCH = {
-    /* 修真 / 玄幻：修炼体系是核心，战力与境界必须有，现代资源组反而多余 */
+    /* 修真 / 玄幻：修炼体系是核心。用户要求「每界状态栏至少 12 个预设内容」，故扩到 14 个。 */
     xianxia: {
       off: ['adult'],
-      relabel: { realm: '境界', health: '道体状态', injury: '伤势', resource: '随身财物' },
+      relabel: { realm: '境界', health: '道体状态', injury: '伤势', resource: '随身财物', age: '道龄' },
       fields: [
         { k: 'daoji', label: '道基/灵根', group: 'identity' },
         { k: 'gongfa', label: '主修功法', group: 'identity' },
-        { k: 'lingshi', label: '灵石/资源', group: 'resource' },
+        { k: 'shentong', label: '神通/秘术', group: 'combat' },
         { k: 'faba', label: '法宝/本命物', group: 'resource' },
-        { k: 'yinguo', label: '因果/业障', group: 'state' },
+        { k: 'lingshi', label: '灵石/资源', group: 'resource' },
+        { k: 'danshu', label: '丹药/补给', group: 'resource' },
         { k: 'daoxin', label: '道心', group: 'mind' },
-        { k: 'chongjing', label: '当前瓶颈', group: 'goal' }
+        { k: 'shaqi', label: '杀伐/因果', group: 'state' },
+        { k: 'chongjing', label: '当前瓶颈', group: 'goal' },
+        { k: 'shimen', label: '宗门/师承', group: 'relation' },
+        { k: 'daolv', label: '道侣/同修', group: 'relation' },
+        { k: 'choujia', label: '仇家/宿敌', group: 'relation' },
+        { k: 'mingyun', label: '气运/福缘', group: 'state' },
+        { k: 'bihuzhen', label: '底牌/护身', group: 'combat' }
       ]
     },
-    /* 网游大世界：等级/职业/装备/公会/副本是骨架 */
+    /* 网游大世界：等级/职业/装备/公会/副本是骨架。扩到 14 个。 */
     youxi: {
       off: ['adult'],
       relabel: { realm: '等级', role: '职业', health: 'HP/状态', resource: '金币' },
       fields: [
         { k: 'guild', label: '公会/阵营', group: 'relation' },
         { k: 'equip', label: '当前装备', group: 'resource' },
-        { k: 'dungeon', label: '副本进度', group: 'goal' },
+        { k: 'weapon_s', label: '武器/品级', group: 'combat' },
         { k: 'skillbar', label: '核心技能', group: 'combat' },
+        { k: 'talent', label: '天赋/加点', group: 'identity' },
+        { k: 'bag', label: '背包/道具', group: 'resource' },
+        { k: 'gold', label: '金币/元宝', group: 'resource' },
+        { k: 'dungeon', label: '副本进度', group: 'goal' },
+        { k: 'questline', label: '主线任务', group: 'goal' },
         { k: 'rep', label: '声望值', group: 'reputation' },
+        { k: 'pk_karma', label: 'PK/善恶值', group: 'state' },
+        { k: 'exp_bar', label: '经验/升级进度', group: 'state' },
+        { k: 'party', label: '队伍/队友', group: 'relation' },
         { k: 'online', label: '在线/挂机状态', group: 'state' }
       ]
     },
-    /* 都市 / 现代：职业、资产、人脉、手机是骨架 */
+    /* 都市 / 现代：职业、资产、人脉、手机是骨架。扩到 14 个。 */
     dushi: {
       off: ['combat', 'adult'],
       relabel: { realm: '社会阶层', health: '身体状态', resource: '资产', location: '所在' },
       fields: [
         { k: 'job', label: '职业/单位', group: 'identity' },
+        { k: 'idcard', label: '证件/身份', group: 'identity' },
         { k: 'income', label: '收入/资产', group: 'resource' },
-        { k: 'renmai', label: '人脉/靠山', group: 'relation' },
+        { k: 'cash', label: '随身现金', group: 'resource' },
         { k: 'phone', label: '手机/通讯', group: 'resource' },
+        { k: 'vehicle', label: '交通工具', group: 'resource' },
+        { k: 'house', label: '住所/据点', group: 'resource' },
+        { k: 'renmai', label: '人脉/靠山', group: 'relation' },
+        { k: 'family', label: '家人/牵挂', group: 'relation' },
         { k: 'fame', label: '社会名声', group: 'reputation' },
-        { k: 'secret', label: '不为人知的秘密', group: 'secret' }
+        { k: 'mood', label: '心情/压力', group: 'mind' },
+        { k: 'schedule', label: '近期安排', group: 'goal' },
+        { k: 'secret', label: '不为人知的秘密', group: 'secret' },
+        { k: 'risk', label: '当前的麻烦', group: 'state' }
       ]
     },
-    /* 科幻 / 星际：权限、舰船、能量、星域 */
+    /* 科幻 / 星际：权限、舰船、能量、星域。扩到 14 个。 */
     keji: {
       off: ['adult'],
       relabel: { realm: '权限等级', health: '生命体征', resource: '资源点数', location: '星域坐标' },
@@ -76,12 +99,20 @@
         { k: 'ship', label: '舰船/载具', group: 'resource' },
         { k: 'energy', label: '能量/燃料', group: 'resource' },
         { k: 'clearance', label: '权限等级', group: 'identity' },
+        { k: 'suit', label: '装备/外骨骼', group: 'combat' },
+        { k: 'weapon_sf', label: '武器系统', group: 'combat' },
+        { k: 'credit', label: '信用点/货币', group: 'resource' },
         { k: 'faction', label: '所属势力', group: 'relation' },
+        { k: 'crew', label: '船员/同伴', group: 'relation' },
         { k: 'tech', label: '掌握科技', group: 'state' },
-        { k: 'signal', label: '通讯/信号状态', group: 'state' }
+        { k: 'signal', label: '通讯/信号状态', group: 'state' },
+        { k: 'rad', label: '辐射/污染', group: 'state' },
+        { k: 'oxygen', label: '氧气/维生余量', group: 'state' },
+        { k: 'mission', label: '当前任务', group: 'goal' },
+        { k: 'bounty', label: '悬赏/通缉度', group: 'reputation' }
       ]
     },
-    /* 克苏鲁 / 诡秘：理智与污染是命脉 */
+    /* 克苏鲁 / 诡秘：理智与污染是命脉。扩到 14 个。 */
     kepfu: {
       off: ['combat', 'adult'],
       relabel: { health: '身体状态', resource: '随身物品', realm: '途径/序列' },
@@ -89,12 +120,20 @@
         { k: 'sanity', label: '理智值', group: 'mind' },
         { k: 'corrupt', label: '污染/疯狂度', group: 'state' },
         { k: 'pathway', label: '途径·序列', group: 'identity' },
+        { k: 'potions', label: '魔药/消化进度', group: 'state' },
+        { k: 'spirit', label: '灵性/灵感', group: 'mind' },
         { k: 'knowledge', label: '隐秘知识', group: 'secret' },
         { k: 'taboo', label: '已知禁忌', group: 'secret' },
-        { k: 'ritual', label: '掌握的仪式', group: 'state' }
+        { k: 'ritual', label: '掌握的仪式', group: 'state' },
+        { k: 'artifact', label: '非凡物品', group: 'resource' },
+        { k: 'prayer', label: '信仰/所奉神明', group: 'identity' },
+        { k: 'secretOrg', label: '所属密教/结社', group: 'relation' },
+        { k: 'contact', label: '线人/合作者', group: 'relation' },
+        { k: 'clue_c', label: '已掌握线索', group: 'goal' },
+        { k: 'nightmare', label: '梦魇/低语', group: 'state' }
       ]
     },
-    /* 武侠：内力、招式、江湖名望 */
+    /* 武侠：内力、招式、江湖名望。扩到 14 个。 */
     wuxia: {
       off: ['adult'],
       relabel: { realm: '内力境界', resource: '随身财物' },
@@ -102,12 +141,20 @@
         { k: 'neili', label: '内力/真气', group: 'combat' },
         { k: 'zhaoshi', label: '得意招式', group: 'combat' },
         { k: 'weaponx', label: '趁手兵器', group: 'resource' },
+        { k: 'neigong', label: '内功心法', group: 'identity' },
+        { k: 'qinggong', label: '轻功身法', group: 'combat' },
+        { k: 'poison_res', label: '抗毒/解毒', group: 'state' },
         { k: 'jianghu', label: '江湖名望', group: 'reputation' },
+        { k: 'menpai', label: '门派/师承', group: 'relation' },
+        { k: 'shixiong', label: '同门/师兄弟', group: 'relation' },
         { k: 'enmity', label: '恩怨', group: 'relation' },
-        { k: 'menpai', label: '门派/师承', group: 'relation' }
+        { k: 'silver', label: '银两/盘缠', group: 'resource' },
+        { k: 'medicine', label: '伤药/丹药', group: 'resource' },
+        { k: 'wanted', label: '通缉/追杀', group: 'state' },
+        { k: 'mission_w', label: '当前所托', group: 'goal' }
       ]
     },
-    /* 蒸汽魔导 / 近代工业：学派、造物、齿轮 */
+    /* 蒸汽魔导 / 近代工业：学派、造物、齿轮。扩到 14 个。 */
     zhengqi: {
       off: ['adult'],
       relabel: { realm: '魔导等级', resource: '资财', location: '所在城邦' },
@@ -116,10 +163,19 @@
         { k: 'contraption', label: '随身造物', group: 'resource' },
         { k: 'runeknow', label: '掌握的符文', group: 'state' },
         { k: 'rank_off', label: '官方身份', group: 'identity' },
-        { k: 'steam', label: '魔能/蒸汽余量', group: 'resource' }
+        { k: 'steam', label: '魔能/蒸汽余量', group: 'resource' },
+        { k: 'patent', label: '专利/成果', group: 'reputation' },
+        { k: 'workshop', label: '工坊/据点', group: 'resource' },
+        { k: 'apprentice', label: '学徒/助手', group: 'relation' },
+        { k: 'guild_z', label: '行会关系', group: 'relation' },
+        { k: 'invention', label: '在研项目', group: 'goal' },
+        { k: 'wound_z', label: '旧伤/义体', group: 'body' },
+        { k: 'coin_z', label: '金镑/票据', group: 'resource' },
+        { k: 'rumor', label: '掌握的传闻', group: 'secret' },
+        { k: 'law', label: '法律处境', group: 'state' }
       ]
     },
-    /* 恐怖 / 悬疑：恐惧、线索、真相 */
+    /* 恐怖 / 悬疑：恐惧、线索、真相。扩到 14 个。 */
     kongbu: {
       off: ['combat', 'adult'],
       relabel: { health: '身心状态', resource: '随身物', location: '当前位置' },
@@ -128,7 +184,16 @@
         { k: 'clue', label: '已知线索', group: 'secret' },
         { k: 'truth', label: '触到的真相', group: 'secret' },
         { k: 'missing', label: '缺失的信息', group: 'goal' },
-        { k: 'pursuer', label: '追踪者/威胁', group: 'state' }
+        { k: 'pursuer', label: '追踪者/威胁', group: 'state' },
+        { k: 'sanity_k', label: '精神稳定度', group: 'mind' },
+        { k: 'light', label: '照明/光源', group: 'resource' },
+        { k: 'escape', label: '退路/出口', group: 'state' },
+        { k: 'companion_k', label: '同行者', group: 'relation' },
+        { k: 'trust', label: '可信任的人', group: 'relation' },
+        { k: 'record', label: '录音/笔记', group: 'resource' },
+        { k: 'timeleft', label: '剩余时间', group: 'goal' },
+        { k: 'anomaly', label: '已确认的异常', group: 'secret' },
+        { k: 'safehouse', label: '安全屋', group: 'resource' }
       ]
     }
   };
