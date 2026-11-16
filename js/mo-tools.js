@@ -148,6 +148,45 @@
     else toast("自由人生未加载", "error");
   }
 
+  /* ---------- 🛠 研发中枢：自主巡检 / 自我验证（v4.17.5） ---------- */
+  function devReady() {
+    if (!window.MoDevtools) { toast("研发中枢未加载，请刷新后再试", "error"); return false; }
+    try { var FB = window.FileBridge; if (!FB || !FB.hasRoot || !FB.hasRoot()) { toast("请先在 🛠 文件工坊授权项目文件夹", "error"); return false; } }
+    catch (e) { toast("文件桥未就绪", "error"); return false; }
+    return true;
+  }
+  async function devscan() {
+    if (!devReady()) return;
+    var ov = overlay("🛠 小云自主巡检", '<div data-body style="color:#8fb8b0;font-size:13px;">正在全量扫描项目源码，请稍候…（几百个文件，约几秒）</div>', '');
+    try {
+      var rep = await window.MoDevtools.scanProject();
+      var txt = window.MoDevtools.reportText(rep);
+      ov.querySelector('[data-body]').innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.7;max-height:56vh;overflow:auto;">' + esc(txt) + '</pre>';
+      var foot = ov.querySelector('[style*="display:flex"]');
+      if (foot && rep.ok) {
+        var btn = document.createElement('button');
+        btn.textContent = '让小云解读';
+        btn.style.cssText = 'flex:1;padding:9px;border:1px solid #9adfd2;border-radius:8px;background:#12312e;color:#9adfd2;cursor:pointer;';
+        btn.onclick = function () { ov.remove(); if (window.MoAssistant) window.MoAssistant.send('请解读刚才的巡检报告，告诉我最该先修哪三处、为什么。'); };
+        foot.insertBefore(btn, foot.firstChild);
+      }
+    } catch (e) {
+      ov.querySelector('[data-body]').textContent = '扫描失败：' + (e && e.message || e);
+    }
+  }
+  async function devverify() {
+    if (!devReady()) return;
+    var ov = overlay("✅ 小云自我验证", '<div data-body style="color:#8fb8b0;font-size:13px;">正在跑全量验证（语法 / 引用 / 版本），请稍候…</div>', '');
+    try {
+      var rep = await window.MoDevtools.verify({ full: true });
+      var txt = window.MoDevtools.reportText(rep);
+      var color = rep.ok && rep.data.verdict === 'PASS' ? '#8fe0a8' : (rep.ok && rep.data.verdict === 'WARN' ? '#e0c04c' : '#e07a6c');
+      ov.querySelector('[data-body]').innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.7;color:' + color + ';max-height:56vh;overflow:auto;">' + esc(txt) + '</pre>';
+    } catch (e) {
+      ov.querySelector('[data-body]').textContent = '验证失败：' + (e && e.message || e);
+    }
+  }
+
   function run(tool) {
     if (tool === "diagnose") return diagnose();
     if (tool === "whatif") return whatif();
@@ -155,7 +194,9 @@
     if (tool === "clock") return clock();
     if (tool === "roster") return roster();
     if (tool === "life") return life();
+    if (tool === "devscan") return devscan();
+    if (tool === "devverify") return devverify();
   }
 
-  window.MoTools = { run, diagnose, whatif, plan, clock, roster, life };
+  window.MoTools = { run, diagnose, whatif, plan, clock, roster, life, devscan, devverify };
 })();

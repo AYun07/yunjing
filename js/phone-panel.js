@@ -1264,7 +1264,7 @@ ${notes.map((n) => "· " + n).join("\n")}
       }
     },
     /* ==================== v3.31.0 手机容器：拖拽 / 缩放 / 位置记忆 ====================
-     * 借鉴 st-yuzi-phone 的 window 模块体验：手机不钉死在右侧——
+     * 借鉴 某手机前端 的 window 模块体验：手机不钉死在右侧——
      * 按住状态栏可拖到屏幕任意角落（localStorage 记忆，跨会话还原）；
      * ⤢ 钮三档宽度循环（紧凑/标准/宽屏）；拖拽中禁用过渡动画保证跟手。 */
     SHELL_LAYOUT_KEY: "storyPhoneShellLayout",
@@ -2427,20 +2427,20 @@ ${notes.map((n) => "· " + n).join("\n")}
     try {
       const link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "css/phone-style.css?v=4.17.5";
+      link.href = "css/phone-style.css?v=4.17.6";
       document.head.appendChild(link);
       PhonePanel.install();
       const aliveScript = document.createElement("script");
-      aliveScript.src = "js/phone-alive.js?v=4.17.5";
+      aliveScript.src = "js/phone-alive.js?v=4.17.6";
       aliveScript.onerror = () => console.warn("[PhoneAlive] 主动联系引擎加载失败（不影响手机基础功能）");
       document.head.appendChild(aliveScript);
       const appsScript = document.createElement("script");
-      appsScript.src = "js/phone-apps.js?v=4.17.5";
+      appsScript.src = "js/phone-apps.js?v=4.17.6";
       appsScript.onerror = () => console.warn("[PhoneApps] App 生态加载失败（不影响手机基础功能）");
       document.head.appendChild(appsScript);
       /* v3.47.0 墨韵融合：微博/匿名树洞/日历/商城/日记（CSS 由该模块自注入） */
       const socialScript = document.createElement("script");
-      socialScript.src = "js/phone-social.js?v=4.17.5";
+      socialScript.src = "js/phone-social.js?v=4.17.6";
       socialScript.onerror = () => console.warn("[PhoneSocial] 墨韵融合社交包加载失败（基础 App 不受影响）");
       document.head.appendChild(socialScript);
     } catch (e) {

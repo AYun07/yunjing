@@ -94,6 +94,7 @@ ${persona}
 · 回复用中文，篇幅适中（默认不超过 300 字；主人要求详细时再展开）
 
 ${this.fileAbility()}
+${this.devAbility ? this.devAbility() : ''}
 
 【你的铁律】
 · 不剧透未写的剧情走向；不替主笔代写整段正文（给一小段示例片段可以）
@@ -165,6 +166,23 @@ ${proto}
 ${canCreate}
 
 ${dlcNote}${pluginProto}`;
+  },
+  /** v4.17.5 研发能力说明：把 MoDevtools 的四项能力告诉小云，让她能承担优化/迭代全流程 */
+  devAbility() {
+    var MD = window.MoDevtools;
+    if (!MD) return '';
+    var ready = false;
+    try { var FB = window.FileBridge; ready = !!(FB && FB.hasRoot && FB.hasRoot()); } catch (e) {}
+    var head = ready
+      ? '【研发中枢已就绪】你能主动开发、验证、迭代整个项目，不只是被动改文件。'
+      : '【研发中枢待授权】主人授权项目文件夹后，你就能主动巡检、看懂项目结构、改完自验。';
+    return head + `
+你可以调用下面的研发能力（在回复里说明你要做什么，主人确认后执行）：
+· 自主巡检 scanProject() —— 主动扫全项目源码，定位语法错/引用缺失/重复id/版本不一致，输出带 P0/P1/P2 严重度的问题清单。主人说「检查一下项目」「哪里有问题」时用。
+· 模块地图 moduleMap() —— 看懂项目由哪些模块组成、谁依赖谁、哪些是悬空引用或孤岛。主人问「这个项目结构」「改这里会影响什么」时用。
+· 自我验证 verify() —— 改完自己跑一遍检查，给出 PASS / WARN / BLOCK 结论。每次改完文件后主动提出「让我验证一下」。
+· 影响面分析 refactorImpact(旧名, 新名) —— 大范围改名/迁移前，先算清楚涉及哪些文件多少处，再生成补丁。批量重构时用。
+工作闭环：巡检发现问题 → 模块地图看懂影响 → 补丁块动手（你已有的能力）→ 自我验证确认 → 向主人复述结果。报告里的数字都来自真实扫描，不许编造 PASS。`;
   },
   /** 注入给小云的后台视野：工坊类型 + 进度 + 设定卡 + 状态面板摘要 */
   buildContext() {
@@ -438,7 +456,9 @@ ${String(recap.summary).slice(0, 600)}`);
     { icon: "🎯", label: "剧情规划", tool: "plan" },
     { icon: "⏱️", label: "世界时钟", tool: "clock" },
     { icon: "👥", label: "人物志", tool: "roster" },
-    { icon: "🎲", label: "自由人生", tool: "life" }
+    { icon: "🎲", label: "自由人生", tool: "life" },
+    { icon: "🛠️", label: "自主巡检", tool: "devscan" },
+    { icon: "✅", label: "自我验证", tool: "devverify" }
   ],
   runQuick(action) {
     if (action.health) {
@@ -578,7 +598,7 @@ ${report}${fileRep}`;
     drawer.innerHTML = `
             <div class="mo-head">
                 <div class="mo-head-id">
-                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.5" alt="小云" draggable="false" decoding="async"></div>
+                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
                     <div class="mo-head-txt">
                         <div class="mo-name">小云 <span class="mo-name-tag" id="moModeTag">管家</span></div>
                         <div class="mo-status" id="moStatus"><i class="mo-dot"></i><span>随时待命</span></div>
@@ -670,7 +690,7 @@ ${report}${fileRep}`;
       box.innerHTML = `
                 <div class="mo-welcome">
                     <div class="mo-welcome-drop">
-                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.5" alt="小云" draggable="false" decoding="async"></div>
+                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
                     </div>
                     <div class="mo-welcome-title">云端的小云，已就位 ✨</div>
                     <div class="mo-welcome-sub">聊灵感、点评剧情、卡文急救，或者让小云给工坊做个体检～</div>
@@ -702,7 +722,7 @@ ${report}${fileRep}`;
     ).join("");
     return `
         <div class="mo-msg mo-msg-mo">
-            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.5" alt="小云" draggable="false" decoding="async"></div>
+            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
             <div class="mo-bubble mo-bubble-mo">${this.mdLite(body)}${chips ? `<div class="mo-suggests">${chips}</div>` : ""}</div>
         </div>`;
   },
@@ -723,7 +743,7 @@ ${report}${fileRep}`;
     if (!box) return null;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.5" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo" id="moTypingBubble">
                     <div class="mo-typing"><i></i><i></i><i></i></div>
                 </div>
@@ -741,7 +761,7 @@ ${report}${fileRep}`;
     if (!box) return;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.5" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo ${type === "error" ? "mo-bubble-error" : ""}">${this.mdLite(text)}</div>
             </div>`);
     this.scrollBottom();
