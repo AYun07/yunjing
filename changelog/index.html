@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.2">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.3">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,16 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="功能 生图 插件 状态栏 手机" style="--entry-hue:#5a7d4f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.17.3</span>
+                <span class="entry-date">2026-11-16</span>
+            </div>
+            <h3 class="entry-title">生图来源多样化 · 手机限近现代 · 插件运行时 · 每界专属状态栏</h3>
+            <p class="entry-text"><b>① 生图来源多样化</b>：新增 <b>ComfyUI 原生模式</b>。ComfyUI 与 OpenAI 的 images 接口根本不是一种东西——它是<b>两阶段异步</b>（POST /prompt 提交工作流 → 拿 prompt_id → 轮询 /history → 再走 /view 取图），而且它不吃提示词字符串、吃的是节点图 JSON，所以不能靠改 baseURL 兼容，必须有独立通路。现在支持玩家贴自己的工作流（用 <code>{{PROMPT}}</code> 标记注入点）或直接用内置 SD1.5 默认工作流，提示词节点可自动识别也可手填。至此生图共五路：<b>OpenAI 兼容（含 agnes 与各类个人端点与中转站）/ ComfyUI 原生 / NovelAI 原生 / 对话式 / 文墨 SVG</b>。<b>② 手机功能限近现代世界</b>：旧代码里有两道硬编码门（<code>phone-panel.js</code> 的 <code>if (GENRE !== "earth") return;</code> 与 <code>studio.html</code> 的 <code>if (genre === "earth")</code>），导致<b>只有「真实地球」能用手机</b>，而项目其实早就写好了按年份自动切换界面（微信≥2011 / QQ≥1999 / 短信≥1983）。现改为<b>让时代判定自己说了算</b>：16 个现代与近现代世界（都市 / 电竞 / 末世 / 科幻 / 维多利亚 / 蒸汽）自动可用，22 个古代玄幻世界自动不可用，全 38 界实测 0 不符。同时补了两个<b>近现代早期档位</b>——<b>电报时代(1844+)</b> 与 <b>无线电时代(1920+)</b>，因为诡秘之主(1890)、克苏鲁(1925)、黎明之剑(1880) 同属近现代，旧档位只覆盖 1983 年以后，这三个世界此前完全没有通讯界面。<b>③ 插件运行时（补上断掉的一环）</b>：查证发现 <code>FileBridge</code> 早已让小云<b>能写文件</b>（授权/白名单/备份/回滚/自检齐全），但全库搜 <code>registerPlugin</code>／<code>loadPlugin</code>／<code>extensionPoint</code> <b>一处都没有</b>——小云能把插件写出来，却<b>没有任何东西会加载并执行它</b>。新增 <code>js/plugin-runtime.js</code>：7 个扩展点（<code>story:turn-start/turn-end</code>、<code>world:init</code>、<code>prompt:inject</code>、<code>status:extend</code>、<code>ui:panel</code>、<code>world:var-change</code>）、6 种能力声明与运行时校验（未声明 <code>write-save</code> 就写不了档）、清单校验（非法 id / 过高 apiVersion 一律拒绝）、<b>插件抛错自动停用且绝不影响主流程与其他插件</b>。小云的提示词也一并升级：现在它知道自己有三种工作方式——改已有文件修 bug、新建文件做插件、用 DLC 机制装资料包。<b>④ 每个世界专属状态栏</b>：<code>status-schema.js</code> 此前是一张<b>全宇宙通用</b>的字段表（13 组 / 60+ 字段），全库搜 <code>genre</code> 一处都没有——修仙与网游、都市与克苏鲁用的是同一套状态栏。新增 <code>js/status-presets.js</code>：按世界类型给出专属的<b>组开关 + 专属字段 + 字段改名</b>。实测每界各不相同：修真看到<b>境界 / 道基灵根 / 功法 / 灵石 / 因果业障 / 道心</b>，网游看到<b>等级 / 公会 / 装备 / 副本进度 / 声望值</b>，都市看到<b>社会阶层 / 职业 / 资产 / 人脉 / 手机</b>，克苏鲁与诡秘看到<b>途径序列 / 理智值 / 污染疯狂度 / 隐秘知识 / 禁忌</b>，武侠看到<b>内力 / 招式 / 兵器 / 江湖名望 / 恩怨</b>，蒸汽看到<b>魔导等级 / 学派 / 造物 / 符文</b>，科幻看到<b>权限等级 / 舰船 / 能量 / 星域</b>；自由创作世界不套预设（由玩家自定义）。预设只在<b>首次进入该世界</b>时套用，之后尊重玩家自己的改动，另给「恢复本界预设」。修复过程中发现并修掉两个自身缺陷：<b>字段跨世界累积</b>（切 10 个世界累积 50+ 字段，现按 genre 过滤：本界的与玩家自建的才生效，其它世界的保留但不渲染）与 <b>Anthropic 档位倒挂</b>。</p>
+                    <p class="ver-diff"><b>相比 v4.17.2 的变化</b>：生图新增 ComfyUI 原生（五路来源）· 手机改为按时代判定（16 界可用 / 22 界不可用 + 电报与无线电档位）· 插件运行时（7 扩展点 / 能力校验 / 出错隔离）· 每界专属状态栏（组开关 + 专属字段 + 字段改名）… · <a href="https://github.com/AYun07/yunjing/compare/v4.17.2...v4.17.3" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
 
         <article class="log-entry" data-tags="功能 推理模型 设置" style="--entry-hue:#3f6f8f;">
             <div class="entry-head">
@@ -588,7 +598,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.2 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.3 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

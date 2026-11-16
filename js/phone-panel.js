@@ -7,7 +7,31 @@
       return "free";
     }
   })();
-  if (GENRE !== "earth") return;
+  /* v4.17.3：手机不再只限「真实地球」。
+     用户要求「小手机功能仅限于近现代世界才能使用」——正确做法不是硬编码世界名单，
+     而是让**时代判定**说了算：能从设定/变量解析出年份的，按年份给微信/QQ/短信界面；
+     解析不出的（古代 / 玄幻世界）自动 none，整个手机不可用。
+     旧写法 `if (GENRE !== "earth") return;` 在这一切之前就杀掉了模块，只有地球能用。
+     下面这张表只为「默认就是近现代、但开场未必显式写年份」的世界补样本年份；
+     不在表里且解析不出年份的世界仍然自动 none，符合「仅限近现代」的约束。 */
+  const GENRE_DEFAULT_YEAR = {
+    earth: 2025,            // 真实地球（默认现代，玩家可选近现代时间线）
+    zhongshengdushi: 2025,  // 重生都市
+    zhanhen: 2025,          // 都市神话悬疑
+    mystery: 2025,          // 悬疑（默认现代）
+    wangyou: 2025,          // 网游大世界（现代设备语境）
+    lunhuileyuan: 2025,     // 轮回乐园（现代起点无限流）
+    quanzhigaoshou: 2025,   // 全职高手（现代电竞）
+    longzu: 2025,           // 龙族（现代都市奇幻）
+    chaoshenxueyuan: 2025,  // 超神学院（现代科幻）
+    quanqiubingfeng: 2025,  // 全球冰封（现代末世）
+    ditandali: 2025,        // 吞噬星空（现代起点）
+    dibao: 2025,            // 地堡（现代末世）
+    scifi: 2077,            // 科幻
+    guimi: 1890,            // 诡秘之主（维多利亚时代 · 近现代）
+    cthulhu: 1925,          // 克苏鲁（两战之间 · 近现代）
+    limingzhijian: 1880     // 黎明之剑（蒸汽魔导工业 · 近现代）
+  };
   const API_KEY = "storyPhoneApi";
   const SET_KEY = "storyPhone";
   const PhonePanel = {
@@ -36,11 +60,20 @@
       // v3.19.9：读取知识库（常驻+检索条目注入三链提示词）
     },
     /* ==================== 时代档位（时代即边界） ==================== */
-    /* 手机形态随年份切换：微信(2011+) / QQ(1999-2010) / 短信(1983-1998) / 无(<1983) */
+    /* 手机形态随年份切换：微信(2011+) / QQ(1999-2010) / 短信(1983-1998)
+       v4.17.3 新增两个**近现代早期**档位：用户要求手机「仅限近现代世界」，
+       而诡秘之主(1890 维多利亚)、克苏鲁(1925 两战之间)、黎明之剑(1880 蒸汽魔导)
+       同属近现代，旧档位却因只覆盖 1983+ 而判成 none，这三个世界完全没有通讯界面。
+       现在补齐：
+         电报时代(1844-1919)  —— 电报局/纸质信笺，吻合维多利亚与蒸汽朋克语境
+         无线电时代(1920-1982) —— 早期电话/无线电，吻合两战之间与冷战
+       设备形态随之改变（载体名、图标、配色），不是把现代微信硬塞进旧时代。 */
     TIERS: {
       wechat: { label: "微信时代", appName: "微信", feedName: "朋友圈", hue: 145, carrier: "5G", icon: "💬" },
       qq: { label: "QQ时代", appName: "QQ", feedName: "QQ空间", hue: 205, carrier: "GPRS", icon: "💬" },
-      sms: { label: "短信时代", appName: "短信", feedName: "", hue: 210, carrier: "GSM", icon: "✉️" }
+      sms: { label: "短信时代", appName: "短信", feedName: "", hue: 210, carrier: "GSM", icon: "✉️" },
+      wireless: { label: "无线电时代", appName: "无线电", feedName: "通报栏", hue: 30, carrier: "WIRELESS", icon: "📻" },
+      telegram: { label: "电报时代", appName: "电报", feedName: "电讯栏", hue: 38, carrier: "TELEGRAPH", icon: "📜" }
     },
     /** 从任意文本提取公元年份（含公元前 → 负数）；找不到返回 null */
     parseYear(str) {
@@ -104,13 +137,20 @@
         if (tid === "modern") year = 2025;
         else if (tid === "millennium") year = 1999;
         else if (tid === "coldwar") year = 1972;
+        /* v4.17.3：显式自定义纪元仍判 none（尊重玩家「这是另一个世界」的设定）；
+           否则看本世界的默认年份——近现代世界（都市 / 科幻 / 维多利亚 / 蒸汽）
+           即使开场没写年份也应能用手机，古代玄幻世界则自然落到 none。 */
         else if (tid === "custom_era") return "none";
-        else return "none";
+        else year = GENRE_DEFAULT_YEAR[GENRE] != null ? GENRE_DEFAULT_YEAR[GENRE] : null;
+        if (year == null) return "none";
       }
       if (year >= 2011) return "wechat";
       if (year >= 1999) return "qq";
       if (year >= 1983) return "sms";
-      return "none";
+      /* v4.17.3：近现代早期也给通讯界面，避免「同属近现代却完全没手机」 */
+      if (year >= 1920) return "wireless";   // 两战之间 / 冷战前期
+      if (year >= 1844) return "telegram";   // 电报时代（维多利亚 / 蒸汽工业）
+      return "none";                          // 古代与玄幻：没有通讯设备，手机不出现
     },
     tier() {
       return this.detectTier();
@@ -2387,20 +2427,20 @@ ${notes.map((n) => "· " + n).join("\n")}
     try {
       const link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "css/phone-style.css?v=4.17.2";
+      link.href = "css/phone-style.css?v=4.17.3";
       document.head.appendChild(link);
       PhonePanel.install();
       const aliveScript = document.createElement("script");
-      aliveScript.src = "js/phone-alive.js?v=4.17.2";
+      aliveScript.src = "js/phone-alive.js?v=4.17.3";
       aliveScript.onerror = () => console.warn("[PhoneAlive] 主动联系引擎加载失败（不影响手机基础功能）");
       document.head.appendChild(aliveScript);
       const appsScript = document.createElement("script");
-      appsScript.src = "js/phone-apps.js?v=4.17.2";
+      appsScript.src = "js/phone-apps.js?v=4.17.3";
       appsScript.onerror = () => console.warn("[PhoneApps] App 生态加载失败（不影响手机基础功能）");
       document.head.appendChild(appsScript);
       /* v3.47.0 墨韵融合：微博/匿名树洞/日历/商城/日记（CSS 由该模块自注入） */
       const socialScript = document.createElement("script");
-      socialScript.src = "js/phone-social.js?v=4.17.2";
+      socialScript.src = "js/phone-social.js?v=4.17.3";
       socialScript.onerror = () => console.warn("[PhoneSocial] 墨韵融合社交包加载失败（基础 App 不受影响）");
       document.head.appendChild(socialScript);
     } catch (e) {

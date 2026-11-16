@@ -590,7 +590,14 @@ window.StoryImageGen = {
       (_a = window.TokenUsage) == null ? void 0 : _a.recordRequest([{ role: "user", content: imgPrompt }], "插图");
     } catch (e) {
     }
-    const url = cfg.mode === "nai" ? await this._genViaNai(cfg, imgPrompt) : cfg.mode === "chat" ? await this._genViaChat(cfg, imgPrompt) : cfg.mode === "ink" ? await this._genViaInk(cfg, imgPrompt) : await this._genViaImages(cfg, imgPrompt);
+    /* v4.17.3 模式分派：ink / nai / chat / comfy / images(默认 OpenAI 兼容)
+       覆盖用户要求的全部来源：ComfyUI 原生、NovelAI 原生、OpenAI 及一切类 OpenAI 的
+       玩家个人端点与 agnes 这类第三方生图端点。 */
+    const url = cfg.mode === "nai" ? await this._genViaNai(cfg, imgPrompt)
+      : cfg.mode === "comfy" ? await this._genViaComfy(cfg, imgPrompt)
+      : cfg.mode === "chat" ? await this._genViaChat(cfg, imgPrompt)
+      : cfg.mode === "ink" ? await this._genViaInk(cfg, imgPrompt)
+      : await this._genViaImages(cfg, imgPrompt);
     const entry = {
       turn: typeof opts.turn === "number" ? opts.turn : null,
       prompt,
@@ -630,6 +637,120 @@ window.StoryImageGen = {
     const data = await withTimeoutMs(res.json(), ms);
     return this._pickImageUrl(data);
   },
+  /** v4.17.3 模式五：ComfyUI 原生协议。
+   *
+   *  为什么单独做一套
+   *    用户要求生图来源「包括且不限于 nai / comfyui / openai / 玩家个人端点 / 其它类 agnes 端点」。
+   *    ComfyUI 与 OpenAI 的 images 接口**根本不是一种东西**：
+   *      · 它是**两阶段异步**：POST /prompt 提交工作流 → 拿 prompt_id → 轮询 /history/{id} → 取输出图；
+   *      · 它不吃 prompt 字符串，吃的是**节点图 JSON**，提示词要嵌在具体节点的 inputs.text 里；
+   *      · 取图还要再走 /view?filename=…&subfolder=…&type=output。
+   *    所以不能靠「改个 baseURL」兼容，必须有一条独立通路。
+   *
+   *  玩家配置
+   *    cfg.endpoint   ComfyUI 地址（如 http://127.0.0.1:8188）
+   *    cfg.comfyWorkflow  可选：自己的工作流 JSON（API 格式，从 ComfyUI「保存(API格式)」导出）。
+   *                       里面用 {{PROMPT}} 标记提示词要落到的位置；不填则用内置默认工作流。
+   *    cfg.comfyPromptNode 可选：提示词节点 id（默认自动找第一个 CLIPTextEncode 的正面节点）
+   */
+  async _genViaComfy(cfg, prompt) {
+    const base = String(cfg.endpoint || "").trim().replace(/\/+$/, "").replace(/\/prompt$/, "");
+    if (!base) throw new Error("ComfyUI 模式需要填地址（如 http://127.0.0.1:8188）");
+    const ms = secsToMs(cfg.timeout, 300);
+
+    /* ---- 1) 组装工作流 ---- */
+    let wf = null;
+    const raw = cfg.comfyWorkflow;
+    if (raw && typeof raw === "object") wf = JSON.parse(JSON.stringify(raw));
+    else if (typeof raw === "string" && raw.trim()) {
+      try { wf = JSON.parse(raw); }
+      catch (e) { throw new Error("ComfyUI 工作流不是合法 JSON：" + String(e.message).slice(0, 80)); }
+    }
+    if (!wf) wf = this._comfyDefaultWorkflow(cfg);
+    /* 提示词注入：优先 {{PROMPT}} 占位，其次指定节点，最后自动找 CLIPTextEncode */
+    let injected = false;
+    const s = JSON.stringify(wf);
+    if (s.indexOf("{{PROMPT}}") !== -1) {
+      wf = JSON.parse(s.split("{{PROMPT}}").join(String(prompt).replace(/"/g, '\\"')));
+      injected = true;
+    }
+    if (!injected) {
+      let target = cfg.comfyPromptNode ? String(cfg.comfyPromptNode) : null;
+      if (!target) {
+        for (const k of Object.keys(wf)) {
+          const n = wf[k];
+          if (n && n.class_type === "CLIPTextEncode" && n.inputs && typeof n.inputs.text === "string") {
+            /* 取文本最长的那个当正面提示词（负面通常更短） */
+            if (!target || n.inputs.text.length > String(wf[target].inputs.text || "").length) target = k;
+          }
+        }
+      }
+      if (!target || !wf[target]) {
+        throw new Error("ComfyUI 工作流里找不到提示词节点：请在工作流 JSON 中用 {{PROMPT}} 标记，或填「提示词节点 id」");
+      }
+      wf[target].inputs.text = String(prompt);
+      injected = true;
+    }
+
+    /* ---- 2) 提交 ---- */
+    const clientId = "yj-" + Math.random().toString(36).slice(2, 12);
+    const res = await fetchWithTimeout(base + "/prompt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: wf, client_id: clientId })
+    }, ms, { label: "插图", throttleKey: "插图" });
+    if (!res.ok) throw new Error("ComfyUI 提交失败: " + (await this._errText(res)));
+    const sub = await withTimeoutMs(res.json(), ms);
+    const pid = sub && (sub.prompt_id || sub.promptId);
+    if (!pid) throw new Error("ComfyUI 未返回 prompt_id：" + JSON.stringify(sub).slice(0, 120));
+
+    /* ---- 3) 轮询历史 ---- */
+    const deadline = Date.now() + ms;
+    const gap = 1200;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, gap));
+      let hist = null;
+      try {
+        const hr = await fetchWithTimeout(base + "/history/" + encodeURIComponent(pid), { method: "GET" }, Math.min(30000, ms));
+        if (hr.ok) hist = await hr.json();
+      } catch (e) { /* 网络抖动：继续轮询直到总超时 */ }
+      const rec = hist && hist[pid];
+      if (!rec) continue;
+      const outs = rec.outputs || {};
+      /* 在 outputs 里找第一张图（SaveImage / PreviewImage 节点） */
+      for (const nodeId of Object.keys(outs)) {
+        const imgs = outs[nodeId] && outs[nodeId].images;
+        if (Array.isArray(imgs) && imgs.length) {
+          const im = imgs[0];
+          const q = "filename=" + encodeURIComponent(im.filename || "") +
+                    "&subfolder=" + encodeURIComponent(im.subfolder || "") +
+                    "&type=" + encodeURIComponent(im.type || "output");
+          return base + "/view?" + q;
+        }
+      }
+      /* 有记录但没有图：多半是执行报错，把状态里的错误带出来 */
+      const st = rec.status || {};
+      if (st.status_str === "error" || (st.messages || []).some((m) => m && m[0] === "execution_error")) {
+        throw new Error("ComfyUI 执行出错：" + JSON.stringify(st.messages || st).slice(0, 200));
+      }
+    }
+    throw new Error("ComfyUI 生成超时（" + Math.round(ms / 1000) + " 秒内未取到图片）");
+  },
+
+  /** 内置最小可用的 SD1.5 txt2img 工作流（玩家没提供工作流时用） */
+  _comfyDefaultWorkflow(cfg) {
+    const ckpt = cfg.comfyCheckpoint || "v1-5-pruned-emaonly.safetensors";
+    return {
+      "3": { class_type: "KSampler", inputs: { seed: Math.floor(Math.random() * 1e15), steps: 28, cfg: 7, sampler_name: "dpmpp_2m", scheduler: "karras", denoise: 1, model: ["4", 0], positive: ["6", 0], negative: ["7", 0], latent_image: ["5", 0] } },
+      "4": { class_type: "CheckpointLoaderSimple", inputs: { ckpt_name: ckpt } },
+      "5": { class_type: "EmptyLatentImage", inputs: { width: 1024, height: 1024, batch_size: 1 } },
+      "6": { class_type: "CLIPTextEncode", inputs: { text: "{{PROMPT}}", clip: ["4", 1] } },
+      "7": { class_type: "CLIPTextEncode", inputs: { text: "lowres, text, watermark, signature, worst quality", clip: ["4", 1] } },
+      "8": { class_type: "VAEDecode", inputs: { samples: ["3", 0], vae: ["4", 2] } },
+      "9": { class_type: "SaveImage", inputs: { filename_prefix: "yunjing", images: ["8", 0] } }
+    };
+  },
+
   /** 模式二：对话式生图（chat/completions 回复解析图片链接，OpenRouter / gpt-4o 系中转常用） */
   async _genViaChat(cfg, prompt) {
     var _a, _b, _c, _d;
@@ -692,7 +813,11 @@ window.StoryImageGen = {
    *  v3.46.2：NAI 模式测试走精简参数（steps 28→10），少烧一次额度 */
   async testApi(cfg) {
     const probe = "一只戴着斗笠打盹的橘猫，水墨国风，暖色背景";
-    const url = cfg.mode === "nai" ? await this._genViaNai(cfg, probe, true) : cfg.mode === "chat" ? await this._genViaChat(cfg, probe) : cfg.mode === "ink" ? await this._genViaInk(cfg, probe) : await this._genViaImages(cfg, probe);
+    const url = cfg.mode === "nai" ? await this._genViaNai(cfg, probe, true)
+      : cfg.mode === "comfy" ? await this._genViaComfy(cfg, probe)
+      : cfg.mode === "chat" ? await this._genViaChat(cfg, probe)
+      : cfg.mode === "ink" ? await this._genViaInk(cfg, probe)
+      : await this._genViaImages(cfg, probe);
     return url.startsWith("data:") ? "（返回 base64 图片，链路正常）" : url;
   },
   /** 拉取模型列表

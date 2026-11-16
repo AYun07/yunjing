@@ -127,14 +127,44 @@ ${this.fileAbility()}
 · 想新增内容：find 写成插入点前后的那几行，replace 里保留这些行并插进新内容；
 · 想整文件重写：留空 find（会二次确认）；
 · 一次可以给多个补丁块，按顺序应用；写入前自动备份，主人可一键回滚。`;
+    /* v4.17.3：补齐**建新文件 / 做插件 / 做 DLC**的能力说明。
+       旧提示词只教了「改已有文件」，没教「新建文件」也没教插件协议——
+       于是玩家说「帮我做个插件」时，小云即使能写文件也不知道该写成什么样子，
+       而写出来的插件文件在当时**没有任何东西会加载它**（plugin-runtime 那次补齐了这一环）。 */
+    const pluginProto = (() => {
+      try { return window.PluginRuntime && window.PluginRuntime.authoringGuide ? '\n\n' + window.PluginRuntime.authoringGuide() : ''; }
+      catch (e) { return ''; }
+    })();
+    const canCreate = `【新建文件】find 留空即整文件写入——用于**创建新文件**（插件、DLC 设定包、新的样式等）：
+\`\`\`yj-patch
+{"path":"plugins/我的插件/plugin.json","find":"","replace":"{\\"id\\":\\"my-plugin\\",...}"}
+\`\`\`
+新建时：① 路径必须是白名单类型（js/css/html/json/md/txt）；② 会二次确认；③ 同样自动备份。
+一次可以同时新建多个文件（比如清单 + 入口 + 说明）。`;
+    const dlcNote = `【做 DLC / 资料包】除了写代码，你还可以用 DLC 机制做**纯资料扩展**（不需要玩家改代码）：
+knowledgeItems 里放 {title, content, category, tags}，由 storyDLCManager.createDLC(name, desc, items) 装载，激活后进入该世界的知识库。
+适合「补原著设定 / 加自创势力 / 加物品图鉴」这类**内容型**扩展；要改行为与界面才需要写插件。`;
     if (ready) {
-      return `【你现在能改文件】主人已授权项目文件夹，你可以直接读写并修改项目源码（js / css / html 等）。
+      return `【你现在能改文件】主人已授权项目文件夹，你可以直接读写、修改**并新建**项目源码（js / css / html / json / md / txt）。
 流程：你给出补丁块 → 系统校验 find 是否唯一命中 → 展示差异预览 → 主人点确认才写入 → 写入前自动备份，可回滚。
 可先让主人点抽屉里的 🛠 跑一次「自检」（语法 / 引用 / 重复 id / 版本号），再对症下药。
-${proto}`;
+
+你的三种工作方式，按玩家意图自选：
+  ① 修 bug / 改现有行为 —— 用补丁块改已有文件（下面 proto）
+  ② 做插件 / 加新功能 —— 新建 plugins/<id>/plugin.json + plugin.js（见「新建文件」与插件规范）
+  ③ 做资料包 / DLC —— 用 DLC 机制的 knowledgeItems 装内容（见「做 DLC」）
+${proto}
+
+${canCreate}
+
+${dlcNote}${pluginProto}`;
     }
     return `【改文件】主人还没授权项目文件夹，你现在只能给建议。涉及改代码时，照样按下面的补丁块格式给出，系统会提示主人授权后再应用。
-${proto}`;
+${proto}
+
+${canCreate}
+
+${dlcNote}${pluginProto}`;
   },
   /** 注入给小云的后台视野：工坊类型 + 进度 + 设定卡 + 状态面板摘要 */
   buildContext() {
@@ -548,7 +578,7 @@ ${report}${fileRep}`;
     drawer.innerHTML = `
             <div class="mo-head">
                 <div class="mo-head-id">
-                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.2" alt="小云" draggable="false" decoding="async"></div>
+                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.3" alt="小云" draggable="false" decoding="async"></div>
                     <div class="mo-head-txt">
                         <div class="mo-name">小云 <span class="mo-name-tag" id="moModeTag">管家</span></div>
                         <div class="mo-status" id="moStatus"><i class="mo-dot"></i><span>随时待命</span></div>
@@ -640,7 +670,7 @@ ${report}${fileRep}`;
       box.innerHTML = `
                 <div class="mo-welcome">
                     <div class="mo-welcome-drop">
-                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.2" alt="小云" draggable="false" decoding="async"></div>
+                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.3" alt="小云" draggable="false" decoding="async"></div>
                     </div>
                     <div class="mo-welcome-title">云端的小云，已就位 ✨</div>
                     <div class="mo-welcome-sub">聊灵感、点评剧情、卡文急救，或者让小云给工坊做个体检～</div>
@@ -672,7 +702,7 @@ ${report}${fileRep}`;
     ).join("");
     return `
         <div class="mo-msg mo-msg-mo">
-            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.2" alt="小云" draggable="false" decoding="async"></div>
+            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.3" alt="小云" draggable="false" decoding="async"></div>
             <div class="mo-bubble mo-bubble-mo">${this.mdLite(body)}${chips ? `<div class="mo-suggests">${chips}</div>` : ""}</div>
         </div>`;
   },
@@ -693,7 +723,7 @@ ${report}${fileRep}`;
     if (!box) return null;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.2" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.3" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo" id="moTypingBubble">
                     <div class="mo-typing"><i></i><i></i><i></i></div>
                 </div>
@@ -711,7 +741,7 @@ ${report}${fileRep}`;
     if (!box) return;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.2" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.3" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo ${type === "error" ? "mo-bubble-error" : ""}">${this.mdLite(text)}</div>
             </div>`);
     this.scrollBottom();

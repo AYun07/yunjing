@@ -24,6 +24,7 @@
 
   var _last = null;
   var _history = [];
+  var _worldInitFired = false;
 
   function bytes(s) { return String(s == null ? '' : s).length; }
 
@@ -76,10 +77,34 @@
    */
   async function compile(userMessage) {
     var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+    /* v4.17.3：插件世界初始化扩展点（首次编译时触发一次） */
+    try {
+      if (!_worldInitFired && window.PluginRuntime) {
+        _worldInitFired = true;
+        window.PluginRuntime.emit('world:init', { genre: (environment() || {}).genre });
+      }
+    } catch (e) { }
     if (typeof window.buildStoryMessages !== 'function') {
       throw new Error('buildStoryMessages 未就绪（ai-message-builder.js 未加载？）');
     }
     var messages = await window.buildStoryMessages(userMessage);
+    /* v4.17.3：插件扩展点 prompt:inject —— 插件返回的段落拼接后追加到系统提示末尾。
+       这是「做 DLC 设定包」最常用的入口：插件不改云境源码，只往提示词里加内容。
+       任何插件抛错都在 PluginRuntime 内部被吞掉并停用该插件，不会影响本轮出文。 */
+    try {
+      var P = window.PluginRuntime;
+      if (P && P.collectPromptInjections) {
+        var extra = P.collectPromptInjections({ userMessage: userMessage, genre: (environment() || {}).genre });
+        if (extra && Array.isArray(messages)) {
+          for (var i = 0; i < messages.length; i++) {
+            if (messages[i] && messages[i].role === 'system') {
+              messages[i] = Object.assign({}, messages[i], { content: String(messages[i].content || '') + '\n\n' + extra });
+              break;
+            }
+          }
+        }
+      }
+    } catch (e) { }
     var t1 = (window.performance && performance.now) ? performance.now() : Date.now();
     record(messages, userMessage, Math.round(t1 - t0));
     return messages;
