@@ -103,6 +103,6 @@ npm test          # = node test/regression.mjs，当前 26 项全绿
 - P2 口径统一：README 解释 38/36 界差异；本交接文档。
 
 **待办 / 已知约束**：
-- v4.28.0 尚未推送到 GitHub（见第 5 节流程）。
+- v4.28.0 已推送到 GitHub：main `890d39b7`（含 hotfix），tag/Release `v4.28.0` 在线。
 - 沙箱本地 git 与远端历史分叉（gitignore 排除了 `_common.js` 等运行必需文件，远端保留），属正常，不影响运行。
 - API Key 存 localStorage 明文——纯前端架构的固有特性，靠"只存本机 + 备份需提示勿外传"缓解，无服务端方案。

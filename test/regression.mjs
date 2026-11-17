@@ -86,7 +86,7 @@ function makeEnv() {
     CustomEvent: class { constructor(t, o) { this.type = t; this.detail = o?.detail; } },
     Event: class {}, dispatchEvent() {}, addEventListener() {}, removeEventListener() {},
     YunjingID: { APP: 'yunjing', acceptApp: (a) => a === 'yunjing' || a === 'moshu', dbName: (n) => n.replace('moshu', 'yunjing') },
-    YJ_VER: '4.28.0',
+    YJ_VER: '4.29.0',
     showToast() {},
     SlotRegistry: {
       genre: () => 'free', slotId: () => 'main',
@@ -269,9 +269,15 @@ G('4. 多值栏目全界识别');
 G('5. 静态不变量');
 {
   const idx = read('index.html');
-  ok('index.html YJ_VER = 4.28.0', /YJ_VER\s*=\s*['"]4\.28\.0['"]/.test(idx));
-  const cacheParams = (idx + read('studio.html')).match(/\?v=\d+\.\d+\.\d+/g) || [];
-  const stale = cacheParams.filter(v => v !== '?v=4.28.0');
+  const studio = read('studio.html');
+  /* 版本号不写死：从唯一来源 studio.html 派生，避免每次升版都要改测试 */
+  const verM = studio.match(/window\.YJ_VER\s*=\s*['"](\d+\.\d+\.\d+)['"]/);
+  const CUR = verM ? verM[1] : '';
+  ok('能从唯一来源读到版本号', !!CUR, CUR);
+  const idxVerM = idx.match(/YJ_VER\s*=\s*['"](\d+\.\d+\.\d+)['"]/);
+  ok('index.html YJ_VER 与唯一来源同源', !!idxVerM && idxVerM[1] === CUR, (idxVerM && idxVerM[1]) + ' vs ' + CUR);
+  const cacheParams = (idx + studio).match(/\?v=\d+\.\d+\.\d+/g) || [];
+  const stale = cacheParams.filter(v => v !== '?v=' + CUR);
   ok('缓存参数无旧版本残留', stale.length === 0, [...new Set(stale)].slice(0, 5).join(','));
   ok('sw.js 预缓存含 save-slots.js', read('sw.js').includes('save-slots.js'));
   ok('studio.html 加载 save-slots.js', read('studio.html').includes('save-slots.js'));

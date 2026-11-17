@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.19.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.29.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,30 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.29.0 ==================== -->
+        <article class="log-entry" data-tags="功能 工程 小云 判定 质量" style="--entry-hue:#6f9fbe;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.29.0</span>
+                <span class="entry-date">2026-11-17</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">工程地基加固 · 行动判定骰 · 小云资料召回 · 三道自动体检</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：核心回归 33 项接入 CI · 新增网络韧性体检与世界书条目体检（均"存量入基线、只拦新增"）· 新增行动判定骰（六轴属性+资质+难度，演算/口述双裁定）· 小云新增"资料召回"与"行动判定"两项能力 · 新增代码地图与改动规约文档。 · <a href="https://github.com/AYun07/yunjing/compare/v4.28.0...v4.29.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>三道自动体检入 CI</b>：CI 由四道闸扩为七道——核心回归 33 项（<code>npm test</code>）、网络韧性体检（扫裸 fetch / 无超时 / 无中止信号）、世界书条目体检（扫占位符 / 灌水标记 / 同界重复句 / 跨世界套话）。后两者采用"存量入基线、只拦新增"口径，不阻塞历史内容，只守住今后不再新增。</li>
+                    <li><b>行动判定骰（🎯）</b>：与"灵感骰子"定位不同——它按 d20 + 六轴属性 + 资质档 + 装备修正 − 难度算成败，给出大成功到大失败六档。两种裁定口径：演算裁定前端确定性计算（弱模型也稳），口述裁定只给参考、最终由剧情与玩家定。草稿自动留痕，只读属性不改状态数值。</li>
+                    <li><b>小云资料召回（🔎）</b>：正文前一次轻量召回——按当前剧情关键词捞世界书条目 + 五层长期记忆摘要，整理成"资料便签"送入输入框；不搞多轮 AI 循环、不强依赖向量接口，弱模型/无接口也能用。可直接对小云说"召回 / 查资料 / 判定"。</li>
+                    <li><b>代码地图与改动规约</b>：<code>CODE-MAP.md</code> 按功能分层索引 150+ 模块的入口与职责，并固化"定位→小步改→验证四件套→提交"的改动闭环与新增模块三件套，方便交接与快速定位。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.19.0 ==================== -->
         <article class="log-entry" data-tags="视觉 地图 状态栏 体验 模型" style="--entry-hue:#7a5fa8;">
             <div class="entry-head">
                 <span class="entry-ver">v4.19.0</span>
                 <span class="entry-date">2026-11-17</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">38 界专属状态栏 · 地图精修 · 模型配置引导 · 调用消耗透明</h3>
             <p class="ver-diff"><b>相比 v4.18.0 的变化</b>：36 个有名世界各有 14 个专属状态字段（按原著设定，界界不同，告别通用模板）· 舆图画面精修（世界主色辉光/立体边框/据点发光/地名描边）· 顶栏新增模型配置状态徽标+游玩中引导条 · 新增「调用与消耗」面板（各接口调用次数/token/花费估算）· <a href="https://github.com/AYun07/yunjing/compare/v4.18.0...v4.19.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -669,7 +687,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.19.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.29.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

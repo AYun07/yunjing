@@ -182,6 +182,10 @@
         } else bot((r2 && r2.msg) || '没有可修复的正文。');
       } else if (/变量|数据异常/.test(t)) {
         var r3 = runTool('vars.check'); bot(r3 ? r3.msg : '变量系统未加载。');
+      } else if (/判定|掷骰|摇骰|成败|检定|roll/i.test(t)) {
+        var ra = runTool('ui.actioncheck'); bot(ra && ra.ok ? ra.msg : ((ra && ra.msg) || '判定骰未加载。'));
+      } else if (/召回|查资料|资料便签|回忆一下|整理资料|写前参考/.test(t)) {
+        Promise.resolve(runTool('recall.brief', {})).then(function (r) { bot(r && r.msg || '召回暂无结果。'); });
       } else if (/灵感|没思路|写什么|点子/.test(t)) { bot(INSPIRE[Math.floor(Math.random() * INSPIRE.length)]); }
       else if (/卡文|卡住|写不下/.test(t)) { bot('卡文急救三步：① 回到上一幕的「钩子」 ② 让配角说一句反常的话 ③ 给场景换天气。还不行？<a href="studio.html" style="color:#b9c0ff">去创作室让我深度帮你 →</a>'); }
       else if (/体检|检查|问题/.test(t)) { var r4 = runTool('system.status'); bot(r4 ? r4.msg : '工坊体检：排版 ✅ · 存档 ✅ · 灵感库 ✅ · 主笔通道 ✅'); }
@@ -199,6 +203,8 @@
     quick.innerHTML = '';
     [['💡 剧情灵感', function () { bot(INSPIRE[Math.floor(Math.random() * INSPIRE.length)]); }],
      ['📚 世界书', function () { var r = runTool('ui.worldbook'); bot(r && r.ok ? r.msg : ((r && r.msg) || '世界书未加载。')); }],
+     ['🎯 行动判定', function () { var r = runTool('ui.actioncheck'); bot(r && r.ok ? r.msg : ((r && r.msg) || '判定骰未加载。')); }],
+     ['🔎 资料召回', function () { Promise.resolve(runTool('recall.brief', {})).then(function (r) { bot(r && r.msg || '召回暂无结果。'); }); }],
      ['🩹 正文急救', function () { var r = runTool('format.repair'); bot(r && r.ok ? r.msg : ((r && r.msg) || '没有可修复的正文。')); }],
      ['💾 存档管理', function () { var r = runTool('saves.ui'); if (r && r.ok) bot(r.msg); else { bot(r && r.msg || '存档系统未加载。'); if (window.SaveSlots) { try { SaveSlots.open(); } catch (e) {} } } }],
      ['🧩 预设/正则', function () { var p = runTool('preset.info'); var g = runTool('regex.info'); bot((p && p.msg || '') + '\n' + (g && g.msg || '')); }],
