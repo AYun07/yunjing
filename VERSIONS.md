@@ -2,21 +2,23 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **95** 个版本，从 `v3.55.7` 到 `v4.29.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **97** 个版本，从 `v3.55.7` 到 `v4.29.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v4.29.0 口径）**：首行 **v4.29.0 为当前版本**；其余 **94 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v4.29.0 口径）**：首行 **v4.29.0 为当前版本**；其余 **96 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；95 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；97 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
 
-## 版本速查（新→旧 · 首行为当前版本，其余 94 版为旧版本）
+## 版本速查（新→旧 · 首行为当前版本，其余 96 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
-| **v4.17.5** | 2026-11-16（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.5) |
+| **v4.29.0** | 2026-11-17（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.29.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.29.0) |
+| **v4.17.6** | 2026-11-17 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
+| **v4.17.5** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.5) |
 | **v4.17.4** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.4) |
 | **v4.17.3** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.3) |
 | **v4.17.2** | 2026-11-15 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.2) |
@@ -115,7 +117,21 @@
 
 ---
 
-## v4.17.6 · 2026-11-17（当前版本）
+## v4.29.0 · 2026-11-17（当前版本）
+
+> **相比 v4.17.6 的变化**：工程地基加固（CI 七道闸 / 网络韧性体检 / 世界书体检 / 代码地图）＋行动判定骰（六轴属性演算与玩家口述双裁定）＋小云资料召回。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.6...v4.29.0)
+
+**本版做了什么**
+
+- **工程地基**：CI 从四道闸升到七道闸 —— 新增核心回归（存档 / 填表规则 / 多值字段等 34 项）、网络韧性体检（裸 fetch 静态扫描，基线只拦新增）、世界书条目体检（38 界 / 3763 条，占位符 / 灌水 / 重复句，基线只拦新增）；新增 `CODE-MAP.md` 代码地图。
+- **行动判定骰 `js/action-check.js`**：d20 + 六轴属性 + 资质档 + 装备修正 − 难度，六档结果；`calc` 前端确定性演算，`free` 口述剧情优先，草稿留痕。小云可用「判定 / 掷骰」触发。
+- **小云能力**：新增 `recall.brief` 资料召回（世界书关键词 + 记忆层摘要整理为资料便签）、`saves.backup` / `saves.capacity`、`ui.actioncheck`；工具循环改为支持 Promise，避免 async 工具回灌 `[object Promise]`。
+- **存档防丢（承 v4.28.0）**：全量备份 / 恢复、单档导出补散落键 + 正文、导入前快照回滚、容量体检；键重映射覆盖主档裸键 / `~slot` / `:slot:` / `.slot~` 等格式。
+- **填表双规则（承 v4.28.0）**：严格模式走引擎钳制、自由模式玩家口述优先，单一事实源 `fill-rule.js`。
+
+---
+
+## v4.17.6 · 2026-11-17
 
 > **相比 v4.17.5 的变化**：新增小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 批量重构影响面分析），FileBridge 暴露全量文件清单，小云提示词与工具箱接入研发能力；全量真浏览器视觉审查并修复小云遮挡状态面板 / 工具箱条目。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.5...v4.17.6)
 
