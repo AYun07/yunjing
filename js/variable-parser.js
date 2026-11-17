@@ -1,4 +1,4 @@
-/* v4.27.0 填表规则：严格演算走引擎钳制/补涨；玩家自由跳过钳制与补涨，玩家填多少算多少。 */
+/* v4.28.0 填表规则：严格演算走引擎钳制/补涨；玩家自由跳过钳制与补涨，玩家填多少算多少。 */
 function yjEngineOn() { return !(window.FillRule && window.FillRule.shouldEnforceEngine && !window.FillRule.shouldEnforceEngine()); }
 function yjGrowthOn() { return !(window.FillRule && window.FillRule.shouldSettleGrowth && !window.FillRule.shouldSettleGrowth()); }
 

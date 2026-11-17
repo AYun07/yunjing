@@ -325,7 +325,7 @@
     return s;
   }
 
-  /* ============ 多值栏目 v4.27.0 ============
+  /* ============ 多值栏目 v4.28.0 ============
      有些状态维度天生可同时存在多项（斗罗九枚魂环、多块魂骨、多位队友…）。
      单值字符串写不下也显示不出。多值栏目统一用数组存；同时兼容模型上报的
      「用 / 、 , ；分隔的一行文本」，自动拆成数组，老存档/老模型都不会失效。 */
@@ -488,7 +488,7 @@
       html = sectionHTML(gs);
     }
     var flags = [];
-    /* v4.27.0 填表规则标记：让玩家随时看清当前是严格演算还是玩家自由 */
+    /* v4.28.0 填表规则标记：让玩家随时看清当前是严格演算还是玩家自由 */
     try { if (window.FillRule && window.FillRule.flagHTML) flags.push(window.FillRule.flagHTML()); } catch (e) {}
     if (adultOn() && adultConfirmed()) flags.push('<span class="yj-st-flag adult">🔞 成人字段已开</span>');
     if (breakOn()) flags.push('<span class="yj-st-flag brk">⛓ 破限已开</span>');
@@ -581,7 +581,7 @@
         </div>`;
   }
 
-  /* ============ 多值栏目编辑器 v4.27.0 ============
+  /* ============ 多值栏目编辑器 v4.28.0 ============
      一栏可填多项（九个魂环、多块魂骨、多位队友…），支持逐项增删排序 + 批量粘贴。 */
   var _multiF = null;
   function openMultiEditor(f) {
@@ -839,13 +839,13 @@
       }
       if (rest.length) out += '选报（与情节相关就报，能显著提升状态栏的信息量）：\n' + rest.join('\n') + '\n';
       out += '每项一行，形如 `所在：骊珠洞天`（严禁英文 key）。成人向状态（情欲状态/亲密关系/事后余韵/双方意愿）按当前内容尺度如实上报：尺度允许时写清，不允许时填「无」，且绝不涉及未成年人。';
-      /* v4.27.0 多值栏目：告诉模型这些字段可报多项，逐条列出。 */
+      /* v4.28.0 多值栏目：告诉模型这些字段可报多项，逐条列出。 */
       var multiLabels = [];
       gs.forEach(function (g) { g.fields.forEach(function (f) { if (fieldIsMulti(f)) multiLabels.push(f.label); }); });
       if (multiLabels.length) {
         out += '\n【多值栏目】' + multiLabels.join('、') + ' 可同时有多项：请逐项分行列出，形如 `魂环配置：第一魂环·百年曼陀罗蛇 / 第二魂环·千年大力猩猩`（用 / 分隔多项；只有一项就写一项，确实没有填「无」）。';
       }
-      /* v4.27.0 填表规则分叉：严格演算 / 玩家自由两套行为准则，随模式注入。 */
+      /* v4.28.0 填表规则分叉：严格演算 / 玩家自由两套行为准则，随模式注入。 */
       try { if (window.FillRule && window.FillRule.directive) out += window.FillRule.directive(); } catch (e) {}
       return out;
     },
