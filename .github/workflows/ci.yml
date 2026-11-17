@@ -9,11 +9,14 @@
 #     · css/touch-targets.css 被页面引用却没进预缓存清单
 #   这些都不是「不小心」，而是**流程缺兜底**。本工作流把可机械校验的部分全部自动化。
 #
-# 四道闸
+# 七道闸
 #   ① 语法      —— 全量 JS/MJS 过一遍 node --check（12 万行手写 JS 的第一道网）
 #   ② 版本同源  —— scripts/sync-version.mjs --check（单一来源派生，杜绝漏改）
 #   ③ 预缓存    —— scripts/sync-precache.mjs（清单 vs 文件系统 vs HTML 引用三方对齐）
 #   ④ 离线测试  —— yunjing-test/run-all.mjs（统一入口，9 个纯 Node 测试，秒级）
+#   ⑤ 核心回归  —— test/regression.mjs（存档/填表规则/多值字段等 33 项断言）
+#   ⑥ 网络体检  —— scripts/net-vitals.mjs（裸 fetch 静态扫描，基线只拦新增）
+#   ⑦ 世界书体检—— scripts/kb-vet.mjs（占位符/灌水/重复句，基线只拦新增）
 #
 # 需要浏览器/外部接口的 27 个脚本不在这里跑（见 run-all.mjs --all），
 # 它们要么需要 Playwright 浏览器，要么需要真实的 LLM 接口，不适合每次提交都跑。
@@ -69,3 +72,12 @@ jobs:
         env:
           PYTHON: python3
           PYTHONIOENCODING: utf-8
+
+      - name: '⑤ 核心回归（33 项）'
+        run: node test/regression.mjs
+
+      - name: '⑥ 网络韧性体检'
+        run: node scripts/net-vitals.mjs
+
+      - name: '⑦ 世界书条目体检'
+        run: node scripts/kb-vet.mjs
