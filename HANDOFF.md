@@ -108,7 +108,7 @@ npm test          # = node test/regression.mjs，当前 26 项全绿
 
 **待办 / 已知约束**：
 - v4.29.0 已推送：main `fec857d6`，tag/Release 在线（29 文件核对一致）；唯一例外是 `ci.yml` 因 token 无 `workflow` scope 未同步（见第 5 节）。
-- v4.29 收尾补推（已执行）：`package.json` 版本已同步 4.29.0、本 HANDOFF 已同步 v4.29 状态，最新 main `85960e6`。仍只有 `ci.yml`（七道闸）未同步。
-- **ci.yml 补推已穷尽沙箱所有途径（2026-11-17 实测）**：① `repo` scope PAT 走 contents API → 403 `workflow scope`；② 同 PAT 走 Git Data API → 建 tree 404；③ GitHub MCP 连接器（integration 身份）→ 403 `Resource not accessible by integration`；④ 历史 `ghu_` token 已失效 401；⑤ 浏览器无 GitHub 登录 session，网页编辑器不可用；⑥ `git push` 走沙箱直连 120s 超时被封。**结论：必须提供一个 classic PAT 且勾选 `workflow` scope（或等效授权）才能写入 `.github/workflows/ci.yml`。** 拿到后执行：contents API `PUT /repos/AYun07/yunjing/contents/.github/workflows/ci.yml`，body 带本地文件 base64 + 远端 blob sha `1feca500409445a7d809d5938b4148cb83082b75` + commit message + `branch: main`。此为 GitHub 硬性安全策略，无法在工程侧绕过，不影响产品运行。
+- **（已全部完成，2026-11-17）ci.yml 七道闸补推 + CI 全绿**：用临时 classic PAT（勾选 `repo`+`workflow`）经 contents API 推送 `ci.yml`，远端 blob `d440c49…`、commit `ab617c1`。推送过程中发现 CI 红灯真因：`VERSIONS.md` 速查表首行停在 v4.17.5、缺 v4.29.0 详情段，导致版本同源闸失败 → 已补齐 v4.29.0 速查表行 + 详情段，并用 `node scripts/sync-version.mjs` 自动修正计数（95→97），commit `aa3eb73`。**最新一次 CI run 七道闸全部 success**（语法/版本同源/预缓存/离线9项/核心回归34项/网络体检/世界书体检）。临时 PAT 用完已网页删除，API 验证返回 401 Bad credentials 确认失效；浏览器会话、token 文件、截图均已清除。
+- **历史踩坑留档（无需再处理）**：`repo` scope PAT 无法写 `.github/workflows/*`（contents API 403 `workflow scope`、Git Data API 建 tree 404）；GitHub MCP 集成身份 403；沙箱 `git push` 直连超时。写 workflow 文件必须带 `workflow` scope 的 classic PAT。当前已无此待办。
 - 沙箱本地 git 与远端历史分叉（gitignore 排除了 `_common.js` 等运行必需文件，远端保留），属正常，不影响运行。
 - API Key 存 localStorage 明文——纯前端架构的固有特性，靠"只存本机 + 备份需提示勿外传"缓解，无服务端方案。
