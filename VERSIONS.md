@@ -16,7 +16,9 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
-| **v4.17.5** | 2026-11-16（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.5) |
+| **v4.29.0** | 2026-11-17（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.29.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.29.0) |
+| **v4.17.6** | 2026-11-17 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
+| **v4.17.5** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.5) |
 | **v4.17.4** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.4) |
 | **v4.17.3** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.3) |
 | **v4.17.2** | 2026-11-15 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.2) |
@@ -115,7 +117,21 @@
 
 ---
 
-## v4.17.6 · 2026-11-17（当前版本）
+## v4.29.0 · 2026-11-17（当前版本）
+
+> **相比 v4.17.6 的变化**：工程地基加固（CI 七道闸 / 网络韧性体检 / 世界书体检 / 代码地图）＋行动判定骰（六轴属性演算与玩家口述双裁定）＋小云资料召回。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.6...v4.29.0)
+
+**本版做了什么**
+
+- **工程地基**：CI 从四道闸升到七道闸 —— 新增核心回归（存档 / 填表规则 / 多值字段等 34 项）、网络韧性体检（裸 fetch 静态扫描，基线只拦新增）、世界书条目体检（38 界 / 3763 条，占位符 / 灌水 / 重复句，基线只拦新增）；新增 `CODE-MAP.md` 代码地图。
+- **行动判定骰 `js/action-check.js`**：d20 + 六轴属性 + 资质档 + 装备修正 − 难度，六档结果；`calc` 前端确定性演算，`free` 口述剧情优先，草稿留痕。小云可用「判定 / 掷骰」触发。
+- **小云能力**：新增 `recall.brief` 资料召回（世界书关键词 + 记忆层摘要整理为资料便签）、`saves.backup` / `saves.capacity`、`ui.actioncheck`；工具循环改为支持 Promise，避免 async 工具回灌 `[object Promise]`。
+- **存档防丢（承 v4.28.0）**：全量备份 / 恢复、单档导出补散落键 + 正文、导入前快照回滚、容量体检；键重映射覆盖主档裸键 / `~slot` / `:slot:` / `.slot~` 等格式。
+- **填表双规则（承 v4.28.0）**：严格模式走引擎钳制、自由模式玩家口述优先，单一事实源 `fill-rule.js`。
+
+---
+
+## v4.17.6 · 2026-11-17
 
 > **相比 v4.17.5 的变化**：新增小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 批量重构影响面分析），FileBridge 暴露全量文件清单，小云提示词与工具箱接入研发能力；全量真浏览器视觉审查并修复小云遮挡状态面板 / 工具箱条目。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.17.5...v4.17.6)
 
