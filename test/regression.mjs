@@ -90,7 +90,16 @@ function makeEnv() {
     showToast() {},
     SlotRegistry: {
       genre: () => 'free', slotId: () => 'main',
-      keysOf: () => ['storySave_free', 'worldExt_free', 'yunjingWorldBook:free'],
+      // 模拟真实规则：主档裸键，副档带 ~sid 后缀
+      keysOf: (sid, g) => {
+        const sfx = (!sid || sid === 'main') ? '' : ('~' + sid);
+        const gg = g || 'free';
+        return ['storySave_' + gg + sfx, 'worldExt_' + gg + sfx, 'yunjingWorldBook:' + gg + sfx,
+          'yunjingBeasts~' + (sid || 'main'),
+          'yunjingWorldRuntime~' + (sid || 'main') + '~' + gg,
+          'yunjingCanonLedger:' + (sid || 'main') + ':' + gg,
+          'yunjing.clock.' + (sid || 'main') + '~' + gg];
+      },
       scanKeysOf: () => []
     },
     StorageBoost: {
@@ -167,6 +176,52 @@ G('2. 单档导出补齐散落键 + idb:// 正文');
   try { pkg = JSON.parse(captured.parts[0]); } catch (err) {}
   ok('导出包含 scoped 散落键', !!pkg?.scoped?.['worldExt_free']);
   ok('导出包含 idb:// 指向的 media 实体', pkg?.media?.['txt_002'] === '被 idb:// 引用的正文实体', JSON.stringify(pkg?.media));
+}
+
+/* ================= 2b. 单档导入的键重映射（防污染，v4.28.0 修复） ================= */
+G('2b. 单档导入散落键重映射（主档/副档/D冒号/E点号格式）');
+{
+  const e = makeEnv();
+  load(e, ['save-slots.js']);
+  const S = e.win.SaveSlots;
+  // 主档裸键 → 新槽位：必须带新槽后缀，不能覆盖主档
+  ok('主档裸键加新槽后缀', S.remapScopedKey('storySave_free', 'main', 'sNEW', 'free') === 'storySave_free~sNEW',
+    S.remapScopedKey('storySave_free', 'main', 'sNEW', 'free'));
+  // B 类 ~main
+  ok('B类 ~main 重映射', S.remapScopedKey('yunjingBeasts~main', 'main', 'sNEW', 'free') === 'yunjingBeasts~sNEW',
+    S.remapScopedKey('yunjingBeasts~main', 'main', 'sNEW', 'free'));
+  // C 类 ~sid~genre
+  ok('C类 ~sid~genre 重映射', S.remapScopedKey('yunjingWorldRuntime~sOLD~free', 'sOLD', 'sNEW', 'free') === 'yunjingWorldRuntime~sNEW~free',
+    S.remapScopedKey('yunjingWorldRuntime~sOLD~free', 'sOLD', 'sNEW', 'free'));
+  // D 类冒号
+  ok('D类 :sid: 重映射', S.remapScopedKey('yunjingCanonLedger:sOLD:free', 'sOLD', 'sNEW', 'free') === 'yunjingCanonLedger:sNEW:free',
+    S.remapScopedKey('yunjingCanonLedger:sOLD:free', 'sOLD', 'sNEW', 'free'));
+  // E 类点号
+  ok('E类 .sid~ 重映射', S.remapScopedKey('yunjing.clock.sOLD~free', 'sOLD', 'sNEW', 'free') === 'yunjing.clock.sNEW~free',
+    S.remapScopedKey('yunjing.clock.sOLD~free', 'sOLD', 'sNEW', 'free'));
+
+  // 完整导入流程：导入一个主档单档，当前主档数据必须保持不变
+  const e2 = makeEnv();
+  load(e2, ['save-slots.js']);
+  const S2 = e2.win.SaveSlots;
+  e2.store['storySave_free'] = '当前主档正文'; // 当前主档
+  const pkg = {
+    app: 'yunjing', ver: '4.28.0', genre: 'free', slotId: 'main',
+    meta: { name: '导入档' }, save: { variables: { title: '导入的书' } },
+    scoped: { storySave_free: '被导入的主档正文', worldExt_free: '{"stage":9}' }
+  };
+  // 模拟 FileReader.readAsText
+  const fakeFile = { _text: JSON.stringify(pkg) };
+  let imported = false;
+  e2.win.UIDialog = null; // 走原生 confirm
+  e2.win.confirm = () => true;
+  e2.win.location.reload = () => { imported = true; };
+  S2.importSlot(fakeFile);
+  await new Promise(r => setTimeout(r, 30));
+  ok('导入主档后当前主档正文未被覆盖', e2.store['storySave_free'] === '当前主档正文', e2.store['storySave_free']);
+  // 导入的内容应落在新槽（~s...）键上
+  const newKeys = Object.keys(e2.store).filter(k => k.startsWith('storySave_free~s'));
+  ok('导入内容落到新槽键', newKeys.length === 1 && e2.store[newKeys[0]] === JSON.stringify(pkg.save), newKeys.join(','));
 }
 
 /* ================= 3. 填表规则双模式 ================= */
