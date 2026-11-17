@@ -137,7 +137,7 @@
       }
     },
     "preset.importText": {
-      desc: "导入一份第三方（酒馆/SillyTavern 格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
+      desc: "导入一份第三方（酒馆/常见前端工具 格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
       fn: function (a) {
         if (!window.YunjingPresetIO) return { ok: false, msg: "预设系统未加载。" };
         if (!a || !a.json) return { ok: false, msg: "缺少预设 JSON 文本。" };
@@ -253,6 +253,85 @@
     "ui.devforge": {
       desc: "打开造物工坊（小云独立开发新模块 / 写入项目源码）", args: "{}",
       fn: function () { if (window.XYDev) { window.XYDev.open(); return { ok: true, msg: "造物工坊已打开。" }; } return { ok: false, msg: "造物工坊未加载。" }; }
+    },
+    /* —— 行动判定骰 —— */
+    "ui.actioncheck": {
+      desc: "打开行动判定骰（用属性+资质+难度判定行动成败，演算/口述两模式）", args: "{}",
+      fn: function () {
+        if (!window.ActionCheck) return { ok: false, msg: "判定骰模块未加载。" };
+        try { window.ActionCheck.open(); return { ok: true, msg: "已打开行动判定骰。" }; }
+        catch (e) { return { ok: false, msg: "打开失败：" + e.message }; }
+      }
+    },
+    /* —— 正文前轻量召回 ——
+       一次扫描：世界书按关键词命中 + 五层长期记忆摘要，拼成一段可直接送进输入框的
+       「资料便签」。不发起多轮 AI 调用、不强依赖向量接口，弱模型/无接口也能用；
+       若玩家配了向量库则额外附加语义命中的段落。 */
+    "recall.brief": {
+      desc: "正文前轻量召回：按当前剧情关键词捞世界书条目 + 长期记忆，整理成资料便签送进输入框", args: "可选 {q:关注点, send:是否送入输入框}",
+      fn: function (a) {
+        a = a || {};
+        var fw = window.storyFramework || {};
+        var hist = (fw.storyState && fw.storyState.conversationHistory) || [];
+        /* 取最近 2 条正文作为查询语料 */
+        var recent = [];
+        for (var i = hist.length - 1; i >= 0 && recent.length < 2; i--) {
+          if (hist[i].role !== 'assistant') continue;
+          var body = String(hist[i].content || '').replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, '').trim();
+          if (body) recent.unshift(body);
+        }
+        var corpus = (a.q ? String(a.q) + ' ' : '') + recent.join(' ');
+        /* 中文按 2-gram 提取关键词，去掉常见虚词 */
+        var STOP_CHARS = '的了是在和与及但对于其这那有个不都很就也还把被从向到而为以之一二三四五';
+        var grams = {};
+        var clean = corpus.replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g, ' ');
+        clean.split(/\s+/).forEach(function (seg) {
+          if (seg.length >= 2) for (var k = 0; k < seg.length - 1; k++) {
+            var g = seg.slice(k, k + 2);
+            if (STOP_CHARS.indexOf(g[0]) >= 0 || STOP_CHARS.indexOf(g[1]) >= 0) continue;
+            grams[g] = (grams[g] || 0) + 1;
+          }
+        });
+        var keys = Object.keys(grams).sort(function (x, y) { return grams[y] - grams[x]; }).slice(0, 12);
+
+        var lines = [], hits = 0;
+        /* 世界书：按标题/标签命中关键词，最多取 6 条 */
+        if (window.WorldBook && window.WorldBook.all) {
+          var all = window.WorldBook.all() || [];
+          all.forEach(function (e) {
+            var hay = String(e.name || '') + ' ' + String(e.text || '') + ' ' + String((e.tags || []).join(' '));
+            var score = keys.reduce(function (s, g) { return s + (hay.indexOf(g) >= 0 ? grams[g] : 0); }, 0);
+            e._score = score;
+          });
+          var top = all.filter(function (e) { return e._score > 0; }).sort(function (x, y) { return y._score - x._score; }).slice(0, 6);
+          top.forEach(function (e) {
+            hits++;
+            var txt = String(e.text || '').replace(/\s+/g, ' ').slice(0, 100);
+            lines.push('· 【世界书·' + (e.cat || '设定') + '】' + e.name + '：' + txt + (String(e.text || '').length > 100 ? '…' : ''));
+          });
+        }
+        /* 长期记忆：用现成的 buildInjection 取结构化摘要块 */
+        if (window.MemoryLayers && window.MemoryLayers.buildInjection) {
+          try {
+            var mb = window.MemoryLayers.buildInjection(a.q || '', hist);
+            if (mb && mb.content) lines.push('· 【长期记忆】' + String(mb.content).replace(/^【[^】]*】\s*/, '').replace(/\s+/g, ' ').slice(0, 300));
+          } catch (e2) { }
+        }
+        if (!lines.length) {
+          return { ok: true, msg: '本轮没有捞到相关世界书条目或长期记忆（可能剧情刚开始、资料库为空）。', data: { lines: [] } };
+        }
+        var brief = '【小云·资料便签（写作前参考）】\n' + lines.join('\n') + '\n（以上为本地资料库命中，供续写时保持设定一致；不强制采用。）';
+        var sent = false;
+        if (a.send !== false) {
+          var el = document.getElementById('userInput');
+          if (el) {
+            el.value = (el.value ? el.value + '\n' : '') + brief;
+            try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (e3) { }
+            sent = true;
+          }
+        }
+        return { ok: true, msg: '已召回 ' + hits + ' 条世界书' + (lines.length > hits ? ' + 长期记忆' : '') + (sent ? '，便签已送入输入框。' : '。') + '\n' + brief, data: { lines: lines, sent: sent } };
+      }
     }
   };
 
