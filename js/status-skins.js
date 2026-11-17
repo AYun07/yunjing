@@ -1,4 +1,4 @@
-/* 云境 · 每界差异化状态栏皮肤 StatusSkins v7.0.0（v4.27.0）
+/* 云境 · 每界差异化状态栏皮肤 StatusSkins v7.0.0（v4.28.0）
  * ---------------------------------------------------------------------------
  * v5 大改：解决「状态栏太简单、没突出特色」——根因是 8 套皮肤换色换图标，
  *          但字段区（占最大面积）都是同一个两列文字网格。改为「一栏材质卡」+
@@ -21,7 +21,7 @@
   var CN = ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾', '拾壹', '拾贰', '拾叁', '拾肆'];
   var ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV'];
 
-  /* ===== 每界唯一身份表 WORLD_ID（v4.27.0）=====
+  /* ===== 每界唯一身份表 WORLD_ID（v4.28.0）=====
      36 界各自独立：主色 c + 徽记 s + 题词 m + 专属卷册名 t + 副题 sub。
      t/sub 直接替换骨架里原本写死的「本命道册/深渊秘录/星舰终端…」，
      彻底消除同题材世界标题雷同。全部为通用意境词，非人物/宗门/招式专名。 */
@@ -89,7 +89,7 @@
     try { return window.StatusSchema ? window.StatusSchema.readField(f) : ''; } catch (e) { return ''; }
   }
   function editAttr(f) { return 'onclick="StatusSchema.editField(\'' + esc(f.k) + '\')"'; }
-  /* v4.27.0 多值栏目渲染：单值原样；多值渲染成带序号的多行子项，点击整体进编辑器。
+  /* v4.28.0 多值栏目渲染：单值原样；多值渲染成带序号的多行子项，点击整体进编辑器。
      每项独立成行、自动换行，不再被 nowrap 截断——九个魂环能全部显示。 */
   function isMulti(f) {
     try { return !!(window.StatusSchema && window.StatusSchema.fieldIsMulti && window.StatusSchema.fieldIsMulti(f)); }
@@ -339,7 +339,7 @@
       document.body.style.setProperty('--wpri', WID.c);
       document.body.style.setProperty('--wpri-glow', hexA(WID.c, 0.42));
     } catch (e) {}
-    /* v4.27.0 减法：去掉状态栏里重复的「身份铭牌」——窄条里徽记/题词/名字重复三次太挤。
+    /* v4.28.0 减法：去掉状态栏里重复的「身份铭牌」——窄条里徽记/题词/名字重复三次太挤。
        世界身份改由主内容区「入世封面」承载（空间大、更好看）；状态栏只留一处徽记印章。 */
     try { return ambienceHTML(skin) + (RENDER[skin] || skinXianxia)(groups, g); }
     catch (e) { return '<div class="empty-hint">皮肤渲染异常，已回退。</div>'; }

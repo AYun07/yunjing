@@ -921,7 +921,7 @@ html[data-yj-base="light"] body .wiz-label { color: var(--text) !important; }
 .mo-avatar, .mo-welcome-avatar, .mo-msg-avatar { position: relative; }
 .mc-restore { font-size: 17px; letter-spacing: 0; }
 
-/* ===== v4.27.0 填表规则：模式切换 + 状态栏标记 ===== */
+/* ===== v4.28.0 填表规则：模式切换 + 状态栏标记 ===== */
 .yj-fill-mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
 .yj-fill-opt{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;cursor:pointer;
   padding:12px 13px;border-radius:9px;border:1px solid #39445a;background:#151b26;color:#cfd7e6;

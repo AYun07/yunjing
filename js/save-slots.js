@@ -157,9 +157,10 @@
       (_a = window.showToast) == null ? void 0 : _a.call(window, "正在切换书档…", "info");
       setTimeout(() => location.reload(), 350);
     },
-    /** 导出槽位为 JSON（含注册表元信息，跨设备搬运） */
-    exportSlot(slotId) {
+    /** 导出槽位为 JSON（含注册表元信息 + 散落键 + IDB 正文，跨设备搬运） */
+    async exportSlot(slotId) {
       var _a, _b;
+      try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) {}
       const fw = window.storyFramework;
       const suffix = slotId !== "main" ? `~${slotId}` : "";
       const key = `storySave_${fw.genre}${suffix}`;
@@ -185,6 +186,25 @@
           squad: localStorage.getItem(`yunjingSquad${suffix}`) || ""
         };
       } catch (e) { }
+      /* v4.28.0：单档导出也补齐该槽位的全部散落键（世界书/账本/时钟/关系…），
+         不再只导 beasts/squad——否则导出的档换设备后世界演化进度全丢。 */
+      pkg.scoped = this.collectLS('slot', slotId);
+      /* v4.28.0：正文中 idb:// 占位标记指向的实体（图片/长文本）一并导出。 */
+      try {
+        const markers = [];
+        const re = /idb:\/\/([A-Za-z0-9_\-:.]+)/g;
+        let m;
+        const scan = (s) => { while ((m = re.exec(s || ''))) markers.push(m[1]); };
+        scan(raw);
+        Object.keys(pkg.scoped || {}).forEach(k => scan(pkg.scoped[k]));
+        pkg.media = {};
+        if (markers.length && window.StorageBoost) {
+          for (const key of Array.from(new Set(markers))) {
+            const v = await window.StorageBoost.get(key);
+            if (v) pkg.media[key] = v;
+          }
+        }
+      } catch (e) { pkg.media = {}; }
       const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -195,7 +215,7 @@
     /** 导入槽位 JSON（收进新槽位，绝不覆盖现有档） */
     importSlot(file) {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
         try {
           const pkg = JSON.parse(reader.result);
@@ -215,6 +235,26 @@
               if (pkg.extras.squad) localStorage.setItem(`yunjingSquad${suffix}`, String(pkg.extras.squad));
             }
           } catch (e) { }
+          /* v4.28.0：恢复该槽位的全部散落键。导入档的键是源槽位名，
+             这里按后缀规则把源槽位后缀替换为新槽位后缀，避免污染其它档。 */
+          try {
+            if (pkg.scoped) {
+              const srcSuffix = pkg.slotId && pkg.slotId !== 'main' ? ('~' + pkg.slotId) : '';
+              Object.keys(pkg.scoped).forEach(k => {
+                let nk = k;
+                if (srcSuffix && nk.indexOf(srcSuffix) >= 0) nk = nk.split(srcSuffix).join(suffix);
+                localStorage.setItem(nk, String(pkg.scoped[k]));
+              });
+            }
+          } catch (e) { }
+          /* v4.28.0：恢复 idb:// 占位指向的正文/图片实体。 */
+          try {
+            if (pkg.media && window.StorageBoost) {
+              for (const key of Object.keys(pkg.media)) {
+                await window.StorageBoost.put(key, pkg.media[key]);
+              }
+            }
+          } catch (e) { }
           const arr = this.list();
           const r = arr.find((x) => x.id === id);
           if (r) {
@@ -231,6 +271,233 @@
         }
       };
       reader.readAsText(file);
+    },
+
+    /* ==================== v4.28.0 存档防丢（P0：全量备份 / 恢复 / 容量体检） ====================
+       云境数据分两层：
+         ① localStorage —— 配置、状态、槽位注册表、API Key（storyApiConfig）
+         ② IndexedDB    —— 长正文 / 图片实体（localStorage 里只留 idb:// 占位标记）
+       只导 localStorage 会导致换设备后「图片和长正文全丢」——这是旧版 exportSlot 的
+       致命缺口。本组方法两层一起导，配合「导入前自动快照」防误覆盖，才是真正可用的备份。 */
+
+    /** 收集 localStorage。scope='all' 全量；'slot' 只收指定槽位相关键（含跨分隔符格式） */
+    collectLS(scope, slotId) {
+      const out = {};
+      try {
+        if (scope === 'all') {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k != null) out[k] = localStorage.getItem(k);
+          }
+        } else {
+          const fw = window.storyFramework || {};
+          const g = fw.genre || this.genre();
+          const sid = slotId || this.activeId();
+          const keys = new Set();
+          if (window.SlotRegistry) {
+            try { (window.SlotRegistry.keysOf(sid, g) || []).forEach(k => keys.add(k)); } catch (e) {}
+            try { if (window.SlotRegistry.scanKeysOf) (window.SlotRegistry.scanKeysOf(sid, g) || []).forEach(k => keys.add(k)); } catch (e) {}
+          }
+          keys.add(this.regKey(g));
+          keys.add(this.activeKey(g));
+          keys.forEach(k => { const v = localStorage.getItem(k); if (v != null) out[k] = v; });
+        }
+      } catch (e) {}
+      return out;
+    },
+
+    /** 原生读取一个 IndexedDB 库的全部 objectStore 内容 → {storeName:{key:value}} */
+    _dumpDB(name) {
+      return new Promise((resolve) => {
+        const out = {};
+        let req;
+        try { req = indexedDB.open(name); } catch (e) { return resolve(out); }
+        req.onupgradeneeded = function () { /* 库不存在时保持空，不新建 store */ };
+        req.onerror = () => resolve(out);
+        req.onblocked = () => resolve(out);
+        req.onsuccess = () => {
+          let db;
+          try { db = req.result; } catch (e) { return resolve(out); }
+          const stores = Array.prototype.slice.call(db.objectStoreNames || []);
+          let pending = stores.length;
+          if (!pending) { try { db.close(); } catch (e) {} return resolve(out); }
+          const done = () => { if (--pending === 0) { try { db.close(); } catch (e) {} resolve(out); } };
+          stores.forEach(sn => {
+            try {
+              const tx = db.transaction(sn, 'readonly');
+              const os = tx.objectStore(sn);
+              const rk = os.getAllKeys();
+              const rv = os.getAll();
+              let keys = [], vals = [];
+              rk.onsuccess = () => { keys = rk.result || []; };
+              rv.onsuccess = () => { vals = rv.result || []; };
+              tx.oncomplete = () => {
+                const m = {};
+                keys.forEach((k, i) => { m[String(k)] = vals[i]; });
+                if (Object.keys(m).length) out[sn] = m;
+                done();
+              };
+              tx.onerror = done;
+              tx.onabort = done;
+            } catch (e) { done(); }
+          });
+        };
+      });
+    },
+
+    /** 收集全部 IndexedDB 仓（正文 / 图片实体）。跳过本模块自建的备份库，防递归膨胀 */
+    async collectIDB() {
+      const out = {};
+      const names = new Set();
+      try {
+        if (indexedDB.databases) {
+          (await indexedDB.databases()).forEach(d => { if (d.name) names.add(d.name); });
+        }
+      } catch (e) {}
+      try {
+        const dn = (n) => (window.YunjingID && window.YunjingID.dbName) ? window.YunjingID.dbName(n) : n;
+        ['moshu', 'yunjing', 'moshu_mirror', 'yunjing_mirror', 'moshu_safe', 'yunjing_safe'].forEach(n => names.add(dn(n)));
+      } catch (e) {}
+      for (const n of names) {
+        if (!n || String(n).indexOf('yunjing_backup') >= 0) continue;
+        try {
+          const d = await this._dumpDB(n);
+          if (Object.keys(d).length) out[n] = d;
+        } catch (e) {}
+      }
+      return out;
+    },
+
+    _download(obj, filename) {
+      const blob = new Blob([JSON.stringify(obj)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} a.remove(); }, 1000);
+    },
+
+    _toast(msg, type) { try { if (window.showToast) window.showToast(msg, type || 'info'); } catch (e) {} },
+
+    /** 全量备份：所有槽位 + 全部 localStorage + 全部 IndexedDB，一键跨设备搬家 */
+    async exportAll() {
+      try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) {}
+      try { const fw = window.storyFramework; if (fw && fw.storyState && fw.storyState.isStoryStarted && fw.saveStory) fw.saveStory(); } catch (e) {}
+      this._toast('正在打包全部存档…', 'info');
+      try {
+        const pkg = {
+          app: (window.YunjingID && window.YunjingID.APP) || 'yunjing',
+          type: 'full',
+          ver: window.YJ_VER || '4.28.0',
+          createdAt: Date.now(),
+          genre: this.genre(),
+          ls: this.collectLS('all'),
+          idb: await this.collectIDB()
+        };
+        const d = new Date();
+        const stamp = '' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '_' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0');
+        this._download(pkg, '云境全量备份_' + stamp + '.json');
+        const sz = JSON.stringify(pkg).length;
+        this._toast('已导出全量备份（' + (sz / 1024 / 1024).toFixed(1) + 'MB）。文件含 API Key，请妥善保管！', 'success');
+      } catch (e) {
+        this._toast('导出失败：' + e.message, 'error');
+      }
+    },
+
+    /** 导入前自动快照到独立库，供 undoLastImport 回滚 */
+    async _snapshotBeforeImport() {
+      try {
+        if (!window.localforage) return null;
+        const snap = { at: Date.now(), ls: this.collectLS('all'), idb: await this.collectIDB() };
+        const inst = window.localforage.createInstance({ name: 'yunjing_backup', storeName: 'auto' });
+        await inst.setItem('last_before_import', snap);
+        return snap;
+      } catch (e) { return null; }
+    },
+
+    /** 把一份快照写回两层存储 */
+    async _applySnapshot(snap) {
+      for (const k of Object.keys(snap.ls || {})) {
+        try { localStorage.setItem(k, snap.ls[k]); } catch (e) {}
+      }
+      for (const db of Object.keys(snap.idb || {})) {
+        if (db === 'yunjing_backup') continue;
+        const stores = snap.idb[db] || {};
+        for (const sn of Object.keys(stores)) {
+          try {
+            const inst = window.localforage.createInstance({ name: db, storeName: sn });
+            const entries = stores[sn] || {};
+            for (const k of Object.keys(entries)) {
+              try { await inst.setItem(k, entries[k]); } catch (e) {}
+            }
+          } catch (e) {}
+        }
+      }
+    },
+
+    /** 撤销上一次全量导入，回到导入前状态 */
+    async undoLastImport() {
+      try {
+        if (!window.localforage) throw new Error('存储不可用');
+        const inst = window.localforage.createInstance({ name: 'yunjing_backup', storeName: 'auto' });
+        const snap = await inst.getItem('last_before_import');
+        if (!snap) throw new Error('没有可撤销的导入');
+        await this._applySnapshot(snap);
+        this._toast('已恢复到导入前的状态，即将刷新', 'success');
+        setTimeout(() => location.reload(), 700);
+      } catch (e) {
+        this._toast('撤销失败：' + e.message, 'error');
+      }
+    },
+
+    /** 全量恢复：强确认 → 自动快照 → 覆盖写回 → 刷新 */
+    async importAll(file) {
+      try {
+        if (!file) return;
+        const txt = await file.text();
+        if (txt.length > 300 * 1024 * 1024) throw new Error('备份文件超过 300MB，疑似损坏');
+        const pkg = JSON.parse(txt);
+        const okApp = window.YunjingID && window.YunjingID.acceptApp
+          ? window.YunjingID.acceptApp(pkg.app)
+          : (pkg.app === 'yunjing' || pkg.app === 'moshu');
+        if (!okApp || pkg.type !== 'full' || !pkg.ls) throw new Error('不是云境全量备份文件');
+        const msg = '确定用这份备份覆盖当前全部数据吗？\n\n'
+          + '· 备份时间：' + new Date(pkg.createdAt || Date.now()).toLocaleString('zh-CN') + '\n'
+          + '· 含 ' + Object.keys(pkg.ls).length + ' 项本地数据、' + Object.keys(pkg.idb || {}).length + ' 个存储仓\n\n'
+          + '当前数据会先自动存一份快照，导入后可用「撤销上次导入」找回。覆盖后页面将刷新。';
+        let ok;
+        if (window.UIDialog && window.UIDialog.confirm) {
+          ok = await window.UIDialog.confirm({ title: '全量恢复', message: msg, danger: true, confirmText: '确认恢复' });
+        } else {
+          ok = confirm(msg);
+        }
+        if (!ok) return;
+        this._toast('正在保存当前快照…', 'info');
+        await this._snapshotBeforeImport();
+        this._toast('正在恢复数据…', 'info');
+        await this._applySnapshot(pkg);
+        this._toast('恢复完成，即将刷新', 'success');
+        setTimeout(() => location.reload(), 800);
+      } catch (e) {
+        this._toast('恢复失败：' + e.message, 'error');
+      }
+    },
+
+    /** 容量体检（供书架页脚展示） */
+    capacity() {
+      if (window.StorageBoost && window.StorageBoost.capacity) return window.StorageBoost.capacity();
+      return Promise.resolve({ ok: false });
+    },
+
+    async refreshCapacity() {
+      const el = document.getElementById('ssCap');
+      if (!el) return;
+      try {
+        const c = await this.capacity();
+        el.textContent = c.ok ? ('存储占用 ' + (c.used / 1024 / 1024).toFixed(1) + 'MB / ' + (c.quota / 1024 / 1024 / 1024).toFixed(1) + 'GB') : '';
+      } catch (e) { el.textContent = ''; }
     },
     /* ==================== 书架 UI ==================== */
     esc(s) {
@@ -272,8 +539,15 @@
                     <div class="ss-body">${cards}</div>
                     <div class="ss-foot">
                         <button class="ss-btn main" onclick="SaveSlots.newBook()">✚ 开新书（新档位）</button>
-                        <label class="ss-btn" style="cursor:pointer;">📥 导入存档<input type="file" accept=".json" style="display:none;" onchange="SaveSlots.importSlot(this.files[0]);this.value='';"></label>
+                        <label class="ss-btn" style="cursor:pointer;" title="导入单本书档（收进新档位，不覆盖现有档）">📥 导入单档<input type="file" accept=".json" style="display:none;" onchange="SaveSlots.importSlot(this.files[0]);this.value='';"></label>
+                        <button class="ss-btn" onclick="SaveSlots.exportAll()" title="导出全部书档 + 配置 + 图片正文到单个文件，跨设备搬家">🗂 全量备份</button>
+                        <label class="ss-btn" style="cursor:pointer;" title="从全量备份恢复（会覆盖当前全部数据，导入前自动存快照）">📦 全量恢复<input type="file" accept=".json" style="display:none;" onchange="SaveSlots.importAll(this.files[0]);this.value='';"></label>
                     </div>
+                    <div class="ss-foot2">
+                        <span id="ssCap" class="ss-cap"></span>
+                        <button class="ss-btn" onclick="SaveSlots.undoLastImport()" title="撤销上一次全量恢复，回到导入前状态">↩ 撤销上次恢复</button>
+                    </div>
+                    <div class="ss-hint">⚠ 备份文件含 API Key 与全部故事数据，请只存私密位置、勿外传。</div>
                 </div>
             </div>`;
       (_c = document.getElementById("slotModal")) == null ? void 0 : _c.remove();
@@ -281,6 +555,7 @@
       wrap.id = "slotModal";
       wrap.innerHTML = html;
       document.body.appendChild(wrap);
+      try { this.refreshCapacity(); } catch (e) {}
     },
     /* v3.27.4 安卓适配：原生 prompt/confirm → 应用内 UIDialog（触屏体验统一，
      *  原生弹窗在部分 WebView 内嵌环境会被静默拦截；UIDialog 缺失时回退原生） */
@@ -352,7 +627,10 @@
 .ss-btn.main{background:#c9a86a2a;border-color:#c9a86a88}
 .ss-btn.danger{border-color:#e0707055;background:#e0707014;color:#e8a0a0}
 .ss-btn:disabled{opacity:.35;cursor:not-allowed}
-.ss-foot{display:flex;gap:10px;padding:13px 18px;border-top:1px solid #c9a86a25}`;
+.ss-foot{display:flex;gap:10px;padding:13px 18px;border-top:1px solid #c9a86a25;flex-wrap:wrap}
+.ss-foot2{display:flex;gap:10px;padding:8px 18px 0;align-items:center;flex-wrap:wrap}
+.ss-cap{font-size:11px;color:#9a8c6e;margin-right:auto}
+.ss-hint{font-size:11px;line-height:1.6;color:#c9a86a99;padding:8px 18px 13px}`;
     document.head.appendChild(st);
   }
   window.SaveSlots = SaveSlots;
