@@ -1,3 +1,7 @@
+/* v4.27.0 填表规则：严格演算走引擎钳制/补涨；玩家自由跳过钳制与补涨，玩家填多少算多少。 */
+function yjEngineOn() { return !(window.FillRule && window.FillRule.shouldEnforceEngine && !window.FillRule.shouldEnforceEngine()); }
+function yjGrowthOn() { return !(window.FillRule && window.FillRule.shouldSettleGrowth && !window.FillRule.shouldSettleGrowth()); }
+
 const VariableInstructionParser = {
   /** 保留容器名：出现在 "xxx.字段" 前缀时按容器处理而非角色 */
   RESERVED_CONTAINERS: ["stats", "dashboard", "plotPoints", "characters", "foreshadowings", "items", "history", "gauges", "dimensions", "天赋", "时间"],
@@ -33,7 +37,7 @@ const VariableInstructionParser = {
     }
     /* v3.55.27 时间跨越成长结算：AI 未上报（或报不足）的成长由引擎按公式真实补涨。
        仅正文登记路径结算——动态世界的旁白推演不算玩家亲身经历的时间。 */
-    if (AE && res && res.newVariables) {
+    if (AE && res && res.newVariables && yjGrowthOn()) {
       try { AE.settleTimeGrowth(res.newVariables, isStoryReg); } catch (e) { /* 不阻断 */ }
     }
     /* v3.56.1 变量模板校验：解析出口对 AI 变量做钳制/越界收敛/锁定跳过（不否决 AI，只收敛）。
@@ -208,7 +212,7 @@ const VariableInstructionParser = {
         const key = statMap[k] || k;
         const n = num(v);
         if (n == null) return;
-        if (AEJ) AEJ.applyStatDelta(vars.stats, key, String(v));
+        if (AEJ && yjEngineOn()) AEJ.applyStatDelta(vars.stats, key, String(v));
         else this.applyNumeric(vars.stats, key, v);
       });
     }
@@ -710,7 +714,7 @@ const VariableInstructionParser = {
           /* v3.55.26 数值平衡：属性增量经属性引擎钳制（单项±6/轮、合计±10/轮、值域0-100），
              无正文依据的离谱跳变在此被真实拦截——不只靠提示词自觉 */
           const AE = window.AttributeEngine;
-          if (AE && container === "stats" && /^[+-]?\s*\d+(?:\.\d+)?$/.test(rawValue)) {
+          if (AE && yjEngineOn() && container === "stats" && /^[+-]?\s*\d+(?:\.\d+)?$/.test(rawValue)) {
             AE.applyStatDelta(target, key, rawValue);
           } else {
             this.applyNumeric(target, key, rawValue);

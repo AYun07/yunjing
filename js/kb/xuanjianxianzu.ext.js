@@ -403,7 +403,7 @@
   var KB = window.KB_PRESETS || {};
   var a = KB["xuanjianxianzu"] || (KB["xuanjianxianzu"] = []);
   var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
-  var add = [{"title":"xuanjianxianzu·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门、客栈、渡口、集市、驿站、医馆、书斋、祠堂、茶寮、铁匠铺、药圃、观星台、古道、义庄、镖局、酒肆、琴院、棋亭。","alwaysInclude":false}];
+  var add = [{"title":"xuanjianxianzu·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门、客栈、渡口、集市、驿站、医馆、书斋、祠堂、茶寮、铁匠铺、药圃、观星台、古道、义庄、镖局、酒肆、琴院、棋亭。","tags":["xuanjianxianzu","地标索引"],"alwaysInclude":false}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
 

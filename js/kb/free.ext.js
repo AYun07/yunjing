@@ -331,7 +331,7 @@
   var KB = window.KB_PRESETS || {};
   var a = KB["free"] || (KB["free"] = []);
   var have = {}; a.forEach(function(x){ have[String(x&&x.title||'').trim()] = 1; });
-  var add = [{"title":"free·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门。","alwaysInclude":false}];
+  var add = [{"title":"free·类型地标补录索引（v4.04.0）","content":"【类型通用地标 · 非原著逐字地名】本界舆图为补全密度登记了以下类型地标，它们是通用场景而非原著专有地名，玩家与 AI 可自由赋予本界细节，但不得把它们写成原著设定：山门。","tags":["free","地标索引"],"alwaysInclude":false}];
   add.forEach(function(x){ var t=String(x&&x.title||'').trim(); if(!have[t]){ have[t]=1; a.push(x); } });
 })();
 

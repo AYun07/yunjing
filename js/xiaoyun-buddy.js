@@ -258,8 +258,12 @@
     if (panelOn) return;
     /* v3.92.1 视觉合理性：大厅首屏已有吉祥物与标题，右下角再自动轮播气泡会压住
        主题卡片（六套风格 × 桌面/手机实测会被遮挡）。大厅不自动弹，玩家点小云才出现；
-       创作室保留轮播，那边是浮动助手、不承载版式构图。 */
+       创作室保留轮播，那边是浮动助手、不承载版式构图。
+       v4.17.7 手机修复：窄屏(<640px)创作室的输入框铺满整宽，气泡用 right:104px 向左横穿，
+       实测正好盖住「主角小传」等输入框的 placeholder。窄屏一律不自动弹，玩家主动点小云
+       仍照常出现（say() 独立路径），功能不丢，只是不再自动遮挡输入。 */
     if (document.body && document.body.classList.contains('page-index')) return;
+    if (window.matchMedia && window.matchMedia('(max-width:640px)').matches) return;
     var f = face(); tip.textContent = f.tips[Math.floor(Math.random() * f.tips.length)];
     tip.classList.add('on');
     setTimeout(function () { tip.classList.remove('on'); }, 3200);

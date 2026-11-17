@@ -554,6 +554,17 @@
       seed(state);
       var v = state.variables;
       var cfg = fw.config || {};
+      /* v4.27.0 填表规则分叉：玩家自由模式不需要严格演算纪律，给出精简快照 + 玩家优先指令。 */
+      if (window.FillRule && window.FillRule.isFree && window.FillRule.isFree()) {
+        var _lm = {};
+        (cfg.statKeys || []).forEach(function (s) { if (s && s.key) _lm[s.key] = s.label; });
+        var fvals = Object.keys(v.stats || {}).filter(function (k) { return typeof v.stats[k] === 'number'; })
+          .map(function (k) { return (_lm[k] || k) + ' ' + v.stats[k]; });
+        var fl = [];
+        if (fvals.length) fl.push('当前数值快照（仅参考，玩家一改即以玩家为准）：' + fvals.join(' / '));
+        fl.push('【填表规则·玩家自由】一切以玩家为主：玩家说有什么数值/物品/身份/关系就填什么，直接采信、不钳制、不质疑、不要求推导；玩家最新发言覆盖既有数值。玩家没说的才按剧情合理补全。');
+        return fl.join('\n');
+      }
       var labelMap = {};
       (cfg.statKeys || []).forEach(function (s) { if (s && s.key) labelMap[s.key] = s.label; });
       var stats = v.stats && typeof v.stats === "object" ? v.stats : {};

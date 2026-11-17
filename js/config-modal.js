@@ -10,7 +10,44 @@ const ConfigModal = {
       this.bindEvents(modal);
     }
     this.fillForm();
+    this.applyView();
     modal.style.display = "flex";
+  },
+  /* v4.18.0 新手/专家两档视图。简洁模式只留主笔连接配置，副接口与高级参数折叠；
+     偏好记在 localStorage，纯展示层切换，不动任何已填配置。 */
+  _view: null,
+  setView(v) {
+    this._view = (v === 'full') ? 'full' : 'simple';
+    try { localStorage.setItem('cfgViewMode', this._view); } catch (e) {}
+    this.applyView();
+  },
+  applyView() {
+    var modal = document.getElementById('configModal');
+    if (!modal) return;
+    var simple = this._view !== 'full';
+    // 标记副接口卡（第一个 .api-card 是主笔）
+    var cards = modal.querySelectorAll('.api-card');
+    for (var i = 0; i < cards.length; i++) {
+      if (i === 0) continue;
+      cards[i].style.display = simple ? 'none' : '';
+    }
+    // 高级参数区（含刚加的上下文窗口）在简洁模式也收起——它属专家项
+    var advHead = null, advBody = null;
+    var subs = modal.querySelectorAll('.dw-subgroup');
+    for (var j = 0; j < subs.length; j++) {
+      var t = subs[j].querySelector('.dw-sub-title');
+      if (t && /高级参数/.test(t.textContent)) { advHead = subs[j]; break; }
+    }
+    if (advHead) advHead.style.display = simple ? 'none' : '';
+    // 切换按钮高亮
+    var btns = modal.querySelectorAll('.cfg-view-switch button[data-view]');
+    for (var k = 0; k < btns.length; k++) {
+      var on = btns[k].getAttribute('data-view') === (simple ? 'simple' : 'full');
+      btns[k].style.background = on ? '#c9a86a' : 'transparent';
+      btns[k].style.color = on ? '#1a1530' : '#cfc9dc';
+      btns[k].style.fontWeight = on ? '700' : '400';
+      btns[k].style.borderColor = on ? '#c9a86a' : 'rgba(255,255,255,.2)';
+    }
   },
   close() {
     const modal = document.getElementById("configModal");
@@ -92,6 +129,18 @@ const ConfigModal = {
       endpoint: "https://generativelanguage.googleapis.com/v1beta",
       models: ["gemini-2.5-pro", "gemini-2.5-flash"],
       tip: "aistudio.google.com 申请 Key；走 Gemini 原生协议，需海外网络"
+    },
+    /* v4.18.0 原生 Ollama：本地零成本、数据不出机。Key 填任意占位（ollama）即可。
+       点「获取」会从 /api/tags 自动发现已安装的模型。首次需设 OLLAMA_ORIGINS=* 允许网页跨域。 */
+    {
+      id: "ollama",
+      name: "Ollama（本地部署 · 免费）",
+      group: "本地部署",
+      type: "openai",
+      endpoint: "http://127.0.0.1:11434/v1",
+      apiKey: "ollama",
+      models: [],
+      tip: "本机跑 Ollama（ollama.com 下载）：先 ollama pull qwen2.5 拉模型；若获取列表报跨域，设环境变量 OLLAMA_ORIGINS=* 后重启。Key 任意填 ollama 即可。"
     },
     // ---- 聚合站（一个 Key 通吃多厂） ----
     {
@@ -249,6 +298,13 @@ const ConfigModal = {
                 <div class="api-guide">
                     <b>${this.isEarthGenre() ? "六接口分工" : "五接口分工"}</b>：① 主笔写正文 · ② 动态世界推演远方事件 · ③ 变量AI登记状态面板 · ④ 插图引擎生成正文插图 · ⑤ 提示词工程师润色插图提示词${this.isEarthGenre() ? " · ⑥ 手机分身运转微信消息与朋友圈" : ""}。各接口相互独立、可同厂商可混搭；未启用的接口无需填写。
                 </div>
+                <!-- v4.18.0 新手/专家两档：新手只看主笔四项，避免一上来被 5 套 API 淹没 -->
+                <div class="cfg-view-switch" style="display:flex;align-items:center;gap:8px;margin:12px 0;padding:10px 12px;border:1px solid rgba(201,168,106,.3);border-radius:10px;background:rgba(201,168,106,.06);">
+                    <span style="font-size:12px;opacity:.75;">配置视图</span>
+                    <button type="button" data-view="simple" onclick="ConfigModal.setView('simple')" style="padding:6px 14px;border-radius:8px;border:1px solid #c9a86a;background:#c9a86a;color:#1a1530;font-weight:700;font-size:12px;cursor:pointer;">🌱 简洁（只填主笔）</button>
+                    <button type="button" data-view="full" onclick="ConfigModal.setView('full')" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#cfc9dc;font-size:12px;cursor:pointer;">🔧 完整（全部接口）</button>
+                    <span style="font-size:11px;opacity:.5;margin-left:auto;">随时可切换，配置不会丢</span>
+                </div>
 
                 <!-- ✍ 主笔 AI：第一接口（写正文） -->
                 <div class="dw-config api-card">
@@ -320,6 +376,11 @@ const ConfigModal = {
                                     <label>超时（秒）</label>
                                     <input id="cfg_timeout" type="number" min="60" max="1800" value="300" title="流式模式下为「无数据超时」：只要正文还在持续生成就不计时；默认 300 秒">
                                 </div>
+                            </div>
+                            <div class="form-row">
+                                <label>上下文窗口 (tokens) <span style="opacity:.65;font-weight:400">— 留空则按模型名自动推断；新型号/中转站建议手填</span></label>
+                                <input id="cfg_contextWindow" type="number" min="2000" max="2000000" placeholder="留空自动推断，例如 8192 / 32768 / 128000" title="模型单次请求可容纳的总 token 数。填对后云境会自动缩放提示词预算，避免小窗模型爆窗、大窗模型浪费">
+                                <div class="form-tip">正确填写可让 8K/16K/128K 模型各自拿到合适的上下文预算；不填则由云境按模型名推断，推断不出按保守档处理。</div>
                             </div>
                             <label class="check-row">
                                 <input type="checkbox" id="cfg_stream" checked>
@@ -635,7 +696,7 @@ const ConfigModal = {
                     </div>
                 </div>
 
-                <!-- 🔗 多连接配置（Connection Profiles · v3.55.30） -->
+                <!-- 🔗 多连接配置（多连接配置 · v3.55.30） -->
                 <div class="dw-config api-card">
                     <div class="dw-config-head api-card-head" id="cpSectionHead" onclick="ConfigModal.toggleCPSection()">
                         <span class="api-head-left">
@@ -647,7 +708,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="cpSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            借鉴酒馆 Connection Profiles：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
+                            借鉴酒馆 多连接配置：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
                             主笔只管写正文，机械活（状态登记 / 滚动摘要）交给廉价跟随模型——声线一致、还省钱。
                         </div>
                         <div id="cp_profileList" class="cp-profile-list"></div>
@@ -1075,7 +1136,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="mmSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            云境工坊原创内置预设（SillyTavern 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 SillyTavern 预设整份替换。
+                            云境工坊原创内置预设（常见前端工具 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 常见前端工具 预设整份替换。
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">📦 当前预设 <span class="api-role-chip" id="mmPresetChip"></span></div>
@@ -1087,7 +1148,7 @@ const ConfigModal = {
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
-                                支持 SillyTavern 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
+                                支持 常见前端工具 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
                                 导入后整份替换内置预设，旧的逐条开关会自动清空；随时可一键恢复内置。
                             </div>
                         </div>
@@ -1233,6 +1294,11 @@ const ConfigModal = {
     const p = this.currentProvider(prefix);
     if (p.endpoint) {
       document.getElementById(prefix + "_endpoint").value = p.endpoint;
+    }
+    /* v4.18.0：本地 Ollama 等无需真 Key 的预设，带占位 apiKey 时自动填入（不覆盖玩家已填的） */
+    if (p.apiKey) {
+      var keyEl = document.getElementById(prefix + "_key");
+      if (keyEl && !keyEl.value.trim()) keyEl.value = p.apiKey;
     }
     if (prefix === "cfg") this.resetModelList();
     if (prefix === "dw") this.resetExtraModelList();
@@ -1702,7 +1768,7 @@ const ConfigModal = {
       // v3.27.6
     };
   },
-  /* ==================== 🔗 多连接配置（Connection Profiles · v3.55.30） ==================== */
+  /* ==================== 🔗 多连接配置（多连接配置 · v3.55.30） ==================== */
   toggleCPSection() {
     const body = document.getElementById("cpSectionBody");
     const caret = document.getElementById("cpCaret");
@@ -3239,10 +3305,13 @@ const ConfigModal = {
     const endpoint = document.getElementById("cfg_endpoint").value.trim();
     const apiKey = document.getElementById("cfg_key").value.trim();
     const type = this.currentType("cfg");
-    if (!endpoint || !apiKey) {
+    /* v4.18.0 原生 Ollama 支持：本地 Ollama 不需要 Key，且原生模型发现端点是 /api/tags
+       （返回的字段是 name 而非 id）。识别到 Ollama 端点就走原生发现，Key 可留空。 */
+    const isOllama = /11434|ollama/i.test(endpoint);
+    if (!endpoint || (!apiKey && !isOllama)) {
       const hint = document.getElementById("cfg_modelHint");
       hint.style.display = "block";
-      hint.textContent = "✕ 请先填写 API 地址与 API Key，再获取模型列表";
+      hint.textContent = isOllama ? "✕ 请填写 Ollama 地址" : "✕ 请先填写 API 地址与 API Key，再获取模型列表";
       hint.style.color = "var(--danger)";
       return;
     }
@@ -3250,7 +3319,12 @@ const ConfigModal = {
     btn.disabled = true;
     btn.textContent = "获取中…";
     try {
-      const models = type === "gemini" ? await fetchGeminiModels(endpoint, apiKey) : await fetchOpenAIModels(endpoint, apiKey);
+      let models;
+      if (isOllama) {
+        models = await this.fetchOllamaModels(endpoint);
+      } else {
+        models = type === "gemini" ? await fetchGeminiModels(endpoint, apiKey) : await fetchOpenAIModels(endpoint, apiKey);
+      }
       if (!models.length) throw new Error("接口未返回任何模型（可能不支持列表查询，请手填模型名）");
       this.displayModels(models);
     } catch (err) {
@@ -3262,6 +3336,16 @@ const ConfigModal = {
       btn.disabled = false;
       btn.textContent = "获取";
     }
+  },
+  /** v4.18.0：从 Ollama 原生 /api/tags 发现本地模型（无需 Key、无需 /v1） */
+  async fetchOllamaModels(endpoint) {
+    var base = String(endpoint || '').replace(/\/v1\/?$/, '').replace(/\/$/, '');
+    var url = /\/api\/tags$/.test(base) ? base : (base + '/api/tags');
+    var resp = await fetch(url, { method: 'GET' });
+    if (!resp.ok) throw new Error('Ollama /api/tags 返回 ' + resp.status + '（确认 Ollama 已启动并允许跨域：OLLAMA_ORIGINS=*）');
+    var data = await resp.json();
+    var models = (data && Array.isArray(data.models)) ? data.models.map(function (m) { return m.name || m.model; }).filter(Boolean) : [];
+    return models;
   },
   /** 渲染模型下拉（对应原框架 displayModels，当前已填模型自动选中） */
   displayModels(models) {
@@ -3318,7 +3402,9 @@ const ConfigModal = {
 
   fillForm() {
     var _a;
-    const fw = window.storyFramework;
+    // v4.18.0：恢复视图偏好（默认简洁，新手友好）
+    if (this._view === null) { try { this._view = localStorage.getItem('cfgViewMode') || 'simple'; } catch (e) { this._view = 'simple'; } }
+    const fw = window.storyFramework || { apiConfig: {} };
     const c = fw.apiConfig;
     document.getElementById("cfg_provider").value = this.detectProvider(c);
     document.getElementById("cfg_endpoint").value = c.endpoint || "";
@@ -3327,6 +3413,15 @@ const ConfigModal = {
     document.getElementById("cfg_maxTokens").value = c.maxTokens || 16384;
     document.getElementById("cfg_temperature").value = (_a = c.temperature) != null ? _a : 0.9;
     document.getElementById("cfg_timeout").value = c.timeout || 300;
+    /* v4.18.0 上下文窗口回填：apiConfig → 独立 CTX_KEY。留空表示自动推断。 */
+    try {
+      const ctxEl = document.getElementById("cfg_contextWindow");
+      if (ctxEl) {
+        let cv = c.contextWindow || c.ctxWindow || c.context_length || '';
+        if (!cv) { const s = Number(localStorage.getItem('storyContextWindow') || 0); cv = s > 0 ? s : ''; }
+        ctxEl.value = cv || '';
+      }
+    } catch (e) {}
     document.getElementById("cfg_stream").checked = c.stream !== false;
     /* v3.55.11 模型能力档位回填（apiConfig 优先，其次 localStorage；默认 auto） */
     const tierVal = (typeof c.baseModelMode === 'string' && (c.baseModelMode === 'auto' || c.baseModelMode === 'lite' || c.baseModelMode === 'full')) ? c.baseModelMode : (window.BaseModelMode && BaseModelMode.getTier ? BaseModelMode.getTier() : 'auto');
@@ -3369,6 +3464,19 @@ const ConfigModal = {
       maxTokens: clamp(document.getElementById("cfg_maxTokens").value, 256, 131072, 16384),
       temperature: this.clampTemp(document.getElementById("cfg_temperature").value, 0.9),
       timeout: clamp(document.getElementById("cfg_timeout").value, 60, 1800, 300),
+      /* v4.18.0 上下文窗口：0/空表示自动推断；手填值同步写入独立键供预算器优先采用。 */
+      contextWindow: (() => {
+        try {
+          const el = document.getElementById("cfg_contextWindow");
+          const raw = el ? String(el.value || '').trim() : '';
+          if (!raw) { localStorage.removeItem('storyContextWindow'); return 0; }
+          const n = parseInt(raw, 10);
+          if (isNaN(n) || n < 2000) { localStorage.removeItem('storyContextWindow'); return 0; }
+          const v = Math.min(2000000, n);
+          localStorage.setItem('storyContextWindow', String(v));
+          return v;
+        } catch (e) { return 0; }
+      })(),
       stream: document.getElementById("cfg_stream").checked,
       /* v3.55.11 模型能力档位随「保存」落盘 */
       baseModelMode: document.getElementById("cfg_baseMode").value,

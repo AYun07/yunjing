@@ -281,12 +281,16 @@
     }).map(function (g) { return { id: g.id, name: g.name, icon: g.icon, tip: g.tip, adult: !!g.adult, fields: applyRelabel(g.fields.slice()) }; });
     var cs = customFields();
     if (cs.length) {
+      /* v4.19.0b：专属字段是本界招牌，标题带世界名且加 exclusive 标记（渲染层据此高亮+开局可见）。 */
+      var isExclusiveGrp = cs.some(function (f) { return f.genre; });
+      var zhName = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreName) || currentGenre() || '特色';
       out.push({
         /* v4.17.5：**保留** customFields() 已经算好的 keys，不要覆盖成 [f.k]。
            旧写法在这一步把 label 键全丢了，导致「模型按中文 label 上报、读取器只认英文 key」，
            状态栏里 14 个自定义字段永远读不出值（实测「按中文 label 上报后读到 = {}」）。 */
-        id: 'custom', name: '自定义', icon: '🧩', fields: cs.map(function (f) {
-          return { k: f.k, label: f.label, keys: (f.keys && f.keys.length ? f.keys : keysForLabel(f.label, f.k)), custom: true };
+        id: 'custom', name: isExclusiveGrp ? '本界专属 · ' + zhName : '自定义', icon: isExclusiveGrp ? '✦' : '🧩',
+        exclusive: isExclusiveGrp, fields: cs.map(function (f) {
+          return { k: f.k, label: f.label, keys: (f.keys && f.keys.length ? f.keys : keysForLabel(f.label, f.k)), custom: true, genre: f.genre };
         })
       });
     }
@@ -321,8 +325,55 @@
     return s;
   }
 
+  /* ============ 多值栏目 v4.27.0 ============
+     有些状态维度天生可同时存在多项（斗罗九枚魂环、多块魂骨、多位队友…）。
+     单值字符串写不下也显示不出。多值栏目统一用数组存；同时兼容模型上报的
+     「用 / 、 , ；分隔的一行文本」，自动拆成数组，老存档/老模型都不会失效。 */
+  function fieldIsMulti(f) {
+    if (!f) return false;
+    if (f.multi) return true;
+    /* 专属字段来自 StatusWorldFields.parse 已带 multi；自定义字段按 label 判定 */
+    try {
+      var SW = window.StatusWorldFields;
+      if (SW && SW.isMulti && SW.isMulti(f.label)) return true;
+    } catch (e) {}
+    return false;
+  }
+  /* 把任意值规整成字符串数组：数组直接用；字符串按常见分隔符拆；空→[] */
+  function toList(raw) {
+    if (raw == null) return [];
+    if (Array.isArray(raw)) {
+      return raw.map(function (x) { return cleanVal(typeof x === 'string' ? x : (x && (x.v || x.name || x.text)) || ''); })
+        .filter(function (x) { return !!x; });
+    }
+    var s = cleanVal(raw);
+    if (!s) return [];
+    /* 优先按换行拆；否则按 / 、 , ; ； 拆；都不含则单项 */
+    var parts = s.split(/\n+|[\/、,，;；]+/).map(function (x) { return cleanVal(x); }).filter(function (x) { return !!x; });
+    return parts.length ? parts : [s];
+  }
+  /** 多值栏目读取：始终返回字符串数组 */
+  function readList(f) {
+    try {
+      var fw = window.storyFramework;
+      var v = (fw && fw.storyState && fw.storyState.variables) || {};
+      var pn = playerName();
+      var c = v.characters && typeof v.characters === 'object' ? v.characters[pn] : null;
+      for (var i = 0; i < f.keys.length; i++) {
+        var key = f.keys[i];
+        var pool = [v[key], c ? c[key] : null, pn ? v[pn + '.' + key] : null];
+        for (var j = 0; j < pool.length; j++) {
+          var list = toList(pool[j]);
+          if (list.length) return list;
+        }
+      }
+    } catch (e) {}
+    return [];
+  }
+
   /** 从 variables / 主角角色卡 / 平铺「主角.字段」三处取值 */
   function readField(f) {
+    if (fieldIsMulti(f)) return readList(f);
     try {
       var fw = window.storyFramework;
       var v = (fw && fw.storyState && fw.storyState.variables) || {};
@@ -347,13 +398,15 @@
       if (!fw || !fw.storyState) return false;
       var v = fw.storyState.variables || (fw.storyState.variables = {});
       var key = f.keys[0];
-      v[key] = value;
+      /* 多值栏目落库为数组（保持顺序）；单值维持原样 */
+      var store = fieldIsMulti(f) ? toList(value) : value;
+      v[key] = store;
       var pn = playerName();
       if (pn) {
         if (!v.characters || typeof v.characters !== 'object') v.characters = {};
         if (!v.characters[pn]) v.characters[pn] = {};
-        v.characters[pn][key] = value;
-        v[pn + '.' + key] = value;
+        v.characters[pn][key] = store;
+        v[pn + '.' + key] = store;
       }
       if (fw.saveStory) fw.saveStory();
       return true;
@@ -365,16 +418,34 @@
     return gs.map(function (g) {
       var rows = g.fields.map(function (f) {
         var val = readField(f);
-        /* 成人向字段组：用户已通过成年确认并开启，就常驻显示（空则显示「—」）。
-           否则模型不主动上报时整组会被折叠掉，状态栏里根本看不到 NSFW 字段。 */
-        if (!val && !(g.adult && adultOn() && adultConfirmed()) && localStorage.getItem(K_SHOWEMPTY) !== '1') return '';
-        return '<div class="yj-st-row" data-fk="' + esc(f.k) + '">' +
-          '<span class="yj-st-k">' + esc(f.label) + '</span>' +
-          '<span class="yj-st-v' + (val ? '' : ' empty') + '" onclick="StatusSchema.editField(\'' + esc(f.k) + '\')">' + esc(val || '—') + '</span>' +
+        /* 开局可见性（v4.19.0b）：
+           ① 本界专属字段（custom 组）——永远显示，空值给「—」。玩家一进场就能看到
+              本世界 14 个招牌字段，这正是「每界状态栏都不同」的承诺所在；若沿用旧的
+              「空值折叠」，真实玩家开局一个专属字段都看不到（只有一句提示），等于白做。
+           ② 成人向字段组：已确认成年并开启则常驻。
+           ③ 通用空字段：仍折叠，避免面板被几十个英文槽位撑爆。
+           showEmpty 全开时则一律显示。 */
+        var isExclusive = g.id === 'custom' || f.custom;
+        var alwaysShow = isExclusive || (g.adult && adultOn() && adultConfirmed())
+          || localStorage.getItem(K_SHOWEMPTY) === '1';
+        if (!val && !alwaysShow) return '';
+        var vHTML;
+        if (fieldIsMulti(f)) {
+          var ml = Array.isArray(val) ? val : (val ? [val] : []);
+          vHTML = ml.length
+            ? '<span class="yj-st-v yj-multi" onclick="StatusSchema.editField(\'' + esc(f.k) + '\')">' +
+              ml.slice(0, 9).map(function (x, i) { return '<span class="yj-mi"><b>' + (i + 1) + '</b>' + esc(x) + '</span>'; }).join('') +
+              (ml.length > 9 ? '<span class="yj-mi-more">+' + (ml.length - 9) + ' 项</span>' : '') + '</span>'
+            : '<span class="yj-st-v empty yj-multi-empty" onclick="StatusSchema.editField(\'' + esc(f.k) + '\')">— ＋</span>';
+        } else {
+          vHTML = '<span class="yj-st-v' + (val ? '' : ' empty') + '" onclick="StatusSchema.editField(\'' + esc(f.k) + '\')">' + esc(val || '—') + '</span>';
+        }
+        return '<div class="yj-st-row' + (isExclusive ? ' exclusive' : '') + (fieldIsMulti(f) ? ' multi' : '') + '" data-fk="' + esc(f.k) + '">' +
+          '<span class="yj-st-k">' + esc(f.label) + '</span>' + vHTML +
           '</div>';
       }).join('');
       if (!rows) return '';
-      return '<div class="yj-st-group' + (g.adult ? ' adult' : '') + '">' +
+      return '<div class="yj-st-group' + (g.adult ? ' adult' : '') + (g.exclusive ? ' exclusive' : '') + '">' +
         '<div class="yj-st-gname">' + g.icon + ' ' + esc(g.name) + '</div>' +
         '<div class="yj-st-rows">' + rows + '</div></div>';
     }).join('');
@@ -404,8 +475,21 @@
     var host = document.getElementById('yjStatusBody');
     if (!host) return;
     var gs = activeGroups();
-    var html = sectionHTML(gs);
+    /* v4.19.3：8 套题材皮肤。有专属字段（本界预设）时按皮肤渲染器出差异化结构，
+       每个世界主题结构/装饰/字体全不同；无专属字段（自由世界/未套预设）回退通用表格。
+       无论走哪条路，字段读写都还是本模块的 readField/editField，功能零变化。 */
+    var hasExclusive = gs.some(function (g) { return g.exclusive; });
+    var html;
+    if (hasExclusive && window.StatusSkins && window.StatusSkins.render) {
+      html = window.StatusSkins.render(gs, currentGenre());
+    } else {
+      var sec = document.getElementById('yjStatusSection');
+      if (sec) sec.removeAttribute('data-status-skin');
+      html = sectionHTML(gs);
+    }
     var flags = [];
+    /* v4.27.0 填表规则标记：让玩家随时看清当前是严格演算还是玩家自由 */
+    try { if (window.FillRule && window.FillRule.flagHTML) flags.push(window.FillRule.flagHTML()); } catch (e) {}
     if (adultOn() && adultConfirmed()) flags.push('<span class="yj-st-flag adult">🔞 成人字段已开</span>');
     if (breakOn()) flags.push('<span class="yj-st-flag brk">⛓ 破限已开</span>');
     host.innerHTML = (flags.length ? '<div class="yj-st-flags">' + flags.join('') + '</div>' : '') +
@@ -475,6 +559,7 @@
                     <span>🔞 启用成人向字段组</span><i>${adultConfirmed() ? '' : '需先在「⚙ 接口 → 内容尺度」确认已成年'}</i></label>
                 </div>
                 <div class="yj-set-note">字段只是中性的状态槽位（关系 / 状态 / 记号 / 禁忌 / 处境 / 余韵），写什么完全由你和模型决定，程序不预置任何文案。硬底线始终有效：仅成年虚构角色、不写真实人物、不美化性暴力。</div>
+                ${window.FillRule && window.FillRule.settingsHTML ? window.FillRule.settingsHTML() : ''}
                 <div class="yj-set-sec">破限模式</div>
                 <div class="yj-set-row">
                     <label><input type="checkbox" ${breakOn() ? 'checked' : ''} onchange="StatusSchema.askBreak(this.checked)">
@@ -496,12 +581,104 @@
         </div>`;
   }
 
+  /* ============ 多值栏目编辑器 v4.27.0 ============
+     一栏可填多项（九个魂环、多块魂骨、多位队友…），支持逐项增删排序 + 批量粘贴。 */
+  var _multiF = null;
+  function openMultiEditor(f) {
+    _multiF = f;
+    var list = readList(f);
+    if (!list.length) list = [''];
+    var m = document.getElementById('yjMultiEditor');
+    if (!m) {
+      m = document.createElement('div');
+      m.id = 'yjMultiEditor';
+      m.className = 'modal-overlay';
+      m.addEventListener('click', function (e) { if (e.target === m) closeMultiEditor(); });
+      document.body.appendChild(m);
+    }
+    m.innerHTML =
+      '<div class="yj-me-box">' +
+        '<div class="yj-me-hd"><b>✎ ' + esc(f.label) + '</b>' +
+          '<i>多值栏目 · 可填多项，每行一项</i>' +
+          '<button class="yj-me-x" onclick="StatusSchema.closeMultiEditor()" title="关闭">✕</button></div>' +
+        '<div class="yj-me-tip">此栏目可同时记录多个内容（如九枚魂环逐条列出）。拖动顺序可用右侧 ↑↓ 调整。</div>' +
+        '<div class="yj-me-list" id="yjMeList">' + list.map(function (v, i) { return multiRowHTML(v); }).join('') + '</div>' +
+        '<button class="yj-me-add" onclick="StatusSchema.multiAdd()">＋ 添加一项</button>' +
+        '<div class="yj-me-bulk">' +
+          '<div class="yj-me-bulk-t">批量粘贴（多行，或用 / 、 分隔一次导入多项）</div>' +
+          '<textarea id="yjMeBulk" rows="3" placeholder="例：\n第一魂环：百年曼陀罗蛇\n第二魂环：千年大力猩猩\n第三魂环：万年…"></textarea>' +
+          '<button class="yj-me-import" onclick="StatusSchema.multiImport()">⇩ 导入为多项</button>' +
+        '</div>' +
+        '<div class="yj-me-ft">' +
+          '<button class="btn-ghost" onclick="StatusSchema.closeMultiEditor()">取消</button>' +
+          '<button class="btn-primary" onclick="StatusSchema.multiSave()">保存</button>' +
+        '</div>' +
+      '</div>';
+    m.style.display = 'flex';
+    injectMultiCSS();
+  }
+  function multiRowHTML(v) {
+    return '<div class="yj-me-row">' +
+      '<span class="yj-me-idx">•</span>' +
+      '<input type="text" value="' + esc(v) + '" placeholder="输入一项内容">' +
+      '<button class="yj-me-mv" onclick="StatusSchema.multiMove(this,1)" title="上移">↑</button>' +
+      '<button class="yj-me-mv" onclick="StatusSchema.multiMove(this,-1)" title="下移">↓</button>' +
+      '<button class="yj-me-del" onclick="StatusSchema.multiDel(this)" title="删除">✕</button>' +
+      '</div>';
+  }
+  function multiValues() {
+    var box = document.getElementById('yjMeList');
+    if (!box) return [];
+    return [].map.call(box.querySelectorAll('input'), function (inp) { return inp.value.trim(); })
+      .filter(function (x) { return !!x; });
+  }
+  function closeMultiEditor() {
+    var m = document.getElementById('yjMultiEditor');
+    if (m) m.style.display = 'none';
+    _multiF = null;
+  }
+  function injectMultiCSS() {
+    if (document.getElementById('yj-me-css')) return;
+    var st = document.createElement('style');
+    st.id = 'yj-me-css';
+    st.textContent =
+      '#yjMultiEditor .yj-me-box{width:min(560px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(160deg,#16202e,#0e1420);' +
+        'border:1px solid #2f4460;border-radius:14px;box-shadow:0 18px 60px rgba(0,0,0,.6);color:#e6edf7;font-family:inherit}' +
+      '#yjMultiEditor .yj-me-hd{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #273650;position:relative}' +
+      '#yjMultiEditor .yj-me-hd b{font-size:17px;color:#e8c877;letter-spacing:.08em}' +
+      '#yjMultiEditor .yj-me-hd i{font-size:11px;color:#8496ad;font-style:normal;margin-left:auto;margin-right:26px}' +
+      '#yjMultiEditor .yj-me-x{position:absolute;right:14px;top:14px;background:none;border:none;color:#8496ad;cursor:pointer;font-size:16px}' +
+      '#yjMultiEditor .yj-me-tip{padding:10px 18px 0;font-size:12px;color:#8496ad;line-height:1.6}' +
+      '#yjMultiEditor .yj-me-list{padding:12px 18px;display:flex;flex-direction:column;gap:8px}' +
+      '#yjMultiEditor .yj-me-row{display:flex;align-items:center;gap:6px}' +
+      '#yjMultiEditor .yj-me-idx{width:16px;color:#e8c877;font-weight:700;flex:0 0 auto}' +
+      '#yjMultiEditor .yj-me-row input{flex:1;min-width:0;padding:8px 10px;background:#0d1420;border:1px solid #32445f;border-radius:7px;color:#e6edf7;font-family:inherit;font-size:13px;outline:none}' +
+      '#yjMultiEditor .yj-me-row input:focus{border-color:#e8c877;box-shadow:0 0 0 2px rgba(232,200,119,.15)}' +
+      '#yjMultiEditor .yj-me-mv,#yjMultiEditor .yj-me-del{flex:0 0 auto;width:28px;height:28px;border-radius:6px;border:1px solid #32445f;background:#182337;color:#aebdd0;cursor:pointer;font-size:13px}' +
+      '#yjMultiEditor .yj-me-mv:hover{background:#22304a;color:#e8c877}' +
+      '#yjMultiEditor .yj-me-del:hover{background:#4a2323;color:#ff9a8a;border-color:#6a3030}' +
+      '#yjMultiEditor .yj-me-add{margin:2px 18px;padding:9px;border:1px dashed #465b78;background:transparent;color:#9fc4e8;border-radius:8px;cursor:pointer;font-size:13px}' +
+      '#yjMultiEditor .yj-me-add:hover{background:#16263a;border-color:#e8c877;color:#e8c877}' +
+      '#yjMultiEditor .yj-me-bulk{margin:14px 18px 4px;padding:12px;background:#0c121d;border:1px solid #263650;border-radius:9px}' +
+      '#yjMultiEditor .yj-me-bulk-t{font-size:12px;color:#8496ad;margin-bottom:7px}' +
+      '#yjMultiEditor .yj-me-bulk textarea{width:100%;box-sizing:border-box;padding:9px 10px;background:#0d1420;border:1px solid #32445f;border-radius:7px;color:#e6edf7;font-family:inherit;font-size:12px;resize:vertical;outline:none}' +
+      '#yjMultiEditor .yj-me-import{margin-top:8px;padding:7px 12px;background:#1e3a52;border:1px solid #3a6a8a;color:#9fd8f0;border-radius:7px;cursor:pointer;font-size:12px}' +
+      '#yjMultiEditor .yj-me-import:hover{background:#274b6a}' +
+      '#yjMultiEditor .yj-me-ft{display:flex;justify-content:flex-end;gap:10px;padding:14px 18px 18px}' +
+      '#yjMultiEditor .yj-me-ft button{padding:9px 22px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit}' +
+      '#yjMultiEditor .btn-ghost{background:transparent;border:1px solid #3a4a63;color:#aebdd0}' +
+      '#yjMultiEditor .btn-primary{background:linear-gradient(135deg,#c9a24c,#a8342a);border:none;color:#fff;font-weight:600}';
+    document.head.appendChild(st);
+  }
+
   var StatusSchema = {
     GROUPS: GROUPS,
     mount: mount,
     render: render,
     activeGroups: activeGroups,
     readField: readField,
+    readList: readList,
+    fieldIsMulti: fieldIsMulti,
     keysForLabel: keysForLabel,
     isOff: isOff,
     toggleGroup: function (id, on) {
@@ -567,11 +744,53 @@
         g.fields.forEach(function (x) { if (x.k === k) f = x; });
       });
       if (!f) return;
+      /* 多值栏目：打开可视化的多值编辑器（增删/排序/批量粘贴） */
+      if (fieldIsMulti(f)) { openMultiEditor(f); return; }
       var cur = readField(f);
       var nv = prompt('修改「' + f.label + '」（留空表示清空）：', cur);
       if (nv == null) return;
       if (writeField(f, nv)) { render(); if (window.showToast) window.showToast('已更新 ' + f.label, 'ok'); }
       else alert('写入失败：故事尚未初始化。');
+    },
+    closeMultiEditor: closeMultiEditor,
+    multiAdd: function () {
+      var box = document.getElementById('yjMeList');
+      if (!box) return;
+      var d = document.createElement('div');
+      d.innerHTML = multiRowHTML('');
+      box.appendChild(d.firstChild);
+      var ins = box.lastElementChild.querySelector('input');
+      if (ins) ins.focus();
+    },
+    multiDel: function (btn) {
+      var box = document.getElementById('yjMeList');
+      var row = btn.closest('.yj-me-row');
+      if (box && row && box.children.length > 1) row.remove();
+      else if (row) row.querySelector('input').value = '';
+    },
+    multiMove: function (btn, dir) {
+      var row = btn.closest('.yj-me-row');
+      if (!row) return;
+      if (dir > 0 && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling);
+      else if (dir < 0 && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row);
+    },
+    multiImport: function () {
+      var ta = document.getElementById('yjMeBulk');
+      var box = document.getElementById('yjMeList');
+      if (!ta || !box || !ta.value.trim()) return;
+      var items = ta.value.split(/\n+|[\/、,，;；]+/).map(function (x) { return x.trim(); }).filter(function (x) { return !!x; });
+      if (!items.length) return;
+      box.innerHTML = items.map(function (v) { return multiRowHTML(v); }).join('');
+      ta.value = '';
+      if (window.showToast) window.showToast('已导入 ' + items.length + ' 项，检查后保存', 'ok');
+    },
+    multiSave: function () {
+      if (!_multiF) { closeMultiEditor(); return; }
+      var vals = multiValues();
+      if (writeField(_multiF, vals)) {
+        closeMultiEditor(); render();
+        if (window.showToast) window.showToast('已保存 ' + vals.length + ' 项到「' + _multiF.label + '」', 'ok');
+      } else alert('写入失败：故事尚未初始化。');
     },
     openSettings: function () {
       var m = document.getElementById('yjStatusSettings');
@@ -607,7 +826,7 @@
            「一律使用中文 label，严禁英文 key」直接矛盾 —— 等于叫模型填英文。
            内置字段保留 (key) 提示（它们的 key 是稳定的英文别名，有兼容价值）。 */
         var others = g.fields.filter(function (f) { return CORE.indexOf(f.k) === -1; })
-          .map(function (f) { return f.custom ? f.label : (f.label + '(' + f.keys[0] + ')'); });
+          .map(function (f) { return (f.custom ? f.label : (f.label + '(' + f.keys[0] + ')')) + (fieldIsMulti(f) ? '〔可多项〕' : ''); });
         if (others.length) rest.push('· ' + g.name + '：' + others.join(' / '));
       });
       var out = '【状态栏上报契约（每轮必报）】本轮结束时，在 (variable_update) 块内按下列字段如实上报；' +
@@ -620,6 +839,14 @@
       }
       if (rest.length) out += '选报（与情节相关就报，能显著提升状态栏的信息量）：\n' + rest.join('\n') + '\n';
       out += '每项一行，形如 `所在：骊珠洞天`（严禁英文 key）。成人向状态（情欲状态/亲密关系/事后余韵/双方意愿）按当前内容尺度如实上报：尺度允许时写清，不允许时填「无」，且绝不涉及未成年人。';
+      /* v4.27.0 多值栏目：告诉模型这些字段可报多项，逐条列出。 */
+      var multiLabels = [];
+      gs.forEach(function (g) { g.fields.forEach(function (f) { if (fieldIsMulti(f)) multiLabels.push(f.label); }); });
+      if (multiLabels.length) {
+        out += '\n【多值栏目】' + multiLabels.join('、') + ' 可同时有多项：请逐项分行列出，形如 `魂环配置：第一魂环·百年曼陀罗蛇 / 第二魂环·千年大力猩猩`（用 / 分隔多项；只有一项就写一项，确实没有填「无」）。';
+      }
+      /* v4.27.0 填表规则分叉：严格演算 / 玩家自由两套行为准则，随模式注入。 */
+      try { if (window.FillRule && window.FillRule.directive) out += window.FillRule.directive(); } catch (e) {}
       return out;
     },
     /** 自检用：当前启用字段数 */
