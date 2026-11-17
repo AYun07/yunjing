@@ -34,7 +34,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "v4.08.0";
+  var VERSION = "v4.27.0";
   /* 快照里最多保留多少条历史轮次。超出的部分丢弃——快照是诊断设施，
      不是存档，不该无限增长（否则它自己就成了长时运行的一个泄漏点）。 */
   var MAX_HISTORY = 24;

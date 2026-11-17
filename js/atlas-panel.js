@@ -16404,6 +16404,20 @@
             ${visited ? `<div class="ad-visit">足迹 · 首次到访：第 ${rec && rec.round ? rec.round : "—"} 回合${isCur ? " · 现正身处此地" : ""}</div>` : ""}
         </div>`;
   }
+  /* v4.19.0b：原创世界的通用行迹提示按题材措辞，避免所有世界都写「江湖」（科幻/克苏鲁串味）。 */
+  function genericHintFor(genre) {
+    const T = {
+      cthulhu: '诡秘之地', guimi: '非凡世界', shenmifusu: '灵异现场', mystery: '调查现场',
+      scifi: '星域航点', swallowedstar: '星域航点', shengxu: '秘境星域', quanqiubingfeng: '末世据点',
+      quanzhigaoshou: '荣耀赛场', quanzhifashi: '魔法疆域', longzu: '龙族秘境',
+      wangyou: '游戏地图', earth: '现实地点', lunhuileyuan: '副本地标',
+      wuxia: '江湖', jianlai: '山河', xianni: '修真界', doupocangqiong: '斗气大陆',
+      wanmeishijie: '大荒', douluodalu: '斗罗大陆', shrouding: '星域', fanrenxiuxian: '修真界'
+    };
+    const word = T[genre] || '此界';
+    return '✦ 原创世界 · 行迹图鉴：预设为' + word + '常见去处（类型地标）；身处具体小场所时将自动生成行迹地标，走到哪，记到哪';
+  }
+
   function render() {
     const genre = state.genre, g = ATLAS_DATA[genre], wrap = $("atlasPanel");
     if (!g || !wrap) return;
@@ -16441,7 +16455,7 @@
                     <button class="atlas-close" onclick="StoryAtlas.toggle(false)">✕</button>
                 </div>
             </div>
-            ${g.generic ? `<div class="atlas-generic" style="border-color:${hexA(P.accent, 0.38)};color:${P.muted};">${g.fallback ? "✦ 原创世界 · 行迹图鉴：此界暂无预置舆图——AI 每上报一处行踪即落一枚行迹地标，走到哪，记到哪" : "✦ 原创江湖 · 预设为江湖常见去处（类型地标）；身处具体小场所时将自动生成行迹地标，走到哪记到哪"}</div>` : ""}
+            ${g.generic ? `<div class="atlas-generic" style="border-color:${hexA(P.accent, 0.38)};color:${P.muted};">${g.fallback ? "✦ 原创世界 · 行迹图鉴：此界暂无预置舆图——AI 每上报一处行踪即落一枚行迹地标，走到哪，记到哪" : genericHintFor(genre)}</div>` : ""}
             <div class="atlas-tabs">
                 ${g.layers.map((l) => `<button class="atlas-tab ${l.id === state.layerId ? "on" : ""}" style="--p:${P.primary};" onclick="StoryAtlas.switchLayer('${l.id}')"><i>${l.ico || "◈"}</i>${l.name}</button>`).join("")}
             </div>
@@ -16984,6 +16998,25 @@
         .ad-alias{font-size:11px;color:var(--accent,#8ab0c8);letter-spacing:.6px;margin:-3px 0 8px;}
         .ad-km{font-style:normal;opacity:.66;font-size:10px;}
         @media (max-width:560px){.atlas-tip{max-width:180px;font-size:10px;}.atlas-typelegend{gap:6px 8px;}.atlas-layerstat{gap:5px;}}
+        /* ===== v4.19.0 舆图画面精修：世界主色辉光 · 立体边框 · 据点发光 · 地名描边 ===== */
+        .atlas-map{position:relative;border:1px solid color-mix(in srgb,var(--primary,#c9a86a) 40%,transparent)!important;
+            border-radius:14px;overflow:hidden;
+            box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--primary,#c9a86a) 12%,transparent),
+                       inset 0 0 46px color-mix(in srgb,var(--primary,#c9a86a) 9%,transparent),
+                       0 6px 30px rgba(0,0,0,.42);}
+        .atlas-map::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:14px;
+            background:radial-gradient(ellipse at 50% 42%,transparent 58%,color-mix(in srgb,var(--primary,#c9a86a) 10%,transparent) 100%);
+            mix-blend-mode:screen;}
+        .atlas-svg{max-height:70vh!important;min-height:390px!important;filter:drop-shadow(0 3px 12px rgba(0,0,0,.4));}
+        .atlas-node{filter:drop-shadow(0 0 1.1px color-mix(in srgb,var(--primary,#c9a86a) 55%,transparent));}
+        .atlas-node:hover{filter:drop-shadow(0 0 3.4px var(--primary,#c9a86a)) brightness(1.34)!important;}
+        .atlas-node[data-mode="visited"] .atlas-mark{filter:drop-shadow(0 0 2.2px var(--primary,#c9a86a));}
+        .atlas-label{paint-order:stroke fill;stroke:rgba(3,4,10,.72)!important;stroke-width:.5px!important;stroke-linejoin:round;}
+        .atlas-title{text-shadow:0 0 18px color-mix(in srgb,var(--primary,#c9a86a) 45%,transparent);}
+        .atlas-flavor{position:relative;padding-left:11px;}
+        .atlas-flavor::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:2px;border-radius:2px;
+            background:linear-gradient(180deg,var(--primary,#c9a86a),transparent);opacity:.7;}
+        @media (max-width:560px){.atlas-svg{max-height:60vh!important;min-height:320px!important;}}
         `;
     document.head.appendChild(st);
   }

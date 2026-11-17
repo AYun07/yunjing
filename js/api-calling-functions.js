@@ -47,6 +47,26 @@ window.TokenUsage = {
     } catch (e) {
     }
   },
+  /** v4.18.0 成本估算：按玩家自填单价（元/百万 token）把累计 token 换算成金额。
+   *  单价口径由玩家自己填（各厂商价格常变，产品不内置硬编码价格，避免说假话）。
+   *  @param {object} rates { in: 元/百万输入token, out: 元/百万输出token }
+   *  @returns {object} { inCost, outCost, total, byTag:{tag:金额} }，单位元 */
+  estimateCost(rates) {
+    var rin = Number(rates && rates.in) || 0;
+    var rout = Number(rates && rates.out) || 0;
+    var st = this._state();
+    var byTag = {};
+    var totalIn = 0, totalOut = 0;
+    Object.keys(st.byTag || {}).forEach(function (tag) {
+      var a = st.byTag[tag];
+      var c = (a.inTok || 0) / 1e6 * rin + (a.outTok || 0) / 1e6 * rout;
+      byTag[tag] = Math.round(c * 1e4) / 1e4;
+      totalIn += a.inTok || 0; totalOut += a.outTok || 0;
+    });
+    var inCost = Math.round(totalIn / 1e6 * rin * 1e4) / 1e4;
+    var outCost = Math.round(totalOut / 1e6 * rout * 1e4) / 1e4;
+    return { inCost: inCost, outCost: outCost, total: Math.round((inCost + outCost) * 1e4) / 1e4, byTag: byTag };
+  },
   /** 面板读取入口 */
   get() {
     return this._state();

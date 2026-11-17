@@ -185,21 +185,55 @@
     }));
   }
 
-  /** 从 FileBridge 已授权的目录里发现插件：扫 plugins/ 下的 plugin.json */
+  /** 从 FileBridge 已授权的目录里发现插件：扫 plugins/ 下的 plugin.json
+   *  v4.18.0 统一造物工坊：旧版造物工坊把模块写进 modules/ + registry.json，而本加载器
+   *  只读 plugins/_index.json —— 两套注册表互不相通，造出来的模块永远接不进系统。
+   *  现在两套都认：plugins/ 走原生插件，modules/registry.json 里的 HTML 造物被包装成
+   *  一个 ui 插件（提供「打开造物」入口），让"创造→生效"真正闭环。 */
   async function discoverFromFileBridge() {
     try {
       var FB = window.FileBridge;
       if (!FB || !FB.hasRoot || !FB.hasRoot()) return { ok: false, reason: '未授权项目文件夹' };
-      /* FileBridge 的 read 走的是相对路径，manifest 约定放在 plugins/<id>/plugin.json */
+      var ids = [], count = 0, sources = [];
+      /* --- 原生插件：plugins/_index.json --- */
       var idx = null;
       try { idx = await FB.read('plugins/_index.json'); } catch (e) { idx = null; }
-      if (!idx || !idx.text) return { ok: false, reason: '没有 plugins/_index.json（可在插件工坊里生成）' };
-      var ids = [];
-      try { ids = JSON.parse(idx.text); } catch (e) { return { ok: false, reason: 'plugins/_index.json 不是合法 JSON' }; }
-      if (!Array.isArray(ids)) return { ok: false, reason: 'plugins/_index.json 应为插件 id 数组' };
-      var urls = ids.map(function (id) { return 'plugins/' + id + '/plugin.js'; });
-      await loadFromUrls(urls);
-      return { ok: true, count: ids.length, ids: ids };
+      if (idx && idx.text) {
+        var pids = [];
+        try { pids = JSON.parse(idx.text); } catch (e) { pids = []; }
+        if (Array.isArray(pids)) {
+          ids = ids.concat(pids.map(function (id) { return 'plugins/' + id + '/plugin.js'; }));
+          count += pids.length; sources = sources.concat(pids);
+        }
+      }
+      /* --- 造物工坊：modules/registry.json → 包装成 ui 插件 --- */
+      var reg = null;
+      try { reg = await FB.read('modules/registry.json'); } catch (e) { reg = null; }
+      if (reg && reg.text) {
+        var manifest;
+        try { manifest = JSON.parse(reg.text); } catch (e) { manifest = null; }
+        var mods = (manifest && Array.isArray(manifest.modules)) ? manifest.modules : [];
+        mods.forEach(function (m, i) {
+          var file = String(m.file || m.path || '');
+          var name = String(m.name || ('造物' + (i + 1)));
+          if (!file) return;
+          var pid = 'xy-created-' + (file.replace(/[^\w]/g, '_').slice(-24) || i);
+          if (_byId[pid]) return; // 已注册过（热重载保幂等）
+          register({
+            id: pid, name: name, version: '1.0.0', apiVersion: 1,
+            author: '小云造物工坊', desc: '由造物工坊生成并写入源码的模块',
+            capabilities: ['ui']
+          }, function (api) {
+            api.on('ui:panel', function () {
+              return { id: pid, label: '🧩 ' + name, kind: 'created-module', file: file, name: name };
+            });
+          });
+          count++; sources.push(pid);
+        });
+      }
+      if (ids.length) await loadFromUrls(ids);
+      if (!count) return { ok: false, reason: '没有 plugins/_index.json，也没有 modules/registry.json' };
+      return { ok: true, count: count, ids: sources };
     } catch (e) {
       return { ok: false, reason: '发现失败：' + (e && e.message) };
     }

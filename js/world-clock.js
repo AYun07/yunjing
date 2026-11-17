@@ -145,6 +145,13 @@
       save();
       try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
       toast(`⏱ 世界第${day}日：${ev}`, "info");
+      /* v4.18.0：派发世界事件给即时反馈层，落「世界动态」常驻面板（此前只有一闪而过的 toast）。 */
+      try {
+        var _we = new (window.CustomEvent || window.Event)("yj:world-tick", {
+          detail: { day: day, text: "第" + day + "日：" + ev, ev: ev, major: /灭|覆|陨|大战|突破|降临|剧变/.test(String(ev)) }
+        });
+        window.dispatchEvent(_we);
+      } catch (e) {}
       try { window.StoryStatusRenderer && StoryStatusRenderer.renderHistory && StoryStatusRenderer.renderHistory(v.history); } catch (e) {}
       try { window.MoChibi && MoChibi.react && MoChibi.react("day", { day, ev }); } catch (e) {}
     } catch (e) { /* 单拍失败绝不杀死时钟 */ }

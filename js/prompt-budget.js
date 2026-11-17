@@ -19,21 +19,39 @@
     defaults: { enabled: true, limit: 11e4, auto: true },
     /** 上一次构建的账单（UI 展示用） */
     lastReport: null,
-    /** 主接口模型的上下文窗口（tokens）；推断不出返回 0 */
+    /** 主接口模型的上下文窗口（tokens）；推断不出返回 0
+     *  v4.18.0 修复：此前读 storyFramework.config.api，但真实 API 配置在
+     *  storyFramework.apiConfig（见 story-framework.js），config 是题材配置根本没有 .api。
+     *  结果"按模型名推断窗口"这条链路永远读到空对象 → 恒返回 0 → 自适应名存实亡。
+     *  现在按 apiConfig（内存）→ localStorage storyApiConfig → 独立 CTX_KEY 三级取值，
+     *  并兼容端点/模型名推断，让"不挑模型"真正落到每一档上下文预算上。 */
     ctxTokens() {
-      try {
-        const api = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.api) || {};
-        const explicit = Number(api.contextWindow || api.ctxWindow || api.context_length || 0);
-        if (explicit > 0) return explicit;
-        const model = String(api.model || "");
-        if (model) {
-          for (let i = 0; i < CTX_RULES.length; i++) if (CTX_RULES[i][0].test(model)) return CTX_RULES[i][1];
-        }
-      } catch (e) {}
+      // 1) 显式手填的窗口（独立键，优先级最高——玩家手动指定就是最终口径）
       try {
         const v = Number(localStorage.getItem(this.CTX_KEY) || 0);
         if (v > 0) return v;
       } catch (e) {}
+      var api = {};
+      // 2) 内存中的真实 API 配置
+      try {
+        const sf = window.storyFramework || {};
+        if (sf.apiConfig && typeof sf.apiConfig === 'object') api = Object.assign({}, api, sf.apiConfig);
+        // 兼容历史/插件里可能存在的 config.api 写法
+        if (sf.config && sf.config.api && typeof sf.config.api === 'object') api = Object.assign({}, api, sf.config.api);
+      } catch (e) {}
+      // 3) localStorage 里的持久化接口配置（内存未就绪时兜底，如首屏预算预计算）
+      try {
+        const raw = localStorage.getItem('storyApiConfig');
+        if (raw) { const cfg = JSON.parse(raw); if (cfg && typeof cfg === 'object') api = Object.assign({}, cfg, api); }
+      } catch (e) {}
+      // 显式窗口字段（允许玩家在接口配置里直接填 contextWindow/上下文）
+      const explicit = Number(api.contextWindow || api.ctxWindow || api.context_length || api.context || 0);
+      if (explicit > 0) return explicit;
+      // 按模型名推断
+      const model = String(api.model || "");
+      if (model) {
+        for (let i = 0; i < CTX_RULES.length; i++) if (CTX_RULES[i][0].test(model)) return CTX_RULES[i][1];
+      }
       return 0;
     },
     /** 按上下文窗口换算成字符上限：中文约 1 字 ≈ 1.2 token，留 40% 给输出与波动 */

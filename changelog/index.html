@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.17.6">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.19.0">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,47 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <!-- ==================== v4.19.0 ==================== -->
+        <article class="log-entry" data-tags="视觉 地图 状态栏 体验 模型" style="--entry-hue:#7a5fa8;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.19.0</span>
+                <span class="entry-date">2026-11-17</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">38 界专属状态栏 · 地图精修 · 模型配置引导 · 调用消耗透明</h3>
+            <p class="ver-diff"><b>相比 v4.18.0 的变化</b>：36 个有名世界各有 14 个专属状态字段（按原著设定，界界不同，告别通用模板）· 舆图画面精修（世界主色辉光/立体边框/据点发光/地名描边）· 顶栏新增模型配置状态徽标+游玩中引导条 · 新增「调用与消耗」面板（各接口调用次数/token/花费估算）· <a href="https://github.com/AYun07/yunjing/compare/v4.18.0...v4.19.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>状态栏按世界彻底差异化</b>：新增 38 界专属字段表，仙逆见「天逆珠/元婴/云天宗」、斗破见「异火/药老/佛怒火莲」、克苏鲁见「理智值/污染度/途径」——每界 14 项、界界不同，且状态栏自动贴本界主色。含老玩家一次性迁移，升级即生效。</li>
+                    <li><b>舆图画面精修</b>：地图区放大、世界主色双层辉光边框、据点发光与悬停高亮、地名描边，38 界各自配色，画面更立体精致（零侵入渲染逻辑）。</li>
+                    <li><b>游玩中模型配置引导</b>：顶栏常驻状态徽标——未配置显示「⚠ 点此配置模型」并呼吸提示+一次性引导条，已配置显示「✓ 模型名」，点击直达接口设置。</li>
+                    <li><b>调用与消耗透明</b>：「工具箱 → 调用与消耗」面板，实时显示总调用次数、输入/输出 token、按接口（主笔/状态/推演等）分列明细，玩家自填单价即可估算花费。</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- ==================== v4.18.0 ==================== -->
+        <article class="log-entry" data-tags="功能 小云 模型 内容 架构" style="--entry-hue:#4f7d6b;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.18.0</span>
+                <span class="entry-date">2026-11-17</span>
+            </div>
+            <h3 class="entry-title">全维度迭代：模型自适应修复 · 小云工具循环 · 新手引导 · 内容清洗</h3>
+            <p class="entry-text"><b>① 模型自适应修复（重点）</b>：<code>prompt-budget.js:ctxTokens()</code> 此前读 <code>storyFramework.config.api</code>，而真实 API 配置在 <code>apiConfig</code>，导致「按模型名推断上下文窗口」永远读到空值、8K/128K 自适应名存实亡；现按 apiConfig→localStorage→模型名三级取值（实测 deepseek=64K / gemini=1M / gpt-4o=128K），接口设置新增「上下文窗口」手填框，新型号/中转站也能正确适配。<b>② 小云研发中枢全接通</b>：新增真正的工具循环（⟦dev:xxx⟧ 标记→本地执行→结果回注→再问一次），moduleMap / refactorImpact 两个此前「只写在提示词里的空头支票」已注册为可调用工具并补快捷入口；造物工坊产物接进 PluginRuntime（兼容 modules/registry.json），形成创造→生效闭环。<b>③ 新手引导与反馈</b>：首次进入 3 步轻引导 + 跳转创作室自动打开接口设置；配置面板新增「简洁/完整」两档视图；数值变动浮字 + 常驻「世界动态」面板 + 连续回归钩子。<b>④ 内容与分享</b>：清洗 33 个世界书文件中的 <b>220 条</b>配置碎片垃圾条目、补齐 <b>303 条</b>空 tags；新增世界包/整书分享码导出导入、提示词调试器（可视化编译概览 + token/成本估算）、原生 Ollama 支持（/api/tags 发现、免 Key）、成本估算 API。<b>⑤ 已核实达标项</b>：主笔跨接口 fallback 经查实已在 ChannelHub 降级链实现、按界视觉经查实每界已有精致 CSS+SVG 氛围背景——两项误判已澄清未做无谓改动。全量语法 306/306、版本同源、真浏览器零异常。</p>
+                    <p class="ver-diff"><b>相比 v4.17.7 的变化</b>：修复模型上下文窗口读取错位 · 小云工具循环接通四能力 · 造物工坊接入插件系统 · 新手引导+配置两档 · 数值浮字+世界动态+连续回归 · 清洗220条世界书垃圾 · 世界包分享码 · 提示词调试器+成本估算 · 原生Ollama… · <a href="https://github.com/AYun07/yunjing/compare/v4.17.7...v4.18.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
+        <!-- ==================== v4.17.7 ==================== -->
+        <article class="log-entry" data-tags="修复 小云 视觉 稳定" style="--entry-hue:#4f7d6b;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.17.7</span>
+                <span class="entry-date">2026-11-17</span>
+            </div>
+            <h3 class="entry-title">全量复审（内容 / 框架 / 板块）· 手机端小云气泡遮挡修复</h3>
+            <p class="entry-text"><b>① 全量复审</b>：按内容 / 框架 / 板块三线重新审查全项目 —— 663 文件 / 45MB；全量 JS 语法 <b>302/302</b> 通过、HTML 引用 <b>零缺失</b>、版本同源、SW 预缓存 166 项全存在；真浏览器加载大厅 / 创作室 / 自检三页 <b>零 pageerror、零 HTTP≥400</b>，创作室 18 个关键全局对象全部挂载；项目自检 <b>71/71 全绿</b>。<b>② 数据复核</b>：状态栏 8 大原型 × 14 字段 = <b>112 个专属预设字段</b>（每界 ≥12 达标），MAP 覆盖 36 界（free / freeworld 自定义不套）；38 界世界书 core 分包共 <b>3763 条</b>真实条目（每界 66–101 条）+ 38 个 ext 分包；四套主题（云白 / 水墨 / 星穹 / 鎏金）切换全部正常，手机端大厅 / 创作室无横向溢出。<b>③ 手机端小云气泡遮挡修复</b>：窄屏(&lt;640px)创作室输入框铺满整宽，小云自动轮播气泡用 <code>right:104px</code> 向左横穿，实测正好盖住「主角小传」等输入框的 placeholder；现窄屏一律不自动弹气泡（玩家主动点小云仍照常出现，功能不丢），且窄屏气泡改为贴小云正上方、限宽折行、箭头朝下，主动弹出也不再遮挡输入。</p>
+                    <p class="ver-diff"><b>相比 v4.17.6 的变化</b>：全量复审三线全绿 · 数据复核（112 状态字段 / 3763 世界书条目）· 修复手机端小云气泡遮挡输入框 · 窄屏气泡改头顶限宽折行… · <a href="https://github.com/AYun07/yunjing/compare/v4.17.6...v4.17.7" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
 
         <!-- ==================== v4.17.6 ==================== -->
         <article class="log-entry" data-tags="功能 小云 视觉 巡检" style="--entry-hue:#4f7d6b;">
@@ -628,7 +669,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.17.6 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.19.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

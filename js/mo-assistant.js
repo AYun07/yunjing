@@ -182,7 +182,12 @@ ${dlcNote}${pluginProto}`;
 · 模块地图 moduleMap() —— 看懂项目由哪些模块组成、谁依赖谁、哪些是悬空引用或孤岛。主人问「这个项目结构」「改这里会影响什么」时用。
 · 自我验证 verify() —— 改完自己跑一遍检查，给出 PASS / WARN / BLOCK 结论。每次改完文件后主动提出「让我验证一下」。
 · 影响面分析 refactorImpact(旧名, 新名) —— 大范围改名/迁移前，先算清楚涉及哪些文件多少处，再生成补丁。批量重构时用。
-工作闭环：巡检发现问题 → 模块地图看懂影响 → 补丁块动手（你已有的能力）→ 自我验证确认 → 向主人复述结果。报告里的数字都来自真实扫描，不许编造 PASS。`;
+工作闭环：巡检发现问题 → 模块地图看懂影响 → 补丁块动手（你已有的能力）→ 自我验证确认 → 向主人复述结果。报告里的数字都来自真实扫描，不许编造 PASS。
+
+【如何真正调用工具 · 重要】上面四个能力都可以直接执行，不是让你用嘴描述。当你要调用某个能力时，在回复里单独写一行标记：
+⟦dev:scanProject⟧ 或 ⟦dev:moduleMap⟧ 或 ⟦dev:verify⟧ 或 ⟦dev:refactorImpact⟧
+（影响面分析需要参数时写成 ⟦dev:refactorImpact:旧名→新名⟧，冒号后是要改的名字）
+云境看到标记会自动执行本地工具，把真实结果回传给你，你再据此给主人结论。一次可调用多个，每个占一行。需要主人授权文件夹时先提示，别假装执行过。`;
   },
   /** 注入给小云的后台视野：工坊类型 + 进度 + 设定卡 + 状态面板摘要 */
   buildContext() {
@@ -296,6 +301,60 @@ ${String(recap.summary).slice(0, 600)}`);
    * @param {string} text 用户输入
    * @param {object} opt { kind: 'health' 体检发起（气泡特殊渲染），bubble: true 桌面宠物气泡模式 }
    */
+  /** 调一次主笔模型（供工具循环复用）。opts.onDelta 用于流式回显。 */
+  async callModel(messages, opts) {
+    const fw = window.storyFramework;
+    if (window.ChannelHub && ChannelHub.canCall("troupe")) return await ChannelHub.call("troupe", messages, opts);
+    return fw.apiConfig.type === "gemini" ? await callGemini(messages, opts) : await callOpenAI(messages, opts);
+  },
+  /** 解析模型回复里的 ⟦dev:工具⟧ 标记，本地执行并把真实结果回注为 user 消息。
+   *  返回 { final, used }：final 是最终给玩家看的回复，used 是执行过的工具名数组。
+   *  纯前端无 function-calling，故用「标记→本地执行→结果回注→再问一次」的轻量循环，
+   *  最多 2 轮防跑飞；工具不可用时把错误作为结果回注，让模型如实说明而不是编造。 */
+  async resolveDevTools(messages, firstReply, onDelta) {
+    var used = [];
+    var reply = firstReply;
+    for (var round = 0; round < 2; round++) {
+      var text = String(reply || "");
+      var marks = text.match(/⟦dev:[^\n⟧]*⟧/g) || [];
+      if (!marks.length) break;
+      var results = [];
+      for (var i = 0; i < marks.length; i++) {
+        var m = /⟦dev:([^:\n⟧]+)(?::([^\n⟧]*))?⟧/.exec(marks[i]);
+        if (!m) continue;
+        var name = (m[1] || "").trim(), arg = (m[2] || "").trim();
+        used.push(name);
+        results.push("【工具 " + name + (arg ? "（" + arg + "）" : "") + " 的真实结果】\n" + await this.execDevTool(name, arg));
+      }
+      // 工具标记从给玩家看的正文里移除
+      reply = text.replace(/⟦dev:[^\n⟧]*⟧/g, "").trim();
+      // 把工具结果作为 user 消息回注，让模型基于真实数据继续
+      messages.push({ role: "user", content: "（你刚请求的工具已由云境本地执行，真实结果如下。请据此给主人简洁结论，不要重复罗列原始数据，也不要再编造其他数字。）\n" + results.join("\n\n") });
+      try { window.TokenUsage && window.TokenUsage.recordRequest(messages, "小云·工具"); } catch (e) {}
+      reply = String(await this.callModel(messages, { onDelta: onDelta }) || "").trim();
+      try { window.TokenUsage && window.TokenUsage.recordOutput(reply, "小云·工具"); } catch (e) {}
+    }
+    return { final: reply, used: used };
+  },
+  /** 执行单个研发工具，返回可读文本（含失败原因，绝不静默） */
+  async execDevTool(name, arg) {
+    var MD = window.MoDevtools;
+    if (!MD || typeof MD[name] !== "function") return "（工具 " + name + " 当前不可用：研发中枢未加载或无此能力）";
+    try {
+      var rep;
+      if (name === "refactorImpact") {
+        var parts = String(arg || "").split(/→|->|=>/);
+        rep = await MD.refactorImpact((parts[0] || "").trim(), (parts[1] || "").trim());
+      } else {
+        rep = await MD[name]({ full: true });
+      }
+      if (MD.reportText && rep) return MD.reportText(rep);
+      return JSON.stringify(rep, null, 2).slice(0, 6000);
+    } catch (e) {
+      return "（工具执行失败：" + String(e && e.message || e) + "。若提示未授权文件夹，请主人在 🛠 文件工坊授权后重试）";
+    }
+  },
+
   async send(text, opt = {}) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
     text = String(text || "").trim();
@@ -351,13 +410,11 @@ ${String(recap.summary).slice(0, 600)}`);
           }
         }
       };
-      let reply;
-      if (window.ChannelHub && ChannelHub.canCall("troupe")) {
-        reply = await ChannelHub.call("troupe", messages, opts);
-      } else {
-        reply = fw.apiConfig.type === "gemini" ? await callGemini(messages, opts) : await callOpenAI(messages, opts);
-      }
-      const final = String(reply || "").trim() || "（小云一时语塞，什么都没说…再问一次试试？）";
+      /* v4.18.0 工具循环：先拿首轮回复，若含 ⟦dev:xxx⟧ 标记则本地执行研发工具并回注结果，
+         最多 2 轮，最终把干净的结论呈现给玩家。工具标记不会泄漏到可见区。 */
+      const firstReply = String(await this.callModel(messages, opts) || "").trim();
+      const looped = await this.resolveDevTools(messages, firstReply, opts.onDelta);
+      const final = String(looped.final || "").trim() || "（小云一时语塞，什么都没说…再问一次试试？）";
       (_i = window.TokenUsage) == null ? void 0 : _i.recordOutput(final, "小云");
       history.push({ role: "assistant", content: final, at: Date.now() });
       this.saveChat(history);
@@ -458,6 +515,8 @@ ${String(recap.summary).slice(0, 600)}`);
     { icon: "👥", label: "人物志", tool: "roster" },
     { icon: "🎲", label: "自由人生", tool: "life" },
     { icon: "🛠️", label: "自主巡检", tool: "devscan" },
+    { icon: "🗺️", label: "模块地图", tool: "devmap" },
+    { icon: "🔧", label: "影响面分析", tool: "devimpact" },
     { icon: "✅", label: "自我验证", tool: "devverify" }
   ],
   runQuick(action) {
@@ -598,7 +657,7 @@ ${report}${fileRep}`;
     drawer.innerHTML = `
             <div class="mo-head">
                 <div class="mo-head-id">
-                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
+                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.27.0" alt="小云" draggable="false" decoding="async"></div>
                     <div class="mo-head-txt">
                         <div class="mo-name">小云 <span class="mo-name-tag" id="moModeTag">管家</span></div>
                         <div class="mo-status" id="moStatus"><i class="mo-dot"></i><span>随时待命</span></div>
@@ -690,7 +749,7 @@ ${report}${fileRep}`;
       box.innerHTML = `
                 <div class="mo-welcome">
                     <div class="mo-welcome-drop">
-                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
+                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.27.0" alt="小云" draggable="false" decoding="async"></div>
                     </div>
                     <div class="mo-welcome-title">云端的小云，已就位 ✨</div>
                     <div class="mo-welcome-sub">聊灵感、点评剧情、卡文急救，或者让小云给工坊做个体检～</div>
@@ -722,7 +781,7 @@ ${report}${fileRep}`;
     ).join("");
     return `
         <div class="mo-msg mo-msg-mo">
-            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
+            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.27.0" alt="小云" draggable="false" decoding="async"></div>
             <div class="mo-bubble mo-bubble-mo">${this.mdLite(body)}${chips ? `<div class="mo-suggests">${chips}</div>` : ""}</div>
         </div>`;
   },
@@ -743,7 +802,7 @@ ${report}${fileRep}`;
     if (!box) return null;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.27.0" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo" id="moTypingBubble">
                     <div class="mo-typing"><i></i><i></i><i></i></div>
                 </div>
@@ -761,7 +820,7 @@ ${report}${fileRep}`;
     if (!box) return;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.17.6" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=4.27.0" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo ${type === "error" ? "mo-bubble-error" : ""}">${this.mdLite(text)}</div>
             </div>`);
     this.scrollBottom();

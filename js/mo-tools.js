@@ -187,6 +187,38 @@
     }
   }
 
+  /* v4.18.0 补齐研发中枢另外两项：模块地图 / 重构影响面。此前它们只在小云提示词里
+     被描述，没有任何调用点（玩家说「看项目结构」模型拿不到结果）。现在两者都能从
+     快捷入口直达，也已注册进 MoAssistant 的工具循环。 */
+  async function devmap() {
+    if (!devReady()) return;
+    var ov = overlay("🗺 小云模块地图", '<div data-body style="color:#8fb8b0;font-size:13px;">正在解析模块依赖、悬空引用与孤岛模块…</div>', '');
+    try {
+      var rep = await window.MoDevtools.moduleMap();
+      ov.querySelector('[data-body]').innerHTML = '<pre style="white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.7;max-height:56vh;overflow:auto;">' + esc(window.MoDevtools.reportText(rep)) + '</pre>';
+    } catch (e) { ov.querySelector('[data-body]').textContent = '解析失败：' + (e && e.message || e); }
+  }
+  function devimpact() {
+    if (!devReady()) return;
+    var ov = overlay("🔧 重构影响面分析", '<div data-body style="color:#8fb8b0;font-size:13px;">输入要改动的旧名与新名，先算影响面再动手。</div>', '');
+    var body = ov.querySelector('[data-body]');
+    body.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
+      + '<input data-from placeholder="旧名（函数名/变量名/文件路径）" style="flex:1;min-width:180px;padding:8px;border-radius:7px;background:#0e2624;color:#cdeee8;border:1px solid #2c5a54;">'
+      + '<span style="color:#7fb7ae">→</span>'
+      + '<input data-to placeholder="新名" style="flex:1;min-width:140px;padding:8px;border-radius:7px;background:#0e2624;color:#cdeee8;border:1px solid #2c5a54;">'
+      + '<button data-go style="padding:8px 14px;border:1px solid #9adfd2;border-radius:8px;background:#12312e;color:#9adfd2;cursor:pointer;">分析</button></div>'
+      + '<pre data-out style="white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.7;max-height:50vh;overflow:auto;"></pre>';
+    body.querySelector('[data-go]').onclick = async function () {
+      var from = body.querySelector('[data-from]').value.trim(), to = body.querySelector('[data-to]').value.trim();
+      if (!from) { body.querySelector('[data-out]').textContent = '请先填旧名。'; return; }
+      body.querySelector('[data-out]').textContent = '正在计算影响面…';
+      try {
+        var rep = await window.MoDevtools.refactorImpact(from, to);
+        body.querySelector('[data-out]').textContent = window.MoDevtools.reportText(rep);
+      } catch (e) { body.querySelector('[data-out]').textContent = '分析失败：' + (e && e.message || e); }
+    };
+  }
+
   function run(tool) {
     if (tool === "diagnose") return diagnose();
     if (tool === "whatif") return whatif();
@@ -196,7 +228,9 @@
     if (tool === "life") return life();
     if (tool === "devscan") return devscan();
     if (tool === "devverify") return devverify();
+    if (tool === "devmap") return devmap();
+    if (tool === "devimpact") return devimpact();
   }
 
-  window.MoTools = { run, diagnose, whatif, plan, clock, roster, life, devscan, devverify };
+  window.MoTools = { run, diagnose, whatif, plan, clock, roster, life, devscan, devverify, devmap, devimpact };
 })();

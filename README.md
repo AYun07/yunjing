@@ -49,11 +49,11 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v4.17.6（2026-11-17 · 唯一当前版）
+## 🆕 当前版本：v4.19.0（2026-11-17 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v4.17.6** | 2026-11-17 | **当前** | 小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 批量重构分析）+ 全量界面视觉审查与小云遮挡修复。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
+| **v4.19.0** | 2026-11-17 | **当前** | 小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 批量重构分析）+ 全量界面视觉审查与小云遮挡修复。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
 
 **看版本**：[📚 版本页（86 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v4.12.0 的差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.16.0) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.16.0)
 

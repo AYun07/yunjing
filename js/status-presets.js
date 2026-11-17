@@ -25,6 +25,7 @@
 
   var K_APPLIED = 'yunjingStatusPresetApplied';   // { genre: true } 已套用过的世界
   var K_RELABEL = 'yunjingStatusRelabel';          // { 字段k: 显示名 }
+  var K_EXCL_VER = 'yunjingStatusExclusiveVer';    // v4.19.0 专属字段表版本印章（升级迁移用）
 
   /* ---- 世界类型原型。每个原型给出：关掉的组、追加字段、字段改名 ---- */
   var ARCH = {
@@ -211,7 +212,7 @@
     wuxia: 'wuxia',
     limingzhijian: 'zhengqi',
     earth: 'dushi', zhongshengdushi: 'dushi', zhanhen: 'dushi', longzu: 'dushi',
-    quanqiubingfeng: 'dushi', dibao: 'dushi', lunhuileyuan: 'dushi'
+    quanqiubingfeng: 'dushi', dibao: 'dushi', lunhuileyuan: 'youxi'
     /* free / freeworld：玩家自定义世界，不套任何预设 */
   };
 
@@ -234,9 +235,21 @@
   /** 本界用哪个原型 */
   function archOf(g) { return MAP[g || genre()] || null; }
 
-  /** 该世界的预设（人可读，供面板展示） */
+  /** 该世界的预设（人可读，供面板展示）
+   *  v4.19.0：优先用 38 界专属字段表（每界字段各不相同），未命中再回退旧题材原型。 */
   function presetOf(g) {
-    var a = archOf(g);
+    var key = g || genre();
+    var SW = window.StatusWorldFields;
+    var exclusive = SW && SW.get ? SW.get(key) : null;
+    if (exclusive) {
+      return {
+        arch: exclusive.arch, off: (exclusive.off || []).slice(),
+        fields: (exclusive.fields || []).slice(), relabel: Object.assign({}, exclusive.relabel || {}),
+        offNames: (exclusive.off || []).map(function (id) { return SLOTS_ZH[id] || id; }),
+        exclusive: true
+      };
+    }
+    var a = archOf(key);
     if (!a) return null;
     var A = ARCH[a];
     return {
@@ -246,9 +259,31 @@
     };
   }
 
+  /** v4.19.0 一次性迁移：专属字段表上线后，清掉旧的「已套用」标记，
+   *  让每个世界重新套用新的专属字段（老玩家 localStorage 里所有界都标过 applied，
+   *  不清会导致新字段永远不生效）。只做一次，用版本印章保证幂等。 */
+  function migrateExclusive() {
+    try {
+      var stamp = localStorage.getItem(K_EXCL_VER);
+      if (stamp === '4.19.2') return;
+      /* 清掉旧 applied 标记，让专属字段重新套用 */
+      localStorage.removeItem(K_APPLIED);
+      /* 清掉旧的「按 genre 前缀存的专属字段」，保留玩家手动加的（无 genre 标记） */
+      try {
+        var all = jget('yunjingStatusCustom', []);
+        if (Array.isArray(all)) {
+          var kept = all.filter(function (f) { return f && !f.genre; });
+          jset('yunjingStatusCustom', kept);
+        }
+      } catch (e) {}
+      localStorage.setItem(K_EXCL_VER, '4.19.2');
+    } catch (e) {}
+  }
+
   /** 套用本界预设（幂等；已套用过或玩家改过则跳过） */
   function applyIfNeeded(g, force) {
     try {
+      migrateExclusive();
       g = g || genre();
       var p = presetOf(g);
       if (!p) return { applied: false, reason: '本界无预设（自由创作世界）' };
