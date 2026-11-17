@@ -554,7 +554,7 @@
       seed(state);
       var v = state.variables;
       var cfg = fw.config || {};
-      /* v4.27.0 填表规则分叉：玩家自由模式不需要严格演算纪律，给出精简快照 + 玩家优先指令。 */
+      /* v4.28.0 填表规则分叉：玩家自由模式不需要严格演算纪律，给出精简快照 + 玩家优先指令。 */
       if (window.FillRule && window.FillRule.isFree && window.FillRule.isFree()) {
         var _lm = {};
         (cfg.statKeys || []).forEach(function (s) { if (s && s.key) _lm[s.key] = s.label; });

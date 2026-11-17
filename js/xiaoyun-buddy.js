@@ -126,16 +126,23 @@
         var calls = parseTools(text);
         if (calls.length && round < 2) {
           round++;
-          var results = calls.map(function (c) {
-            var r = runTool(c.tool, c.args || {});
-            return c.tool + ' → ' + (r && r.ok ? '成功：' + r.msg : '失败：' + (r && r.msg || '无返回'));
-          }).join('\n');
-          bot(text.replace(/⟦tool⟧\{[^\n⟦]*\}/g, '').trim() || '好，我来动手…');
-          msgs.push({ role: 'assistant', content: text });
-          msgs.push({ role: 'user', content: '工具执行结果：\n' + results + '\n\n请基于以上结果回复我；如还需工具可继续按协议调用。' });
-          thinking = true;
-          var st2 = el('div', 'xy-msg bot xy-typing', '小云正在干活…'); chat.appendChild(st2); chat.scrollTop = chat.scrollHeight;
-          setTimeout(function () { step(st2); }, 120);
+          /* v4.28.0：工具可能返回 Promise（如全量备份/容量体检），统一 await 后再汇总，
+             避免把 [object Promise] 回灌给模型或显示在聊天里。 */
+          Promise.all(calls.map(function (c) {
+            return Promise.resolve(runTool(c.tool, c.args || {})).then(function (r) {
+              return c.tool + ' → ' + (r && r.ok ? '成功：' + r.msg : '失败：' + (r && r.msg || '无返回'));
+            }).catch(function (e) {
+              return c.tool + ' → 失败：' + (e && e.message || e);
+            });
+          })).then(function (lines) {
+            var results = lines.join('\n');
+            bot(text.replace(/⟦tool⟧\{[^\n⟦]*\}/g, '').trim() || '好，我来动手…');
+            msgs.push({ role: 'assistant', content: text });
+            msgs.push({ role: 'user', content: '工具执行结果：\n' + results + '\n\n请基于以上结果回复我；如还需工具可继续按协议调用。' });
+            thinking = true;
+            var st2 = el('div', 'xy-msg bot xy-typing', '小云正在干活…'); chat.appendChild(st2); chat.scrollTop = chat.scrollHeight;
+            setTimeout(function () { step(st2); }, 120);
+          });
           return;
         }
         var clean = text.replace(/⟦tool⟧\{[^\n⟦]*\}/g, '').trim();
@@ -153,6 +160,13 @@
       if (/加条目|补条目|世界书|资料库/.test(t)) {
         if (window.WorldBook) { bot('世界书面板这就打开——你可以手动加条目，也可以告诉我「加一条：XX」，我直接替你写进去。'); window.WorldBook.open(); }
         else bot('世界书系统在这个页面还没加载（去创作室里我就能直接操作）。');
+      } else if (/全量备份|备份存档|备份所有|导出全部|搬家/.test(t)) {
+        Promise.resolve(runTool('saves.backup')).then(function (r) {
+          bot(r && r.ok ? r.msg : ((r && r.msg) || '备份失败，请到书架面板手动导出。'));
+          if (window.SaveSlots) { try { SaveSlots.open(); } catch (e) {} }
+        });
+      } else if (/容量|存储占用|还剩多少空间|存储体检/.test(t)) {
+        Promise.resolve(runTool('saves.capacity')).then(function (r) { bot(r && r.msg || '容量信息不可用。'); });
       } else if (/存档|书档|存档管理/.test(t)) {
         var r = runTool('saves.ui');
         bot(r && r.ok ? r.msg : (window.SaveSlots ? '已帮你打开存档管理。' : (r && r.msg) || '存档系统未加载。'));

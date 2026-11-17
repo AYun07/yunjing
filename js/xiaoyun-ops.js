@@ -137,7 +137,7 @@
       }
     },
     "preset.importText": {
-      desc: "导入一份第三方（酒馆/SillyTavern 格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
+      desc: "导入一份第三方（酒馆/常见前端工具 格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
       fn: function (a) {
         if (!window.YunjingPresetIO) return { ok: false, msg: "预设系统未加载。" };
         if (!a || !a.json) return { ok: false, msg: "缺少预设 JSON 文本。" };
@@ -185,6 +185,27 @@
         if (!window.SaveSlots) return { ok: false, msg: "存档系统未加载。" };
         try { window.SaveSlots.open(); return { ok: true, msg: "已打开存档管理面板。" }; }
         catch (e) { return { ok: false, msg: "打开失败：" + e.message }; }
+      }
+    },
+    "saves.backup": {
+      desc: "全量备份：把所有书档+配置+图片正文打包成一个文件下载（含API Key，勿外传）", args: "{}",
+      fn: async function () {
+        if (!window.SaveSlots || !window.SaveSlots.exportAll) return { ok: false, msg: "存档系统未加载或版本过低。" };
+        try {
+          await window.SaveSlots.exportAll();
+          return { ok: true, msg: "已开始下载全量备份文件（含全部书档、配置、图片正文）。文件含 API Key，请只存私密位置、勿外传。" };
+        } catch (e) { return { ok: false, msg: "备份失败：" + e.message }; }
+      }
+    },
+    "saves.capacity": {
+      desc: "体检本机存储占用（localStorage+IndexedDB 合计用量/配额）", args: "{}",
+      fn: async function () {
+        if (!window.SaveSlots || !window.SaveSlots.capacity) return { ok: false, msg: "存档系统未加载。" };
+        try {
+          var c = await window.SaveSlots.capacity();
+          if (!c || !c.ok) return { ok: true, msg: "当前浏览器不支持容量估算（不影响存档功能）。" };
+          return { ok: true, msg: "存储占用 " + (c.used / 1024 / 1024).toFixed(1) + "MB / " + (c.quota / 1024 / 1024 / 1024).toFixed(1) + "GB（已用 " + c.pct + "%）", data: c };
+        } catch (e) { return { ok: false, msg: "体检失败：" + e.message }; }
       }
     },
     /* —— 变量与正文 —— */
