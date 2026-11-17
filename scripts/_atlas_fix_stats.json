@@ -1,0 +1,25 @@
+{
+  "version": "v3.97.0",
+  "total": 805,
+  "dropped": 8,
+  "renamed": 7,
+  "dedup": 1,
+  "changes": [
+    "cthulhu: 「守护幻梦境圣地」→「幻梦境」",
+    "douluodalu: 删除「骨斗罗护宗」",
+    "douluodalu: 删除「情报遍布大陆」",
+    "douluodalu: 删除「天下第一宗门」",
+    "doupocangqiong: 「坐落圣丹城」→「圣丹城」",
+    "doupocangqiong: 删除「炼药师圣地」",
+    "doupocangqiong: 删除「下辖五大家族」",
+    "guzhenren: 删除「遍布五域」",
+    "limingzhijian: 删除「情报组织」",
+    "quanzhifashi: 「下辖神庙学院」→「神庙学院」",
+    "xianni: 「下辖昆虚星域」→「昆虚星域」",
+    "xianni: 「下辖罗天星域」→「罗天星域」",
+    "xianni: 去重「罗天星域」",
+    "xianni: 「下辖云海星域」→「云海星域」",
+    "xianni: 「下辖召河星域」→「召河星域」",
+    "xuanjianxianzu: 删除「辖诸郡」"
+  ]
+}
