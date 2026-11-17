@@ -236,13 +236,21 @@
             }
           } catch (e) { }
           /* v4.28.0：恢复该槽位的全部散落键。导入档的键是源槽位名，
-             这里按后缀规则把源槽位后缀替换为新槽位后缀，避免污染其它档。 */
+             经 remapScopedKey 精确重映射到新槽位，覆盖全部键格式，杜绝污染主档。 */
           try {
             if (pkg.scoped) {
-              const srcSuffix = pkg.slotId && pkg.slotId !== 'main' ? ('~' + pkg.slotId) : '';
+              const srcSid = pkg.slotId || 'main';
+              const g = pkg.genre || fw.genre;
+              /* 注册表键（storySlots_* / storyActiveSlot_*）不属于槽位数据，
+                 绝不能恢复——否则会把当前整个书架注册表覆盖成源档的。 */
+              const regKeys = [this.regKey(g), this.activeKey(g)];
+              /* 故事本体键 storySave_* 已由上面用 pkg.save 单独写入，
+                 scoped 里的副本跳过，避免被未解析的原文重复覆盖。 */
+              const bodyPrefix = 'storySave_' + g;
               Object.keys(pkg.scoped).forEach(k => {
-                let nk = k;
-                if (srcSuffix && nk.indexOf(srcSuffix) >= 0) nk = nk.split(srcSuffix).join(suffix);
+                if (regKeys.indexOf(k) >= 0) return;
+                if (k.indexOf(bodyPrefix) === 0) return;
+                const nk = this.remapScopedKey(k, srcSid, id, g);
                 localStorage.setItem(nk, String(pkg.scoped[k]));
               });
             }
@@ -279,6 +287,29 @@
          ② IndexedDB    —— 长正文 / 图片实体（localStorage 里只留 idb:// 占位标记）
        只导 localStorage 会导致换设备后「图片和长正文全丢」——这是旧版 exportSlot 的
        致命缺口。本组方法两层一起导，配合「导入前自动快照」防误覆盖，才是真正可用的备份。 */
+
+    /** v4.28.0 修复：把导出档的散落键从「源槽位」重映射到「新槽位」。
+        覆盖 A(裸/~后缀) / B(~main) / C(~sid~genre) / D(:sid:) / E(.sid~) 全部键格式；
+        主档裸键会正确补上新槽后缀，绝不覆盖当前主档。 */
+    remapScopedKey(key, srcSid, dstSid, genre) {
+      /* 首选：SlotRegistry 精确键表（keysOf 顺序固定，索引一一映射，最可靠） */
+      try {
+        if (window.SlotRegistry && window.SlotRegistry.keysOf) {
+          const sk = window.SlotRegistry.keysOf(srcSid, genre) || [];
+          const dk = window.SlotRegistry.keysOf(dstSid, genre) || [];
+          const i = sk.indexOf(key);
+          if (i >= 0 && dk[i]) return dk[i];
+        }
+      } catch (e) {}
+      /* 兜底：令牌替换（覆盖 keysOf 未列、被 scanKeysOf 扫到的历史键） */
+      const s = srcSid || 'main';
+      const d = dstSid || 'main';
+      if (key.indexOf('~' + s) >= 0) return key.split('~' + s).join('~' + d);
+      if (key.indexOf(':' + s + ':') >= 0) return key.split(':' + s + ':').join(':' + d + ':');
+      if (key.indexOf('.' + s + '~') >= 0) return key.split('.' + s + '~').join('.' + d + '~');
+      /* 纯裸键（主档 A 类，如 storySave_free）→ 追加目标槽后缀 */
+      return key + '~' + d;
+    },
 
     /** 收集 localStorage。scope='all' 全量；'slot' 只收指定槽位相关键（含跨分隔符格式） */
     collectLS(scope, slotId) {
