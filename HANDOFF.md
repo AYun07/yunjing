@@ -89,7 +89,9 @@ npm test          # = node test/regression.mjs，当前 26 项全绿
 3. 逐文件建 blob → 分批建 tree（base_tree 累积）→ 建 commit（父 = 远端 main）→ PATCH ref → 建 tag + Release
 4. 逐字节核对远端文件内容
 
-详见 `/workspace/GitHub认证与推送指南.md`。上一次推送：v4.27.0 → main `aeb2e775`，103 文件逐字节一致。本版 v4.28.0 待推。
+详见 `/workspace/GitHub认证与推送指南.md`。最近一次推送：v4.29.0 → main `fec857d6`，29 文件逐字节一致，tag/Release `v4.29.0` 在线。
+
+**另一个坑（v4.29.0 踩到）**：PAT 只有 `repo` scope 时，GitHub **拒绝**通过 Git Data API 或 contents API 创建/修改 `.github/workflows/*`（返回 404 / 403 `workflow scope`）。所以当次改动若含工作流文件（如 `ci.yml`），必须先把它从 tree 清单里排除、其余文件照常推送，并说明该文件待用带 `workflow` scope 的 token 单独同步。v4.29.0 的 `ci.yml`（七道闸）即属此情况——本地已更新，远端仍是旧版，下次拿到 `workflow` scope 的 token 时补推即可，不影响产品运行。
 
 > 安全口径：PAT 绝不写进仓库文件，用完 `shred -u` 擦除临时 token 文件。
 
@@ -97,12 +99,14 @@ npm test          # = node test/regression.mjs，当前 26 项全绿
 
 ## 6. 当前状态与待办
 
-**已完成（v4.28.0）**：
-- P0 存档防丢：全量备份/恢复、单档导出补散落键+正文、导入前快照回滚、容量体检；小云可直接触发。
-- P1 自动回归：`test/regression.mjs` + `npm test`，26 项全绿。
-- P2 口径统一：README 解释 38/36 界差异；本交接文档。
+**已完成（v4.29.0）**：
+- 存档防丢（v4.28.0）：全量备份/恢复、单档导出补散落键+正文、导入前快照回滚、容量体检；小云可直接触发。
+- 自动回归（v4.28.0）：`test/regression.mjs` + `npm test`，现 34 项全绿；版本号从唯一来源动态派生，不再写死。
+- 口径统一（v4.28.0）：README 解释 38/36 界差异；本交接文档。
+- 工程地基（v4.29.0）：CI 七道闸（回归 34 项 + 网络体检 + 世界书体检，存量基线/只拦新增）；`CODE-MAP.md` 代码地图。
+- 新功能（v4.29.0）：`action-check.js` 行动判定骰（演算/口述双裁定）；小云 `recall.brief` 资料召回 / `ui.actioncheck`。
 
 **待办 / 已知约束**：
-- v4.28.0 已推送到 GitHub：main `890d39b7`（含 hotfix），tag/Release `v4.28.0` 在线。
+- v4.29.0 已推送：main `fec857d6`，tag/Release 在线（29 文件核对一致）；唯一例外是 `ci.yml` 因 token 无 `workflow` scope 未同步（见第 5 节）；本文件亦为此后更新，随下次推送一并同步。
 - 沙箱本地 git 与远端历史分叉（gitignore 排除了 `_common.js` 等运行必需文件，远端保留），属正常，不影响运行。
 - API Key 存 localStorage 明文——纯前端架构的固有特性，靠"只存本机 + 备份需提示勿外传"缓解，无服务端方案。
