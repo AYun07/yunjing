@@ -1,0 +1,1508 @@
+const KB_GENRE = new URLSearchParams(location.search).get("genre") || "free";
+
+/* v4.10.0 修 F12（第三方审查 P1-2「项目源码 / 系统提示词被当成世界观铁律回灌知识库」）：
+   某构建/抽取脚本把 js/*.js 源码（含模板字符串）按分隔符切碎后写进各界 KB 的 add 数组，
+   产出一批 title 形如「世界观铁律 · const defaultSyste」「世界观设定 · { key」、
+   content 是 JS 语句的垃圾条目（分布 37/38 界，标题属于高优先级「世界观铁律」类）。
+   它们会被当「设定」检索、甚至注入模型，形成「提示词污染提示词」的自我回灌。
+
+   这里在装配漏斗 _mergePresets 处做**确定性过滤**：只在条目 title 命中「被切碎的源码
+   行」形态才剔除。判据刻意收窄到 title 前缀 + 明确 JS token，避免误伤
+   「速查 / 条文汇编 / 总纲 / 档案」这类 content 里恰好引用了字段名的合法设定文本。
+   数据文件本身不物理删除（可逆、可审计），过滤层同时兜住未来再次生成的同类脏数据。 */
+/* v4.16.0 · 判据重做（第三方审查 F12 复核）。
+   旧版为什么形同虚设：① 只看 title，不看 content —— 而 content 才是 JS 语句；
+   ② 用「白名单 token」判断，且白名单写的是完整串 `defaultDynamicWorldPrompt`，
+      实际 title 被切碎脚本**截断成 20 字符**（`defaultDynamicWorl`）→ 永远匹配不上。
+   实测：对 247 条「纯代码无中文」碎片，旧判据拦截 0 条（0.0%）。
+   新版改为**反向判据**：不枚举坏 token，而是要求「规则类条目的标题必须是人类可读短语」，
+   并同时检查 content。宁可用 title+content 双判可读性，也不依赖易漏的白名单。 */
+function KB_isCodeFragment(entry) {
+  if (!entry || typeof entry !== "object") return false;
+  var t = String(entry.title || "").trim();
+  var c = String(entry.content || "").trim();
+  var hasCJK = /[\u4e00-\u9fff]/.test(c);
+  var frag = t.replace(/^(?:世界观铁律|世界观设定)\s*·\s*/, "");
+  /* ① 标题本身就是一句 JS 语句 */
+  if (/^(?:const\s|let\s|var\s|function\b|=>|if\s*\(|return\b|document\.|window\.|console\.|<\/?script|[\{\}])/.test(frag)) return true;
+  /* ② 标题形如「世界观铁律 · <纯 JS 标识符>」且内容无中文
+        （合法条目如「世界观设定 · 诺登斯 Nodens」的内容一定有中文说明） */
+  if (/^(?:世界观铁律|世界观设定)\s*·/.test(t) && frag && !/[\u4e00-\u9fff]/.test(frag)
+      && /^[A-Za-z_$][\w$]*$/.test(frag) && !hasCJK) return true;
+  /* ③ content 是一段裸 JS（无中文 + 具备语句/表达式形状）——补上旧判据完全没看 content 的洞 */
+  if (!hasCJK && c) {
+    if (/^(?:const|let|var|function|if|return|document\.|window\.|console\.)\b/.test(c)) return true;
+    if (/^[A-Za-z_$][\w$]*\s*[:,=]/.test(c) && /[:=\(\[\{`>]|=>/.test(c)) return true;
+    if (/^[\[\{'`]/.test(c) && /[:=\(\[\{`>]|=>/.test(c) && /[;,}\]\)]\s*$/.test(c)) return true;
+    if (/[;{}]\s*$/.test(c) && /[=\(\)\{\}\[\]]/.test(c) && /[A-Za-z_]/.test(c)) return true;
+  }
+  return false;
+}
+/* v3.53.0：按「原创设计」需要补齐分类——势力与组织分开（势力有地盘与立场，组织偏职能），
+   道具与技能/功法分开（一个拿在手上，一个会长在人身上），另补血脉、种族、关系、伏笔。
+   旧条目的老分类全部保留，不受影响。 */
+const KB_CATEGORIES = [
+  "人物", "势力", "组织", "地点", "血脉", "种族",
+  "道具", "技能", "功法", "世界观", "设定", "规则",
+  "事件", "关系", "伏笔", "文风", "通用"
+];
+const KB_PRIORITY_DESC = {
+  "": "按需检索：不常驻注入，每轮创作时按与当前情节的相关度自动检索（每次最多 3 条）。适合细节性背景资料。",
+  key: "关键词触发：填写的触发词出现在近期正文或本轮指令中时才注入（每轮最多 5 条）。适合「提及时才需要」的设定——角色卡世界书导入后即为此模式。",
+  top: "核心常驻：每轮请求都注入，位于前景层最顶端（最贴近本轮指令，权重最高）。适合世界观铁律、不可违背的设定。",
+  high: "重点常驻：每轮请求都注入，位于前景层（对话历史之后、本轮指令之前）。适合重要人物与核心组织设定。",
+  medium: "次重点常驻：每轮请求都注入，位于背景层（对话历史之前）。适合一般性背景补充。",
+  low: "一般常驻：每轮请求都注入，位于背景层。适合低频引用的辅助资料。"
+};
+const KB_PRIORITY_LABEL = {
+  top: "👑 核心",
+  high: "⭐ 重点",
+  medium: "📌 次重点",
+  low: "📋 常驻",
+  "": "🔎 检索",
+  key: "🗝 触发"
+};
+const KB_KEY_DEPTH_KEY = "storyKBKeyDepth";
+const KB_WLEN_TITLE = "正文篇幅·字数调节（玩家亲设）";
+const KB_WLEN_LEVELS = [
+  { id: "mini", label: "精简", range: [250, 400], note: "快节奏·对白主导" },
+  { id: "std", label: "标准", range: [500, 800], note: "均衡篇幅·默认" },
+  { id: "long", label: "加长", range: [900, 1200], note: "沉浸党之选" },
+  { id: "xlong", label: "超长", range: [1400, 1800], note: "慢节奏大章" },
+  { id: "epic", label: "史诗", range: [2e3, 3e3], note: "名场面级长卷" }
+];
+const StoryKnowledge = {
+  genre: KB_GENRE,
+  storageKey: `storyKnowledge_${KB_GENRE}`,
+  enabledKey: `storyKBEnabled_${KB_GENRE}`,
+  globalKey: "storyKBGlobal",
+  knowledgeBase: [],
+  _globalKB: [],
+  _vecCache: {},
+  _bm25Cache: {},
+  // 预留（旧向量缓存）
+  _bm25Cache: {},
+  // BM25 索引内存缓存（不落盘，节省 localStorage 容量）
+  /* ==================== 初始化与持久化 ==================== */
+  init() {
+    this.load();
+    this._loadGlobal();
+    /* v3.53.0 世界书按界懒加载：旧版靠 studio.html 两段 document.write 抢在解析期装载，
+       实测（Chrome）第二个内联脚本总会早于前一段写入的脚本执行 → __KB_SPLIT_OK__ 恒 false
+       → 每次进任何世界都白拉 9.4MB 整包。现在改由消费方按需装：分界文件 290KB 起步，
+       缺文件才回退整包，首屏与换界都快一个数量级。 */
+    const self = this;
+    this._ensureKB().then(function () {
+      self._injectPreset();
+      console.log(`[StoryKnowledge] 知识库已加载（${self.genre}）：本界 ${self._localCount()} 条 + 全局 ${self._globalKB.length} 条`);
+      try { document.dispatchEvent(new CustomEvent("story:kb-ready", { detail: { genre: self.genre } })); } catch (e) { }
+    });
+  },
+  /** 确保本界世界书已就位（已存在则立即兑现；否则动态装载，失败回退整包） */
+  _ensureKB() {
+    const g = this.genre;
+    if (window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
+      window.__KB_SPLIT_OK__ = true;
+      return Promise.resolve(true);
+    }
+    if (window.__kbLoading) return window.__kbLoading;
+    const v = (window.YJ_VER || "3.55.19");
+    const loadOne = (src) => new Promise((resolve) => {
+      const el = document.createElement("script");
+      el.src = src;
+      el.async = true;
+      el.onload = () => resolve(true);
+      el.onerror = () => resolve(false);
+      (document.head || document.documentElement).appendChild(el);
+    });
+    /* v3.55.28：世界书二次拆分——进界先挂 core（常驻/高优先，最大约 45KB，原整包最大 411KB），
+       其余条目由 ext 在空闲时补齐并自动补注入，玩家感知不到先后，进界不再背整包下载 */
+    /* v4.00.0 专名铁律表：35 界共用一份约 16KB，与 core 并行拉取，进界即可用 */
+    if (!window.KB_NAMES) loadOne(`js/kb/names.js?v=${v}`);
+    window.__kbLoading = loadOne(`js/kb/${g}.core.js?v=${v}`).then(async (ok) => {
+      if (ok && window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
+        window.__KB_SPLIT_OK__ = true;
+        this._loadExt(g, v, loadOne);
+        return true;
+      }
+      /* v3.86.0 P3-4：core 失败后 600ms 重试一次（不再回退 9MB 整包——整包已作为 100% 冗余副本删除） */
+      await new Promise(function (res) { setTimeout(res, 600); });
+      const ok2 = await loadOne(`js/kb/${g}.core.js?v=${v}&retry=1`);
+      if (ok2 && window.KB_PRESETS && Array.isArray(window.KB_PRESETS[g]) && window.KB_PRESETS[g].length) {
+        window.__KB_SPLIT_OK__ = true;
+        this._loadExt(g, v, loadOne);
+        return true;
+      }
+      window.__KB_SPLIT_OK__ = false;
+      console.warn("[StoryKnowledge] 世界书 core 重试仍失败：本界将只有玩家自建条目（已不再回退 9MB 整包）");
+      return false;
+    });
+    return window.__kbLoading;
+  },
+  /** 空闲补齐世界书扩展包（core 之外的条目），补齐后自动并入知识库并落盘 */
+  _loadExt(g, v, loadOne) {
+    if (window.__kbExtLoaded === g) return;
+    window.__kbExtLoaded = g;
+    const self = this;
+    const go = function () {
+      /* v3.95.0：先挂跨题材通用常识库（小参数模型的背景兜底），失败也不阻断本界扩展包 */
+      const commonReady = window.KB_COMMON ? Promise.resolve(true) : loadOne(`js/kb/_common.js?v=${v}`);
+      commonReady.then(function () {
+      loadOne(`js/kb/${g}.ext.js?v=${v}`).then(function (ok) {
+        if (!ok && !window.KB_COMMON) return;
+        const presets = ((window.KB_PRESETS && window.KB_PRESETS[g]) || []).concat(window.KB_COMMON || []);
+        const added = self._mergePresets(presets);
+        if (added) self.save({ silent: true });
+        try { document.dispatchEvent(new CustomEvent("story:kb-ext-ready", { detail: { genre: g, added } })); } catch (e) { }
+        if (added) console.log(`[StoryKnowledge] 世界书扩展包已补齐 ${added} 条（${g}）`);
+      });
+      });
+    };
+    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 3000 });
+    else setTimeout(go, 800);
+  },
+  _loadGlobal() {
+    try {
+      const saved = localStorage.getItem(this.globalKey);
+      if (saved) {
+        const data = JSON.parse(saved);
+        const entries = Array.isArray(data == null ? void 0 : data.knowledge) ? data.knowledge : [];
+        this._globalKB = entries.map(function(e) { e.isGlobal = true; return e; });
+      }
+    } catch (e) { this._globalKB = []; }
+    // 合并全局条目到内存 KB（标记 isGlobal）
+    for (const g of this._globalKB) {
+      if (!this.knowledgeBase.some(function(i) { return i.id === g.id; })) {
+        this.knowledgeBase.push(g);
+      }
+    }
+  },
+  _saveGlobal() {
+    const globals = this.knowledgeBase.filter(function(i) { return i.isGlobal === true; });
+    const data = { version: "1.0", app: "云境", savedAt: new Date().toISOString(), knowledge: globals };
+    try { localStorage.setItem(this.globalKey, JSON.stringify(data)); } catch (e) { console.error("[StoryKnowledge] 全局知识保存失败:", e); }
+  },
+  _localCount() { return this.knowledgeBase.filter(function(i) { return i.isGlobal !== true; }).length; },
+  toggleGlobal(id) {
+    const entry = this.getById(id);
+    if (!entry) return;
+    entry.isGlobal = entry.isGlobal !== true;
+    this._saveGlobal();
+    this.save();
+    window.showToast && window.showToast(entry.isGlobal ? "🌐 已设为全局（所有世界通用）" : "📂 已设为仅本界", "success");
+  },
+  load() {
+    try {
+      const saved = localStorage.getItem(this.storageKey);
+      if (saved) {
+        const data = JSON.parse(saved);
+        const arr = Array.isArray(data == null ? void 0 : data.knowledge) ? data.knowledge : [];
+        /* v4.10.0 F12：清理老存档里已经注入过的源码/提示词碎片（存量）。
+           只剔除命中 KB_isCodeFragment 的条目，玩家自建内容零影响。 */
+        this.knowledgeBase = arr.filter(function (e) { return !KB_isCodeFragment(e); });
+      }
+    } catch (e) {
+      console.error("[StoryKnowledge] 读取知识库失败:", e);
+      this.knowledgeBase = [];
+    }
+    this._vecCache = {};
+    this._bm25Cache = {};
+  },
+  /* ==================== 预置知识（四工坊专属，按 genre 完全独立） ==================== */
+  /** 预置注入标记（版本化：KB 内容扩容后老存档自动补入新增条目） */
+  _presetFlagKey: `storyKBPreset_${KB_GENRE}`,
+  _presetVersion: "v19",
+  // v19: 全 40 界地图细节化与地理志回库——①舆图新增悬停速览、8 类地标图例、道路三档分级、本层统计条、
+  //    图廓刻度、详情别名/方位/里程（40 界 123 层逐层实测全绿、375px 全界零横向溢出）；②把地图结构回库：
+  //    新增「舆图层志 / 地理志·区域详录」条目（明确标注引擎整理口径、非原著逐字），层名与区域名 100% 可检索；
+  //    ③模型准入白名单收敛为严格三个模型，校验改枚举法；④网游数值/逻辑按真实网游补齐（见 rpg-core.js）。
+  // v18: 全 40 界舆图美化与网游世界完善——①根治「很多地方没显示」：未到访节点不再套 agFog 高斯模糊与 opacity 0.58，
+  //    改为清晰可辨（40 界 123 层逐层实测 2622 节点全部可见）；②补录地标由 scale(0.62) 小菱形升级为 8 类可辨迷你图标，
+  //    标签常显比例由 1/3 提到 1/2；③清理 14 条带 / 的合并地名，拆为主名 + aliases；④两张 agnes-image-2.5-flash
+  //    生成的舆图纹章接入面板并加入离线预缓存；⑤三个网游界舆图每层补到 12 个正式节点（含明确标注「引擎口径、非原著」
+  //    的网游通用设施）；⑥为 32 界补类型通用地标补录，并同步写「类型地标补录索引」知识条目，123 层节点全部 >=10、
+  //    标签压字 0；⑦图廓标题与比例尺加入标签避让障碍，区域名牌同步避让。老存档自动补入新增条目。
+  // v17: 全 40 界三层覆盖率补齐——①为 dazhuzai/wudongqiankun/yuanzun/wanxiangzhiwang/free/freeworld 六个此前走「只有 1 个启程之地」兜底图的世界补上 3 层原著主舆图（共 100 节点），40/40 界 ATLAS_DATA 齐备；②给 40 界各补一条「舆图地名索引」，625 个舆图节点名 100% 可回库检索；③补齐 FACTION_ATLAS 缺的 4 个土豆宇宙界，并为 free/freeworld/mystery 写类型通用地名补录；④修复专名铁律命中率：为 earth/cthulhu/wanmeishijie 及另外 7 界共 74 个「已注入模型但知识库检索不到」的专名补核对条目，非模板 33 界命中率最低 96%；为 free 补 tpl 专名表；⑤网游三部曲知识库由 79/97/98 扩至 384/432/428 条（原著核对 + 明确标注非原著的引擎通用口径），常驻条目数不变、重内容仍为 0。老存档自动补入新增条目。
+  // v16: 资料库治理 + 网游三部曲扩容——①合并完美世界/全职高手/克苏鲁共 33 条原著核对详录；②修正完美世界「石中天与秦怡宁」「秦昊」「关系·石昊与秦昊」三条事实错误（石中天是祖父非父亲、秦昊是同父同母亲弟非月宫竞争者）；③全库删除 258 条内容完全重复条目，把 741 条「条目N」切碎残句整理成 35 条条文汇编，脏标题清零；④新增失落叶网游三部曲三界（盗版神话/纵横天下/天下无双）世界书、专名表与网游数值面板。老存档自动补入新增条目。
+  // v15: 全量世界书扩容——33 个工坊全部补至 ≥300 条（共 13193 条）。按原著穷举地点/人物/关系/物品/技能/天赋/体质/血脉/道具/世界观/地图/剧情时间线；每个世界独立存储、进入即自动挂载对应世界书（storyKBPreset_${genre} 版本化，老存档自动补入新增条目）；
+  // v14: 新增斩神界知识库（19 条：迷雾降临世界观/精神力六境/禁墟序列/守夜人组织/阳光精神病院诸神/林七夜与赵空城详录/大事时间线/沧南地理/原著文风圣经/神秘遭遇主持法/日常波澜配比/防剧透纪律/原创配角建档/主角替代协议/战斗描写手册，v3.38.0 新世界）；
+  // v13: 全员新增「正文篇幅·字数调节」共享条目（v3.37.0 玩家反馈专项：面板顶部 📏 档位条即点即改，条目本身即存储；老档自动补入，误删可一键重建）；
+  // v12: 新增凡人修仙传/仙逆两界知识库（各 24+ 条：炼气十三层到筑基结丹元婴化神炼虚合体大乘的境界全阶/韩立详录/掌天瓶/黄枫谷与越国七派/魔道乱越/慕兰之战/乱星海星宫/大晋佛道/灵界天渊城/苟道算计/忘语文风圣经；四步之路境界全阶/王林详录/天逆珠与司徒南残魂/李慕婉与逆天复活/王家灭门血仇/恒岳派与赵国/天南凶名/罗天星域/古神涂司/心魔劫与执念/耳根文风圣经），两界共世与主角替代协议（默认共世，可亲笔替代）；
+  // v11: 新增帝霸/龙族两界知识库（各 21 条：万古棋局/命宫真命/帝兵帝陵/禁区/李七夜详录；表里双世/血统言灵/卡塞尔学院/龙王死侍/路明非·楚子航·恺撒·诺诺·绘梨衣·昂热详录），两界文风圣经与主角替代协议（默认共世，可亲笔替代）；
+  // v10: 道诡异仙/重生之都市修仙知识库扩充至35/37条，新增药引同伴/华家等群像；
+  // v9：全员防八股（套话禁词总库 + 套路替换手册，11 工坊全注入，含 free）；
+  // v8：六界新增群像语音库（配角台词模板）；v7：人物语音库
+  /**
+   * 进入本工坊时自动写入该工坊的专属预置知识（来自 js/kb/<genre>.core.js 与 .ext.js，不再有 9MB 整包）。
+   * 同名条目跳过（保护用户已录入内容）；注入按版本标记执行——
+   * 预置库扩容（版本号变化）时，老存档也会自动补入新增条目；
+   * 删除预置条目后不会自动复活，需要找回时用面板的「↺ 预置」按钮（restorePresets）。
+   */
+  _injectPreset() {
+    var _a;
+    const presets = (_a = window.KB_PRESETS) == null ? void 0 : _a[this.genre];
+    if (!Array.isArray(presets) || !presets.length) return;
+    try {
+      const flag = localStorage.getItem(this._presetFlagKey);
+      if (flag === this._presetVersion) return;
+      const added = this._mergePresets(presets);
+      /* v3.53.0 修复：落盘失败（存储配额满）时不再写「已注入」标记。
+         旧实现无论成败都写标记 → 下次启动读到标记即跳过注入 → 世界书条目集体消失，
+         而玩家看不见任何提示（只有一条 console.error）。现在失败即不写标记，
+         下次进界重新补齐（内存里始终完整，功能不受影响）。 */
+      const ok = added ? this.save({ silent: true }) : true;
+      if (ok) {
+        localStorage.setItem(this._presetFlagKey, this._presetVersion);
+        if (added) console.log(`[StoryKnowledge] 已注入/补齐 ${this.genre} 预置知识 ${added} 条（${this._presetVersion}）`);
+      } else {
+        console.warn(`[StoryKnowledge] 预置知识未能落盘（存储空间不足），本次仍完整可用；下次进界会重新补齐。可在「工具箱 → 🛡 存档体检 → 世界书缓存」清理其它世界的缓存。`);
+      }
+    } catch (e) {
+      console.error("[StoryKnowledge] 预置知识注入失败:", e);
+    }
+  },
+  /** 把缺失的预置条目并入知识库（同名跳过，不覆盖已编辑内容），返回新增数 */
+  _mergePresets(presets) {
+    const existing = new Set(this.knowledgeBase.map((i) => String(i.title).trim()));
+    let added = 0;
+    for (const p of presets) {
+      /* v4.10.0 F12：源码/提示词碎片不进检索池（详见文件头 KB_isCodeFragment） */
+      if (KB_isCodeFragment(p)) continue;
+      const title = String(p.title || "").trim();
+      if (!title || existing.has(title)) continue;
+      this.knowledgeBase.push(this._normalizeEntry({ ...p, source: "preset" }));
+      added++;
+    }
+    return added;
+  },
+  /** 手动恢复/补齐本工坊预置知识（面板「↺ 预置」按钮；同名条目不会被覆盖） */
+  async restorePresets() {
+    var _a, _b, _c;
+    const presets = (_a = window.KB_PRESETS) == null ? void 0 : _a[this.genre];
+    if (!Array.isArray(presets) || !presets.length) {
+      (_b = window.showToast) == null ? void 0 : _b.call(window, "本工坊暂无预置知识（自由创作工坊不预置）", "info");
+      return;
+    }
+    const before = this.knowledgeBase.length;
+    const added = this._mergePresets(presets);
+    if (added) this.save();
+    this.open();
+    if (added) {
+      (_c = window.showToast) == null ? void 0 : _c.call(window, `✓ 已补回 ${added} 条预置知识（同名条目已保留你的版本）`, "success");
+    } else {
+      window.UIDialog.alert({
+        title: "预置知识",
+        message: `本工坊共 ${presets.length} 条预置知识，当前均已就位（${before} 条知识中没有缺失）。
+同名条目不会被覆盖——若想要回被你修改过的原版，请删除该条目后再点「↺ 预置」。`
+      });
+    }
+  },
+  save(opts) {
+    var _a;
+    const localEntries = this.knowledgeBase.filter(function(i) { return i.isGlobal !== true; });
+    const data = {
+      version: "1.0",
+      app: "云境",
+      genre: this.genre,
+      savedAt: (new Date()).toISOString(),
+      knowledge: localEntries
+    };
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(data));
+    } catch (e) {
+      /* 配额满只在控制台说一次，避免每次保存刷屏；自动注入路径不再弹 toast 打扰开局 */
+      if (!this._quotaWarned) {
+        this._quotaWarned = true;
+        console.warn("[StoryKnowledge] 保存失败（可能超出容量）:", e && e.name || e);
+        if (!(opts && opts.silent)) {
+          (_a = window.showToast) == null ? void 0 : _a.call(window, "知识库保存失败：浏览器本地存储已满。可在「工具箱 → 🛡 存档体检 → 世界书缓存」清理其它世界的缓存（本界条目不受影响）", "error");
+        }
+      }
+      return false;
+    }
+    this._quotaWarned = false;
+    this._saveGlobal();
+    return true;
+  },
+  /** 是否参与 AI 写作注入（可在面板中一键开关） */
+  isEnabled() {
+    const v = localStorage.getItem(this.enabledKey);
+    return v === null ? true : v === "true";
+  },
+  setEnabled(on) {
+    /* v4.08.0：加 try 保护（配额满时抛 QuotaExceededError，UI 无反馈） */
+    try {
+      localStorage.setItem(this.enabledKey, String(!!on));
+      return true;
+    } catch (e) {
+      console.warn("[KnowledgeManager] 开关状态写入失败:", e);
+      try { if (window.showToast) window.showToast("⚠ 资料库开关保存失败：浏览器存储空间不足。", "error"); } catch (e2) {}
+      return false;
+    }
+  },
+  getCount() {
+    return this.knowledgeBase.length;
+  },
+  getStats() {
+    const kb = this.knowledgeBase;
+    return {
+      total: kb.length,
+      alwaysInclude: kb.filter((i) => i.alwaysInclude === true && i.enabled !== false).length,
+      retrieval: kb.filter((i) => i.alwaysInclude !== true && i.enabled !== false).length,
+      dlc: kb.filter((i) => i.source === "dlc" || i.category === "dlc").length,
+      global: kb.filter((i) => i.isGlobal === true).length,
+      top: kb.filter((i) => i.priority === "top").length,
+      high: kb.filter((i) => i.priority === "high").length,
+      medium: kb.filter((i) => i.priority === "medium").length,
+      low: kb.filter((i) => i.priority === "low" || i.alwaysInclude && !i.priority).length
+    };
+  },
+  getById(id) {
+    return this.knowledgeBase.find((i) => i.id === id) || null;
+  },
+  /* ==================== 条目 CRUD ==================== */
+  /** 生成条目 id */
+  _genId() {
+    return "kb_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9);
+  },
+  /** 规范化条目（导入/新建/编辑共用，剔除向量等运行时字段） */
+  _normalizeEntry(raw) {
+    var _a;
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    const always = raw.alwaysInclude === true;
+    let priority = raw.priority;
+    if (always && !["top", "high", "medium", "low"].includes(priority)) priority = "medium";
+    if (!always) priority = "";
+    const tags = Array.isArray(raw.tags) ? raw.tags.map((t) => String(t).trim()).filter(Boolean) : typeof raw.tags === "string" ? raw.tags.split(/[,，\s]+/).map((t) => t.trim()).filter(Boolean) : [];
+    let keys = (Array.isArray(raw.keys) ? raw.keys : typeof raw.keys === "string" ? raw.keys.split(/[,，、\s]+/) : []).map((k) => String(k).trim()).filter((k) => k.length >= 1).slice(0, 30);
+    /* v3.47.6 修复：预置知识条目（preset-knowledge.js）历史上只写了 tags、未写 keys，
+       而 matchKeys() 的候选条件要求 keys 非空 —— 导致全部"按需（非驻留）"条目关键词触发命中恒为 0，
+       只能靠 retrieve() 语义检索捞出 3 条，大量原著细节事实上无法进入上下文。
+       此处以 tags 兜底作为触发词（tags 本就是为匹配而写的精准关键词），同时覆盖用户自建与 DLC 条目。 */
+    if (!keys.length && !always && tags.length) keys = tags.slice(0, 30);
+    let id = String(raw.id || "").replace(/[^a-zA-Z0-9_\-]/g, "");
+    if (!id) id = this._genId();
+    return {
+      id,
+      title: String(raw.title || "").trim(),
+      content: String((_a = raw.content) != null ? _a : ""),
+      category: raw.category || "通用",
+      tags,
+      keys,
+      alwaysInclude: always,
+      priority,
+      source: raw.source || "manual",
+      isGlobal: raw.isGlobal === true,
+      ...raw.dlcId ? { dlcId: raw.dlcId } : {},
+      createdAt: raw.createdAt || now,
+      updatedAt: now
+    };
+  },
+  addItem(raw) {
+    const entry = this._normalizeEntry(raw);
+    const idx = this.knowledgeBase.findIndex((e) => e.id === entry.id);
+    if (idx !== -1) this.knowledgeBase[idx] = entry;
+    else this.knowledgeBase.push(entry);
+    delete this._vecCache[entry.id];
+    delete this._bm25Cache[entry.id];
+    this.save();
+    return entry;
+  },
+  updateItem(id, patch) {
+    const idx = this.knowledgeBase.findIndex((e) => e.id === id);
+    if (idx === -1) return null;
+    const merged = { ...this.knowledgeBase[idx], ...patch, id, updatedAt: (/* @__PURE__ */ new Date()).toISOString() };
+    this.knowledgeBase[idx] = this._normalizeEntry(merged);
+    delete this._vecCache[id];
+    delete this._bm25Cache[id];
+    this.save();
+    return this.knowledgeBase[idx];
+  },
+  deleteItem(id) {
+    const idx = this.knowledgeBase.findIndex((e) => e.id === id);
+    if (idx === -1) return false;
+    this.knowledgeBase.splice(idx, 1);
+    delete this._vecCache[id];
+    delete this._bm25Cache[id];
+    return this.save();
+  },
+  /** 调整注入方式：'' → 检索模式；top/high/medium/low → 常驻（模仿原框架 changeKBPriority） */
+  setPriority(id, priority) {
+    const item = this.getById(id);
+    if (!item) return null;
+    const always = ["top", "high", "medium", "low"].includes(priority);
+    return this.updateItem(id, { alwaysInclude: always, priority: always ? priority : "" });
+  },
+  clearAll() {
+    this.knowledgeBase = [];
+    this._vecCache = {};
+    this._bm25Cache = {};
+    this.save();
+  },
+  /* ==================== 导入 / 导出 / 模板 ==================== */
+  /**
+   * 导入知识数据（兼容原框架格式）：
+   *   [ ... ] 数组 / { knowledge: [...] } / { items: [...] }
+   * id 重复时覆盖更新而非重复添加（与原框架一致）
+   */
+  importData(data, { replace = false } = {}) {
+    let items = null;
+    if (Array.isArray(data)) items = data;
+    else if (Array.isArray(data == null ? void 0 : data.knowledge)) items = data.knowledge;
+    else if (Array.isArray(data == null ? void 0 : data.items)) items = data.items;
+    if (!items && typeof window !== "undefined" && window.STImport && window.STImport.parse) {      try {        const _stEs = window.STImport.parse(typeof data === "string" ? data : JSON.stringify(data));        if (Array.isArray(_stEs) && _stEs.length) items = _stEs;      } catch (_eST) {}    }    if (!items) throw new Error("未识别的知识库格式（支持条目数组或 { knowledge: [...] } 结构）");
+    if (replace) {
+      this.knowledgeBase = [];
+      this._vecCache = {};
+      this._bm25Cache = {};
+    }
+    let added = 0, updated = 0, skipped = 0;
+    for (const raw of items) {
+      if (!raw || !raw.title || !raw.content && raw.content !== 0) {
+        skipped++;
+        continue;
+      }
+      const entry = this._normalizeEntry(raw);
+      const idx = this.knowledgeBase.findIndex((e) => e.id === entry.id);
+      if (idx !== -1) {
+        this.knowledgeBase[idx] = entry;
+        updated++;
+      } else {
+        this.knowledgeBase.push(entry);
+        added++;
+      }
+      delete this._vecCache[entry.id];
+      delete this._bm25Cache[entry.id];
+    }
+    this.save();
+    return { added, updated, skipped, total: this.knowledgeBase.length };
+  },
+  /** 导出（格式与原框架知识库导出对齐，可互相导入） */
+  exportData() {
+    return {
+      version: "1.0",
+      app: "云境",
+      genre: this.genre,
+      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      method: "keyword",
+      knowledge: this.knowledgeBase
+    };
+  },
+  /** 下载知识库模板（模仿原框架 createKnowledgeTemplate） */
+  buildTemplate() {
+    return {
+      version: "1.0",
+      app: "云境",
+      instructions: "将 knowledge 数组中的示例替换为你的设定资料。字段说明：title 标题；content 内容；category 分类；tags 标签数组；alwaysInclude 设为 true 则每轮创作请求都注入（常驻）；priority 常驻条目的优先级（top/high/medium/low），留空且 alwaysInclude 为 false 时为按需检索模式。",
+      knowledge: [
+        { title: "世界观总纲", category: "世界观", tags: ["核心", "世界"], alwaysInclude: true, priority: "top", content: "示例：这个世界的基本法则、历史脉络与力量体系。核心常驻条目会以最高优先级注入每轮创作请求，适合存放不可违背的铁律设定。" },
+        { title: "主角档案", category: "人物", tags: ["主角"], alwaysInclude: true, priority: "high", content: "示例：主角的姓名、身份、外貌特征、性格内核、说话习惯与行动逻辑。重点常驻条目每轮注入且贴近本轮指令。" },
+        { title: "雾隐城", category: "地点", tags: ["城市", "地图"], alwaysInclude: true, priority: "medium", content: "示例：故事主要发生地的地理、街区、氛围与势力分布。次重点常驻条目每轮注入，位于背景层。" },
+        { title: "守夜人会", category: "组织", tags: ["组织"], alwaysInclude: false, priority: "", content: "示例：某个组织的结构、成员、行事风格与禁忌。检索条目只在情节与之相关时被自动检索注入。" },
+        { title: "青铜罗盘", category: "道具", tags: ["道具", "伏笔"], alwaysInclude: false, priority: "", content: "示例：关键道具的来历、能力与代价。" },
+        { title: "叙事文风约束", category: "文风", tags: ["文风"], alwaysInclude: true, priority: "low", content: "示例：行文偏好补充（如意象、句式、留白习惯），一般常驻条目每轮注入于背景层。" }
+      ]
+    };
+  },
+  _download(content, filename) {
+    const blob = new Blob([content], { type: "application/json;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+  /* ==================== BM25 检索引擎（v1.6.9 T2-⑥ 升级） ====================
+   * 旧引擎（纯余弦 + 绝对阈值 0.12）的两个致命伤：
+   *   ① 查询是"本轮指令 + 最近正文"拼接（数百字），向量维度远多于条目，
+   *      余弦相似度被长度稀释——真实创作查询命中率趋近于零，检索形同虚设；
+   *   ② 绝对阈值对查询/条目长度无自适应性，错杀长短不一的相关条目。
+   * 新引擎：BM25（词频饱和 k1=1.5 + 长度归一 b=0.75 + IDF 加权），
+   *   中文二元词组切词；标题词项 3 倍加权（标题命中是最强相关信号）；
+   *   查询先清洗（剥变量块 / 段落标记 / 标点噪声）。
+   * 选择策略（T1-②）：绝对下限 0.03 + 相对截断（不低于最高分 35%）取 top-k——
+   *   只要本轮最相关条目过下限，同一量级的相关条目一并入选。 */
+  /** 分词：中文连续段取二元词组，英文/数字按整词（小写化） */
+  tokenize(text) {
+    const out = [];
+    if (!text) return out;
+    const cleaned = String(text).toLowerCase();
+    const cjkWords = cleaned.replace(/[^\u4e00-\u9fff]+/g, " ").split(/\s+/).filter(Boolean);
+    for (const word of cjkWords) {
+      for (let i = 0; i < word.length - 1; i++) out.push(word.slice(i, i + 2));
+    }
+    const latin = cleaned.match(/[a-z0-9]{2,}/g) || [];
+    out.push(...latin);
+    return out;
+  },
+  /** 查询清洗：剥变量块 / 段落标记 / 标点噪声，只留有效语料 */
+  cleanQuery(query) {
+    return String(query || "").replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, " ").replace(/[(【<]\/?variable_update[)】>]/gi, " ").replace(/[【】\[\]{}（）()"'“”…—·、,，。！!？?：:；;\n\r\t]+/g, " ").replace(/\s{2,}/g, " ").trim();
+  },
+  /** 条目 BM25 索引项 { tf: 词频表, len: 词项总数 }；标题词项 3 倍权重（内存缓存） */
+  _bm25Doc(item) {
+    if (!this._bm25Cache) this._bm25Cache = {};
+    if (!this._bm25Cache[item.id]) {
+      const title = `${item.title || ""} ${(item.tags || []).join(" ")}`;
+      const terms = [].concat(this.tokenize(title), this.tokenize(title), this.tokenize(title)).concat(this.tokenize(this._contentText(item.content)));
+      const tf = {};
+      terms.forEach((t) => {
+        tf[t] = (tf[t] || 0) + 1;
+      });
+      this._bm25Cache[item.id] = { tf, len: terms.length || 1 };
+    }
+    return this._bm25Cache[item.id];
+  },
+  /** BM25 打分（k1 词频饱和 / b 长度归一 / idf 逆文档频率） */
+  _bm25Score(doc, queryTerms, df, docCount, avgLen) {
+    const k1 = 1.5, b = 0.75;
+    let score = 0;
+    for (const term of queryTerms) {
+      const tf = doc.tf[term] || 0;
+      if (!tf) continue;
+      const n = df[term] || 0;
+      const idf = Math.log(1 + (docCount - n + 0.5) / (n + 0.5));
+      score += idf * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * (doc.len / avgLen)));
+    }
+    return score;
+  },
+  /**
+   * 检索与查询最相关的知识条目（非常驻条目）
+   * BM25 打分 + 标题整串命中强加分；绝对下限 0.03，相对截断（≥最高分 35%），默认取前 3 条
+   * 返回条目的 similarity 为相对分（最高命中 = 1），用于注入文案的相关度展示
+   */
+  retrieve(query, maxCount = 3) {
+    if (!query || !this.isEnabled()) return [];
+    const candidates = this.knowledgeBase.filter((i) => i.alwaysInclude !== true && i.enabled !== false);
+    if (!candidates.length) return [];
+    const cleaned = this.cleanQuery(query);
+    if (!cleaned) return [];
+    const qTerms = [...new Set(this.tokenize(cleaned))];
+    if (!qTerms.length) return [];
+    const docs = candidates.map((i) => this._bm25Doc(i));
+    const df = {};
+    docs.forEach((d) => Object.keys(d.tf).forEach((t) => {
+      df[t] = (df[t] || 0) + 1;
+    }));
+    const avgLen = docs.reduce((a, d) => a + d.len, 0) / (docs.length || 1);
+    const docCount = docs.length;
+    const scored = candidates.map((item, i) => {
+      let score = this._bm25Score(docs[i], qTerms, df, docCount, avgLen);
+      const title = (item.title || "").trim();
+      if (title && cleaned.includes(title)) score += 5;
+      return { item, score };
+    }).filter((s) => s.score > 0.03);
+    if (!scored.length) return [];
+    scored.sort((a, b) => b.score - a.score);
+    const best = scored[0].score;
+    const kept = scored.filter((s) => s.score >= best * 0.35).slice(0, maxCount);
+    return kept.map((s) => ({ ...s.item, similarity: Math.min(1, s.score / (best || 1)) }));
+  },
+  /** 取 BM25 候选池（不做相对截断，供向量/重排精排） */
+  _bm25Rank(query, limit = 20) {
+    if (!query || !this.isEnabled()) return [];
+    const candidates = this.knowledgeBase.filter((i) => i.alwaysInclude !== true && i.enabled !== false);
+    if (!candidates.length) return [];
+    const cleaned = this.cleanQuery(query);
+    if (!cleaned) return [];
+    const qTerms = [...new Set(this.tokenize(cleaned))];
+    if (!qTerms.length) return [];
+    const docs = candidates.map((i) => this._bm25Doc(i));
+    const df = {};
+    docs.forEach((d) => Object.keys(d.tf).forEach((t) => {
+      df[t] = (df[t] || 0) + 1;
+    }));
+    const avgLen = docs.reduce((a, d) => a + d.len, 0) / (docs.length || 1);
+    const docCount = docs.length;
+    const scored = candidates.map((item, i) => {
+      let score = this._bm25Score(docs[i], qTerms, df, docCount, avgLen);
+      const title = (item.title || "").trim();
+      if (title && cleaned.includes(title)) score += 5;
+      return { item, score };
+    }).filter((s) => s.score > 0.03);
+    scored.sort((a, b) => b.score - a.score);
+    const best = scored[0] ? scored[0].score : 0;
+    return scored.slice(0, limit).map((s) => ({ ...s.item, bm25: s.score, similarity: best ? Math.min(1, s.score / best) : 0 }));
+  },
+  /** 单条目检索自测：返回该条目在本查询下的相对相关度（0 = 未命中） */
+  testItemRetrieval(id, query) {
+    if (!id || !query) return 0;
+    const hit = this.retrieve(query, 50).find((r) => r.id === id);
+    return hit ? hit.similarity : 0;
+  },
+  /* ==================== AI 上下文注入（模仿原框架 buildOptimizedMessages 的分层策略） ==================== */
+  _contentText(content) {
+    return typeof content === "object" && content !== null ? JSON.stringify(content, null, 2) : String(content != null ? content : "");
+  },
+  /** 单条注入文本（超长截断，避免 token 失控） */
+  _itemText(item) {
+    let text = this._contentText(item.content);
+    if (text.length > 1500) text = text.slice(0, 1500) + "……（内容过长已截断）";
+    return `【${item.title}】（${item.category}）
+${text}`;
+  },
+  _layerMessage(items, title) {
+    if (!items.length) return null;
+    return { role: "system", content: `${title}
+${items.map((i) => this._itemText(i)).join("\n\n")}` };
+  },
+  /**
+   * v3.99.0 预算内打包（低参数模型的核心保障）
+   *
+   * 旧做法是「全部常驻条目一次性塞进去」，超上下文后由 PromptBudget 整段丢弃——
+   * 结果是便宜小模型要么爆窗报错，要么成段丢掉世界骨架，随即人物跑偏（OOC）。
+   *
+   * 新做法：先按优先级排序，逐条累加；预算不够时对**当前这一条**做压缩
+   * （保留标题 + 首句 + 带铁律/禁止/必须的句子），而不是整段删。
+   * 这样小模型拿到的永远是「薄但完整」的世界骨架，而不是「厚但残缺」的碎片。
+   *
+   * @param {Array} items 条目
+   * @param {number} budget 字符预算（<=0 视为不限）
+   * @param {string} title 段标题
+   * @returns {{msg: object|null, used: number, kept: number, dropped: number, squeezed: number}}
+   */
+  _packLayer(items, title, budget) {
+    if (!items.length) return { msg: null, used: 0, kept: 0, dropped: 0, squeezed: 0 };
+    const head = `${title}\n`;
+    const unlimited = !(budget > 0);
+    let used = head.length;
+    const out = [];
+    let dropped = 0;
+    let squeezed = 0;
+    for (const it of items) {
+      const full = this._itemText(it);
+      if (unlimited) {
+        out.push(full);
+        used += full.length + 2;
+        continue;
+      }
+      const remain = budget - used - 2;
+      if (remain <= 40) {
+        dropped += 1;
+        continue;
+      }
+      if (full.length <= remain) {
+        out.push(full);
+        used += full.length + 2;
+        continue;
+      }
+      /* 压缩：标题必留 + 内容按句切，优先保留含铁律/禁止/必须/不得/切勿的句子 */
+      const squeezedText = this._squeezeItem(it, remain - 8);
+      if (squeezedText) {
+        out.push(squeezedText);
+        used += squeezedText.length + 2;
+        squeezed += 1;
+      } else {
+        dropped += 1;
+      }
+    }
+    if (!out.length) return { msg: null, used: 0, kept: 0, dropped, squeezed };
+    return {
+      msg: { role: "system", content: head + out.join("\n\n") },
+      used,
+      kept: out.length,
+      dropped,
+      squeezed
+    };
+  },
+  /** v3.99.0 是否低配档（极低参数模型）：注入量需整体收紧 */
+  _isLite() {
+    try {
+      return !!(window.BaseModelMode && window.BaseModelMode.isLite && window.BaseModelMode.isLite());
+    } catch (e) {
+      return false;
+    }
+  },
+  /** 把一条内容压到 n 字以内：保留首句与所有「约束句」，宁短勿断义 */  _squeezeItem(item, n) {
+    if (n < 60) return null;
+    const head = `【${item.title}】（${item.category}）\n`;
+    const raw = this._contentText(item.content);
+    const room = n - head.length;
+    if (room < 40) return null;
+    if (raw.length <= room) return head + raw;
+    const sentences = raw.split(/(?<=[。！？；])/).filter((s) => s.trim());
+    if (!sentences.length) return head + raw.slice(0, room) + "…";
+    const MUST = /铁律|禁止|不得|严禁|切勿|必须|不可|唯一|绝不|不是/;
+    const must = sentences.filter((s) => MUST.test(s));
+    const picked = [];
+    let len = 0;
+    /* 先放约束句（防 OOC 的关键），再放首句补语境 */
+    for (const s of must) {
+      if (len + s.length > room) continue;
+      picked.push(s);
+      len += s.length;
+    }
+    if (!picked.length && sentences[0].length <= room) {
+      picked.push(sentences[0]);
+      len += sentences[0].length;
+    }
+    if (!picked.length) {
+      return head + raw.slice(0, Math.max(20, room - 1)) + "…";
+    }
+    return head + picked.join("") + (len < raw.length ? "…" : "");
+  },
+  /** 背景层常驻知识（一般/次重点），置于对话历史之前
+   *  @param {number} budget 字符预算，<=0 不限（v3.99.0 新增） */
+  buildBackgroundKnowledge(budget) {
+    if (!this.isEnabled()) return [];
+    const always = this.knowledgeBase.filter((i) => i.alwaysInclude === true && i.enabled !== false);
+    const messages = [];
+    const medium = always.filter((i) => i.priority === "medium");
+    const low = always.filter((i) => !i.priority || i.priority === "low");
+    let left = budget > 0 ? budget : 0;
+    /* 次重点先给（含世界地理/势力这类骨架），一般常驻吃剩下的 */
+    const m1 = this._packLayer(medium, "【次重点常驻知识（背景参考）】", left);
+    if (m1.msg) {
+      messages.push(m1.msg);
+      if (left > 0) left -= m1.used;
+    }
+    const m2 = this._packLayer(low, "【一般常驻知识（背景参考）】", left);
+    if (m2.msg) messages.push(m2.msg);
+    this._lastBgStat = { medium: m1, low: m2, budget: budget || 0 };
+    return messages;
+  },
+  /** v4.00.0 专名铁律段
+   *  极低参数模型最典型的翻车不是文笔，而是专名：把「萧炎」写成「萧炎炎」、
+   *  把「斗宗」跳到「斗帝」、给原著不存在的宗门安个名字。检索式知识库对这类
+   *  错误无能为力（它只在关键词命中时才给资料）。这里给一份按世界硬编码的
+   *  人物/地名/势力/功法/境界名单，永远第一个入场、永远不被裁掉。
+   *  @param {number} maxChars 上限，<=0 取默认 1100 */
+  _nameAnchorMsg(maxChars) {
+    try {
+      const N = window.KB_NAMES;
+      if (!N) return { msg: null, used: 0 };
+      const g = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey) || "";
+      const d = g && N[g];
+      if (!d) return { msg: null, used: 0 };
+      const lim = maxChars > 0 ? maxChars : 1100;
+      /* v4.00.0 模板类世界（悬疑/西幻/科幻/武侠/全球冰封/重生都市）没有原著人物：
+         names.js 的 people 里存的是职业原型。若照「只可用以下人物名单」渲染，等于
+         禁止模型给 NPC 起名——悬疑案子里连侦探都不许有名字，是反效果。 */
+      const tpl = !!d.tpl;
+      const head = "【本界专名铁律 · 最高优先级】\n";
+      const tail = tpl
+        ? "\n【硬约束】本界无原著固定人物：NPC 姓名由你按本界时代与地域自拟，禁止套用其他作品的专名；上面的阶位与设定词必须照用，不得改名、不得自创同级新词。"
+        : "\n【硬约束】以上专名的字、归属、层级错一处即为 OOC；不确定人物关系时保持沉默，绝不许编。";
+      const blocks = [];
+      if (d.realms && d.realms.length) blocks.push(`【境界】必须严格按此顺序，不得跳级、不得自创：${d.realms.join(" → ")}`);
+      /* v4.00.0 并行体系单独成段：诡秘的 22 条途径、剑来的练气士与武夫、仙逆的古神、
+         斗罗二至五部——它们不是主阶梯的下一级，混进箭头链会让模型以为「序列0 之后是愚者途径」。
+         若本界压根没有主阶梯（剑来就是两套并行），措辞改为「多套并行」，避免出现「与上面并存」却无上面。 */
+      if (d.realmsExtra && d.realmsExtra.length) {
+        const hasMain = !!(d.realms && d.realms.length);
+        blocks.push(hasMain
+          ? `【并行体系】与上面的阶梯并存，不可混用、不可串级：${d.realmsExtra.join("；")}`
+          : `【境界】本界有多套并行阶梯，各自按序、不得混用、不得串级：${d.realmsExtra.join("；")}`);
+      }
+      if (d.people && d.people.length) blocks.push(tpl
+        ? `【身份原型】本界人物由你自拟姓名，身份可取自：${d.people.join("、")}`
+        : `【人物】只可用以下名单；需要无名路人时用「某」泛指，禁止杜撰与原著同姓同名的角色：${d.people.join("、")}`);
+      if (d.factions && d.factions.length) blocks.push(`【势力】${d.factions.join("、")}`);
+      if (d.places && d.places.length) blocks.push(`【地名】${d.places.join("、")}`);
+      if (d.arts && d.arts.length) blocks.push(`${tpl ? "【常用设定词】" : "【功法器物】"}${d.arts.join("、")}`);
+      if (!blocks.length) return { msg: null, used: 0 };
+      let text = head;
+      for (const b of blocks) {
+        if (text.length + b.length + tail.length > lim && text.length > head.length) break;
+        text += (text.length > head.length ? "\n" : "") + b;
+      }
+      text += tail;
+      if (text.length > lim + 120) text = text.slice(0, lim) + "…";
+      return { msg: { role: "system", content: text }, used: text.length };
+    } catch (e) { return { msg: null, used: 0 }; }
+  },
+  /** 前景层知识（核心/重点常驻 + 关键词触发 + 相关检索），置于本轮指令之前以获得更高权重
+   *  @param {number} budget 字符预算，<=0 不限（v3.99.0 新增） */
+  buildForegroundKnowledge(userMessage, history = [], precomputedRelevant = null, budget) {
+    if (!this.isEnabled()) return [];
+    const messages = [];
+    const always = this.knowledgeBase.filter((i) => i.alwaysInclude === true && i.enabled !== false);
+    let left = budget > 0 ? budget : 0;
+    /* v4.00.0 专名铁律永远第一个入场：名单错了，后面给多少设定都救不回来 */
+    const _tier = (window.BaseModelMode && window.BaseModelMode.ctxTier) ? window.BaseModelMode.ctxTier() : "normal";
+    const _naCap = _tier === "tiny" ? 420 : 1100;
+    const _na = this._nameAnchorMsg(budget > 0 ? Math.min(budget * 0.42, _naCap) : _naCap);
+    if (_na.msg) {
+      messages.push(_na.msg);
+      if (left > 0) left -= _na.used;
+    }
+    /* v3.99.0 顺序修正：top（铁律）必须先入场，旧代码先塞 high 再塞 top，
+       预算一紧就把铁律挤掉了——那正是 OOC 的直接来源。 */
+    const top = this._packLayer(always.filter((i) => i.priority === "top"), "【核心设定知识（最高优先级，必须严格遵守）】", left);
+    if (top.msg) {
+      messages.push(top.msg);
+      if (left > 0) left -= top.used;
+    }
+    const high = this._packLayer(always.filter((i) => i.priority === "high"), "【重点常驻知识（写作时须贯彻）】", left);
+    if (high.msg) {
+      messages.push(high.msg);
+      if (left > 0) left -= high.used;
+    }
+    /* v3.99.0 低配档：触发上限与单条字数同步收紧，避免 5×1500 字一次灌进去 */
+    const lite = this._isLite();
+    const triggered = this.matchKeys(userMessage, history, lite ? 3 : 5);
+    if (triggered.length) {
+      let text = "【触发式设定（关键词命中，本段情节涉及，写作时须遵守）】：\n\n";
+      const per = lite ? 700 : 1500;
+      triggered.forEach((item) => {
+        const body = this._contentText(item.content);
+        text += `【${item.title}】（${item.category}）
+${body.length > per ? body.slice(0, per) + "…" : body}
+
+`;
+      });
+      messages.push({ role: "system", content: text.trim() });
+    }
+    const query = this._buildQuery(userMessage, history);
+    /* v3.99.0 检索条数与单条长度按档位收缩：lite 档 2 条 × 600 字（约 1.2k 字），
+       full 档保持 3 条 × 1200 字。把「贵」的额度留给常驻铁律而不是随机命中。 */
+    const topK = lite ? 2 : 3;
+    const perItem = lite ? 600 : 1200;
+    const relevant = (precomputedRelevant && precomputedRelevant.length) ? precomputedRelevant.slice(0, topK) : this.retrieve(query, topK);
+    if (relevant.length) {
+      let text = "【相关知识库】以下是与当前情节相关的背景资料，写作时可自然引用（严禁在正文中罗列资料原文）：\n\n";
+      relevant.forEach((item, i) => {
+        text += `资料${i + 1}（${item.category} - ${item.title}，相关度 ${(item.similarity * 100).toFixed(0)}%）：
+${this._contentText(item.content).slice(0, perItem)}
+
+`;
+      });
+      messages.push({ role: "system", content: text.trim() });
+    }
+    this._lastFgStat = {
+      budget: budget || 0,
+      lite: lite,
+      top: top,
+      high: high,
+      triggered: triggered.length,
+      relevant: relevant.length
+    };
+    console.log(`[StoryKnowledge] 本轮注入（${lite ? "低配" : "标准"}档）：常驻 ${always.length} 条（top:${always.filter((i) => i.priority === "top").length}/high:${always.filter((i) => i.priority === "high").length}/medium:${always.filter((i) => i.priority === "medium").length}/low:${always.filter((i) => !i.priority || i.priority === "low").length} → 实投 top ${top.kept}${top.squeezed ? `(压${top.squeezed})` : ""}/high ${high.kept}${high.squeezed ? `(压${high.squeezed})` : ""}），触发 ${triggered.length} 条，检索 ${relevant.length} 条`);
+    return messages;
+  },
+  /**
+   * 异步前景知识（v3.49.0）：检索可走「BM25 候选池 → 向量/重排」，
+   * 由 js/kb-vector.js 提供；未配置、超时或报错时自动回退纯 BM25，不阻断写作。
+   */
+  async buildForegroundKnowledgeAsync(userMessage, history = [], budget) {
+    if (!this.isEnabled()) return [];
+    let rel = null;
+    try {
+      if (window.KBVector && typeof window.KBVector.retrieve === "function" && window.KBVector.isOn()) {
+        const query = this._buildQuery(userMessage, history);
+        rel = await window.KBVector.retrieve(this, query, this._isLite() ? 4 : 6);
+      }
+    } catch (e) {
+      console.warn("[StoryKnowledge] 向量检索失败，已回退 BM25：", e && e.message ? e.message : e);
+    }
+    return this.buildForegroundKnowledge(userMessage, history, rel, budget);
+  },
+  /**
+   * v3.18.0 关键词触发：keys 命中「本轮指令 + 最近 scanDepth 轮正文」即注入
+   * 命中口径：大小写不敏感、不做分词（世界书惯例是整词匹配，中文即子串）；
+   * 常驻条目不参与（它们本来就每轮在场）；按 insertionOrder/优先级稳定排序，上限 5 条防膨胀
+   */
+  matchKeys(userMessage, history = [], maxCount = 5) {
+    if (!this.isEnabled()) return [];
+    const scanDepth = Math.max(1, Math.min(10, Number(localStorage.getItem(KB_KEY_DEPTH_KEY)) || 4));
+    const parts = [String(userMessage || "")];
+    let used = 0;
+    for (let i = history.length - 1; i >= 0 && used < scanDepth; i--) {
+      if (history[i].role !== "assistant") continue;
+      let body = String(history[i].content || "");
+      body = body.replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, " ");
+      parts.push(body);
+      used++;
+    }
+    const scanWindow = parts.join("\n").toLowerCase();
+    if (!scanWindow.trim()) return [];
+    const cands = this.knowledgeBase.filter((i) => i.alwaysInclude !== true && Array.isArray(i.keys) && i.keys.length);
+    const hits = [];
+    for (const item of cands) {
+      const hitKeys = item.keys.filter((k) => {
+        const kw = String(k).trim().toLowerCase();
+        return kw && scanWindow.includes(kw);
+      });
+      if (hitKeys.length) hits.push({ item, n: hitKeys.length, keys: hitKeys });
+    }
+    hits.sort((a, b) => b.n - a.n || String(a.item.title).localeCompare(String(b.item.title)));
+    return hits.slice(0, maxCount).map((h) => ({ ...h.item, hitKeys: h.keys }));
+  },
+  /** 组合检索查询：本轮指令 + 最近一段正文（提升检索命中率） */
+  _buildQuery(userMessage, history) {
+    let query = String(userMessage || "");
+    for (let i = history.length - 1; i >= 0 && query.length < 600; i--) {
+      if (history[i].role !== "assistant") continue;
+      let body = String(history[i].content || "");
+      body = body.replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, " ");
+      query += " " + body.slice(0, 400);
+      break;
+    }
+    return query;
+  },
+  /* ==================== UI：主面板 ==================== */
+  open() {
+    let modal = document.getElementById("knowledgeModal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "knowledgeModal";
+      modal.className = "modal-overlay";
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) this.close();
+      });
+      document.body.appendChild(modal);
+    }
+    modal.innerHTML = this._buildMainHTML();
+    modal.style.display = "flex";
+    this.filterList("");
+  },
+  close() {
+    const modal = document.getElementById("knowledgeModal");
+    if (modal) modal.style.display = "none";
+  },
+  _genreName() {
+    var _a;
+    return ((_a = window.GenreStoryConfig) == null ? void 0 : _a.genreName) || "当前工坊";
+  },
+  _buildMainHTML() {
+    const s = this.getStats();
+    const enabled = this.isEnabled();
+    const catOptions = KB_CATEGORIES.map((c) => `<option>${c}</option>`).join("");
+    return `
+        <div class="modal-box wide">
+            <div class="modal-header">
+                <span>📚 知识库 · ${this._genreName()}</span>
+                <button class="modal-close" onclick="StoryKnowledge.close()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="kb-stats">
+                    <div class="kb-stat"><b>${s.total}</b><i>总条目</i></div>
+                    <div class="kb-stat"><b>${s.alwaysInclude}</b><i>常驻注入</i></div>
+                    <div class="kb-stat"><b>${s.retrieval}</b><i>按需检索</i></div>
+                    <div class="kb-stat"><b>${s.global}</b><i>🌐 全局</i></div>
+                </div>
+                <div class="kb-switch ${enabled ? "on" : ""}" id="kbEnabledSwitch" onclick="StoryKnowledge.toggleEnabled()">
+                    <span class="kb-switch-dot"></span>
+                    <span class="kb-switch-text">${enabled ? "✓ 参与创作注入：已开启" : "参与创作注入：已关闭（条目仅存档，不进入 AI 上下文）"}</span>
+                </div>
+                ${window.KBVector ? window.KBVector.buildPanelHTML() : ""}
+                ${this._buildWlenHTML()}
+                <div class="form-tip">常驻条目每轮创作请求按优先级注入（核心/重点贴近指令，次重点/一般置于背景）；检索条目仅在与当前情节相关时自动注入（最多 3 条）。知识随工坊独立保存，可通过导入导出跨设备迁移。</div>
+                <div class="kb-actions">
+                    <button class="btn-solid btn-mini" onclick="StoryKnowledge.openEditor()">➕ 添加条目</button>
+                    <button class="btn-ghost btn-mini forge-entry" onclick="CreatorForge.open()" title="按模板建自设势力 / 人物 / 道具 / 技能…">🧬 原创设计</button>
+                    <button class="btn-ghost btn-mini" onclick="StoryKnowledge.filterGlobal()">🌐 全局</button>
+                    <button class="btn-ghost btn-mini" onclick="StoryKnowledge.filterLocal()">📂 本界</button>
+                    <button class="btn-ghost btn-mini" onclick="StoryKnowledge.importFromFile()">📥 导入</button>
+                    <button class="btn-ghost btn-mini" onclick="StoryKnowledge.exportToFile()">📤 导出</button>
+                    <button class="btn-ghost btn-mini" onclick="StoryKnowledge.downloadTemplate()">📝 模板</button>
+                    <button class="btn-ghost btn-mini" onclick="StoryKnowledge.restorePresets()" title="补回本工坊缺失的专属预置知识（同名条目不覆盖）">↺ 预置</button>
+                    <button class="btn-ghost btn-mini danger" onclick="StoryKnowledge.confirmClear()">🗑 清空</button>
+                </div>
+                <input id="kbSearchInput" class="kb-search" type="text" placeholder="🔍 搜索标题 / 内容 / 标签…" oninput="StoryKnowledge.filterList(this.value)">
+                <div class="kb-list" id="kbListContainer"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" onclick="StoryKnowledge.close()">关闭</button>
+            </div>
+        </div>`;
+  },
+  toggleEnabled() {
+    var _a;
+    this.setEnabled(!this.isEnabled());
+    this.open();
+    (_a = window.showToast) == null ? void 0 : _a.call(window, this.isEnabled() ? "✓ 知识库已开启创作注入" : "知识库注入已关闭", "success");
+  },
+  /* ==================== v3.37.0 正文篇幅·字数调节（玩家反馈专项） ==================== */
+  /** 字数调节条目（条目本身即存储：改写内容 = 改档位） */
+  _wlenEntry() {
+    return this.knowledgeBase.find((i) => String(i.title).trim() === KB_WLEN_TITLE);
+  },
+  /** 解析当前档位：{ label, range } 或 null（条目缺失/被改坏时各按钮全灰，点任意档即重建） */
+  _wlenCurrent() {
+    const e = this._wlenEntry();
+    if (!e) return null;
+    const m = /当前档位：(.+?)——每轮场景正文目标\s*([^字\n]+?)\s*字/.exec(this._contentText(e.content));
+    return m ? { label: m[1].trim(), range: m[2].trim() } : null;
+  },
+  /** 面板顶部「📏 正文字数调节」档位条 HTML */
+  _buildWlenHTML() {
+    const cur = this._wlenCurrent();
+    const curLabel = cur ? cur.label : "";
+    const curRange = cur ? cur.range : "";
+    const activeLv = KB_WLEN_LEVELS.find((l) => curLabel === `${l.label}版`) || null;
+    const btns = KB_WLEN_LEVELS.map((l) => `
+            <button class="kb-wl-btn ${activeLv && activeLv.id === l.id ? "on" : ""}" onclick="StoryKnowledge.adjustWordLength('${l.id}')" title="${l.note}">
+                <b>${l.label}</b><i>${l.range[0]}~${l.range[1]}字</i>
+            </button>`).join("");
+    return `
+        <div class="kb-wlen">
+            <div class="kb-wlen-head">
+                <span class="kb-wlen-name">📏 正文字数调节</span>
+                <span class="kb-wlen-cur">${cur ? `当前：<b>${curLabel}</b>（${curRange} 字）` : "未设置——点任意档位立即开启"}</span>
+            </div>
+            <div class="kb-wlen-btns">${btns}
+                <span class="kb-wlen-custom">
+                    <input id="kbWlenCustom" type="number" min="100" max="6000" step="50" placeholder="自定义字数">
+                    <button class="btn-ghost btn-mini" onclick="StoryKnowledge.adjustWordLengthCustom()">应用</button>
+                </span>
+            </div>
+            <div class="form-tip">每轮正文的目标篇幅，点选即时生效——写入下方「${KB_WLEN_TITLE}」常驻条目（👑 核心优先级，AI 每轮遵守，优先级高于世界默认篇幅）；重大转折与高潮戏自动上浮约三成，纯寒暄过场自动下浮。注意：上方「参与创作注入」关闭时字数条目同样不生效。</div>
+        </div>`;
+  },
+  /** 档位内容模板（与 preset-knowledge.js 预置条目同构，保证解析稳定） */
+  _wlenContent(label, range) {
+    return `【正文篇幅·玩家亲设】当前档位：${label}——每轮场景正文目标 ${range} 字。
+铁律：
+1. 本条目是玩家亲手设定的篇幅指令，优先级高于世界默认篇幅要求与文风偏好；
+2. 字数指场景正文（对白计入），变量块、行动选项、插图标记不计入；
+3. 写满目标篇幅靠分层推进（场景/动作/对白/心理/感官细节），严禁复读原文与注水凑字；
+4. 弹性区间：重大转折、战斗与情感高潮允许上浮约三成；单句寒暄、纯过场允许下浮至六成；其余回合务必落在区间内；
+5. 玩家本轮临时要求加长或缩短时从其本轮指令，下一轮自动回落本档位。`;
+  },
+  /** 点档位按钮：改写（或重建）字数条目 */
+  adjustWordLength(levelId) {
+    var _a;
+    const lv = KB_WLEN_LEVELS.find((l) => l.id === levelId);
+    if (!lv) return;
+    this._applyWlen(`${lv.label}版`, `${lv.range[0]}~${lv.range[1]}`);
+    (_a = window.showToast) == null ? void 0 : _a.call(window, `✓ 正文篇幅已调为：${lv.label}版（每轮 ${lv.range[0]}~${lv.range[1]} 字）`, "success");
+  },
+  /** 自定义字数：±25% 弹性区间 */
+  adjustWordLengthCustom() {
+    var _a, _b;
+    const input = document.getElementById("kbWlenCustom");
+    const n = Math.round(Number(input && input.value) || 0);
+    if (!Number.isFinite(n) || n < 100 || n > 6e3) {
+      (_a = window.showToast) == null ? void 0 : _a.call(window, "自定义字数请填 100~6000（目标字数，允许上下浮动约四分之一）", "info");
+      return;
+    }
+    const lo = Math.max(50, Math.round(n * 0.75 / 10) * 10);
+    const hi = Math.round(n * 1.25 / 10) * 10;
+    this._applyWlen(`自定义·${n}字`, `${lo}~${hi}`);
+    (_b = window.showToast) == null ? void 0 : _b.call(window, `✓ 正文篇幅已调为：自定义（约 ${n} 字）`, "success");
+  },
+  /** 落库：有条目则改写，没有则重建（误删自救） */
+  _applyWlen(label, range) {
+    const content = this._wlenContent(label, range);
+    const e = this._wlenEntry();
+    if (e) {
+      this.updateItem(e.id, { content, alwaysInclude: true, priority: "top" });
+    } else {
+      this.knowledgeBase.push(this._normalizeEntry({
+        title: KB_WLEN_TITLE,
+        content,
+        category: "规则",
+        tags: ["字数调节", "篇幅", "玩家亲设", "每轮必遵"],
+        alwaysInclude: true,
+        priority: "top",
+        source: "preset"
+      }));
+      this.save();
+    }
+    this.open();
+  },
+  /** 渲染列表（带前端关键词过滤，模仿原框架 filterKBList） */
+  filterList(keyword) {
+    const container = document.getElementById("kbListContainer");
+    if (!container) return;
+    const kw = String(keyword || "").trim().toLowerCase();
+    let items = this.knowledgeBase;
+    if (this._filterMode === "global") items = items.filter((i) => i.isGlobal === true);
+    else if (this._filterMode === "local") items = items.filter((i) => i.isGlobal !== true);
+    if (kw) {
+      items = items.filter((i) => (i.title || "").toLowerCase().includes(kw) || this._contentText(i.content).toLowerCase().includes(kw) || (i.tags || []).some((t) => String(t).toLowerCase().includes(kw)) || (i.category || "").toLowerCase().includes(kw));
+    }
+    if (!items.length) {
+      container.innerHTML = `<div class="kb-empty">${this.knowledgeBase.length ? "🔍 没有匹配的知识条目" : "📦 知识库为空：点击「添加条目」录入设定，或「导入」知识库文件 / 「模板」生成示例结构"}</div>`;
+      return;
+    }
+    container.innerHTML = items.map((item) => this._buildItemHTML(item)).join("");
+  },
+  filterGlobal() { this._filterMode = "global"; this.filterList(""); },
+  filterLocal() { this._filterMode = "local"; this.filterList(""); },
+  _buildItemHTML(item) {
+    const isDLC = item.source === "dlc" || item.category === "dlc";
+    const isPreset = item.source === "preset";
+    const isGlobal = item.isGlobal === true;
+    const badges = [
+      `<span class="kb-badge ${item.alwaysInclude ? "b-" + (item.priority || "low") : "b-retrieval"}">${KB_PRIORITY_LABEL[item.alwaysInclude ? item.priority || "low" : ""] || "🔎 检索"}</span>`,
+      `<span class="kb-badge b-cat">${kbEsc(item.category)}</span>`
+    ];
+    if (isGlobal) badges.push(`<span class="kb-badge b-global">🌐 全局</span>`);
+    if (isDLC) badges.push(`<span class="kb-badge b-dlc">📦 DLC</span>`);
+    if (isPreset) badges.push(`<span class="kb-badge b-preset">🏛 预置</span>`);
+    const preview = this._contentText(item.content).slice(0, 120).replace(/\s+/g, " ");
+    const tagsHtml = (item.tags || []).length ? item.tags.map((t) => `<span class="kb-tag">${kbEsc(t)}</span>`).join("") : "";
+    const globalBtn = `<button class="btn-ghost btn-mini kb-global-toggle${isGlobal ? " on" : ""}" onclick="event.stopPropagation(); StoryKnowledge.toggleGlobal('${kbEsc(item.id)}'); StoryKnowledge.open();" title="${isGlobal ? "点击设为仅本界" : "点击设为全局（所有世界通用）"}">${isGlobal ? "🌐 全局" : "📂 本界"}</button>`;
+    return `
+        <div class="kb-item${item.enabled === false ? " kb-off" : ""}" onclick="StoryKnowledge.openDetail('${kbEsc(item.id)}')">
+            <div class="kb-item-top">
+                <div class="kb-badges">${badges.join("")}</div>
+                <span class="kb-item-title">${kbEsc(item.title)}</span>
+                ${globalBtn}
+                <button class="btn-ghost btn-mini danger kb-item-del" onclick="event.stopPropagation(); StoryKnowledge.confirmDelete('${kbEsc(item.id)}')">删除</button>
+            </div>
+            <div class="kb-item-preview">${kbEsc(preview)}${this._contentText(item.content).length > 120 ? "…" : ""}</div>
+            <div class="kb-item-meta">${tagsHtml}<span class="kb-item-date">${kbTime(item.updatedAt || item.createdAt)}</span></div>
+        </div>`;
+  },
+  /* ==================== UI：条目编辑器（新增 / 编辑共用） ==================== */
+  _editingId: null,
+  openEditor(id) {
+    const item = id ? this.getById(id) : null;
+    this._editingId = id || null;
+    let modal = document.getElementById("kbEditorModal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "kbEditorModal";
+      modal.className = "modal-overlay";
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) this.closeEditor();
+      });
+      document.body.appendChild(modal);
+    }
+    const catOptions = KB_CATEGORIES.map((c) => `<option value="${c}" ${item && item.category === c ? "selected" : ""}>${c}</option>`).join("");
+    const isKeyMode = !!(item && !item.alwaysInclude && Array.isArray(item.keys) && item.keys.length);
+    const priority = item ? item.alwaysInclude ? item.priority : isKeyMode ? "key" : "" : "";
+    modal.innerHTML = `
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>${item ? "✏️ 编辑知识条目" : "➕ 新增知识条目"}</span>
+                <button class="modal-close" onclick="StoryKnowledge.closeEditor()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label>标题 *</label>
+                    <input id="kbEdTitle" type="text" placeholder="例如：主角档案 / 雾隐城 / 守夜人会" value="${kbEscAttr((item == null ? void 0 : item.title) || "")}">
+                </div>
+                <div class="form-row two-col">
+                    <div>
+                        <label>分类</label>
+                        <select id="kbEdCategory">${catOptions}</select>
+                    </div>
+                    <div>
+                        <label>标签（逗号分隔）</label>
+                        <input id="kbEdTags" type="text" placeholder="例如：核心, 组织, 伏笔" value="${kbEscAttr(((item == null ? void 0 : item.tags) || []).join(", "))}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>注入方式</label>
+                    <select id="kbEdPriority" onchange="StoryKnowledge.updatePriorityDesc(this.value)">
+                        <option value="" ${priority === "" ? "selected" : ""}>🔎 按需检索（与情节相关时自动注入）</option>
+                        <option value="key" ${priority === "key" ? "selected" : ""}>🗝 关键词触发（命中关键词才注入，世界书模式）</option>
+                        <option value="top" ${priority === "top" ? "selected" : ""}>👑 核心常驻（最高优先级）</option>
+                        <option value="high" ${priority === "high" ? "selected" : ""}>⭐ 重点常驻</option>
+                        <option value="medium" ${priority === "medium" ? "selected" : ""}>📌 次重点常驻</option>
+                        <option value="low" ${priority === "low" ? "selected" : ""}>📋 一般常驻</option>
+                    </select>
+                    <div class="form-tip" id="kbEdPriorityDesc"></div>
+                </div>
+                <div class="form-row" id="kbEdKeysRow" style="display:${priority === "key" ? "" : "none"}">
+                    <label>触发关键词（逗号分隔，任一命中即注入）</label>
+                    <input id="kbEdKeys" type="text" placeholder="例如：雾隐城, 守夜人, 旧约" value="${kbEscAttr(((item == null ? void 0 : item.keys) || []).join(", "))}">
+                    <div class="form-tip">扫描最近几轮正文与本轮指令，任一关键词出现即注入该条目（最多命中 5 条 / 轮）。导入的角色卡世界书就是用这种方式工作。</div>
+                </div>
+                <div class="form-row">
+                    <label>内容 *（至少 20 字）</label>
+                    <textarea id="kbEdContent" rows="8" placeholder="设定资料的完整内容：人物写身份/性格/动机/秘密，地点写地理/氛围/势力，世界观写法则/历史/力量体系…" oninput="StoryKnowledge.updateCharCount()">${kbEsc(item ? this._contentText(item.content) : "")}</textarea>
+                    <div class="form-tip" id="kbEdCharCount"></div>
+                </div>
+                <div class="form-row">
+                    <label>作用范围</label>
+                    <div class="kb-global-toggle-row">
+                        <label class="kb-global-check"><input type="checkbox" id="kbEdGlobal" ${item && item.isGlobal ? "checked" : ""}> 🌐 全局知识（勾选后所有世界通用，切换世界也生效）</label>
+                        <div class="form-tip">不勾选则仅当前世界（${this._genreName()}）可見。适合放通用文风偏好、写作纪律等跨世界设定。</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" onclick="StoryKnowledge.closeEditor()">取消</button>
+                <button class="btn-solid" onclick="StoryKnowledge.saveEditor()">保存条目</button>
+            </div>
+        </div>`;
+    this.updatePriorityDesc(priority);
+    this.updateCharCount();
+    modal.style.display = "flex";
+  },
+  closeEditor() {
+    const modal = document.getElementById("kbEditorModal");
+    if (modal) modal.style.display = "none";
+    this._editingId = null;
+  },
+  updatePriorityDesc(priority, targetId = "kbEdPriorityDesc") {
+    const el = document.getElementById(targetId);
+    if (el) el.textContent = KB_PRIORITY_DESC[priority] || "";
+    const keysRow = document.getElementById("kbEdKeysRow");
+    if (keysRow) keysRow.style.display = priority === "key" ? "" : "none";
+  },
+  updateCharCount() {
+    const el = document.getElementById("kbEdCharCount");
+    const input = document.getElementById("kbEdContent");
+    if (el && input) el.textContent = `当前 ${input.value.length} 字`;
+  },
+  saveEditor() {
+    var _a, _b, _c, _d, _e;
+    const title = document.getElementById("kbEdTitle").value.trim();
+    const content = document.getElementById("kbEdContent").value.trim();
+    if (!title) {
+      (_a = window.showToast) == null ? void 0 : _a.call(window, "请填写条目标题", "error");
+      return;
+    }
+    if (content.length < 20) {
+      (_b = window.showToast) == null ? void 0 : _b.call(window, "内容至少 20 字，请补充完整设定资料", "error");
+      return;
+    }
+    const priority = document.getElementById("kbEdPriority").value;
+    const keysInput = document.getElementById("kbEdKeys");
+    const raw = {
+      id: this._editingId || void 0,
+      title,
+      content,
+      category: document.getElementById("kbEdCategory").value,
+      tags: document.getElementById("kbEdTags").value,
+      keys: priority === "key" && keysInput ? keysInput.value : "",
+      alwaysInclude: ["top", "high", "medium", "low"].includes(priority),
+      priority: priority === "key" ? "" : priority,
+      isGlobal: document.getElementById("kbEdGlobal") ? document.getElementById("kbEdGlobal").checked : false,
+      source: this._editingId ? ((_c = this.getById(this._editingId)) == null ? void 0 : _c.source) || "manual" : "manual"
+    };
+    if (priority === "key" && keysInput && !String(keysInput.value).trim()) {
+      (_d = window.showToast) == null ? void 0 : _d.call(window, "关键词触发模式需要至少填一个触发词，否则永远不会被注入", "error");
+      return;
+    }
+    const entry = this.addItem(raw);
+    this.closeEditor();
+    this.open();
+    (_e = window.showToast) == null ? void 0 : _e.call(window, `✓ 知识条目「${entry.title}」已保存`, "success");
+  },
+  /* ==================== UI：条目详情 ==================== */
+  openDetail(id) {
+    var _a;
+    const item = this.getById(id);
+    if (!item) {
+      (_a = window.showToast) == null ? void 0 : _a.call(window, "条目不存在或已被删除", "error");
+      return;
+    }
+    let modal = document.getElementById("kbDetailModal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "kbDetailModal";
+      modal.className = "modal-overlay";
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) this.closeDetail();
+      });
+      document.body.appendChild(modal);
+    }
+    const isDLC = item.source === "dlc" || item.category === "dlc";
+    const badges = [
+      `<span class="kb-badge ${item.alwaysInclude ? "b-" + (item.priority || "low") : "b-retrieval"}">${KB_PRIORITY_LABEL[item.alwaysInclude ? item.priority || "low" : ""] || "🔎 检索"}</span>`,
+      `<span class="kb-badge b-cat">${kbEsc(item.category)}</span>`
+    ];
+    if (isDLC) badges.push(`<span class="kb-badge b-dlc">📦 DLC（由知识包注入）</span>`);
+    const tagsHtml = (item.tags || []).length ? item.tags.map((t) => `<span class="kb-tag">${kbEsc(t)}</span>`).join("") : '<span class="kb-item-date">无标签</span>';
+    const retrievalTest = item.alwaysInclude ? "" : `
+            <div class="kb-retrieval-test">
+                <input id="kbTestQuery" type="text" placeholder="输入情节关键词，测试该条目会被检索命中的相关度…">
+                <button class="btn-ghost btn-mini" onclick="StoryKnowledge.runItemRetrievalTest('${kbEsc(item.id)}')">检索自测</button>
+            </div>
+            <div class="form-tip" id="kbTestResult"></div>`;
+    modal.innerHTML = `
+        <div class="modal-box wide">
+            <div class="modal-header">
+                <span>📄 ${kbEsc(item.title)}</span>
+                <button class="modal-close" onclick="StoryKnowledge.closeDetail()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="kb-badges">${badges.join("")}</div>
+                <div class="kb-detail-meta">
+                    <span>ID：${kbEsc(item.id)}</span>
+                    <span>分类：${kbEsc(item.category)}</span>
+                    <span>标签：${tagsHtml}</span>
+                    <span>创建：${kbTime(item.createdAt)}</span>
+                    <span>更新：${kbTime(item.updatedAt)}</span>
+                    <span>来源：${item.source === "dlc" ? "DLC 知识包" : item.source === "import" ? "导入" : "手动创建"}</span>
+                </div>
+                <div class="form-tip">${KB_PRIORITY_DESC[item.alwaysInclude ? item.priority || "low" : ""]}</div>
+                <div class="kb-detail-content">${kbEsc(this._contentText(item.content))}</div>
+                ${retrievalTest}
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" onclick="StoryKnowledge.openEditor('${kbEsc(item.id)}')">编辑</button>
+                <button class="btn-ghost" onclick="StoryKnowledge.promptPriority('${kbEsc(item.id)}')">调整注入方式</button>
+                <button class="btn-ghost danger" onclick="StoryKnowledge.confirmDelete('${kbEsc(item.id)}')">删除</button>
+                <button class="btn-solid" onclick="StoryKnowledge.closeDetail()">关闭</button>
+            </div>
+        </div>`;
+    modal.style.display = "flex";
+  },
+  closeDetail() {
+    const modal = document.getElementById("kbDetailModal");
+    if (modal) modal.style.display = "none";
+  },
+  runItemRetrievalTest(id) {
+    var _a;
+    const query = (_a = document.getElementById("kbTestQuery")) == null ? void 0 : _a.value.trim();
+    const result = document.getElementById("kbTestResult");
+    if (!query || !result) return;
+    const rank = this.retrieve(query, 50).findIndex((r) => r.id === id);
+    if (rank < 0) {
+      result.textContent = "✕ 未命中：该情节关键词与本条目相关度过低。可补充关键词标签，或改为常驻注入模式。";
+      result.style.color = "var(--danger)";
+    } else {
+      result.textContent = `✓ 命中：在本工坊全部检索条目中排第 ${rank + 1} 位（每轮自动注入前 3 条）${rank < 3 ? "——该情节下会被注入" : "——本轮有更相关的条目挤占名额，可能不被注入"}。`;
+      result.style.color = rank < 3 ? "var(--ok)" : "var(--warning, #c9a13b)";
+    }
+  },
+  /* ==================== UI：调整注入方式 ==================== */
+  _priorityTargetId: null,
+  promptPriority(id) {
+    const item = this.getById(id);
+    if (!item) return;
+    this._priorityTargetId = id;
+    let modal = document.getElementById("kbPriorityModal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "kbPriorityModal";
+      modal.className = "modal-overlay";
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) this.closePriority();
+      });
+      document.body.appendChild(modal);
+    }
+    const current = item.alwaysInclude ? item.priority : "";
+    modal.innerHTML = `
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>🎚 调整注入方式 · ${kbEsc(item.title)}</span>
+                <button class="modal-close" onclick="StoryKnowledge.closePriority()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label>注入方式</label>
+                    <select id="kbPrioritySelect" onchange="StoryKnowledge.updatePriorityDesc(this.value, 'kbPriorityDesc')">
+                        <option value="" ${current === "" ? "selected" : ""}>🔎 按需检索（与情节相关时自动注入）</option>
+                        <option value="top" ${current === "top" ? "selected" : ""}>👑 核心常驻（最高优先级）</option>
+                        <option value="high" ${current === "high" ? "selected" : ""}>⭐ 重点常驻</option>
+                        <option value="medium" ${current === "medium" ? "selected" : ""}>📌 次重点常驻</option>
+                        <option value="low" ${current === "low" ? "selected" : ""}>📋 一般常驻</option>
+                    </select>
+                    <div class="form-tip" id="kbPriorityDesc"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" onclick="StoryKnowledge.closePriority()">取消</button>
+                <button class="btn-solid" onclick="StoryKnowledge.applyPriority()">确定</button>
+            </div>
+        </div>`;
+    this.updatePriorityDesc(current, "kbPriorityDesc");
+    modal.style.display = "flex";
+  },
+  closePriority() {
+    const modal = document.getElementById("kbPriorityModal");
+    if (modal) modal.style.display = "none";
+    this._priorityTargetId = null;
+  },
+  applyPriority() {
+    var _a, _b, _c;
+    const id = this._priorityTargetId;
+    const priority = (_b = (_a = document.getElementById("kbPrioritySelect")) == null ? void 0 : _a.value) != null ? _b : "";
+    if (!id) return;
+    const updated = this.setPriority(id, priority);
+    this.closePriority();
+    if (updated) {
+      this.closeDetail();
+      this.open();
+      (_c = window.showToast) == null ? void 0 : _c.call(window, `✓ 「${updated.title}」已切换为${updated.alwaysInclude ? "常驻注入（" + KB_PRIORITY_LABEL[updated.priority] + "）" : "按需检索"}模式`, "success");
+    }
+  },
+  /* ==================== UI：删除 / 清空 / 导入 / 导出 / 模板 ==================== */
+  async confirmDelete(id) {
+    var _a;
+    const item = this.getById(id);
+    if (!item) return;
+    const ok = await window.UIDialog.confirm({
+      title: "删除知识条目",
+      message: `确定删除「${item.title}」吗？此操作不可恢复。${item.source === "dlc" ? "\n（该条目来自 DLC 知识包，删除后重新激活对应 DLC 可恢复）" : ""}`,
+      danger: true,
+      confirmText: "删除"
+    });
+    if (!ok) return;
+    this.deleteItem(id);
+    this.closeDetail();
+    this.open();
+    (_a = window.showToast) == null ? void 0 : _a.call(window, `✓ 已删除「${item.title}」`, "success");
+  },
+  async confirmClear() {
+    var _a, _b;
+    if (!this.knowledgeBase.length) {
+      (_a = window.showToast) == null ? void 0 : _a.call(window, "知识库已经是空的", "info");
+      return;
+    }
+    const ok = await window.UIDialog.confirm({
+      title: "清空知识库",
+      message: `确定清空全部 ${this.knowledgeBase.length} 条知识（含 DLC 注入条目）吗？
+此操作不可恢复，建议先导出备份。清空后可随时从「预置知识库」恢复本工坊的专属设定。`,
+      danger: true,
+      confirmText: "全部清空"
+    });
+    if (!ok) return;
+    this.clearAll();
+    this.open();
+    (_b = window.showToast) == null ? void 0 : _b.call(window, "✓ 知识库已清空", "success");
+  },
+  importFromFile() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = () => {
+      var _a;
+      const file = (_a = input.files) == null ? void 0 : _a[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        var _a2, _b;
+        try {
+          const data = JSON.parse(e.target.result);
+          const result = this.importData(data);
+          this.open();
+          (_a2 = window.showToast) == null ? void 0 : _a2.call(window, `✓ 导入完成：新增 ${result.added} 条，更新 ${result.updated} 条${result.skipped ? `，跳过 ${result.skipped} 条无效数据` : ""}`, "success");
+        } catch (err) {
+          (_b = window.showToast) == null ? void 0 : _b.call(window, `导入失败：${err.message}`, "error");
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  },
+  exportToFile() {
+    var _a, _b;
+    if (!this.knowledgeBase.length) {
+      (_a = window.showToast) == null ? void 0 : _a.call(window, "知识库为空，无可导出内容", "error");
+      return;
+    }
+    this._download(JSON.stringify(this.exportData(), null, 2), `云境知识库_${this.genre}_${Date.now()}.json`);
+    (_b = window.showToast) == null ? void 0 : _b.call(window, `✓ 已导出 ${this.knowledgeBase.length} 条知识（JSON）`, "success");
+  },
+  downloadTemplate() {
+    var _a;
+    this._download(JSON.stringify(this.buildTemplate(), null, 2), `云境知识库模板.json`);
+    (_a = window.showToast) == null ? void 0 : _a.call(window, "✓ 模板已下载：替换示例内容后可导入", "success");
+  }
+};
+function kbEsc(s) {
+  return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function kbEscAttr(s) {
+  return kbEsc(s);
+}
+function kbTime(iso) {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  } catch (e) {
+    return String(iso);
+  }
+}
+StoryKnowledge.init();
+window.StoryKnowledge = StoryKnowledge;

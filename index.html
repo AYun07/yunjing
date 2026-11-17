@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- PWA / iOS 主屏安装（v3.27.1）：Safari「加入主屏幕」后全屏独立运行，HTTPS 部署时离线可玩 -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="assets/yj-icon-apple.png">
+    <!-- v3.93.0：图标换为云境自有素材（移除墨枢遗留 icon-192/512/apple-touch/favicon） -->
+    <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
+    <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="云境">
+    <meta name="theme-color" content="#13111e">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
+    <script src="js/id-migrate.js?v=4.27.0"></script>
+    <!-- v4.08.0 存档键统一注册表（早于所有业务脚本） -->
+    <script src="js/slot-registry.js?v=4.27.0"></script>
+    <title>云境 v4.27.0 · AI创作与开放世界扮演</title>
+    <style>
+        /* v3.93.0 大厅：css/lobby-themes.css 六套风格皮肤 + css/lobby-layouts.css 六套异构骨架（旧 8 套深紫玻璃版式已移除） */
+        :root {
+            --primary: #b5382e;
+            --ink: #1c1a16;
+            --paper: #f4efe4;
+        }
+    </style>
+
+    <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集 -->
+    <link rel="stylesheet" href="css/fonts-local.css?v=4.27.0">
+    <!-- v3.93.0 大厅：基础版式 + 六套风格皮肤 + 六套异构骨架（杂志/手帐/Y2K/水墨/瑞士/终端） -->
+    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=4.27.0">
+    <link rel="stylesheet" href="css/lobby-themes.css?v=4.27.0">
+    <!-- 骨架层必须在皮肤层之后：六种风格各有自己的排版结构，不是换配色 -->
+    <link rel="stylesheet" href="css/lobby-layouts.css?v=4.27.0">
+    <!-- 主题切换器：同步挂 html[data-theme]，首屏不闪色；六套主题可见可切可记忆 -->
+    <script src="js/lobby-themes.js?v=4.27.0"></script>
+    <script src="js/theme-studio.js?v=4.27.0"></script>
+</head>
+
+<body class="page-index">
+    <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <!-- v3.93.0：版本徽标移入页脚，不再 fixed 悬浮压住正文 -->
+
+    <!-- 开屏 -->
+    <div id="splash">
+        <div class="splash-mark">云境</div>
+        <div class="splash-sub">万象入云 · 一念一世界</div>
+        <div class="splash-line"></div>
+        <div class="splash-hint">轻触任意处 展卷</div>
+    </div>
+
+    <div class="container">
+        <div class="masthead">
+            <!-- v3.93.0：大厅吉祥物图标已删除；全站唯一小云是右下角 #xyBuddy 全功能助手，进入主页面后不会再出现第二只 -->
+            <h1 class="logo-kai"><span class="lk-a">云</span><span class="lk-b">境</span></h1>
+            <div class="sub">万象入云 · 一念一世界</div>
+            <div class="gold-divider"></div>
+            <div class="mh-chips">
+                <span>🧬 变量登记</span><span>📋 全域填表</span><span>🔮 世界推演</span><span>⏱️ 自主时钟</span><span>🎯 剧情规划</span><span>👥 众生谱</span><span>🎲 自由人生</span>
+            </div>
+        </div>
+
+        <!-- v4.06.0 四分类：原著同人 / 真实地球 / 自由创作 / 网游大世界。
+             原「五大类型工坊」已并入「自由创作世界」分类，不再单独成区。 -->
+        <div class="section-title">开放世界扮演 · 38 界｜四大分类：原著同人 30 · 真实地球 1 · 自由创作 6 · 网游大世界 1</div>
+        <div class="ws-groups-ctl" id="wsGroupsCtl">
+            <button type="button" class="ws-ctl-btn" id="wsExpandAll">⊕ 全部展开</button>
+            <button type="button" class="ws-ctl-btn" id="wsCollapseAll">⊖ 全部收起</button>
+        </div>
+
+        <div class="ws-cat" data-cat="canon" style="--cat-hue:#c9a86a;">
+            <div class="ws-cat-head">
+                <span class="wc-glyph">原</span>
+                <span class="wc-name">原著同人世界</span>
+                <span class="wc-desc">三十部原著各成一界，题材分七组——玄幻、仙侠、都市、诡秘、末世、科幻、西幻</span>
+                <span class="wc-count">30 界</span>
+            </div>
+            <div class="ws-cat-body">
+<div class="ws-group" data-gkey="xuanhuan" style="--g-hue:#c9a86a;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">玄</span>
+                <span class="wg-name">东方玄幻</span>
+                <span class="wg-sub">遮天 · 斗破苍穹 · 完美世界 · 斗罗大陆 · 帝霸 · 武炼巅峰 · 圣墟 · 武动乾坤 · 大主宰 · 元尊 · 万相之王</span>
+                <span class="wg-count">11 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=shrouding&v=1.6.9" style="--ws-hue:#c9a86a;">
+                            <div class="ws-glyph">遮</div>
+                            <div class="ws-name">遮天</div>
+                            <div class="ws-desc">九龙拉棺之后再入北斗：凡人之躯，行万古求道之路</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=doupocangqiong&v=1.10.0" style="--ws-hue:#e06a4a;">
+                            <div class="ws-glyph">斗</div>
+                            <div class="ws-name">斗破苍穹</div>
+                            <div class="ws-desc">替代萧炎立下三年之约：戒中药老、异火之途与斗帝之路，皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=wanmeishijie&v=1.11.0" style="--ws-hue:#a8c97f;">
+                            <div class="ws-glyph">完</div>
+                            <div class="ws-name">完美世界</div>
+                            <div class="ws-desc">替代石昊自石村而出：至尊骨被夺的少年就是你，一路打到万古之巅独断万古</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=douluodalu&v=1.11.0" style="--ws-hue:#8f9fe8;">
+                            <div class="ws-glyph">罗</div>
+                            <div class="ws-name">斗罗大陆</div>
+                            <div class="ws-desc">替代唐三觉醒双生武魂：史莱克七怪、海神九考与嘉陵关决战，皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=wudongqiankun&v=3.97.0" style="--ws-hue:#3a9d8f;">
+                            <div class="ws-glyph">武</div>
+                            <div class="ws-name">武动乾坤</div>
+                            <div class="ws-desc">天蚕土豆大千世界：替代林动自青阳镇崛起，石符、八大祖符与异魔皇之祸皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=dazhuzai&v=3.97.0" style="--ws-hue:#9b6ad0;">
+                            <div class="ws-glyph">主</div>
+                            <div class="ws-name">大主宰</div>
+                            <div class="ws-desc">天蚕土豆大千世界：替代牧尘自北灵境而出，灵路、北苍灵院、大罗天域与域外邪族皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=yuanzun&v=3.97.0" style="--ws-hue:#5a9bd4;">
+                            <div class="ws-glyph">尊</div>
+                            <div class="ws-name">元尊</div>
+                            <div class="ws-desc">天蚕土豆大千世界：替代周元自大周废太子之身逆袭，源师、苍玄宗与圣族之困皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=wanxiangzhiwang&v=3.97.0" style="--ws-hue:#c9a83a;">
+                            <div class="ws-glyph">相</div>
+                            <div class="ws-name">万相之王</div>
+                            <div class="ws-desc">天蚕土豆大千世界：替代李洛自洛岚府遗孤而起，相师、天元神州与归一会皆由你亲历</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=dibao&v=1.13.0" style="--ws-hue:#e0c888;">
+                            <div class="ws-glyph">帝</div>
+                            <div class="ws-name">帝霸</div>
+                            <div class="ws-desc">踏入万古棋局的时代：命宫十二重与真命之路，大教禁区之间活出你自己的万古</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=wulianfengdian&v=3.19.0" style="--ws-hue:#d89030;">
+                            <div class="ws-glyph">武</div>
+                            <div class="ws-name">武炼巅峰</div>
+                            <div class="ws-desc">从淬体到开天的十六境长征：递出你的第一封战书，挑战台上无父子，武路尽头是高处不胜寒</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=shengxu&v=3.19.0" style="--ws-hue:#4cb8a8;">
+                            <div class="ws-glyph">墟</div>
+                            <div class="ws-name">圣墟</div>
+                            <div class="ws-desc">大漠尽头彼岸花开：大劫之后灵气复苏，一部呼吸法一门神通，山海经的神话睁开了眼</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="ws-group" data-gkey="xianxia" style="--g-hue:#6fc9b0;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">仙</span>
+                <span class="wg-name">仙侠修真</span>
+                <span class="wg-sub">凡人修仙传 · 仙逆 · 剑来 · 蛊真人 · 玄鉴仙族</span>
+                <span class="wg-count">5 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=fanrenxiuxian&v=3.25.0" style="--ws-hue:#5db8c8;">
+                            <div class="ws-glyph">凡</div>
+                            <div class="ws-name">凡人修仙传</div>
+                            <div class="ws-desc">青衫修士的凡人流长跑：炼气十三层数着走，掌天瓶催熟灵药，苟道与算计换来一步一生</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=xianni&v=3.46.0" style="--ws-hue:#9d86d0;">
+                            <div class="ws-glyph">逆</div>
+                            <div class="ws-name">仙逆</div>
+                            <div class="ws-desc">顺为凡，逆则仙：平庸少年得天逆珠，从赵国山村的冷眼一路杀到踏天之巅，为挚爱逆天改命</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=jianlai&v=3.46.0" style="--ws-hue:#d8b86a;">
+                            <div class="ws-glyph">剑</div>
+                            <div class="ws-name">剑来</div>
+                            <div class="ws-desc">骊珠洞天坠落人间：泥瓶巷的草鞋少年、齐先生的三问与摔碗酒——浩然天下的规矩与因果，一步一步走出来</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=guzhenren&v=3.46.0" style="--ws-hue:#5fb87a;">
+                            <div class="ws-glyph">蛊</div>
+                            <div class="ws-name">蛊真人</div>
+                            <div class="ws-desc">五百年魔道大能重生回青茅山古月家族——春秋蝉虽败，命不该绝，这一世步步算计</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=xuanjianxianzu&v=3.46.0" style="--ws-hue:#6fc9b0;">
+                            <div class="ws-glyph">玄</div>
+                            <div class="ws-name">玄鉴仙族</div>
+                            <div class="ws-desc">修仙家族经营：灵田、炼丹、坊市、护卫——家族兴衰与个人道途同行</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="ws-group" data-gkey="dushi" style="--g-hue:#5fc9d8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">都</span>
+                <span class="wg-name">都市现代</span>
+                <span class="wg-sub">全职高手 · 重生之都市修仙 · 龙族 · 全职法师 · 开局地摊卖大力 · 斩神</span>
+                <span class="wg-count">6 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=quanzhigaoshou&v=1.10.0" style="--ws-hue:#5fc9d8;">
+                            <div class="ws-glyph">全</div>
+                            <div class="ws-name">全职高手</div>
+                            <div class="ws-desc">替代叶修踏上荣耀之巅：被逼退役的教科书就是你，从网吧夜班重返总决赛</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=zhongshengdushi&v=1.12.0" style="--ws-hue:#d8b468;">
+                            <div class="ws-glyph">重</div>
+                            <div class="ws-name">重生之都市修仙</div>
+                            <div class="ws-desc">替代陈凡重回十七岁：五百年北玄仙尊的记忆，从高三晚自习开始的都市问仙路</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=longzu&v=1.13.0" style="--ws-hue:#8a9ae8;">
+                            <div class="ws-glyph">龙</div>
+                            <div class="ws-name">龙族</div>
+                            <div class="ws-desc">一封烫金邀请函寄到你手里：卡塞尔学院的血统测试、言灵觉醒与屠龙者的黎明</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=quanzhifashi&v=3.15.0" style="--ws-hue:#9d8cf0;">
+                            <div class="ws-glyph">法</div>
+                            <div class="ws-name">全职法师</div>
+                            <div class="ws-desc">魔法取代科学的现代都市：觉醒考核亮起你的元素，城墙之外魔物环伺，黑教廷在暗处等你</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=ditandali&v=3.19.0" style="--ws-hue:#e8a04c;">
+                            <div class="ws-glyph">摊</div>
+                            <div class="ws-name">开局地摊卖大力</div>
+                            <div class="ws-desc">灵气复苏二十年，你在夜市支起小摊：破布下压着最强地摊系统——货在人先，人在祸前</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=zhanhen&v=3.46.0" style="--ws-hue:#a8c4c8;">
+                            <div class="ws-glyph">斩</div>
+                            <div class="ws-name">我在精神病院学斩神</div>
+                            <div class="ws-desc">迷雾笼罩的都市：守夜人在暗处巡逻，阳光精神病院里住着诸神——你是执刀的凡人，还是待斩的神</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="ws-group" data-gkey="guimi" style="--g-hue:#c9584a;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">幽</span>
+                <span class="wg-name">诡秘无限</span>
+                <span class="wg-sub">道诡异仙 · 轮回乐园 · 神秘复苏 · 诡秘之主</span>
+                <span class="wg-count">4 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=daoguiyixian&v=1.12.0" style="--ws-hue:#c9584a;">
+                            <div class="ws-glyph">诡</div>
+                            <div class="ws-name">道诡异仙</div>
+                            <div class="ws-desc">替代李火旺踏入双世界：白塔医院的消毒水与大傩清风观的苦药，哪个才是真的</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=lunhuileyuan&v=3.19.0" style="--ws-hue:#e05858;">
+                            <div class="ws-glyph">轮</div>
+                            <div class="ws-name">轮回乐园</div>
+                            <div class="ws-desc">濒死之际契约递到面前：乐园把你投入一个个衍生世界执行任务——完成即生，失败即真死</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=shenmifusu&v=3.46.0" style="--ws-hue:#7ab0a8;">
+                            <div class="ws-glyph">复</div>
+                            <div class="ws-name">神秘复苏</div>
+                            <div class="ws-desc">深夜的敲门声、镜子里慢半拍的倒影——厉鬼杀人有规律，剥清它，或者成为它的下一页档案</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=guimi&v=3.46.0" style="--ws-hue:#8a9ab0;">
+                            <div class="ws-glyph">雾</div>
+                            <div class="ws-name">诡秘之主</div>
+                            <div class="ws-desc">灰雾之上的愚者先生、二十二条途径的序列魔药——第五纪的雾都里，占卜家的每一步晋升都要付代价</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="ws-group" data-gkey="moshi" style="--g-hue:#5fb8d8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">冰</span>
+                <span class="wg-name">末世寒潮</span>
+                <span class="wg-sub">全球冰封</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=quanqiubingfeng&v=3.31.4" style="--ws-hue:#5fb8d8;">
+                            <div class="ws-glyph">封</div>
+                            <div class="ws-name">全球冰封</div>
+                            <div class="ws-desc">重生回寒潮降临前三十天：空间异能囤空仓库，打造末日安全屋——上一世递出去的善意全变成了刀，这一世百倍奉还</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="ws-group" data-gkey="xinghai" style="--g-hue:#6f9fe8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">星</span>
+                <span class="wg-name">科幻星海</span>
+                <span class="wg-sub">吞噬星空 · 超神学院</span>
+                <span class="wg-count">2 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=swallowedstar&v=1.6.9" style="--ws-hue:#6f9fe8;">
+                            <div class="ws-glyph">吞</div>
+                            <div class="ws-name">吞噬星空</div>
+                            <div class="ws-desc">自定义身份踏入原著世界：基地市与星海之间，活出你自己的传奇</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                        <a class="workshop" href="studio.html?genre=chaoshenxueyuan&v=3.46.0" style="--ws-hue:#e8c478;">
+                            <div class="ws-glyph">神</div>
+                            <div class="ws-name">超神学院</div>
+                            <div class="ws-desc">诸神注视下的地球：饕餮舰队压境，雄兵连集结，超级基因觉醒——你是钢铁防线的一员，还是文明夹缝中的变数</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<div class="ws-group" data-gkey="mofang" style="--g-hue:#d8a04c;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">魔</span>
+                <span class="wg-name">西幻魔导</span>
+                <span class="wg-sub">黎明之剑</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=limingzhijian&v=3.19.0" style="--ws-hue:#d8a04c;">
+                            <div class="ws-glyph">黎</div>
+                            <div class="ws-name">黎明之剑</div>
+                            <div class="ws-desc">魔潮倒计时的洛伦大陆：高文揭棺而起掀动魔导革命，蒸汽与符文的新时代里留好你的位置</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+
+        <div class="ws-cat" data-cat="earth" style="--cat-hue:#5a9e7f;">
+            <div class="ws-cat-head">
+                <span class="wc-glyph">地</span>
+                <span class="wc-name">真实地球世界</span>
+                <span class="wc-desc">不加架空设定的这颗星球：你熟悉的每一座城市都是地图节点</span>
+                <span class="wc-count">1 界</span>
+            </div>
+            <div class="ws-cat-body">
+<div class="ws-group" data-gkey="huanqiu" style="--g-hue:#5a9e7f;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">寰</span>
+                <span class="wg-name">现实寰宇</span>
+                <span class="wg-sub">地球开放世界</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=earth&v=3.19.8" style="--ws-hue:#5a9e7f;">
+                            <div class="ws-glyph">地</div>
+                            <div class="ws-name">地球开放世界</div>
+                            <div class="ws-desc">无剧情·全现实：任选时代的真实地球，以普通人身份活一段人生——世界不给故事，只给因果</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+
+        <div class="ws-cat" data-cat="free" style="--cat-hue:#e3a9c2;">
+            <div class="ws-cat-head">
+                <span class="wc-glyph">笔</span>
+                <span class="wc-name">自由创作世界</span>
+                <span class="wc-desc">不依赖原著的通用题材与完全自建世界——悬疑、科幻、武侠、克苏鲁、自由创作、无界创世</span>
+                <span class="wc-count">6 界</span>
+            </div>
+            <div class="ws-cat-body">
+<div class="workshops">
+            <a class="workshop" href="studio.html?genre=mystery&v=1.6.9" style="--ws-hue:#8e9fd8;">
+                <div class="ws-glyph">悬</div>
+                <div class="ws-name">悬疑推理</div>
+                <div class="ws-desc">迷雾重重，抽丝剥茧，每一处细节皆是证词</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=scifi&v=1.6.9" style="--ws-hue:#9ec6e8;">
+                <div class="ws-glyph">科</div>
+                <div class="ws-name">科幻未来</div>
+                <div class="ws-desc">星辰为幕，文明作注，写尽想象的边界</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=wuxia&v=1.6.9" style="--ws-hue:#d8b878;">
+                <div class="ws-glyph">侠</div>
+                <div class="ws-name">武侠仙侠</div>
+                <div class="ws-desc">江湖夜雨，快意恩仇，一剑光寒十九州</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=cthulhu&v=1.6.9" style="--ws-hue:#4a6a86;">
+                <div class="ws-glyph">异</div>
+                <div class="ws-name">克苏鲁恐怖</div>
+                <div class="ws-desc">不可名状之物低语，理智在真相前碎裂</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+            <a class="workshop" href="studio.html?genre=free&v=1.6.9" style="--ws-hue:#e3a9c2;">
+                <div class="ws-glyph">笔</div>
+                <div class="ws-name">自由创作</div>
+                <div class="ws-desc">不设藩篱，任意题材，随心落笔成书</div>
+                <span class="ws-enter">入坊 →</span>
+            </a>
+        </div>
+<div class="ws-group" data-gkey="wujie" style="--g-hue:#b98fd8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">凿</span>
+                <span class="wg-name">无界创世</span>
+                <span class="wg-sub">自由世界 · 全自定义</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=freeworld&v=3.24.0" style="--ws-hue:#b98fd8;">
+                            <div class="ws-glyph">凿</div>
+                            <div class="ws-name">自由世界</div>
+                            <div class="ws-desc">全自由·防八股：什么世界、什么法则、什么势力、什么量表全部你说了算——四步创世台亲笔捏世界，唯一管住的是文风不八股</div>
+                            <span class="ws-enter">创世 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+
+        <div class="ws-cat" data-cat="wangyou" style="--cat-hue:#6fc9d8;">
+            <div class="ws-cat-head">
+                <span class="wc-glyph">游</span>
+                <span class="wc-name">网游大世界</span>
+                <span class="wc-desc">云境原创的超级网游开放世界：三大分区合流、六幕主线、八隐藏职业与完整网游机制</span>
+                <span class="wc-count">1 界</span>
+            </div>
+            <div class="ws-cat-body">
+<div class="ws-group" data-gkey="grp-wangyou" style="--g-hue:#6fc9d8;">
+            <button type="button" class="ws-group-head" aria-expanded="true">
+                <span class="wg-glyph">游</span>
+                <span class="wg-name">网游大世界</span>
+                <span class="wg-sub">寰宇纪元 · 东境·月恒服 / 北境·灵恸服 / 中天·天纵服 / 寰宇中枢</span>
+                <span class="wg-count">1 界</span>
+                <span class="wg-caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="ws-group-body">
+                <div class="ws-clip">
+                    <div class="workshops">
+                        <a class="workshop" href="studio.html?genre=wangyou&v=1.0.0" style="--ws-hue:#6fc9d8;">
+                            <div class="ws-glyph">寰</div>
+                            <div class="ws-name">寰宇纪元 · 网游大世界</div>
+                            <div class="ws-desc">三部曲融合成一个超大开放网游世界：可选东境月恒、北境灵恸、中天天纵任一区分开局，凭跨服通行权穿行三区，六幕主线从新手谷打到王者权杖，八隐藏职业与十五阶品级链随分区切换</div>
+                            <span class="ws-enter">入场 →</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+
+
+        <!-- 指引与特性 -->
+        <div class="section-title">初来乍到</div>
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-title"><span class="dot"></span>使用指引</div>
+                <ul class="info-list">
+                    <li>创作工坊：完成故事设定（视角 · 文风 · 时代 · 母题 · 开篇 · 技法 · 六维），逐章共创</li>
+                    <li>扮演世界：捏一个身份（姓名 · 出身 · 时代 · 资质 · 入场事件），踏入原著开放漫游</li>
+                    <li>首次使用请点右上角「⚙」配置 AI 接口</li>
+                    <li>与 AI 逐轮推进，或点快捷指令放养续写</li>
+                    <li>满意即导出 TXT / Markdown 存稿</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <div class="info-title"><span class="dot"></span>框架特性</div>
+                <ul class="info-list">
+                    <li>配置驱动：一个 config 文件定义一个文学世界</li>
+                    <li>设定台 60+ 选项：视角/文风/时代/母题全维可调</li>
+                    <li>开放世界扮演：原著知识库 + 原著忠实铁律 + 玩家身份卡</li>
+                    <li>变量系统：角色卡 / 伏笔 / 状态仪表盘全程追踪</li>
+                    <li>动态世界：第二 API 推演远方事件，NPC 档案自动并入</li>
+                    <li>变量AI：第三模型提取状态，主笔专注写正文</li>
+                    <li>双格式接口：OpenAI 兼容 / Gemini</li>
+                    <li>灵感引擎 + DLC 知识包 + 数据隔离存档</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 沉浸扮演 · 平台宣传（v1.6.6：原日志区腾出，创作日志已独立成册 changelog/） -->
+        <div class="rp-promo">
+            <div class="rp-promo-mark">卷</div>
+            <div class="rp-head">
+                <div class="rp-left">
+                    <div class="rp-kicker">OPEN WORLD ROLE-PLAY · 沉浸扮演</div>
+                    <div class="rp-title">你不是读者 · 你是主角</div>
+                    <div class="rp-sub">
+                        捏一个身份，踏进原著世界。书里的风会记得你的名字，你视线之外的山河正自行运转——这不是读故事，是活进故事。脚下每一步，世界都随之改变。
+                    </div>
+                </div>
+                <div class="rp-feats">
+                <div class="rp-feat">
+                    <div class="fi">🪪</div>
+                    <div class="fn">身份卡入场</div>
+                    <div class="fd">姓名 · 出身 · 时代 · 资质 · 入场事件全自定义，以自己的名义活在书里</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">📜</div>
+                    <div class="fn">原著铁律</div>
+                    <div class="fd">知识库 + 忠实铁律双保险，名场面与设定原汁原味，绝不崩坏</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">🌍</div>
+                    <div class="fn">世界在呼吸</div>
+                    <div class="fd">第二 AI 幕后推演视线之外的事：势力暗流 · 远方传闻 · 伏笔暗涌</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">🧾</div>
+                    <div class="fn">万物皆入档</div>
+                    <div class="fd">18 维 NPC 档案 · 伏笔簿 · 状态仪表盘全程追踪，遇见的人都记得你</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">🎭</div>
+                    <div class="fn">抉择即剧情</div>
+                    <div class="fd">每轮行动选项由你定夺；写坏了 ↻ 换写法，后悔了 ↩ 回退本轮</div>
+                </div>
+                <div class="rp-feat">
+                    <div class="fi">⚡</div>
+                    <div class="fn">逐字登场</div>
+                    <div class="fd">流式打字机演出，正文如墨迹在纸面洇开，看它落笔即是享受</div>
+                </div>
+            </div>
+            </div>
+            <div class="rp-cta">
+                <a href="studio.html?genre=swallowedstar&v=1.6.9">吞噬星空 · 入场</a>
+                <a href="studio.html?genre=shrouding&v=1.6.9" class="alt">遮天 · 入场</a>
+                <a href="studio.html?genre=quanzhigaoshou&v=1.10.0" class="alt">全职高手 · 入场</a>
+                <a href="studio.html?genre=doupocangqiong&v=1.10.0" class="alt">斗破苍穹 · 入场</a>
+                <a href="studio.html?genre=wanmeishijie&v=1.11.0" class="alt">完美世界 · 入场</a>
+                <a href="studio.html?genre=douluodalu&v=1.11.0" class="alt">斗罗大陆 · 入场</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>首次进入需配置 AI 接口（支持 OpenAI 兼容格式与 Gemini 格式）</p>
+            <p>建议通过本地 HTTP 服务访问 · 支持电脑 / 平板 / 手机多端创作</p>
+            <p class="footer-log">📜 <a href="changelog/">创作日志 · 独立成册</a> · 当前版本 <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v4.27.0 云境版</a></p>
+        </div>
+    </div>
+
+    <!-- v3.38.1 错误哨兵：脚本加载失败/运行异常时屏幕直接显示出错文件 -->
+    <script defer src="js/boot-error-guard.js?v=4.27.0"></script>
+    <script>
+        // 响应式模式类（与 studio.html 同策略；判空防异常，媒体查询兜底已内置）
+        (function () {
+            function fitMode() {
+                if (!document.body) return;
+                document.body.classList.toggle('mobile', window.innerWidth <= 760);
+                document.body.classList.toggle('narrow', window.innerWidth <= 380);
+            }
+            window.addEventListener('resize', fitMode);
+            window.addEventListener('orientationchange', fitMode);
+            document.addEventListener('DOMContentLoaded', fitMode);
+            window.addEventListener('load', fitMode);
+            fitMode();
+        })();
+
+        // 开屏动画：点击跳过，2.4 秒自动展开
+        (function () {
+            const splash = document.getElementById('splash');
+            let closed = false;
+            function close() {
+                if (closed) return;
+                closed = true;
+                splash.classList.add('hidden');
+                // 与 CSS 的 .45s 淡出过渡对齐：过渡完成后立即移除节点，不留 DOM 冗余滞留窗口
+                setTimeout(() => splash.remove(), 500);
+            }
+            splash.addEventListener('click', close);
+            setTimeout(close, 2400);
+        })();
+
+        // 开放世界折叠分组（v3.19.3）：同题材归组手风琴 + localStorage 状态记忆
+        // 首访默认展开第一组；无 JS 时全部展开（控制条隐藏），渐进增强
+        (function () {
+            var groups = Array.prototype.slice.call(document.querySelectorAll('.ws-group'));
+            if (!groups.length) return;
+            var LS_KEY = 'yunjingLobbyWsGroups';
+
+            var ctlBar = document.getElementById('wsGroupsCtl');
+            if (ctlBar) ctlBar.style.display = 'flex';
+
+            function setGroup(g, open) {
+                g.classList.toggle('closed', !open);
+                var head = g.querySelector('.ws-group-head');
+                if (head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+            function persist() {
+                var state = {};
+                groups.forEach(function (g) {
+                    state[g.getAttribute('data-gkey') || ''] = !g.classList.contains('closed');
+                });
+                try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { }
+            }
+
+            var saved = null;
+            try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { }
+            groups.forEach(function (g, i) {
+                setGroup(g, saved ? !!saved[g.getAttribute('data-gkey')] : i === 0);
+            });
+
+            /* v4.06.0 四大分类：分类本身也可折叠，状态另存一个 key，不与题材分组冲突 */
+            var CATS = Array.prototype.slice.call(document.querySelectorAll('.ws-cat'));
+            var CAT_KEY = 'yunjing_ws_cats_v406';
+            var catSaved = null;
+            try { catSaved = JSON.parse(localStorage.getItem(CAT_KEY) || 'null'); } catch (e) { }
+            function setCat(c, open) {
+                c.classList.toggle('closed', !open);
+                var h = c.querySelector('.ws-cat-head');
+                if (h) h.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+            CATS.forEach(function (c, i) {
+                var k = c.getAttribute('data-cat') || String(i);
+                setCat(c, catSaved ? !!catSaved[k] : true);
+            });
+            CATS.forEach(function (c) {
+                var head = c.querySelector('.ws-cat-head');
+                if (!head) return;
+                head.addEventListener('click', function () {
+                    setCat(c, c.classList.contains('closed'));
+                    var st = {};
+                    CATS.forEach(function (x) { st[x.getAttribute('data-cat') || ''] = !x.classList.contains('closed'); });
+                    try { localStorage.setItem(CAT_KEY, JSON.stringify(st)); } catch (e) { }
+                });
+            });
+            var ec = document.getElementById('wsExpandAll');
+            var cc = document.getElementById('wsCollapseAll');
+            if (ec) ec.addEventListener('click', function () {
+                groups.forEach(function (g) { setGroup(g, true); });
+                CATS.forEach(function (c) { setCat(c, true); });
+                persist();
+            });
+            if (cc) cc.addEventListener('click', function () {
+                groups.forEach(function (g) { setGroup(g, false); });
+                CATS.forEach(function (c) { setCat(c, false); });
+                persist();
+            });
+
+            groups.forEach(function (g) {
+                var head = g.querySelector('.ws-group-head');
+                if (!head) return;
+                head.addEventListener('click', function () {
+                    setGroup(g, g.classList.contains('closed'));
+                    persist();
+                });
+            });
+
+            var expandAll = document.getElementById('wsExpandAll');
+            var collapseAll = document.getElementById('wsCollapseAll');
+            if (expandAll) expandAll.addEventListener('click', function () {
+                groups.forEach(function (g) { setGroup(g, true); });
+                persist();
+            });
+            if (collapseAll) collapseAll.addEventListener('click', function () {
+                groups.forEach(function (g) { setGroup(g, false); });
+                persist();
+            });
+        })();
+
+        // 预加载创作室
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = 'studio.html';
+        document.head.appendChild(link);
+    </script>
+
+<script>
+    /* PWA：HTTPS 部署时启用离线缓存（本地 http 服务与安卓 APK 内 file:// 均不启用，零影响） */
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('sw.js').catch(function () { });
+        });
+    }
+</script>
+
+<script>
+(function(){
+  try{
+    if(location.protocol!=='file:')return;try{if(localStorage.getItem('yunjingFileBannerOff'))return;}catch(e){}
+    var d=document.createElement('div');d.id='yunjing-file-banner';
+    d.style.cssText='position:fixed;left:12px;right:12px;bottom:12px;z-index:99999;background:#2a2320;color:#f0d9ad;border:1px solid #e0a84c55;border-radius:10px;padding:12px 14px;font:14px/1.6 "Microsoft YaHei",sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5)';
+    d.innerHTML=`<b>当前是受限模式(直接打开文件)。</b>关闭本页,双击文件夹里的「start-windows.bat」可获得完整体验。<span style="float:right;cursor:pointer;margin-left:10px" onclick="try{localStorage.setItem('yunjingFileBannerOff',1)}catch(e){}this.parentNode.remove()">知道了✕</span>`;
+    document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(d)});
+  }catch(e){}
+})();
+</script>
+<!-- v3.84.0 小云：大厅即全功能可用（世界书/存档/预设/正文急救/造物工坊） -->
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=4.27.0">
+<!-- v4.16.0：移动端触控目标补丁（≤640px 生效，只抬最小可点尺寸，不改视觉） -->
+<link rel="stylesheet" href="css/touch-targets.css?v=4.27.0">
+<script src="js/worldbook-seeds.js?v=4.27.0"></script>
+<script src="js/world-book.js?v=4.27.0"></script>
+<script src="js/xiaoyun-ops.js?v=4.27.0"></script>
+<script src="js/xiaoyun-buddy.js?v=4.27.0"></script>
+<script src="js/first-run-guide.js?v=4.27.0"></script>
+<script>
+  /* v3.87.0 P3-3：首页版本徽标与 YJ_VER 同源（此前写死 v3.84.0，与实际版本长期不符） */
+  window.YJ_VER = '4.27.0';
+  (function () {
+    var b = document.getElementById('verBadge');
+    if (b) b.textContent = 'v' + window.YJ_VER + ' 云境版';
+  })();
+</script>
+</body>
+
+</html>

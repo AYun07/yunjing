@@ -1,0 +1,155 @@
+/* ============================================================
+   全职高手主题 - 电竞银蓝（赛场冷光 × 键盘热血）
+   v3.15.0 每界专属 UI 皮肤重做：
+   键位斜纹底纹 · 顶栏战队灯带 · 卡片斜切角标 ·
+   选项连击指引 · 面板战绩标题 · 专属滚动条
+   ============================================================ */
+body {
+    --primary: #5fc9d8;
+    --primary-dim: rgba(95, 201, 216, 0.12);
+    --primary-glow: rgba(95, 201, 216, 0.3);
+    --secondary: #e0a84c;
+    --accent: #8ad0da;
+    --panel-border: rgba(95, 201, 216, 0.18);
+    background-color: #0a141a;
+    background-image:
+        radial-gradient(ellipse 760px 440px at 14% -6%, rgba(95, 201, 216, 0.1), transparent 62%),
+        radial-gradient(ellipse 640px 480px at 98% 110%, rgba(224, 168, 76, 0.05), transparent 60%),
+        repeating-linear-gradient(-45deg, transparent 0 18px, rgba(95, 201, 216, 0.03) 18px 19px),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%235fc9d8' stroke-opacity='0.06' stroke-width='1.2'%3E%3Crect x='14' y='14' width='30' height='30' rx='5'/%3E%3Crect x='66' y='66' width='30' height='30' rx='5'/%3E%3C/g%3E%3Cg fill='%23a8e4ec' fill-opacity='0.08'%3E%3Ccircle cx='55' cy='30' r='1.2'/%3E%3Ccircle cx='30' cy='82' r='1'/%3E%3Ccircle cx='84' cy='18' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
+}
+body .chapter-badge { background: linear-gradient(135deg, #a8e4ec, #5fc9d8); }
+body .progress-fill { background: linear-gradient(90deg, #5fc9d8, #a8e4ec); }
+body #sendBtn, body .btn-solid { background: linear-gradient(135deg, #a8e4ec, #5fc9d8); }
+body .foreshadow-item.planted {
+    background: rgba(95, 201, 216, 0.08);
+    border-left-color: #5fc9d8;
+    color: #a4d8e2;
+}
+body .char-status { color: #5fc9d8; border-color: rgba(95, 201, 216, 0.4); }
+
+/* ─────────── ① 顶栏：战队灯带 ─────────── */
+body.theme-quanzhigaoshou .top-bar {
+    background: linear-gradient(180deg, rgba(11, 22, 28, 0.96), rgba(10, 20, 26, 0.93));
+    border-bottom: none;
+    box-shadow: inset 0 -2px 0 rgba(95, 201, 216, 0.45), inset 0 -5px 8px rgba(95, 201, 216, 0.12), 0 2px 16px rgba(0, 0, 0, 0.4);
+}
+body.theme-quanzhigaoshou #gameTitle {
+    letter-spacing: 2px;
+    text-shadow: 0 0 14px rgba(95, 201, 216, 0.5);
+    text-transform: none;
+}
+
+/* ─────────── ② 正文卡：赛事面板 + 斜切角标 ─────────── */
+body.theme-quanzhigaoshou .ai-card {
+    position: relative;
+    border-left: none;
+    border-radius: 6px 10px 6px 10px;
+    background:
+        linear-gradient(135deg, rgba(95, 201, 216, 0.08), transparent 35%),
+        var(--panel);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+body.theme-quanzhigaoshou .ai-card:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), 0 0 18px rgba(95, 201, 216, 0.12);
+}
+/* 斜切角标：左上蓝 + 右下金 */
+body.theme-quanzhigaoshou .ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-top: 20px solid rgba(95, 201, 216, 0.22);
+    border-right: 20px solid transparent;
+    border-radius: 6px 0 0 0;
+    pointer-events: none;
+}
+body.theme-quanzhigaoshou .ai-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 0; height: 0;
+    border-bottom: 26px solid rgba(224, 168, 76, 0.14);
+    border-left: 26px solid transparent;
+    border-radius: 0 0 10px 0;
+    pointer-events: none;
+}
+body.theme-quanzhigaoshou .ai-card-header { border-bottom: 1px solid rgba(95, 201, 216, 0.2); }
+
+/* ─────────── ③ 章节徽章：击杀播报 ─────────── */
+body.theme-quanzhigaoshou .chapter-badge {
+    font-family: var(--mono);
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(168, 228, 236, 0.55);
+    box-shadow: 0 0 12px rgba(95, 201, 216, 0.35);
+    text-shadow: 0 0 6px rgba(95, 201, 216, 0.4);
+}
+
+/* ─────────── ④ 选项按钮：技能连招 ─────────── */
+body.theme-quanzhigaoshou .option-btn { border-radius: 6px 10px 6px 10px; }
+body.theme-quanzhigaoshou .option-btn::before { content: '≫ '; color: #5fc9d8; font-weight: bold; }
+body.theme-quanzhigaoshou .option-btn:hover:not(:disabled) {
+    border-color: rgba(95, 201, 216, 0.75);
+    box-shadow: inset 2px 0 0 #5fc9d8, 0 0 16px rgba(95, 201, 216, 0.18);
+    background: rgba(95, 201, 216, 0.06);
+    text-shadow: 0 0 8px rgba(95, 201, 216, 0.4);
+}
+body.theme-quanzhigaoshou .options-title { letter-spacing: 3px; }
+body.theme-quanzhigaoshou .options-title::before { content: '▶ '; color: #5fc9d8; }
+
+/* ─────────── ⑤ 输入区：操作指令行 ─────────── */
+body.theme-quanzhigaoshou #userInput { border-radius: 6px; font-family: var(--mono); }
+body.theme-quanzhigaoshou #userInput:focus {
+    border-color: #5fc9d8;
+    box-shadow: 0 0 0 3px rgba(95, 201, 216, 0.18), 0 0 20px rgba(95, 201, 216, 0.12);
+}
+body.theme-quanzhigaoshou #sendBtn {
+    border-radius: 6px 10px 6px 10px;
+    box-shadow: 0 0 14px rgba(95, 201, 216, 0.35);
+    letter-spacing: 1px;
+}
+
+/* ─────────── ⑥ 面板：战绩统计板 ─────────── */
+body.theme-quanzhigaoshou .panel-title { letter-spacing: 1.5px; }
+body.theme-quanzhigaoshou .panel-title::before { content: '◤ '; color: #8ad0da; }
+body.theme-quanzhigaoshou .gauge-label { color: #8ad0da; }
+body.theme-quanzhigaoshou .gauge-fill { box-shadow: 0 0 8px rgba(95, 201, 216, 0.4); }
+body.theme-quanzhigaoshou .sheet-box { border-top: 2px solid rgba(95, 201, 216, 0.45); border-radius: 6px 6px 0 0; }
+body.theme-quanzhigaoshou .modal-box { border-top: 2px solid rgba(95, 201, 216, 0.45); border-radius: 6px 6px 0 0; }
+
+/* ─────────── ⑦ 滚动条：屏幕流光 ─────────── */
+body.theme-quanzhigaoshou #chatMessages::-webkit-scrollbar-thumb,
+body.theme-quanzhigaoshou #statusPanel::-webkit-scrollbar-thumb,
+body.theme-quanzhigaoshou #setupWrap::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(95, 201, 216, 0.3), rgba(95, 201, 216, 0.16));
+}
+body.theme-quanzhigaoshou #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(95, 201, 216, 0.5); }
+
+/* ─────────── ⑧ 扮演模式特化：角色面板 ─────────── */
+body.theme-quanzhigaoshou .wizard-title { letter-spacing: 2px; text-shadow: 0 0 12px rgba(95, 201, 216, 0.4); }
+body.theme-quanzhigaoshou .book-title-line { color: #5fc9d8; }
+body.theme-quanzhigaoshou .status-panel {
+    border-image: linear-gradient(180deg, rgba(95, 201, 216, 0.4), rgba(224, 168, 76, 0.12)) 1;
+}
+
+/* ─────────── ⑨ 快捷指令：键位钮 ─────────── */
+body.theme-quanzhigaoshou .quick-btn {
+    border-radius: 5px;
+    font-family: var(--mono);
+}
+body.theme-quanzhigaoshou .quick-btn:hover {
+    border-color: rgba(95, 201, 216, 0.65);
+    box-shadow: 0 0 10px rgba(95, 201, 216, 0.2), inset 0 0 6px rgba(95, 201, 216, 0.08);
+    transform: translateY(-1px);
+}
+
+/* ─────────── ⑩ 章节标题：赛季大字 ─────────── */
+body.theme-quanzhigaoshou .story-chapter-title {
+    letter-spacing: 5px;
+    text-shadow: 0 0 8px rgba(95, 201, 216, 0.35), 0 0 24px rgba(95, 201, 216, 0.18);
+}
+
+/* ─────────── 移动端适配（皮肤只做轻装饰，不改布局） ─────────── */
+body.theme-quanzhigaoshou.mobile .ai-card::before,
+body.theme-quanzhigaoshou.mobile .ai-card::after { display: none; }

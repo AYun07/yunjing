@@ -1,0 +1,370 @@
+/* ============================================================
+   云境 · 板式 D「云白卡片」 v3.72.0
+   云白轻底 / 独立卡片(Bento) / 靛蓝点睛 / 大圆角柔阴影
+   ★ 这一版是"板式"变化：整块长卡拆成一张张独立小卡
+   作用域 html body.page-studio，仅在 ?theme=cloud 时启用
+   ============================================================ */
+html body.page-studio {
+  --indigo: #5b6ee1;
+  --indigo-lt: #7b8bf5;
+  --sky: #63b3ed;
+  --ink: #2b3550;
+  --text: #2b3550;
+  --text-muted: #6b7692;
+  --text-faint: #9aa4bd;
+  --primary: #5b6ee1;
+  --primary-dim: rgba(91, 110, 225, .1);
+  --primary-glow: rgba(91, 110, 225, .24);
+  --panel: #ffffff;
+  --panel-2: #f8f9fd;
+  --line: #e7ebf4;
+
+  background:
+    radial-gradient(760px 560px at 8% -6%, rgba(99, 179, 237, .16), transparent 60%),
+    radial-gradient(820px 620px at 100% 0%, rgba(139, 124, 246, .16), transparent 56%),
+    radial-gradient(700px 640px at 50% 116%, rgba(99, 179, 237, .10), transparent 62%),
+    linear-gradient(180deg, #f7f9fd, #eef2f9);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+/* ── 顶栏：白玻璃 ── */
+html body.page-studio .top-bar {
+  background: rgba(255, 255, 255, .82);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 6px 24px rgba(43, 53, 80, .07);
+}
+html body.page-studio .top-bar::after { display: none; }
+html body.page-studio #gameTitle {
+  font-family: var(--sans);
+  font-size: 16px;
+  letter-spacing: .5px;
+  font-weight: 700;
+  background: linear-gradient(120deg, #4c5fd8, #7b8bf5 60%, #63b3ed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+html body.page-studio .back-link {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: #4a5573;
+}
+html body.page-studio .back-link:hover {
+  border-color: #c9d2ee;
+  color: var(--indigo);
+  box-shadow: 0 4px 14px rgba(91, 110, 225, .12);
+}
+html body.page-studio .ver-dot {
+  background: rgba(91, 110, 225, .08);
+  border-color: rgba(91, 110, 225, .35);
+  color: var(--indigo);
+}
+html body.page-studio .top-btn {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: #4a5573;
+}
+html body.page-studio .top-btn:hover,
+html body.page-studio .top-btn.active {
+  background: rgba(91, 110, 225, .07);
+  border-color: rgba(91, 110, 225, .45);
+  color: var(--indigo);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(91, 110, 225, .14);
+}
+
+/* ── 设定台：拆成独立卡片（Bento） ── */
+html body.page-studio #setupWrap { padding: 34px 24px 90px; }
+html body.page-studio #setupContainer { max-width: 1060px; }
+
+/* 外层不再是一张巨卡：透明、无边框、无阴影 */
+html body.page-studio .wizard-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+html body.page-studio .wizard-card::before,
+html body.page-studio .wizard-card::after { display: none; }
+
+html body.page-studio .wizard-title {
+  font-family: var(--sans);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: #222a3f;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  padding: 0 4px;
+}
+html body.page-studio .wizard-sub {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 10px 0 20px;
+  padding: 0 4px;
+  line-height: 1.8;
+}
+
+/* 每节 = 一张独立小白卡 */
+html body.page-studio .wiz-section {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 26px rgba(43, 53, 80, .06), 0 1px 2px rgba(43, 53, 80, .04);
+}
+html body.page-studio .wiz-section + .wiz-section {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+html body.page-studio .wiz-row {
+  margin-bottom: 14px;
+  gap: 14px;
+}
+html body.page-studio .wiz-row.two-col,
+html body.page-studio .wiz-row.three-col { gap: 14px; }
+html body.page-studio .wiz-row .wiz-section {
+  margin-bottom: 0;
+  height: 100%;
+}
+html body.page-studio .wiz-row .wiz-section + .wiz-section {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+/* ── 分区标题：干净无衬线 ── */
+html body.page-studio .wiz-label {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #37415c;
+  letter-spacing: .2px;
+  padding-left: 0;
+}
+html body.page-studio .wiz-label::before { display: none; }
+html body.page-studio .wiz-hint { color: var(--text-faint); font-weight: 400; }
+html body.page-studio .points-remain {
+  background: rgba(91, 110, 225, .08);
+  border: 1px solid rgba(91, 110, 225, .22);
+  border-radius: 99px;
+  color: var(--indigo);
+}
+
+/* ── 表单：浅灰填充 + 靛蓝聚焦环 ── */
+html body.page-studio .wiz-input,
+html body.page-studio .wiz-select {
+  height: 44px;
+  background: #f3f5fb;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0 14px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+html body.page-studio textarea.wiz-input {
+  height: auto;
+  min-height: 68px;
+  padding: 11px 14px;
+  line-height: 1.65;
+}
+html body.page-studio .wiz-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #7b8bf5 50%),
+    linear-gradient(135deg, #7b8bf5 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+html body.page-studio .wiz-input::placeholder { color: #9aa4bd; }
+html body.page-studio .wiz-input:hover,
+html body.page-studio .wiz-select:hover { background: #eef1f9; }
+html body.page-studio .wiz-input:focus,
+html body.page-studio .wiz-select:focus {
+  background: #fff;
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(91, 110, 225, .14);
+}
+html body.page-studio .wiz-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  background: #f7f9fd;
+  border-left: 2px solid #dbe2f5;
+  border-radius: 0 8px 8px 0;
+  padding: 7px 10px;
+}
+
+/* ── 骰子 / 随缘 ── */
+html body.page-studio .dice-btn {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: #6b7692;
+}
+html body.page-studio .dice-btn:hover {
+  background: rgba(91, 110, 225, .06);
+  border-color: rgba(91, 110, 225, .4);
+  color: var(--indigo);
+}
+html body.page-studio .fate-hero {
+  background: linear-gradient(135deg, rgba(91, 110, 225, .08), rgba(99, 179, 237, .06));
+  border: 1px solid rgba(91, 110, 225, .2);
+  border-radius: 16px;
+  box-shadow: none;
+}
+html body.page-studio .fate-btn {
+  background: linear-gradient(135deg, #6b7cf0, #5b6ee1);
+  border-radius: 11px;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(91, 110, 225, .3);
+}
+html body.page-studio .fate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(91, 110, 225, .4);
+}
+
+/* ── 开局 / 技法：浅灰内卡 ── */
+html body.page-studio .opening-grid,
+html body.page-studio .tech-grid { gap: 11px; }
+html body.page-studio .opening-item,
+html body.page-studio .tech-item {
+  background: #f8f9fd;
+  border: 1px solid #eaeef7;
+  border-radius: 13px;
+  transition: all .16s ease;
+}
+html body.page-studio .opening-item:hover,
+html body.page-studio .tech-item:hover {
+  background: #fff;
+  border-color: #c9d2ee;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(43, 53, 80, .09);
+}
+html body.page-studio .opening-item.selected,
+html body.page-studio .tech-item.selected {
+  background: #eef1ff;
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 1px rgba(91, 110, 225, .28), 0 8px 22px rgba(91, 110, 225, .14);
+}
+html body.page-studio .opening-name,
+html body.page-studio .tech-name {
+  color: #3a4563;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+html body.page-studio .opening-desc,
+html body.page-studio .tech-desc,
+html body.page-studio .opening-effects { color: var(--text-muted); }
+html body.page-studio .pm.plus { color: #2fa37a; }
+html body.page-studio .pm.minus { color: #e0725f; }
+html body.page-studio .cost { color: #e0725f; }
+
+/* ── 六维 ── */
+html body.page-studio .stats-grid { gap: 10px; }
+html body.page-studio .stat-alloc {
+  background: #f8f9fd;
+  border: 1px solid #eaeef7;
+  border-radius: 13px;
+}
+html body.page-studio .sa-btn { border-radius: 8px; color: #4a5573; }
+html body.page-studio .sa-btn:hover {
+  background: rgba(91, 110, 225, .1);
+  color: var(--indigo);
+  box-shadow: none;
+}
+
+/* ── 底部操作：也做成一张卡 ── */
+html body.page-studio .wizard-actions {
+  margin-top: 4px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(43, 53, 80, .06);
+}
+html body.page-studio .btn-solid {
+  background: linear-gradient(135deg, #6b7cf0, #5b6ee1);
+  border-radius: 12px;
+  color: #fff;
+  padding: 12px 26px;
+  font-weight: 700;
+  box-shadow: 0 8px 22px rgba(91, 110, 225, .3);
+  transition: all .18s ease;
+}
+html body.page-studio .btn-solid:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(91, 110, 225, .42);
+}
+html body.page-studio .btn-ghost {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: #4a5573;
+}
+html body.page-studio .btn-ghost:hover {
+  border-color: rgba(91, 110, 225, .45);
+  color: var(--indigo);
+  background: rgba(91, 110, 225, .04);
+}
+
+/* ── 右栏：白色浮卡 ── */
+html body.page-studio #statusPanel {
+  background: #fff;
+  border-left: 1px solid var(--line);
+  box-shadow: -12px 0 40px rgba(43, 53, 80, .07);
+}
+html body.page-studio .panel-header {
+  background: rgba(255, 255, 255, .92);
+  border-bottom: 1px solid var(--line);
+}
+html body.page-studio .panel-title {
+  font-family: var(--sans);
+  letter-spacing: .5px;
+  font-weight: 700;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  color: #2b3550;
+}
+html body.page-studio .panel-section {
+  background: #f8f9fd;
+  border: 1px solid #eaeef7;
+  border-radius: 13px;
+}
+html body.page-studio .section-title { color: #7a86a3; letter-spacing: 1px; font-weight: 600; }
+html body.page-studio .section-title::before {
+  background: var(--indigo);
+  box-shadow: none;
+}
+html body.page-studio .empty-hint { color: var(--text-faint); }
+html body.page-studio .empty-hint::before { border-color: #c9d2ee; }
+html body.page-studio .progress-bar { background: #eef1f8; box-shadow: none; }
+html body.page-studio .progress-fill {
+  background: linear-gradient(90deg, #7b8bf5, #5b6ee1);
+  box-shadow: 0 0 10px rgba(91, 110, 225, .28);
+}
+
+/* ── 移动端 ── */
+@media (max-width: 720px) {
+  html body.page-studio #setupWrap { padding: 16px 12px 76px; }
+  html body.page-studio .wiz-section { padding: 16px 15px; border-radius: 16px; }
+  html body.page-studio .wizard-title { font-size: 22px; }
+  html body.page-studio .wizard-actions { padding: 14px 15px; border-radius: 16px; }
+}
