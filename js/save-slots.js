@@ -205,22 +205,22 @@
           }
         }
       } catch (e) { pkg.media = {}; }
-      const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `云境存档_${fw.genre}_${(meta.title || meta.name || slotId).slice(0, 12)}_${slotId}.json`;
-      a.click();
-      URL.revokeObjectURL(a.href);
+      /* v4.35.0：接口配置随单档导出（端点/模型免重填，密钥按勾选项决定） */
+      try {
+        const includeKey = !!(window.__yjExportIncludeKey);
+        if (window.SaveCodec) pkg.config = window.SaveCodec.collectConfig(includeKey);
+      } catch (e) {}
+      await this._downloadSmart(pkg, `云境存档_${fw.genre}_${(meta.title || meta.name || slotId).slice(0, 12)}_${slotId}`);
     },
-    /** 导入槽位 JSON（收进新槽位，绝不覆盖现有档） */
+    /** 导入槽位 JSON/gzip（收进新槽位，绝不覆盖现有档） */
     importSlot(file) {
-      const reader = new FileReader();
-      reader.onload = async () => {
+      (async () => {
         var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
         try {
-          const pkg = JSON.parse(reader.result);
-          /* v3.68.0 导入防护：超大文件直接拒绝，防撑爆配额 */
-          if (String(reader.result || "").length > 20 * 1024 * 1024) throw new Error("存档文件过大（>20MB），疑似损坏文件");
+          const text = await this._readSmart(file);
+          const pkg = JSON.parse(text);
+          /* v4.35.0：解压后正文可能较大，放宽到 80MB；gzip 包本身通常仅几 MB */
+          if (text.length > 80 * 1024 * 1024) throw new Error("存档解压后过大（>80MB），疑似损坏文件");
           const okApp = window.YunjingID && window.YunjingID.acceptApp ? window.YunjingID.acceptApp(pkg.app) : (pkg.app === "yunjing" || pkg.app === "moshu");
           if (!okApp || !pkg.save) throw new Error("不是云境存档文件");
           const fw = window.storyFramework;
@@ -272,13 +272,21 @@
             r.started = !!((_i = pkg.save) == null ? void 0 : _i.isStoryStarted);
             this._write(arr);
           }
-          (_j = window.showToast) == null ? void 0 : _j.call(window, `✅ 已收入书架（新档位）`, "success");
+          /* v4.35.0：恢复接口配置（端点/模型免重填，密钥按导出时的勾选） */
+          let cfgMsg = '';
+          try {
+            if (pkg.config && window.SaveCodec) {
+              const cr = window.SaveCodec.restoreConfig(pkg.config);
+              if (cr.applied.length) cfgMsg = ' · 已恢复接口配置';
+              if (cr.keyNeeded) cfgMsg += ' · 密钥需补填（导出时未含）';
+            }
+          } catch (e) {}
+          (_j = window.showToast) == null ? void 0 : _j.call(window, `✅ 已收入书架（新档位）${cfgMsg}`, "success");
           this.open();
         } catch (e) {
           (_k = window.showToast) == null ? void 0 : _k.call(window, `导入失败：${e.message}`, "error");
         }
-      };
-      reader.readAsText(file);
+      })();
     },
 
     /* ==================== v4.28.0 存档防丢（P0：全量备份 / 恢复 / 容量体检） ====================
@@ -412,6 +420,46 @@
 
     _toast(msg, type) { try { if (window.showToast) window.showToast(msg, type || 'info'); } catch (e) {} },
 
+    /** v4.35.0：导出是否包含 API 密钥（全局开关，导出时读取） */
+    setIncludeKey(on) {
+      window.__yjExportIncludeKey = !!on;
+      try { localStorage.setItem('yunjingExportIncludeKey', on ? '1' : '0'); } catch (e) {}
+    },
+    _initIncludeKey() {
+      try { window.__yjExportIncludeKey = localStorage.getItem('yunjingExportIncludeKey') === '1'; } catch (e) { window.__yjExportIncludeKey = false; }
+    },
+
+    /* ==================== v4.35.0 智能存档编解码（gzip 压缩 + 配置随档） ==================== */
+    /** 压缩写出：优先 gzip（约 1/5~1/10 体积），不支持则回退明文 JSON。返回 {bytes,ext,compressed} */
+    async _downloadSmart(obj, baseName) {
+      const json = JSON.stringify(obj);
+      let payload, ext, compressed = false;
+      try {
+        if (window.SaveCodec && window.SaveCodec.hasGzip()) {
+          const gz = await window.SaveCodec.gzip(json);
+          if (gz && gz.length < json.length) { payload = gz; ext = '.json.gz'; compressed = true; }
+        }
+      } catch (e) {}
+      if (!payload) { payload = new TextEncoder().encode(json); ext = '.json'; }
+      const blob = new Blob([payload], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = baseName + ext;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} a.remove(); }, 1200);
+      try {
+        const ratio = compressed ? ((payload.length / json.length) * 100).toFixed(0) + '%' : '未压缩';
+        this._toast(`✅ 已导出${compressed ? '压缩存档' : '存档'}（${(payload.length / 1024).toFixed(0)} KB，体积 ${ratio}）`, 'success');
+      } catch (e) {}
+      return { bytes: payload.length, ext, compressed };
+    },
+    /** 读入并自动解压（gzip 魔数识别），兼容旧明文 .json。返回字符串 */
+    async _readSmart(file) {
+      const buf = await file.arrayBuffer();
+      if (window.SaveCodec) return await window.SaveCodec.gunzip(buf);
+      return new TextDecoder().decode(new Uint8Array(buf));
+    },
+
     /** 全量备份：所有槽位 + 全部 localStorage + 全部 IndexedDB，一键跨设备搬家 */
     async exportAll() {
       try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) {}
@@ -429,9 +477,9 @@
         };
         const d = new Date();
         const stamp = '' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '_' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0');
-        this._download(pkg, '云境全量备份_' + stamp + '.json');
-        const sz = JSON.stringify(pkg).length;
-        this._toast('已导出全量备份（' + (sz / 1024 / 1024).toFixed(1) + 'MB）。文件含 API Key，请妥善保管！', 'success');
+        const res = await this._downloadSmart(pkg, '云境全量备份_' + stamp);
+        const sz = res.bytes;
+        this._toast('已导出全量备份（' + (sz / 1024 / 1024).toFixed(2) + 'MB' + (res.compressed ? '，已压缩' : '') + '）。文件含 API Key，请妥善保管！', 'success');
       } catch (e) {
         this._toast('导出失败：' + e.message, 'error');
       }
@@ -487,8 +535,8 @@
     async importAll(file) {
       try {
         if (!file) return;
-        const txt = await file.text();
-        if (txt.length > 300 * 1024 * 1024) throw new Error('备份文件超过 300MB，疑似损坏');
+        const txt = await this._readSmart(file);
+        if (txt.length > 500 * 1024 * 1024) throw new Error('备份解压后超过 500MB，疑似损坏');
         const pkg = JSON.parse(txt);
         const okApp = window.YunjingID && window.YunjingID.acceptApp
           ? window.YunjingID.acceptApp(pkg.app)
@@ -576,9 +624,12 @@
                     </div>
                     <div class="ss-foot2">
                         <span id="ssCap" class="ss-cap"></span>
+                        <label class="ss-cap" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;" title="勾选后，导出的存档包会明文写入 API 密钥；不勾选则只带端点与模型，导入后需补填密钥">
+                            <input type="checkbox" id="ssIncludeKey" onchange="SaveSlots.setIncludeKey(this.checked)"> 导出含密钥
+                        </label>
                         <button class="ss-btn" onclick="SaveSlots.undoLastImport()" title="撤销上一次全量恢复，回到导入前状态">↩ 撤销上次恢复</button>
                     </div>
-                    <div class="ss-hint">⚠ 备份文件含 API Key 与全部故事数据，请只存私密位置、勿外传。</div>
+                    <div class="ss-hint">⚠ 存档包已启用 gzip 压缩（体积约 1/5）。默认只带端点与模型、不含密钥；如需换设备免重填，勾选「导出含密钥」后请只存私密位置、勿外传。</div>
                 </div>
             </div>`;
       (_c = document.getElementById("slotModal")) == null ? void 0 : _c.remove();
@@ -586,6 +637,7 @@
       wrap.id = "slotModal";
       wrap.innerHTML = html;
       document.body.appendChild(wrap);
+      try { this._initIncludeKey(); const cb = wrap.querySelector('#ssIncludeKey'); if (cb) cb.checked = !!window.__yjExportIncludeKey; } catch (e) {}
       try { this.refreshCapacity(); } catch (e) {}
     },
     /* v3.27.4 安卓适配：原生 prompt/confirm → 应用内 UIDialog（触屏体验统一，

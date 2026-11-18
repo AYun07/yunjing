@@ -103,7 +103,7 @@ const CORE2 = CORE.concat(GEN, [
   'js/theme-studio.js','js/vault.js',
   /* v3.53.0 新增：原创设计工坊 / 状态栏字段全集 / 文件桥（离线也要能用） */
   'js/creator-forge.js','js/status-schema.js','js/file-bridge.js',
-  'js/save-slots.js','js/card-io.js','js/card-hub.js',
+  'js/save-slots.js','js/save-codec.js','js/card-io.js','js/card-hub.js',
   /* --- 知识库与 DLC ---
      v3.55.3 预缓存瘦身：js/preset-knowledge.js（9MB 整包）撤出预缓存——v3.53.0 起
      世界书已按界拆成 js/kb/<界>.core.js + .ext.js（66 个分包均在 GEN 预缓存，覆盖全部工坊），
