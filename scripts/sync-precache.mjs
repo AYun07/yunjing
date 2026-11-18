@@ -46,7 +46,7 @@ const genreExtra = swGenres ? swGenres.filter((g) => !realGenres.includes(g)) : 
 /* 注意：sw.js 里有 `'configs/' + g + '-config.js'` 这类**拼接片段**，
    字面量 '-config.js' 也会被正则匹配到，但它不是路径。剔除「以 - 或 . 开头」的片段，
    并要求：含 '/' 的目录路径，或属于根目录下的已知文件。 */
-const ROOT_FILES = new Set(['index.html', 'studio.html', 'sw.js', 'story-framework.js',
+const ROOT_FILES = new Set(['index.html', 'studio.html', 'opening.html', 'xiaoyun.html', 'sw.js', 'story-framework.js',
   'selftest.html', 'manifest.webmanifest', 'mobile-server.ps1', 'offline.html', 'changelog.html']);
 const literalPaths = [...sw.matchAll(/'((?:\.\/)?[\w./@-]+\.(?:js|css|json|html|png|ico|woff2|webmanifest|ps1))'/g)]
   .map((m) => m[1].replace(/^\.\//, ''))

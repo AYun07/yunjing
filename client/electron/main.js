@@ -43,7 +43,7 @@ function startServer() {
     server = http.createServer((req, res) => {
       try {
         let urlPath = decodeURIComponent((req.url || '/').split('?')[0]);
-        if (urlPath === '/' || urlPath === '') urlPath = '/index.html';
+        if (urlPath === '/' || urlPath === '') urlPath = '/opening.html';
         // 防目录穿越
         const safe = path.normalize(urlPath).replace(/^(\.\.[/\\])+/, '');
         let filePath = path.join(SITE_ROOT, safe);
@@ -92,7 +92,7 @@ function createWindow() {
   });
 
   win.once('ready-to-show', () => { win.show(); win.focus(); });
-  win.loadURL(`http://127.0.0.1:${serverPort}/index.html`).catch(err => {
+  win.loadURL(`http://127.0.0.1:${serverPort}/opening.html`).catch(err => {
     dialog.showErrorBox('云境启动失败', '本地服务加载失败：' + err.message);
   });
 

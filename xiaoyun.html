@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e0b1e">
+<title>造物 · 万象工坊 — 小云全能力</title>
+<link rel="icon" href="assets/yj-favicon.ico">
+<style>
+  :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; --panel:rgba(24,20,48,.72); --line:rgba(244,216,150,.28); }
+  *{ box-sizing:border-box; }
+  body{ margin:0; min-height:100vh; color:#ece8f4; background:#0e0b1e;
+    font-family:"Noto Sans CJK SC","Microsoft YaHei",system-ui,sans-serif; }
+  body::before{ content:""; position:fixed; inset:0; z-index:-1;
+    background:radial-gradient(1200px 700px at 20% -10%,#2a2152 0%,transparent 60%),
+               radial-gradient(900px 600px at 100% 100%,#1c2a4a 0%,transparent 55%),#0e0b1e; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:26px 20px 60px; }
+  header{ display:flex; align-items:center; gap:16px; margin-bottom:8px; }
+  header .back{ color:var(--gold-soft); text-decoration:none; font-size:14px; border:1px solid var(--line);
+    padding:7px 14px; border-radius:10px; }
+  header .back:hover{ background:rgba(244,216,150,.1); }
+  h1{ font-family:"Noto Serif CJK SC","Songti SC",serif; font-size:clamp(26px,5vw,44px); margin:0;
+    color:var(--gold); letter-spacing:.08em; }
+  .lead{ color:#bfb9d4; font-size:14px; margin:6px 0 22px; line-height:1.8; }
+  .stats{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 24px; }
+  .stat{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 16px; font-size:13px; }
+  .stat b{ color:var(--gold); font-size:18px; margin-right:6px; }
+
+  .grid{ display:grid; grid-template-columns:minmax(280px,1fr) minmax(300px,1.1fr); gap:20px; }
+  @media(max-width:760px){ .grid{ grid-template-columns:1fr; } }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:18px; }
+  .card h2{ font-family:"Noto Serif CJK SC",serif; color:var(--gold-soft); font-size:18px; margin:0 0 14px; letter-spacing:.06em; }
+
+  /* 舞台：立绘 + 视频叠加（透明 WebM） */
+  .stage{ position:relative; width:100%; aspect-ratio:3/4; max-height:560px; margin:0 auto;
+    border-radius:14px; overflow:hidden; background:radial-gradient(circle at 50% 40%,#2b2452,#12102a 70%);
+    display:flex; align-items:flex-end; justify-content:center; }
+  .stage img, .stage video{ position:absolute; bottom:0; height:100%; width:auto; object-fit:contain; }
+  .stage video{ display:none; }
+  .stage.playing video{ display:block; }
+  .stage.playing img{ opacity:0; }
+  .stage .tag{ position:absolute; top:10px; left:10px; z-index:2; font-size:12px; color:var(--gold);
+    background:rgba(10,8,24,.6); border:1px solid var(--line); padding:4px 10px; border-radius:8px; }
+
+  .forms{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; }
+  .forms button, .acts button{ cursor:pointer; border:1px solid var(--line); background:transparent;
+    color:#d8d2e8; border-radius:10px; padding:8px 4px; font-size:13px; font-family:inherit; transition:.15s; }
+  .forms button:hover,.acts button:hover{ background:rgba(244,216,150,.12); }
+  .forms button.on{ background:var(--gold); color:#1a1530; font-weight:700; border-color:var(--gold); }
+  .acts{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .acts button{ padding:12px; font-size:14px; }
+  .acts .emo{ color:var(--gold-soft); }
+  .subhd{ font-size:12px; color:#9a94c0; margin:16px 0 8px; letter-spacing:.08em; }
+
+  /* 输入触发演示 */
+  .try{ margin-top:20px; }
+  .try input{ width:100%; background:#16132e; border:1px solid var(--line); color:#efeaf8;
+    border-radius:10px; padding:12px 14px; font-size:14px; font-family:inherit; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+  .chips span{ cursor:pointer; font-size:12px; color:var(--gold-soft); border:1px solid var(--line);
+    border-radius:20px; padding:5px 12px; }
+  .chips span:hover{ background:rgba(244,216,150,.12); }
+  .log{ font-size:13px; color:#c9c3dc; min-height:22px; margin-top:10px; line-height:1.7; }
+  .log b{ color:var(--gold); }
+
+  .abilities{ margin-top:24px; }
+  .ab-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:12px; }
+  .ab{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+  .ab h3{ margin:0 0 6px; font-size:15px; color:var(--gold-soft); }
+  .ab p{ margin:0; font-size:12.5px; color:#b6b0c9; line-height:1.7; }
+  .note{ margin-top:22px; font-size:12px; color:#8f89a8; line-height:1.8; border-top:1px solid var(--line); padding-top:14px; }
+  .note b{ color:var(--gold-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="opening.html">‹ 返回开场</a>
+    <h1>造物 · 万象工坊</h1>
+  </header>
+  <p class="lead">这里是小云——云境的全能伙伴。她不是在云端临时生成的，而是<strong>提前预设在本地</strong>的完整角色：12 种形态、132 条透明动作视频、随你话语切换的情绪，一切离线可用，零内置生图接口。点下面的形态与动作，看看她能做到什么。</p>
+
+  <div class="stats">
+    <div class="stat"><b>12</b>种形态</div>
+    <div class="stat"><b>96</b>条精细情绪视频</div>
+    <div class="stat"><b>36</b>条基础动作视频</div>
+    <div class="stat"><b>0</b>内置生图 API</div>
+    <div class="stat"><b>100%</b>本地播放</div>
+  </div>
+
+  <div class="grid">
+    <!-- 左：形态 + 舞台 -->
+    <section class="card">
+      <h2>一 · 择形</h2>
+      <div class="stage" id="stage">
+        <span class="tag" id="stageTag">温柔 · 待机</span>
+        <img id="portrait" src="assets/xiaoyun-wenrou-happy.png" alt="小云立绘">
+        <video id="video" playsinline muted preload="none"></video>
+      </div>
+      <div class="forms" id="forms"></div>
+    </section>
+
+    <!-- 右：动作 + 输入触发 -->
+    <section class="card">
+      <h2>二 · 驱动</h2>
+      <p class="subhd">精细情绪（8 种 · 每形态专属视频）</p>
+      <div class="acts" id="emoActs"></div>
+      <p class="subhd">基础动作（3 种 · 全形态通用）</p>
+      <div class="acts" id="baseActs"></div>
+
+      <div class="try">
+        <h2>三 · 对她说一句话</h2>
+        <input id="say" placeholder="试试「太好了！」或「战斗」或「哼，才不是」……">
+        <div class="chips" id="chips"></div>
+        <div class="log" id="log">小云会根据你的话自动匹配情绪并播放对应动作——全部本地完成。</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 小云全部既有能力（真实来自 xiaoyun-ops.js） -->
+  <section class="abilities">
+    <h2 style="font-family:'Noto Serif CJK SC',serif;color:var(--gold);letter-spacing:.06em;">四 · 她还能替你做这些（返回游戏后，右下角@她即可）</h2>
+    <div class="ab-grid" id="abGrid"></div>
+    <p class="note" id="note"></p>
+  </section>
+</div>
+
+<script>
+/* ---------- 形态与动作数据（与 xiaoyun-emotion.js 同源） ---------- */
+var FORMS = [
+  ['wenrou','温柔'],['aojiao','傲娇'],['keai','可爱'],['gaoguai','高傲'],
+  ['yu','雨'],['qingchun','青春'],['luo','萝莉'],['jiaohua','校花'],
+  ['linjia','邻家'],['kusa','酷飒'],['youtai','幼态'],['zhixing','知性']
+];
+var EMOS = [['cheer','欢呼'],['angry','生气'],['pout','傲娇'],['shy','害羞'],
+            ['surprised','惊讶'],['think','思考'],['sleep','困倦'],['proud','得意']];
+var BASE = [['happy','开心'],['wave','挥手'],['battle','战斗']];
+var INTENTS = [
+  {emo:'sleep',kw:['困','睡觉','晚安','累了','想睡']},
+  {emo:'surprised',kw:['惊讶','震惊','什么','居然','没想到']},
+  {emo:'angry',kw:['生气','愤怒','讨厌','可恶','发火']},
+  {emo:'shy',kw:['害羞','脸红','别这样','不好意思']},
+  {emo:'pout',kw:['哼','才不是','不理你','撇嘴','才没有']},
+  {emo:'think',kw:['想想','思考','让我想','琢磨','怎么办']},
+  {emo:'proud',kw:['得意','本小姐','骄傲','厉害吧']},
+  {emo:'cheer',kw:['开心','高兴','太好了','欢呼','好耶','哈哈']},
+  {act:'battle',kw:['战斗','攻击','出击','上吧','打倒']},
+  {act:'wave',kw:['挥手','招手','你好','打招呼','再见','拜拜']},
+  {act:'happy',kw:['笑一个','跳舞','转圈','表演']}
+];
+var EMO_CN = {}; EMOS.forEach(function(e){EMO_CN[e[0]]=e[1];});
+var BASE_CN = {}; BASE.forEach(function(b){BASE_CN[b[0]]=b[1];});
+
+var cur='wenrou';
+var portrait=document.getElementById('portrait');
+var video=document.getElementById('video');
+var stage=document.getElementById('stage');
+var stageTag=document.getElementById('stageTag');
+var timer=null;
+
+function renderForms(){
+  var box=document.getElementById('forms'); box.innerHTML='';
+  FORMS.forEach(function(fm){
+    var b=document.createElement('button'); b.textContent=fm[1];
+    if(fm[0]===cur) b.className='on';
+    b.onclick=function(){ cur=fm[0]; stop(); portrait.src='assets/xiaoyun-'+cur+'-happy.png';
+      stageTag.textContent=fm[1]+' · 待机'; renderForms(); };
+    box.appendChild(b);
+  });
+}
+function play(type, key, label){
+  clearTimeout(timer);
+  var src = type==='emo' ? 'assets/videos/xiaoyun-'+cur+'-emo-'+key+'.webm'
+                         : 'assets/videos/xiaoyun-'+cur+'-'+key+'.webm';
+  video.src=src; video.load();
+  video.onloadeddata=function(){ video.play().catch(function(){}); };
+  video.onerror=function(){ stop(); log('这段视频没能加载，已回到立绘。'); };
+  stage.classList.add('playing');
+  stageTag.textContent=(FORMS.filter(function(f){return f[0]===cur;})[0]||[])[1]+' · '+label;
+  timer=setTimeout(stop, 4400);
+}
+function stop(){ clearTimeout(timer); try{video.pause();}catch(e){}
+  stage.classList.remove('playing'); video.removeAttribute('src');
+  stageTag.textContent=(FORMS.filter(function(f){return f[0]===cur;})[0]||[])[1]+' · 待机'; }
+function renderActs(){
+  var eb=document.getElementById('emoActs'); eb.innerHTML='';
+  EMOS.forEach(function(e){ var b=document.createElement('button'); b.className='emo'; b.textContent=e[1];
+    b.onclick=function(){play('emo',e[0],e[1]);}; eb.appendChild(b); });
+  var bb=document.getElementById('baseActs'); bb.innerHTML='';
+  BASE.forEach(function(a){ var b=document.createElement('button'); b.textContent=a[1];
+    b.onclick=function(){play('base',a[0],a[1]);}; bb.appendChild(b); });
+}
+function match(text){
+  var s=String(text||'').toLowerCase();
+  for(var i=0;i<INTENTS.length;i++){
+    var it=INTENTS[i];
+    for(var j=0;j<it.kw.length;j++) if(s.indexOf(it.kw[j].toLowerCase())>=0) return it;
+  }
+  return null;
+}
+function log(html){ document.getElementById('log').innerHTML=html; }
+var CHIPS=['太好了！','战斗','哼，才不是','你好','害羞了','让我想想'];
+document.getElementById('chips').innerHTML=CHIPS.map(function(c){return '<span>'+c+'</span>';}).join('');
+function trySay(text){
+  if(!text){return;}
+  var it=match(text);
+  if(!it){ log('「'+text+'」没有命中预设动作——正常聊天小云不干预。换个词试试。'); return; }
+  if(it.emo){ play('emo',it.emo,EMO_CN[it.emo]);
+    log('「'+text+'」→ 命中情绪 <b>'+EMO_CN[it.emo]+'</b>，播放 '+cur+' 形态专属情绪视频。'); }
+  else { play('base',it.act,BASE_CN[it.act]);
+    log('「'+text+'」→ 命中基础动作 <b>'+BASE_CN[it.act]+'</b>，播放 '+cur+' 形态动作视频。'); }
+}
+document.getElementById('say').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ trySay(this.value); }
+});
+document.getElementById('chips').addEventListener('click',function(e){
+  if(e.target.tagName==='SPAN'){ var t=e.target.textContent;
+    document.getElementById('say').value=t; trySay(t); }
+});
+
+/* ---------- 小云全部既有能力（真实接口，来自 xiaoyun-ops.js manifest） ---------- */
+var ABILITIES=[
+  ['世界书','列出 / 新增 / 更新 / 删除当前世界的资料条目；把已登场人物与大事一键归档。'],
+  ['正文急救','去除 AI 腔、清围栏、标点归一、清宏残留；可修复最近一条 AI 正文。'],
+  ['存档管理','列出全部书档进度，打开切换 / 新建 / 导出 / 导入界面。'],
+  ['全量备份','把所有书档、配置、正文打包成一个文件下载（含 Key，需自行妥善保管）。'],
+  ['预设与正则','查看当前主笔预设，导入酒馆格式预设 / 正则，一键还原内置云起预设。'],
+  ['造物工坊','让小云独立开发新模块，挂载到大厅、写入源码或全屏运行。'],
+  ['行动判定骰','用属性 + 资质 + 难度判定行动成败，演算 / 口述两种模式。'],
+  ['资料召回','按剧情关键词捞世界书条目与长期记忆，整理成资料便签送入输入框。'],
+  ['存储体检','统计 localStorage + IndexedDB 用量与配额；体检变量异常（NaN / 宏残留）。'],
+  ['情绪动作','12 形态 × 8 精细情绪 + 3 基础动作，随话语本地触发，缺失自动精确回退。']
+];
+document.getElementById('abGrid').innerHTML=ABILITIES.map(function(a){
+  return '<div class="ab"><h3>'+a[0]+'</h3><p>'+a[1]+'</p></div>'; }).join('');
+document.getElementById('note').innerHTML='<b>说明</b>：以上能力在正式游戏中由右下角小云助手提供，本页为能力展陈与动作试玩。'+
+  '小云的全部动作都是<b>提前生成的本地透明视频</b>，运行时不联网、不内置任何生图 / 生视频接口；'+
+  '未命中预设时正常聊天不干预。12 形态 ×（8 情绪 + 3 基础）= 132 条视频，全部内置在本地。';
+
+renderForms(); renderActs();
+</script>
+</body>
+</html>

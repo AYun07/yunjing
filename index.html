@@ -16,6 +16,8 @@
     <meta name="theme-color" content="#13111e">
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <!-- v4.34.0 开场入口分派：读 ?entry= 触发 续梦(存档)/观星(设置)；须在业务脚本之后执行，故 defer -->
+    <script defer src="js/opening-entry.js?v=4.34.0"></script>
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=4.34.0"></script>
     <!-- v4.08.0 存档键统一注册表（早于所有业务脚本） -->
