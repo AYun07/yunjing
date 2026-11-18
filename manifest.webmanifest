@@ -1,15 +1,15 @@
 {
     "name": "云境 · AI创作与开放世界扮演",
     "short_name": "云境",
-    "description": "AI 互动叙事工坊：多世界观角色扮演、世界线管理、地图集与长期记忆。",
+    "description": "万象入云，一念一世界。AI 互动叙事工坊：多世界观角色扮演、世界线管理、地图集与长期记忆。",
     "lang": "zh-CN",
     "dir": "ltr",
     "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",
-    "orientation": "portrait",
-    "background_color": "#12141d",
-    "theme_color": "#1a1512",
+    "orientation": "any",
+    "background_color": "#0b0c1c",
+    "theme_color": "#1e2246",
     "categories": ["entertainment", "books", "games"],
     "icons": [
         {
@@ -25,7 +25,7 @@
             "purpose": "any"
         },
         {
-            "src": "assets/yj-icon-512.png",
+            "src": "assets/yj-maskable-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"

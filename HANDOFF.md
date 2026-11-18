@@ -412,3 +412,85 @@ python3.11 scripts/gen-xiaoyun-videos.py --watch --concurrency 2 --submit-gap 15
 2. headless Chromium 同页加载 96 个 VP9 video 时，交互预览页截图部分格子空白——解码器限制，ffmpeg 抽帧 96/96 全部成功、文件内容完整；静态矩阵图用逐条抽帧合成，不受此限制。
 3. ffmpeg 命令行从 WebM 抽帧读不到 VP9 alpha side data（显示全绿），故静态矩阵图改从绿幕 MP4 源抽帧 + OpenCV HSV 抠绿合成；真浏览器渲染 WebM alpha 正常（1.2% 绿 / 73% 透明），交付物无绿幕。
 4. 动作仍是图生视频的"可见姿态变化"，非真人级骨骼动画；不同情绪由不同 prompt 推理，姿态差异明显但幅度受单图限制。
+
+---
+
+## 13. 品牌重塑 · PC/手机客户端 · 商业化预备（2026-11-18 v4.34.0）
+
+### 13.1 需求四问与决策
+- 用户诉求原话要点：「小云的本地启动方式仅限于那个程序启动打开到网页端，直接打开那个网页文件不成功」→「生成云境客户端，pc 和移动端都要有」→「生成一个符合云境的开成动画和图标，为后续的收益化做准备」。
+- 关键约束（已验证）：直接双击 `index.html` 因 file:// 下 ES module / fetch CORS 限制跑不起来；所有分发形态必须自带本地服务或等价加载器。菜单选择已确认：客户端=可下载安装（PC+手机）；风格=「云的诗意 + 小云元素」；商业化=品牌资产+上架素材+授权占位三件都要。
+- 决策（技术取舍我替用户扛）：
+  - PC = Electron 壳，主进程内置 Node 原生 HTTP 静态服务（端口 127.0.0.1 随机），窗口加载 `http://127.0.0.1:<port>`，与启动器脚本同构、彻底绕开 file://。Windows 交付免安装便携版 zip（NSIS 安装包因沙箱缺 wine32 卡死，改走 zip，解压即用）。
+  - 手机 = Capacitor 6 + Android WebView 壳，assets 内置整站 525M（含 288 视频），`androidScheme=https` 走 Capacitor 本地加载器（ES module 正常），可装 APK。
+  - 品牌 = 从零绘制矢量主图标（夜空深蓝紫 + 银白云 + 金月晕 + 远山 + 小云云朵发饰带淡紫蝴蝶结），导出 16/32/48/64/180/192/512/1024 + 六尺寸 ICO + maskable；开场动画纯 CSS/SVG（三端通用无视频依赖）；slogan「万象入云 · 一念一世界」。
+  - 商业化 = 授权模块做成**明确标注未启用的本地占位**（不联网、不校验、不支付、不上传），只预留 UI 与状态读写接口；上架素材=商店横/竖宣传图 + 一句话介绍/卖点/隐私说明。
+
+### 13.2 验收句（可验证）
+1. 直接双击 index.html 仍不成功（既有事实），但 PC 客户端双击 exe → 自动起本地服务 → 窗口显示完整云境大厅（真浏览器 Xvfb 已截图验证：独立窗口 + 原生菜单 + 38 界卡片）。
+2. 图标全套齐全：ico（6尺寸）、16/32/48/64/180/192/512/1024 png、maskable；主视觉可辨云形与小云发饰，缩小后清晰。
+3. 开场动画：真浏览器加载 index，#splash 内动画场景挂载（12 星点 + 云 + 发饰）、0 JS 错误；动画 DOM 与原有 2.4s 自动关闭/点击跳过逻辑共存不冲突。
+4. 安卓 APK：能安装启动、应用图标/启动屏为新品牌、内置站点含 288 视频、ES module 正常加载（Capacitor https scheme，不误报 file:// 受限横幅）。
+5. 授权占位：界面明示「未启用/演示占位」，输入演示码仅本地读写 localStorage、零网络请求，不误导为真实授权。
+6. 版本全站同源 4.34.0；SW 预缓存 check 通过（清单含新动画/图标）；回归 34/34 不回退。
+
+### 13.3 任务卡与排期
+| id | title | owner | est | acceptance |
+|---|---|---|---|---|
+| T01 | 品牌主图标 + 全套尺寸导出 | lead/frontend | 0.5h | SVG 主视觉定稿 + 11 尺寸 + 六尺寸 ICO，真图核验 |
+| T02 | 诗意云开场动画 + 三端接入 | frontend | 0.5h | CSS/SVG 动画 + yj-splash.js 注入，真浏览器 0 错误 |
+| T03 | PC Electron 壳 + 内置本地服务 | frontend/backend | 1h | 独立窗口加载完整云境，绕开 file://，截图验证 |
+| T04 | Windows 便携版打包 | lead | 0.5h | zip 解压即用；NSIS 走不通如实改 zip |
+| T05 | 安卓 APK（Capacitor 壳 + 品牌资源） | backend | 1.5h | SDK/Gradle 工具链就绪、APK 生成、图标/启动屏新品牌 |
+| T06 | 商业化：授权占位 + 上架素材 | lead | 0.5h | 占位模块明示未启用、宣传图/文案齐全 |
+| T07 | 版本同源 + 预缓存 + 文档交接 | lead/quality | 0.4h | sync-version/precache --check 全过 |
+
+三档排期：乐观 3.5h / 正常 5h / 悲观 8h（工具链下载与 NSIS 失败改道是主要变量）。易返工三处：① 品牌图标审美（先看小云立绘抓云朵发饰元素再定稿）② Windows NSIS 打包（wine 缺 32 位库卡死→改 zip 便携版）③ Android Gradle 首次构建（wrapper 下载超时→本地 Gradle 8.2.1；全局 init.gradle 语法坏→备份清空）。
+
+### 13.4 检查点报告（四行）
+- 做完什么：品牌图标全套 + 开场动画 + 启动屏；PC 桌面客户端并实测独立窗口加载完整云境；Windows 便携版 zip（615M）；安卓工程 + 图标/启动屏新品牌 + **APK 已生成（511M，包名 com.yunjing.studio、versionName 4.34.0、application-label 云境、zip 完整性通过）**；授权占位模块 + 上架素材（横/竖宣传图 + 文案）；全站升 4.34.0，回归 34/34、版本同源与 SW 预缓存 check 全过。
+- 试过什么：真浏览器 Xvfb 启动 Electron 截图（独立窗口+原生菜单+38界）；开场动画逐帧截图迭代（修掉白线/文字遮挡）；图标缩小可读性核验；SDK 组件安装、Gradle 镜像下载、init.gradle 修复；aapt2 dump badging + unzip -t 验证 APK。
+- 还差什么：Windows NSIS 安装包未生成（改 zip 便携版，功能等价）；macOS dmg 因 Linux 环境无法交叉打包，仅交付工程与脚本。此二者是平台限制下的等价替代，不影响"能下载安装使用"的核心诉求。
+- 卡在哪：无阻断，全部交付物已生成并通过验证。
+
+### 13.5 交付物
+- 品牌：`assets/yj-icon-{16,32,48,64,180,192,512,1024}.png`、`yj-maskable-512.png`、`yj-favicon.ico`（6尺寸）、`css/yj-splash-anim.css`、`js/yj-splash.js`。
+- PC 客户端：`client/electron/`（main.js 内置本地服务 + preload.js + package.json 打包配置）；`云境-Windows-4.34.0-便携版.zip`（615M，解压即用）。
+- 手机客户端：`client/capacitor-app/`（Capacitor 工程 + android/ 原生壳 + 品牌图标/启动屏）；APK 产物见 android/app/build/outputs/apk/。
+- 商业化：`js/yj-license.js`（授权占位，index/studio 已接入）；`上架素材/`（商店宣传图横/竖 + 上架文案.md）。
+- 文档：changelog v4.34.0 条目、VERSIONS/README/QUICKSTART 版本同源、本交接第 13 节。
+
+### 13.6 强制披露
+1. 直接双击 `index.html` 依旧跑不起来（ES module/fetch 的 file:// 限制，产品既有约束）——客户端存在的意义正是消除它；不要绕过客户端直接用 file://。
+2. Windows NSIS/portable 安装包因沙箱缺 wine32、NSIS 阶段挂起而放弃，改为 **zip 便携版**（解压即用、双击 YunJing.exe 启动），功能等价但不是传统安装向导；如需 .exe 安装向导，在有 wine32 的环境对本工程跑 `npm run build:win` 即可。
+3. macOS dmg 无法在 Linux 交叉打包（electron-builder 限制）；Mac 用户仍可用既有 `start-mac.command` 启动器，或用 `client/electron` 工程在 Mac 本地 `npm run build:mac`。
+4. 授权模块是**纯占位**：不联网、不校验真伪、不接支付、不上传输入；演示码 YUNJING-DEMO-2026 仅本地演示，无任何授权效力。云境目前完全免费，无需激活。
+5. 客户端内置整站 525M（含 288 视频），故 PC zip 615M / APK 偏大；这是"开箱即用、离线全功能"的代价，未做视频裁剪。
+6. 上架素材为通用模板，正式上架需按各商店规范补齐截图实拍、隐私政策 URL、开发者资质等；本交付只备齐品牌视觉与文案底稿。
+
+---
+
+## 14. 范围收窄：停止打包，GitHub 源码分发（2026-11-18 决定）
+
+### 14.1 需求与决策
+- 用户决定原话要点：「算了，不要打包安装包了，就这样吧，玩家想玩就让他们去我的GitHub上面下载。因为后面的更新还要重新打包太麻烦了」。
+- 这是**推翻第 13 节**「PC zip + Android APK 客户端交付」的范围变更。推翻理由、三条候选、取舍与失效条件已落成 `DECISIONS.md` 的 DR-001（五栏齐备，链接旧决定）。
+- 影响面只在**分发方式**：Web 应用本体、小云全形态视频、品牌图标/开场动画、授权占位、上架素材、启动器脚本、PWA 全部保留；不回滚任何代码，不删除任何产物。
+
+### 14.2 验收句（可验证）
+1. `README.md` / `QUICKSTART.txt` 不再出现「安卓工程压缩包 / APK 安装 / 安装包」作为获取方式，改为「GitHub 下载源码 → 启动器 HTTP 打开 → 手机 PWA」，并保留「直接双击 index.html 不成功」的明示。
+2. `git ls-files` 中不含 `*.apk` / `云境-Windows-*.zip`；`.gitignore` 已含这两条忽略规则——玩家 clone 不会被迫下载 1.1G。
+3. 已生成的两个安装包保留在本地作为历史产物，不再更新、不进仓库、不主动删除。
+4. `DECISIONS.md` DR-001 五栏齐备，含旧决定链接与可观察的失效条件。
+
+### 14.3 检查点报告（四行）
+- 做完什么：落 DR-001 决策记录（推翻第 13 节并写明理由）；改写 README 与 QUICKSTART 的获取/启动说明；本交接第 14 节归档。未重新打包任何产物。
+- 试过什么：`git ls-files | grep -E '\.(apk|zip)$'` 返回空，确认安装包未被跟踪；核对 `.gitignore` 已含 `*.apk`、`*.aab`、`云境-Windows-*.zip`；核对启动器脚本与 PWA 路径未改动。
+- 还差什么：**v4.34.0 的源码改动尚未提交/推送到 GitHub**（`git log` 最新为 `de8873a v4.33.0`）。玩家现在从 GitHub 下载拿到的是 v4.33.0；要让他们玩到 v4.34.0，需把这些改动提交并推送。
+- 卡在哪：无阻断。是否提交推送由用户决定。
+
+### 14.4 强制披露
+1. 安装包未删除，仍在 `yunjing/` 目录（约 1.1G），仅作为本地历史产物存在；因已被 git 忽略，不影响 GitHub 下载体积。
+2. 停止打包不等于放弃客户端工程：`client/electron/` 与 `client/capacitor-app/` 源码保留，日后若 DR-001 的失效条件触发，可直接复用打包。
+3. 手机端在本方案下只有 PWA 路径（同一 WiFi + 添加到主屏幕），没有 APK 安装路径；离线 PWA 功能一致，但不进应用商店。
+4. 本次未做任何代码、版本、资产改动，版本号仍为 4.34.0，不需要重跑回归。

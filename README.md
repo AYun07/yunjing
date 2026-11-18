@@ -1,5 +1,7 @@
 # 云境 · AI 互动小说 + 开放世界扮演
 
+![云境封面](上架素材/商店宣传图-横版-封面.png)
+
 > **一句话**：打开网页就能用的 AI 互动小说 + 开放世界扮演平台。纯前端静态站点，无构建、无后端、无账号；AI 接口由玩家自己填，故事与 API Key 只留在本机浏览器。
 
 ## 大致介绍
@@ -45,17 +47,17 @@
 - 用**六个 AI 接口分工**：主笔写正文 / 推演视线之外的远方事件 / 登记状态 / 插图 / 润色插图提示词 / 现实地球界的手机分身（微信 · 朋友圈）。用哪个、混不混搭、留不留空，全随你。
 - 用**知识库**：每界一份独立世界书，可增删改查、导出备份，九类模板填表生成条目，检索走 BM25 → 向量 → 精排并逐级降级，任一环挂掉都不卡住写作。
 - **和酒馆互通**：整份导入 / 导出 SillyTavern 的预设、正则、世界书；内置云起预设支持一键云端同步。
-- **怎么落地都行**：Windows / Mac 双击启动器；手机同一 WiFi 打开提示网址 →「添加到主屏幕」即全屏 App，可离线 PWA；另有独立安卓工程可出 APK。
+- **怎么落地都行**：从 GitHub 下载源码后，Windows / Mac 双击启动器以本地 HTTP 打开；手机同一 WiFi 打开提示网址 →「添加到主屏幕」即全屏 App，可离线 PWA。项目只分发源码、不提供 APK / 安装包，更新即拉取最新源码。
 
-**怎么用**：`python3 -m http.server 8899` → 浏览器打开 `http://127.0.0.1:8899/index.html`；Windows 双击 `start-windows.bat`、Mac 双击 `start-mac.command`。详见 [QUICKSTART.txt](QUICKSTART.txt)。首次使用进「☰ 工具 → ⚙ 接口设置」填自己的模型。
+**怎么获取并启动**：从 GitHub 下载或克隆本仓库 → Windows 双击 `start-windows.bat`、Mac 双击 `start-mac.command`；或任意平台执行 `python3 -m http.server 8899` → 浏览器打开 `http://127.0.0.1:8899/index.html`。**直接双击 `index.html` 打不开**（file:// 下的 ES module / fetch CORS 限制），必须经启动器以 HTTP 打开。详见 [QUICKSTART.txt](QUICKSTART.txt)。首次使用进「☰ 工具 → ⚙ 接口设置」填自己的模型。分发方式变更的理由与失效条件见 [DECISIONS.md](DECISIONS.md) 的 DR-001。
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v4.33.0（2026-11-17 · 唯一当前版）
+## 🆕 当前版本：v4.34.0（2026-11-17 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v4.33.0** | 2026-11-17 | **当前** | 小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 批量重构分析）+ 全量界面视觉审查与小云遮挡修复。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
+| **v4.34.0** | 2026-11-17 | **当前** | 小云研发中枢（自主巡检 / 模块地图 / 自我验证 / 批量重构分析）+ 全量界面视觉审查与小云遮挡修复。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
 
 **看版本**：[📚 版本页（86 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v4.12.0 的差异](https://github.com/AYun07/yunjing/compare/v4.12.0...v4.16.0) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.16.0)
 

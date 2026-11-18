@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.33.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.34.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,31 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.34.0 ==================== -->
+        <article class="log-entry" data-tags="客户端 品牌 商业化 图标 开场动画" style="--entry-hue:#5f8fbe;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.34.0</span>
+                <span class="entry-date">2026-11-18</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">品牌重塑 · PC/手机客户端 · 商业化预备</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：从"网页 + 启动脚本"升级为<b>可下载安装的客户端</b>——新增 Windows 桌面客户端（内置本地服务，双击即用）与安卓客户端（WebGL/WebView 壳，可装 APK），彻底解决"直接双击 index.html 跑不起来"的痛点；同时完成统一品牌视觉（诗意云图标全套 + 国风开场动画 + 启动屏）与商业化预备（授权占位 + 上架素材）。 · <a href="https://github.com/AYun07/yunjing/compare/v4.33.0...v4.34.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>PC 桌面客户端</b>：Electron 壳内置 Node 本地静态服务（绕开 file:// 的 ES module / fetch CORS 限制），窗口加载云境；新图标、原生菜单、外链交系统浏览器。交付 Windows 免安装便携版（解压即用）。</li>
+                    <li><b>手机客户端</b>：Capacitor + Android WebView 壳，内置本地站点、可安装 APK；应用图标/自适应图标/启动屏全套换成新品牌；PWA manifest 同步深色主题与 maskable 图标。</li>
+                    <li><b>品牌视觉</b>：全新"诗意云 + 小云发饰"主图标，导出 16→1024 全套尺寸与多尺寸 ICO；云境开场动画改为夜空 + 星点 + 浮云 + 小云发饰的国风动画，纯 CSS 三端通用；真浏览器逐帧验证无错误。</li>
+                    <li><b>商业化预备</b>：授权系统占位模块（明确标注"未启用"，不联网、不校验、不支付，纯本地演示）；上架素材（商店横/竖宣传图、一句话介绍、卖点、隐私说明）。</li>
+                    <li><b>版本同源</b>：全站升至 v4.34.0，SW 预缓存补入新动画与图标资源，依赖版本同步脚本校验一致性。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.33.0 ==================== -->
         <article class="log-entry" data-tags="小云 视频 情绪动作 全形态 精细情绪" style="--entry-hue:#b06f9f;">
             <div class="entry-head">
                 <span class="entry-ver">v4.33.0</span>
                 <span class="entry-date">2026-11-18</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">小云全形态精细情绪视频补齐 · 12×8 全动态</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：用新密钥把 11 形态各自的 8 种精细情绪视频全部离线生成补齐（傲娇 8 条此前已有），至此 <b>12 形态 × 8 情绪 = 96 条专属情绪视频</b>全部就位，加上 36 条基础动作，共 132 条本地透明视频。前端解除"仅傲娇有精细情绪"限制——任何形态说情绪词都播该形态专属动作，不再回退到通用基础动作。仍然零生图 API、零运行时网络请求。 · <a href="https://github.com/AYun07/yunjing/compare/v4.32.0...v4.33.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -759,7 +778,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.33.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.34.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
