@@ -542,6 +542,18 @@
             if (window.YJLazy && YJLazy.ensure) YJLazy.ensure('config-modal').then(openCfg).catch(openCfg);
             else setTimeout(openCfg, 800);
           }
+          /* v4.34.0 造物中枢深链：从造物页跳来，按 goto 自动打开对应创造面板。
+             goto=dlc  → DLC 知识包管理；goto=forge → 原创设计工坊。 */
+          var _goto = new URLSearchParams(location.search).get('goto');
+          if (_goto === 'dlc' || _goto === 'forge') {
+            var _openPanel = function () {
+              if (_goto === 'dlc' && window.StoryDLCUI && StoryDLCUI.manage) StoryDLCUI.manage();
+              else if (_goto === 'forge' && window.CreatorForge && CreatorForge.open) CreatorForge.open();
+            };
+            var _glob = _goto === 'dlc' ? 'StoryDLCUI' : 'CreatorForge';
+            if (window.YJLazy && YJLazy.ensure) YJLazy.ensure(_glob).then(_openPanel).catch(function(){ setTimeout(_openPanel, 800); });
+            else setTimeout(_openPanel, 1200);
+          }
         } catch (e) {}
       });
     </script>

@@ -51,7 +51,7 @@
 
 **怎么获取并启动**：从 GitHub 下载或克隆本仓库 → Windows 双击 `start-windows.bat`、Mac 双击 `start-mac.command`，启动后浏览器打开 `http://127.0.0.1:8080/` 即进入**开场封面**；或任意平台执行 `python3 -m http.server 8899` → 打开 `http://127.0.0.1:8899/opening.html`。**直接双击 `index.html` 打不开**（file:// 下的 ES module / fetch CORS 限制），必须经启动器以 HTTP 打开。详见 [QUICKSTART.txt](QUICKSTART.txt)。
 
-**开场四入口**：踏云（开新档）/ 续梦（读档）/ 观星（接口设置）/ 造物（小云全能力展陈 `xiaoyun.html`）。首次使用进「观星」或游戏内「☰ 工具 → ⚙ 接口设置」填自己的模型。分发方式变更的理由与失效条件见 [DECISIONS.md](DECISIONS.md) 的 DR-001。
+**开场四入口**：踏云（开新档）/ 续梦（读档）/ 观星（接口设置）/ 造物（**小云创造中枢** `xiaoyun.html`）。造物入口让小云按你的意志**改源码、造文件、造模块、造插件、造 DLC、造原创设定并应用**：造物工坊 / 文件桥 / 插件运行时 / 研发中枢四项本页直接用，DLC / 原创设计一键直达创作室；写磁盘需 Chrome/Edge 授权项目文件夹，独立开发需填自己的模型 Key（代码层无上传、无 git）。详见 [上架文案](上架素材/上架文案.md)「造物中枢」一节。首次使用进「观星」或游戏内「☰ 工具 → ⚙ 接口设置」填自己的模型。分发方式变更见 [DECISIONS.md](DECISIONS.md) 的 DR-001，造物入口正名见 DR-002。
 
 <!-- YJ_CHANGELOG_START -->
 
