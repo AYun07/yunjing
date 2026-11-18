@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小云 · 情绪动作驱动（傲娇垂直切片 v4.31.0）</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#1a1430 0%,#2d1b4e 60%,#1a1430 100%);color:#fff;
+  font-family:'Noto Sans SC','PingFang SC',sans-serif;min-height:100vh;padding:32px 20px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:26px;margin:0 0 6px}
+.sub{opacity:.7;font-size:14px;margin-bottom:26px;line-height:1.7}
+.badge{display:inline-block;background:#8f6fbe;border-radius:20px;padding:3px 12px;font-size:12px;margin-left:8px;vertical-align:middle}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:18px;padding:14px;text-align:center;transition:.25s}
+.card:hover{background:rgba(255,255,255,.1);transform:translateY(-3px)}
+.card video{width:100%;max-width:190px;height:340px;object-fit:contain;display:block;margin:0 auto;border-radius:10px;
+  background:repeating-conic-gradient(#2a2044 0% 25%,#241b3c 0% 50%) 50%/24px 24px}
+.card .nm{font-size:16px;font-weight:700;margin-top:10px}
+.card .cmd{font-size:12px;opacity:.65;margin-top:4px;line-height:1.5}
+.note{margin-top:28px;background:rgba(255,255,255,.05);border-left:3px solid #8f6fbe;padding:14px 18px;border-radius:8px;font-size:13px;line-height:1.9;opacity:.9}
+.note b{color:#c9a9f5}
+.sec{margin-top:30px;font-size:18px;font-weight:700;border-left:4px solid #8f6fbe;padding-left:10px}
+</style></head><body>
+<div class="wrap">
+  <h1>小云 · 情绪动作驱动 <span class="badge">傲娇垂直切片 · v4.31.0</span></h1>
+  <div class="sub">玩家输入带情绪的指令 → 右下角小云切换为对应情绪动作视频，几秒后回到默认立绘。<br>
+    以下 8 条是 AI 图生视频生成的真动态视频（透明 WebM，绿幕已抠除），循环播放。点击可看动效。</div>
+
+  <div class="grid">
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-cheer.webm"></video><div class="nm">🎉 欢呼</div><div class="cmd">"太好了 / 开心 / 好耶"</div></div>
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-angry.webm"></video><div class="nm">😠 生气</div><div class="cmd">"讨厌 / 气死了 / 发火"</div></div>
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-pout.webm"></video><div class="nm">😤 撇嘴傲娇</div><div class="cmd">"哼 / 才不是 / 不理你"</div></div>
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-shy.webm"></video><div class="nm">😳 害羞</div><div class="cmd">"害羞 / 脸红 / 别这样"</div></div>
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-surprised.webm"></video><div class="nm">😲 惊讶</div><div class="cmd">"什么 / 惊讶 / 没想到"</div></div>
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-think.webm"></video><div class="nm">🤔 思考</div><div class="cmd">"想想 / 嗯… / 怎么办"</div></div>
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-sleep.webm"></video><div class="nm">😴 困倦</div><div class="cmd">"困了 / 睡觉 / 打哈欠"</div></div>
+    <div class="card"><video autoplay loop muted playsinline controls src="assets/videos/xiaoyun-aojiao-emo-proud.webm"></video><div class="nm">😏 得意</div><div class="cmd">"嘿嘿 / 本小姐 / 得意"</div></div>
+  </div>
+
+  <div class="sec">关于"半身/头像"和"动作僵硬"</div>
+  <div class="note">
+    <b>Q：为什么很多是半身/头像？</b>那 12 条 face 本来就是按脸部特写设计的，12 条 chibi 是 Q 版全身；happy/wave/battle 共 36 条是全身。不是视频裁切。<br>
+    <b>Q：僵硬的观感从哪来？</b>图生视频从单张立绘推理运动，没有真实骨骼，所以幅度偏小。这次 8 条情绪动作改用<b>明确的物理动作信号</b>（双手举高、握拳跺脚、捂脸、手托下巴…）写进 prompt，姿态差异肉眼可辨，就是上面这 8 条。<br>
+    <b>Q：放到云境是什么样？</b>透明 WebM 直接叠在右下角 orb，无绿边无白块——见配套图 <b>小云情绪动作-云境接入效果.png</b>。<br>
+    <b>当前限制（如实说）</b>：情绪动作<b>目前只有傲娇形态</b>。默认"温柔"形态说情绪词不会触发；其余 11 形态 + 任意自然语言实时生成是下一步全量范围。特殊动作指令（如"跳个舞"）当前走降级提示。
+  </div>
+</div>
+</body></html>

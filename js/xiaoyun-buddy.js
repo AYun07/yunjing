@@ -310,7 +310,9 @@
     setTimeout(refreshModulesWhenReady, 15000);
   }
   /* v3.92.1：暴露给 MoChibi 兼容层路由 say()，以及外部触发开关面板 */
-  window.XYBuddy = { say: say, open: openPanel, close: closePanel };
+  /* v4.31.0：currentImg 供情绪动作模块 reset 时恢复当前形态立绘 */
+  window.XYBuddy = { say: say, open: openPanel, close: closePanel,
+                     currentImg: function () { return face().img; } };
   img.src = face().img;
   setTimeout(rotateTips, 900); setInterval(rotateTips, 7000);
 })();
