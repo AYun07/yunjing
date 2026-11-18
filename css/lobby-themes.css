@@ -465,19 +465,19 @@ html[data-theme="term"] .wg-glyph{
 /* ==========================================================================
    D · 每套的小云助手与开屏（避免浅底上白裙立绘融掉 / 深紫面板违和）
    ========================================================================== */
-/* 纸本三套：给唯一小云一块纸片衬底 + 描边 */
+/* v4.37.0 玩家要求：所有主题小云纯透明叠加，背后不留衬底/阴影/背景块 */
+/* 纸本三套：移除圆形白色衬底与投影 */
 html[data-theme="zine"] #xyBuddy .xy-orb,
 html[data-theme="ink"] #xyBuddy .xy-orb,
 html[data-theme="swiss"] #xyBuddy .xy-orb{
-  border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(255,255,255,.5) 62%,transparent 72%);
-  box-shadow:0 6px 22px rgba(60,50,35,.22)}
+  background:none;box-shadow:none;border-radius:0}
 html[data-theme="zine"] #xyBuddy .xy-orb img,
 html[data-theme="ink"] #xyBuddy .xy-orb img,
-html[data-theme="swiss"] #xyBuddy .xy-orb img{filter:drop-shadow(0 4px 10px rgba(60,50,35,.28))}
-/* 暗幕三套：小云保持发光，不加衬底 */
+html[data-theme="swiss"] #xyBuddy .xy-orb img{filter:none}
+/* 暗幕三套：同样去掉投影，只留透明立绘 */
 html[data-theme="editorial"] #xyBuddy .xy-orb img,
 html[data-theme="y2k"] #xyBuddy .xy-orb img,
-html[data-theme="term"] #xyBuddy .xy-orb img{filter:drop-shadow(0 6px 20px rgba(0,0,0,.6))}
+html[data-theme="term"] #xyBuddy .xy-orb img{filter:none}
 
 /* 开屏按主题换底，避免从深紫闪到纸本 */
 html[data-theme="zine"] #splash,html[data-theme="ink"] #splash,html[data-theme="swiss"] #splash{

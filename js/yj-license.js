@@ -110,30 +110,14 @@
   }
   function close() { if (modal) modal.style.display = 'none'; }
 
-  // 自动挂载：在页脚版本徽标旁加一个低调入口（不主动弹窗）
+  /* v4.37.0 · 玩家反馈「授权占位」入口碍眼，已移除界面挂载。
+     模块本体与 window.YJLicense API 完整保留（open/status/verifyPlaceholder），
+     未来接入真实授权时可直接调用；仅不再自动往页面插入任何可见按钮。
+     如需临时调试，可在控制台手动执行 YJLicense.open()。 */
   function mount() {
-    if (window.__YJ_LICENSE_MOUNTED__) return;
-    window.__YJ_LICENSE_MOUNTED__ = true;
-    var btn = document.createElement('a');
-    btn.href = 'javascript:void(0)';
-    btn.title = '商业化授权系统（占位 · 尚未启用）';
-    btn.setAttribute('aria-label', '授权占位');
-    var anchor = document.getElementById('verBadge');
-    if (anchor) {
-      btn.style.cssText = 'display:inline-block;margin-left:8px;padding:5px 10px;border-radius:999px;border:1px solid rgba(232,196,119,.28);color:#c9a86a;font-size:12px;text-decoration:none;white-space:nowrap;';
-      btn.textContent = '🔑 授权占位';
-      btn.onclick = function (e) { e.preventDefault(); open(); };
-      anchor.parentNode.insertBefore(btn, anchor.nextSibling);
-    } else {
-      // 创作室无版本徽标：右下角低调悬浮入口（避开小云，置于其上方）
-      btn.style.cssText = 'position:fixed;right:14px;bottom:150px;z-index:60;padding:5px 11px;border-radius:999px;border:1px solid rgba(232,196,119,.28);background:rgba(18,20,46,.82);color:#c9a86a;font-size:12px;text-decoration:none;white-space:nowrap;backdrop-filter:blur(4px);';
-      btn.textContent = '🔑 授权占位';
-      btn.onclick = function (e) { e.preventDefault(); open(); };
-      document.body.appendChild(btn);
-    }
+    // 默认不挂载任何可见入口。保留函数体以便未来按需开启。
+    return;
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
-  else mount();
 
   window.YJLicense = {
     open: open, close: close, status: status,
