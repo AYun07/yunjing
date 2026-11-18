@@ -215,12 +215,26 @@
     /** 导入槽位 JSON/gzip（收进新槽位，绝不覆盖现有档） */
     importSlot(file) {
       (async () => {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
         try {
           const text = await this._readSmart(file);
           const pkg = JSON.parse(text);
           /* v4.35.0：解压后正文可能较大，放宽到 80MB；gzip 包本身通常仅几 MB */
           if (text.length > 80 * 1024 * 1024) throw new Error("存档解压后过大（>80MB），疑似损坏文件");
+          /* v4.36.0 T07：导入端自动识别差分包 → 还原选中分支后走同一落库流程 */
+          if (window.SaveCodec && window.SaveCodec.isDeltaPack(pkg)) {
+            return await this._importDelta(pkg);
+          }
+          this._importPkg(pkg);
+        } catch (e) {
+          window.showToast && window.showToast(`导入失败：${e.message}`, "error");
+        }
+      })();
+    },
+
+    /** 把一份存档 pkg 落进新槽位（importSlot / 差分包共用，绝覆盖现有档） */
+    async _importPkg(pkg) {
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+      {
           const okApp = window.YunjingID && window.YunjingID.acceptApp ? window.YunjingID.acceptApp(pkg.app) : (pkg.app === "yunjing" || pkg.app === "moshu");
           if (!okApp || !pkg.save) throw new Error("不是云境存档文件");
           const fw = window.storyFramework;
@@ -283,10 +297,63 @@
           } catch (e) {}
           (_j = window.showToast) == null ? void 0 : _j.call(window, `✅ 已收入书架（新档位）${cfgMsg}`, "success");
           this.open();
-        } catch (e) {
-          (_k = window.showToast) == null ? void 0 : _k.call(window, `导入失败：${e.message}`, "error");
+      }
+    },
+
+    /** v4.36.0 T07：差分包导入——列出分支供选择，还原后走 _importPkg
+     *  浏览器 confirm 逐支确认，选「取消」跳过；至少导入一支。 */
+    async _importDelta(pack) {
+      var branches = [];
+      for (var i = 0; i < pack.branches.length; i++) {
+        var title = (pack.branches[i].meta && (pack.branches[i].meta.title || pack.branches[i].meta.name))
+          || pack.branches[i].id || ('分支' + (i + 1));
+        branches.push({ i: i, title: String(title) });
+      }
+      var picked = 0;
+      for (var j = 0; j < branches.length; j++) {
+        var b = branches[j];
+        var yes = window.confirm ? window.confirm('差分包含多分支，是否导入这一支？\n\n【' + b.title + '】\n\n点「确定」导入，「取消」跳过。') : true;
+        if (!yes) continue;
+        var restored = window.SaveCodec.unpackBranch(pack, b.i);
+        await this._importPkg(restored.obj);
+        picked++;
+      }
+      if (!picked) window.showToast && window.showToast('未选择任何分支导入', 'info');
+    },
+
+    /** v4.36.0 T07：把当前世界全部槽位导出为差分包（共享基线，体积远小于逐档全量） */
+    async exportDeltaPack() {
+      try {
+        var fw = window.storyFramework;
+        if (fw && fw.flushSave) fw.flushSave();
+        var rows = this.list();
+        if (!rows.length) { this._toast('书架为空，没有可打包的存档', 'error'); return; }
+        var branches = [];
+        for (var i = 0; i < rows.length; i++) {
+          var sid = rows[i].id;
+          var suffix = sid !== 'main' ? '~' + sid : '';
+          var raw = localStorage.getItem('storySave_' + fw.genre + suffix)
+            || localStorage.getItem('storySave_' + fw.genre + suffix + '.bak');
+          if (!raw) continue;
+          var save;
+          try { save = JSON.parse(raw); } catch (e) { continue; }
+          var pkg = {
+            app: (window.YunjingID && window.YunjingID.APP) || 'yunjing', ver: '4.36.0',
+            genre: fw.genre, slotId: sid, meta: rows[i], save: save,
+            scoped: this.collectLS('slot', sid)
+          };
+          try { pkg.config = window.SaveCodec.collectConfig(!!window.__yjExportIncludeKey); } catch (e) {}
+          branches.push({ id: sid, meta: { title: rows[i].title || rows[i].name || sid }, obj: pkg });
         }
-      })();
+        if (!branches.length) { this._toast('没有可导出的存档正文', 'error'); return; }
+        var pack = window.SaveCodec.makeBranchPack(branches);
+        var stamp = Date.now();
+        await this._downloadSmart(pack, '云境差分包_' + fw.genre + '_' + branches.length + '支_' + stamp);
+        var ratio = (JSON.stringify(pack).length / JSON.stringify(branches).length * 100).toFixed(0);
+        this._toast('✅ 已导出差分包（' + branches.length + ' 支，体积约为逐档全量的 ' + ratio + '%）', 'success');
+      } catch (e) {
+        this._toast('差分包导出失败：' + e.message, 'error');
+      }
     },
 
     /* ==================== v4.28.0 存档防丢（P0：全量备份 / 恢复 / 容量体检） ====================
@@ -618,9 +685,13 @@
                     <div class="ss-body">${cards}</div>
                     <div class="ss-foot">
                         <button class="ss-btn main" onclick="SaveSlots.newBook()">✚ 开新书（新档位）</button>
-                        <label class="ss-btn" style="cursor:pointer;" title="导入单本书档（收进新档位，不覆盖现有档）">📥 导入单档<input type="file" accept=".json" style="display:none;" onchange="SaveSlots.importSlot(this.files[0]);this.value='';"></label>
+                        <label class="ss-btn" style="cursor:pointer;" title="导入单本书档或差分包（收进新档位，不覆盖现有档）">📥 导入单档<input type="file" accept=".json,.gz" style="display:none;" onchange="SaveSlots.importSlot(this.files[0]);this.value='';"></label>
                         <button class="ss-btn" onclick="SaveSlots.exportAll()" title="导出全部书档 + 配置 + 图片正文到单个文件，跨设备搬家">🗂 全量备份</button>
-                        <label class="ss-btn" style="cursor:pointer;" title="从全量备份恢复（会覆盖当前全部数据，导入前自动存快照）">📦 全量恢复<input type="file" accept=".json" style="display:none;" onchange="SaveSlots.importAll(this.files[0]);this.value='';"></label>
+                        <label class="ss-btn" style="cursor:pointer;" title="从全量备份恢复（会覆盖当前全部数据，导入前自动存快照）">📦 全量恢复<input type="file" accept=".json,.gz" style="display:none;" onchange="SaveSlots.importAll(this.files[0]);this.value='';"></label>
+                    </div>
+                    <div class="ss-foot2">
+                        <button class="ss-btn" onclick="SaveSlots.exportDeltaPack()" title="v4.36.0：把全部档位打包成差分包——共享基线，体积远小于逐档全量，适合多分支长期备份">🧬 导出差分包</button>
+                        <span class="ss-cap" style="font-size:11px;color:#8fa6b5;line-height:1.5;align-self:center;">差分包含全部档位，导入时用「导入单档」即可逐支还原（差分包自动识别）</span>
                     </div>
                     <div class="ss-foot2">
                         <span id="ssCap" class="ss-cap"></span>

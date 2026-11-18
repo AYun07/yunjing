@@ -79,13 +79,148 @@
     return result;
   }
 
+  /* ==================== T07 · 长文档差分存档（本地双模，DR-004） ====================
+   * 多分支场景：N 个分支共享一份基线对象，每个分支只存相对基线的「结构化字段增量」。
+   * 逐叶子比较：数值变化只记数值，长文本叶子用字符前后缀增量——避免靠前一字段变化
+   * 污染后面全部正文（v1 曾整体字符串 diff，chapter 一变导致差分包反超全量，已废弃）。
+   * 逐字段精确还原（patchObj(base, diff(base,t)) 深度等于 t），保证回档一致。
+   * 差分包是独立 format，导入端据此分派；旧明文 .json / 旧 gzip 一律走原路径，零破坏。 */
+  function makeDelta(baseText, targetText) {
+    var a = String(baseText == null ? '' : baseText);
+    var b = String(targetText == null ? '' : targetText);
+    var min = Math.min(a.length, b.length), p = 0;
+    while (p < min && a.charAt(p) === b.charAt(p)) p++;
+    var s = 0;
+    while (s < min - p && a.charAt(a.length - 1 - s) === b.charAt(b.length - 1 - s)) s++;
+    return { p: p, s: s, m: b.slice(p, b.length - s), len: a.length };
+  }
+  function applyDelta(baseText, d) {
+    var a = String(baseText == null ? '' : baseText);
+    if (!d || typeof d !== 'object') throw new Error('差分增量格式非法');
+    return a.slice(0, d.p) + String(d.m == null ? '' : d.m) + a.slice(a.length - d.s);
+  }
+  function isDeltaPack(pkg) {
+    return !!(pkg && pkg.format === 'delta' && pkg.baseObj && Array.isArray(pkg.branches));
+  }
+  /* 递归结构化 diff —— 逐叶子字段比较，避免「靠前一字段变化污染后面全部正文」。
+     长字符串叶子（>=120 字）用字符前后缀增量；其余叶子直接记新值；
+     对象递归公共键 + 增删；数组记长度 + 逐项。
+     delta 形如 { "save.variables.chapter": {t:'v',v:121},
+                  "save.variables.transcript": {t:'s',p:…,s:…,m:…} } */
+  function diffValue(a, b, path, out) {
+    if (a === b) return;
+    var oa = (a !== null && typeof a === 'object');
+    var ob = (b !== null && typeof b === 'object');
+    if (!oa || !ob || Array.isArray(a) !== Array.isArray(b)) {
+      if (typeof a === 'string' && typeof b === 'string' && (a.length >= 120 || b.length >= 120)) {
+        out[path] = Object.assign({ t: 's' }, makeDelta(a, b));
+      } else {
+        out[path] = { t: 'v', v: b === undefined ? null : b };
+      }
+      return;
+    }
+    if (Array.isArray(a)) {
+      if (a.length !== b.length) out[path + '#len'] = b.length;
+      /* 只比对目标仍存在的索引：超出新长度的尾部由 #len 截断处理，避免写出无效项 */
+      var n = Math.max(a.length, b.length);
+      for (var i = 0; i < n && i < b.length; i++) diffValue(a[i], b[i], path + '[' + i + ']', out);
+      return;
+    }
+    var keys = {};
+    Object.keys(a).forEach(function (k) { keys[k] = 1; });
+    Object.keys(b).forEach(function (k) { keys[k] = 1; });
+    Object.keys(keys).forEach(function (k) {
+      var kp = path ? path + '.' + k : k;
+      /* 目标缺失的键标记为删除；目标新增的键直接记值 */
+      if (!(k in b)) { out[kp] = { t: 'd' }; return; }
+      if (!(k in a)) { out[kp] = { t: 'v', v: b[k] }; return; }
+      diffValue(a[k], b[k], kp, out);
+    });
+  }
+  function parseSegments(path) {
+    var segs = [], cur = '', i = 0;
+    while (i < path.length) {
+      var ch = path.charAt(i);
+      if (ch === '[') {
+        if (cur) { segs.push(cur); cur = ''; }
+        var j = path.indexOf(']', i);
+        segs.push(parseInt(path.slice(i + 1, j), 10)); i = j + 1;
+      } else if (ch === '.') { if (cur) { segs.push(cur); cur = ''; } i++; }
+      else { cur += ch; i++; }
+    }
+    if (cur) segs.push(cur);
+    return segs;
+  }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  /** 把 delta 应用回基线对象，逐字段还原 */
+  function patchObj(baseObj, delta) {
+    var root = clone(baseObj);
+    var paths = Object.keys(delta);
+    /* 普通字段先应用，数组长度截断（#len）最后统一处理，杜绝顺序依赖 */
+    paths.forEach(function (path) {
+      if (path.slice(-4) === '#len') return;
+      var d = delta[path], segs = parseSegments(path), cur = root;
+      for (var k = 0; k < segs.length - 1; k++) {
+        if (cur == null) return;
+        cur = cur[segs[k]];
+      }
+      if (cur == null) return;
+      var last = segs[segs.length - 1];
+      if (d.t === 'd') { delete cur[last]; return; }       // 删除键
+      cur[last] = (d.t === 's') ? applyDelta(cur[last], d) : d.v;
+    });
+    paths.forEach(function (path) {
+      if (path.slice(-4) !== '#len') return;
+      var segs = parseSegments(path.slice(0, -4)), arr = root;
+      for (var i = 0; i < segs.length; i++) {
+        if (arr == null) return;
+        arr = arr[segs[i]];
+      }
+      if (Array.isArray(arr)) arr.length = delta[path];
+    });
+    return root;
+  }
+  /** branches: [{id, meta, obj}] → 差分包对象（基线取第 0 支全文，其余支存结构化增量） */
+  function makeBranchPack(branches) {
+    branches = (Array.isArray(branches) ? branches : []).filter(Boolean);
+    if (!branches.length) throw new Error('没有可打包的分支');
+    var baseObj = branches[0].obj === undefined ? branches[0] : branches[0].obj;
+    var out = {
+      app: 'yunjing', format: 'delta', dv: '2.0', ver: '4.36.0',
+      baseObj: baseObj,
+      branches: branches.map(function (br, i) {
+        var obj = br.obj === undefined ? br : br.obj;
+        var item = { id: br.id != null ? br.id : ('branch' + i), meta: br.meta || {} };
+        var delta = {};
+        diffValue(baseObj, obj, '', delta);
+        item.delta = Object.keys(delta).length ? delta : null;
+        return item;
+      })
+    };
+    return out;
+  }
+  /** 从差分包还原第 index 支的完整对象 → {id, meta, obj} */
+  function unpackBranch(pack, index) {
+    if (!isDeltaPack(pack)) throw new Error('不是差分存档包');
+    if (!pack.baseObj) throw new Error('差分包缺少基线对象（旧版 v1 包不兼容，请用全量存档）');
+    var br = pack.branches[index];
+    if (!br) throw new Error('分支不存在');
+    var obj = br.delta ? patchObj(pack.baseObj, br.delta) : clone(pack.baseObj);
+    return { id: br.id, meta: br.meta || {}, obj: obj };
+  }
+
   window.SaveCodec = {
-    version: '1.0.0',
+    version: '1.1.0',
     hasGzip: hasGzip,
     gzip: gzip,
     gunzip: gunzip,
     collectConfig: collectConfig,
     restoreConfig: restoreConfig,
+    makeDelta: makeDelta,
+    applyDelta: applyDelta,
+    isDeltaPack: isDeltaPack,
+    makeBranchPack: makeBranchPack,
+    unpackBranch: unpackBranch,
     CONFIG_KEY: CONFIG_KEY
   };
 })();
