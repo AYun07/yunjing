@@ -74,7 +74,7 @@
   }
 
   /* ---------- 单次世界日结算（有界、纯规则） ---------- */
-  function tick() {
+  function tick(quiet) {
     if (ticking) return;             /* 单飞：重入直接丢弃本拍 */
     if (document.visibilityState === "hidden") return; /* 后台不积累 */
     const v = vars();
@@ -144,7 +144,7 @@
       v.时间.lastClockAt = Date.now();
       save();
       try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
-      toast(`⏱ 世界第${day}日：${ev}`, "info");
+      if (!quiet) toast(`⏱ 世界第${day}日：${ev}`, "info");
       /* v4.18.0：派发世界事件给即时反馈层，落「世界动态」常驻面板（此前只有一闪而过的 toast）。 */
       try {
         var _we = new (window.CustomEvent || window.Event)("yj:world-tick", {
@@ -162,7 +162,7 @@
   function start() {
     stop(); /* 单飞铁律：先清掉任何既有 interval（含上一实例） */
     const sec = clamp(Math.round(Number(cfg.intervalSec) || TICK_DEFAULT_SEC), 30, 3600);
-    timer = setInterval(tick, sec * 1000);
+    timer = setInterval(function () { tick(false); }, sec * 1000);
     cfg.enabled = true; saveCfg();
     try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
     return true;
@@ -192,6 +192,22 @@
     }
     setTimeout(waitBoot, 2000);
   })();
+
+  /* v4.38.0 修 P0-2（叙事时间与世界日脱节 · 玩家实测）：
+     旧版世界日只靠固定 interval（≥30s）推进，剧情里已"三天前/三个时辰/夜三更"，
+     左上角却长期停在"第0日"，玩家要等半分钟才见世界动一下，世界像死的。
+     现在让**玩家的每一轮叙事也成为一次世界推进**：故事保存后（story:turn-saved）
+     调一次 tick，玩家推进剧情 = 世界随之流转；墙钟 interval 仍在，作为"玩家发呆时
+     世界也在自行演化"的补充。tick 自带 ticking 单飞锁与后台跳过，直接调用安全。
+     仅在时钟启用（cfg.enabled）时挂钩，玩家主动暂停则世界完全随回合静止（尊重其选择）。 */
+  try {
+    document.addEventListener('story:turn-saved', function () {
+      if (cfg.enabled && timer != null) {
+        /* 与墙钟 tick 错峰：回合驱动延后一小段，避免与可能同时到点的 interval 抢同一拍 */
+        setTimeout(function () { try { tick(true); } catch (e) {} }, 350);
+      }
+    });
+  } catch (e) {}
 
   /* v3.85.0 可视开关：世界时钟默认开启后，给玩家一个显眼且随时可暂停/恢复的入口（P0-4）。
      固定悬浮药丸，落在左上角避开水云伙伴（右下）与切换坞（左下）。 */

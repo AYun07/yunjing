@@ -99,7 +99,12 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
       localStorage.setItem(key, String(ch));
     } catch (e) {
     }
-    const title = String(vars && vars.chapterTitle || "").trim();
+    /* v4.38.0 修 P1-1（章名"未题"）：模型常只报 chapter 数字、不报 chapterTitle，
+       转场大字就长期显示"未题"，像半成品。用一组按回目轮转的雅致兜底名，保证每章
+       都有像样的题名；模型一旦上报真实 chapterTitle 仍优先用它。 */
+    var fallbackTitles = ["风起", "暗流", "迷雾", "惊变", "抉择", "余响", "远行", "归途", "旧事", "新生"];
+    const title = String(vars && vars.chapterTitle || "").trim()
+      || (fallbackTitles[(Number(ch) - 1) % fallbackTitles.length] + "·第" + ch + "回");
     const quote = firstSentence(body, 44);
     const bits = [];
     if (vars && vars.time) bits.push(String(vars.time));
@@ -117,7 +122,7 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
             <div class="ip-tp-inner">
                 <div class="ip-tp-kicker">卷 · 第 ${esc(ch)} 章</div>
                 <div class="ip-tp-rule"></div>
-                <div class="ip-tp-title">${esc(title || "未题")}</div>
+                <div class="ip-tp-title">${esc(title)}</div>
                 ${bits && bits.length ? `<div class="ip-tp-bits">${bits.map((b) => `<span>${esc(b)}</span>`).join("")}</div>` : ""}
                 ${quote ? `<div class="ip-tp-quote">「${esc(quote)}」</div>` : ""}
                 <div class="ip-tp-enter">轻触 · 入卷</div>
@@ -125,7 +130,9 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     el.addEventListener("click", () => dismissTitlePage());
     (document.body || document.documentElement).appendChild(el);
     clearTimeout(showTitlePage._t);
-    showTitlePage._t = setTimeout(() => dismissTitlePage(), 4200);
+    /* v4.38.0 修 P1-2：连续生成时 4.2s 转场偏长、连续打断阅读；缩到 2.2s，
+       仍需仪式感时点一下即可立即跳过（单击监听不变）。 */
+    showTitlePage._t = setTimeout(() => dismissTitlePage(), 2200);
   }
   function dismissTitlePage() {
     const el = document.getElementById("ipTitlePage");
