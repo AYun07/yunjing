@@ -142,6 +142,18 @@ const StoryResponseHandler = {
     if (window.ImmersionPlus && window.ImmersionPlus.stripHookMarkers) {
       body = window.ImmersionPlus.stripHookMarkers(body);
     }
+    /* v4.38.0 修 P0-1（钩子标记裸奔进正文 · 实测 agnes-3.0-flash 第3轮）：
+       模型在正文末尾单独输出一行 `(next: 门槛外的土腥气…)`。ImmersionPlus.stripHookMarkers
+       虽能剥，但它只在完整 handle() 流程里被调用；extractBody 会被草稿/质检/场景态/存档
+       重放等多处直接调用（那些路径可能早于 ImmersionPlus 初始化），于是 (next:) 原样落到
+       正文末尾。这里在 extractBody 内部再加一层不依赖任何外部模块的兜底，幂等（正常流程
+       已被剥过则此处无匹配）。剥离口径与 stripHookMarkers 同源：允许 1~10 字符前缀词，
+       覆盖 next/下回/gameover/echo 三类钩子，整行删除。 */
+    body = body.replace(/(^|\n)[ \t]*[(（【]\s*(?:[A-Za-z]{1,10}|[\u4e00-\u9fa5]{1,4})?\s*[.．:：]?\s*(?:next|下回|预告|gameover|终局|echo|回响)\s*[.．:：]\s*[^\n)）】]{0,120}\s*[)）】][ \t]*(?=\n|$)/gi, "$1");
+    /* 裸字段与正文粘连行（实测「主角名.status: 警觉风。」陈默重复…」）：
+       协议值后直接粘了正文首字。先剥「裸键:值」前缀、保留其后正文——仅在行首命中
+       「已知协议键前缀」（姓名/身份/主角名./chapter= 等）时触发，绝不误伤对白。 */
+    body = body.replace(/(^|\n)[ \t]*(?:主角名\.[\u4e00-\u9fa5A-Za-z]+|(?:姓名|身份|所在|时刻|情绪|伤势|装备|钱财|境界|当前目标))\s*[:：]\s*/g, "$1");
     body = body.replace(/```[a-zA-Z]*\r?\n[\s\S]*?```/g, (fence) => {
       if (/variable_update/i.test(fence)) return "";
       const inner = fence.replace(/```[a-zA-Z]*\r?\n?/, "").replace(/```$/, "");
@@ -776,7 +788,11 @@ const StoryResponseHandler = {
     if (!container) return;
     const card = document.createElement("div");
     card.className = "message-card ai-card";
-    const chapter = vars && vars.chapter != null && String(vars.chapter).trim() ? `第 ${this.escapeHtml(vars.chapter)} 章` : "正文";
+    /* v4.38.0 修 P1-1：只有 chapter 是有效正整数（≥1）才显示「第 N 章」，
+       否则（空串/"0"/空白/非数字）统一显示「正文」——杜绝实测到的「✒ 第  章」空徽标。 */
+    const _chNum = Number(vars && vars.chapter);
+    const chapter = Number.isFinite(_chNum) && _chNum >= 1
+      ? `第 ${_chNum} 章` : "正文";
     const IG = window.StoryImageGen;
     const bodyForCount = IG && IG.stripMarkers ? IG.stripMarkers(body) : body;
     const words = bodyForCount ? bodyForCount.replace(/\s/g, "").length : 0;

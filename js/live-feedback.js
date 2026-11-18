@@ -50,17 +50,50 @@
   var feed = [];
   try { feed = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); if (!Array.isArray(feed)) feed = []; } catch (e) { feed = []; }
   function saveFeed() { try { localStorage.setItem(LOG_KEY, JSON.stringify(feed.slice(-30))); } catch (e) {} }
+  var FEED_HIDE_KEY = 'yjWorldFeedHidden';
+  function feedHidden() { try { return localStorage.getItem(FEED_HIDE_KEY) === '1'; } catch (e) { return false; } }
+  function setFeedHidden(v) { try { localStorage.setItem(FEED_HIDE_KEY, v ? '1' : '0'); } catch (e) {} }
+
+  /* v4.38.0 修 P1-4：世界动态面板常驻左下、遮挡内容且不能整体收起。
+     加一个「×」关闭按钮 → 隐藏面板并在左下留一个极小的「⏱」重开圆点（不再是碍眼大卡片）。
+     关闭状态记忆到 localStorage，刷新后保持；点重开圆点恢复。 */
+  function ensureReopenDot() {
+    if (document.getElementById('yjWorldFeedReopen')) return;
+    var dot = document.createElement('button');
+    dot.id = 'yjWorldFeedReopen';
+    dot.title = '显示世界动态';
+    dot.setAttribute('aria-label', '显示世界动态');
+    dot.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9941;width:34px;height:34px;border-radius:50%;border:1px solid rgba(201,168,106,.4);background:rgba(14,16,30,.9);color:#e8c47a;font-size:15px;cursor:pointer;display:none;box-shadow:0 4px 14px rgba(0,0,0,.4)';
+    dot.textContent = '⏱';
+    dot.onclick = function () { setFeedHidden(false); dot.style.display = 'none'; var el = ensureFeedPanel(); if (el) el.style.display = ''; };
+    (document.body || document.documentElement).appendChild(dot);
+  }
   function ensureFeedPanel() {
+    ensureReopenDot();
     var el = document.getElementById('yjWorldFeed');
     if (!el) {
       el = document.createElement('div');
       el.id = 'yjWorldFeed';
       el.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9940;width:250px;max-height:230px;overflow:hidden;border-radius:14px;background:rgba(14,16,30,.92);border:1px solid rgba(201,168,106,.3);color:#e8e2d0;font-family:"Noto Sans SC",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:12px;';
-      el.innerHTML = '<div data-head style="display:flex;align-items:center;gap:6px;padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(201,168,106,.18);"><b style="font-size:12px;">⏱ 世界动态</b><span data-dot style="width:7px;height:7px;border-radius:50%;background:#c94b4b;display:none;"></span><span data-caret style="margin-left:auto;opacity:.6;">▾</span></div><div data-body style="max-height:170px;overflow:auto;padding:6px 12px;"></div>';
+      el.innerHTML = '<div data-head style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid rgba(201,168,106,.18);"><span data-toggle style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;"><b style="font-size:12px;">⏱ 世界动态</b><span data-dot style="width:7px;height:7px;border-radius:50%;background:#c94b4b;display:none;"></span></span><span data-caret style="cursor:pointer;opacity:.6;padding:0 4px;">▾</span><button data-close title="收起世界动态" aria-label="收起世界动态" style="cursor:pointer;background:transparent;border:none;color:#c9b78f;font-size:15px;line-height:1;padding:2px 4px;">×</button></div><div data-body style="max-height:170px;overflow:auto;padding:6px 12px;"></div>';
       document.body.appendChild(el);
-      var head = el.querySelector('[data-head]'), body = el.querySelector('[data-body]');
-      head.onclick = function () { var open = body.style.display !== 'none'; body.style.display = open ? 'none' : ''; head.querySelector('[data-caret]').textContent = open ? '▸' : '▾'; if (!open) head.querySelector('[data-dot]').style.display = 'none'; };
+      var head = el.querySelector('[data-toggle]'), body = el.querySelector('[data-body]'), caret = el.querySelector('[data-caret]');
+      function toggleBody() { var open = body.style.display !== 'none'; body.style.display = open ? 'none' : ''; caret.textContent = open ? '▸' : '▾'; if (!open) el.querySelector('[data-dot]').style.display = 'none'; }
+      head.onclick = toggleBody;
+      caret.onclick = toggleBody;
+      el.querySelector('[data-close]').onclick = function (ev) {
+        ev.stopPropagation();
+        setFeedHidden(true);
+        el.style.display = 'none';
+        var dot = document.getElementById('yjWorldFeedReopen');
+        if (dot) dot.style.display = 'block';
+      };
       renderFeed();
+    }
+    if (feedHidden()) {
+      el.style.display = 'none';
+      var dot = document.getElementById('yjWorldFeedReopen');
+      if (dot) dot.style.display = 'block';
     }
     return el;
   }
@@ -68,7 +101,7 @@
     var el = document.getElementById('yjWorldFeed');
     if (!el) return;
     var body = el.querySelector('[data-body]');
-    if (!feed.length) { body.innerHTML = '<div style="opacity:.55;padding:6px 0;">世界还没开始自转。开启「世界时钟」后，这里会记下发生的事件。</div>'; return; }
+    if (!feed.length) { body.innerHTML = '<div style="opacity:.62;padding:6px 0;line-height:1.6;">天地初开，万物静候。随着故事推进，此处的风物人事会自行流转、一一记下。</div>'; return; }
     body.innerHTML = feed.slice(-12).reverse().map(function (x) {
       return '<div style="padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.08);line-height:1.5;"><span style="opacity:.55;margin-right:6px;">' + (x.t || '') + '</span>' + String(x.e || '') + '</div>';
     }).join('');

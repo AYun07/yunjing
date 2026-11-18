@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.37.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.38.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,32 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.38.0 ==================== -->
+        <article class="log-entry" data-tags="体验 修复 正文 世界 移动端" style="--entry-hue:#8f7fbf;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.38.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">挑剔试玩反馈全修 · 正文与世界真正活起来</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：以资深游戏开发者视角真玩一遍后，把反馈报告里的体验问题逐条修复——正文钩子标记不再漏进叙事、世界随剧情推进、章节不再"未题"、移动端触控与小字达标、浮层可收起。 · <a href="https://github.com/AYun07/yunjing/compare/v4.37.0...v4.38.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>正文清洗兜底</b>：extractBody 内置 (next:)/(cho:) 钩子标记与裸字段行的兜底剥离，不依赖其它模块初始化；实测第 3 轮原文已无 (next:) 与主角名/变量残片。</li>
+                    <li><b>世界随剧情推进</b>：玩家每完成一轮叙事即静默推进一次世界日（墙钟仍在，双驱动）；世界动态空态文案改为叙事化口吻，不再出现"还没开始自转"。</li>
+                    <li><b>章节有题名</b>：模型不报 chapterTitle 时按回目轮转雅致兜底名，不再显示"未题"；章节徽标仅在有效章号时显示，杜绝"第　章"空徽标；转场 4.2s 缩到 2.2s。</li>
+                    <li><b>移动端适配</b>：窄屏小云按钮用带 ID 特异性补 44px 触控（此前被主题规则盖掉）；opening-effects/wp-eyebrow 等 10px 小字抬到 12px。</li>
+                    <li><b>浮层可收起 + 状态栏说明</b>：世界动态面板加关闭按钮与极小重开圆点、状态记忆；叙事仪表盘与创作六维各加用途副标，消除"哪个是真的"困惑。</li>
+                    <li><b>视觉</b>：首屏"轻触展卷"提亮加描边，开场入口副标题加深底衬，浅色云海上也清晰。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.37.0 ==================== -->
         <article class="log-entry" data-tags="界面 小云 交互 修复" style="--entry-hue:#6f9f8f;">
             <div class="entry-head">
                 <span class="entry-ver">v4.37.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">界面清爽化 · 小云可拖动</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：按玩家反馈做四处界面修正——功能按钮/世界卡片文字不再歪斜、移除碍眼的授权占位入口、小云可自由拖动并记忆位置、小云背后不再有阴影与衬底。 · <a href="https://github.com/AYun07/yunjing/compare/v4.36.0...v4.37.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -797,7 +817,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.37.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.38.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

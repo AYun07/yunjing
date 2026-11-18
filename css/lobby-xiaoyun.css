@@ -106,7 +106,12 @@ html body.page-index .stars i:nth-child(7){top:46%;left:54%;animation-delay:1.4s
   text-shadow:0 0 24px color-mix(in srgb,var(--accent) 60%,transparent);}
 .splash-sub{margin-top:10px;color:var(--ink-dim);letter-spacing:.3em;font-size:14px;}
 .splash-line{width:60px;height:2px;margin:18px auto;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
-.splash-hint{color:var(--ink-faint);font-size:13px;letter-spacing:.2em;animation:tw 3s infinite;}
+/* v4.38.0 修 P2-1：首屏「轻触任意处 展卷」原用 --ink-faint（暗紫）在深底上偏糊，
+   新玩家看不清该点哪里。提亮为 ink-light 系、加发光描边，仍保留呼吸动画。 */
+.splash-hint{color:var(--ink-light,#e8e2d0);font-size:13px;letter-spacing:.2em;animation:tw 3s infinite;text-shadow:0 1px 4px rgba(0,0,0,.85),0 0 10px rgba(232,196,122,.35);opacity:.92;}
+/* 主题特化皮肤的 hint 也补描边（这些规则在 lobby-themes.css 里以更高特异性覆盖颜色，
+   这里只叠加阴影、不动它们的主题配色，特异性对齐 html[data-theme] 避免被盖）。 */
+html[data-theme] .splash-hint{text-shadow:0 1px 4px rgba(0,0,0,.9),0 0 10px rgba(232,196,122,.3);opacity:.95;}
 
 /* 版本徽标 */
 .ver-badge{position:fixed;right:14px;bottom:14px;z-index:30;font-size:12px;letter-spacing:.06em;

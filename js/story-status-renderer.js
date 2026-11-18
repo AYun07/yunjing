@@ -56,14 +56,14 @@ const StoryStatusRenderer = {
             </div>
 
             <div class="panel-section">
-                <div class="section-title">◈ ${pl.gauges || "叙事仪表盘"}</div>
+                <div class="section-title">◈ ${pl.gauges || "叙事仪表盘"}<span class="sec-sub">本轮剧情状态 · 随故事实时变化</span></div>
                 ${gaugeHTML || '<div class="empty-hint">本类型未定义仪表盘</div>'}
             </div>
 
             ${ledgerHTML}
 
             <div class="panel-section">
-                <div class="section-title">✦ ${pl.stats || "创作六维"}</div>
+                <div class="section-title">✦ ${pl.stats || "创作六维"}<span class="sec-sub">作者风格偏好 · 影响后续生成</span></div>
                 <div id="statsArea"></div>
             </div>
 

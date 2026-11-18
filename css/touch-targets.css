@@ -76,4 +76,53 @@
     display: inline-flex;
     align-items: center;
   }
+
+  /* 5) v4.38.0 修 P1-3（小云面板按钮实测仍 29px）：
+       上面的 .xy-q / .xy-f / .xy-home 是单类选择器（特异性 0,1,0），
+       被 xiaoyun-buddy.css 里带 ID 的「#xyBuddy .xy-q」主题规则（1,1,0）盖过，
+       min-height 未生效。这里用同等带 ID 的特异性补一条，确保窄屏真正达到 44px。 */
+  /* v4.38.0 修 P1-3 二次：实测面板打开后这些按钮计算 minHeight=44px 但渲染仍 30px——
+     是被 .xy-quick grid / 滚动面板的 flex 收缩压过去的。用 !important + flex-shrink:0
+     强制撑足 44px；同时给两个 grid 容器设 min 行高，防止反过来把按钮压扁。 */
+  #xyBuddy .xy-q,
+  #xyBuddy .xy-f,
+  #xyBuddy .xy-home {
+    min-height: 44px !important;
+    height: 44px !important;
+    flex-shrink: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  #xyBuddy .xy-quick,
+  #xyBuddy .xy-forms {
+    grid-auto-rows: minmax(44px, auto);
+    flex-shrink: 0;
+  }
+
+  /* 6) 无类名的发送按钮（聊天输入区）与创作日志行内链接 */
+  button:not([class]) {
+    min-height: 44px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  a:not([class]) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* 7) v4.38.0 修 P1-3（<11px 小字）：实测开局设定台 17 处 10~10.5px 标签，
+       手机上几乎读不清。仅窄屏把这些说明性文字抬到 12px，不改桌面排版。 */
+  .opening-effects,
+  .wp-eyebrow,
+  .yj-st-flag,
+  .token-note,
+  .char-cf-tip,
+  .fs-tag,
+  .wb-tag {
+    font-size: 12px;
+  }
 }

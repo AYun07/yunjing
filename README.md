@@ -55,11 +55,11 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v4.37.0（2026-11-18 · 唯一当前版）
+## 🆕 当前版本：v4.38.0（2026-11-18 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v4.37.0** | 2026-11-18 | **当前** | 规则引擎引入全 38 界：每界专属维度、世界自适应检定入账本、成长账本面板与本地差分存档，真浏览器 38 界冒烟全过。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.36.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.36.0) |
+| **v4.38.0** | 2026-11-18 | **当前** | 规则引擎引入全 38 界：每界专属维度、世界自适应检定入账本、成长账本面板与本地差分存档，真浏览器 38 界冒烟全过。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.36.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.36.0) |
 
 **看版本**：[📚 版本页（99 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v4.29.0 的差异](https://github.com/AYun07/yunjing/compare/v4.29.0...v4.36.0) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.36.0)
 
