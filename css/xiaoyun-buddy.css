@@ -2,10 +2,11 @@
 .xy-buddy{position:fixed;right:26px;bottom:26px;z-index:9990;font-family:'Noto Sans SC','PingFang SC',sans-serif}
 .xy-orb{position:relative;width:96px;height:120px;cursor:pointer;transition:transform .3s;transform-origin:bottom center}
 .xy-orb:hover{transform:translateY(-6px) scale(1.04)}
-.xy-orb img{height:100%;width:auto;filter:drop-shadow(0 10px 24px rgba(10,10,30,.45));animation:xyFloat 3.2s ease-in-out infinite}
-/* v4.31.0 情绪动作视频：与静态立绘同尺寸/投影/浮动，透明叠加无绿边 */
+/* v4.37.0 玩家要求：小云纯透明叠加在内容界面上，背后不留阴影/背景块 */
+.xy-orb img{height:100%;width:auto;filter:none;animation:xyFloat 3.2s ease-in-out infinite}
+/* v4.31.0 情绪动作视频：与静态立绘同尺寸/浮动，透明叠加无绿边；v4.37.0 去投影 */
 .xy-orb .xy-emo-video{position:absolute;left:50%;top:0;height:100%;width:auto;max-width:none;
-  filter:drop-shadow(0 10px 24px rgba(10,10,30,.45));animation:xyFloatV 3.2s ease-in-out infinite;pointer-events:none}
+  filter:none;animation:xyFloatV 3.2s ease-in-out infinite;pointer-events:none}
 @keyframes xyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes xyFloatV{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-7px)}}
 .xy-tip{position:absolute;right:104px;top:8px;white-space:nowrap;background:#fff;color:#4a3f5c;font-size:13px;font-weight:600;
@@ -56,12 +57,19 @@
   border-radius:20px;box-shadow:0 24px 60px rgba(5,5,20,.6),inset 0 1px 0 rgba(255,255,255,.12);overflow:hidden;
   opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;transition:.32s;color:#efedfa}
 .xy-panel.on{opacity:1;transform:none;pointer-events:auto}
+/* v4.37.0 小云拖到屏幕上半部时，面板改为向下展开，避免溢出视口顶部 */
+.xy-buddy.flip-panel .xy-panel{top:132px;bottom:auto}
+@media(max-height:560px){.xy-buddy.flip-panel .xy-panel{top:auto;bottom:132px}}
 .xy-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(90deg,rgba(126,140,255,.22),rgba(255,140,190,.14));border-bottom:1px solid rgba(200,180,255,.18)}
 /* v3.92.1：面板头改用云朵符号，不再放第二张小云头像——全站只有右下角一只立绘 */
 .xy-head .xy-cloud-mark{width:34px;height:34px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
   font-size:20px;line-height:1;background:rgba(255,255,255,.16);color:#dcd2ff}
 .xy-head b{font-size:15px;letter-spacing:.06em}
 .xy-mood{margin-left:auto;font-size:11px;color:#cfc8f0;background:rgba(150,140,255,.18);padding:3px 10px;border-radius:999px}
+/* v4.37.0 归位按钮 */
+.xy-home{flex:0 0 auto;font-size:11px;color:#b8b2dd;background:transparent;border:1px solid rgba(170,160,255,.3);
+  border-radius:999px;padding:3px 9px;cursor:pointer;transition:.2s;white-space:nowrap}
+.xy-home:hover{color:#fff;background:rgba(140,130,255,.32)}
 .xy-chat{flex:0 0 auto;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:80px;max-height:130px}
 .xy-msg{max-width:86%;font-size:13px;line-height:1.7;padding:9px 13px;border-radius:14px}
 .xy-msg.bot{align-self:flex-start;background:rgba(130,120,220,.2);border:1px solid rgba(170,160,255,.22);border-bottom-left-radius:4px}
@@ -116,6 +124,13 @@ html[data-theme="zine"] #xyBuddy .xy-mood,
 html[data-theme="ink"] #xyBuddy .xy-mood,
 html[data-theme="swiss"] #xyBuddy .xy-mood{
   color:var(--ink-mid);background:transparent;border:1px solid var(--rule);border-radius:2px}
+html[data-theme="zine"] #xyBuddy .xy-home,
+html[data-theme="ink"] #xyBuddy .xy-home,
+html[data-theme="swiss"] #xyBuddy .xy-home{
+  color:var(--ink-mid);border:1px solid var(--rule);border-radius:2px}
+html[data-theme="zine"] #xyBuddy .xy-home:hover,
+html[data-theme="ink"] #xyBuddy .xy-home:hover,
+html[data-theme="swiss"] #xyBuddy .xy-home:hover{background:var(--group-bg)}
 html[data-theme="zine"] #xyBuddy .xy-msg.bot,
 html[data-theme="ink"] #xyBuddy .xy-msg.bot,
 html[data-theme="swiss"] #xyBuddy .xy-msg.bot{

@@ -98,9 +98,10 @@ html[data-theme="zine"] body.page-index .mh-chips{justify-content:center;margin:
 html[data-theme="zine"] body.page-index .mh-chips span{
   font-size:12px;padding:6px 12px;background:#fffdf7;border:1px dashed var(--rule);
   box-shadow:0 4px 10px rgba(90,70,40,.12);border-radius:2px}
-html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n+1){transform:rotate(-2deg);background:#fff2c9}
-html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n+2){transform:rotate(1.6deg);background:#dff2e6}
-html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n){transform:rotate(-1deg);background:#ffe2e9}
+/* v4.37.0 玩家反馈「字符没在对应位置」：去掉贴纸式旋转，文字水平对齐，仅保留颜色区分 */
+html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n+1){transform:none;background:#fff2c9}
+html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n+2){transform:none;background:#dff2e6}
+html[data-theme="zine"] body.page-index .mh-chips span:nth-child(3n){transform:none;background:#ffe2e9}
 html[data-theme="zine"] body.page-index .container > .section-title{
   font-family:"Ma Shan Zheng","LXGW WenKai",cursive;font-weight:400;font-size:26px;letter-spacing:.06em}
 /* 第二轮修正：196px 五张会 4+1 孤卡，收窄到 170px 让五张成一行，消掉下方大片空白 */
@@ -110,8 +111,9 @@ html[data-theme="zine"] body.page-index .container > .workshops > .workshop{
   flex:0 0 170px;width:170px;box-sizing:border-box;min-height:0;background:#fff;border:0;border-radius:0;
   padding:11px 11px 14px;box-shadow:0 10px 22px rgba(90,70,40,.22);
   display:flex;flex-direction:column;gap:0;overflow:visible;position:relative}
-html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(odd){transform:rotate(-2.6deg)}
-html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(even){transform:rotate(2.2deg) translateY(10px)}
+/* v4.37.0 卡片不再歪斜错位，水平对齐 */
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(odd){transform:none}
+html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(even){transform:none}
 html[data-theme="zine"] body.page-index .container > .workshops > .workshop::before{
   content:"";position:absolute;top:-13px;left:50%;width:86px;height:26px;margin-left:-43px;
   transform:rotate(-3deg);opacity:.85;border-radius:2px;
@@ -426,8 +428,9 @@ html[data-theme="term"] .ws-group .workshops .workshop .ws-desc{display:none}
   html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-glyph{height:110px;font-size:62px}
   html[data-theme="zine"] body.page-index .container > .workshops > .workshop .ws-name{font-size:19px}
   html[data-theme="zine"] body.page-index .container > .workshops > .workshop::after{top:82px;font-size:11px;right:4px}
+  /* v4.37.0 卡片不再歪斜错位 */
   html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(odd),
-  html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(even){transform:rotate(-1.4deg)}
+  html[data-theme="zine"] body.page-index .container > .workshops > .workshop:nth-child(even){transform:none}
   /* 第 5 张改成跨列宽拍立得，不再孤零零占半行 */
   html[data-theme="zine"] body.page-index .container > .workshops > .workshop:last-child{flex-basis:96%;width:96%}
   html[data-theme="zine"] body.page-index .container > .workshops > .workshop::after{top:82px}

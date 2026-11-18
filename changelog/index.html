@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.34.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.37.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,31 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.37.0 ==================== -->
+        <article class="log-entry" data-tags="界面 小云 交互 修复" style="--entry-hue:#6f9f8f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.37.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">界面清爽化 · 小云可拖动</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：按玩家反馈做四处界面修正——功能按钮/世界卡片文字不再歪斜、移除碍眼的授权占位入口、小云可自由拖动并记忆位置、小云背后不再有阴影与衬底。 · <a href="https://github.com/AYun07/yunjing/compare/v4.36.0...v4.37.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>文字对齐</b>：去掉各主题给功能按钮与世界卡片加的贴纸式旋转（±1~2.6°），文字水平对齐，不再像错位；保留原有颜色区分。</li>
+                    <li><b>移除授权占位</b>：不再自动往页面挂"🔑 授权占位"按钮；授权模块本体与 API 完整保留，未来接真实授权可直接复用。</li>
+                    <li><b>小云可拖动</b>：鼠标/触摸拖动小云到任意位置，localStorage 记忆、刷新保持；面板随小云移动，拖到屏幕上方时自动改为向下展开避免溢出；面板头新增"⟲ 归位"一键复位。</li>
+                    <li><b>小云透明叠加</b>：去掉立绘的投影（drop-shadow）与各主题圆形白色衬底，小云纯透明浮在云境内容界面上。</li>
+                    <li><b>验证</b>：真浏览器覆盖 9 套主题文字 0 旋转、授权占位 0 处、拖拽/记忆/归位/点击开面板全通过；回归 34/0；控制台 0 错误。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.34.0 ==================== -->
         <article class="log-entry" data-tags="客户端 品牌 商业化 图标 开场动画" style="--entry-hue:#5f8fbe;">
             <div class="entry-head">
                 <span class="entry-ver">v4.34.0</span>
                 <span class="entry-date">2026-11-18</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">品牌重塑 · PC/手机客户端 · 商业化预备</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：从"网页 + 启动脚本"升级为<b>可下载安装的客户端</b>——新增 Windows 桌面客户端（内置本地服务，双击即用）与安卓客户端（WebGL/WebView 壳，可装 APK），彻底解决"直接双击 index.html 跑不起来"的痛点；同时完成统一品牌视觉（诗意云图标全套 + 国风开场动画 + 启动屏）与商业化预备（授权占位 + 上架素材）。 · <a href="https://github.com/AYun07/yunjing/compare/v4.33.0...v4.34.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -778,7 +797,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.34.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.37.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

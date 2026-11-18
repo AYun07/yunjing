@@ -49,6 +49,11 @@
     head.appendChild(el('span', 'xy-cloud-mark', '☁'));
     head.appendChild(el('b', null, '小云 · ' + f.n + '模式'));
     head.appendChild(el('span', 'xy-mood', apiCfg() ? 'AI 管家 · 全能' : 'AI 管家'));
+    /* v4.37.0 归位按钮：拖动后一键回到右下角默认位 */
+    var home = el('button', 'xy-home', '⟲ 归位');
+    home.title = '把小云移回右下角默认位置';
+    home.onclick = function (e) { e.stopPropagation(); xyResetPos(); say('好嘞，我回到右下角啦～'); };
+    head.appendChild(home);
   }
   function renderForms() {
     forms.innerHTML = '';
@@ -272,8 +277,88 @@
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send.onclick(); });
   /* v3.92.1：打开面板时按需重建「模块」区，反映当前题材已加载的子系统 */
   orb.addEventListener('click', function () {
+    if (__xyDragSuppressed) { __xyDragSuppressed = false; return; }
     if (panelOn) closePanel(); else openPanel();
   });
+
+  /* ==========================================================================
+     v4.37.0 · 小云位置可拖动并记忆
+     - pointer 事件同时支持鼠标与触摸；位移 > 6px 视为拖拽，不触发打开面板；
+     - 位置写入 localStorage，刷新后保持；贴近视口边缘自动回收，不拖丢；
+     - 面板 .xy-panel 相对 root 绝对定位，拖动时自然跟随；
+     - 面板头提供「⟲ 归位」按钮，一键回到右下角默认位。
+     ========================================================================== */
+  var XY_POS_KEY = 'yj_xybuddy_pos_v4';
+  var __xyDragSuppressed = false;
+  function xyApplyPos(x, y) {
+    root.style.setProperty('left', x + 'px', 'important');
+    root.style.setProperty('top', y + 'px', 'important');
+    root.style.setProperty('right', 'auto', 'important');
+    root.style.setProperty('bottom', 'auto', 'important');
+    // 面板默认向上展开（bottom:132px）；当小云离顶部不足 340px 时改为向下展开
+    if (root.classList) root.classList.toggle('flip-panel', y < 340);
+  }
+  function xyClearPos() {
+    ['left', 'top', 'right', 'bottom'].forEach(function (p) { root.style.removeProperty(p); });
+    if (root.classList) root.classList.remove('flip-panel');
+  }
+  function xyResetPos() {
+    try { localStorage.removeItem(XY_POS_KEY); } catch (e) {}
+    xyClearPos();
+  }
+  function xyRestorePos() {
+    try {
+      var p = JSON.parse(localStorage.getItem(XY_POS_KEY) || 'null');
+      if (p && typeof p.x === 'number' && typeof p.y === 'number') {
+        // 视口尺寸变化时把旧坐标收回可视范围，避免拖到屏幕外找不回
+        var w = Math.min(p.x, Math.max(0, window.innerWidth - 120));
+        var h = Math.min(p.y, Math.max(0, window.innerHeight - 140));
+        xyApplyPos(w, h);
+      }
+    } catch (e) {}
+  }
+  xyRestorePos();
+
+  (function enableXyDrag() {
+    if (orb.setPointerCapture === undefined && !('ontouchstart' in window) && !window.PointerEvent) return;
+    var dragging = false, moved = false, sx = 0, sy = 0, ox = 0, oy = 0, pid = null;
+    orb.style.touchAction = 'none';
+    function down(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      var r = root.getBoundingClientRect();
+      dragging = true; moved = false; sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; pid = e.pointerId;
+      // 立刻切换到 left/top 定位，避免 fixed 的 right/bottom 让拖拽跳动
+      xyApplyPos(r.left, r.top);
+      try { orb.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    function move(e) {
+      if (!dragging) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
+      if (!moved) return;
+      if (e.cancelable) e.preventDefault();
+      var r = root.getBoundingClientRect();
+      var nx = Math.max(0, Math.min(window.innerWidth - r.width, ox + dx));
+      var ny = Math.max(0, Math.min(window.innerHeight - r.height, oy + dy));
+      xyApplyPos(nx, ny);
+    }
+    function up(e) {
+      if (!dragging) return;
+      dragging = false;
+      try { if (pid != null) orb.releasePointerCapture(pid); } catch (err) {}
+      pid = null;
+      if (!moved) return; // 纯点击：保持默认定位，交给 click 打开面板
+      __xyDragSuppressed = true; // 拖拽结束的那次 click 不打开面板
+      var r = root.getBoundingClientRect();
+      try { localStorage.setItem(XY_POS_KEY, JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top) })); } catch (err) {}
+      // 兜底清除抑制标记，防止某些浏览器拖拽后不再派发 click 导致下次点击被吞
+      setTimeout(function () { __xyDragSuppressed = false; }, 350);
+    }
+    orb.addEventListener('pointerdown', down);
+    window.addEventListener('pointermove', move, { passive: false });
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+  })();
   function rotateTips() {
     if (panelOn) return;
     /* v3.92.1 视觉合理性：大厅首屏已有吉祥物与标题，右下角再自动轮播气泡会压住
