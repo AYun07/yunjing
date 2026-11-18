@@ -42,3 +42,13 @@ _shots_v399/
 # Python 字节码缓存
 __pycache__/
 *.pyc
+
+# 小云视频化 · 运行态目录（断点 state + 验收截图，本地留证，不入库；密钥仅走环境变量 AGNES_API_KEY）
+.codebuddy/
+# 早期本地渐变背景测试版视频（assets/videos-local/，已被 assets/videos/ 真实 AI 视频取代，废弃中间产物）
+assets/videos-local/
+# 脚本备份文件
+scripts/*.bak
+scripts/*.bak-*
+# assets/videos/（288 文件 / 469MB：96 情绪 + 156 源片 + 132 透明 WebM）是最终产品资产，
+# 全量质检已通过（v4.33.0），随仓库入库；单文件均 < 100MB，无 GitHub 大文件限制问题。

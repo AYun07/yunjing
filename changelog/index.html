@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.29.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.33.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,84 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.33.0 ==================== -->
+        <article class="log-entry" data-tags="小云 视频 情绪动作 全形态 精细情绪" style="--entry-hue:#b06f9f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.33.0</span>
+                <span class="entry-date">2026-11-18</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">小云全形态精细情绪视频补齐 · 12×8 全动态</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：用新密钥把 11 形态各自的 8 种精细情绪视频全部离线生成补齐（傲娇 8 条此前已有），至此 <b>12 形态 × 8 情绪 = 96 条专属情绪视频</b>全部就位，加上 36 条基础动作，共 132 条本地透明视频。前端解除"仅傲娇有精细情绪"限制——任何形态说情绪词都播该形态专属动作，不再回退到通用基础动作。仍然零生图 API、零运行时网络请求。 · <a href="https://github.com/AYun07/yunjing/compare/v4.32.0...v4.33.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>96 条精细情绪视频</b>：新 key 实测有效后，离线批量生成 11 形态 × 8 情绪（欢呼/生气/撇嘴/害羞/惊讶/思考/困倦/得意）= 88 条，加傲娇原有 8 条共 96 条；全部绿幕 MP4 抠像转透明 WebM，真浏览器验证 alpha 透明、无绿边。</li>
+                    <li><b>全形态精细情绪生效</b>：js/xiaoyun-emotion.js 的 EMO_FORMS 从"仅傲娇"扩到 12 形态，任一形态说情绪词即播该形态专属 emo 视频；降级链保留（视频缺失时精确回退到对应基础动作），全程本地。</li>
+                    <li><b>零 API 不变</b>：生成走离线脚本，前端运行时依旧不内置任何生图/生视频 API、零网络请求；新 key 只用于一次性离线产出，不写进前端。</li>
+                    <li><b>验证</b>：96/96 情绪 WebM + 36/36 基础动作齐全；逻辑单测、回归测试、版本同源、真浏览器全形态触发验证全通过。</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- ==================== v4.32.0 ==================== -->
+        <article class="log-entry" data-tags="小云 视频 情绪动作 指令 预设" style="--entry-hue:#6f9f8f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.32.0</span>
+                <span class="entry-date">2026-11-18</span>
+            </div>
+            <h3 class="entry-title">小云动作全预设化 · 零生图API · 全形态动态响应</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：彻底移除前端"实时生成"接口，小云所有形象与动作一律改用<b>提前生成好</b>的本地透明视频预设，运行时零网络请求、零生图/生视频 API；把原傲娇专属的情绪动作扩到<b>全部 12 形态</b>——每个形态各 3 条基础动作（开心/挥手/战斗），傲娇额外保留 8 条精细情绪，玩家指令命中即播，未命中不影响正常聊天。 · <a href="https://github.com/AYun07/yunjing/compare/v4.31.0...v4.32.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>零 API 收口</b>：删除 js/xiaoyun-emotion.js 的 requestLiveMotion() 实时生成兜底与相关话术；动作一律从 assets/videos/ 本地预设调度，未命中预设不再弹"实时生成将开放"提示。</li>
+                    <li><b>全形态预设清单</b>：12 形态 × 3 基础动作（happy/wave/battle）共 36 条由绿幕 MP4 本地抠像转透明 WebM，加上傲娇 8 条精细情绪，共 44 条透明视频全部就位。</li>
+                    <li><b>智能降级链</b>：精细情绪视频 → 当前形态最接近的基础动作 → 静态立绘，全程本地文件；非傲娇形态说情绪词也能动起来（回退到该形态基础动作）。</li>
+                    <li><b>透明链路复核</b>：真浏览器 canvas 读帧确认 WebM alpha 正常（72.6% 透明、无绿边）；ffprobe 报 yuv420p 是 VP9 alpha side data 误报，非缺陷。</li>
+                    <li><b>边界披露</b>：生图/生视频 API key 已失效（提交返回 401），故 11 形态的专属精细情绪视频无法再生成；本版以"基础动作回退"覆盖，不造假、不留实时接口。</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- ==================== v4.31.0 ==================== -->
+        <article class="log-entry" data-tags="小云 视频 情绪动作 指令" style="--entry-hue:#8f6fbe;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.31.0</span>
+                <span class="entry-date">2026-11-18</span>
+            </div>
+            <h3 class="entry-title">小云情绪动作视频 · 玩家指令驱动（傲娇垂直切片）</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：攻破原生 AI 视频下载链路（agnesapi 直链 + 裸 GET），全量产出 60 条 5 视图动态视频；新增傲娇形态 8 条情绪动作视频（欢呼/生气/撇嘴/害羞/惊讶/思考/困倦/得意），玩家输入对应指令即切换小云动作，解决"动作僵硬、表情单一"。 · <a href="https://github.com/AYun07/yunjing/compare/v4.30.0...v4.31.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>真 AI 视频全量</b>：12 形态 × 5 视图（happy/wave/battle/chibi/face）共 60 条，5.17 秒、绿幕全身/头像，可播放 MP4。</li>
+                    <li><b>情绪动作驱动</b>：傲娇形态新增 8 条情绪动作（透明 WebM），玩家说"太好了/生气/哼/害羞/什么/想想/困了/嘿嘿"即播对应动作，几秒后回默认立绘。</li>
+                    <li><b>取片链路修复</b>：此前 content 端点 502 的根因是取文件方式错误——改用官方 agnesapi 拿直链、从 video_id 构造下载 URL、裸 GET 不带密钥，绕开坏掉的反代通道。</li>
+                    <li><b>当前为垂直切片</b>：情绪动作仅傲娇形态可用；其余形态与任意自然语言实时生成在全量版开放，特殊动作指令先走降级提示。</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- ==================== v4.30.0 ==================== -->
+        <article class="log-entry" data-tags="视觉 小云 形象 生图" style="--entry-hue:#5f8fbe;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.30.0</span>
+                <span class="entry-date">2026-11-17</span>
+            </div>
+            <h3 class="entry-title">小云全形象统一重制 · 图生图锁角色 · 绿幕抠图</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：全部 60 张小云立绘（12 形态 × 5 视图）用生图模型统一重画，角色长相锁定为银白双马尾蓝瞳的同一形象，保留各形态服装设定；改用绿幕抠图替代白底泛洪，从根上消除大腿白块、腿间白条与轮廓毛边。 · <a href="https://github.com/AYun07/yunjing/compare/v4.29.0...v4.30.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>角色一致性</b>：所有形态统一以同一张基础立绘作参考图走图生图，锁定银白双马尾、蓝瞳、云朵发饰与大眼睛的可爱长相——御姐/酷飒/知性/校花不再画成成年人，只靠服装与气质区分，避免"长得不像小云""丢了可爱感"。</li>
+                    <li><b>十二形态 × 五视图</b>：萝莉/御姐/校花/清纯/邻家/酷飒/温柔/傲娇/可爱/搞怪/幼态/知性各自的欢呼(happy)/战斗(battle)/挥手(wave)/全身(chibi)/头像(face)共 60 张全部重制。</li>
+                    <li><b>绿幕抠图</b>：让模型输出纯色绿幕背景，本地按 HSV 色域精确抠图，白裙白袜完整保留、无白块白条、无绿边毛边；解决了历史上白底抠图伤害浅色衣物的问题。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.29.0 ==================== -->
         <article class="log-entry" data-tags="功能 工程 小云 判定 质量" style="--entry-hue:#6f9fbe;">
             <div class="entry-head">
                 <span class="entry-ver">v4.29.0</span>
                 <span class="entry-date">2026-11-17</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">工程地基加固 · 行动判定骰 · 小云资料召回 · 三道自动体检</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：核心回归 33 项接入 CI · 新增网络韧性体检与世界书条目体检（均"存量入基线、只拦新增"）· 新增行动判定骰（六轴属性+资质+难度，演算/口述双裁定）· 小云新增"资料召回"与"行动判定"两项能力 · 新增代码地图与改动规约文档。 · <a href="https://github.com/AYun07/yunjing/compare/v4.28.0...v4.29.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -687,7 +759,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.29.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.33.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

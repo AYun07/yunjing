@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小云 AI 动态视频 · 生成进度</title>
+<style>
+  :root{--bg:#0e1220;--card:#1a2138;--accent:#7c9cff;--ok:#3ecf8e;--wait:#f5b942;--txt:#e8ecf8;--sub:#9aa6c8}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#0e1220,#151a30);color:var(--txt);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;padding:24px}
+  h1{font-size:22px;margin:0 0 4px} .sub{color:var(--sub);font-size:13px;margin-bottom:18px}
+  .bar{height:10px;background:#28304d;border-radius:6px;overflow:hidden;margin:14px 0 6px}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--ok));transition:width .4s}
+  .stat{display:flex;gap:18px;font-size:13px;color:var(--sub);margin-bottom:20px}
+  .stat b{color:var(--txt)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .cell{background:var(--card);border:1px solid #2a3352;border-radius:12px;overflow:hidden;position:relative}
+  .cell video{width:100%;aspect-ratio:9/16;object-fit:cover;display:block;background:#0a0e1a}
+  .cell .lab{position:absolute;left:0;right:0;bottom:0;padding:5px 8px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:12px;font-weight:600}
+  .cell.pending{display:flex;align-items:center;justify-content:center;aspect-ratio:9/16;color:var(--sub);font-size:12px;text-align:center;padding:10px}
+  .cell.pending .dot{color:var(--wait)}
+  .foot{margin-top:22px;font-size:12px;color:var(--sub);line-height:1.7}
+  code{background:#232b45;padding:2px 6px;border-radius:4px;color:#c7d4ff}
+</style>
+</head>
+<body>
+<h1>小云 AI 动态视频 · 真·图生视频</h1>
+<div class="sub">模型 agnes-video-2.5-flash · 12 形态 × 5 动作 = 60 条 · 每条 5 秒 / 720P / 9:16 · 带原生音轨</div>
+<div class="bar"><i id="bar"></i></div>
+<div class="stat" id="stat"></div>
+<div class="grid" id="grid"></div>
+<div class="foot">
+  <b style="color:var(--txt)">生成状态：</b>后台管线运行中，本页每 10 秒自动刷新。已完成视频会自动播放。<br>
+  断点文件 <code>.codebuddy/xiaoyun-video-state.json</code> · 日志 <code>/tmp/xy_full_run.log</code><br>
+  中断后恢复：<code>python3.11 scripts/gen-xiaoyun-videos.py --all --concurrency 2 --submit-gap 12</code>
+</div>
+<script>
+const FORMS=[['luo','萝莉'],['yu','御姐'],['jiaohua','校花'],['qingchun','清纯'],['linjia','邻家'],['kusa','酷飒'],['wenrou','温柔'],['aojiao','傲娇'],['keai','可爱'],['gaoguai','搞怪'],['youtai','幼态'],['zhixing','知性']];
+const VIEWS=[['happy','欢呼'],['wave','挥手'],['battle','战斗'],['chibi','Q版'],['face','特写']];
+const DONE={"aojiao/wave": "xiaoyun-aojiao-wave.mp4", "aojiao/happy": "xiaoyun-aojiao-happy.mp4", "yu/happy": "xiaoyun-yu-happy.mp4", "luo/happy": "xiaoyun-luo-happy.mp4", "luo/wave": "xiaoyun-luo-wave.mp4", "luo/battle": "xiaoyun-luo-battle.mp4", "luo/chibi": "xiaoyun-chibi-luo.mp4", "luo/face": "xiaoyun-face-luo.mp4", "yu/wave": "xiaoyun-yu-wave.mp4", "yu/battle": "xiaoyun-yu-battle.mp4", "yu/chibi": "xiaoyun-chibi-yu.mp4", "yu/face": "xiaoyun-face-yu.mp4", "jiaohua/happy": "xiaoyun-jiaohua-happy.mp4", "jiaohua/wave": "xiaoyun-jiaohua-wave.mp4", "jiaohua/battle": "xiaoyun-jiaohua-battle.mp4", "jiaohua/chibi": "xiaoyun-chibi-jiaohua.mp4", "jiaohua/face": "xiaoyun-face-jiaohua.mp4", "qingchun/happy": "xiaoyun-qingchun-happy.mp4", "qingchun/wave": "xiaoyun-qingchun-wave.mp4", "qingchun/battle": "xiaoyun-qingchun-battle.mp4", "qingchun/chibi": "xiaoyun-chibi-qingchun.mp4", "qingchun/face": "xiaoyun-face-qingchun.mp4", "linjia/happy": "xiaoyun-linjia-happy.mp4", "linjia/wave": "xiaoyun-linjia-wave.mp4", "linjia/battle": "xiaoyun-linjia-battle.mp4", "linjia/chibi": "xiaoyun-chibi-linjia.mp4", "linjia/face": "xiaoyun-face-linjia.mp4", "kusa/happy": "xiaoyun-kusa-happy.mp4", "kusa/wave": "xiaoyun-kusa-wave.mp4", "kusa/battle": "xiaoyun-kusa-battle.mp4", "kusa/chibi": "xiaoyun-chibi-kusa.mp4", "kusa/face": "xiaoyun-face-kusa.mp4", "wenrou/happy": "xiaoyun-wenrou-happy.mp4", "wenrou/wave": "xiaoyun-wenrou-wave.mp4", "wenrou/battle": "xiaoyun-wenrou-battle.mp4", "wenrou/chibi": "xiaoyun-chibi-wenrou.mp4", "wenrou/face": "xiaoyun-face-wenrou.mp4", "aojiao/battle": "xiaoyun-aojiao-battle.mp4", "aojiao/chibi": "xiaoyun-chibi-aojiao.mp4", "aojiao/face": "xiaoyun-face-aojiao.mp4", "keai/happy": "xiaoyun-keai-happy.mp4", "keai/wave": "xiaoyun-keai-wave.mp4", "keai/battle": "xiaoyun-keai-battle.mp4", "keai/chibi": "xiaoyun-chibi-keai.mp4", "keai/face": "xiaoyun-face-keai.mp4", "gaoguai/happy": "xiaoyun-gaoguai-happy.mp4", "gaoguai/wave": "xiaoyun-gaoguai-wave.mp4", "gaoguai/battle": "xiaoyun-gaoguai-battle.mp4", "gaoguai/chibi": "xiaoyun-chibi-gaoguai.mp4", "gaoguai/face": "xiaoyun-face-gaoguai.mp4", "youtai/happy": "xiaoyun-youtai-happy.mp4", "youtai/wave": "xiaoyun-youtai-wave.mp4", "youtai/battle": "xiaoyun-youtai-battle.mp4", "youtai/chibi": "xiaoyun-chibi-youtai.mp4", "youtai/face": "xiaoyun-face-youtai.mp4", "zhixing/happy": "xiaoyun-zhixing-happy.mp4", "zhixing/wave": "xiaoyun-zhixing-wave.mp4", "zhixing/battle": "xiaoyun-zhixing-battle.mp4", "zhixing/chibi": "xiaoyun-chibi-zhixing.mp4", "zhixing/face": "xiaoyun-face-zhixing.mp4"}; // {form/view: filename}
+function fname(f,v){return (v==='chibi'||v==='face')?`xiaoyun-${v}-${f}.mp4`:`xiaoyun-${f}-${v}.mp4`}
+function render(){
+  let n=0,html='';
+  for(const [f,fc] of FORMS){
+    for(const [v,vc] of VIEWS){
+      const k=f+'/'+v, file=DONE[k];
+      if(file) n++;
+      if(file) html+=`<div class="cell"><video src="assets/videos/${file}" autoplay loop muted playsinline></video><div class="lab">${fc} · ${vc}</div></div>`;
+      else html+=`<div class="cell pending"><div><span class="dot">●</span><br>生成中<br><small>${fc}·${vc}</small></div></div>`;
+    }
+  }
+  document.getElementById('grid').innerHTML=html;
+  document.getElementById('bar').style.width=(n/60*100)+'%';
+  document.getElementById('stat').innerHTML=`<span>已完成 <b>${n}</b> / 60</span><span>进度 <b>${Math.round(n/60*100)}%</b></span><span>状态 <b style="color:var(--ok)">后台生成中</b></span>`;
+}
+render();
+setInterval(()=>location.reload(),10000);
+</script>
+</body>
+</html>
+EOF
