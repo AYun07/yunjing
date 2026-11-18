@@ -292,6 +292,7 @@
             if (pkg.config && window.SaveCodec) {
               const cr = window.SaveCodec.restoreConfig(pkg.config);
               if (cr.applied.length) cfgMsg = ' · 已恢复接口配置';
+              if (cr.networkKept) cfgMsg += ' · 接口地址沿用本机（安全保护）';
               if (cr.keyNeeded) cfgMsg += ' · 密钥需补填（导出时未含）';
             }
           } catch (e) {}
@@ -565,6 +566,15 @@
 
     /** 把一份快照写回两层存储 */
     async _applySnapshot(snap) {
+      /* DR-008：先删除「当前存在但快照里没有」的键，否则导入时新增的键在撤销后残留，
+         回滚不彻底。只清 localStorage 全量（快照已是导入前的完整 collectLS('all')），
+         使回滚后的键集合与快照完全一致。 */
+      try {
+        const keep = new Set(Object.keys(snap.ls || {}));
+        const now = [];
+        for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k) now.push(k); }
+        for (const k of now) if (!keep.has(k)) { try { localStorage.removeItem(k); } catch (e) {} }
+      } catch (e) {}
       for (const k of Object.keys(snap.ls || {})) {
         try { localStorage.setItem(k, snap.ls[k]); } catch (e) {}
       }
@@ -621,7 +631,9 @@
         }
         if (!ok) return;
         this._toast('正在保存当前快照…', 'info');
-        await this._snapshotBeforeImport();
+        /* DR-008：快照失败则拒绝覆盖——否则一旦覆盖就没有可撤销的回滚点。 */
+        const snap = await this._snapshotBeforeImport();
+        if (!snap) { this._toast('快照保存失败，已中止恢复（存储不可用，无法保证可撤销）', 'error'); return; }
         this._toast('正在恢复数据…', 'info');
         await this._applySnapshot(pkg);
         this._toast('恢复完成，即将刷新', 'success');

@@ -73,6 +73,14 @@
   }
 
   function refresh() {
+    /* BUGFIX(audit): 配置成功后主动移除一次性引导条。旧实现只在 inject 时判断一次，
+       配置完成后提示条仍留在布局里（且曾误插进 .main-layout 成为 flex 兄弟挤爆聊天区）。 */
+    try {
+      if (configured()) {
+        var stale = document.querySelector('.apiHintBar');
+        if (stale) stale.remove();
+      }
+    } catch (e) {}
     if (!badge) return;
     var ok = configured();
     badge.className = ok ? 'on' : 'off';
@@ -101,10 +109,13 @@
       if (configured()) return;
       if (localStorage.getItem(K_HINT_DISMISSED) === '1') return;
       if (document.querySelector('.apiHintBar')) return;
-      var host = document.querySelector('.main-layout .center-col')
-        || document.querySelector('.main-layout')
-        || document.querySelector('#chatContainer')
-        || document.body;
+      /* BUGFIX(audit): 绝不插入 .main-layout 作为直接 flex 子元素——旧兜底把提示条
+         变成布局兄弟（宽 ~1060px），把 flex:1 的聊天区挤到 ~48px，正文被压成竖排、
+         撑出 25 万像素高度而完全不可见。只插入到聊天区/向导区这类 flex:1 容器内部；
+         找不到就不插（顶栏徽标已是足够的引导）。 */
+      var host = document.querySelector('#chatArea')
+        || document.querySelector('#setupWrap')
+        || document.querySelector('#chatMessages');
       if (!host) return;
       var bar = document.createElement('div');
       bar.className = 'apiHintBar';

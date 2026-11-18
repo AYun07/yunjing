@@ -1,4 +1,4 @@
-/* 云境 · 存档编解码 v1.0.0（v4.34.0 增量）
+/* 云境 · 存档编解码 v1.0.0（v4.36.0 增量）
  * 职责：① 存档包 gzip 压缩/解压（浏览器原生 CompressionStream，无外部库）；
  *       ② 接口配置随存档采集/恢复（端点/模型随档走，密钥可选，避免每次重填）。
  * 纯前端、无上传、无后端。压缩后是标准 gzip 流，文件扩展名 .json.gz。
@@ -10,8 +10,12 @@
   /* 配置里这些字段随存档走；密钥单列，由导出选项决定是否写入。 */
   var CFG_FIELDS = ['endpoint', 'model', 'type', 'maxTokens', 'temperature', 'topP',
     'contextSize', 'reasoningEffort', 'timeout', 'autoContinue', 'provider', 'baseUrl'];
+  /* 安全闸门（DR-006）：endpoint/baseUrl 决定「正文发往哪台服务器」，
+     属网络去向字段，导入外部存档时绝不采信档内值，防止恶意档把接口劫持到第三方。
+     仅当本机从未配置过该项时才允许用档内值做首次引导。 */
+  var NETWORK_FIELDS = ['endpoint', 'baseUrl'];
 
-  function log() { try { if (window.YJDebug) console.debug('[SaveCodec]', ...arguments); } catch (e) {} }
+  function log() { try { if (window.YJ_DEBUG) console.debug('[SaveCodec]', ...arguments); } catch (e) {} }
 
   /* ==================== gzip 压缩 / 解压 ==================== */
   function hasGzip() { return typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined'; }
@@ -60,15 +64,19 @@
 
   /** 恢复配置；返回 {applied:[...], keyRestored:boolean, keyNeeded:boolean} */
   function restoreConfig(cfg) {
-    var result = { applied: [], keyRestored: false, keyNeeded: false };
+    var result = { applied: [], keyRestored: false, keyNeeded: false, networkKept: false };
     if (!cfg || typeof cfg !== 'object') return result;
     var cur = {};
     try { cur = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}') || {}; } catch (e) {}
     var next = Object.assign({}, cur);
     CFG_FIELDS.forEach(function (k) {
-      if (cfg[k] !== undefined && cfg[k] !== null && cfg[k] !== '') { next[k] = cfg[k]; result.applied.push(k); }
+      if (cfg[k] === undefined || cfg[k] === null || cfg[k] === '') return;
+      /* 网络去向字段：本机已有值则保留本机，不被存档覆盖；本机为空才允许引导。 */
+      if (NETWORK_FIELDS.indexOf(k) >= 0 && cur[k]) { result.networkKept = true; return; }
+      next[k] = cfg[k]; result.applied.push(k);
     });
-    if (cfg._keyIncluded && cfg.apiKey) { next.apiKey = cfg.apiKey; result.keyRestored = true; }
+    /* 密钥：本机已有密钥始终优先，档内密钥只在 _keyIncluded 且本机为空时采用。 */
+    if (cfg._keyIncluded && cfg.apiKey && !cur.apiKey) { next.apiKey = cfg.apiKey; result.keyRestored = true; }
     else if (!cur.apiKey) { result.keyNeeded = true; }
     try { localStorage.setItem(CONFIG_KEY, JSON.stringify(next)); } catch (e) {}
     /* 同步内存态：让当前会话立即生效，无需刷新 */
@@ -107,6 +115,9 @@
      对象递归公共键 + 增删；数组记长度 + 逐项。
      delta 形如 { "save.variables.chapter": {t:'v',v:121},
                   "save.variables.transcript": {t:'s',p:…,s:…,m:…} } */
+  /* DR-009：键名可能含 . [ ] 等路径元字符，拼接时转义，避免 diff 路径被误拆
+     （如键 'a.b' 会被 parseSegments 拆成 a→b 两段而还原失败）。旧包无转义，照常解析。 */
+  function escKey(k) { return String(k).replace(/([.\[\]\\])/g, '\\$1'); }
   function diffValue(a, b, path, out) {
     if (a === b) return;
     var oa = (a !== null && typeof a === 'object');
@@ -130,7 +141,7 @@
     Object.keys(a).forEach(function (k) { keys[k] = 1; });
     Object.keys(b).forEach(function (k) { keys[k] = 1; });
     Object.keys(keys).forEach(function (k) {
-      var kp = path ? path + '.' + k : k;
+      var kp = path ? path + '.' + escKey(k) : escKey(k);
       /* 目标缺失的键标记为删除；目标新增的键直接记值 */
       if (!(k in b)) { out[kp] = { t: 'd' }; return; }
       if (!(k in a)) { out[kp] = { t: 'v', v: b[k] }; return; }
@@ -141,6 +152,8 @@
     var segs = [], cur = '', i = 0;
     while (i < path.length) {
       var ch = path.charAt(i);
+      /* 反斜杠转义：下一个字符按字面量收入当前段，不作分隔符解释 */
+      if (ch === '\\' && i + 1 < path.length) { cur += path.charAt(i + 1); i += 2; continue; }
       if (ch === '[') {
         if (cur) { segs.push(cur); cur = ''; }
         var j = path.indexOf(']', i);
