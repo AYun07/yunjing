@@ -1,4 +1,4 @@
-// 云境 · 一键回归测试（v4.28.0）
+// 云境 · 一键回归测试（v4.36.0）
 // 用法：node test/regression.mjs
 // 目标：把关键引擎 + 存档防丢 + 静态不变量串成一条「改完就能跑」的回归线，
 //       替代散落的一次性 verify 脚本。零依赖（Node 内置 vm/fs），不联网、不开浏览器。
@@ -88,7 +88,7 @@ function makeEnv() {
     CustomEvent: class { constructor(t, o) { this.type = t; this.detail = o?.detail; } },
     Event: class {}, dispatchEvent() {}, addEventListener() {}, removeEventListener() {},
     YunjingID: { APP: 'yunjing', acceptApp: (a) => a === 'yunjing' || a === 'moshu', dbName: (n) => n.replace('moshu', 'yunjing') },
-    YJ_VER: '4.29.0',
+    YJ_VER: '4.36.0',
     showToast() {},
     SlotRegistry: {
       genre: () => 'free', slotId: () => 'main',
@@ -285,9 +285,23 @@ G('5. 静态不变量');
   ok('能从唯一来源读到版本号', !!CUR, CUR);
   const idxVerM = idx.match(/YJ_VER\s*=\s*['"](\d+\.\d+\.\d+)['"]/);
   ok('index.html YJ_VER 与唯一来源同源', !!idxVerM && idxVerM[1] === CUR, (idxVerM && idxVerM[1]) + ' vs ' + CUR);
-  const cacheParams = (idx + studio).match(/\?v=\d+\.\d+\.\d+/g) || [];
+  /* DR-007：旧实现只扫 idx+studio 两个 HTML，JS 内 ?v= 参数（真实加载路径）全部漏检，
+     造成「测试全绿但 46 处旧戳残留」的假阳性。改为扫描全部 JS + 全部根 HTML（排除 .ext 数据）。 */
+  let scanAll = idx + studio;
+  try {
+    const jsDir = path.join(ROOT, 'js');
+    for (const f of fs.readdirSync(jsDir)) {
+      if (!f.endsWith('.js') || f.endsWith('.ext.js')) continue;
+      scanAll += '\n' + fs.readFileSync(path.join(jsDir, f), 'utf8');
+    }
+    for (const f of fs.readdirSync(ROOT)) {
+      if (!f.endsWith('.html') || f === 'selftest.html') continue;
+      scanAll += '\n' + fs.readFileSync(path.join(ROOT, f), 'utf8');
+    }
+  } catch (e) {}
+  const cacheParams = scanAll.match(/\?v=\d+\.\d+\.\d+/g) || [];
   const stale = cacheParams.filter(v => v !== '?v=' + CUR);
-  ok('缓存参数无旧版本残留', stale.length === 0, [...new Set(stale)].slice(0, 5).join(','));
+  ok('缓存参数无旧版本残留(全JS+HTML)', stale.length === 0, [...new Set(stale)].slice(0, 5).join(','));
   ok('sw.js 预缓存含 save-slots.js', read('sw.js').includes('save-slots.js'));
   ok('studio.html 加载 save-slots.js', read('studio.html').includes('save-slots.js'));
   // 全量 JS 语法（借 node --check 通过子进程太重，这里做括号配平的粗检 + 关键模块可加载）

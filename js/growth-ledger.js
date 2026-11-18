@@ -18,7 +18,7 @@
   };
 
   function log() {
-    try { if (window.YJDebug) console.debug('[GrowthLedger]', ...arguments); } catch (e) {}
+    try { if (window.YJ_DEBUG) console.debug('[GrowthLedger]', ...arguments); } catch (e) {}
   }
 
   function readLog() {

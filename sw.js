@@ -21,11 +21,11 @@ const SW_VER = 'yunjing-v4.36.0';  /* v3.73.0 大厅焕新「鎏金云海」：�
    逐版说明见 changelog/。改动必须递增 SW_VER */
 const CORE = [
   './', './opening.html', './xiaoyun.html', './index.html', './studio.html', './manifest.webmanifest',
-  /* v4.34.0 开场封面 + 入口分派：开场页与小云工坊离线也要能进 */
+  /* v4.36.0 开场封面 + 入口分派：开场页与小云工坊离线也要能进 */
   './js/opening-entry.js', './上架素材/开场底图-横版.png', './上架素材/开场底图-竖版.png',
   './story-framework.js', './assets/yj-favicon.ico', './assets/yj-icon-192.png', './assets/yj-icon-512.png',
   './assets/yj-icon-apple.png', './css/ui-polish.css', './mobile-server.ps1',
-  /* v4.34.0 品牌资产 + 商业化占位：离线开场动画/授权占位/新图标都要能用 */
+  /* v4.36.0 品牌资产 + 商业化占位：离线开场动画/授权占位/新图标都要能用 */
   './js/yj-splash.js', './css/yj-splash-anim.css', './js/yj-license.js',
   './assets/yj-maskable-512.png', './assets/yj-icon-1024.png',
   /* v3.55.3 小云长发可御可萝：离线时桌面宠物（萝/御双形态）与各处头像都要能显示。

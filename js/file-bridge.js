@@ -60,6 +60,7 @@
   /* ==================== IndexedDB 句柄存取 ==================== */
   function idb() {
     return new Promise(function (res, rej) {
+      if (typeof indexedDB === 'undefined') { rej(new Error('当前浏览器不支持 IndexedDB，无法使用文件桥存储；请换 Chrome/Edge 新版')); return; }
       var r = indexedDB.open(DB_NAME, 1);
       r.onupgradeneeded = function () {
         var db = r.result;

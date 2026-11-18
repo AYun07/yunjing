@@ -1,5 +1,5 @@
 /**
- * 云境 · 诗意云开场动画注入器 (v4.34.0)
+ * 云境 · 诗意云开场动画注入器 (v4.36.0)
  * 纯本地，零网络请求。把动画场景注入到 #splash 背后，不改动原有跳过/淡出逻辑。
  * 在 #splash 存在时自动运行；重复调用幂等。
  */
@@ -40,5 +40,5 @@
   } else {
     mount();
   }
-  window.YJSplash = { mount: mount, version: '4.34.0' };
+  window.YJSplash = { mount: mount, version: '4.36.0' };
 })();
