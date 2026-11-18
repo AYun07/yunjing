@@ -76,6 +76,8 @@ function makeEnv() {
     localStorage, indexedDB: fakeIndexDB, storyFramework, console,
     URL: { createObjectURL: () => 'blob:mock', revokeObjectURL() {} },
     Blob: class { constructor(parts) { this.parts = parts; this.size = String(parts[0] || '').length; } },
+    /* v4.36.0：存档编解码/回退明文路径用到 TextEncoder/TextDecoder，vm 沙箱需显式注入 */
+    TextEncoder: globalThis.TextEncoder, TextDecoder: globalThis.TextDecoder,
     FileReader: class {
       readAsText(file) { queueMicrotask(() => { this.result = file._text; this.onload?.(); }); }
     },
@@ -173,7 +175,11 @@ G('2. 单档导出补齐散落键 + idb:// 正文');
   await S.exportSlot('main');
   ok('exportSlot 产出 Blob', !!captured);
   let pkg = null;
-  try { pkg = JSON.parse(captured.parts[0]); } catch (err) {}
+  try {
+    const part = captured.parts[0];
+    const asText = (part instanceof Uint8Array) ? new TextDecoder().decode(part) : String(part);
+    pkg = JSON.parse(asText);
+  } catch (err) {}
   ok('导出包含 scoped 散落键', !!pkg?.scoped?.['worldExt_free']);
   ok('导出包含 idb:// 指向的 media 实体', pkg?.media?.['txt_002'] === '被 idb:// 引用的正文实体', JSON.stringify(pkg?.media));
 }
@@ -211,7 +217,10 @@ G('2b. 单档导入散落键重映射（主档/副档/D冒号/E点号格式）')
     scoped: { storySave_free: '被导入的主档正文', worldExt_free: '{"stage":9}' }
   };
   // 模拟 FileReader.readAsText
-  const fakeFile = { _text: JSON.stringify(pkg) };
+  // v4.35+ _readSmart 用 file.arrayBuffer()（gzip 魔数识别），真实 File 都支持；
+  // 旧桩只有 _text，这里补上 arrayBuffer 以匹配真实浏览器行为
+  const pkgBytes = new TextEncoder().encode(JSON.stringify(pkg));
+  const fakeFile = { _text: JSON.stringify(pkg), arrayBuffer: async () => pkgBytes.buffer };
   let imported = false;
   e2.win.UIDialog = null; // 走原生 confirm
   e2.win.confirm = () => true;
