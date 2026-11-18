@@ -84,11 +84,15 @@
   /* v4.38.0 修 P1-3 二次：实测面板打开后这些按钮计算 minHeight=44px 但渲染仍 30px——
      是被 .xy-quick grid / 滚动面板的 flex 收缩压过去的。用 !important + flex-shrink:0
      强制撑足 44px；同时给两个 grid 容器设 min 行高，防止反过来把按钮压扁。 */
+  /* v4.38.0 修 P1-3 三次（关键）：#xyBuddy 在小屏被 lobby-layouts/lobby-themes 整体
+     `transform:scale(.68)`（面板适配手机的既有设计）。因此按钮 rect 高 = CSS 高 ×0.68：
+     之前设 44px → 实际 30px。这里按 0.68 反推：44/0.68 ≈ 65px，取整 66px，
+     缩放后视觉恰好 45px，真实触控达标。面板内部按 66px 排布，缩放后观感正常。 */
   #xyBuddy .xy-q,
   #xyBuddy .xy-f,
   #xyBuddy .xy-home {
-    min-height: 44px !important;
-    height: 44px !important;
+    min-height: 66px !important;
+    height: 66px !important;
     flex-shrink: 0 !important;
     display: inline-flex;
     align-items: center;
@@ -98,8 +102,16 @@
   }
   #xyBuddy .xy-quick,
   #xyBuddy .xy-forms {
-    grid-auto-rows: minmax(44px, auto);
+    grid-auto-rows: minmax(66px, auto);
     flex-shrink: 0;
+  }
+  /* 小云聊天输入区的「发送」按钮同样在 .68 缩放区内，反推补偿到 66px */
+  #xyBuddy .xy-form button,
+  #xyBuddy .xy-send,
+  #xyBuddy button:not([class]) {
+    min-height: 66px !important;
+    height: 66px !important;
+    flex-shrink: 0 !important;
   }
 
   /* 6) 无类名的发送按钮（聊天输入区）与创作日志行内链接 */
