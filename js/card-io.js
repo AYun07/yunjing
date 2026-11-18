@@ -237,7 +237,7 @@
     /**
      * tEXt 正文 → 卡对象，双格式自适应：
      *   ① UTF-8 JSON 直读（V3 ccv3 规范 + 本引擎导出的裸 JSON）
-     *   ② Base64 解码再读（V2 chara 事实标准——ST / Chub / RisuAI 导出的卡
+     *   ② Base64 解码再读（V2 chara 事实标准——ST / 社区卡库 / 常见前端工具 导出的卡
      *      一律是 Base64(UTF-8 JSON)，且常见 URL-safe 变体；JSON 含 {}": 等字符
      *      不可能通过 Base64 词表嗅探，故先直读失败再走解码不会误伤）
      */
@@ -257,7 +257,7 @@
       }
       return null;
     },
-    /** 归一化：扁平化各实现差异（RisuAI 的 alternate_greetings 数组习惯等） */
+    /** 归一化：扁平化各实现差异（常见前端工具 的 alternate_greetings 数组习惯等） */
     normalize(card) {
       const d = this.cardData(card);
       const book = d.character_book || d.characterBook || null;
@@ -362,7 +362,7 @@
     /**
      * 卡 → PNG 字节流（双标识写入，老前端读 chara、新前端读 ccv3）
      *   ccv3 ：V3 规范——tEXt 直存 UTF-8 JSON
-     *   chara：V2 事实标准——tEXt 存 Base64(UTF-8 JSON)（ST / Chub / RisuAI 的
+     *   chara：V2 事实标准——tEXt 存 Base64(UTF-8 JSON)（ST / 社区卡库 / 常见前端工具 的
      *          读取口径；Base64 纯 ASCII，天然满足 tEXt 的 Latin-1 安全约束）
      * @param {Uint8Array|null} basePng 底图（null 时用 1×1 透明像素占位）
      */
