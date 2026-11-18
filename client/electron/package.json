@@ -1,0 +1,64 @@
+{
+  "name": "yunjing-desktop",
+  "version": "4.34.0",
+  "description": "云境 · AI创作与开放世界扮演 桌面客户端",
+  "main": "main.js",
+  "author": "云境",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron main.js --no-sandbox",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "33.2.0",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.yunjing.studio",
+    "productName": "YunJing",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build-res"
+    },
+    "extraResources": [
+      {
+        "from": "build-resources/yunjing",
+        "to": "yunjing",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "build-res/yj-icon-512.png",
+      "artifactName": "云境-Windows-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": ["zh_CN", "en_US"],
+      "language": "2052",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "云境"
+    },
+    "portable": {
+      "artifactName": "云境-Windows-${version}-便携版.exe"
+    },
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "icon": "build-res/yj-icon-512.png",
+      "artifactName": "云境-macOS-${version}-${arch}.${ext}"
+    },
+    "linux": {
+      "target": [{ "target": "AppImage", "arch": ["x64"] }],
+      "icon": "build-res/yj-icon-512.png",
+      "artifactName": "云境-Linux-${version}-${arch}.${ext}",
+      "category": "Education"
+    }
+  }
+}

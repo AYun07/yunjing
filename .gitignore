@@ -52,3 +52,31 @@ scripts/*.bak
 scripts/*.bak-*
 # assets/videos/（288 文件 / 469MB：96 情绪 + 156 源片 + 132 透明 WebM）是最终产品资产，
 # 全量质检已通过（v4.33.0），随仓库入库；单文件均 < 100MB，无 GitHub 大文件限制问题。
+
+# ===== v4.34.0 客户端与商业化：构建产物 / 大文件 / 工具链，不入库 =====
+# 分发安装包（511M APK + 615M Windows zip）——本地交付物，不进 git
+*.apk
+*.aab
+云境-Windows-*.zip
+# Android SDK / Gradle 下载的工具链（数百MB，非项目源码）
+client/android-sdk/
+# Capacitor/Electron 内置的整站副本（525M×2，源码在仓库根目录，无需重复入库）
+client/electron/build-resources/
+client/electron/dist/
+client/capacitor-app/www/
+client/capacitor-app/android/app/src/main/assets/public/
+client/capacitor-app/android/.gradle/
+client/capacitor-app/android/app/build/
+client/capacitor-app/android/build/
+client/capacitor-app/android/local.properties
+# npm 依赖
+client/**/node_modules/
+# 本地验收截图 / 品牌中间预览（交付展示件已在根目录，中间过程不入库）
+测试快照-*.png
+测试直播快照-*.png
+Brand-安卓启动屏预览.png
+品牌开场动画-预览.png
+# 根目录 npm 依赖（playwright 仅为测试工具）
+/node_modules/
+# 验收截图（本地留证）
+PC客户端-运行验证.png

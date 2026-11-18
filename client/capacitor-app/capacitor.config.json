@@ -1,0 +1,17 @@
+{
+  "appId": "com.yunjing.studio",
+  "appName": "云境",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2400,
+      "backgroundColor": "#0b0c1c",
+      "showSpinner": false,
+      "androidSplashResourceName": "splash",
+      "splashFullScreen": true
+    }
+  }
+}

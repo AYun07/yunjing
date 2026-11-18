@@ -1,0 +1,152 @@
+/* ==========================================================================
+   云境 · 诗意云开场动画 (v4.34.0)
+   纯 CSS/SVG 驱动，PWA / Android WebView / Electron 三端通用，零视频依赖。
+   作为 #splash 的增强层叠加，不改动原有淡出与跳过逻辑。
+   ========================================================================== */
+
+#splash {
+  overflow: hidden;
+  background: radial-gradient(120% 100% at 50% 32%, #1e2246 0%, #14162f 55%, #0b0c1c 100%) !important;
+}
+
+/* 动画画布：绝对铺满，位于文字背后 */
+.yj-splash-scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* 星点层 */
+.yj-splash-stars { position: absolute; inset: 0; }
+.yj-splash-stars i {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  animation: yjStarTwinkle var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes yjStarTwinkle {
+  0%, 100% { opacity: 0.05; transform: scale(0.8); }
+  50%      { opacity: 0.9;  transform: scale(1.25); box-shadow: 0 0 8px 2px rgba(255,233,184,.6); }
+}
+
+/* 月晕 */
+.yj-splash-halo {
+  position: absolute;
+  left: 50%; top: 33%;
+  width: 460px; height: 460px;
+  margin: -230px 0 0 -230px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,196,119,.28) 0%, rgba(232,196,119,.10) 40%, transparent 70%);
+  animation: yjHaloBreath 3.6s ease-in-out infinite;
+}
+@keyframes yjHaloBreath {
+  0%, 100% { opacity: .55; transform: scale(.92); }
+  50%      { opacity: 1;   transform: scale(1.06); }
+}
+
+/* 主云：由三个圆角团构成，柔和漂浮 */
+.yj-splash-cloud {
+  position: absolute;
+  left: 50%; top: 33%;
+  width: 300px; height: 110px;
+  margin: -55px 0 0 -150px;
+  filter: drop-shadow(0 10px 30px rgba(180,170,230,.35));
+  animation: yjCloudFloat 4.2s ease-in-out infinite;
+}
+.yj-splash-cloud .puff {
+  position: absolute;
+  background: linear-gradient(180deg, #ffffff 0%, #f2effb 55%, #d9d4f2 100%);
+  border-radius: 50%;
+}
+.yj-splash-cloud .puff.a { left: 20px;  bottom: 0; width: 120px; height: 100px; }
+.yj-splash-cloud .puff.b { left: 95px;  bottom: 0; width: 160px; height: 135px; }
+.yj-splash-cloud .puff.c { right: 18px; bottom: 0; width: 110px; height: 92px; }
+.yj-splash-cloud .base {
+  position: absolute; left: 12px; right: 12px; bottom: 0; height: 56px;
+  background: linear-gradient(180deg, #f2effb, #cfc9ee);
+  border-radius: 40px;
+}
+@keyframes yjCloudFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-14px) scale(1.02); }
+}
+
+/* 小云发饰：云团右上角的小云+蝴蝶结，呼应 logo */
+.yj-splash-charm {
+  position: absolute;
+  right: -34px; top: -30px;
+  width: 70px; height: 46px;
+  animation: yjCharmBob 3s ease-in-out infinite;
+}
+.yj-splash-charm .mini {
+  position: absolute; left: 0; top: 8px;
+  width: 54px; height: 34px;
+  background: #fff; border-radius: 40px;
+  box-shadow: -6px 6px 0 -1px #fff, 10px 4px 0 -2px #fff;
+}
+.yj-splash-charm .bow { position: absolute; right: 2px; top: 2px; }
+.yj-splash-charm .bow::before,
+.yj-splash-charm .bow::after {
+  content: ''; position: absolute;
+  width: 18px; height: 14px;
+  background: #b9a7e0; border-radius: 60% 40% 55% 45%;
+}
+.yj-splash-charm .bow::before { left: 0;  transform: rotate(-24deg); }
+.yj-splash-charm .bow::after  { left: 14px; transform: rotate(24deg); background: #cdbff0; }
+@keyframes yjCharmBob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50%      { transform: translateY(-6px) rotate(4deg); }
+}
+
+/* 流动的云气：横向飘过的薄雾 */
+.yj-splash-mist {
+  position: absolute;
+  left: -30%; top: 46%;
+  width: 55%; height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  filter: blur(3px);
+  animation: yjMistDrift 7s linear infinite;
+}
+.yj-splash-mist.m2 { top: 51%; animation-duration: 9s; animation-delay: -3s; opacity: .45; }
+@keyframes yjMistDrift {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(260%); }
+}
+
+/* 文字层提到动画之上 */
+#splash .splash-mark,
+#splash .splash-sub,
+#splash .splash-line,
+#splash .splash-hint { position: relative; z-index: 2; }
+
+/* 文字整体下移，与上方的云拉开距离 */
+#splash { padding-top: 130px !important; }
+#splash .splash-mark {
+  animation: yjTitleIn 1.1s cubic-bezier(.2,.8,.2,1) both;
+  color: #f6ecd2;
+  text-shadow: 0 2px 18px rgba(0,0,0,.7), 0 0 30px rgba(232,196,119,.5);
+}
+#splash .splash-sub {
+  color: #e8dcc0 !important;
+  text-shadow: 0 1px 10px rgba(0,0,0,.8);
+}
+@keyframes yjTitleIn {
+  0%   { opacity: 0; transform: translateY(18px); letter-spacing: .5em; filter: blur(6px); }
+  100% { opacity: 1; transform: translateY(0);    letter-spacing: .24em; filter: blur(0); }
+}
+#splash .splash-sub  { animation: yjFadeUp 1s ease-out .5s both; }
+#splash .splash-line { animation: yjFadeUp 1s ease-out .7s both; }
+#splash .splash-hint { animation: yjFadeUp 1s ease-out .95s both, tw 3s ease-in-out 2s infinite; }
+@keyframes yjFadeUp {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 尊重减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .yj-splash-scene * { animation: none !important; }
+}

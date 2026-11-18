@@ -55,7 +55,7 @@ while ($true) {
         $qi = $path.IndexOf('?')
         if ($qi -ge 0) { $path = $path.Substring(0, $qi) }
         $path = [Uri]::UnescapeDataString($path)
-        if ($path -eq '/') { $path = '/index.html' }
+        if ($path -eq '/') { $path = '/opening.html' }
         $file = Join-Path $root ($path -replace '/', '\')
         $code = '200 OK'
         if (-not (Test-Path $file -PathType Leaf)) {
