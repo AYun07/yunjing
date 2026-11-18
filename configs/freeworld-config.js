@@ -383,12 +383,12 @@ const techniques = [
   { id: "family_backing", name: "家中殷实", cost: 15, description: "家底厚实、亲族得力——但人情的账，迟早要还" }
 ];
 const statKeys = [
-  { key: "body", label: "体质" },
-  { key: "intellect", label: "智力" },
-  { key: "charm", label: "魅力" },
-  { key: "will", label: "意志" },
-  { key: "agility", label: "敏捷" },
-  { key: "knowledge", label: "学识" }
+  { key: "body", label: "体魄" },
+  { key: "intellect", label: "神智" },
+  { key: "charm", label: "灵魅" },
+  { key: "will", label: "战意" },
+  { key: "agility", label: "身法" },
+  { key: "knowledge", label: "阅历" }
 ];
 const nameSeeds = {
   flavor: {

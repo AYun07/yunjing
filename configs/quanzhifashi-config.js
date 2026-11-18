@@ -355,12 +355,12 @@ const techniques = [
 ];
 
 const statKeys = [
-    { key: 'body', label: '体魄' },
-    { key: 'psyche', label: '精神' },
-    { key: 'comprehension', label: '悟性' },
-    { key: 'will', label: '心志' },
-    { key: 'fortune', label: '气运' },
-    { key: 'connections', label: '人脉' }
+    { key: 'body', label: '法体' },
+    { key: 'psyche', label: '魔能' },
+    { key: 'comprehension', label: '法悟' },
+    { key: 'will', label: '法心' },
+    { key: 'fortune', label: '命运' },
+    { key: 'connections', label: '法师塔' }
 ];
 
 const gauges = [

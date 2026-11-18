@@ -463,7 +463,9 @@
       }
     };
     function done(html, wish, demoMode) {
-      lastHTML = html; lastName = wish.replace(/^(加一个|做一个|添加)?[「"?]?([^\s，。,「"]{2,10})[」"?]?.*$/, '$2') || ('模块' + Date.now() % 1000);
+      lastHTML = html; lastName = (wish.match(/[「"]([^」"]{2,12})[」"]/) || [])[1]
+        || wish.replace(/^(加一个|做一个|添加)?[「"?]?([^\s，。,「」"]{2,10})[」"?]?.*$/, '$2')
+        || ('模块' + Date.now() % 1000);
       DEV.wish = wish; DEV.api = curAPI; DEV.fix = 0; DEV.busy = false;
       go.disabled = false;
       st.className = 'status';
@@ -514,7 +516,8 @@
     b.appendChild(bar); b.appendChild(fr); r.appendChild(b); document.body.appendChild(r);
   }
   function demo(wish) {
-    var name = (wish.match(/[「"]?([^\s，。,"「"]{2,8})[」"]?$/) || [])[1] || '新模块';
+    var name = (wish.match(/[「"]([^」"]{2,12})[」"]/) || [])[1]
+      || (wish.match(/^(?:加一个|做一个|添加)?([^\s，。,"「」]{2,10})/) || [])[1] || '新模块';
     var feats = /签到|日历/.test(wish) ? ['连续签到日历','每日灵感积分','补签卡'] : /钟|专注/.test(wish) ? ['25 分钟专注','番茄统计','白噪音开关'] : /骰|随机/.test(wish) ? ['廿八界随机漫游','命运三连抽','结果回溯'] : ['条目收集','标签归类','灵感回顾'];
     var li = feats.map(function (f) { return '<li>✦ ' + f + '</li>'; }).join('');
     return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>'

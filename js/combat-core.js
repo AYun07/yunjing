@@ -68,9 +68,50 @@ else{var cards=cfg.foes.map(function(f,fi){var need=fi>=3?3:fi>=2?2:1;var locked
 o+=cards+'<div class="wr-actions"><div class="wr-act"><div class="wr-act-hd"><b>🛌 休整</b><span>'+esc(cfg.hp)+' +35</span></div><button class="wr-btn" onclick="WorldExt.act(\'wr_combat\',\'rest\',\'\')">休整</button></div></div>'}
 o+=WR.ui.logHTML(s);return o},
 directive:function(st){if(st.inBattle&&st.foeId){var f=foeById[st.foeId];return"战斗进行中：「"+(f?f.n:"?")+"」敌 "+st.foeHp+"/"+st.foeMax+"，我 "+(st.hp!=null?st.hp:100)+"——正文须与战况同步。"}if(Number(st.hurtUntil)>WR.round())return"玩家重伤未愈——两轮内不宜再战。";return""}})}
+/* T04 · 战斗结算可视化增强：纯函数模拟口。
+ * 不依赖 WorldRuntime/DOM，给定世界+敌人+行动序列即可复算一场战斗，
+ * 返回「伤害/护盾/回合/结束判定」四类自洽字段 + 逐回合明细，供面板回看与自动化测试。
+ * 用可复现的 LCG 伪随机（seed 固定则结果固定），避免测试抖动。 */
+function simulate(g, foeId, opts){
+  opts=opts||{};
+  var cfg=R[g]||R.mystery, foe=null;
+  cfg.foes.forEach(function(f){if(f.id===foeId)foe=f;});
+  if(!foe)return null;
+  var s=(opts.seed==null?42:opts.seed)>>>0;
+  function rand(){s=(s*1664525+1013904223)>>>0;return s/4294967296;}
+  function rnd(a,b){return a+Math.floor(rand()*(b-a+1));}
+  var acts=opts.actions&&opts.actions.length?opts.actions:['strike','skill:s3','guard','strike','skill:s3','strike'];
+  var myHp=100,foeHp=foe.hp,qi=30,guard=false,turn=1,totalDmg=0,totalShield=0,end=null,log=[];
+  for(var ai=0;ai<acts.length&&turn<=30;ai++){
+    var act=acts[ai],dmg=0,shield=0,note='';
+    if(act==='guard'){guard=true;qi=Math.min(30,qi+6);shield=Math.round(foe.atk*0.5);totalShield+=shield;note='防御姿态·减伤'+shield+'，回气+6';}
+    else{
+      if(act.indexOf('skill:')===0){
+        var sid=act.split(':')[1],sk=null;cfg.sk.forEach(function(x){if(x.id===sid)sk=x;});
+        if(sk&&qi>=sk.c){qi-=sk.c;dmg=sk.d+rnd(-2,3);
+          if(foe.t==='shield'&&sk.e!=='pierce')dmg=Math.round(dmg*0.5);
+          if(sk.e==='pierce'&&foe.t==='shield')dmg=Math.round(dmg*1.2);
+          if(sk.e==='guard'){guard=true;shield=Math.round(foe.atk*0.5);totalShield+=shield;}
+          note=sk.ic+' '+sk.n+'·造成'+dmg;}
+        else{dmg=rnd(8,13);note='技能不可用·改用普攻造成'+dmg;}
+      }else{dmg=rnd(8,13);note='普通攻击·造成'+dmg;}
+      dmg=Math.max(1,dmg);foeHp=Math.max(0,foeHp-dmg);totalDmg+=dmg;qi=Math.min(30,qi+3);
+    }
+    var rec={turn:turn,action:act,damage:dmg,shield:shield,foeHp:foeHp,myHp:myHp,qi:qi,note:note};
+    if(foeHp<=0){end='win';log.push(rec);break;}
+    var fd=foe.atk+rnd(-2,2);if(guard){fd=Math.round(fd*0.5);guard=false;}fd=Math.max(3,fd);
+    myHp=Math.max(0,myHp-fd);rec.counter=fd;rec.myHp=myHp;log.push(rec);
+    if(myHp<=0){end='lose';break;}
+    turn++;
+  }
+  if(!end)end=foeHp<foe.hp?'ongoing':'timeout';
+  return{world:g,foe:foe.n,foeHp:foeHp,foeMax:foe.hp,myHp:myHp,turns:turn,
+    totalDamage:totalDmg,totalShield:totalShield,result:end,log:log,
+    fields:{damage:totalDmg,shield:totalShield,turn:turn,end:end}};
+}
 var genre=WR.genre;var injected=false;
 function inject(){if(injected)return true;if(!window.WorldExt||!window.WorldExt.hasModules||!window.WorldExt.hasModules())return false;try{WorldExt.injectModules(genre,[combatModule(genre)]);console.log("[CombatCore] "+genre+" 就位")}catch(e){console.warn("[CombatCore]",e.message)}injected=true;return true}
 /* v3.55.29：同上，改为单飞 + 有界的 YJWait，杜绝定时器裂变 */
 if(window.YJWait)YJWait.for(inject,null,{name:"combat-core",base:140,max:60});
 else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inject);else inject();
-window.WRCombat={module:combatModule,rosters:R}})();
+window.WRCombat={module:combatModule,rosters:R,simulate:simulate}})();

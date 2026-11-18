@@ -354,12 +354,12 @@ const techniques = [
 ];
 
 const statKeys = [
-    { key: 'body', label: '根骨' },
-    { key: 'comprehension', label: '悟性' },
-    { key: 'fortune', label: '气运' },
-    { key: 'temperament', label: '心性' },
-    { key: 'soul', label: '灵魂' },
-    { key: 'ties', label: '人脉' }
+    { key: 'body', label: '斗骨' },
+    { key: 'comprehension', label: '药悟' },
+    { key: 'fortune', label: '异火缘' },
+    { key: 'temperament', label: '斗心' },
+    { key: 'soul', label: '魂识' },
+    { key: 'ties', label: '宗门脉' }
 ];
 
 const gauges = [

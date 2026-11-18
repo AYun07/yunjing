@@ -187,12 +187,12 @@ const techniques = [
     { id: 'slow_burn', name: '文火慢炖', cost: 5, description: '克制推进，情绪浓度在最后一章一次性兑付' }
 ];
 const statKeys = [
-    { key: 'tension', label: '张力' },
-    { key: 'emotion', label: '情感' },
-    { key: 'prose', label: '文笔' },
-    { key: 'pacing', label: '节奏' },
-    { key: 'creativity', label: '创意' },
-    { key: 'depth', label: '深度' }
+    { key: 'tension', label: '战张力' },
+    { key: 'emotion', label: '羁绊' },
+    { key: 'prose', label: '叙笔' },
+    { key: 'pacing', label: '团战节奏' },
+    { key: 'creativity', label: '配装创意' },
+    { key: 'depth', label: '副本深度' }
 ];
 const gauges = [
     { key: 'tension', label: '叙事张力', icon: '⚡', color: 'linear-gradient(90deg,#e07856,#e0a84c)', default: 40 },
