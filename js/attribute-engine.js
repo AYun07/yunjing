@@ -70,13 +70,29 @@
   ];
   var GENERIC_AXIS = { id: "generic", name: "专精", dpp: 50, cap: 15, bias: "该维度主导的同类行动天然占优" };
 
+  /* v4.35.0 每世界专属维度：优先用当前世界的规则档 AXES（WorldRules），
+     未加载规则档 / 未匹配到世界时回退通用 6 轴，旧档行为不变。 */
+  function axesInUse() {
+    try {
+      var WR = window.WorldRules;
+      if (WR && typeof WR.currentAxes === "function") {
+        var a = WR.currentAxes();
+        if (a && a.length) return a;
+      }
+    } catch (e) { /* 规则档异常不影响引擎 */ }
+    return AXES;
+  }
   function axisOf(key, label) {
     var t = String(key || "") + " " + String(label || "");
     var tl = t.toLowerCase();
-    for (var i = 0; i < AXES.length; i++) {
-      var kws = AXES[i].kw;
+    var axes = axesInUse();
+    for (var i = 0; i < axes.length; i++) {
+      var kws = axes[i].kw || [];
+      /* 世界专属档：维度名/中文 label 直接命中（最精确） */
+      if (String(label || "") && String(label) === axes[i].name) return axes[i];
+      if (String(key || "") === axes[i].id) return axes[i];
       for (var j = 0; j < kws.length; j++) {
-        if (tl.indexOf(kws[j]) >= 0) return AXES[i];
+        if (tl.indexOf(kws[j]) >= 0) return axes[i];
       }
     }
     return GENERIC_AXIS;

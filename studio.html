@@ -437,7 +437,9 @@
     <!-- v4.17.0：每轮请求总预算。四层重试（内部/自检/纠偏/续写）此前互不知情，
          最坏一次点击会向上游发 6+ 次请求；现在重试前先问它。 -->
     <script defer src="js/turn-budget.js?v=4.34.0"></script>
-    <script defer src="js/attribute-engine.js?v=4.34.0"></script>
+    <!-- v4.35.0 每世界专属维度规则档：38 界维度定义 + 新世界运行时自动发现，需在属性引擎之前 -->
+    <script defer src="js/world-rules.js?v=4.35.0"></script>
+    <script defer src="js/attribute-engine.js?v=4.35.0"></script>
     <script defer src="js/world-schema.js?v=4.34.0"></script>
     <script defer src="js/entity-editor.js?v=4.34.0"></script>
     <script defer src="js/sim-core.js?v=4.34.0"></script>
