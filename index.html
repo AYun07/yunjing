@@ -7,7 +7,7 @@
     <!-- PWA / iOS 主屏安装（v3.27.1）：Safari「加入主屏幕」后全屏独立运行，HTTPS 部署时离线可玩 -->
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="assets/yj-icon-apple.png">
-    <!-- v3.93.0：图标换为云境自有素材（移除墨枢遗留 icon-192/512/apple-touch/favicon） -->
+    <!-- v3.93.0：图标换为云境自有素材（移除早期源码基础遗留 icon-192/512/apple-touch/favicon） -->
     <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
     <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#13111e">
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <!-- v4.34.0 开场入口分派：读 ?entry= 触发 续梦(存档)/观星(设置)；须在业务脚本之后执行，故 defer -->
+    <!-- v4.36.0 开场入口分派：读 ?entry= 触发 续梦(存档)/观星(设置)；须在业务脚本之后执行，故 defer -->
     <script defer src="js/opening-entry.js?v=4.36.0"></script>
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=4.36.0"></script>
@@ -589,7 +589,7 @@
         <div class="footer">
             <p>首次进入需配置 AI 接口（支持 OpenAI 兼容格式与 Gemini 格式）</p>
             <p>建议通过本地 HTTP 服务访问 · 支持电脑 / 平板 / 手机多端创作</p>
-            <p class="footer-log">📜 <a href="changelog/">创作日志 · 独立成册</a> · 当前版本 <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v4.34.0 云境版</a></p>
+            <p class="footer-log">📜 <a href="changelog/">创作日志 · 独立成册</a> · 当前版本 <a class="ver-badge" id="verBadge" href="changelog/" title="查看创作日志 · 独立成册">v4.36.0 云境版</a></p>
         </div>
     </div>
 

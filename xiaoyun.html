@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0e0b1e">
 <title>造物 · 小云创造中枢</title>
 <link rel="icon" href="assets/yj-favicon.ico">
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=4.34.0">
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=4.36.0">
 <style>
   :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; --panel:rgba(24,20,48,.72); --line:rgba(244,216,150,.28); --ok:#8fd6a8; }
   *{ box-sizing:border-box; }
@@ -135,11 +135,11 @@
 <div class="toast" id="toast"></div>
 
 <!-- 造物工坊本体依赖的小云脚本 + 四项本页可用的基建 -->
-<script src="js/xiaoyun-ops.js?v=4.34.0"></script>
-<script src="js/xiaoyun-buddy.js?v=4.34.0"></script>
-<script src="js/file-bridge.js?v=4.34.0"></script>
-<script src="js/plugin-runtime.js?v=4.34.0"></script>
-<script src="js/mo-devtools.js?v=4.34.0"></script>
+<script src="js/xiaoyun-ops.js?v=4.36.0"></script>
+<script src="js/xiaoyun-buddy.js?v=4.36.0"></script>
+<script src="js/file-bridge.js?v=4.36.0"></script>
+<script src="js/plugin-runtime.js?v=4.36.0"></script>
+<script src="js/mo-devtools.js?v=4.36.0"></script>
 <script>
 /* ================= 六项创造能力卡片 ================= */
 function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on');
@@ -239,15 +239,16 @@ function stop(){clearTimeout(timer);try{video.pause();}catch(e){}stage.classList
 function renderActs(){var eb=document.getElementById('emoActs');eb.innerHTML='';
   EMOS.forEach(function(e){var b=document.createElement('button');b.className='emo';b.textContent=e[1];b.onclick=function(){play('emo',e[0],e[1]);};eb.appendChild(b);}); }
 function match(t){var s=String(t||'');for(var i=0;i<INTENTS.length;i++)for(var j=0;j<INTENTS[i].kw.length;j++)if(s.indexOf(INTENTS[i].kw[j])>=0)return INTENTS[i];return null;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function log(h){document.getElementById('log').innerHTML=h;}
 var CH=['太好了！','战斗','哼，才不是','你好','害羞了'];
-document.getElementById('chips2').innerHTML=CH.map(function(c){return '<span>'+c+'</span>';}).join('');
-function trySay(t){if(!t)return;var it=match(t);if(!it){log('「'+t+'」未命中预设动作——正常聊天小云不干预。');return;}
-  if(it.emo){play('emo',it.emo);log('「'+t+'」→ 命中情绪 <b>'+EMO_CN[it.emo]+'</b>');}
-  else{play('base',it.act);log('「'+t+'」→ 命中动作 <b>'+BASE_CN[it.act]+'</b>');}}
+document.getElementById('chips2').innerHTML=CH.map(function(c){return '<span>'+esc(c)+'</span>';}).join('');
+function trySay(t){if(!t)return;var safe=esc(t);var it=match(t);if(!it){log('「'+safe+'」未命中预设动作——正常聊天小云不干预。');return;}
+  if(it.emo){play('emo',it.emo);log('「'+safe+'」→ 命中情绪 <b>'+esc(EMO_CN[it.emo])+'</b>');}
+  else{play('base',it.act);log('「'+safe+'」→ 命中动作 <b>'+esc(BASE_CN[it.act])+'</b>');}}
 document.getElementById('say').addEventListener('keydown',function(e){if(e.key==='Enter')trySay(this.value);});
 document.getElementById('chips2').addEventListener('click',function(e){if(e.target.tagName==='SPAN'){var t=e.target.textContent;document.getElementById('say').value=t;trySay(t);}});
-document.getElementById('note').innerHTML='<b>版本</b> · 小云创造中枢 v4.34.0。六项能力均来自项目既有真实模块（XYDev / FileBridge / PluginRuntime / MoDevtools / StoryDLCUI / CreatorForge），未新增任何生图或生视频接口；形象与动作视频为本地预设。所有创造内容仅存本机，不联网上传、不触碰 Git 仓库。';
+document.getElementById('note').innerHTML='<b>版本</b> · 小云创造中枢 v4.36.0。六项能力均来自项目既有真实模块（XYDev / FileBridge / PluginRuntime / MoDevtools / StoryDLCUI / CreatorForge），未新增任何生图或生视频接口；形象与动作视频为本地预设。所有创造内容仅存本机，不联网上传、不触碰 Git 仓库。';
 renderForms();renderActs();
 </script>
 </body>
