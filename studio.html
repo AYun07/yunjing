@@ -232,7 +232,12 @@
                 <!-- v4.29.0 行动判定骰：按属性+资质+难度判定行动成败，与灵感骰子定位不同 -->
                 <button class="sheet-item" onclick="window.ActionCheck && ActionCheck.open()">
                     <span class="si-ico">🎯</span>
-                    <span class="si-main"><b>行动判定骰</b><i>骰点 + 六轴属性 + 资质 + 难度判成败 · 演算/口述双裁定</i></span>
+                    <span class="si-main"><b>行动判定骰</b><i>骰点 + 世界专属属性 + 资质 + 难度判成败 · 判定自动入账本</i></span>
+                </button>
+                <!-- v4.36.0 成长账本：数值增减 + 判定留痕的统一回看面板 -->
+                <button class="sheet-item" onclick="window.GrowthLedger && GrowthLedger.open()">
+                    <span class="si-ico">📈</span>
+                    <span class="si-main"><b>成长账本</b><i>六维增减 / 战斗伤愈 / 修行 / 判定留痕 · 带事由可追溯</i></span>
                 </button>
                 <div class="sheet-sec">面板与资料</div>
                 <button class="sheet-item" onclick="Toolbox.act('panel')">
@@ -438,8 +443,9 @@
          最坏一次点击会向上游发 6+ 次请求；现在重试前先问它。 -->
     <script defer src="js/turn-budget.js?v=4.34.0"></script>
     <!-- v4.35.0 每世界专属维度规则档：38 界维度定义 + 新世界运行时自动发现，需在属性引擎之前 -->
-    <script defer src="js/world-rules.js?v=4.35.0"></script>
-    <script defer src="js/attribute-engine.js?v=4.35.0"></script>
+    <script defer src="js/world-rules.js?v=4.36.0"></script>
+    <script defer src="js/attribute-engine.js?v=4.36.0"></script>
+    <script defer src="js/growth-ledger.js?v=4.36.0"></script>
     <script defer src="js/world-schema.js?v=4.34.0"></script>
     <script defer src="js/entity-editor.js?v=4.34.0"></script>
     <script defer src="js/sim-core.js?v=4.34.0"></script>

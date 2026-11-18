@@ -44,7 +44,31 @@
     return ({ '顶级': 4, '稀有': 3, '中平': 2, '低劣': 0 })[tier] || 2;
   }
 
-  /* 从当前故事变量里抽属性，映射到六轴，算每轴加值（0~6 的温和封顶） */
+  /* T05 · 世界自适应轴表：优先用 WorldRules 当前世界的专属维度，
+   * 退回 AttributeEngine.axisOf（其本身也读 WorldRules），最后退回通用六轴。
+   * 这样 38 界检定用的都是本世界的维度名（斗罗魂力/修仙神识/克苏鲁理智…）。 */
+  var AX_FALLBACK = [
+    { id: 'body', name: '肉身', kw: ['力量','体魄','体质','气血','肉身','根骨','strength','body','体'] },
+    { id: 'sense', name: '感知', kw: ['神识','感知','精神','灵觉','直觉','眼力','sense','perception'] },
+    { id: 'mind', name: '心志', kw: ['心性','意志','道心','坚韧','will','毅'] },
+    { id: 'wit', name: '谋算', kw: ['谋略','智计','智慧','智力','心机','wit','intellect','谋'] },
+    { id: 'learn', name: '修学', kw: ['资质','悟性','修炼','学习','灵根','root','aptitude','悟'] },
+    { id: 'luck', name: '机缘', kw: ['气运','运道','幸运','机缘','fortune','luck','魅力','缘'] }
+  ];
+  function axisTable() {
+    try {
+      var WR = window.WorldRules;
+      if (WR && typeof WR.currentAxes === 'function') {
+        var ax = WR.currentAxes();
+        if (ax && ax.length) return ax.map(function (a) {
+          return { id: a.id, name: a.name, kw: (a.kw || []).concat([a.name]) };
+        });
+      }
+    } catch (e) { }
+    return AX_FALLBACK;
+  }
+
+  /* 从当前故事变量里抽属性，映射到当前世界的轴表，算每轴加值（0~6 的温和封顶） */
   function readAxes() {
     var stats = {};
     try {
@@ -52,24 +76,26 @@
       stats = (st && st.variables && st.variables.stats) || {};
     } catch (e) { }
     var axes = [];
-    var AE = window.AttributeEngine;
-    var AX_IDS = [
-      { id: 'body', name: '肉身', kw: ['力量','体魄','体质','气血','肉身','根骨','strength','body','体'] },
-      { id: 'sense', name: '感知', kw: ['神识','感知','精神','灵觉','直觉','眼力','sense','perception'] },
-      { id: 'mind', name: '心志', kw: ['心性','意志','道心','坚韧','will','毅'] },
-      { id: 'wit', name: '谋算', kw: ['谋略','智计','智慧','智力','心机','wit','intellect','谋'] },
-      { id: 'learn', name: '修学', kw: ['资质','悟性','修炼','学习','灵根','root','aptitude','悟'] },
-      { id: 'luck', name: '机缘', kw: ['气运','运道','幸运','机缘','fortune','luck','魅力','缘'] }
-    ];
+    var AX_IDS = axisTable();
     Object.keys(stats).forEach(function (k) {
       var v = stats[k];
       if (typeof v !== 'number') return;
       var label = k;
+      /* 优先用属性引擎的世界自适应归类（它读 WorldRules）；失败再用本地关键词表 */
       var hit = null;
-      for (var i = 0; i < AX_IDS.length && !hit; i++) {
-        var a = AX_IDS[i];
-        for (var j = 0; j < a.kw.length; j++) {
-          if (String(k).indexOf(a.kw[j]) >= 0 || String(label).indexOf(a.kw[j]) >= 0) { hit = a; break; }
+      try {
+        var AE = window.AttributeEngine;
+        if (AE && typeof AE.axisOf === 'function') {
+          var ax = AE.axisOf(k, k);
+          if (ax) hit = { id: ax.id, name: ax.name };
+        }
+      } catch (e) { }
+      if (!hit) {
+        for (var i = 0; i < AX_IDS.length && !hit; i++) {
+          var a = AX_IDS[i];
+          for (var j = 0; j < a.kw.length; j++) {
+            if (String(k).indexOf(a.kw[j]) >= 0 || String(label).indexOf(a.kw[j]) >= 0) { hit = a; break; }
+          }
         }
       }
       if (!hit) return;
@@ -129,13 +155,36 @@
     var nat20 = die === 20, nat1 = die === 1;
     if (nat20 && grade.key !== 'critical') grade = GRADES[0];      // 天然 20 保底大成功
     if (nat1 && grade.key !== 'criticalfail') grade = GRADES[GRADES.length - 1]; // 天然 1 保底大失败
+    /* T05 · 判定即入账本（成功/失败都留痕）：写进 v.statLog，字段含
+       目标 act / DC diff.target / 结果 grade.name / 依据 basis / 时间 t。
+       用 recordStatLog 复用引擎的滚动上限与持久化，type='check'，stat 记成「检定·行动」。 */
+    var basis = 'd20=' + die + '，' + (axis ? axis.name : '专精') + '+' + axisBonus
+      + '，资质' + apt.tier + '+' + aptBonus + '，修正' + (gear >= 0 ? '+' : '') + gear
+      + ' = ' + total + '，DC' + diff.target + '（' + (margin >= 0 ? '+' : '') + margin + '）';
+    try {
+      var v = (window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables);
+      if (v) {
+        /* 直接 push 一条结构化 check 记录；recordStatLog 的签名装不下 DC/依据，
+           故走同一 v.statLog 结构手写一条，保持字段对齐 + 80 条滚动。 */
+        v.statLog = (v.statLog && Array.isArray(v.statLog)) ? v.statLog : [];
+        v.statLog.push({
+          t: Date.now(), chapter: Number(v.chapter) || 0,
+          stat: '检定·' + String(opts.act || '未命名').slice(0, 14),
+          delta: margin, value: total, type: 'check',
+          reason: '目标=' + String(opts.act || '').slice(0, 24)
+            + '｜DC=' + diff.target + '｜结果=' + grade.name + '｜依据=' + basis
+        });
+        if (v.statLog.length > 80) v.statLog = v.statLog.slice(-80);
+      }
+    } catch (e) { }
     return {
       act: String(opts.act || ' unspecified action').trim(),
       die: die, axis: axis || null, axes: axes,
       axisBonus: axisBonus, aptitude: apt, aptBonus: aptBonus, gear: gear,
       difficulty: diff, total: total, margin: margin, grade: grade,
       nat20: nat20, nat1: nat1,
-      mode: opts.mode || 'calc'
+      mode: opts.mode || 'calc',
+      checkRecord: { t: Date.now(), target: String(opts.act || ''), dc: diff.target, result: grade.name, basis: basis }
     };
   }
 

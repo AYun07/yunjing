@@ -4029,7 +4029,7 @@ function currentAxes(){
   return d && d.axes && d.axes.length ? d.axes : null;
 }
 function axesFor(cfg){
-  r = current(); if (r && r.axes && r.axes.length) return r.axes;
+  var r = current(); if (r && r.axes && r.axes.length) return r.axes;
   var fp = fingerprintOf(cfg); var id = FP_MAP[fp];
   if (id) return REGISTRY[id].axes;
   var d = derive(cfg); return d ? d.axes : null;
