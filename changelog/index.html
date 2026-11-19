@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.44.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.45.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,30 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.45.0 ==================== -->
+        <article class="log-entry" data-tags="新增 动态关系 负面关系 表达尺度 性格世界书" style="--entry-hue:#c9a86a;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.45.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">动态关系系统 + 人物性格世界书 · 关系随时间呼吸，每人都有自己的脾气</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：关系引擎拆除"只升不降"棘轮，改为五维（好感/信任/敬重/亲近/欲望）可升可降，阶段双向覆盖宿敌→伴侣；新增随时间/事件/特殊因素的自动演化与玩家锁定（"玩家要求除外"）；删除一刀切含蓄护栏，改玩家自选含蓄/直白/露骨三档。新增 <code>js/personality-codex.js</code> 性格世界书（全 38 界每个人独特性格，正面/负面/奇葩三类原型）与 <code>js/relation-codex-bridge.js</code> 联动桥。<code>js/intimacy-archive.js</code> 升级为 v2。 · <a href="https://github.com/AYun07/yunjing/compare/v4.44.0...v4.45.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <ul class="ver-list">
+                <li><b>关系像真人一样动态</b>：💞 动态关系档案。五维各自升降、可为负；阶段从宿敌到伴侣十段双向；随世界推进的时长、事件文本、局势张力自动演化并留痕，多疑者信任更难涨、热情者好感更易升。</li>
+                <li><b>玩家要求除外</b>：任意维度可手动锁定（🔒），锁定后自动演化不再覆盖；可随时解锁恢复自动。负面关系独立成段（敌视/厌恶/疏远），不再是清一色好感进度条。</li>
+                <li><b>表达尺度自选</b>：含蓄/直白/露骨三档玩家切换并持久化；AI 润色提示词随档切换，露骨档移除硬性禁令。<b>边界</b>：云境自身不内置、不主动生成露骨色情文本，尺度由你配置的模型与你的判断决定。</li>
+                <li><b>人物性格世界书</b>：📖 入口。全 38 界覆盖（228 位预置真实角色 + 任意自定义名字即时生成），每人正面/负面/奇葩取向+独特特质/说话/习惯/喜恶/底线/癖好，影响关系演化。</li>
+                <li><b>验证</b>：新增 61 项断言，<code>npm test</code> 扩至 284 项全绿；真 Chromium 验证两面板渲染、切换查档、切档、锁定全部正常，0 页面错误。</li>
+            </ul>
+            <p class="entry-note">版权说明：本版全部模块为云境项目独立实现——字段命名、确定性散列（FNV-1a+mulberry32）、原型库文案、状态机与视觉均原创，未复制任何第三方项目表达，也未引用原著角色设定原文。借鉴的是不受著作权保护的通用"关系维度/性格原型"机制思想。</p>
+        </article>
+
         <!-- ==================== v4.44.0 ==================== -->
         <article class="log-entry" data-tags="新增 亲密档案 AI增强 大模型 成本" style="--entry-hue:#c98a9a;">
             <div class="entry-head">
                 <span class="entry-ver">v4.44.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">亲密关系档案 + 统一 AI 增强层 · 本地骨架叠加大模型血肉</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：新增 <code>js/intimacy-archive.js</code>（R18 亲密关系档案：六段关系阶段、亲密度棘轮、私密记忆分层、专属称呼、边界偏好、含蓄互动、只增不删库房）与 <code>js/ai-augment.js</code>（统一 AI 增强调度：复用主笔接口、采样策略、成本账本、失败降级）。<code>js/ai-augment-bridge.js</code> 把增强接到亲密互动/NPC演化/世界事件，表格与推演沿用既有大模型通道不重复调用。全部默认关闭、开启明示成本。 · <a href="https://github.com/AYun07/yunjing/compare/v4.43.0...v4.44.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -936,7 +954,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.44.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.45.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

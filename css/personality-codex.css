@@ -1,0 +1,40 @@
+/* 云境 · 人物性格世界书面板 v4.45.0（原创视觉） */
+.codex-overlay{position:fixed;inset:0;z-index:9120;display:none;align-items:center;justify-content:center;background:rgba(8,10,16,.72);backdrop-filter:blur(6px);padding:20px}
+.codex-panel{width:min(960px,96vw);max-height:90vh;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#1c2030,#141822);border:1px solid rgba(201,168,106,.35);border-radius:16px;box-shadow:0 30px 90px rgba(0,0,0,.5);color:#e8e4d8}
+.codex-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(201,168,106,.22)}
+.codex-head h3{margin:0;font-size:17px;letter-spacing:.5px}
+.codex-sub{font-size:11px;font-weight:400;color:#9a8c6e;margin-left:8px}
+.codex-close{border:0;background:transparent;color:#c9a86a;font-size:18px;cursor:pointer}
+.codex-body{padding:18px 22px;overflow-y:auto}
+.codex-selectors{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:8px}
+.codex-selectors label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#b9b09a}
+.codex-selectors select,.codex-selectors input{background:#0f1320;border:1px solid rgba(201,168,106,.3);color:#e8e4d8;border-radius:8px;padding:7px 10px;font-size:13px;min-width:180px}
+.codex-query{background:#c9a86a;color:#1a1a1a;border:0;border-radius:8px;padding:8px 18px;font-weight:600;cursor:pointer;height:34px}
+.codex-muted{color:#8f8a7c;font-size:12px;line-height:1.6}
+.codex-roster{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 16px}
+.codex-chip{background:rgba(201,168,106,.08);border:1px solid rgba(201,168,106,.25);color:#d8cfb4;border-radius:14px;padding:4px 12px;font-size:12px;cursor:pointer;transition:.15s}
+.codex-chip:hover{background:rgba(201,168,106,.2)}
+.codex-chip.on{background:#c9a86a;color:#1a1a1a;font-weight:600}
+.codex-profile{border:1px solid rgba(201,168,106,.25);border-radius:12px;padding:16px;background:rgba(255,255,255,.02)}
+.codex-phead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.codex-name{font-size:20px;color:#f0e6c8}
+.codex-orient{padding:3px 12px;border-radius:12px;font-size:12px;font-weight:600}
+.codex-orient.pos{background:rgba(90,160,120,.2);color:#8fd4a8;border:1px solid rgba(90,160,120,.4)}
+.codex-orient.neg{background:rgba(190,90,85,.18);color:#e29a95;border:1px solid rgba(190,90,85,.4)}
+.codex-orient.ecc{background:rgba(150,120,200,.18);color:#c4a9e8;border:1px solid rgba(150,120,200,.4)}
+.codex-arch{color:#b9a98a;font-size:13px}
+.codex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 20px}
+.codex-cell i{display:block;font-style:normal;font-size:11px;color:#9a8c6e;margin-bottom:3px;letter-spacing:1px}
+.codex-cell p{margin:0;font-size:13px;line-height:1.6;color:#ddd6c4}
+.codex-tags{display:flex;flex-wrap:wrap;gap:5px}
+.codex-tags span{background:rgba(201,168,106,.14);border:1px solid rgba(201,168,106,.28);border-radius:10px;padding:2px 9px;font-size:12px;color:#e4d6b4}
+.codex-line p{color:#e8a89f}
+.codex-quirk p{color:#c4a9e8}
+.codex-bias{margin-top:14px;border-top:1px dashed rgba(201,168,106,.25);padding-top:12px}
+.codex-bias>i,.codex-brief>i{font-style:normal;font-size:11px;color:#9a8c6e;letter-spacing:1px}
+.codex-axes{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px}
+.codex-ax{display:flex;gap:8px;align-items:center;font-size:13px;color:#c9c2b0}
+.codex-ax b{font-variant-numeric:tabular-nums}
+.codex-brief{margin-top:12px;border-top:1px dashed rgba(201,168,106,.25);padding-top:12px}
+.codex-brief p{margin:6px 0 0;font-size:12px;line-height:1.7;color:#a9a594;font-style:italic}
+@media (max-width:640px){.codex-grid{grid-template-columns:1fr}.codex-selectors label{min-width:100%}.codex-selectors select,.codex-selectors input{min-width:100%}}

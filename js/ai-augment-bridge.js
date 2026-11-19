@@ -28,9 +28,11 @@
       var base = orig.call(this, name, text, opts); /* 本地保底先入档 */
       var A = AI();
       if (base && A && A.isTaskAvailable('intimacy') && opts && opts.allowAI !== false) {
-        /* 构造含蓄润色提示词：明确要求文学化、禁止露骨内容 */
-        var system = '你是文风润色师。把互动片段改写成含蓄、文学化的中文，只保留情感与氛围，'
-          + '严禁任何露骨、色情或身体细节描写。只输出改写后的一段话，不要解释。';
+        /* 提示词随玩家表达尺度切换（含蓄/直白/露骨）；露骨档不再注入硬禁令，
+           尺度由玩家自有模型与其判断决定——云境自身不生成露骨色情文本。 */
+        var system = (typeof IA.systemHint === 'function')
+          ? IA.systemHint()
+          : '你是文风润色师，只输出改写后的一段话，不要解释。';
         A.enhance('intimacy', '原始片段：' + text, {
           system: system, maxTokens: 200, temperature: 0.8,
           parse: null

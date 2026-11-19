@@ -41,4 +41,19 @@
 .aia-existing{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:#8fa9c9;border:1px solid #3a4a68;border-radius:6px;padding:4px 9px;background:#1b2436}
 .aia-total{margin-top:16px;padding-top:12px;border-top:1px solid #2e2740;font-size:12.5px;color:#cdbfe0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .aia-total b{color:#e8c987}
+/* v4.45.0 动态关系：表达尺度 / 五维双向条 / 锁定 / 变动轨迹 / 负面阶段 */
+.ia-exprbar{display:flex;align-items:center;gap:8px;margin:10px 0;flex-wrap:wrap}
+.ia-exprbar>span{font-size:12px;color:#9a8fa8}
+.ia-expr{font-size:11.5px;color:#b9a9cf;background:#241c38;border:1px solid #3a3050;border-radius:12px;padding:3px 12px;cursor:pointer}
+.ia-expr.on{background:#c9a86a;color:#1a1a1a;font-weight:600;border-color:#c9a86a}
+.ia-stage.neg{color:#e29a95;border-color:#7a3f3b}
+.ia-total{font-size:11px;color:#9a8fa8;margin-left:auto}
+.ia-ax-track{position:relative}
+.ia-ax-track .ia-mid{position:absolute;left:50%;top:0;width:1px;height:100%;background:#4a3f60;z-index:2}
+.ia-lock{font-size:10px;color:#8fbf9f;background:transparent;border:1px solid #3a5a46;border-radius:8px;padding:1px 7px;cursor:pointer;flex:none}
+.ia-lock:hover{background:rgba(90,160,120,.15)}
+.ia-hist li{font-size:11px}
+.ia-hist li i{color:#9a8fa8;font-style:normal}
+.ia-hist li span{color:#6f6578}
+.ia-notice{font-size:11.5px;line-height:1.6;color:#a9987a;background:rgba(201,168,106,.06);border-left:2px solid #6a5636;padding:7px 10px;border-radius:4px;margin:8px 0}
 @media(max-width:520px){.ia-panel,.aia-panel{width:96vw}.ia-body,.aia-body{padding:14px}}
