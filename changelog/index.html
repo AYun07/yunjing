@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.46.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.47.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,23 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.47.0 ==================== -->
+        <article class="log-entry" data-tags="新增 心理模型 关系光谱 核心恐惧 破防 表里反差" style="--entry-hue:#7f9fd0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.47.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">性格心理模型 · 从"标签"深化到"心理机制"，按关系阶段与核心恐惧行事</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>（参考 ACG 角色心理模型的通用机制思想，全部云境原创实现、未复制其文案/台词/数据）：新增 <code>js/psyche-model.js</code>，为全部 72 种性格各建<b>七项心理档案</b>（本质定性／核心驱动／核心恐惧／特有机制／表里反差／破防条件／语调锚点）；新增 <b>10 段关系光谱</b>——同一性格对宿敌、陌生人、熟悉、伴侣的表现各不相同，直接复用 v4.45.0 的动态关系阶段；新增<b>渐变曲线</b>（初/中/后期）与<b>触发分级</b>（轻度/中度/致命），行为引擎 <code>behaviorOf</code> 据此输出"表象行为＋真实倾向＋破防标记"，致命事件触发破防并暴露核心恐惧；AI 速写 <code>brief()</code> 与 NPC 演化提示词注入心理机制，逼大模型在规则未覆盖的情境下按角色核心恐惧推导其一贯反应，而非通用腔调。性格档案 UI 增"🧠 心理模型"区与关系光谱（当前阶段高亮）。 · <a href="https://github.com/AYun07/yunjing/compare/v4.46.0...v4.47.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
         <!-- ==================== v4.46.0 ==================== -->
         <article class="log-entry" data-tags="新增 原著性格 性格辞典 行为演化 病态阴暗" style="--entry-hue:#c98a9a;">
             <div class="entry-head">
                 <span class="entry-ver">v4.46.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">性格世界书重做 · 原著性格归位，每人十性格，按性格与轨迹演化</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：把 v4.45.0「随机散列贴性格标签」彻底改成真正的性格世界书——① <b>尊重原著</b>：从自有 configs 的「原著人物独立意志」逐字提取 25 界 80+ 位角色（含配角）的原著性格锚点，韩立谨慎多疑、白灵淼温柔坚韧、墨大夫表面慈和实则凉薄、苏晓冷酷高效……原著角色按本色行事，不被随机覆盖；② <b>每人≥10条性格</b>，逐条标注来源（原著／辞典／玩家）；③ <b>性格类型辞典</b>：6 大类（正面/负面/奇葩/阴暗/病态/复杂）共 60 种，每种含特征、特色、行为、说话、雷区、关系系数；④ <b>玩家角色可动态增删性格</b>，优先级最高、随存档持久化；⑤ <b>按性格＋行为轨迹演化</b>：世界时钟每推一段，所有角色按性格与事件生成行为倾向台账；⑥ AI 增强的 NPC 演化注入原著性格速写，让大模型按本色写。 · <a href="https://github.com/AYun07/yunjing/compare/v4.45.0...v4.46.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -964,7 +975,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.46.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.47.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

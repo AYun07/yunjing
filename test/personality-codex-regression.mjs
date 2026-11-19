@@ -83,7 +83,7 @@ ok(JSON.stringify(P.forRole('韩立', 'fanrenxiuxian').traits) === JSON.stringif
 const fresh = P.generate('韩立', 'fanrenxiuxian');
 ok(fresh.traits.includes('谨慎多疑'), '确定性重生成仍含原著锚点');
 const exp = P.exportAll();
-ok(exp.v === '2.0.0' && exp.player, '导出含版本与玩家层');
+ok(exp.v === '2.1.0' && exp.player, '导出含版本与玩家层');
 ok(P.worlds().length >= 38, `覆盖≥38世界（实${P.worlds().length}）`);
 ok(st.canonRoles >= 80, `原著角色库≥80位（实${st.canonRoles}）`);
 
