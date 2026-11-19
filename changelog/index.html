@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.41.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.42.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,33 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.42.0 ==================== -->
+        <article class="log-entry" data-tags="修复 演化 存档 测试 体验" style="--entry-hue:#6faf9f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.42.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">遗留问题清零 · 长演化不再变死水、老浏览器也能读档、核心测试沉淀进仓库</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：把上一版盘点的四层遗留问题逐项处理——长跨度演化后世界不再变死水、重入回合不再丢失、中文约数能解析、老浏览器也能导入 gzip 存档；散落的临时验证脚本沉淀为仓库内正式回归用例；本地清掉 4.8G 打包产物（源码与远程不动）。 · <a href="https://github.com/AYun07/yunjing/compare/v4.41.0...v4.42.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>长演化世界不再变死水</b>：真实子系统长跑实测发现——三年逐日演化会让势力累积到 88 个空壳、张力跌到 12。现在逐日演化层加了后置护栏：自动裁剪最老的已覆灭势力（存活的一律保留）、张力低于软地板时按「乱世潜流」回填。实测三年后存活势力稳定、总数 12、张力≈23，世界仍保有兴衰起伏。</li>
+                    <li><b>重入回合不再丢失</b>：世界演化进行中若又推进剧情，旧版直接丢弃该回合；现在改为排队并在批次末合并补跑（取最大跨度），快速连点也不会少转世界。</li>
+                    <li><b>中文约数解析</b>：attributes 引擎现在认得「十余日」「十数年」「二十余日」「数十日」这类约数（此前一律返回 NaN），跳时间识别更贴近真实正文。</li>
+                    <li><b>老浏览器也能读 gzip 存档</b>：新增纯 JS 的 gzip 解压兜底——没有原生 DecompressionStream 的老浏览器也能导入 .json.gz 存档，不再只提示「换新版浏览器」。已用 Node zlib 生成样本对比验证，100% 解出一致。</li>
+                    <li><b>核心测试沉淀进仓库</b>：世界时钟 / 逐日演化 / 并发闸门 / gzip 兜底的 47 项深度用例合并为 <code>test/core-regression.mjs</code>，<code>npm test</code> 一条命令跑全部 81 项（34 冒烟 + 47 核心）。此前这些只存在临时脚本里。</li>
+                    <li><b>本地瘦身</b>：清掉 client/ 下 4.8G 被忽略的打包产物（dist/android-sdk/node_modules 等），客户端源码与远程仓库完全不动——尊重此前「停止打包但保留源码」的决定。</li>
+                </ul>
+                <p class="entry-note">取舍说明：成本熔断闸维持「不设强制闸」（沿用你的选择），额外付费功能保持默认关 + 明示成本；本次只处理问题项，不改这两项既定口径。多浏览器实测受沙箱限制（仅 Chromium），已用视口 + 禁用原生 API 模拟降级路径。</p>
+            </div>
+        </article>
+
         <!-- ==================== v4.41.0 ==================== -->
         <article class="log-entry" data-tags="成本 并发 接口" style="--entry-hue:#7f9fc0;">
             <div class="entry-head">
                 <span class="entry-ver">v4.41.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">全局动态并发闸门 · 控制大模型真实调用并发，按你的端点自适应省钱</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：新增跨接口的全局并发闸门——同时发出的大模型请求数受动态上限约束，撞限流自动收紧、顺畅再逐步回升，玩家可在成本面板选偏好档。只排队、不拒绝，不按次数/花费强制熔断。 · <a href="https://github.com/AYun07/yunjing/compare/v4.40.0...v4.41.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -873,7 +894,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.41.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.42.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

@@ -151,6 +151,15 @@
     if (/^\d+(\.\d+)?$/.test(s)) return parseFloat(s);
     if (s === "半") return 0.5;
     if (s === "数" || s === "几") return 3;
+    /* v4.42.0 中文约数：「十余」「十数」「十来」≈十几(取15)，「二十余」≈二十几；
+       「数十」「数百」的「数」是约数前缀(=几)，不是精确 3。此前这些一律返回 NaN。 */
+    var approx = s.match(/^([零一两二三四五六七八九十百千万]+)(余|多|来|数)$/);
+    if (approx) {
+      var base = cn2num(approx[1]);
+      if (isFinite(base)) return base + (base >= 100 ? Math.round(base * 0.2) : (base >= 10 ? 5 : 2));
+    }
+    var shushu = s.match(/^数(十|百|千|万)$/);
+    if (shushu) return { 十: 20, 百: 200, 千: 2000, 万: 20000 }[shushu[1]];
     if (s.indexOf("十") >= 0) {
       var parts = s.split("十");
       var a = parts[0] ? CN_DIGIT[parts[0]] : 1;
@@ -236,7 +245,7 @@
     var needCtx = strict !== false && !/(时间\s*\.\s*跨度|时间跨度|time\s*\.\s*span)\s*[:：]/i.test(src);
     var bestMin = 0, bestText = "";
     /* A) 数字 + 单位 */
-    var re = /(\d+(?:\.\d+)?|[零一两二三四五六七八九十百千万半数几]{1,4})\s*(?:个)?\s*(甲子|春秋|周岁|年|载|季|个月|月|旬|日|天|昼夜|整日|时辰|刻|小时|钟头|钟点|分钟|minute|min)/gi;
+    var re = /(\d+(?:\.\d+)?|[零一两二三四五六七八九十百千万半数几余多来]{1,4})\s*(?:个)?\s*(甲子|春秋|周岁|年|载|季|个月|月|旬|日|天|昼夜|整日|时辰|刻|小时|钟头|钟点|分钟|minute|min)/gi;
     var m;
     while ((m = re.exec(src))) {
       var n = cn2num(m[1]);

@@ -736,9 +736,12 @@
       var fall = (tension >= 55 ? (0.4 + fallCoef * 1.6) : 0)   // 高张力本身缓慢出清
                + (conflictFiredFlag ? (1.0 + fallCoef * 2.0) : 0)  // 实际冲突 = 矛盾释放
                + collapseNow * 0.8;                     // 势力覆灭 = 一支矛盾消失
-      /* 弱回归：极端值向 50 回拉，防锁死 */
+      /* v4.42.0 太平生乱：长跨度逐日演化会让 fall（冲突/覆灭出清）持续累积，
+         旧版仅在 t<8 才微弱回拉，实测三年千余拍后张力跌到个位数、世界成一潭死水。
+         现设 32 的软地板——越接近太平，潜流回升越快，与 rise/fall 形成动态平衡，
+         长跨度后世界仍保有起伏；不碰极端上限的回拉逻辑（>92 仍缓慢出清）。 */
       var regression = 0;
-      if (t < 8) regression = (8 - t) * 0.25;
+      if (t < 32) regression = (32 - t) * 0.14;
       else if (t > 92) regression = -(t - 92) * 0.25;
       var delta = rise - fall + regression;
       /* 平滑：把 delta 累积进 v.tensionTrend（一位小数），满 1 才进整数位，
