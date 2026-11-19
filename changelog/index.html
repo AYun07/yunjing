@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.45.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.46.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,22 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.46.0 ==================== -->
+        <article class="log-entry" data-tags="新增 原著性格 性格辞典 行为演化 病态阴暗" style="--entry-hue:#c98a9a;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.46.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">性格世界书重做 · 原著性格归位，每人十性格，按性格与轨迹演化</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：把 v4.45.0「随机散列贴性格标签」彻底改成真正的性格世界书——① <b>尊重原著</b>：从自有 configs 的「原著人物独立意志」逐字提取 25 界 80+ 位角色（含配角）的原著性格锚点，韩立谨慎多疑、白灵淼温柔坚韧、墨大夫表面慈和实则凉薄、苏晓冷酷高效……原著角色按本色行事，不被随机覆盖；② <b>每人≥10条性格</b>，逐条标注来源（原著／辞典／玩家）；③ <b>性格类型辞典</b>：6 大类（正面/负面/奇葩/阴暗/病态/复杂）共 60 种，每种含特征、特色、行为、说话、雷区、关系系数；④ <b>玩家角色可动态增删性格</b>，优先级最高、随存档持久化；⑤ <b>按性格＋行为轨迹演化</b>：世界时钟每推一段，所有角色按性格与事件生成行为倾向台账；⑥ AI 增强的 NPC 演化注入原著性格速写，让大模型按本色写。 · <a href="https://github.com/AYun07/yunjing/compare/v4.45.0...v4.46.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
         <!-- ==================== v4.45.0 ==================== -->
         <article class="log-entry" data-tags="新增 动态关系 负面关系 表达尺度 性格世界书" style="--entry-hue:#c9a86a;">
             <div class="entry-head">
                 <span class="entry-ver">v4.45.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">动态关系系统 + 人物性格世界书 · 关系随时间呼吸，每人都有自己的脾气</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：关系引擎拆除"只升不降"棘轮，改为五维（好感/信任/敬重/亲近/欲望）可升可降，阶段双向覆盖宿敌→伴侣；新增随时间/事件/特殊因素的自动演化与玩家锁定（"玩家要求除外"）；删除一刀切含蓄护栏，改玩家自选含蓄/直白/露骨三档。新增 <code>js/personality-codex.js</code> 性格世界书（全 38 界每个人独特性格，正面/负面/奇葩三类原型）与 <code>js/relation-codex-bridge.js</code> 联动桥。<code>js/intimacy-archive.js</code> 升级为 v2。 · <a href="https://github.com/AYun07/yunjing/compare/v4.44.0...v4.45.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -954,7 +964,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.45.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.46.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

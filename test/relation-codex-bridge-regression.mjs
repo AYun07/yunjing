@@ -83,7 +83,24 @@ G('6. 状态');
 {
   const s = BR.status();
   ok(s.booted === true && typeof s.world === 'string', '状态含引导标志与世界');
-  ok(BR.resetStats() === true && BR.status().stats.ticks === 0, '统计可重置');
+}
+
+G('7. 按性格+行为轨迹演化（v4.46）');
+{
+  BR.resetStats();
+  ok(BR.status().stats.ticks === 0, '统计可重置');
+  listeners['yj:world-tick'][0]({ detail: { day: 20, span: 3, ev: '敌人追杀，朋友背叛' } });
+  const bh = BR.behaviorsNow(30);
+  ok(bh.length > 0, `时钟驱动产生行为台账（${bh.length}条）`);
+  const han = bh.find(x => x.name === '韩立');
+  ok(!!han, '台账含韩立');
+  ok(han && han.tendency && han.tendency.length > 0, '韩立按性格+轨迹输出行为倾向');
+  ok(han && han.rationale && han.rationale.includes('轨迹'), '行为倾向含轨迹依据');
+  ok(han && han.rationale && han.rationale.includes('原著锚点'), '原著角色行为含原著锚点依据');
+  ok(BR.status().stats.behaviors > 0, '行为演化计数');
+  // 未建档的世界角色也应纳入演化
+  const hasRoster = bh.some(x => ['南宫婉','厉飞雨','大衍神君'].includes(x.name));
+  ok(hasRoster, '同世界未建档角色也按性格演化');
 }
 
 console.log('\n===== 结果：' + pass + ' 通过 / ' + fail + ' 失败 =====');

@@ -15,9 +15,11 @@
  * ===================================================================== */
 (function (global) {
   'use strict';
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var booted = false;
-  var stats = { ticks: 0, relationsEvolved: 0, npcBiased: 0, lastSpan: 0, errors: 0 };
+  var stats = { ticks: 0, relationsEvolved: 0, npcBiased: 0, behaviors: 0, lastSpan: 0, errors: 0 };
+  /* 行为台账：按「性格 + 行为轨迹」演化的角色行为倾向，供 NPC 引擎/UI/AI 消费 */
+  var behaviorLedger = [];
 
   function IA() { return global.IntimacyArchive || null; }
   function PC() { return global.PersonalityCodex || null; }
@@ -80,11 +82,12 @@
     var wk = worldKey();
     var ten = tension();
     var impacts = eventsToImpacts(d.ev ? [d.ev] : (d.text ? [d.text] : []));
+    var rawEvents = d.ev ? [d.ev] : (d.text ? [d.text] : []);
     var roster = A.list();
+    var C = PC();
     roster.forEach(function (rec) {
       try {
         var bias = {};
-        var C = PC();
         if (C && C.biasFor) {
           var pb = C.biasFor(rec.name, wk);
           if (pb && !pb.name) bias = pb;   // biasFor 不传轴返回系数对象
@@ -97,8 +100,32 @@
           personalityBias: bias
         });
         stats.relationsEvolved++;
+        /* 新增：按「性格 + 行为轨迹」演化角色行为倾向并留痕 */
+        if (C && C.behaviorOf) {
+          var bh = C.behaviorOf(rec.name, wk, { events: rawEvents, days: days, tension: ten });
+          behaviorLedger.push(Object.assign({ tick: stats.ticks, world: wk }, bh));
+          stats.behaviors++;
+          if (behaviorLedger.length > 200) behaviorLedger = behaviorLedger.slice(-200);
+        }
       } catch (e) { stats.errors++; }
     });
+    /* 同世界角色即使未建档，也在世界时钟里按性格演化行为（覆盖所有角色） */
+    if (C && C.behaviorOf && C.roster) {
+      (C.roster(wk) || []).forEach(function (nm) {
+        if (roster.some(function (r) { return r.name === nm; })) return;
+        try {
+          var bh2 = C.behaviorOf(nm, wk, { events: rawEvents, days: days, tension: ten });
+          behaviorLedger.push(Object.assign({ tick: stats.ticks, world: wk }, bh2));
+          stats.behaviors++;
+        } catch (e) {}
+      });
+      if (behaviorLedger.length > 200) behaviorLedger = behaviorLedger.slice(-200);
+    }
+  }
+  /* 供 UI / AI / NPC 引擎读取最近的行为演化台账 */
+  function behaviorsNow(limit) {
+    var n = limit || 20;
+    return behaviorLedger.slice(-n).map(function (x) { return Object.assign({}, x); });
   }
 
   /* ② NPC 态度变更叠加性格倾向（尊重玩家显式设定） */
@@ -157,12 +184,12 @@
     booted = true;
     return ok;
   }
-  function status() { return { booted: booted, world: worldKey(), stats: Object.assign({}, stats) }; }
-  function resetStats() { Object.keys(stats).forEach(function (k) { if (typeof stats[k] === 'number') stats[k] = 0; }); return true; }
+  function status() { return { booted: booted, world: worldKey(), stats: Object.assign({}, stats), ledgerSize: behaviorLedger.length }; }
+  function resetStats() { Object.keys(stats).forEach(function (k) { if (typeof stats[k] === 'number') stats[k] = 0; }); behaviorLedger = []; return true; }
 
   var API = {
     VERSION: VERSION, boot: boot, status: status, resetStats: resetStats,
-    onWorldTick: onWorldTick, evolveAllNow: evolveAllNow,
+    onWorldTick: onWorldTick, evolveAllNow: evolveAllNow, behaviorsNow: behaviorsNow,
     worldKey: worldKey, eventsToImpacts: eventsToImpacts,
     _hooks: { hookNPC: hookNPC }
   };

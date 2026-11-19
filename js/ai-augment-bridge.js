@@ -18,6 +18,17 @@
   var booted = false;
 
   function AI() { return global.AIAugment; }
+  /* 当前世界 key（与 RelationCodexBridge 同源） */
+  function worldKeyOf() {
+    try {
+      if (global.WorldExt && global.WorldExt.genre) return String(global.WorldExt.genre);
+      if (typeof location !== 'undefined' && location.search) {
+        var m = new URLSearchParams(location.search).get('genre');
+        if (m) return m;
+      }
+    } catch (e) {}
+    return 'free';
+  }
 
   /* ① 亲密互动：包装 IntimacyArchive.recordInteraction —— AI 开启且采样命中时润色文本 */
   function hookIntimacy() {
@@ -57,7 +68,11 @@
       var base = orig.call(this, name, ctx); /* 本地自治先跑 */
       var A = AI();
       if (base && base.active && base.deed && A && A.isTaskAvailable('npc')) {
-        var system = '你是叙事润色师。把这条角色动向改写成一句凝练、有画面感的中文，不要解释，只输出一句话。';
+        /* 注入原著性格速写：原著角色按其本色行事，不得写成另一个人的腔调 */
+        var codex = global.PersonalityCodex;
+        var persona = (codex && codex.brief) ? codex.brief(name, worldKeyOf()) : '';
+        var system = '你是叙事润色师。把这条角色动向改写成一句凝练、有画面感的中文，不要解释，只输出一句话。'
+          + (persona ? '\n必须与角色性格一致，按其特征、说话方式与行为倾向来写：\n' + persona : '');
         A.enhance('npc', '角色：' + name + '\n动向：' + base.deed, {
           system: system, maxTokens: 160, temperature: 0.8
         }).then(function (r) {
