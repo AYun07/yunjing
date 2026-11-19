@@ -20,7 +20,11 @@
 (function () {
   'use strict';
   var G = (typeof window !== 'undefined') ? window : (typeof globalThis !== 'undefined' ? globalThis : {});
-  var VERSION = '2.0.0';
+  var VERSION = '2.1.0';
+
+  /* 心理模型软引用：浏览器由 psyche-model.js 先注入 G.PsycheModel；
+     Node vm 测试里若未加载则优雅降级（心理字段留空，不影响既有行为）。 */
+  function PM() { return G.PsycheModel || (typeof require === 'function' ? null : null); }
 
   /* ---------- 确定性工具（原创） ---------- */
   function fnv1a(str) {
@@ -521,7 +525,40 @@
       taboo: rep.taboo,
       relBias: buildBias(faces),
       seed: fnv1a(world + '::' + name),
-      generatedAt: 'v4.46.0'
+      /* v4.47.0 心理模型：七项心理档案 + 10 阶段关系光谱
+         代表原型 rep 已由原著锚点/主类别决定，故用 rep.name 取心理档案，
+         让原著角色（如墨大夫→凉薄/城府）拿到贴合本色的心理模型，而非通用兜底。 */
+      psychology: (function () {
+        var pm = PM();
+        if (!pm || !pm.of) return null;
+        try {
+          /* 原著角色：用 canon 锚点文本挑最贴切的心理档案（byCanon），
+             避免 lexicon 补益把负面角色（如苏晓"冷酷高效"）带偏到 complex。 */
+          var psyCat = primaryCat, psyRep = rep && rep.name ? rep.name : name;
+          if (canon && canon.faces && canon.faces.length) {
+            var anchorStr = canon.faces.map(function (x) { return (x && x.text) ? x.text : String(x); }).join('、');
+            if (pm.byCanon) {
+              var bc = pm.byCanon(anchorStr, primaryCat);
+              if (bc && bc.rep) { psyRep = bc.rep; psyCat = bc.cat; }
+            }
+          }
+          var psy = pm.of(psyRep, psyCat);
+          var spect = {};
+          (pm.STAGES || []).forEach(function (s) { spect[s] = pm.spectrum(name, psyCat, s).text; });
+          psy.spectrum = spect;
+          psy.archetype = rep.name;
+          psy.basedOn = psyRep;     // 心理档案实际取自哪个性格原型（原著角色经 byCanon 校正）
+          /* 原著锚点叠加：让核心恐惧与行事机制带上原著本色 */
+          var canonTexts = (canon && canon.faces) ? canon.faces.map(function (f) { return f.text || f; }) : [];
+          if (canonTexts.length) {
+            psy.canonAnchor = canonTexts.join('、');
+            psy.fear = canonTexts.slice(0, 2).join('、') + '；' + psy.fear;
+            psy.essence = '（原著：' + canonTexts.slice(0, 2).join('、') + '）' + psy.essence;
+          }
+          return psy;
+        } catch (e) { return null; }
+      })(),
+      generatedAt: 'v4.47.0'
     };
   }
 
@@ -574,8 +611,10 @@
     // 由行为轨迹提取情境张力
     var events = ctx.events || [];
     var threat = 0, kindness = 0, betrayal = 0;
+    var eventText = '';
     events.forEach(function (e) {
       var s = String((e && (e.text || e.reason)) || '');
+      eventText += s + ' ';
       if (/敌|攻|杀|危|威胁|追|斗/.test(s)) threat++;
       if (/助|救|赠|谢|善|帮/.test(s)) kindness++;
       if (/背|叛|骗|欺|算计|害/.test(s)) betrayal++;
@@ -599,6 +638,35 @@
     out.rationale = '性格〔' + p.traits.slice(0, 5).join('、') + '〕'
       + ' × 轨迹〔事件' + events.length + '起/威胁' + threat + '/善意' + kindness + '/背叛' + betrayal + '/历时' + days + '日〕'
       + (p.isCanon ? ' × 原著锚点' : '');
+
+    /* ---- v4.47.0 心理模型叠加：关系光谱 × 触发分级 × 破防 × 表里反差 ---- */
+    var pm = PM();
+    if (pm && pm.react) {
+      try {
+        var stageLabel = ctx.stage || '陌生';
+        var reaction = pm.react(name, p.primaryCat, {
+          stage: stageLabel, eventText: eventText, intensity: ctx.intensity, days: days
+        });
+        out.psychology = {
+          essence: p.psychology ? p.psychology.essence : '',
+          fear: p.psychology ? p.psychology.fear : '',
+          stage: reaction.stage,
+          tier: reaction.tier,
+          phase: reaction.phase,
+          surface: reaction.surface,        // 表象行为（对关系阶段的表现）
+          real: reaction.real,              // 真实倾向（机制/破防时暴露核心恐惧）
+          contrast: reaction.contrast,      // 表里反差
+          mechanism: reaction.mechanism,
+          breaking: reaction.breaking,
+          mood: reaction.mood,
+          rationale: reaction.rationale
+        };
+        // 破防时把表象纳入倾向，让行为引擎真正"按心理机制行事"
+        if (reaction.breaking) out.tendency.push('破防：' + reaction.real);
+        else if (reaction.tier === '中度') out.tendency.push('心理波动：' + reaction.mechanism);
+        // 破防会覆盖情绪标记（原 mood 保留在 out.mood，心理情绪单列）
+      } catch (e) {}
+    }
     return out;
   }
 
@@ -621,9 +689,17 @@
   function brief(name, world) {
     var p = forRole(name, world);
     var anchor = p.faces.filter(function (x) { return x.source === 'canon'; }).map(function (x) { return x.text; });
-    return p.name + '（' + p.primaryLabel + '·' + p.archetype + (p.isCanon ? '·原著' : '') + '）：'
+    var s = p.name + '（' + p.primaryLabel + '·' + p.archetype + (p.isCanon ? '·原著' : '') + '）：'
       + (anchor.length ? '原著性格〔' + anchor.join('/') + '〕；' : '')
       + '特质〔' + p.traits.slice(0, 10).join('/') + '〕；' + p.speech + '；' + p.behavior + '；雷区：' + p.taboo + '。';
+    /* v4.47.0：附加心理模型速写，逼大模型按角色心理机制本色行事（不含任何原文台词） */
+    if (p.psychology) {
+      s += ' 心理：本质〔' + p.psychology.essence + '〕；核心恐惧〔' + p.psychology.fear + '〕；'
+        + '行事机制〔' + p.psychology.mechanism + '〕；表里〔' + p.psychology.contrast + '〕；'
+        + '破防条件〔' + p.psychology.breaking + '〕；语调〔' + p.psychology.voice + '〕。'
+        + ' 请据此角色的心理机制推导其在未明情境下的反应，不要写成通用腔调。';
+    }
+    return s;
   }
   function stats() {
     return {
@@ -636,7 +712,8 @@
       indexedRoles: countIndex(),
       playerOverrides: Object.keys(PLAYER).length,
       cached: Object.keys(cache).length,
-      relAxes: REL_AXES.slice()
+      relAxes: REL_AXES.slice(),
+      psyched: (function () { var pm = PM(); return pm && pm.stats ? pm.stats().psyches : 0; })()
     };
   }
   function exportAll() { return { v: VERSION, cache: cache, player: PLAYER, canonKeys: Object.keys(CANON) }; }

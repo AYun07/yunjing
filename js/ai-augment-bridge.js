@@ -72,7 +72,8 @@
         var codex = global.PersonalityCodex;
         var persona = (codex && codex.brief) ? codex.brief(name, worldKeyOf()) : '';
         var system = '你是叙事润色师。把这条角色动向改写成一句凝练、有画面感的中文，不要解释，只输出一句话。'
-          + (persona ? '\n必须与角色性格一致，按其特征、说话方式与行为倾向来写：\n' + persona : '');
+          + (persona ? '\n必须与角色性格一致，按其特征、说话方式与行为倾向来写：\n' + persona : '')
+          + (persona ? '\n若动向未明说其反应，请依该角色的核心恐惧与行事机制推导其一贯反应；表里反差可通过动作/细节暗示，不要写成通用腔调。' : '');
         A.enhance('npc', '角色：' + name + '\n动向：' + base.deed, {
           system: system, maxTokens: 160, temperature: 0.8
         }).then(function (r) {

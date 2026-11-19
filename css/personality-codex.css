@@ -76,4 +76,30 @@
 .codex-player-add button{border:0;border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer}
 .codex-addface{background:#c9a86a;color:#1a1a1a;font-weight:600}
 .codex-reset{background:rgba(255,255,255,.08);color:#c9c2b0;border:1px solid rgba(255,255,255,.15)!important}
-@media (max-width:640px){.codex-grid{grid-template-columns:1fr}.codex-dict-grid{grid-template-columns:repeat(2,1fr)}.codex-selectors label{min-width:100%}.codex-selectors select,.codex-selectors input{min-width:100%}}
+/* ===== v4.47.0 心理模型区 ===== */
+.psy-block{margin-top:14px;border:1px solid rgba(140,170,220,.28);border-radius:12px;padding:14px;background:linear-gradient(135deg,rgba(90,120,180,.1),rgba(140,110,170,.06))}
+.psy-title{font-size:14px;font-weight:600;color:#d7e3f5;margin-bottom:12px;display:flex;align-items:baseline;gap:10px}
+.psy-title small{font-weight:400;font-size:11px;color:#8f98ab}
+.psy-seven{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.psy-field{border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:8px 10px;background:rgba(0,0,0,.16)}
+.psy-field i{display:block;font-size:11px;font-style:normal;color:#8fa8d0;margin-bottom:4px;letter-spacing:.5px}
+.psy-field p{margin:0;font-size:12px;line-height:1.6;color:#d4d8e2}
+.psy-field.psy-essence{grid-column:1/-1;border-color:rgba(140,200,160,.3)}
+.psy-field.psy-essence i{color:#8fd0a4}
+.psy-field.psy-fear{border-color:rgba(210,110,110,.3)}
+.psy-field.psy-fear i{color:#e09393}
+.psy-field.psy-mech{border-color:rgba(200,170,110,.3)}
+.psy-field.psy-mech i{color:#d9be80}
+.psy-field.psy-break{border-color:rgba(190,110,150,.3)}
+.psy-field.psy-break i{color:#d99ac0}
+.psy-spectrum{margin-top:12px;border-top:1px dashed rgba(140,170,220,.28);padding-top:10px}
+.psy-spectrum>i{font-size:12px;font-style:normal;color:#a9b6d0;display:flex;justify-content:space-between}
+.psy-spectrum>i span{color:#c9a86a}
+.psy-sp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.psy-sp{border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:6px 8px;background:rgba(0,0,0,.14);min-height:34px}
+.psy-sp b{font-size:11px;color:#9aa4bb;display:block}
+.psy-sp-text{display:block;font-size:10px;line-height:1.45;color:#8f93a0;margin-top:3px}
+.psy-sp.on{border-color:rgba(201,168,106,.55);background:rgba(201,168,106,.12)}
+.psy-sp.on b{color:#e8c880}
+.psy-sp.on .psy-sp-text{color:#d8cfae}
+@media (max-width:640px){.psy-seven{grid-template-columns:1fr}.psy-sp-grid{grid-template-columns:repeat(2,1fr)}}
