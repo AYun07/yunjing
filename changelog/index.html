@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.42.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.44.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,54 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.44.0 ==================== -->
+        <article class="log-entry" data-tags="新增 亲密档案 AI增强 大模型 成本" style="--entry-hue:#c98a9a;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.44.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">亲密关系档案 + 统一 AI 增强层 · 本地骨架叠加大模型血肉</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：新增 <code>js/intimacy-archive.js</code>（R18 亲密关系档案：六段关系阶段、亲密度棘轮、私密记忆分层、专属称呼、边界偏好、含蓄互动、只增不删库房）与 <code>js/ai-augment.js</code>（统一 AI 增强调度：复用主笔接口、采样策略、成本账本、失败降级）。<code>js/ai-augment-bridge.js</code> 把增强接到亲密互动/NPC演化/世界事件，表格与推演沿用既有大模型通道不重复调用。全部默认关闭、开启明示成本。 · <a href="https://github.com/AYun07/yunjing/compare/v4.43.0...v4.44.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <ul class="ver-list">
+                <li><b>亲密关系档案（默认关）</b>：💞 入口。关系阶段只升不降、私密记忆按重要度 40/12/5 留存、删除先进库房可恢复、露骨词护栏拦截、内容全程约束在文学化情感层面。</li>
+                <li><b>统一 AI 增强层</b>：✨ 入口。五项分项开关（亲密润色/NPC演化/世界事件/表格填写/推演规划）、默认低频采样（每2-4节点调一次）、真实调用与 token 按项记账、失败自动降级本地引擎。</li>
+                <li><b>省钱口径</b>：增强层复用主笔接口（内层已接全局并发闸门+记账），绝不重复 acquire；表格/推演本身已有大模型通道，只统一记账、不重复调用，避免翻倍烧钱。</li>
+                <li><b>验证</b>：新增 44+28+16 = 88 项断言全过，<code>npm test</code> 扩至 223 项全绿；真浏览器验证两个面板渲染、开关与记账，0 页面错误。</li>
+            </ul>
+            <p class="entry-note">版权说明：本版全部模块为云境项目独立实现——数据结构、字段命名、算法（djb2+xorshift）、状态机、文案与视觉均为原创，未复制/改写/翻译任何第三方项目的源码、标识符或提示词。借鉴的是不受著作权保护的通用游戏机制思想。</p>
+        </article>
+
+        <!-- ==================== v4.43.0 ==================== -->
+        <article class="log-entry" data-tags="新增 NPC 档案 机制" style="--entry-hue:#8f7fbf;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.43.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge">历史版本</span>
+            </div>
+            <h3 class="entry-title">NPC 编年史系统 · 角色档案生命周期机制全链路落地</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：用云境原生 JS 独立实现角色态度、生平经历、只增不删档案、离场自治、认知边界与驱动力节流六项机制，并完整接入游戏运行时——数据桥接、世界时钟联动、可查看面板、省 token 静滞闸门全部到位。只借鉴通用游戏设计思想，未使用任何第三方项目的源码、标识符或文案。 · <a href="https://github.com/AYun07/yunjing/compare/v4.42.0...v4.43.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>四轴态度</b>：信任 / 好感 / 敬重 / 戒备四维，正向轴带棘轮防关系倒退，戒备轴双向可变；全部 clamp 到 0-100。</li>
+                    <li><b>生平经历时间线</b>：结构化经历按角色重要度分层留存——羁绊角色留全生平（60 条）、普通角色 12 条、路人 5 条，只留最新。</li>
+                    <li><b>只增不删档案库</b>：任何"移除"先把完整快照存进库房，可随时取回，从根上防止角色连同感情线一起消失。</li>
+                    <li><b>离场确定性自治</b>：零 API 的相位机——契约者在任务/休整间轮转、土著留故土、随从恒在身侧；种子伪随机保证同输入同结果，成长按档次封顶。</li>
+                    <li><b>驱动力节流</b>：离场角色没有羁绊/任务/局势/社交理由时判定静滞，本轮不消耗 AI 演化额度；随从恒有驱动、冻结者恒静滞。</li>
+                    <li><b>认知边界</b>：公开事件人人可知，私密事件只有被点名的知情人才"有资格知道"。</li>
+                    <li><b>全链路接入</b>：<code>npc-bridge.js</code> 以低耦合方式（包装公开方法 + 监听 <code>yj:world-tick</code>）把引擎接到 <code>WorldRuntime.NPC</code>——登场即建档、态度变更经棘轮写回、删除前自动归档、世界每拍对离场角色跑静滞判定与自治；新增「角色编年史」面板可查看四轴、生平与档案统计。</li>
+                    <li><b>省 token</b>：离场角色没有羁绊/任务/局势/社交理由时判为静滞，本轮不消耗演化额度；随从恒有驱动、冻结者恒静滞。</li>
+                    <li><b>验证</b>：新增 <code>test/npc-chronicle-regression.mjs</code>（31 项）+ <code>test/npc-bridge-regression.mjs</code>（20 项）；<code>npm test</code> 扩至 135 项（34 冒烟 + 50 核心 + 31 引擎 + 20 桥接）全绿；真 Chromium 验证引擎挂载、桥接驱动、UI 面板渲染全部生效、0 页面错误；版本同源校验通过。</li>
+                </ul>
+                <p class="entry-note">版权说明：本系统实现的是不受著作权保护的通用游戏机制思想；字段命名、数据结构、算法、状态机、视觉与文案均为本项目独立编写，未复制、改写或翻译任何第三方项目的源码、标识符、提示词文案或数据定义。当前四轴作用于游戏内角色运行时；与主笔正文生成所用的角色变量打通，是后续可选项，不在本版范围。</p>
+            </div>
+        </article>
+
         <!-- ==================== v4.42.0 ==================== -->
         <article class="log-entry" data-tags="修复 演化 存档 测试 体验" style="--entry-hue:#6faf9f;">
             <div class="entry-head">
                 <span class="entry-ver">v4.42.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">遗留问题清零 · 长演化不再变死水、老浏览器也能读档、核心测试沉淀进仓库</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：把上一版盘点的四层遗留问题逐项处理——长跨度演化后世界不再变死水、重入回合不再丢失、中文约数能解析、老浏览器也能导入 gzip 存档；散落的临时验证脚本沉淀为仓库内正式回归用例；本地清掉 4.8G 打包产物（源码与远程不动）。 · <a href="https://github.com/AYun07/yunjing/compare/v4.41.0...v4.42.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -894,7 +936,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.42.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.44.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

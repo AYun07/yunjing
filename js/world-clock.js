@@ -283,6 +283,10 @@
       const v = vars();
       save();
       try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
+      /* 舆图同步收口：逐拍 syncFactions 跑在 SimCore/lifecycle 之前，最后一拍的势力兴衰
+         到批次末才定稿。收尾补一次同步（幂等，无变化不 render），让「演化全程舆图都开着」
+         时最后一拍也即时上图，并与主存档里的势力状态保持一致。 */
+      try { if (window.StoryAtlas && StoryAtlas.syncFactions && v) StoryAtlas.syncFactions(v); } catch (e) {}
       if (!quiet) toast(`⏱ 世界推进 ${step} 日至第${endDay}日：${lastEv}`, "info");
       /* 长跨度汇总一条入史（势力兴衰 / 众生增减可查） */
       if (step >= 30 && v) {
