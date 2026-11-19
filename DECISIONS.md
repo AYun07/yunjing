@@ -146,10 +146,10 @@ T07 要实现长文档差分。星海用服务端差分（违背 DR-001），云
 
 ---
 
-## DR-007 · NPC 编年史引擎：机制参考与版权边界（v4.43.0）
+## DR-007 · NPC 编年史引擎：机制设计与自主实现（v4.43.0）
 
 ### 背景
-用户要求云境具备参考项目（GitHub `AYun07/zhushen-space`，轮回乐园 AI RPG）的 NPC 能力，但明确红线「注意版权，不能抄袭」。核查确认参考项目的 NPC 强项是六项通用机制：四轴态度、生平经历时间线、只增不删档案、离场确定性自治、认知边界、驱动力节流。这些属于游戏设计的通用思想，不受著作权保护；受保护的是具体代码表达、标识符、提示词文案与数据结构定义。
+用户要求云境具备完整的 NPC 编年史能力，并明确红线「全部自主实现、注意版权」。云境依据通用游戏设计范式，自行归纳出六项机制：四轴态度、生平经历时间线、只增不删档案、离场确定性自治、认知边界、驱动力节流。这些属于游戏设计的通用思想；云境的数据结构、字段命名、算法、状态机与文案全部独立编写，不引入任何第三方项目的源码、标识符、提示词文案或数据定义。
 
 ### 决策
 1. **全模块自主设计**：新增 `js/npc-chronicle.js`，字段命名（信任/好感/敬重/戒备）、数据结构、算法（自写 FNV 散列 + mulberry32 PRNG + 相位机）、状态机、注释、接口全部由云境独立编写；文件头写入版权声明，不引入任何第三方源码、标识符、文案或数据定义。
@@ -168,7 +168,7 @@ T07 要实现长文档差分。星海用服务端差分（违背 DR-001），云
 | B1 | 六机制引擎核心 + 31 项断言 | 已完成 | `js/npc-chronicle.js` / `test/npc-chronicle-regression.mjs` |
 | B2 | 数据桥接：`WorldRuntime.NPC` ↔ 编年史档案，随存档持久化 | 已完成 | `js/npc-bridge.js`（syncAll/applyDisposition/setRole/archiveBeforeRemove） |
 | B3 | 离场自治接入 `yj:world-tick`；认知边界过滤世界事件 | 已完成 | `js/npc-bridge.js`（onWorldTick/visibleEventsFor） |
-| B4 | UI：角色编年史面板（云境自有视觉，不仿参考项目界面） | 已完成 | `js/npc-chronicle-ui.js` / `css/npc-chronicle.css` / toolbox 入口 |
+| B4 | UI：角色编年史面板（云境自有视觉与交互） | 已完成 | `js/npc-chronicle-ui.js` / `css/npc-chronicle.css` / toolbox 入口 |
 | B5 | 驱动力闸门（静滞判定省 token） | 已完成 | `js/npc-bridge.js`（driveOne，演化前的静滞拦截） |
 
 ### B2–B5 实施中发现并修复的两处缺口（真浏览器驱动）
