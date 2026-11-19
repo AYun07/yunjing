@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.47.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.48.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,24 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.48.0 ==================== -->
+        <article class="log-entry" data-tags="新增 随行档案 化形 亲密档案 宠物性格 编年史" style="--entry-hue:#7f9fd0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.48.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">随行存在专属档案 · 灵宠也能化形、有性格、有编年史与亲密档案</h3>
+            <p class="entry-lead">四类随行存在（宠物/灵兽/妖兽/伙伴）从"数值挂件"升级为有档案、有性格、有命运的角色：接入 NPC 编年史六项机制、性格世界书与心理模型、亲密档案，并新增化形形态。亲密默认关闭、须玩家显式开启，全程零额外大模型调用。</p>
+            <p class="ver-diff"><b>相比上一版的变化</b>：新增 <code>js/beast-profile-bridge.js</code> 专属档案桥接层，把随行存在接进编年史（四轴态度/生平经历/只增不删/离场自治/认知边界/驱动力节流，档案 <code>beast:</code> 前缀与普通 NPC 名册隔离）、性格世界书 + 心理模型（每只独立原型、核心恐惧、行为演化）、亲密档案（仅"可化形 + 玩家显式开启 + 系统开启"三条件同时满足者，表达尺度沿用玩家三档设置）。<code>js/beast-system.js</code> 增化形/还原、亲密资格开关、专属档案面板与 prompt 注入；放归自动归档留快照。灵兽/妖兽达通达位阶可化形，人形伙伴本相即人形，寻常宠物仅灵异血统者可化形。所有新字段有默认值、老存档兼容，337+ 全量回归通过。 · <a href="https://github.com/AYun07/yunjing/compare/v4.47.0...v4.48.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
         <!-- ==================== v4.47.0 ==================== -->
         <article class="log-entry" data-tags="新增 心理模型 关系光谱 核心恐惧 破防 表里反差" style="--entry-hue:#7f9fd0;">
             <div class="entry-head">
                 <span class="entry-ver">v4.47.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
+                
             </div>
             <h3 class="entry-title">性格心理模型 · 从"标签"深化到"心理机制"，按关系阶段与核心恐惧行事</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>（云境自主设计、全模块原创实现）：新增 <code>js/psyche-model.js</code>，为全部 72 种性格各建<b>七项心理档案</b>（本质定性／核心驱动／核心恐惧／特有机制／表里反差／破防条件／语调锚点）；新增 <b>10 段关系光谱</b>——同一性格对宿敌、陌生人、熟悉、伴侣的表现各不相同，直接复用 v4.45.0 的动态关系阶段；新增<b>渐变曲线</b>（初/中/后期）与<b>触发分级</b>（轻度/中度/致命），行为引擎 <code>behaviorOf</code> 据此输出"表象行为＋真实倾向＋破防标记"，致命事件触发破防并暴露核心恐惧；AI 速写 <code>brief()</code> 与 NPC 演化提示词注入心理机制，逼大模型在规则未覆盖的情境下按角色核心恐惧推导其一贯反应，而非通用腔调。性格档案 UI 增"🧠 心理模型"区与关系光谱（当前阶段高亮）。 · <a href="https://github.com/AYun07/yunjing/compare/v4.46.0...v4.47.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -975,7 +987,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.47.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.48.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
