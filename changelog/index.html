@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.38.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.39.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,30 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.39.0 ==================== -->
+        <article class="log-entry" data-tags="界面 世界 修复" style="--entry-hue:#7f9fbf;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.39.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">状态栏文字全显 · 世界自转改为回合驱动</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：按玩家反馈修两处——状态栏天赋/时间从此前"只有一条缝"改为完整显示；世界不再在你未行动时自行空转，改为随你的回合推进，跳时间则一次跨到对应天数。 · <a href="https://github.com/AYun07/yunjing/compare/v4.38.0...v4.39.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>状态栏文字全显</b>：天赋行、时间行此前误用 6px 高的进度条容器装 11px 文本，被 overflow 裁成一条缝；改为自适应高度的文本行，天赋「名称·档位·暴露」与时间「纪元·累计·跨度·成长」完整可读，移动端自动换行；六维数值条不受影响。</li>
+                    <li><b>世界随回合自转</b>：世界时钟默认改为「回合驱动」——你这一回合未行动，世界日就不再推进；每完成一轮叙事世界前进一天，左上角药丸显示「🌍随回合 第N日」。</li>
+                    <li><b>跳时间跨到对应天数</b>：正文/变量里的跨度（如"三月后""闭关三年"）由属性引擎权威解析，世界日一次推进到对应天数（三月≈90 日、三年≈1095 日），并在历史日志标注「跨 N 日」可查；旧墙钟配置自动迁移为回合驱动，不再偷偷自转。</li>
+                    <li><b>可冻结可恢复</b>：点击药丸可冻结世界（你不动剧情世界完全静止）或恢复回合驱动；墙钟自转保留为可选模式，仅主动启用才开。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.38.0 ==================== -->
         <article class="log-entry" data-tags="体验 修复 正文 世界 移动端" style="--entry-hue:#8f7fbf;">
             <div class="entry-head">
                 <span class="entry-ver">v4.38.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">挑剔试玩反馈全修 · 正文与世界真正活起来</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：以资深游戏开发者视角真玩一遍后，把反馈报告里的体验问题逐条修复——正文钩子标记不再漏进叙事、世界随剧情推进、章节不再"未题"、移动端触控与小字达标、浮层可收起。 · <a href="https://github.com/AYun07/yunjing/compare/v4.37.0...v4.38.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -817,7 +835,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.38.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.39.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

@@ -672,6 +672,10 @@
     buildLiveBlock: buildLiveBlock,
     axisOf: axisOf,
     stats: stats,
+    /* v4.39.0 世界时钟回合驱动：只读暴露本轮解析出的时间跨度（天），
+       供 world-clock 在 story:turn-saved 时决定推进几个世界日（跳时间→对应天数）。
+       TURN.span 每轮由 beginTurn 重置，无跨轮残留；此处仅返回快照，不改内部预算。 */
+    currentSpanDays: function () { return (TURN.span && Number(TURN.span.days) > 0) ? Number(TURN.span.days) : 0; },
     TIER_NAMES: TIER_NAMES,
     /* v3.65.0 实时事件化 */
     applyEvent: applyEvent,
