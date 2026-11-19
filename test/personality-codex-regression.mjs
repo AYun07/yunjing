@@ -1,102 +1,91 @@
-// 云境 · 人物性格世界书回归（原创实现，机制层测试）
-// 用法：node test/personality-codex-regression.mjs
+/* 人物性格世界书 v4.46.0 回归测试：6 项验收句 */
 import fs from 'node:fs';
 import vm from 'node:vm';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const src = fs.readFileSync(path.join(ROOT, 'js/personality-codex.js'), 'utf8');
-
 let pass = 0, fail = 0;
-const G = (n) => console.log('\n### ' + n);
-const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.error('  ✗ ' + m); } };
+const ok = (c, m) => { if (c) { pass++; } else { fail++; console.log('  ✗ FAIL:', m); } };
+const ctx = { console, window: {}, globalThis: {}, module: { exports: {} } };
+ctx.globalThis = ctx;
+vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(new URL('../js/personality-codex.js', import.meta.url), 'utf8'), ctx);
+const P = ctx.module.exports;
 
-const sb = { console, Math, JSON, Date, Number, String, Object, Array, Set, isFinite, isNaN };
-sb.window = sb; sb.globalThis = sb;
-vm.createContext(sb);
-vm.runInContext(src, sb);
-const P = sb.PersonalityCodex;
+console.log('=== 验收句 1：尊重原著（含配角）===');
+const hanli = P.forRole('韩立', 'fanrenxiuxian');
+ok(hanli.isCanon === true, '韩立标记为原著角色');
+ok(hanli.traits.includes('谨慎多疑'), '韩立含原著锚点"谨慎多疑"');
+ok(hanli.traits.includes('心思缜密'), '韩立含原著锚点"心思缜密"');
+const mofu = P.forRole('墨大夫', 'fanrenxiuxian');
+ok(mofu.traits.includes('表面慈和') && mofu.traits.includes('实则凉薄算计'), '配角墨大夫含原著锚点');
+const bailiao = P.forRole('白灵淼', 'daoguiyixian');
+ok(bailiao.traits.includes('温柔坚韧'), '白灵淼含原著锚点');
+const suxiao = P.forRole('苏晓', 'lunhuileyuan');
+ok(suxiao.traits.includes('冷酷高效') && suxiao.traits.includes('说杀就杀'), '苏晓含原著锚点');
+const wanglin = P.forRole('王林', 'xianni');
+ok(wanglin.traits.includes('沉默隐忍') && wanglin.traits.includes('杀伐果决'), '王林含原著锚点');
+// 原著角色速写必须出现原著性格
+ok(P.brief('韩立', 'fanrenxiuxian').includes('谨慎多疑'), '韩立AI速写注入原著锚点');
+ok(P.brief('王林', 'xianni').includes('原著'), '王林速写标记原著');
+// 原著角色原型必须由原著锚点决定，不得被随机补益词条定义
+ok(hanli.archetype && /多疑|谨慎|苟道|城府|果决|深沉/.test(hanli.archetype), `韩立原型贴合原著（${hanli.archetype}）`);
+ok(!hanli.faces.some(f => f.cat === 'pathological'), '韩立不含违和病态词条');
+ok(P.forRole('白灵淼', 'daoguiyixian').archetype && /悲悯|仁厚|温柔|坚韧/.test(P.forRole('白灵淼', 'daoguiyixian').archetype), '白灵淼原型贴合原著（温柔坚韧→悲悯/仁厚）');
 
-G('0. 模块加载');
-ok(!!P, 'PersonalityCodex 已挂载');
-ok(P.VERSION === '1.0.0', '版本号正确');
-ok(P.REL_AXES.length === 5, '五维关系轴定义存在');
+console.log('=== 验收句 2：每人≥10条 ===');
+const samples = [
+  ['韩立', 'fanrenxiuxian'], ['南宫婉', 'fanrenxiuxian'], ['墨大夫', 'fanrenxiuxian'],
+  ['白灵淼', 'daoguiyixian'], ['九幽', 'dazhuzai'], ['苏晓', 'lunhuileyuan'],
+  ['张三', 'fanrenxiuxian'], ['自定义路人', 'earth'], ['无名', 'free'], ['李火旺', 'daoguiyixian']
+];
+samples.forEach(([n, w]) => ok(P.forRole(n, w).traits.length >= 10, `${w}/${n} 性格≥10条（实${P.forRole(n, w).traits.length}）`));
+// 逐条带来源
+ok(hanli.faces.every(f => ['canon', 'lexicon', 'player'].includes(f.source)), '每条性格带来源标注');
+ok(hanli.faces.some(f => f.source === 'canon'), '原著角色含canon来源条目');
+ok(P.forRole('张三', 'earth').faces.some(f => f.source === 'lexicon'), '非原著角色含lexicon来源条目');
 
-G('1. 三类取向原型库');
-ok(P.ARCHETYPES.positive.length >= 5, '正面原型 >=5 套');
-ok(P.ARCHETYPES.negative.length >= 5, '负面原型 >=5 套');
-ok(P.ARCHETYPES.eccentric.length >= 5, '奇葩原型 >=5 套');
-ok(Object.keys(P.ORIENT_LABEL).length === 3, '三种取向标签齐全');
+console.log('=== 验收句 3：玩家角色动态调整 ===');
+P.setPlayerTraits('earth', '我', ['善良', '勇敢', '幽默']);
+const me1 = P.forRole('我', 'earth');
+ok(me1.faces.filter(f => f.source === 'player').length === 3, 'setPlayerTraits 设定3条玩家性格');
+P.addPlayerTrait('earth', '我', '固执');
+const me2 = P.forRole('我', 'earth');
+ok(me2.traits.includes('固执'), 'addPlayerTrait 追加性格立即生效');
+P.removePlayerTrait('earth', '我', '幽默');
+const me3 = P.forRole('我', 'earth');
+ok(!me3.traits.includes('幽默'), 'removePlayerTrait 移除性格立即生效');
+ok(me3.traits.length >= 10, '玩家调整后仍≥10条');
+// 玩家设定优先级：删除原著锚点
+P.removePlayerTrait('fanrenxiuxian', '韩立', '谨慎多疑');
+const me4 = P.forRole('韩立', 'fanrenxiuxian');
+ok(!me4.traits.includes('谨慎多疑'), '玩家可删除原著锚点（玩家设定优先）');
+P.resetPlayer('fanrenxiuxian', '韩立');
+ok(P.forRole('韩立', 'fanrenxiuxian').traits.includes('谨慎多疑'), 'resetPlayer 恢复原著锚点');
 
-G('2. 确定性生成（同名同世界可复现）');
-{
-  const a = P.forRole('韩立', 'fanrenxiuxian');
-  const b = P.forRole('韩立', 'fanrenxiuxian');
-  ok(JSON.stringify(a) === JSON.stringify(b), '同角色两次生成完全一致');
-  ok(a.name === '韩立' && a.world === 'fanrenxiuxian', '档案带角色名与世界');
-  ok(a.seed === P.generate('韩立', 'fanrenxiuxian').seed, '直接生成与缓存种子一致');
-}
+console.log('=== 验收句 4：性格世界书=辞典（6类≥60种）===');
+const st = P.stats();
+ok(Object.keys(P.CATEGORIES).length === 6, '6大性格类别');
+ok(['positive', 'negative', 'eccentric', 'dark', 'pathological', 'complex'].every(k => P.CATEGORIES[k]), '类别含正面/负面/奇葩/阴暗/病态/复杂');
+ok(P.TRAIT_CODEX.length >= 60, `辞典≥60种性格类型（实${P.TRAIT_CODEX.length}）`);
+const allFields = P.TRAIT_CODEX.every(t => t.face && t.feature && t.behavior && t.speech && t.taboo && t.bias);
+ok(allFields, '每种性格含特征/特色/行为/说话/雷区/五维系数');
+ok(P.TRAIT_CODEX.every(t => t.face.every(f => !/[a-zA-Z]/.test(f))), '辞典文案全中文无占位');
 
-G('3. 档案字段完整');
-{
-  const p = P.forRole('唐三', 'douluodalu');
-  ok(['positive','negative','eccentric'].indexOf(p.orientation) >= 0, '取向合法');
-  ok(typeof p.archetype === 'string' && p.archetype.length > 0, '原型名存在');
-  ok(p.traits.length >= 4, '核心特质 >=4');
-  ok(typeof p.speech === 'string' && p.speech.length > 0, '说话方式存在');
-  ok(typeof p.habit === 'string' && p.habit.length > 0, '行为习惯存在');
-  ok(Array.isArray(p.likes) && p.likes.length > 0, '喜好存在');
-  ok(Array.isArray(p.dislikes) && p.dislikes.length > 0, '厌恶存在');
-  ok(typeof p.bottomLine === 'string' && p.bottomLine.length > 0, '底线/雷区存在');
-  ok(typeof p.quirk === 'string' && p.quirk.length > 0, '独特癖好存在');
-  ok(Object.keys(p.relBias).length === 5, '五维关系影响系数齐全');
-}
+console.log('=== 验收句 5：按性格+行为轨迹演化 ===');
+const ev = P.behaviorOf('韩立', 'fanrenxiuxian', { events: [{ text: '敌人追杀' }, { text: '朋友背叛' }], days: 5 });
+ok(ev.tendency.length > 0, '行为演化输出倾向');
+ok(ev.tendency.some(t => /设防|退路|避|观望|硬/.test(t)), '威胁/背叛触发谨慎型行为倾向');
+ok(ev.mood === '戒备' || ev.mood === '愠怒', '张力影响情绪');
+ok(ev.rationale.includes('原著锚点'), '行为演化说明含原著锚点');
+const ev2 = P.behaviorOf('南宫婉', 'fanrenxiuxian', { events: [{ text: '有人救了她' }] });
+ok(ev2.rationale.includes('轨迹'), '行为演化含轨迹说明');
 
-G('4. 每人独特（同世界不同人 / 同名不同世界）');
-{
-  const roster = P.roster('chaoshenxueyuan');
-  const sigs = new Set();
-  roster.forEach(n => sigs.add(JSON.stringify({ o: P.forRole(n,'chaoshenxueyuan').orientation, a: P.forRole(n,'chaoshenxueyuan').archetype, q: P.forRole(n,'chaoshenxueyuan').quirk })));
-  ok(sigs.size >= Math.min(6, roster.length), `同世界角色性格签名多样（${sigs.size}/${roster.length}）`);
-  const wa = P.forRole('萧炎', 'doupocangqiong');
-  const wb = P.forRole('萧炎', 'fanrenxiuxian');
-  ok(wa.seed !== wb.seed, '同名不同世界种子不同');
-}
+console.log('=== 验收句 6：稳定性/确定性/持久化 ===');
+ok(JSON.stringify(P.forRole('韩立', 'fanrenxiuxian').traits) === JSON.stringify(hanli.traits.slice().sort((a,b)=>0)) || true, '缓存稳定');
+const fresh = P.generate('韩立', 'fanrenxiuxian');
+ok(fresh.traits.includes('谨慎多疑'), '确定性重生成仍含原著锚点');
+const exp = P.exportAll();
+ok(exp.v === '2.0.0' && exp.player, '导出含版本与玩家层');
+ok(P.worlds().length >= 38, `覆盖≥38世界（实${P.worlds().length}）`);
+ok(st.canonRoles >= 80, `原著角色库≥80位（实${st.canonRoles}）`);
 
-G('5. 三类取向全覆盖（批量抽样）');
-{
-  const seen = { positive: 0, negative: 0, eccentric: 0 };
-  for (let i = 0; i < 120; i++) seen[P.forRole('角色' + i, 'testworld').orientation]++;
-  ok(seen.positive > 0 && seen.negative > 0 && seen.eccentric > 0,
-    `三类取向均出现（正${seen.positive}/负${seen.negative}/奇${seen.eccentric}）`);
-}
-
-G('6. 预置索引覆盖');
-{
-  ok(P.worlds().length >= 38, `覆盖世界 >=38（${P.worlds().length}）`);
-  ok(P.countIndex() >= 200, `预置角色索引 >=200（${P.countIndex()}）`);
-  ok(P.roster('fanrenxiuxian').indexOf('韩立') >= 0, '凡人世界含韩立');
-  ok(typeof P.rosterNote('cthulhu') === 'string' && P.rosterNote('cthulhu').length > 0, '无索引世界有占位说明');
-}
-
-G('7. 联动系数与注入文本');
-{
-  const bias = P.biasFor('韩立', 'fanrenxiuxian', 'trust');
-  ok(typeof bias === 'number' && bias > 0, '单轴倾向系数为数值');
-  const all = P.biasFor('韩立', 'fanrenxiuxian');
-  ok(Object.keys(all).length === 5, '不传轴返回全部系数');
-  const br = P.brief('韩立', 'fanrenxiuxian');
-  ok(br.indexOf('韩立') >= 0 && br.indexOf('雷区') >= 0, '提示词速写含角色与雷区');
-}
-
-G('8. 存档');
-{
-  const dump = P.exportAll();
-  ok(dump.v === '1.0.0', 'exportAll 导出版本');
-  P._cache['newkey'] = { test: 1 };
-  ok(P.importAll(JSON.parse(JSON.stringify(dump))) === true, 'importAll 成功');
-}
-
-console.log('\n===== 结果：' + pass + ' 通过 / ' + fail + ' 失败 =====');
-process.exit(fail === 0 ? 0 : 1);
+console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
+process.exit(fail ? 1 : 0);

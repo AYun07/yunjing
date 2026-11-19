@@ -306,7 +306,7 @@ const DynamicWorld = {
     const date = [v.date, v.日期, v.year].map((x) => String(x || "").trim()).find((x) => x && x !== "未上报") || "";
     return { era, date };
   },
-  /** 构建发给额外API的消息序列（模仿觅长生 buildOptimizedMessages 的分层策略） */
+  /** 构建发给额外API的消息序列（模仿某文字游戏框架 buildOptimizedMessages 的分层策略） */
   buildMessages(s) {
     const fw = window.storyFramework;
     const v = fw.storyState.variables;
