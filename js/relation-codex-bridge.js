@@ -100,9 +100,10 @@
           personalityBias: bias
         });
         stats.relationsEvolved++;
-        /* 新增：按「性格 + 行为轨迹」演化角色行为倾向并留痕 */
+        /* 按「性格心理模型 + 关系阶段 + 行为轨迹」演化角色行为倾向并留痕 */
         if (C && C.behaviorOf) {
-          var bh = C.behaviorOf(rec.name, wk, { events: rawEvents, days: days, tension: ten });
+          var stageLabel = (A.get && A.get(rec.name) && A.get(rec.name).stageLabel) || '陌生';
+          var bh = C.behaviorOf(rec.name, wk, { events: rawEvents, days: days, tension: ten, stage: stageLabel });
           behaviorLedger.push(Object.assign({ tick: stats.ticks, world: wk }, bh));
           stats.behaviors++;
           if (behaviorLedger.length > 200) behaviorLedger = behaviorLedger.slice(-200);
@@ -114,7 +115,8 @@
       (C.roster(wk) || []).forEach(function (nm) {
         if (roster.some(function (r) { return r.name === nm; })) return;
         try {
-          var bh2 = C.behaviorOf(nm, wk, { events: rawEvents, days: days, tension: ten });
+          var stage2 = (A.get && A.get(nm) && A.get(nm).stageLabel) || '陌生';
+          var bh2 = C.behaviorOf(nm, wk, { events: rawEvents, days: days, tension: ten, stage: stage2 });
           behaviorLedger.push(Object.assign({ tick: stats.ticks, world: wk }, bh2));
           stats.behaviors++;
         } catch (e) {}

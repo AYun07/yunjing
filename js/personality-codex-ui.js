@@ -45,6 +45,46 @@
 
   function catClass(o) { return 'cat-' + String(o || 'complex'); }
   function srcLabel(s) { return s === 'canon' ? '原著' : (s === 'player' ? '玩家' : '辞典'); }
+  function currentStage(name) {
+    try {
+      var ia = G.IntimacyArchive;
+      var r = ia && ia.get && ia.get(name);
+      if (r && r.stageLabel) return r.stageLabel;
+    } catch (e) {}
+    return '陌生';
+  }
+
+  /* 心理模型区：本质/驱动/核心恐惧/特有机制/表里反差/破防/语调 + 10阶段关系光谱 */
+  function psychBlock(p) {
+    var psy = p.psychology;
+    if (!psy) return '';
+    var field = function (label, key, cls) {
+      return '<div class="psy-field ' + (cls || '') + '"><i>' + label + '</i><p>' + esc(psy[key] || '—') + '</p></div>';
+    };
+    var seven = '<div class="psy-seven">'
+      + field('本质定性', 'essence', 'psy-essence')
+      + field('核心驱动', 'drive')
+      + field('核心恐惧', 'fear', 'psy-fear')
+      + field('特有机制', 'mechanism', 'psy-mech')
+      + field('表里反差', 'contrast')
+      + field('破防条件', 'breaking', 'psy-break')
+      + field('语调锚点', 'voice')
+      + '</div>';
+    var PM = G.PsycheModel;
+    var stages = (PM && PM.STAGES) || [];
+    var cur = currentStage(p.name);
+    var spect = psy.spectrum || {};
+    var spectRow = stages.map(function (s) {
+      var on = s === cur;
+      var txt = spect[s] ? '<span class="psy-sp-text">' + esc(spect[s]) + '</span>' : '';
+      return '<div class="psy-sp' + (on ? ' on' : '') + '"><b>' + esc(s) + '</b>' + txt + '</div>';
+    }).join('');
+    return '<div class="psy-block">'
+      + '<div class="psy-title">🧠 心理模型 <small>按心理机制行事 · 关系光谱随阶段变化</small></div>'
+      + seven
+      + '<div class="psy-spectrum"><i>关系光谱 <span>当前阶段：' + esc(cur) + '</span></i><div class="psy-sp-grid">' + spectRow + '</div></div>'
+      + '</div>';
+  }
 
   function renderRole(api, body) {
     var worlds = api.worlds();
@@ -98,6 +138,7 @@
         + '<div class="codex-cell"><i>行为倾向</i><p>' + esc(p.behavior) + '</p></div>'
         + '<div class="codex-cell codex-line"><i>底线 / 雷区</i><p>' + esc(p.taboo) + '</p></div>'
         + '</div>'
+        + psychBlock(p)
         + '<div class="codex-bias"><i>对关系演化的影响</i><div class="codex-axes">' + biasRows + '</div></div>'
         + '<div class="codex-brief"><i>AI 提示速写（注入原著性格）</i><p>' + esc(api.brief(p.name, p.world)) + '</p></div>'
         + '</div>';
