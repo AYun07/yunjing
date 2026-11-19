@@ -211,9 +211,9 @@ const StoryStatusRenderer = {
       const tTier = t.tier || "待定档";
       const tExp = t.exposure === "exposed" ? "已暴露" : "隐藏中";
       const tCls = t.exposure === "exposed" ? "🔥" : "🙈";
-      talentHTML = `<div class="stat-row" title="天赋档位与暴露状态（隐藏→已暴露单向，暴露后社会反响持续发酵）">
+      talentHTML = `<div class="stat-row stat-row-text" title="天赋档位与暴露状态（隐藏→已暴露单向，暴露后社会反响持续发酵）">
                 <span class="stat-label">🎭 天赋</span>
-                <div class="stat-bar" style="display:flex;align-items:center"><span style="font-size:11px">${this.esc(String(t.name || "未定"))} · ${this.esc(tTier)} · ${tCls}${tExp}</span></div>
+                <span class="stat-inline-val">${this.esc(String(t.name || "未定"))} · ${this.esc(tTier)} · ${tCls}${tExp}</span>
             </div>`;
     }
     /* v3.55.27 时间账本行：世界时间推进 / 期间状态 / 上次跨越结算的成长 */
@@ -227,9 +227,9 @@ const StoryStatusRenderer = {
       parts.push("累计 " + dTxt(tv.days || 0));
       if (tv.span) parts.push("上次跨越 " + (tv.spanText || dTxt(tv.span)) + "·" + (tv.activity || "寻常度日"));
       if (tv.lastGrowthTotal > 0) parts.push("成长 +" + tv.lastGrowthTotal);
-      timeHTML = `<div class="stat-row" title="世界时间账本：时间跨越时属性按公式结算成长（引擎侧真实落表）">
+      timeHTML = `<div class="stat-row stat-row-text" title="世界时间账本：时间跨越时属性按公式结算成长（引擎侧真实落表）">
                 <span class="stat-label">⏳ 时间</span>
-                <div class="stat-bar" style="display:flex;align-items:center"><span style="font-size:11px">${this.esc(parts.join(" · "))}</span></div>
+                <span class="stat-inline-val">${this.esc(parts.join(" · "))}</span>
             </div>`;
     }
     if (!keys.length) {

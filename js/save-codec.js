@@ -20,6 +20,107 @@
   /* ==================== gzip 压缩 / 解压 ==================== */
   function hasGzip() { return typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined'; }
 
+  /* v4.42.0 纯 JS gzip 解压兜底：老浏览器（无 DecompressionStream）也能导入 .json.gz 存档。
+     实现完整 DEFLATE（stored/fixed/dynamic 三种块），无外部依赖；仅在原生不可用时走此路径。
+     正确性由 test/gzip-fallback.mjs 用 Node zlib 生成的样本对比验证。 */
+  function inflateGzip(u8) {
+    var p = 0;
+    if (u8.length < 18 || u8[p] !== 0x1f || u8[p + 1] !== 0x8b) throw new Error('not gzip');
+    var flg = u8[p + 3]; p = 10;
+    if (flg & 4) { var xlen = u8[p] | (u8[p + 1] << 8); p += 2 + xlen; }       /* FEXTRA */
+    if (flg & 8) { while (p < u8.length && u8[p]) p++; p++; }                  /* FNAME */
+    if (flg & 16) { while (p < u8.length && u8[p]) p++; p++; }                 /* FCOMMENT */
+    if (flg & 2) { p += 2; }                                                   /* FHCRC */
+    var bitpos = p * 8;
+    function read(n) {
+      var v = 0;
+      for (var i = 0; i < n; i++) { v |= ((u8[bitpos >> 3] >> (bitpos & 7)) & 1) << i; bitpos++; }
+      return v;
+    }
+    function align() { bitpos = (bitpos + 7) & ~7; }
+    function buildHuff(lens) {
+      var maxb = 0, i;
+      for (i = 0; i < lens.length; i++) if (lens[i] > maxb) maxb = lens[i];
+      if (!maxb) return { map: null, max: 0 };
+      var counts = new Array(maxb + 1).fill(0);
+      for (i = 0; i < lens.length; i++) if (lens[i]) counts[lens[i]]++;
+      var first = new Array(maxb + 1).fill(0), code = 0;
+      for (var len = 1; len <= maxb; len++) { code = (code + counts[len - 1]) << 1; first[len] = code; }
+      var map = Object.create(null);
+      for (var sym = 0; sym < lens.length; sym++) {
+        var l = lens[sym]; if (!l) continue;
+        var c = first[l]++;
+        var rev = 0;
+        for (var j = 0; j < l; j++) { rev = (rev << 1) | (c & 1); c >>>= 1; }
+        map[(l << 16) | rev] = sym;
+      }
+      return { map: map, max: maxb };
+    }
+    function decode(h) {
+      var acc = 0;
+      for (var len = 1; len <= h.max; len++) {
+        acc |= read(1) << (len - 1);
+        var s = h.map[(len << 16) | acc];
+        if (s !== undefined) return s;
+      }
+      throw new Error('invalid huffman code');
+    }
+    var LBASE = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+    var LEXT  = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+    var DBASE = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+    var DEXT  = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+    var CLORD = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+    var out = [];
+    while (true) {
+      var fin = read(1), type = read(2);
+      if (type === 0) {
+        align();
+        var bp = bitpos >> 3;
+        var len = u8[bp] | (u8[bp + 1] << 8);
+        bp += 4;
+        for (var i = 0; i < len; i++) out.push(u8[bp + i]);
+        bitpos = (bp + len) * 8;
+      } else if (type === 1 || type === 2) {
+        var lit, dist;
+        if (type === 1) {
+          var ll = new Array(288).fill(0), i;
+          for (i = 0; i <= 143; i++) ll[i] = 8;
+          for (i = 144; i <= 255; i++) ll[i] = 9;
+          for (i = 256; i <= 279; i++) ll[i] = 7;
+          for (i = 280; i <= 287; i++) ll[i] = 8;
+          lit = buildHuff(ll); dist = buildHuff(new Array(30).fill(5));
+        } else {
+          var hlit = read(5) + 257, hdist = read(5) + 1, hclen = read(4) + 4;
+          var cl = new Array(19).fill(0);
+          for (var i = 0; i < hclen; i++) cl[CLORD[i]] = read(3);
+          var clh = buildHuff(cl), lens = [];
+          while (lens.length < hlit + hdist) {
+            var s = decode(clh), r, prev;
+            if (s <= 15) lens.push(s);
+            else if (s === 16) { r = read(2) + 3; prev = lens[lens.length - 1]; while (r--) lens.push(prev); }
+            else if (s === 17) { r = read(3) + 3; while (r--) lens.push(0); }
+            else if (s === 18) { r = read(7) + 11; while (r--) lens.push(0); }
+          }
+          lit = buildHuff(lens.slice(0, hlit)); dist = buildHuff(lens.slice(hlit, hlit + hdist));
+        }
+        while (true) {
+          var sym = decode(lit);
+          if (sym === 256) break;
+          if (sym < 256) out.push(sym);
+          else {
+            var li = sym - 257;
+            var length = LBASE[li] + read(LEXT[li]);
+            var ds = decode(dist);
+            var distance = DBASE[ds] + read(DEXT[ds]);
+            for (var k = 0; k < length; k++) out.push(out[out.length - distance]);
+          }
+        }
+      } else throw new Error('reserved deflate block');
+      if (fin) break;
+    }
+    return new Uint8Array(out);
+  }
+
   /** 把字符串压成 gzip Uint8Array；不支持时返回 null（调用方回退明文） */
   async function gzip(str) {
     if (!hasGzip()) return null;
@@ -36,7 +137,11 @@
     var u8 = new Uint8Array(buf);
     /* gzip 魔数 1f 8b */
     if (u8.length > 2 && u8[0] === 0x1f && u8[1] === 0x8b) {
-      if (!hasGzip()) throw new Error('当前浏览器不支持解压 gzip 存档，请换 Chrome/Edge 新版');
+      if (!hasGzip()) {
+        /* v4.42.0：原生不可用走纯 JS 兜底，老浏览器也能导入 gzip 存档 */
+        try { return new TextDecoder().decode(inflateGzip(u8)); }
+        catch (e) { log('JS gzip 解压失败', e); throw new Error('gzip 存档解压失败，文件可能已损坏'); }
+      }
       var ds = new DecompressionStream('gzip');
       var stream = new Blob([u8]).stream().pipeThrough(ds);
       return await new Response(stream).text();

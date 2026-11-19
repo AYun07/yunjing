@@ -132,10 +132,21 @@
     var lastErr = null;
     for (var attempt = 0; attempt <= max; attempt++) {
       var resp = null;
+      /* v4.41.0 全局动态并发闸门：跨接口限制「同时在途」的上游请求数（玩家拍板要控制并发省钱）。
+         Throttle 管「同接口节奏」，AIGovernor 管「跨接口并发数」，两者不同维度、叠加生效。
+         闸门只排队不拒绝——请求最终都会发出，不会因并发而丢失，更不设费用/次数硬熔断。 */
       try {
         // v3.47.16 前置节流：先排队再发，尽量避免撞上限流（被动重试只是兜底）
         await Throttle.acquire(opts.throttleKey || label);
-        resp = await doFetch();
+        /* 全局并发闸门：doFetch 前后持有名额，finally 一定释放，绝不泄漏。
+           拿到响应头即释放（真正计费发生在发起请求的时刻），流式 body 读取不长期占名额。 */
+        if (window.AIGovernor && window.AIGovernor.acquire) {
+          await window.AIGovernor.acquire(label);
+          try { resp = await doFetch(); }
+          finally { window.AIGovernor.release(label); }
+        } else {
+          resp = await doFetch();
+        }
       } catch (netErr) {
         /* 网络层异常（DNS/断网/超时）——不重试超时类，避免拖死整体等待
          * v4.08.0 修复：此前只匹配 error.message，而 AbortController.abort() 抛出的
@@ -165,6 +176,8 @@
       }
       if (resp.ok) {
         Throttle.reward(opts.throttleKey || label);
+        /* v4.41.0 成功一次：给全局并发闸门的动态上限一个「顺畅」信号（渐进回升） */
+        if (window.AIGovernor && window.AIGovernor.reward) window.AIGovernor.reward();
         return resp;
       }
       // 非 2xx
@@ -188,6 +201,8 @@
       var d = backoffMs(attempt, ra);
       // 撞限流/5xx：把该接口的常态间隔也拉长，避免"重试成功后又立刻撞上"
       var newGap = Throttle.penalize(opts.throttleKey || label, ra);
+      /* v4.41.0 撞限流/5xx：全局并发上限立即收紧（动态自适应的核心反馈信号） */
+      if (window.AIGovernor && window.AIGovernor.penalize) window.AIGovernor.penalize();
       var reason = resp.status === 429 ? '限流(429)' : ('服务端错误(' + resp.status + ')');
       if (!opts.silent) notify('⚠ ' + label + ' ' + reason + '，' + Math.round(d / 1000) + ' 秒后自动重试（' + (attempt + 1) + '/' + max + '）' + (ra ? '［按服务端 Retry-After］' : '') + '；本接口请求间隔已放宽至 ' + Math.round(newGap) + 'ms', 'warn');
       try { await resp.body && resp.body.cancel && resp.body.cancel(); } catch (e) {}

@@ -53,7 +53,7 @@
     const planLine = plan ? `「${plan.goal}」 ${plan.steps.filter((s) => s.status === "done").length}/${plan.steps.length} 完成` : "尚未设立规划";
     /* 时钟 */
     const clock = window.WorldClock ? WorldClock.status() : null;
-    const clockLine = clock ? (clock.enabled ? `运转中 · 世界第${clock.day}日 · 每${clock.intervalSec}s一天` : `已停 · 累计第${clock.day}日`) : "未加载";
+    const clockLine = clock ? (clock.mode === "off" ? `已冻结 · 累计第${clock.day}日` : (clock.mode === "wall" ? `墙钟自转 · 世界第${clock.day}日 · 每${clock.intervalSec}s一天` : `随回合推进 · 世界第${clock.day}日`)) : "未加载";
 
     const row = (k, val) => `<div style="display:flex;justify-content:space-between;margin:4px 0;"><span style="color:#8fb8b0;">${k}</span><b>${esc(val)}</b></div>`;
     const body = `

@@ -79,9 +79,25 @@ const VariableAI = {
    */
   fetchWithTimeout(url, opts = {}, timeoutMs) {
     const ms = timeoutMs && timeoutMs > 0 ? timeoutMs : 9e4;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), ms);
-    return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
+    /* v4.41.0 全局并发闸门：变量AI 走自有 fetch，绕过 MoNetGuard，单独接入。
+       run() 自带 acquire/finally-release，成功/失败都释放名额，且只排队不拒绝。 */
+    const doFetch = () => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), ms);
+      return fetch(url, { ...opts, signal: controller.signal }).then((resp) => {
+        try {
+          if (window.AIGovernor) {
+            if (resp.ok && window.AIGovernor.reward) window.AIGovernor.reward();
+            else if ((resp.status === 429 || resp.status >= 500) && window.AIGovernor.penalize) window.AIGovernor.penalize();
+          }
+        } catch (e) {}
+        return resp;
+      }).finally(() => clearTimeout(timer));
+    };
+    if (window.AIGovernor && window.AIGovernor.run) {
+      return window.AIGovernor.run('变量AI', doFetch);
+    }
+    return doFetch();
   },
   /** 配置秒 → 毫秒（v1.6.7 修复：v1.6.1 起秒数被当毫秒，90 秒实际 0.09 秒即掐断请求） */
   _toMs(secs, fallbackSecs) {

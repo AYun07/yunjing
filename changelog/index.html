@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.38.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.42.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,89 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.42.0 ==================== -->
+        <article class="log-entry" data-tags="修复 演化 存档 测试 体验" style="--entry-hue:#6faf9f;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.42.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">遗留问题清零 · 长演化不再变死水、老浏览器也能读档、核心测试沉淀进仓库</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：把上一版盘点的四层遗留问题逐项处理——长跨度演化后世界不再变死水、重入回合不再丢失、中文约数能解析、老浏览器也能导入 gzip 存档；散落的临时验证脚本沉淀为仓库内正式回归用例；本地清掉 4.8G 打包产物（源码与远程不动）。 · <a href="https://github.com/AYun07/yunjing/compare/v4.41.0...v4.42.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>长演化世界不再变死水</b>：真实子系统长跑实测发现——三年逐日演化会让势力累积到 88 个空壳、张力跌到 12。现在逐日演化层加了后置护栏：自动裁剪最老的已覆灭势力（存活的一律保留）、张力低于软地板时按「乱世潜流」回填。实测三年后存活势力稳定、总数 12、张力≈23，世界仍保有兴衰起伏。</li>
+                    <li><b>重入回合不再丢失</b>：世界演化进行中若又推进剧情，旧版直接丢弃该回合；现在改为排队并在批次末合并补跑（取最大跨度），快速连点也不会少转世界。</li>
+                    <li><b>中文约数解析</b>：attributes 引擎现在认得「十余日」「十数年」「二十余日」「数十日」这类约数（此前一律返回 NaN），跳时间识别更贴近真实正文。</li>
+                    <li><b>老浏览器也能读 gzip 存档</b>：新增纯 JS 的 gzip 解压兜底——没有原生 DecompressionStream 的老浏览器也能导入 .json.gz 存档，不再只提示「换新版浏览器」。已用 Node zlib 生成样本对比验证，100% 解出一致。</li>
+                    <li><b>核心测试沉淀进仓库</b>：世界时钟 / 逐日演化 / 并发闸门 / gzip 兜底的 47 项深度用例合并为 <code>test/core-regression.mjs</code>，<code>npm test</code> 一条命令跑全部 81 项（34 冒烟 + 47 核心）。此前这些只存在临时脚本里。</li>
+                    <li><b>本地瘦身</b>：清掉 client/ 下 4.8G 被忽略的打包产物（dist/android-sdk/node_modules 等），客户端源码与远程仓库完全不动——尊重此前「停止打包但保留源码」的决定。</li>
+                </ul>
+                <p class="entry-note">取舍说明：成本熔断闸维持「不设强制闸」（沿用你的选择），额外付费功能保持默认关 + 明示成本；本次只处理问题项，不改这两项既定口径。多浏览器实测受沙箱限制（仅 Chromium），已用视口 + 禁用原生 API 模拟降级路径。</p>
+            </div>
+        </article>
+
+        <!-- ==================== v4.41.0 ==================== -->
+        <article class="log-entry" data-tags="成本 并发 接口" style="--entry-hue:#7f9fc0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.41.0</span>
+                <span class="entry-date">2026-11-19</span>
+            </div>
+            <h3 class="entry-title">全局动态并发闸门 · 控制大模型真实调用并发，按你的端点自适应省钱</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：新增跨接口的全局并发闸门——同时发出的大模型请求数受动态上限约束，撞限流自动收紧、顺畅再逐步回升，玩家可在成本面板选偏好档。只排队、不拒绝，不按次数/花费强制熔断。 · <a href="https://github.com/AYun07/yunjing/compare/v4.40.0...v4.41.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>跨接口全局并发闸门</b>：新增 AIGovernor，主笔 / 变量AI / 动态世界 / 手机分身 / 提示词 / 生图 / 小云 全部统一过闸。此前只有「同接口串行」，不同接口可同时打出 4~6 路；现在跨接口在途数也有上限，超额请求排队、不丢弃。</li>
+                    <li><b>动态自适应、因人而异</b>：默认均衡档起点 2 路；撞限流(429)/5xx 立即收紧到下限、进入冷静期；连续 4 次顺畅才回升一格。可在「📊 调用面板 → 并发偏好」选 保守(1~2) / 均衡(2~3) / 激进(3~5)，按自己的端点与机器调。</li>
+                    <li><b>不设强制熔断</b>：闸门只控制「同时在途数」，请求最终都会发出——不会因累计次数或估算费用到顶就拦你。花费仍由 TokenUsage / 用量面板透明展示（输入单价自填，只记不拦）。</li>
+                    <li><b>额外付费功能明示成本</b>：动态世界 / 责编自审 / 多候选并行保持默认关闭，开启处明确标注「会额外调用大模型、按端点计费、每轮成本 ×N」，让你心里有数再决定。</li>
+                    <li><b>有界与稳健</b>：排队等待封顶 120 秒后强制放行，绝不永久挂起；任何异常路径都释放名额、不泄漏；闸门未加载时（旧缓存）各调用点无缝降级为原生请求。</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- ==================== v4.40.0 ==================== -->
+        <article class="log-entry" data-tags="世界 演化 时间" style="--entry-hue:#6f9faf;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.40.0</span>
+                <span class="entry-date">2026-11-19</span>
+            </div>
+            <h3 class="entry-title">世界按正文时间演化 · 过去几天演化几天，过去几年演化几年</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：世界演化从「跳时间只推进数字 + 跑一拍」升级为「真·逐日全量」——正文写过去三天，势力/众生/张力就逐日演化三拍；写过去三年，就逐日演化上千拍，势力数度兴衰、人物成长入账。分钟/时辰级短跨度只更新时刻与当下轻量动态，不动世界日。 · <a href="https://github.com/AYun07/yunjing/compare/v4.39.0...v4.40.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>多粒度时间量化</b>：属性引擎新增 full-spectrum 时间解析——「一顿饭≈45分」「两个时辰=4小时」「须臾=5分」到「三月≈90日」「三年≈1080日」，带跨越语境校验，避免「三年之约」这类静态期限误判。显式「时间.跨度」字段优先。</li>
+                    <li><b>真·逐日全量演化</b>：天/月/年级跨度逐日各跑一拍完整结算——众生繁衍、势力消长与覆灭新生、人物意志漂移、自由人生账本、张力自治演化、机缘滚动——几天几拍、几年上千拍；每拍事件真实入史并注入下一轮主笔提示词。</li>
+                    <li><b>短时辰轻量演化</b>：分钟/小时级不推进世界日，只推进「时刻」（辰时→午时）并滚动当下场景短时动态（风铃、茶楼说书、天光偏移…）注入主笔，世界保持原速。</li>
+                    <li><b>性能与有界</b>：长跨度每 20 天让出主线程一次，界面不假死；实测真实子系统逐日 1080 拍约 0.9 秒；单次跨度封顶十年（3650 日）防异常；事件历史截断 60 条、势力众生受既有 CAPS 约束。</li>
+                    <li><b>可查证据</b>：长跨度额外记一条「第X→Y日（跨N日）间： extant势力A、覆灭B、众生谱C人」汇总日志，演化结果一目了然。</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- ==================== v4.39.0 ==================== -->
+        <article class="log-entry" data-tags="界面 世界 修复" style="--entry-hue:#7f9fbf;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.39.0</span>
+                <span class="entry-date">2026-11-19</span>
+            </div>
+            <h3 class="entry-title">状态栏文字全显 · 世界自转改为回合驱动</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：按玩家反馈修两处——状态栏天赋/时间从此前"只有一条缝"改为完整显示；世界不再在你未行动时自行空转，改为随你的回合推进，跳时间则一次跨到对应天数。 · <a href="https://github.com/AYun07/yunjing/compare/v4.38.0...v4.39.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>状态栏文字全显</b>：天赋行、时间行此前误用 6px 高的进度条容器装 11px 文本，被 overflow 裁成一条缝；改为自适应高度的文本行，天赋「名称·档位·暴露」与时间「纪元·累计·跨度·成长」完整可读，移动端自动换行；六维数值条不受影响。</li>
+                    <li><b>世界随回合自转</b>：世界时钟默认改为「回合驱动」——你这一回合未行动，世界日就不再推进；每完成一轮叙事世界前进一天，左上角药丸显示「🌍随回合 第N日」。</li>
+                    <li><b>跳时间跨到对应天数</b>：正文/变量里的跨度（如"三月后""闭关三年"）由属性引擎权威解析，世界日一次推进到对应天数（三月≈90 日、三年≈1095 日），并在历史日志标注「跨 N 日」可查；旧墙钟配置自动迁移为回合驱动，不再偷偷自转。</li>
+                    <li><b>可冻结可恢复</b>：点击药丸可冻结世界（你不动剧情世界完全静止）或恢复回合驱动；墙钟自转保留为可选模式，仅主动启用才开。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.38.0 ==================== -->
         <article class="log-entry" data-tags="体验 修复 正文 世界 移动端" style="--entry-hue:#8f7fbf;">
             <div class="entry-head">
                 <span class="entry-ver">v4.38.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">挑剔试玩反馈全修 · 正文与世界真正活起来</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：以资深游戏开发者视角真玩一遍后，把反馈报告里的体验问题逐条修复——正文钩子标记不再漏进叙事、世界随剧情推进、章节不再"未题"、移动端触控与小字达标、浮层可收起。 · <a href="https://github.com/AYun07/yunjing/compare/v4.37.0...v4.38.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -817,7 +894,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.38.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.42.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

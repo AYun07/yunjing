@@ -437,6 +437,7 @@ ${entry.story}` });
                 <button class="dwd-close" onclick="DynamicWorld.closePanel()" title="收起模块">✕</button>
             </div>
             <div class="dwd-tip">主笔写正文，第二 AI 在幕后推演「${this.esc(((_a = fw == null ? void 0 : fw.config) == null ? void 0 : _a.genreName) || "本工坊")}」中主角视线之外正在发生的事；远方 NPC 与伏笔自动并入状态面板。</div>
+            <div class="dwd-tip" style="color:#e0b070;opacity:.9">💰 成本提示：本功能默认关闭；开启后每 N 轮会额外调用一次大模型（第二接口），按你的端点计费。可在「配置」里调整推演间隔。</div>
             <div class="dwd-actions">
                 <button class="dwd-act solid" onclick="DynamicWorld.generate(true)">⚡ 立即生成一层</button>
                 <button class="dwd-act" onclick="DynamicWorld.openConfig()">⚙ 配置</button>

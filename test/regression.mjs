@@ -1,7 +1,9 @@
 // 云境 · 一键回归测试（v4.36.0）
-// 用法：node test/regression.mjs
+// 用法：node test/regression.mjs  （或 npm test 同时跑本文件与 core-regression.mjs）
 // 目标：把关键引擎 + 存档防丢 + 静态不变量串成一条「改完就能跑」的回归线，
 //       替代散落的一次性 verify 脚本。零依赖（Node 内置 vm/fs），不联网、不开浏览器。
+// v4.42.0：世界时钟/逐日演化/并发闸门/gzip 兜底的深度用例已沉淀到 test/core-regression.mjs，
+//       由 npm test 一并执行；本文件保留静态不变量与快速冒烟。
 import fs from 'node:fs';
 import vm from 'node:vm';
 import path from 'node:path';
