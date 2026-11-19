@@ -3,7 +3,7 @@
   /* ============================================================
    * 云境工坊 · 手机分身 · 墨韵融合社交包 v3.47.0
    * ------------------------------------------------------------
-   * 灵感蓝本：墨韵手机（SillyTavern 扩展）的产品功能形态
+   * 灵感蓝本：墨韵手机（常见前端工具 扩展）的产品功能形态
    * 实现方式：按云境架构原生重写（存档/AI 调用/时代系统全兼容）
    *
    * 新增五 App：
@@ -736,7 +736,7 @@ ${body || "（今天风平浪静）"}
     const link = document.createElement("link");
     link.id = "phSocialCss";
     link.rel = "stylesheet";
-    link.href = "css/phone-social.css?v=4.44.0";
+    link.href = "css/phone-social.css?v=4.45.0";
     document.head.appendChild(link);
   }
 })();
