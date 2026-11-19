@@ -83,11 +83,11 @@ G('3. B5 驱动力闸门 + B3 自治');
   });
   const { B } = load(sb);
   const a = B.driveOne('宠', {});
-  ok(a.active === true && /随从/.test(a.reason), '随从恒有驱动');
+  ok(a.active === true && /随侍/.test(a.reason), '随侍恒有驱动');
   const b = B.driveOne('孤', {});
-  ok(b.active === false && /静滞/.test(b.reason), '无驱动契约者静滞（省 token）');
+  ok(b.active === false && /静滞/.test(b.reason), '无驱动行者静滞（省 token）');
   const c = B.driveOne('孤', { situation: { taskFor: { '孤': true } } });
-  ok(c.active === true && /任务/.test(c.reason), '有任务时契约者被激活');
+  ok(c.active === true && /任务/.test(c.reason), '有任务时行者被激活');
 }
 
 G('4. B3 认知边界过滤');
@@ -115,7 +115,7 @@ G('4b. 中文键态度 patch 与角色标记（真浏览器发现的缺口）');
   ok(role.npcTag === 'pet' && role.isBond === true, 'setRole 标记类型与羁绊');
   ok(sb.__store['丁'].npcTag === 'pet', '类型写入自定义属性（绕开 upsert 白名单）');
   const drive = B.driveOne('丁', {});
-  ok(drive.active === true && /随从/.test(drive.reason), '标记后随从恒有驱动');
+  ok(drive.active === true && /随侍/.test(drive.reason), '标记后随侍恒有驱动');
 }
 
 G('5. onWorldTick 批量驱动');
@@ -126,7 +126,7 @@ G('5. onWorldTick 批量驱动');
   const { B } = load(sb);
   const adv = B.onWorldTick({});
   ok(Array.isArray(adv), 'onWorldTick 返回数组');
-  ok(adv.some(x => x.name === '宠'), '随从本轮被推进');
+  ok(adv.some(x => x.name === '宠'), '随侍本轮被推进');
 }
 
 console.log('\n========================================');

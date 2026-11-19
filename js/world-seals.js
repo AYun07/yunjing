@@ -169,7 +169,7 @@
 
         /* ---------- 轮回乐园：无限轮回 ---------- */
         lunhuileyuan: [
-            { id: 'lhl_contract', icon: '⟳', name: '契约成立', desc: '与轮回乐园缔结契约，成为契约者', test: (v) => { const t = MoSeals_flat(v).slice(0, 4000); return t.match(/契约(成立|生效)|适格者|轮回乐园/); } },
+            { id: 'lhl_contract', icon: '⟳', name: '契约成立', desc: '与轮回乐园缔结契约，成为行者', test: (v) => { const t = MoSeals_flat(v).slice(0, 4000); return t.match(/契约(成立|生效)|适格者|轮回乐园/); } },
             { id: 'lhl_first', icon: '⚔', name: '首单生还', desc: '完成第一个衍生世界任务并活着回来', test: (v) => { const t = MoSeals_flat(v).slice(0, 4000); return t.match(/任务(完成|结算)|首个任务|第一单.*完成|生还/); } },
             { id: 'lhl_tier3', icon: '🏅', name: '三阶之证', desc: '阶位晋升三阶——脱离新人耗材预备役', test: (v) => /[三四五六七八九十]阶|绝强者|至强者/.test(realmOf(v) + (pc(v).realm || '') + (pc(v).阶位 || '')) },
             { id: 'lhl_epic', icon: '💎', name: '史诗入手', desc: '获得一件金色以上的高品质装备', test: (v) => MoSeals_flat(v).slice(0, 4000).match(/(金色|淡金色|传说级|史诗级|圣灵级)品质|传说级「|史诗级「/) },

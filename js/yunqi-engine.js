@@ -1,6 +1,6 @@
 /* 云境 · 云起预设渲染引擎 v1.0.0（v3.47.17）
    职责：把内嵌的 YUNQI_PRESET 按 order 顺序渲染成一段 system 文本。
-   原样照搬其渲染语义：
+   沿用通用渲染语义：
      · prompts 是"块"，order 是"顺序表"；order 里 enabled:false 的块跳过；
      · 块内容先宏展开，再拼接；
      · 宏：

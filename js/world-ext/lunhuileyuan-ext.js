@@ -1,6 +1,6 @@
 /**
  * 轮回乐园 · 界专属扩展（v3.19.0）
- * ⟳ 乐园面板与阶位阶梯——契约者阶位拾级而上；属性面板、乐园币与技能栏同盘追踪
+ * ⟳ 乐园面板与阶位阶梯——行者阶位拾级而上；属性面板、乐园币与技能栏同盘追踪
  */
 (function () {
     'use strict';
@@ -14,8 +14,8 @@
 
     const paradiseMod = {
         id: 'paradise', icon: '⟳', name: '乐园面板 · 阶位阶梯',
-        tip: '契约者阶位拾级而上——一阶起步，十阶封顶，其上还有绝强者与至强者；属性面板、乐园币与技能栏一屏追踪',
-        contract: '阶位（契约者阶位：一阶/二阶/…/十阶，其上为绝强者、至强者）；乐园币（当前余额数字）；技能[]（已掌握技能清单，标注品质更佳）；属性{力量,敏捷,体力,智力,幸运,魅力}（属性面板数值）',
+        tip: '行者阶位拾级而上——一阶起步，十阶封顶，其上还有绝强者与至强者；属性面板、乐园币与技能栏一屏追踪',
+        contract: '阶位（行者阶位：一阶/二阶/…/十阶，其上为绝强者、至强者）；乐园币（当前余额数字）；技能[]（已掌握技能清单，标注品质更佳）；属性{力量,敏捷,体力,智力,幸运,魅力}（属性面板数值）',
         init: () => ({ rank: 0, coins: null, skills: [], attrs: {} }),
 
         /* v3.32.2 状态板摘要：⟳ 三阶 ·乐园币24000 ·技能5 */
@@ -29,7 +29,7 @@
 
         read(s, vars, round) {
             let d = false;
-            const raw = String(vars.阶位 || vars.契约者阶位 || vars.品级 || vars.境界 || vars.status || '');
+            const raw = String(vars.阶位 || vars.行者阶位 || vars.品级 || vars.境界 || vars.status || '');
             /* 「十阶」须先于「一阶」匹配，避免子串误判；「绝强者/至强者」单列 */
             let idx = -1;
             if (/至强者/.test(raw)) idx = 11;
@@ -63,7 +63,7 @@
         },
 
         html(s) {
-            const ladder = WXH.card('契约者阶位', `<div class="wx-stepper">
+            const ladder = WXH.card('行者阶位', `<div class="wx-stepper">
                 ${RANKS.map((r, i) => `<div class="wx-step ${i === s.rank ? 'on' : i < s.rank ? 'done' : ''}">${i < s.rank ? '✓ ' : ''}${r}</div>`).join('')}
             </div>`, {
                 icon: '🏅', grow: true, tag: '当前：' + RANKS[s.rank]
@@ -82,7 +82,7 @@
 
         directive(s) {
             const t = [];
-            t.push(`契约者阶位${RANKS[s.rank]}：实力表现须贴合阶位（一阶新人靠装备与谨慎，八阶足以左右一场任务战局，绝强者与至强者是位面级存在），越阶硬撼必付代价`);
+            t.push(`行者阶位${RANKS[s.rank]}：实力表现须贴合阶位（一阶新人靠装备与谨慎，八阶足以左右一场任务战局，绝强者与至强者是位面级存在），越阶硬撼必付代价`);
             if (s.coins != null) t.push(`乐园币余额 ${s.coins.toLocaleString()}：采购、药剂与情报都要花钱，钱紧时写取舍`);
             if (s.skills.length) t.push(`技能栏 ${s.skills.length} 项（${s.skills.slice(0, 4).join('、')}）：技能动用写实效与代价，不写成招式播报`);
             return t.join('；');

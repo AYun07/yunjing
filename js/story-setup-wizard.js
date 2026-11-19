@@ -331,7 +331,7 @@ const StorySetupWizard = {
       stats: { ...config.baseAttributes || {} },
       remainingPoints: config.maxPoints || 100
     };
-    /* v3.55.20 玩家身份（穿越者 / 土著）与原著主角关系（同伴 / 敌对 / 陌路）：
+    /* v3.55.20 玩家身份（穿越者 / 本地人）与原著主角关系（同伴 / 敌对 / 陌路）：
        读取已存选择，用于模板里的动态「on」态；取代主角立场下关系失效 */
     const _idCur = (window.StoryIdentity && StoryIdentity.getIdentity()) || "transmigrator";
     const _relCur = (window.StoryIdentity && StoryIdentity.getRelation()) || "stranger";
@@ -397,7 +397,7 @@ const StorySetupWizard = {
                         <b>🌀 穿越者</b><i>先知先觉，但预知有界</i>
                     </button>
                     <button type="button" class="wiz-stance-btn ${_idCur === "native" ? "on" : ""}" data-identity="native" onclick="StorySetupWizard.setIdentity('native')">
-                        <b>🌱 土著</b><i>对原著一无所知</i>
+                        <b>🌱 本地人</b><i>对原著一无所知</i>
                     </button>
                 </div>
                 <div class="wiz-desc" id="wiz_idHint"></div>
@@ -726,7 +726,7 @@ const StorySetupWizard = {
     if (!info) { hint.textContent = "选择一位原著配角，按其原著定位展开人生线。"; return; }
     hint.textContent = info.name + " · " + info.role + "（" + info.realm + "）：" + info.fate + " 关系底子——" + info.rel + "。人生钩子：" + info.hook;
   },
-  /** v3.55.20 玩家身份：穿越者 / 土著 */
+  /** v3.55.20 玩家身份：穿越者 / 本地人 */
   setIdentity(id) {
     if (window.StoryIdentity && !StoryIdentity.IDENTITY[id]) id = "transmigrator";
     document.querySelectorAll(".wiz-stance-btn[data-identity]").forEach(function (b) {

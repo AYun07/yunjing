@@ -106,7 +106,7 @@
       return out.record.disposition;
     },
 
-    /** 标记 NPC 类型（随从/土著/契约者/羁绊），写入自定义属性绕开 upsert 白名单。 */
+    /** 标记 NPC 类型（随侍/本地人/行者/羁绊），写入自定义属性绕开 upsert 白名单。 */
     setRole: function (name, role, opts) {
       var NC = N(), WRx = WR(); if (!NC || !WRx || !WRx.NPC) return null;
       var e = WRx.NPC.get ? WRx.NPC.get(name) : null; if (!e) return null;

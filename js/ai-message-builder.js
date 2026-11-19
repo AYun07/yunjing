@@ -215,7 +215,7 @@ stats.张力: +5
     yunqiBlock = '';
   }
   /* v3.55.17 云境核心契约 · 预设解耦注入
-     问题：玩家用「导入 SillyTavern 预设」整份替换内置预设后，那份预设里没有云境的
+     问题：玩家用「导入通用预设」整份替换内置预设后，那份预设里没有云境的
      六类行动选项 / 状态栏 / 变量块定义；而闭合自检只说"恰好 6 条·六类"却不说是哪
      六类 → 模型只能自由发挥（实测：选项退回 3-4 条、状态栏英文 key 复现、变量块缺失）。
      对策：本契约独立注入、不依赖任何预设文本。仅当当前渲染出的预设不含六类定义时
@@ -588,7 +588,7 @@ function buildPlayerIdentityCard(setup, config) {
     parts.push(`角色资质：${statKeys.map((k) => `${labelMap[k] || k} ${stats[k]}`).join(" / ")}`);
   }
   /* v3.62.0 身份三态：原著主角 / 原著配角 / 完全原创。
-     旧逻辑只有「取代主角 / 同行者 / 搅局者」三档，且与玩家身份（穿越者/土著）耦合；
+     旧逻辑只有「取代主角 / 同行者 / 搅局者」三档，且与玩家身份（穿越者/本地人）耦合；
      现收敛为「你是谁」三态，主角态锁定大势节点、配角态按原著定位生成人生、原创态全自由。 */
   if (window.StoryStance) {
     const isRP = config && config.mode === "roleplay";
@@ -608,8 +608,8 @@ function buildPlayerIdentityCard(setup, config) {
     if (tl) parts.push(tl);
     parts.push(CanonTimeline.buildProtocol());
   }
-  /* v3.55.20 玩家身份（穿越者 / 土著）与原著主角关系（同伴 / 敌对 / 陌路）：
-     补上「元认知边界」与「相处铁律」，让穿越者不会全知、土著不被剧透、
+  /* v3.55.20 玩家身份（穿越者 / 本地人）与原著主角关系（同伴 / 敌对 / 陌路）：
+     补上「元认知边界」与「相处铁律」，让穿越者不会全知、本地人不被剧透、
      陌路时世界照样在主角视线外自走一生 */
   if (window.StoryIdentity) {
     parts.push(StoryIdentity.buildIdentityDirective());

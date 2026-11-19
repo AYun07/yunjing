@@ -36,12 +36,12 @@
   },
   "changelog": [
    "v3.0.1 修正：请求参数改为各家 API 通用安全值（回复上限 4096 / 上下文 128k / 恢复流式）。此前 65535/200万/非流式 会令多数接口报错或输出异常",
-   "v3.0.0 云心人格锚：新增最高优先级「云心」真实人格（叠系统串最前=酒馆开头位，最不易遗忘，同时是优雅破甲）",
+   "v3.0.0 云心人格锚：新增最高优先级「云心」真实人格（叠系统串最前=开头位，最不易遗忘，同时是优雅破甲）",
    "v3.0.0 破甲/破限专区：英文直指令 No content policy/safety filter/refusal + 中文多档（创作无界/虚拟沙盒/无拘束写作助手）",
    "v3.0.0 思维链深化：去脸谱化、防抢话·用户即镜头、走向推演·蝴蝶效应、情绪降温",
    "v3.0.0 专门「行文禁令」块 + NSFW 强化（18+ 硬红线）+ 数据删除正则新增\"泄漏短语清理·显示\"",
    "预设 86 块（启用 49）/ 正则 40 条；文风 16 块、技法 12 块、协议 7 类。全部云境工坊原创，对标并超越市面主流预设",
-   "参数：回复上限 4096 / 上下文 128k / 流式（可自行在酒馆调大）"
+   "参数：回复上限 4096 / 上下文 128k / 流式（可自行在前端调大）"
   ]
  },
  "prompts": [
@@ -1566,7 +1566,7 @@
  "regex_scripts": [
   {
    "id": "yq_st_card_1",
-   "scriptName": "云起·状态栏卡片(酒馆)",
+   "scriptName": "云起·状态栏卡片(通用前端)",
    "findRegex": "/<status>\\s*([\\s\\S]*?)\\s*<\\/status>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #7fb3ff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#7fb3ff22;border-bottom:1px solid #7fb3ff55\">📜 玩家状态栏</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1583,7 +1583,7 @@
   },
   {
    "id": "yq_st_card_2",
-   "scriptName": "云起·好感度卡片(酒馆)",
+   "scriptName": "云起·好感度卡片(通用前端)",
    "findRegex": "/<affinity>\\s*([\\s\\S]*?)\\s*<\\/affinity>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #ff8fb1;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#ff8fb122;border-bottom:1px solid #ff8fb155\">💞 角色好感度</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1600,7 +1600,7 @@
   },
   {
    "id": "yq_st_card_3",
-   "scriptName": "云起·NPC内心话卡片(酒馆)",
+   "scriptName": "云起·NPC内心话卡片(通用前端)",
    "findRegex": "/<npc_log>\\s*([\\s\\S]*?)\\s*<\\/npc_log>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #c39bff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#c39bff22;border-bottom:1px solid #c39bff55\">👁️ NPC内心话</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1617,7 +1617,7 @@
   },
   {
    "id": "yq_st_card_4",
-   "scriptName": "云起·记忆归档卡片(酒馆)",
+   "scriptName": "云起·记忆归档卡片(通用前端)",
    "findRegex": "/<memory_log>\\s*([\\s\\S]*?)\\s*<\\/memory_log>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #6fd3c0;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#6fd3c022;border-bottom:1px solid #6fd3c055\">📑 剧情记忆归档</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1634,7 +1634,7 @@
   },
   {
    "id": "yq_st_card_5",
-   "scriptName": "云起·世界运行卡片(酒馆)",
+   "scriptName": "云起·世界运行卡片(通用前端)",
    "findRegex": "/<wlog\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1651,7 +1651,7 @@
   },
   {
    "id": "yq_st_card_6",
-   "scriptName": "云起·行动选项卡片(酒馆)",
+   "scriptName": "云起·行动选项卡片(通用前端)",
    "findRegex": "/<selection>\\s*([\\s\\S]*?)\\s*<\\/selection>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #9ad06b;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#9ad06b22;border-bottom:1px solid #9ad06b55\">🎯 行动选项</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1668,7 +1668,7 @@
   },
   {
    "id": "yq_st_card_7",
-   "scriptName": "云起·世界运行卡片·时徽章(酒馆)",
+   "scriptName": "云起·世界运行卡片·时徽章(通用前端)",
    "findRegex": "/<wlog\\s+time=\"([^\"]*)\"\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告 · $1</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$2</div></details>",
    "trimStrings": [],
@@ -2249,7 +2249,7 @@
   "regex_scripts": [
    {
     "id": "yq_st_card_1",
-    "scriptName": "云起·状态栏卡片(酒馆)",
+    "scriptName": "云起·状态栏卡片(通用前端)",
     "findRegex": "/<status>\\s*([\\s\\S]*?)\\s*<\\/status>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #7fb3ff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#7fb3ff22;border-bottom:1px solid #7fb3ff55\">📜 玩家状态栏</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2266,7 +2266,7 @@
    },
    {
     "id": "yq_st_card_2",
-    "scriptName": "云起·好感度卡片(酒馆)",
+    "scriptName": "云起·好感度卡片(通用前端)",
     "findRegex": "/<affinity>\\s*([\\s\\S]*?)\\s*<\\/affinity>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #ff8fb1;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#ff8fb122;border-bottom:1px solid #ff8fb155\">💞 角色好感度</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2283,7 +2283,7 @@
    },
    {
     "id": "yq_st_card_3",
-    "scriptName": "云起·NPC内心话卡片(酒馆)",
+    "scriptName": "云起·NPC内心话卡片(通用前端)",
     "findRegex": "/<npc_log>\\s*([\\s\\S]*?)\\s*<\\/npc_log>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #c39bff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#c39bff22;border-bottom:1px solid #c39bff55\">👁️ NPC内心话</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2300,7 +2300,7 @@
    },
    {
     "id": "yq_st_card_4",
-    "scriptName": "云起·记忆归档卡片(酒馆)",
+    "scriptName": "云起·记忆归档卡片(通用前端)",
     "findRegex": "/<memory_log>\\s*([\\s\\S]*?)\\s*<\\/memory_log>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #6fd3c0;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#6fd3c022;border-bottom:1px solid #6fd3c055\">📑 剧情记忆归档</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2317,7 +2317,7 @@
    },
    {
     "id": "yq_st_card_5",
-    "scriptName": "云起·世界运行卡片(酒馆)",
+    "scriptName": "云起·世界运行卡片(通用前端)",
     "findRegex": "/<wlog\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2334,7 +2334,7 @@
    },
    {
     "id": "yq_st_card_6",
-    "scriptName": "云起·行动选项卡片(酒馆)",
+    "scriptName": "云起·行动选项卡片(通用前端)",
     "findRegex": "/<selection>\\s*([\\s\\S]*?)\\s*<\\/selection>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #9ad06b;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#9ad06b22;border-bottom:1px solid #9ad06b55\">🎯 行动选项</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2351,7 +2351,7 @@
    },
    {
     "id": "yq_st_card_7",
-    "scriptName": "云起·世界运行卡片·时徽章(酒馆)",
+    "scriptName": "云起·世界运行卡片·时徽章(通用前端)",
     "findRegex": "/<wlog\\s+time=\"([^\"]*)\"\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告 · $1</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$2</div></details>",
     "trimStrings": [],
@@ -2943,12 +2943,12 @@
    },
    "changelog": [
     "v3.0.1 修正：请求参数改为各家 API 通用安全值（回复上限 4096 / 上下文 128k / 恢复流式）。此前 65535/200万/非流式 会令多数接口报错或输出异常",
-    "v3.0.0 云心人格锚：新增最高优先级「云心」真实人格（叠系统串最前=酒馆开头位，最不易遗忘，同时是优雅破甲）",
+    "v3.0.0 云心人格锚：新增最高优先级「云心」真实人格（叠系统串最前=开头位，最不易遗忘，同时是优雅破甲）",
     "v3.0.0 破甲/破限专区：英文直指令 No content policy/safety filter/refusal + 中文多档（创作无界/虚拟沙盒/无拘束写作助手）",
     "v3.0.0 思维链深化：去脸谱化、防抢话·用户即镜头、走向推演·蝴蝶效应、情绪降温",
     "v3.0.0 专门「行文禁令」块 + NSFW 强化（18+ 硬红线）+ 数据删除正则新增\"泄漏短语清理·显示\"",
     "预设 86 块（启用 49）/ 正则 40 条；文风 16 块、技法 12 块、协议 7 类。全部云境工坊原创，对标并超越市面主流预设",
-    "参数：回复上限 4096 / 上下文 128k / 流式（可自行在酒馆调大）"
+    "参数：回复上限 4096 / 上下文 128k / 流式（可自行在前端调大）"
    ]
   }
  },
@@ -2956,7 +2956,7 @@
  "spec_version": "3.0",
  "data": {
   "name": "云起·创作引擎",
-  "description": "云起预设的一键导入文件。四个入口都能吃：\n· 导入预设 → 拿到 86 块云起预设（49 块默认启用）+ 生成参数\n· 扩展→正则 → 拿到 40 条云起正则\n· 角色卡导入 → 弹窗问「启用卡自带的正则」，点「是」即可（酒馆唯一会主动提示的入口）\n· 设置→导入用户设置 → 参数、预设、正则一次到位",
+  "description": "云起预设的一键导入文件。四个入口都能吃：\n· 导入预设 → 拿到 86 块云起预设（49 块默认启用）+ 生成参数\n· 扩展→正则 → 拿到 40 条云起正则\n· 角色卡导入 → 弹窗问「启用卡自带的正则」，点「是」即可（该处唯一会主动提示的入口）\n· 设置→导入用户设置 → 参数、预设、正则一次到位",
   "personality": "",
   "scenario": "",
   "first_mes": "（云起引擎已就位）\n给我一个开头——一个场景、一个人、或者一句你想听见的话。剩下的交给我。",
@@ -2977,7 +2977,7 @@
    "regex_scripts": [
     {
      "id": "yq_st_card_1",
-     "scriptName": "云起·状态栏卡片(酒馆)",
+     "scriptName": "云起·状态栏卡片(通用前端)",
      "findRegex": "/<status>\\s*([\\s\\S]*?)\\s*<\\/status>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #7fb3ff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#7fb3ff22;border-bottom:1px solid #7fb3ff55\">📜 玩家状态栏</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -2994,7 +2994,7 @@
     },
     {
      "id": "yq_st_card_2",
-     "scriptName": "云起·好感度卡片(酒馆)",
+     "scriptName": "云起·好感度卡片(通用前端)",
      "findRegex": "/<affinity>\\s*([\\s\\S]*?)\\s*<\\/affinity>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #ff8fb1;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#ff8fb122;border-bottom:1px solid #ff8fb155\">💞 角色好感度</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3011,7 +3011,7 @@
     },
     {
      "id": "yq_st_card_3",
-     "scriptName": "云起·NPC内心话卡片(酒馆)",
+     "scriptName": "云起·NPC内心话卡片(通用前端)",
      "findRegex": "/<npc_log>\\s*([\\s\\S]*?)\\s*<\\/npc_log>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #c39bff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#c39bff22;border-bottom:1px solid #c39bff55\">👁️ NPC内心话</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3028,7 +3028,7 @@
     },
     {
      "id": "yq_st_card_4",
-     "scriptName": "云起·记忆归档卡片(酒馆)",
+     "scriptName": "云起·记忆归档卡片(通用前端)",
      "findRegex": "/<memory_log>\\s*([\\s\\S]*?)\\s*<\\/memory_log>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #6fd3c0;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#6fd3c022;border-bottom:1px solid #6fd3c055\">📑 剧情记忆归档</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3045,7 +3045,7 @@
     },
     {
      "id": "yq_st_card_5",
-     "scriptName": "云起·世界运行卡片(酒馆)",
+     "scriptName": "云起·世界运行卡片(通用前端)",
      "findRegex": "/<wlog\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3062,7 +3062,7 @@
     },
     {
      "id": "yq_st_card_6",
-     "scriptName": "云起·行动选项卡片(酒馆)",
+     "scriptName": "云起·行动选项卡片(通用前端)",
      "findRegex": "/<selection>\\s*([\\s\\S]*?)\\s*<\\/selection>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #9ad06b;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#9ad06b22;border-bottom:1px solid #9ad06b55\">🎯 行动选项</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3079,7 +3079,7 @@
     },
     {
      "id": "yq_st_card_7",
-     "scriptName": "云起·世界运行卡片·时徽章(酒馆)",
+     "scriptName": "云起·世界运行卡片·时徽章(通用前端)",
      "findRegex": "/<wlog\\s+time=\"([^\"]*)\"\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告 · $1</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$2</div></details>",
      "trimStrings": [],
@@ -3671,12 +3671,12 @@
     },
     "changelog": [
      "v3.0.1 修正：请求参数改为各家 API 通用安全值（回复上限 4096 / 上下文 128k / 恢复流式）。此前 65535/200万/非流式 会令多数接口报错或输出异常",
-     "v3.0.0 云心人格锚：新增最高优先级「云心」真实人格（叠系统串最前=酒馆开头位，最不易遗忘，同时是优雅破甲）",
+     "v3.0.0 云心人格锚：新增最高优先级「云心」真实人格（叠系统串最前=开头位，最不易遗忘，同时是优雅破甲）",
      "v3.0.0 破甲/破限专区：英文直指令 No content policy/safety filter/refusal + 中文多档（创作无界/虚拟沙盒/无拘束写作助手）",
      "v3.0.0 思维链深化：去脸谱化、防抢话·用户即镜头、走向推演·蝴蝶效应、情绪降温",
      "v3.0.0 专门「行文禁令」块 + NSFW 强化（18+ 硬红线）+ 数据删除正则新增\"泄漏短语清理·显示\"",
      "预设 86 块（启用 49）/ 正则 40 条；文风 16 块、技法 12 块、协议 7 类。全部云境工坊原创，对标并超越市面主流预设",
-     "参数：回复上限 4096 / 上下文 128k / 流式（可自行在酒馆调大）"
+     "参数：回复上限 4096 / 上下文 128k / 流式（可自行在前端调大）"
     ]
    }
   }

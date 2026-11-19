@@ -79,21 +79,21 @@ G('4. 离场自治：确定性 + 零 API + 有界成长');
   const a = N.autonomyTick(mk(), { round: 5, seed: 'S' });
   const b = N.autonomyTick(mk(), { round: 5, seed: 'S' });
   ok(a.phase === b.phase && a.deed === b.deed && a.growthDelta === b.growthDelta, '同种子同回合结果完全一致（确定性）');
-  ok(a.phase === 'mission' || a.phase === 'rest', '契约者相位在任务/休整间');
+  ok(a.phase === 'mission' || a.phase === 'rest', '行者相位在任务/休整间');
   let capped = N.ensure({ name: '满级', tier: 'low', attr: 30 });
   for (let i = 0; i < 50; i++) capped = N.autonomyTick(capped, { round: i, seed: 'X' }).record;
   ok(capped.attr <= 30, '低阶角色成长封顶不越档（≤30）');
   let native = N.autonomyTick(N.ensure({ name: '村夫', npcTag: 'native' }), { round: 1 }).record;
-  ok(native.auto.phase === 'home', '土著留在故地相位');
+  ok(native.auto.phase === 'home', '本地人留在故地相位');
 }
 
 G('5. 驱动力静滞闸门（省 token）');
 {
-  ok(N.driveGate(N.ensure({ name: '宠', npcTag: 'pet' }), {}).active === true, '随从恒有驱动');
+  ok(N.driveGate(N.ensure({ name: '宠', npcTag: 'pet' }), {}).active === true, '随侍恒有驱动');
   ok(N.driveGate(N.ensure({ name: '冻', frozenAt: 1 }), {}).active === false, '冻结者静滞');
-  ok(N.driveGate(N.ensure({ name: '孤', npcTag: 'contractor' }), {}).active === false, '无驱动的契约者静滞');
+  ok(N.driveGate(N.ensure({ name: '孤', npcTag: 'contractor' }), {}).active === false, '无驱动的行者静滞');
   const ctx = { situation: { taskFor: { '孤': true } } };
-  ok(N.driveGate(N.ensure({ name: '孤', npcTag: 'contractor' }), ctx).active === true, '有任务时契约者被激活');
+  ok(N.driveGate(N.ensure({ name: '孤', npcTag: 'contractor' }), ctx).active === true, '有任务时行者被激活');
   const natives = [N.ensure({ name: '甲', npcTag: 'native' }), N.ensure({ name: '乙', npcTag: 'native', isBond: true })];
   const adv = N.tickRoster(natives, { round: 1 });
   ok(adv.length === 1 && adv[0].id === '乙', '批量自治只推进有驱动者');

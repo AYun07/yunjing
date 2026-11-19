@@ -1,16 +1,16 @@
 /* ============================================================
  * 云境工坊 · 云起专用正则引擎（ver 7.2 → 云境适配）
  * ------------------------------------------------------------
- * 原版 45 条是给 SillyTavern 用的，直接搬会有三处水土不服：
+ * 通用正则规则直接用于云境有三处水土不服：
  *   1) 美化模板是几千字节的内联 <style> + 赛博朋克动画，和云境的
  *      水墨/世界皮肤互相打架，还会在每轮正文里重复注入全局样式；
- *   2) 有 2 条是 SillyTavern 专属版（选项美化、特殊状态栏美化），
- *      云境该用同文件里配套的「非SillyTavern」版；
+ *   2) 有 2 条通用版（选项美化、特殊状态栏美化），
+ *      云境改用配套的「轻量版」；
  *   3) 云境的正文渲染是 escapeHtml 的，正则生成的 HTML 会被转义成纯文本。
  *
- * 适配原则（与预设一致：识别规则照搬，渲染换成云境自己）：
- *   - 「清理类」正则（去 AI 味的词/八股）是纯文本替换 —— 原样照搬，直接生效；
- *   - 「协议块」的识别照搬原版 findRegex 的语义，但渲染成云境自己的
+ * 适配原则（与预设一致：识别规则沿用通用范式，渲染换成云境自己）：
+ *   - 「清理类」正则（去 AI 味的词/八股）是纯文本替换 —— 直接生效；
+ *   - 「协议块」的识别沿用通用 findRegex 的语义，但渲染成云境自己的
  *     折叠卡片（跟随世界皮肤，零内联样式）；
  *   - 逐条开关，玩家可自由启停（含原版出厂关闭的 18 条）。
  * ============================================================ */
@@ -121,16 +121,16 @@
     '战斗引擎': 'card',
     '故事引擎': 'card',
     '角色心理推理块': 'card',
-    '特殊状态栏美化-SillyTavern': 'card',
-    '特殊状态栏美化-非SillyTavern': 'card',
+    '特殊状态栏美化-完整版': 'card',
+    '特殊状态栏美化-轻量版': 'card',
     '剧情记忆归档美化': 'card',
     '世界运行报告美化': 'card',
     '玩家状态栏美化': 'card',
     '角色好感度美化': 'card',
     'NPC内心话美化': 'card',
     '平行线美化': 'card',
-    '选项美化-SillyTavern': 'card',
-    '选项美化-非SillyTavern': 'card',
+    '选项美化-完整版': 'card',
+    '选项美化-轻量版': 'card',
     '双语美化-默认': 'misc',
     '双语美化-折叠': 'misc',
     '***符号转分行': 'purge',
@@ -162,7 +162,7 @@
     { key: 'combat', rule: '战斗引擎', yqRule: '云起·战斗引擎美化',     icon: '⚔️', title: '战斗推演',   re: /<combat_driver>\s*([\s\S]*?)\s*<\/combat_driver>/gi },
     { key: 'story', rule: '故事引擎', yqRule: '云起·故事引擎美化',      icon: '🧠', title: '故事推演',   re: /<story_driver>\s*([\s\S]*?)\s*<\/story_driver>/gi },
     { key: 'psyche', rule: '角色心理推理块', yqRule: '云起·角色心理美化',      icon: '🎭', title: '角色心理',   re: /<acg_think>\s*([\s\S]*?)\s*<\/acg_think>/gi },
-    { key: 'special', rule: '特殊状态栏美化-非SillyTavern', yqRule: '云起·特殊状态栏美化',    icon: '🩺', title: '特殊状态',   re: /<special_status>\s*([\s\S]*?)\s*<\/special_status>/gi },
+    { key: 'special', rule: '特殊状态栏美化-轻量版', yqRule: '云起·特殊状态栏美化',    icon: '🩺', title: '特殊状态',   re: /<special_status>\s*([\s\S]*?)\s*<\/special_status>/gi },
     { key: 'memory', rule: '剧情记忆归档美化', yqRule: '云起·剧情记忆归档美化',     icon: '📑', title: '剧情记忆归档', re: /<memory_log>\s*([\s\S]*?)\s*<\/memory_log>/gi },
     { key: 'wlog', rule: '世界运行报告美化', yqRule: '云起·世界运行报告美化',       icon: '🌍', title: '世界运行报告', re: /<wlog(?:\s+time="([^"]*)")?\s*>\s*([\s\S]*?)\s*<\/wlog>/gi },
     { key: 'status', rule: '玩家状态栏美化', yqRule: '云起·玩家状态栏美化',     icon: '📜', title: '玩家状态栏', re: /<status>\s*([\s\S]*?)\s*<\/status>/gi },
@@ -170,7 +170,7 @@
     { key: 'npc', rule: 'NPC内心话美化', yqRule: '云起·NPC内心话美化',        icon: '👁️', title: 'NPC内心话', re: /<npc_log>\s*([\s\S]*?)\s*<\/npc_log>/gi },
     { key: 'parallel', rule: '平行线美化', yqRule: '云起·平行线美化',   icon: '〰️', title: '平行线',     re: /<parallel_line_drive>\s*([\s\S]*?)\s*<\/parallel_line_drive>/gi },
     { key: 'parallel2', rule: '平行线美化', yqRule: '云起·平行线美化',  icon: '〰️', title: '平行线',     re: /<parallel_line>\s*([\s\S]*?)\s*<\/parallel_line>/gi },
-    { key: 'selection', rule: '选项美化-非SillyTavern', yqRule: '云起·行动选项美化',  icon: '🎯', title: '行动选项',   re: /<selection>\s*([\s\S]*?)\s*<\/selection>/gi }
+    { key: 'selection', rule: '选项美化-轻量版', yqRule: '云起·行动选项美化',  icon: '🎯', title: '行动选项',   re: /<selection>\s*([\s\S]*?)\s*<\/selection>/gi }
   ];
 
   /** 每条规则当前是否生效（玩家覆盖 > 原版 disabled） */
@@ -182,18 +182,17 @@
   }
 
   /**
-   * 云境侧的默认调整：原版出厂开着的两条是 SillyTavern 专属版，
-   * 云境改用配套的「非SillyTavern」版（原版里这两条是关着的）。
+   * 云境侧的默认调整：两条美化规则默认取轻量版，完整版默认关闭，避免与云境皮肤冲突。
    * 玩家手动改过就不干预。
    */
   function resolveDefaults() {
     var ov = getOverrides();
     var flip = {
-      // 原版出厂开着的是 SillyTavern 专属版，云境改用配套的「非SillyTavern」版
-      '选项美化-SillyTavern': false,
-      '选项美化-非SillyTavern': true,
-      '特殊状态栏美化-SillyTavern': false,
-      '特殊状态栏美化-非SillyTavern': true
+      // 默认采用轻量版，完整版默认关闭
+      '选项美化-完整版': false,
+      '选项美化-轻量版': true,
+      '特殊状态栏美化-完整版': false,
+      '特殊状态栏美化-轻量版': true
       /* 注：「清理废话修饰词」「清理动物比喻」保持原版出厂的关闭状态。
          它们确实是去 AI 味的利器，但也会误伤正常文学表达
          （"似乎""某种""抿了抿唇"都是合法写法），交由玩家在面板里自选开启。 */
@@ -222,7 +221,7 @@
     return m;
   }
 
-  /* ---------------- 去 AI 味（purge）：原样照搬，作用于显示正文 ---------------- */
+  /* ---------------- 去 AI 味（purge）：通用文本替换，作用于显示正文 ---------------- */
 
   /**
    * 原版「清理动物比喻」正则的收尾组只认 "X般的 / X一样 / X似地"，
@@ -260,10 +259,10 @@
       if (!on[r.id]) return;
       var kd = kindOf(r);
       if (kd !== 'purge' && kd !== 'custom') return;
-      /* v3.55.18 导入第三方（酒馆）正则的两道防护：
-         ① promptOnly 的正则在酒馆里只作用于「发给模型的 prompt」，靠 placement 限定在
+      /* v3.55.18 导入第三方正则的两道防护：
+         ① promptOnly 的正则只作用于「发给模型的 prompt」，靠 placement 限定在
             历史楼层；云境这里处理的是「显示给玩家的正文」，照单执行会把正文清空。
-         ② 整段通配（点星、[\s\S] 星号之类）+ 空替换的规则，在酒馆里是"隐藏不发送"
+         ② 整段通配（点星、[\s\S] 星号之类）+ 空替换的规则，通常是"隐藏不发送"
             的省 token 手段，落到正文就是全清——一律跳过。                      */
       if (r.promptOnly && !r.markdownOnly) return;
       var re = toRegex(adaptSource(r));
@@ -286,7 +285,7 @@
   /**
    * v3.55.18：这条规则会不会把整段文字清空？
    * 判定：替换串为空（或纯空白）+ 正则体是通配（.*  / [\s\S]*  / ^[\s\S]*$  / 空）。
-   * 酒馆里这类规则是"隐藏不发送"的省 token 手段，落到正文渲染就是灾难。
+   * 这类规则是"隐藏不发送"的省 token 手段，落到正文渲染就是灾难。
    */
   function isWipeRule(re, replaceString) {
     if (replaceString && String(replaceString).trim()) return false;
@@ -306,7 +305,7 @@
     rules().forEach(function (r) {
       if (!on[r.id]) return;
       if (kindOf(r) !== 'ctx') return;
-      // 「清空玩家输入历史记录」的 findRegex 是 ^[\s\S]*$ —— 会把整段清空，云境不能照搬
+      // 「清空玩家输入历史记录」的 findRegex 是 ^[\s\S]*$ —— 会把整段清空，云境不能采用
       if (r.scriptName === '清空玩家输入历史记录') return;
       if (/清空AI历史记录仅保留总结/.test(r.scriptName)) return;
       var re = toRegex(r.findRegex);
@@ -379,7 +378,7 @@
 
   /**
    * 正文容器标签：剥掉标签、保留内容。
-   * 原版没有对应规则 —— 因为 SillyTavern 走浏览器渲染，未知标签会被吞掉；
+   * 通用规则里没有对应项 —— 因为浏览器渲染，未知标签会被吞掉；
    * 云境正文是 escapeHtml 的，不剥就会以字面量 "<story_scene>" 出现在正文里。
    */
   var WRAPPER_TAGS = ['story_scene', 'locator', 'opening', 'parallel_line_drive', 'parallel_line'];

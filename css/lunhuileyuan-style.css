@@ -39,7 +39,7 @@ body.theme-lunhuileyuan #gameTitle {
     text-shadow: 0 0 16px rgba(224, 88, 88, 0.42), 0 0 30px rgba(138, 148, 184, 0.14);
 }
 
-/* ─────────── ② 正文卡：契约者档案 ─────────── */
+/* ─────────── ② 正文卡：行者档案 ─────────── */
 body.theme-lunhuileyuan .ai-card {
     position: relative;
     border-left: none;
@@ -126,7 +126,7 @@ body.theme-lunhuileyuan #setupWrap::-webkit-scrollbar-thumb {
 }
 body.theme-lunhuileyuan #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(224, 88, 88, 0.48); }
 
-/* ─────────── ⑧ 扮演模式特化：契约者面板 ─────────── */
+/* ─────────── ⑧ 扮演模式特化：行者面板 ─────────── */
 body.theme-lunhuileyuan .wizard-title { letter-spacing: 3px; text-shadow: 0 0 14px rgba(224, 88, 88, 0.32); }
 body.theme-lunhuileyuan .book-title-line { color: #e05858; }
 body.theme-lunhuileyuan .status-panel {

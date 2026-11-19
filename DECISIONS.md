@@ -93,7 +93,7 @@ v4.34.0 交付了 Windows 便携版 zip（615M）与 Android APK（511M），两
 用户要求引入星海"长文档差分"到云境。星海靠服务端做差分存档（历史快照差分 + 图片去重 + 回合增量）。云境是零后端（DR-001），全部本地。现状：全量 gzip 导出（save-codec.js，0.99MB→0.02MB）+ IndexedDB 全量正文 + 虚拟滚动。
 
 ### 候选
-1. **照搬星海服务端差分**：否掉——违背 DR-001 零后端。
+1. **采用星海服务端差分**：否掉——违背 DR-001 零后端。
 2. **本地差分快照**：IndexedDB 存基线 + 每轮 delta，导出时可选"全量 gzip / 差分包"。选此。
 3. **不做，只保留全量 gzip**：否掉——用户明确要求全做，且多分支场景差分包有明显体积优势。
 
@@ -172,7 +172,7 @@ T07 要实现长文档差分。星海用服务端差分（违背 DR-001），云
 | B5 | 驱动力闸门（静滞判定省 token） | 已完成 | `js/npc-bridge.js`（driveOne，演化前的静滞拦截） |
 
 ### B2–B5 实施中发现并修复的两处缺口（真浏览器驱动）
-1. `WorldRuntime.NPC.upsert` 有字段白名单，丢弃 `npcTag/isBond/tier` → 随从被误判为无驱动契约者。修复：`fromChronicle` 写回自定义属性（随 save 整体序列化），新增 `setRole` 显式标记。
+1. `WorldRuntime.NPC.upsert` 有字段白名单，丢弃 `npcTag/isBond/tier` → 随侍被误判为无驱动行者。修复：`fromChronicle` 写回自定义属性（随 save 整体序列化），新增 `setRole` 显式标记。
 2. 态度 patch 写入用英文键、读取兼容中英文，调用方传中文键「好感/信任」失效。修复：`normalizePatch` 归一化中英文键。
 两处均已补回归断言，真浏览器复验 driveActive=true、favor=30 正确。
 

@@ -49,7 +49,7 @@
       var deeds = (rec.deeds || []).slice(-4).reverse().map(function (x) {
         return '<li><i>' + esc(x.at || '') + '</i>' + esc(x.text) + '</li>';
       }).join('') || '<li class="nc-empty">暂无生平记录</li>';
-      var tagLabel = { contractor: '契约者', native: '土著', companion: '同伴', pet: '随从' }[rec.npcTag] || rec.npcTag;
+      var tagLabel = { contractor: '行者', native: '本地人', companion: '同伴', pet: '随侍' }[rec.npcTag] || rec.npcTag;
       return '<div class="nc-card">' +
         '<div class="nc-hd"><b>' + esc(e.name) + '</b><em>' + esc(tagLabel) + (e.isBond ? ' · 羁绊' : '') + '</em></div>' +
         '<div class="nc-axes">' +

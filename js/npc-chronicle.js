@@ -177,19 +177,19 @@
       var produced = null;
 
       if (rec.npcTag === "native") {
-        // 土著：留在故土过本地生活，不触碰契约者术语
+        // 本地人：留在故土过本地生活，不触碰行者术语
         auto.phase = "home";
         if (rnd() < 0.35) {
           produced = "在故地照旧过日子，起居如常";
         }
       } else if (rec.npcTag === "companion" || rec.npcTag === "pet") {
-        // 随从/宠物：恒在主角一侧
+        // 随侍/宠物：恒在主角一侧
         auto.phase = "along";
         if (rnd() < 0.4) {
           produced = "随在身侧，处理些零碎事务";
         }
       } else {
-        // 契约者/默认：任务地与休整地双相轮转
+        // 行者/默认：任务地与休整地双相轮转
         var span = 2 + Math.floor(rnd() * 3); // 2~4 tick 换一次相
         if (auto.ticks - (auto.phaseRound || 0) >= span) {
           auto.phase = (auto.phase === "mission" ? "rest" : "mission");
@@ -223,7 +223,7 @@
       rec = API.ensure(rec);
       ctx = ctx || {};
       if (rec.archivedAt || rec.frozenAt) return { active: false, reason: "静滞·已归档或冻结" };
-      if (rec.npcTag === "companion" || rec.npcTag === "pet") return { active: true, reason: "随从恒有驱动" };
+      if (rec.npcTag === "companion" || rec.npcTag === "pet") return { active: true, reason: "随侍恒有驱动" };
 
       var disp = rec.disposition;
       var sig = ctx.situation || {};
@@ -233,11 +233,11 @@
       var hasSocial = !!(sig.social && sig.social[rec.name]);
 
       if (rec.npcTag === "native") {
-        if (hasBond || hasTask || hasTension) return { active: true, reason: "土著·羁绊/任务/局势" };
-        return { active: false, reason: "静滞·土著无本地驱动" };
+        if (hasBond || hasTask || hasTension) return { active: true, reason: "本地人·羁绊/任务/局势" };
+        return { active: false, reason: "静滞·本地人无本地驱动" };
       }
-      // 契约者/默认
-      if (hasBond || hasTask || hasTension || hasSocial) return { active: true, reason: "契约者·羁绊/任务/局势/社交" };
+      // 行者/默认
+      if (hasBond || hasTask || hasTension || hasSocial) return { active: true, reason: "行者·羁绊/任务/局势/社交" };
       return { active: false, reason: "静滞·无行动驱动" };
     },
 
