@@ -4,6 +4,16 @@
    · 接入大模型 API 后：小云获得完整对话与工具调用（⟦tool⟧ 协议，最多2轮），
      可自主增补世界书条目、修格式、查变量、管存档、换预设、开发新模块。 */
 (function () {
+  /* v4.41.0 全局并发闸门：小云的三处大模型 fetch 直连（绕过 MoNetGuard），统一从这里过闸。
+     run() 自带 acquire/finally-release；闸门未加载时（老缓存）无缝降级为原生 fetch。 */
+  function gfetch(url, opts) {
+    try {
+      if (window.AIGovernor && window.AIGovernor.run) {
+        return window.AIGovernor.run('小云', function () { return fetch(url, opts); });
+      }
+    } catch (e) {}
+    return fetch(url, opts);
+  }
   var FORMS = [
     { k: 'wenrou', n: '温柔', img: 'assets/xiaoyun-wenrou-happy.png', hi: '今天想写点什么呢？我在哦～', tips: ['需要帮忙吗？点我！', '卡文了？我可以急救～', '今天也要一起加油呀'] },
     { k: 'aojiao', n: '傲娇', img: 'assets/xiaoyun-aojiao-happy.png', hi: '哼、才不是特意等你的呢。想写什么？', tips: ['别磨蹭啦，点我！', '有本大小姐在，怕什么卡文', '快点开我啦！'] },
@@ -100,7 +110,7 @@
   function llm(messages, cb) {
     var a = apiCfg();
     if (!a) { cb(null); return; }
-    fetch(a.base + '/chat/completions', {
+    gfetch(a.base + '/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + a.key },
       body: JSON.stringify({ model: a.model, temperature: 0.7, messages: messages })
@@ -433,7 +443,7 @@
     if (DEV.fix < 2 && DEV.api && DEV.api.key && DEV.api.base) {
       DEV.fix++; DEV.busy = true;
       st.className = 'status'; st.textContent = '⚠ 自检出运行错误，小云正在自修复（第 ' + DEV.fix + '/2 轮）…';
-      fetch(DEV.api.base.replace(/\/$/, '') + '/chat/completions', {
+      gfetch(DEV.api.base.replace(/\/$/, '') + '/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEV.api.key },
         body: JSON.stringify({ model: DEV.api.model, temperature: 0.4, messages: [
@@ -533,7 +543,7 @@
       var key = inK.value.trim(), base = inU.value.trim(), model = inM.value.trim();
       curAPI = (key && base) ? { key: key, base: base, model: model } : null;
       if (key && base) {
-        fetch(base.replace(/\/$/, '') + '/chat/completions', {
+        gfetch(base.replace(/\/$/, '') + '/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
           body: JSON.stringify({ model: model, messages: [{ role: 'system', content: SYS }, { role: 'user', content: wish }], temperature: 0.7 })
