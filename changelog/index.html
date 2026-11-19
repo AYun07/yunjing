@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.40.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.41.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,31 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.41.0 ==================== -->
+        <article class="log-entry" data-tags="成本 并发 接口" style="--entry-hue:#7f9fc0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.41.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">全局动态并发闸门 · 控制大模型真实调用并发，按你的端点自适应省钱</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：新增跨接口的全局并发闸门——同时发出的大模型请求数受动态上限约束，撞限流自动收紧、顺畅再逐步回升，玩家可在成本面板选偏好档。只排队、不拒绝，不按次数/花费强制熔断。 · <a href="https://github.com/AYun07/yunjing/compare/v4.40.0...v4.41.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>跨接口全局并发闸门</b>：新增 AIGovernor，主笔 / 变量AI / 动态世界 / 手机分身 / 提示词 / 生图 / 小云 全部统一过闸。此前只有「同接口串行」，不同接口可同时打出 4~6 路；现在跨接口在途数也有上限，超额请求排队、不丢弃。</li>
+                    <li><b>动态自适应、因人而异</b>：默认均衡档起点 2 路；撞限流(429)/5xx 立即收紧到下限、进入冷静期；连续 4 次顺畅才回升一格。可在「📊 调用面板 → 并发偏好」选 保守(1~2) / 均衡(2~3) / 激进(3~5)，按自己的端点与机器调。</li>
+                    <li><b>不设强制熔断</b>：闸门只控制「同时在途数」，请求最终都会发出——不会因累计次数或估算费用到顶就拦你。花费仍由 TokenUsage / 用量面板透明展示（输入单价自填，只记不拦）。</li>
+                    <li><b>额外付费功能明示成本</b>：动态世界 / 责编自审 / 多候选并行保持默认关闭，开启处明确标注「会额外调用大模型、按端点计费、每轮成本 ×N」，让你心里有数再决定。</li>
+                    <li><b>有界与稳健</b>：排队等待封顶 120 秒后强制放行，绝不永久挂起；任何异常路径都释放名额、不泄漏；闸门未加载时（旧缓存）各调用点无缝降级为原生请求。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.40.0 ==================== -->
         <article class="log-entry" data-tags="世界 演化 时间" style="--entry-hue:#6f9faf;">
             <div class="entry-head">
                 <span class="entry-ver">v4.40.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">世界按正文时间演化 · 过去几天演化几天，过去几年演化几年</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：世界演化从「跳时间只推进数字 + 跑一拍」升级为「真·逐日全量」——正文写过去三天，势力/众生/张力就逐日演化三拍；写过去三年，就逐日演化上千拍，势力数度兴衰、人物成长入账。分钟/时辰级短跨度只更新时刻与当下轻量动态，不动世界日。 · <a href="https://github.com/AYun07/yunjing/compare/v4.39.0...v4.40.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -854,7 +873,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.40.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.41.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

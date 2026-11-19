@@ -43,6 +43,28 @@
   }
   function saveRates(r) { try { localStorage.setItem(RATE_KEY, JSON.stringify(r)); } catch (e) {} }
 
+  /* v4.41.0 全局并发偏好切换：让玩家按自己的端点/机器选档（因人而异），动态上限自动自适应。
+     不设费用/次数硬熔断——这里只调「同时在途的请求数」，请求最终都会发出。 */
+  function buildGovernorBlock() {
+    var G = window.AIGovernor;
+    if (!G) return '';
+    var cur = G.getPref();
+    var st = G.status();
+    var opts = [
+      { k: 'frugal', t: '保守', d: '同时最多 1~2 路，最省额度、最稳' },
+      { k: 'balanced', t: '均衡', d: '同时 2~3 路，撞限流自动收紧（默认）' },
+      { k: 'aggressive', t: '激进', d: '同时 3~5 路，快但更易撞限流' }
+    ].map(function (o) {
+      return '<button type="button" class="up-gov-opt' + (o.k === cur ? ' on' : '') + '" data-pref="' + o.k + '" title="' + o.d + '">' + o.t + '</button>';
+    }).join('');
+    return ''
+      + '<div class="up-gov">'
+      + '  <div class="up-gov-head">⚙ 并发偏好 <span class="up-gov-now">当前：' + esc(st.label) + '（上限 ' + st.limit + ' 路，在途 ' + st.inflight + '）</span></div>'
+      + '  <div class="up-gov-opts">' + opts + '</div>'
+      + '  <div class="up-gov-tip">云境会限制同时发出的大模型请求数：撞限流自动收紧、顺畅再逐步回升。这只是「并发排队」，不会拦你、不按花费强制停止。</div>'
+      + '</div>';
+  }
+
   function build() {
     var st = (window.TokenUsage && TokenUsage.get) ? TokenUsage.get() : { last: null, byTag: {}, total: { inTok: 0, outTok: 0, requests: 0 } };
     var rates = loadRates();
@@ -86,6 +108,7 @@
       + '    </div>'
       + '    <div class="up-cost-val">' + (hasRate ? ('约 <b>¥' + cost.total.toFixed(4) + '</b>') : '填入你所用模型的单价，即可估算本局花费（各厂商价格不同，请以账单为准）') + '</div>'
       + '  </div>'
+      + buildGovernorBlock()
       + '  <div class="up-note">说明：Token 数为本地估算（中文约 1.6 字/token），实际以厂商账单为准；数据随存档保存，可在「工具箱 → 存档体检」清档时清零。</div>'
       + '  <div class="up-actions"><button class="up-reset" type="button">清空本次统计</button></div>'
       + '</div>';
@@ -133,6 +156,17 @@
         color:var(--text);border-radius:6px;padding:5px 8px;font-size:12px;font-family:inherit;}
       .up-cost-val{margin-top:10px;font-size:13px;color:var(--text-muted,#a8a290);}
       .up-cost-val b{font-size:18px;color:#7fd6a8;}
+      .up-gov{margin-top:14px;padding:12px 14px;border-radius:10px;
+        background:linear-gradient(120deg,color-mix(in srgb,var(--primary,#7fa8c9) 8%,transparent),transparent);
+        border:1px solid color-mix(in srgb,var(--primary,#7fa8c9) 22%,transparent);}
+      .up-gov-head{font-size:12px;color:var(--primary,#9fc0d9);letter-spacing:.5px;margin-bottom:10px;}
+      .up-gov-now{float:right;font-size:10.5px;letter-spacing:0;color:var(--text-muted,#a8a290);}
+      .up-gov-opts{display:flex;gap:8px;}
+      .up-gov-opt{flex:1;cursor:pointer;font-family:inherit;font-size:12px;padding:7px 4px;border-radius:7px;transition:.2s;
+        border:1px solid color-mix(in srgb,var(--primary,#9fc0d9) 30%,transparent);background:rgba(0,0,0,.18);color:var(--text-muted,#a8a290);}
+      .up-gov-opt:hover{background:rgba(127,168,201,.16);}
+      .up-gov-opt.on{border-color:#8fd9a8;background:rgba(143,217,168,.16);color:#a8ecc0;}
+      .up-gov-tip{font-size:10.5px;line-height:1.7;color:var(--text-muted,#a8a290);opacity:.82;margin-top:9px;}
       .up-note{font-size:10.5px;line-height:1.7;color:var(--text-muted,#a8a290);opacity:.8;margin-top:12px;}
       .up-actions{margin-top:14px;text-align:right;}
       .up-reset{cursor:pointer;font-family:inherit;font-size:11px;padding:5px 12px;border-radius:7px;
@@ -156,6 +190,14 @@
     box.querySelector('.up-reset').addEventListener('click', function () {
       if (window.TokenUsage && TokenUsage.reset) TokenUsage.reset();
       render();
+    });
+    box.querySelectorAll('.up-gov-opt').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (window.AIGovernor && window.AIGovernor.setPref) {
+          window.AIGovernor.setPref(btn.getAttribute('data-pref'));
+          render();
+        }
+      });
     });
   }
 
