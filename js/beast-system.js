@@ -97,8 +97,12 @@
         /* v4.48.0 专属档案层：化形 / 亲密资格 / 档案开关。全部有默认值，老存档安全。 */
         canTransform: opts.canTransform != null ? !!opts.canTransform : null,  /* null=按种类/位阶自动判定 */
         transformForm: opts.transformForm || "",   /* 人形形态名，空则自动生成 */
-        transformed: !!opts.transformed,           /* 当前是否处于人形 */
-        nsfwEligible: !!opts.nsfwEligible,         /* 玩家显式开启亲密档案资格，默认关 */
+        transformed: !!opts.transformed,           /* 当前是否处于人形（兼容旧字段） */
+        /* v4.49.0 三态形态：beast=本相兽形 / half=半兽形（半人半兽）/ human=完全人形。
+           transformed 仅为兼容旧档保留：读取时由 formState 优先。可化形者三态可切换；
+           不可化形者恒为 beast；companion 本相即 human。 */
+        formState: opts.formState || (kind === "companion" ? "human" : (opts.transformed ? "human" : "beast")),
+        nsfwEligible: !!opts.nsfwEligible,         /* 玩家显式开启亲密档案资格，默认关；v4.49.0 起兽形/半兽形/人形均可生效 */
         profileEnabled: opts.profileEnabled !== false, /* 专属档案默认开 */
         born: Date.now()
       };
@@ -124,34 +128,55 @@
       return /化形|灵|仙|妖|魅|狐|猫|蛇|九尾/.test(String(b.trait || "") + String(b.species || ""));
     },
 
-    /** 化形 / 还原（切换人形形态） */
+    /* v4.49.0 三态形态：统一读取，兼容旧档 transformed 布尔 */
+    formStateOf(b) {
+      var s = b && b.formState;
+      if (s === "beast" || s === "half" || s === "human") return s;
+      /* 老档无 formState：companion 恒 human，其余按 transformed 折算 */
+      if (b && b.kind === "companion") return "human";
+      return (b && b.transformed) ? "human" : "beast";
+    },
+
+    FORM_LABEL: { beast: "本相兽形", half: "半兽形", human: "完全人形" },
+
+    /** 化形 / 形态切换：三态循环 beast→half→human→beast。
+     *  force 可为 "beast"/"half"/"human"（指定）、true(等价 human)/false(等价 beast)、
+     *  省略或 "next"（下一态）。不可化形者恒 beast；companion 恒 human。 */
     transform(id, force) {
       var a = load(); var i = a.findIndex(function (x) { return x.id === id; }); if (i < 0) return null;
       var b = a[i];
       var br = this._bridge();
       var can = br ? br.canTransform(b) : this.canTransform(id);
       if (!can) { if (window.MoChibi) MoChibi.say("「" + b.name + "」尚不具备化形之力。", 2400); return null; }
-      var target = (force === true) ? true : (force === false) ? false : !b.transformed;
-      if (b.kind === "companion") target = true; /* 本相即人形，不可还原成兽 */
-      b.transformed = target;
-      if (target && !b.transformForm) {
+      var cur = this.formStateOf(b);
+      var ORDER = ["beast", "half", "human"];
+      var target;
+      if (b.kind === "companion") target = "human"; /* 本相即人形，不可还原成兽 */
+      else if (force === "beast" || force === "half" || force === "human") target = force;
+      else if (force === true) target = "human";       /* 旧调用兼容 */
+      else if (force === false) target = "beast";      /* 旧调用兼容 */
+      else target = ORDER[(ORDER.indexOf(cur) + 1) % ORDER.length]; /* 循环 next */
+      b.formState = target;
+      b.transformed = (target === "human");            /* 同步旧字段：仅完全人形为真 */
+      if ((target === "half" || target === "human") && !b.transformForm) {
         var title = { spirit: "灵使", demon: "妖将", companion: "本相", pet: "灵童" }[b.kind] || "化形";
         b.transformForm = String(b.name).replace(/[·•].*$/, "") + "·" + title;
       }
       a[i] = b; save(a);
-      /* 化形写一条生平 */
+      /* 形态变化写一条生平 */
       try {
-        if (br) br.addDeed(b, target ? "运功化形，显出人形「" + b.transformForm + "」。" : "收敛化形，复归本相。", {}, "transform");
+        var label = this.FORM_LABEL[target];
+        if (br) br.addDeed(b, "形态转为「" + label + "」" + (b.transformForm && target !== "beast" ? "（" + b.transformForm + "）" : "") + "。", {}, "transform");
       } catch (e) {}
-      if (window.MoChibi) MoChibi.say("「" + b.name + "」" + (target ? "化为人形：" + b.transformForm : "复归本相。"), 3000);
+      if (window.MoChibi) MoChibi.say("「" + b.name + "」现为「" + this.FORM_LABEL[target] + "」" + (target === "human" && b.transformForm ? "：" + b.transformForm : "") + "。", 3000);
       return b;
     },
 
-    /** 玩家开启/关闭该只的亲密档案资格（默认关；仍需人形 + 系统开启才真正生效） */
+    /** 玩家开启/关闭该只的亲密档案资格（默认关；v4.49.0 起兽形/半兽形/人形三态均可生效，仍需系统开启） */
     setNsfwEligible(id, on) {
       var a = load(); var i = a.findIndex(function (x) { return x.id === id; }); if (i < 0) return false;
       a[i].nsfwEligible = !!on; save(a);
-      if (window.MoChibi) MoChibi.say(on ? "已为「" + a[i].name + "」开启亲密档案资格（仍需人形且在系统设置中开启亲密档案）。" : "已关闭「" + a[i].name + "」的亲密档案资格。", 3600);
+      if (window.MoChibi) MoChibi.say(on ? "已为「" + a[i].name + "」开启亲密档案资格（兽形/半兽形/人形均可，仍需系统设置中开启亲密档案）。" : "已关闭「" + a[i].name + "」的亲密档案资格。", 3600);
       return true;
     },
 
@@ -160,6 +185,25 @@
       var b = this.get(id); if (!b) return null;
       var br = this._bridge();
       return br ? br.profileOf(b) : { id: b.id, name: b.name, kind: b.kind, personality: null, form: null, intimacy: null };
+    },
+
+    /** v5.0.0：随行特性/技艺的语意解读—— trait/species/skills 交给语义引擎，口径与装备/称号一致 */
+    semanticBonusOf(b) {
+      b = b || {};
+      var se = (typeof window !== "undefined" && window.SemanticEngine) || null;
+      if (!se || !se.interpret) return [];
+      var custom = se.getCustomText ? se.getCustomText("beast:" + (b.id || b.name)) : "";
+      var source = custom || [b.species, b.trait].concat(b.skills || []).filter(Boolean).join("·");
+      if (!source) return [];
+      return String(source).split(/[·、，,;；\n]+/).map(function (x) { return x.trim(); }).filter(Boolean)
+        .slice(0, 6)
+        .reduce(function (acc, piece) {
+          var h = 0, sid = String(b.id || "");
+          for (var hi = 0; hi < sid.length; hi++) h = (Math.imul(h, 31) + sid.charCodeAt(hi)) >>> 0;
+          return acc.concat(se.interpret(piece, h + piece.length));
+        }, [])
+        .filter(function (a) { return a.confidence >= 0.5; })
+        .map(function (a) { a.source = custom ? "custom" : "semantic"; return a; });
     },
 
     /** 行为演化（性格 × 意志 × 轨迹），供世界时钟/事件调用 */
@@ -335,8 +379,13 @@
       var r = this.battleRoster();
       if (!r.length) return "";
       return "【随队协同】玩家此战可召唤随行：" + r.map(function (b) {
-        return b.name + "（" + KINDS[b.kind].name + " Lv" + b.level + "，攻" + b.stats.atk + "/速" + b.stats.spd + "，技能【" + b.skills.join("、") + "】)";
-      }).join("；") + "。协同技按羁绊触发，羁绊越高配合越默契。";
+        var sem = "";
+        try {
+          var afs = window.BeastSystem.semanticBonusOf(b);
+          if (afs && afs.length) sem = "，特性倾向【" + afs.map(function (a) { return a.text; }).join("、") + "】";
+        } catch (e) {}
+        return b.name + "（" + KINDS[b.kind].name + " Lv" + b.level + "，攻" + b.stats.atk + "/速" + b.stats.spd + "，技能【" + b.skills.join("、") + "】" + sem + "）";
+      }).join("；") + "。协同技按羁绊触发，羁绊越高配合越默契；特性倾向须在协同描写中体现。";
     },
 
     /* =====================================================================
@@ -405,11 +454,13 @@
         var k = KINDS[b.kind];
         var br = window.BeastProfileBridge;
         var canTf = br ? br.canTransform(b) : (b.kind === "companion" || ((b.kind === "spirit" || b.kind === "demon") && (b.realmIdx || 0) >= 4));
+        var fstate = this.formStateOf(b);
         var tfBtn = canTf
-          ? '<button onclick="BeastSystem.transform(\'' + b.id + '\')">' + (b.transformed ? "↩ 还原本相" : "✦ 化形") + '</button>'
+          ? '<button onclick="BeastSystem.transform(\'' + b.id + '\')">' + '✦ 形态（' + this.FORM_LABEL[fstate] + '）›</button>'
           : '';
+        var formColor = { beast: "#9aa0b4", half: "#7ec8ff", human: "#b79bff" }[fstate];
         return '<div class="beast-card">' +
-          '<div class="top"><span class="ico">' + k.ico + '</span><span class="nm">' + b.name + (b.transformed ? ' <span style="font-size:11px;color:#b79bff">人形</span>' : '') + '</span><span class="kd">' + k.name + ' · ' + REALMS[b.realmIdx] + ' Lv' + b.level + '</span></div>' +
+          '<div class="top"><span class="ico">' + k.ico + '</span><span class="nm">' + b.name + (canTf ? ' <span style="font-size:11px;color:' + formColor + '">' + this.FORM_LABEL[fstate] + '</span>' : '') + '</span><span class="kd">' + k.name + ' · ' + REALMS[b.realmIdx] + ' Lv' + b.level + '</span></div>' +
           '<div class="beast-bar"><i style="width:' + b.bond + '%"></i></div>' +
           '<div class="beast-meta">气血' + b.stats.hp + ' · 攻' + b.stats.atk + ' · 防' + b.stats.def + ' · 速' + b.stats.spd + ' · 技艺【' + b.skills.join("、") + '】 · 特性「' + b.trait + '」<br>羁绊 ' + b.bond + '/100 · ' + ({ active: "随队", stable: "寄养", sealed: "镇压" }[b.status] || b.status) + '</div>' +
           '<div class="btns">' +
@@ -471,11 +522,34 @@
         + (pers.brief ? '<div class="row" style="margin-top:6px">' + esc(pers.brief) + '</div>' : '')
         + (pers.psychology && pers.psychology.fear ? '<div class="row" style="margin-top:6px;color:#ffb3b3">核心恐惧：' + esc(pers.psychology.fear) + ' ｜ 行事机制：' + esc(pers.psychology.mechanism || '') + '</div>' : '')
         + '</div>';
-      /* 化形 */
+      /* 化形（v4.49.0 三态） */
+      var fstate = window.BeastSystem.formStateOf(b);
+      var fcolor = { beast: "#9aa0b4", half: "#7ec8ff", human: "#b79bff" }[fstate];
       html += '<div class="bpf-card"><h4>✦ 形态</h4><div class="row">'
         + '可化形：' + (form.canTransform ? '是' : '否')
-        + ' ｜ 当前：' + (form.transformed ? '人形「' + esc(form.formName) + '」' : '本相（兽形）')
-        + '</div>' + (form.realmRequired ? '<div class="row" style="opacity:.7">灵兽/妖兽需达位阶 ' + form.realmRequired + ' 方可化形</div>' : '') + '</div>';
+        + ' ｜ 当前：<span style="color:' + fcolor + '">' + (window.BeastSystem.FORM_LABEL[fstate] || "本相兽形") + '</span>'
+        + ((fstate === "half" || fstate === "human") && form.formName ? '「' + esc(form.formName) + '」' : '')
+        + '</div>'
+        + (form.canTransform ? '<div class="row" style="margin-top:6px">'
+          + '<button onclick="BeastSystem.transform(\'' + b.id + '\',\'beast\');BeastSystem.openProfile(\'' + b.id + '\')"' + (fstate === "beast" ? ' disabled' : '') + '>兽形</button> '
+          + '<button onclick="BeastSystem.transform(\'' + b.id + '\',\'half\');BeastSystem.openProfile(\'' + b.id + '\')"' + (fstate === "half" ? ' disabled' : '') + '>半兽形</button> '
+          + '<button onclick="BeastSystem.transform(\'' + b.id + '\',\'human\');BeastSystem.openProfile(\'' + b.id + '\')"' + (fstate === "human" ? ' disabled' : '') + '>人形</button>'
+          + '</div>' : '')
+        + (form.realmRequired ? '<div class="row" style="opacity:.7">灵兽/妖兽需达位阶 ' + form.realmRequired + ' 方可化形</div>' : '') + '</div>';
+      /* v5.0.0 语意特性：species/trait/skills 按语意解读出倾向（与装备/称号同口径），玩家可自定义 */
+      try {
+        var semB = window.BeastSystem.semanticBonusOf(b);
+        var custB = (window.SemanticEngine && SemanticEngine.getCustomText('beast:' + b.id)) || '';
+        html += '<div class="bpf-card"><h4>✦ 语意特性</h4>'
+          + (semB.length
+            ? '<div class="row">' + semB.map(function (a) {
+                return '<span class="tag" style="color:' + (a.value < 0 ? '#e07070' : '#8fd9a8') + '" title="' + esc(a.desc || '') + '">' + esc(a.text) + '</span>';
+              }).join(' ') + '</div>'
+            : '<div class="row ph">特性暂未解读出明显倾向</div>')
+          + (custB ? '<div class="row" style="opacity:.7;margin-top:4px">已自定义：' + esc(custB) + '</div>' : '')
+          + '<div class="row" style="margin-top:8px"><button onclick="window.BonusEngine&&BonusEngine.openAffixEditor(\'beast:' + esc(b.id) + '\',{title:\'✦ ' + esc(b.name) + ' · 自定义特性\'})">✎ 自定义特性</button> '
+          + '<span style="opacity:.6">(写任意词，按语意附加效果)</span></div></div>';
+      } catch (e) {}
       /* 生平经历 */
       var deeds = (chron.deeds || []).slice(-8).reverse();
       html += '<div class="bpf-card"><h4>📜 生平经历（只增不删）</h4>'
@@ -491,7 +565,7 @@
       }
       html += '<div class="row" style="margin-top:8px">'
         + '<button onclick="BeastSystem.setNsfwEligible(\'' + b.id + '\',' + (!b.nsfwEligible) + ');BeastSystem.openProfile(\'' + b.id + '\')">' + (b.nsfwEligible ? '关闭' : '开启') + '亲密档案资格</button> '
-        + '<span style="opacity:.6">(需人形 + 系统设置中开启亲密档案方可生效)</span></div>'
+        + '<span style="opacity:.6">(v4.49.0 起兽形/半兽形/人形均可，仅需系统设置中开启亲密档案)</span></div>'
         + '</div>';
       html += '</div>';
 

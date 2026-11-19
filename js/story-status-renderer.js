@@ -253,8 +253,27 @@ const StoryStatusRenderer = {
     }
     /* v3.65.0 即时反馈：与上轮值比对，变动行加闪动 + Δ 浮标（受伤红/恢复绿）；
        另监听 yj:stat-change（战斗受伤/疗伤即时触发），面板开着就当场重绘补闪 */
+    /* v4.49.0 装备词条+称号加成行：净值来自 BonusEngine 单一真源 */
+    let bonusHTML = "";
+    if (window.BonusEngine) {
+      try {
+        BonusEngine.recompute();
+        const net = BonusEngine.netMods();
+        if ((net.buffs && net.buffs.length) || (net.debuffs && net.debuffs.length) || net.title) {
+          const bits = [];
+          if (net.title) bits.push("🏅" + this.esc(net.title));
+          const llmMark = (s) => s.source === "llm" ? `<span style="opacity:.7" title="大模型语意解读 · ${this.esc(s.by || 'AI')}">✨</span>` : "";
+          (net.buffs || []).forEach((s) => bits.push(`<span style="color:var(--primary,#8fd9a8)">${llmMark(s)}${this.esc(s.text)}</span>`));
+          (net.debuffs || []).forEach((s) => bits.push(`<span style="color:#e07070">${llmMark(s)}${this.esc(s.text)}</span>`));
+          bonusHTML = `<div class="stat-row stat-row-text" title="装备词条+称号即时结算，已计入战斗与检定">
+                    <span class="stat-label">⚡ 加成</span>
+                    <span class="stat-inline-val">${bits.join(" · ")}</span>
+                </div>`;
+        }
+      } catch (e) { /* 不阻断 */ }
+    }
     const last = this._lastStats || {};
-    const html = talentHTML + timeHTML + keys.map((k) => {
+    const html = talentHTML + timeHTML + bonusHTML + keys.map((k) => {
       const val = Math.max(0, Math.min(100, stats[k]));
       const color = this.statColor(val);
       /* v4.17.4 强项星标改用世界主色（旧值 #e8b339 是写死的固定金） */
@@ -273,8 +292,23 @@ const StoryStatusRenderer = {
     }).join("");
     this._lastStats = Object.assign({}, stats);
     this._bindStatChange();
+    this._bindBonusChange();
     if (this._same("stats", html)) return;
     area.innerHTML = html;
+  },
+  /** v4.49.0 装备/称号变更即时反馈：BonusEngine 派发 yj:bonus-change 时当场重绘 */
+  _bindBonusChange() {
+    if (this._bonusChangeBound || typeof window === "undefined" || !window.addEventListener) return;
+    this._bonusChangeBound = true;
+    window.addEventListener("yj:bonus-change", () => {
+      try {
+        const fw = window.storyFramework;
+        if (!fw || !fw.storyState || !fw.storyState.variables) return;
+        if (!document.getElementById("statsArea")) return;
+        const v = fw.storyState.variables;
+        this.renderStats(v.stats && typeof v.stats === "object" && !Array.isArray(v.stats) ? v.stats : {});
+      } catch (e) { /* 不阻断 */ }
+    });
   },
   /** v3.65.0 战斗受伤/疗伤即时反馈：数值引擎派发 yj:stat-change 时面板当场重绘 */
   _bindStatChange() {

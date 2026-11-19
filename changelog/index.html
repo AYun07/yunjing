@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.48.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,46 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <article class="log-entry" data-tags="版本 发布 语义引擎 大模型 双重解读 成本治理" style="--entry-hue:#7a5ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v5.1.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">本地 + 大模型双重解读 · 词条语意更懂你</h3>
+            <p class="entry-lead">词条的语意解读从"本地一套"升级为"本地 + 大模型双重"：本地语素解读保持同步即时、离线可用，作为零延迟保底；大模型在后台异步做深度解读，结果写入缓存后自动回填，加成面板、战斗、检定与主笔提示词下次取数即采用更贴切的解读。全程走已治理的调用通道，成本与并发完全可控。</p>
+            <div class="ver-diff">
+                <div><b>双重解读</b>：本地语素即时保底 + 大模型深度解读异步回填，来源在状态栏以 ✨ 标注、在提示词里写明；优先级恒为「显式数值声明 &gt; 大模型解读 &gt; 本地语素 &gt; 涌现」。</div>
+                <div><b>成本纪律</b>：复用并发闸门 + 退避重试 + Token 记账（tag=语义解读），缓存 7 天、批量上限、在途去重、全局开关；同一文本绝不重复解读，显式数值声明直接跳过大模型。</div>
+                <div><b>全系统统一</b>：装备、称号、随行加载后惰性触发补充解读；无网络 / 未配置 / 关闭时完全回退纯本地，v5.0.0 行为逐字不变，老档安全。</div>
+            </div>
+        </article>
+
+        <article class="log-entry" data-tags="版本 发布 语义引擎 动态生成 自定义词条 涌现" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v5.0.0</span>
+                <span class="entry-date">2026-11-19</span>
+            </div>
+            <h3 class="entry-title">语义词缀引擎 · 词条按语意解读、随情境涌现、由玩家定义</h3>
+            <p class="entry-lead">词条不再是从固定清单里挑——现在写下任何一句话，引擎都能读懂它的语意并附加相应效果；同一件装备在世界、回合、骰子、战斗状态不同时会生成不同词条，世界真正"活"了起来。装备、称号、随行三大系统统一走这一套语义引擎，玩家可对任意目标自定义词条，也可写明数值（如「+9攻击」）直接指定。全程零额外大模型调用，原始六维与既有数值纪律不受影响。</p>
+            <p class="ver-diff"><b>相比上一版的变化</b>：① 新增 <code>js/semantic-engine.js</code> 本地语义词缀引擎——13 组语素词典覆盖攻防/气血/速度/暴击/六维语义轴，程度副词（无双×2、微×0.6）与减益词加权；任意自然语言按语意解读出属性与强度，显式数值声明（+9攻击 / 防御-3 / 暴击+5%）优先覆盖。② <b>动态涌现</b>：种子化伪随机以世界/回合/骰子历史/战斗状态/装备名为种子，意象×倾向组合生成词条；同种子可复现、异情境产出不同词条，战斗或极端骰子下有概率出「无双·」稀有词条。③ 优先级统一为「玩家自定义 &gt; 系统明确设定 &gt; 语意解读 &gt; 老档兜底」；装备名即性质（剑→攻、甲→防）作主干，情境生成补足条数。④ 装备抽屉、称号阁、随行档案三处新开「✎自定义」入口，实时预览语意解读；随行特性/技艺的语意倾向注入战斗协同 prompt，不污染主角六维。 · <a href="https://github.com/AYun07/yunjing/compare/v4.49.0...v5.0.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
+        <article class="log-entry" data-tags="新增 装备词条 称号系统 即时加成 NSFW三态 数值引擎" style="--entry-hue:#7f9fd0;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.49.0</span>
+                <span class="entry-date">2026-11-19</span>
+            </div>
+            <h3 class="entry-title">亲密三态开放 · 装备词条与称号的即时加成引擎</h3>
+            <p class="entry-lead">亲密档案从"仅人形"开放为兽形/半兽形/人形三态；装备新增按品级自带的词条系统，称号独立成阁——两者的增益与减益汇入同一加成层，即时计入战斗伤害、日常检定与状态面板。加成只读叠加，绝不污染原始六维，属性引擎的数值纪律完全不受影响。全程零额外大模型调用。</p>
+            <p class="ver-diff"><b>相比上一版的变化</b>：① 亲密门槛由"显式开启 + 人形 + 系统开启"三门槛改为"显式开启 + 系统开启"两门槛，兽形/半兽形/人形均可建亲密档案，三态按随行 id 共用一份档案、切换形态不串档；新增 <code>formState</code> 三态字段与循环切换，旧档 <code>transformed</code> 布尔自动折算兼容。② 新增 <code>js/bonus-engine.js</code> 统一加成层：词条库 17 条（增益 13 + 减益 4），按装备名与品级确定性生成，支持玩家手动覆盖；净值 <code>netMods()</code> 是战斗/检定/面板/主笔 prompt 的单一真源，佩戴/卸下/换称即时重算并派发 <code>yj:bonus-change</code>。③ 新增 <code>js/title-system.js</code> 称号阁：7 个原创称号按章节/胜场/属性/羁绊/境界解锁，同时只佩戴一个，加成回灌同一层不重复计算。④ 战斗核心注入攻击/暴击/防御/气血修正，检定读叠加后的有效六维，状态栏与装备抽屉可视化净加成与逐条来源。 · <a href="https://github.com/AYun07/yunjing/compare/v4.48.0...v4.49.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+        </article>
+
         <!-- ==================== v4.48.0 ==================== -->
         <article class="log-entry" data-tags="新增 随行档案 化形 亲密档案 宠物性格 编年史" style="--entry-hue:#7f9fd0;">
             <div class="entry-head">
                 <span class="entry-ver">v4.48.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">随行存在专属档案 · 灵宠也能化形、有性格、有编年史与亲密档案</h3>
             <p class="entry-lead">四类随行存在（宠物/灵兽/妖兽/伙伴）从"数值挂件"升级为有档案、有性格、有命运的角色：接入 NPC 编年史六项机制、性格世界书与心理模型、亲密档案，并新增化形形态。亲密默认关闭、须玩家显式开启，全程零额外大模型调用。</p>
@@ -987,7 +1021,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.48.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

@@ -2,7 +2,7 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **98** 个版本，从 `v3.55.7` 到 `v4.48.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **101** 个版本，从 `v3.55.7` 到 `v5.1.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
 > **版本分层（v4.48.0 口径）**：首行 **v4.48.0 为当前版本**；其余 **97 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
@@ -16,6 +16,9 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v5.1.0** | 2026-11-19 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v5.1.0) |
+| **v5.0.0** | 2026-11-19 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v5.0.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v5.0.0) |
+| **v4.49.0** | 2026-11-19 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.49.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.49.0) |
 | **v4.36.0** | 2026-11-18（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.36.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.36.0) |
 | **v4.29.0** | 2026-11-17 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.29.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.29.0) |
 | **v4.17.6** | 2026-11-17 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
@@ -118,9 +121,45 @@
 
 ---
 
+## v5.1.0 · 2026-11-19
+
+本地语素解读为同步即时保底，大模型异步深度解读写入缓存后自动回填
+
+走已治理通道：并发闸门+退避重试+Token记账，缓存TTL+批量去重+全局开关控成本
+
+装备/称号/随行统一接入，显式数值声明永不被覆盖
+
+无网络/未配置时完全回退纯本地，老档行为逐字不变
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v5.1.0)  [🔍 与 v5.0.0 差异](https://github.com/AYun07/yunjing/compare/v5.0.0...v5.1.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.0.zip)
+
+## v5.0.0 · 2026-11-19
+
+词条改为本地语义引擎解读：任意文本按语意附加效果，显式数值声明优先覆盖
+
+结合世界/回合/骰子/战斗情境动态生成，同种子可复现、异情境可产出不同词条
+
+装备/称号/随行统一走语义引擎，玩家可对任意目标自定义词条
+
+零网络调用，原始六维与既有数值纪律不受影响
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v5.0.0)  [🔍 与 v4.49.0 差异](https://github.com/AYun07/yunjing/compare/v4.49.0...v5.0.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v5.0.0.zip)
+
+## v4.49.0 · 2026-11-19
+
+亲密档案开放兽形/半兽形/人形三态，按随行id共用一份档案
+
+装备按品级自带词条，增益减益经统一加成层即时计入战斗与检定
+
+新增称号阁：原创称号可解锁佩戴，加成与词条同源叠加
+
+加成层只读叠加不污染原始六维，数值纪律不受影响
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.49.0)  [🔍 与 v4.48.0 差异](https://github.com/AYun07/yunjing/compare/v4.48.0...v4.49.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.49.0.zip)
+
 ## v4.36.0 · 2026-11-18（当前版本）
 
-> **相比 v4.29.0 的变化**：把竞品「星海纪行」的六项亮点引入全 38 界——每界专属维度 + 战斗结算模拟 + 世界自适应检定入账本 + 成长账本面板 + 本地差分存档。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.29.0...v4.36.0)
+> **相比 v4.29.0 的变化**：把参考项目的六项机制亮点引入全 38 界——每界专属维度 + 战斗结算模拟 + 世界自适应检定入账本 + 成长账本面板 + 本地差分存档。 · [🔍 代码差异](https://github.com/AYun07/yunjing/compare/v4.29.0...v4.36.0)
 
 规则引擎引入全 38 界：每界专属维度、世界自适应检定入账本、成长账本面板与本地差分存档，真浏览器 38 界冒烟全过。
 

@@ -65,7 +65,7 @@ G('0. 模块加载与版本');
   const sb = makeSandbox();
   const { BS, BP } = load(sb);
   ok(!!BS && !!BP, 'BeastSystem 与 BeastProfileBridge 均已挂载');
-  ok(BP.VERSION === '4.48.0', '桥接层版本号 4.48.0');
+  ok(BP.VERSION === '4.49.0', '桥接层版本号 4.49.0');
   const st = BP.stats();
   ok(st.deps.chronicle && st.deps.personality && st.deps.psyche && st.deps.intimacy && st.deps.beast, '五套依赖全部就绪');
 }
@@ -149,35 +149,72 @@ G('4. 性格世界书与行为演化');
   ok(BS.behavior(b.id, {}).tendency.length > 0, '本体 behavior 委托桥接层正确');
 }
 
-/* ============ 5. 亲密档案三门槛 ============ */
-G('5. NSFW 亲密档案：默认关 + 三门槛');
+/* ============ 5. 三态形态（兽形/半兽形/人形） ============ */
+G('5. 三态形态：循环切换与三态判定');
+{
+  const sb = makeSandbox();
+  const { BS, BP } = load(sb);
+  const spirit = BS.contract({ kind: 'spirit', name: '青羽鹤', realmIdx: 6 });
+  ok(BS.formStateOf(spirit) === 'beast', '新契约默认本相兽形');
+  ok(BS.transform(spirit.id, 'half') && BS.formStateOf(BS.get(spirit.id)) === 'half', '可切半兽形');
+  BS.transform(spirit.id, 'human');
+  ok(BS.formStateOf(BS.get(spirit.id)) === 'human', '可切完全人形');
+  var t = BS.transform(spirit.id); // next → beast
+  ok(BS.formStateOf(t) === 'beast', 'next 循环 human→beast');
+  var t2 = BS.transform(spirit.id); // next → half
+  ok(BS.formStateOf(t2) === 'half', 'next 循环 beast→half');
+  var t3 = BS.transform(spirit.id); // next → human
+  ok(BS.formStateOf(t3) === 'human', 'next 循环 half→human');
+  // 兼容旧调用：true/false
+  ok(BS.formStateOf(BS.transform(spirit.id, false)) === 'beast', '旧调用 false → 兽形');
+  ok(BS.formStateOf(BS.transform(spirit.id, true)) === 'human', '旧调用 true → 人形');
+  // 桥接层三态字段
+  var info = BP.transformInfo(BS.get(spirit.id));
+  ok(info.formState === 'human' && info.isHumanoid === true && info.isBeast === false, '桥接层 transformInfo 三态字段一致');
+  var halfInfo = BP.transformInfo({ kind: 'spirit', formState: 'half', name: '半兽' });
+  ok(halfInfo.isHalfBeast === true && halfInfo.formLabel === '半兽形', '半兽形标记正确');
+  var pet = BS.contract({ kind: 'pet', name: '雪团', trait: '黏人' });
+  ok(BS.transform(pet.id, 'human') === null, '不可化形者三态切换被拒（恒兽形）');
+}
+
+/* ============ 6. 亲密档案：默认关 + 两门槛 + 三态均可 ============ */
+G('6. NSFW 亲密档案：默认关 + 两门槛 + 三态均可');
 {
   const sb = makeSandbox();
   const { BS, BP, IA } = load(sb);
   const spirit = BS.contract({ kind: 'spirit', name: '青羽鹤', realmIdx: 6 });
   // 门槛1：默认关
   ok(BP.eligibleNSFW(spirit).ok === false, '默认未开启亲密资格');
-  // 门槛2：开了资格但仍是兽形
   BS.setNsfwEligible(spirit.id, true);
-  ok(BP.eligibleNSFW(spirit).ok === false, '开资格后仍需人形');
-  // 化形（重新取最新对象，transform 改的是存档副本）
-  BS.transform(spirit.id, true);
-  var spiritNow = BS.get(spirit.id);
-  ok(BP.eligibleNSFW(spiritNow).ok === false, '人形后仍需系统开启');
-  // 门槛3：系统开启
+  // 门槛2：系统未开
+  if (IA && IA.setEnabled) IA.setEnabled(false);
+  ok(BP.eligibleNSFW(BS.get(spirit.id)).ok === false, '开资格但系统未开启仍不可');
   if (IA && IA.setEnabled) IA.setEnabled(true);
-  ok(BP.eligibleNSFW(spiritNow).ok === true, '三门槛全满足后可建亲密档案');
-  ok(BP.intimacyKey(spiritNow).indexOf('灵宠·') === 0, '亲密档案使用人形名且灵宠前缀隔离');
-  // 兽形宠物即使全开也不可
+  // 两门槛满足：兽形即可建（v4.49.0 核心诉求）
+  var beastNow = BS.get(spirit.id);
+  ok(BS.formStateOf(beastNow) === 'beast', '当前处于兽形');
+  ok(BP.eligibleNSFW(beastNow).ok === true, '兽形 + 资格 + 系统开启 → 可建亲密档案');
+  // 半兽形
+  BS.transform(spirit.id, 'half');
+  ok(BP.eligibleNSFW(BS.get(spirit.id)).ok === true, '半兽形 + 资格 + 系统开启 → 可建亲密档案');
+  // 人形
+  BS.transform(spirit.id, 'human');
+  ok(BP.eligibleNSFW(BS.get(spirit.id)).ok === true, '人形 + 资格 + 系统开启 → 可建亲密档案');
+  // 三态共用一份档案 key（不各建、不串档）
+  var keyBeast = BP.intimacyKey({ id: 'x', name: 'x' });
+  var keyHuman = BP.intimacyKey({ id: 'x', name: 'x', formState: 'human', transformForm: '化形' });
+  ok(keyBeast === keyHuman, '亲密档案 key 三态共用（按 id，不按形态名）');
+  ok(keyBeast.indexOf('灵宠·') === 0, '亲密档案 key 灵宠前缀隔离');
+  // 不可化形宠物：v4.49.0 起兽形也可亲密
   const pet = BS.contract({ kind: 'pet', name: '雪团', trait: '黏人' });
   BS.setNsfwEligible(pet.id, true);
-  ok(BP.eligibleNSFW(pet).ok === false, '兽形宠物永不可建亲密档案');
+  ok(BP.eligibleNSFW(BS.get(pet.id)).ok === true, '不可化形宠物兽形 + 资格 + 系统开启 → 可建亲密档案');
   // 表达尺度沿用玩家三档
   const scales = IA.expressionInfo ? IA.expressionInfo().options.map(o => o.key || o.id || o.value) : [];
   ok(Array.isArray(scales) && scales.length === 3, '表达尺度沿用玩家三档设置');
 }
 
-/* ============ 6. 存档兼容 ============ */
+/* ============ 7. 存档兼容 ============ */
 G('6. 存档兼容：老宠物记录缺新字段');
 {
   const sb = makeSandbox();
@@ -195,7 +232,7 @@ G('6. 存档兼容：老宠物记录缺新字段');
   ok(typeof BS.profile(list[0].id) === 'object', '老记录可正常查看专属档案');
 }
 
-/* ============ 7. prompt 注入 ============ */
+/* ============ 8. prompt 注入 ============ */
 G('7. 主笔 prompt 注入');
 {
   const sb = makeSandbox();
@@ -208,7 +245,7 @@ G('7. 主笔 prompt 注入');
   ok(combined.indexOf('专属档案') >= 0 || combined.indexOf('性格') >= 0, '本体 prompt 叠加专属档案块');
 }
 
-/* ============ 8. 版权红线回归 ============ */
+/* ============ 9. 版权红线回归 ============ */
 G('8. 版权：专属词与项目名零残留');
 {
   const bridge = read('js/beast-profile-bridge.js');

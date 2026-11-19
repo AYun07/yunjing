@@ -1,24 +1,24 @@
 /* =========================================================================
- * 云境 · 随行存在专属档案桥接层 BeastProfileBridge（v4.48.0）
+ * 云境 · 随行存在专属档案桥接层 BeastProfileBridge（v4.49.0）
  * -------------------------------------------------------------------------
  * 把 beast-system.js 的四类随行存在（宠物/灵兽/妖兽/伙伴）接进云境已有的
  * 四套角色系统，让它们像真正的 NPC 一样有档案、有性格、有心理、有命运：
  *   1) NPCChronicle  —— 六项机制（四轴态度/生平/只增不删/离场自治/认知边界/驱动力节流）
  *   2) PersonalityCodex + PsycheModel —— 专属性格与七项心理档案、行为演化
- *   3) IntimacyArchive —— 亲密档案（仅"可化形且玩家显式开启"者，受三档尺度控制）
+ *   3) IntimacyArchive —— 亲密档案（玩家显式开启 + 系统开启；v4.49.0 起兽形/半兽形/人形三态均可，受三档尺度控制）
  *   4) 主笔 prompt —— 汇总注入，让大模型真正记得并本色演绎随行存在
  *
  * 设计红线：
  *   - 档案 id 一律 "beast:" 前缀，与普通 NPC 名册隔离，绝不串档；
  *   - 全局机制层沿用云境原创词（行者/本地人/随侍），单世界题材词不在此层出现；
- *   - 亲密默认关闭，须 beast.nsfwEligible && 可化形 && IntimacyArchive 已开启；
+ *   - 亲密默认关闭，须 beast.nsfwEligible && IntimacyArchive 已开启；三态形态不限（v4.49.0）；
  *   - 零网络调用、纯函数、延迟解析依赖，可在 Node vm 沙箱完整回归。
  * 版权：本项目独立编写，仅调用自有模块公开接口，未引用任何第三方代码。
  * ========================================================================= */
 (function () {
   "use strict";
   var G = (typeof window !== "undefined") ? window : (typeof globalThis !== "undefined" ? globalThis : {});
-  var VERSION = "4.48.0";
+  var VERSION = "4.49.0";
 
   /* ---------- 内部工具（独立实现） ---------- */
   function clamp(n, lo, hi) { n = Number(n); if (!isFinite(n)) n = lo; return n < lo ? lo : (n > hi ? hi : n); }
@@ -96,17 +96,32 @@
     return /化形|灵|仙|妖|魅|狐|猫|蛇|九尾/.test(String(b.trait || "") + String(b.species || ""));
   }
 
-  /** 化形形态详情（确定性，同输入必得同结果） */
+  /** v4.49.0 三态形态标签 */
+  var FORM_LABEL = { beast: "本相兽形", half: "半兽形", human: "完全人形" };
+  function formStateOf(b) {
+    var s = b && b.formState;
+    if (s === "beast" || s === "half" || s === "human") return s;
+    if (b && b.kind === "companion") return "human";
+    return (b && b.transformed) ? "human" : "beast";
+  }
+
+  /** 化形形态详情（确定性，同输入必得同结果）
+   *  v4.49.0：三态 beast/half/human；isHumanoid 保留但语义放宽为"非纯兽形"，
+   *  亲密门槛已不再依赖它（见 eligibleNSFW），仅保留字段兼容旧调用方。 */
   function transformInfo(b) {
     var can = canTransform(b);
     var title = FORM_TITLES[b && b.kind] || "化形";
     var base = String((b && b.name) || "无名").replace(/[·•].*$/, "");
     var humanName = (b && b.transformForm) || (base + "·" + title);
-    var humanoid = !!b && (b.kind === "companion" || !!b.transformed);
+    var st = formStateOf(b);
     return {
       canTransform: can,
-      transformed: !!b && (b.kind === "companion" || !!b.transformed),
-      isHumanoid: humanoid,
+      formState: st,
+      formLabel: FORM_LABEL[st],
+      transformed: st === "human",     /* 兼容旧字段：仅完全人形为真 */
+      isHumanoid: st !== "beast",      /* 兼容字段：半兽形/人形为真 */
+      isHalfBeast: st === "half",
+      isBeast: st === "beast",
       formName: humanName,
       formTitle: title,
       realmRequired: (b && (b.kind === "spirit" || b.kind === "demon")) ? 4 : 0
@@ -249,28 +264,26 @@
   }
 
   /* =====================================================================
-   * 四、亲密档案门槛（NSFW：默认关，须显式开启 + 可化形 + 系统开启）
+   * 四、亲密档案门槛（NSFW：默认关，须显式开启 + 系统开启；三态不限）
    * ===================================================================== */
 
   /**
-   * 是否可建亲密档案。三个条件同时满足：
-   *   ① 玩家对该只显式开启 nsfwEligible；
-   *   ② 该只具备人形形态（化形后 / 本相人形）——兽形不建亲密档案；
-   *   ③ 亲密档案系统本身已开启（玩家全局开关）。
+   * 是否可建亲密档案。v4.49.0 起两个条件同时满足即可：
+   *   ① 玩家对该只显式开启 nsfwEligible（逐只、显式、可撤销）；
+   *   ② 亲密档案系统本身已开启（玩家全局开关）。
+   *   兽形 / 半兽形 / 人形三态均可，不再要求化形——尊重玩家对"兽形/半兽形也亲密"的诉求。
    * 表达尺度走 IntimacyArchive 的全局三档（含蓄/直白/露骨），不另起炉灶。
    */
   function eligibleNSFW(b) {
     if (!b || !b.nsfwEligible) return { ok: false, reason: "玩家未对该随行开启亲密档案" };
-    var form = transformInfo(b);
-    if (!form.isHumanoid) return { ok: false, reason: "仅人形形态可建亲密档案（需先化形）" };
     var ia = IA();
     if (!ia || (ia.isEnabled && !ia.isEnabled())) return { ok: false, reason: "亲密档案系统未开启" };
-    return { ok: true, reason: "" };
+    return { ok: true, reason: "", formState: formStateOf(b) };
   }
 
-  /** 亲密档案 key：化形人形名（与兽形名隔离，互不串档） */
+  /** 亲密档案 key：按随行 id 生成，三态共用同一份档案（兽形/半兽形/人形不各建、不串档） */
   function intimacyKey(b) {
-    return "灵宠·" + transformInfo(b).formName;
+    return "灵宠·" + profileId(b);
   }
 
   /** 汇总亲密视图（仅 eligible 时；否则返回 null，绝不泄露） */
@@ -308,8 +321,8 @@
   }
 
   /**
-   * 汇总注入主笔的 prompt 块：让大模型记得随行存在的人形/兽形、性格、心理、
-   * 羁绊阶段；亲密阶段仅在玩家开启且人形时注入，避免越界。
+   * 汇总注入主笔的 prompt 块：让大模型记得随行存在的三态形态、性格、心理、
+   * 羁绊阶段；亲密阶段仅在玩家显式开启且系统开启时注入（三态均可），避免越界。
    */
   function buildPromptBlock(beasts, ctx) {
     var arr = Array.isArray(beasts) ? beasts : (function () {
@@ -326,9 +339,9 @@
       var seg = "· " + b.name + "（" + (kinds[b.kind] || "随行") + "·" + (b.species || "")
         + "，位阶" + (b.realmIdx || 0) + " Lv" + (b.level || 1) + "，羁绊" + (b.bond || 0) + "/100"
         + "，立场" + (b.stance || "忠诚") + "｜情绪" + (b.mood || "平静") + "｜忠诚" + (b.loyalty != null ? b.loyalty : 50) + "）";
-      seg += form.transformed
-        ? " 现为人形「" + form.formName + "」（" + form.formTitle + "），以人形参与社交与对话。"
-        : (form.canTransform ? " 保留化形能力（尚未化形）。" : " 兽形，不具人形形态。");
+      if (form.formState === "human") seg += " 现为完全人形「" + form.formName + "」（" + form.formTitle + "），以人形参与社交与对话。";
+      else if (form.formState === "half") seg += " 现为半兽形（半人半兽，保留兽类特征）——可直立言语，兽性与人性并存。";
+      else seg += (form.canTransform ? " 现为本相兽形，保留化形潜力（可转为半兽形/人形）。" : " 本相兽形，不具化形能力。");
       if (pers.brief) seg += " 性格：" + pers.brief;
       if (pers.psychology && pers.psychology.fear) seg += " 核心恐惧：" + pers.psychology.fear + "，据此推导其未明情境下的一贯反应。";
       var gate = eligibleNSFW(b);
@@ -347,6 +360,8 @@
     VERSION: VERSION,
     canTransform: canTransform,
     transformInfo: transformInfo,
+    formStateOf: formStateOf,
+    FORM_LABEL: FORM_LABEL,
     profileId: profileId,
     syncChronicle: syncChronicle,
     addDeed: addDeed,

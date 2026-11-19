@@ -73,7 +73,11 @@
     var stats = {};
     try {
       var st = window.storyFramework && window.storyFramework.storyState;
-      stats = (st && st.variables && st.variables.stats) || {};
+      /* v4.49.0：检定读「装备词条 + 称号」叠加后的有效六维（BonusEngine 单一真源），
+         原始 stats 仍归 AttributeEngine 管，钳制/审计不受影响；引擎未加载时退回原始值。 */
+      stats = (window.BonusEngine && typeof window.BonusEngine.effectiveStats === 'function')
+        ? window.BonusEngine.effectiveStats()
+        : ((st && st.variables && st.variables.stats) || {});
     } catch (e) { }
     var axes = [];
     var AX_IDS = axisTable();
