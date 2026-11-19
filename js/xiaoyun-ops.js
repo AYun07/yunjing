@@ -137,7 +137,7 @@
       }
     },
     "preset.importText": {
-      desc: "导入一份第三方（酒馆/SillyTavern 格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
+      desc: "导入一份第三方（酒馆/常见前端工具 格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
       fn: function (a) {
         if (!window.YunjingPresetIO) return { ok: false, msg: "预设系统未加载。" };
         if (!a || !a.json) return { ok: false, msg: "缺少预设 JSON 文本。" };

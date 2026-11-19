@@ -45,6 +45,7 @@
   let cfg = loadCfg();
   let timer = null;
   let ticking = false; /* 单飞重入锁 */
+  let pendingTick = null; /* v4.42.0：演化中若又来回合，记下最大跨度排队，批次末合并补跑，不再丢弃 */
 
   function vars() {
     const fw = window.storyFramework;
@@ -104,7 +105,8 @@
     try { if (window.LifeMode) LifeMode.daily(v, day, rnd); } catch (e) {}
     /* 确保真实势力实体存在，供 SimCore 演化 */
     try { if (window.WorldAlive && WorldAlive.seedFactions) WorldAlive.seedFactions(); } catch (e) {}
-    /* 张力向中值 50 的弱回归（无偏抖动）——lifecycle() 接管主要因果演化，这里只做温和回归 */
+    /* 张力向中值 50 的弱回归（无偏抖动）——lifecycle() 接管主要因果演化，这里只做温和回归。
+       注：太平生乱软地板放在本拍末尾（lifecycle 之后），避免被覆灭放血覆盖，见下方。 */
     if (v.tension != null) {
       var tv = clamp(Number(v.tension) || 20, 0, 100);
       var meanPull = (50 - tv) * 0.01;
@@ -130,6 +132,33 @@
     try { if (window.OpportunitySystem && OpportunitySystem.roll) OpportunitySystem.roll(day); } catch (e) {}
     /* 势力生命周期（弱者愈弱→覆灭、新势力崛起） */
     try { if (window.WorldAlive && WorldAlive.lifecycle) WorldAlive.lifecycle(); } catch (e) {}
+    /* v4.42.0 逐日演化后置护栏（真实长跑实测后补）：
+       子系统 lifecycle 是为「每回合一次」设计的，逐日连跑上千拍时有两个放大效应——
+       ① 存活<3 时每天可能新生一个势力 → 三年累积几十个已覆灭壳子（实测 88 个）；
+       ② 「覆灭=矛盾出清」每天放血 → 张力跌到 12、世界成死水。
+       这里在 lifecycle 跑完后统一兜底：裁剪最老的已覆灭势力（全存活的一律保留）、
+       张力低于软地板则回填（乱世潜流），均只作用于逐日演化层，不改子系统因果设计。 */
+    {
+      var facs = v.entities && v.entities.factions;
+      if (facs && typeof facs === "object") {
+        var allK = Object.keys(facs);
+        var MAX_CORPSES = 12;   /* 最多留 12 个已覆灭壳子供追溯，其余裁掉 */
+        var deadK = allK.filter(function (k) { return facs[k] && facs[k].collapsed; });
+        if (deadK.length > MAX_CORPSES) {
+          /* 按 collapsedRound 升序（最老的先删）；无该字段者视为最老 */
+          deadK.sort(function (a, b) {
+            var ra = Number(facs[a].collapsedRound) || -1, rb = Number(facs[b].collapsedRound) || -1;
+            return ra - rb;
+          });
+          deadK.slice(0, deadK.length - MAX_CORPSES).forEach(function (k) { delete facs[k]; });
+        }
+      }
+      if (v.tension != null) {
+        var vt = clamp(Number(v.tension) || 20, 0, 100);
+        if (vt < 30) vt += (30 - vt) * 0.35;   /* 乱世潜流：低张力缓慢回填，不锁死上限 */
+        v.tension = clamp(Math.round(vt * 10) / 10, 0, 100);
+      }
+    }
     /* 伙伴意志 */
     try {
       if (window.BeastSystem && BeastSystem.driftAll) {
@@ -200,8 +229,21 @@
      tick(quiet, days)：推进 days 个世界日，逐日各跑一拍完整结算（真·逐日全量）。
      长跨度分批 yield（每 BATCH 天让出主线程），避免界面卡死；批次末统一 save/渲染/派发。 */
   const BATCH = 20;   /* 每 20 天让出一次主线程 */
+  /* v4.42.0：演化中若又收到回合推进请求，不再 silently 丢弃——记入 pendingTick，
+     批次末合并补跑（取最大跨度），避免玩家连点/快速推进时世界少转。 */
+  function queueTick(req) {
+    if (!pendingTick) { pendingTick = Object.assign({}, req); return; }
+    if (req.kind === "day" && pendingTick.kind !== "day") { pendingTick = Object.assign({}, req); return; }
+    if (req.kind === "day" && pendingTick.kind === "day") {
+      pendingTick.days = Math.max(pendingTick.days || 1, req.days || 1);
+    }
+    /* moment 请求：已被 day 覆盖时忽略；否则取较大分钟数 */
+    if (req.kind === "moment" && pendingTick.kind === "moment") {
+      pendingTick.minutes = Math.max(pendingTick.minutes || 0, req.minutes || 0);
+    }
+  }
   function tick(quiet, days) {
-    if (ticking) return;             /* 单飞：重入直接丢弃本拍 */
+    if (ticking) { queueTick({ kind: "day", days: Math.round(Number(days) || 1), quiet: quiet }); return; }
     if (document.visibilityState === "hidden") return; /* 后台不积累 */
     const v = vars();
     if (!v) return;
@@ -264,13 +306,28 @@
       } catch (e) {}
       try { window.StoryStatusRenderer && StoryStatusRenderer.renderHistory && StoryStatusRenderer.renderHistory(v && v.history); } catch (e) {}
       try { window.MoChibi && MoChibi.react && MoChibi.react("day", { day: endDay, ev: lastEv }); } catch (e) {}
-    } finally { ticking = false; }
+    } finally {
+      ticking = false;
+      /* v4.42.0：批次末排空排队请求（合并后的最大跨度），让连续推进不丢回合 */
+      if (pendingTick) {
+        const p = pendingTick; pendingTick = null;
+        setTimeout(function () {
+          try {
+            if (p.kind === "moment") evolveByQuantum({ minutes: p.minutes, level: "moment" });
+            else tick(p.quiet !== false, p.days);
+          } catch (e) {}
+        }, 16);
+      }
+    }
   }
 
   /* 量子演化入口：根据 AttributeEngine 解析出的正文时间量选择演化路径 */
   function evolveByQuantum(q) {
     if (!q || !(q.minutes > 0)) { tick(true, 1); return; }   /* 无跨度：普通回合 +1 日 */
-    if (q.level === "moment") { momentDrift(q.minutes); return; }  /* 分钟/小时：不动世界日 */
+    if (q.level === "moment") {
+      if (ticking) { queueTick({ kind: "moment", minutes: q.minutes }); return; } /* 演化中：排队补跑短时动态 */
+      momentDrift(q.minutes); return;
+    }  /* 分钟/小时：不动世界日 */
     tick(true, Math.max(1, Math.round(q.days)));           /* 天/月/年：逐日全量演化 */
   }
 
