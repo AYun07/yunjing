@@ -505,7 +505,7 @@ window.YUNQI_REGEX = [
   "maxDepth": null
  },
  {
-  "id": "yq_bt_acg",
+  "id": "yq_bt_psyche",
   "scriptName": "云起·角色心理美化",
   "findRegex": "/(^|\\n|>)(动机|欲望|恐惧|秘密|态度|情绪|心结|执念|立场|伪装|软肋)([：:])/g",
   "replaceString": "$1**$2**$3",
