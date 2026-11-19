@@ -214,6 +214,60 @@
     return "";
   }
 
+  /* ================= v4.40.0 多粒度时间量化（世界按正文时间规模演化） =================
+     旧 parseSpanDays 只认「日/月/年」，且 total<1 直接丢弃——分钟/时辰级完全不解析。
+     这里新增全谱系量化：分钟→小时→天→月→年，统一折算成 minutes 与 days（小数）。
+     level: 'moment'(<1天) | 'day'(1~<30) | 'month'(30~<360) | 'year'(>=360) */
+  var UNIT_MIN = [
+    [/甲子/, 21600 * 1440], [/春秋|周岁|年|载/, 360 * 1440], [/季/, 90 * 1440],
+    [/个月|月/, 30 * 1440], [/旬/, 10 * 1440], [/日|天|昼夜|整日/, 1440],
+    [/时辰/, 120], [/刻/, 15], [/小时|钟头|钟点/, 60],
+    [/分钟|分针|min|minute/i, 1]
+  ];
+  /* 无需数字的量词短语：一盏茶≈15分、半柱香≈30分、一顿饭≈45分、须臾/片刻≈5分 */
+  var FUZZY_MIN = [
+    [/一顿饭|一顿|饭工夫|一餐之间/, 45], [/半柱香|一柱香|炷香|半根香/, 30],
+    [/一盏茶|一盏|杯茶|茶工夫/, 15], [/半日|半晌|大半天/, 720],
+    [/须臾|片刻|瞬息|转瞬|一瞬|刹那|弹指之间/, 5], [/半刻/, 7]
+  ];
+  function parseSpanQuantum(text, strict) {
+    var src = String(text || "");
+    if (!src) return { minutes: 0, days: 0, text: "", level: "none" };
+    var needCtx = strict !== false && !/(时间\s*\.\s*跨度|时间跨度|time\s*\.\s*span)\s*[:：]/i.test(src);
+    var bestMin = 0, bestText = "";
+    /* A) 数字 + 单位 */
+    var re = /(\d+(?:\.\d+)?|[零一两二三四五六七八九十百千万半数几]{1,4})\s*(?:个)?\s*(甲子|春秋|周岁|年|载|季|个月|月|旬|日|天|昼夜|整日|时辰|刻|小时|钟头|钟点|分钟|minute|min)/gi;
+    var m;
+    while ((m = re.exec(src))) {
+      var n = cn2num(m[1]);
+      if (!isFinite(n) || n <= 0) continue;
+      var per = 0;
+      for (var u = 0; u < UNIT_MIN.length; u++) {
+        if (UNIT_MIN[u][0].test(m[2])) { per = UNIT_MIN[u][1]; break; }
+      }
+      if (!per) continue;
+      var mins = n * per;
+      if (needCtx) {
+        var ctx = src.slice(Math.max(0, m.index - 10), m.index + m[0].length + 10);
+        if (!SPAN_CTX.test(ctx) && !/时辰|刻|小时|分钟|盏茶|柱香|顿饭|须臾|片刻/.test(m[0])) continue;
+      }
+      if (mins > bestMin) { bestMin = mins; bestText = m[0]; }
+    }
+    /* B) 模糊量词短语（一盏茶/一顿饭/须臾…）——仅当没有更大的数字跨度时采用 */
+    if (bestMin < 15) {
+      for (var f = 0; f < FUZZY_MIN.length; f++) {
+        if (FUZZY_MIN[f][0].test(src)) {
+          var fm = src.match(FUZZY_MIN[f][0])[0];
+          if (FUZZY_MIN[f][1] > bestMin) { bestMin = FUZZY_MIN[f][1]; bestText = fm; }
+        }
+      }
+    }
+    if (bestMin <= 0) return { minutes: 0, days: 0, text: "", level: "none" };
+    var days = Math.round((bestMin / 1440) * 10000) / 10000;
+    var level = days < 1 ? "moment" : (days < 30 ? "day" : (days < 360 ? "month" : "year"));
+    return { minutes: Math.round(bestMin), days: days, text: bestText, level: level };
+  }
+
   /* 期间活动系数：这段时间玩家在做什么，决定成长快慢 */
   var ACT_RULES = [
     { name: "勤修苦练", rate: 1.15, re: /闭关|苦修|潜心|打坐|吐纳|运功|修炼|苦练|勤修|不辍|浸淫|钻研|研习|历练|征战|搏杀|淬炼|炼体|悟道|参悟|勤学|苦读|操练|修行|操演|对练/ },
@@ -254,7 +308,7 @@
   }
 
   /* ---------- 数值平衡钳制 ---------- */
-  var TURN = { total: 0, gain: {}, allow: {}, span: { days: 0, text: "" }, act: ACT_DEFAULT, tierRate: 1, actTotal: 0 };
+  var TURN = { total: 0, gain: {}, allow: {}, span: { days: 0, text: "" }, spanQ: { minutes: 0, days: 0, text: "", level: "none" }, act: ACT_DEFAULT, tierRate: 1, actTotal: 0 };
   /**
    * 每轮开始：重置预算 + 解析本轮时间跨度 + 预算各属性的时间成长额度
    * @param {string} [replyText] AI 本轮回复全文（含变量块，用于检出跨度与期间状态）
@@ -263,6 +317,7 @@
   function beginTurn(replyText, vars) {
     TURN.total = 0; TURN.gain = {}; TURN.allow = {};
     TURN.span = { days: 0, text: "" };
+    TURN.spanQ = { minutes: 0, days: 0, text: "", level: "none" };
     TURN.act = ACT_DEFAULT; TURN.tierRate = 1; TURN.actTotal = 0;
     try {
       var fw = typeof window !== "undefined" ? window.storyFramework : null;
@@ -279,6 +334,11 @@
       var sp = ex ? parseSpanDays(ex[1], false) : { days: 0, text: "" };
       if (!(sp && sp.days > 0)) sp = parseSpanDays(txt);
       if (sp && sp.days > 0) TURN.span = sp;
+      /* v4.40.0 多粒度量化：分钟/时辰/天/月/年全谱系，供世界按正文时间规模演化。
+         显式「时间.跨度」优先，否则扫描全文；quantum 独立于 span（后者仍供属性成长结算）。 */
+      var q = ex ? parseSpanQuantum(ex[1], false) : { minutes: 0, level: "none" };
+      if (!(q && q.minutes > 0)) q = parseSpanQuantum(txt);
+      if (q && q.minutes > 0) TURN.spanQ = q;
       /* 2) 期间活动性质 */
       TURN.act = ACT_DEFAULT;
       for (var i = 0; i < ACT_RULES.length; i++) {
@@ -667,6 +727,7 @@
     absorbTime: absorbTime,
     settleTimeGrowth: settleTimeGrowth,
     parseSpanDays: parseSpanDays,
+    parseSpanQuantum: parseSpanQuantum,
     timeAllowance: timeAllowance,
     daysText: daysText,
     buildLiveBlock: buildLiveBlock,
@@ -676,6 +737,11 @@
        供 world-clock 在 story:turn-saved 时决定推进几个世界日（跳时间→对应天数）。
        TURN.span 每轮由 beginTurn 重置，无跨轮残留；此处仅返回快照，不改内部预算。 */
     currentSpanDays: function () { return (TURN.span && Number(TURN.span.days) > 0) ? Number(TURN.span.days) : 0; },
+    /* v4.40.0 多粒度时间量：{minutes,days,text,level}，供世界时钟按正文时间规模演化。 */
+    currentSpanQ: function () {
+      var q = TURN.spanQ;
+      return q && q.minutes > 0 ? { minutes: q.minutes, days: q.days, text: q.text, level: q.level } : null;
+    },
     TIER_NAMES: TIER_NAMES,
     /* v3.65.0 实时事件化 */
     applyEvent: applyEvent,

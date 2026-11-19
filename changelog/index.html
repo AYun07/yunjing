@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.39.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=4.40.0">
 </head>
 
 <body class="page-changelog">
@@ -316,12 +316,31 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+        <!-- ==================== v4.40.0 ==================== -->
+        <article class="log-entry" data-tags="世界 演化 时间" style="--entry-hue:#6f9faf;">
+            <div class="entry-head">
+                <span class="entry-ver">v4.40.0</span>
+                <span class="entry-date">2026-11-19</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">世界按正文时间演化 · 过去几天演化几天，过去几年演化几年</h3>
+            <p class="ver-diff"><b>相比上一版的变化</b>：世界演化从「跳时间只推进数字 + 跑一拍」升级为「真·逐日全量」——正文写过去三天，势力/众生/张力就逐日演化三拍；写过去三年，就逐日演化上千拍，势力数度兴衰、人物成长入账。分钟/时辰级短跨度只更新时刻与当下轻量动态，不动世界日。 · <a href="https://github.com/AYun07/yunjing/compare/v4.39.0...v4.40.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+            <div class="entry-detail">
+                <ul>
+                    <li><b>多粒度时间量化</b>：属性引擎新增 full-spectrum 时间解析——「一顿饭≈45分」「两个时辰=4小时」「须臾=5分」到「三月≈90日」「三年≈1080日」，带跨越语境校验，避免「三年之约」这类静态期限误判。显式「时间.跨度」字段优先。</li>
+                    <li><b>真·逐日全量演化</b>：天/月/年级跨度逐日各跑一拍完整结算——众生繁衍、势力消长与覆灭新生、人物意志漂移、自由人生账本、张力自治演化、机缘滚动——几天几拍、几年上千拍；每拍事件真实入史并注入下一轮主笔提示词。</li>
+                    <li><b>短时辰轻量演化</b>：分钟/小时级不推进世界日，只推进「时刻」（辰时→午时）并滚动当下场景短时动态（风铃、茶楼说书、天光偏移…）注入主笔，世界保持原速。</li>
+                    <li><b>性能与有界</b>：长跨度每 20 天让出主线程一次，界面不假死；实测真实子系统逐日 1080 拍约 0.9 秒；单次跨度封顶十年（3650 日）防异常；事件历史截断 60 条、势力众生受既有 CAPS 约束。</li>
+                    <li><b>可查证据</b>：长跨度额外记一条「第X→Y日（跨N日）间： extant势力A、覆灭B、众生谱C人」汇总日志，演化结果一目了然。</li>
+                </ul>
+            </div>
+        </article>
+
         <!-- ==================== v4.39.0 ==================== -->
         <article class="log-entry" data-tags="界面 世界 修复" style="--entry-hue:#7f9fbf;">
             <div class="entry-head">
                 <span class="entry-ver">v4.39.0</span>
                 <span class="entry-date">2026-11-19</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">状态栏文字全显 · 世界自转改为回合驱动</h3>
             <p class="ver-diff"><b>相比上一版的变化</b>：按玩家反馈修两处——状态栏天赋/时间从此前"只有一条缝"改为完整显示；世界不再在你未行动时自行空转，改为随你的回合推进，跳时间则一次跨到对应天数。 · <a href="https://github.com/AYun07/yunjing/compare/v4.38.0...v4.39.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
@@ -835,7 +854,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.39.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=4.40.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
