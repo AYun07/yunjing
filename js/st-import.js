@@ -1,4 +1,4 @@
-/* 云境 · 通用前端预设导入 v1.0.0
+/* 云境 · 常见前端工具预设导入 v1.0.0
    支持:世界书/Lorebook(.json)、角色卡 v2/v3(.json)、对话预设(prompts)
    用法:知识库面板点「导入通用预设」或控制台 STImport.pick() */
 (function () {
@@ -114,7 +114,7 @@
     } catch (e) {}
   }MoUtils.pollUntil(function () { try { tryMount(); } catch (e) {} }, { interval: 2500, max: 80 });
   window.STImport = { pick: pick, parse: parseST, importEntries: importEntries };
-  console.log('[STImport] 通用前端预设导入就绪(世界书/角色卡/预设)');
+  console.log('[STImport] 常见前端工具预设导入就绪(世界书/角色卡/预设)');
 })();
 
 /* ---- v1.1 知识库条目独立开/关(关闭=不进检索不进常驻,条目保留) ---- */
@@ -233,7 +233,7 @@
         var fr = new FileReader();
         fr.onload = function () {
           var card = pngCard(fr.result);
-          if (!card) { alert('这张 PNG 里没有角色卡数据(需要通用前端导出的角色卡)'); return; }
+          if (!card) { alert('这张 PNG 里没有角色卡数据(需要常见前端工具导出的角色卡)'); return; }
           var core = card.data || card;
           var es = window.STImport.parse(JSON.stringify(core));
           if (!es.length) { alert('卡内无可导入字段'); return; }
