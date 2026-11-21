@@ -408,7 +408,7 @@
       target[key] = r.val;
       /* 记录本轮该属性实际落表增量：供 settleTimeGrowth 抵充时间额度，避免重复给 */
       TURN.gain[key] = Math.round(((TURN.gain[key] || 0) + (r.val - cur)) * 10) / 10;
-      if (r.clipped && window.YJ_DEBUG) console.log("[AttributeEngine] 数值平衡钳制:", key, "请求Δ" + delta, "→ 实际Δ" + r.delta);
+      if (r.clipped && window.YJ_DEBUG) console.debug("[AttributeEngine] 数值平衡钳制:", key, "请求Δ" + delta, "→ 实际Δ" + r.delta);
       /* v3.65.0 真实变动落审计账本 + 派发即时反馈事件（仅当确有增减） */
       if (r.delta !== 0) {
         var type = opts.type || (r.delta < 0 ? "injury" : "gain");
@@ -577,7 +577,7 @@
       tv.lastGrowth = applied;
       tv.lastGrowthTotal = sum;
       LAST_SETTLE = { days: days, chapter: chapter, text: TURN.span.text };
-      if (window.YJ_DEBUG) console.log("[AttributeEngine] 时间跨越结算:", daysText(days), TURN.act.name, JSON.stringify(applied));
+      if (window.YJ_DEBUG) console.debug("[AttributeEngine] 时间跨越结算:", daysText(days), TURN.act.name, JSON.stringify(applied));
       return { days: days, spanText: tv.spanText, activity: TURN.act.name, applied: applied, total: sum };
     } catch (e) {
       return null;

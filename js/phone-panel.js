@@ -463,7 +463,7 @@
           marked++;
         }
       }
-      if (marked) console.log(`[手机分身] 旧档迁移：${marked} 位从未谋面的远方NPC撤出通讯录（正文登场后会自然回归）`);
+      if (marked) console.debug(`[手机分身] 旧档迁移：${marked} 位从未谋面的远方NPC撤出通讯录（正文登场后会自然回归）`);
     },
     /* ==================== 第六接口调用（复用主笔 / 独立配置） ==================== */
     fetchWithTimeout(url, opts = {}, timeoutMs) {
@@ -956,7 +956,7 @@ ${this.knowledgeBrief(String(text).slice(0, 60))}
         this.refresh();
         fw.saveStory();
         if (manual) (_g = window.showToast) == null ? void 0 : _g.call(window, got ? `📱 手机已刷新：新增 ${got} 条动静` : "📱 手机很安静——大家都在忙自己的", "success");
-        console.log(`[手机分身] 刷新成功，新增 ${got} 条`);
+        console.debug(`[手机分身] 刷新成功，新增 ${got} 条`);
       } catch (err) {
         console.warn("[手机分身] 刷新失败:", err.message);
         if (manual) (_h = window.showToast) == null ? void 0 : _h.call(window, `📱 手机刷新失败：${err.message}`, "error");
@@ -2419,7 +2419,7 @@ ${notes.map((n) => "· " + n).join("\n")}
         } catch (e) {
         }
       });
-      console.log("[PhonePanel] 📱 地球开放世界·手机分身模块就位");
+      console.debug("[PhonePanel] 📱 地球开放世界·手机分身模块就位");
     }
   };
   window.PhonePanel = PhonePanel;

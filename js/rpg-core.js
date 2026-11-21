@@ -1976,7 +1976,7 @@
       mod = rpgModule(genre);
       window.WorldExt.injectModules(genre, [mod]);
       mountFab();
-      console.log('[RPGCore] ' + genre + ' 网游面板就位（v2 七标签）');
+      console.debug('[RPGCore] ' + genre + ' 网游面板就位（v2 七标签）');
     } catch (e) { console.warn('[RPGCore]', e.message); }
     injected = true; return true;
   }

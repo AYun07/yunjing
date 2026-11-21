@@ -2946,7 +2946,7 @@ const ConfigModal = {
   /* ==================== v3.51.0 预设 / 正则：导入替换 + 逐块编辑 ==================== */
   mmSay(msg, type) {
     if (window.showToast) window.showToast(msg, type || "info");
-    else console.log("[MM]", msg);
+    else console.debug("[MM]", msg);
   },
   /** 下载一段文本为 JSON 文件 */
   mmDownload(name, text) {

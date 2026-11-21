@@ -31,6 +31,9 @@ tr:last-child td{border-bottom:none}
 .stat .num.g{color:#3fb950}.stat .num.y{color:#d29922}
 .stat .lbl{font-size:12px;color:#8b949e;margin-top:4px}
 img.shot{width:100%;max-width:900px;border:1px solid #30363d;border-radius:8px;margin:10px 0;display:block}
+/* v5.1.1 修 P3：验收实拍被 .gitignore 排除（不入库），页面里原来直接 <img> 引用 →
+   新克隆必然破图（实测 brokenImgs=2）。现在图片缺失时显示说明框，不再是碎图。 */
+.shot-fallback{width:100%;max-width:900px;border:1px dashed #30363d;border-radius:8px;margin:10px 0;padding:22px 16px;color:#8b949e;font-size:13px;line-height:1.8;background:rgba(255,255,255,.02)}
 code{background:#1c2128;padding:2px 6px;border-radius:4px;font-size:12px;color:#79c0ff}
 .foot{text-align:center;color:#6e7681;font-size:12px;margin-top:40px}
 ul{margin:8px 0 8px 22px}li{margin:5px 0;font-size:13px}
@@ -131,9 +134,11 @@ ul{margin:8px 0 8px 22px}li{margin:5px 0;font-size:13px}
 
 <h2>六、测试截图证据</h2>
 <h3>创作室正常态（状态面板 + 小云立绘）</h3>
-<img class="shot" src="测试快照-玩家实操.png" alt="创作室正常态">
+<img class="shot" src="测试快照-玩家实操.png" alt="创作室正常态" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+<div class="shot-fallback" style="display:none">📷 <b>创作室正常态</b> —— 本地留证实拍，<code>测试快照-玩家实操.png</code>。<br>按项目规则「验收实拍不入库」（见 <code>.gitignore</code> 的 <code>测试快照-*.png</code>），仓库里没有这张图；本地自测时可把同名文件放在项目根目录，页面会自动显示它。</div>
 <h3>AI 正文生成成功（日志取证画面）</h3>
-<img class="shot" src="测试快照-AI正文生成成功.png" alt="AI正文生成">
+<img class="shot" src="测试快照-AI正文生成成功.png" alt="AI正文生成" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+<div class="shot-fallback" style="display:none">📷 <b>AI 正文生成成功</b> —— 本地留证实拍，<code>测试快照-AI正文生成成功.png</code>。<br>按项目规则「验收实拍不入库」，仓库里没有这张图；本地自测时可把同名文件放在项目根目录，页面会自动显示它。</div>
 
 <h2>七、最终结论</h2>
 <div class="card good">

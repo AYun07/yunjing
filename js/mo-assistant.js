@@ -693,7 +693,7 @@ ${report}${fileRep}`;
     bind("#moTTSBtn", () => this.toggleTTS());
     bind("#moFileBtn", () => {
       if (window.FileBridge) window.FileBridge.open();
-      else alert("文件工坊模块未加载（file-bridge.js 缺失）");
+      else yjAlert("文件工坊模块未加载（file-bridge.js 缺失）");
     });
     const ttsBtn = drawer.querySelector("#moTTSBtn");
     if (ttsBtn && this.getCfg().tts) ttsBtn.classList.add("on");
@@ -982,7 +982,7 @@ ${report}${fileRep}`;
     this.watchErrors();
     this.ensureModule();
     this.renderBadge();
-    console.log("[小云] AI 管家已就位（v1.8.0 · 与小云桌面宠物联动）");
+    console.debug("[小云] AI 管家已就位（v1.8.0 · 与小云桌面宠物联动）");
   }
 };
 window.MoAssistant = MoAssistant;

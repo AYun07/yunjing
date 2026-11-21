@@ -85,7 +85,7 @@ class StoryFramework {
      * 初始化创作框架
      */
     init() {
-        console.log('[StoryFramework] 初始化创作框架:', this.config.genreName);
+        console.debug('[StoryFramework] 初始化创作框架:', this.config.genreName);
         this.loadApiConfig();
         this.loadSave();
         if (this.config.onInit) {
@@ -349,7 +349,7 @@ class StoryFramework {
         const target = StoryFramework.SAVE_SCHEMA || 0;
         if (cur >= target) return data;
         let d = data;
-        console.log(`[StoryFramework] 存档格式 v${cur} → v${target}，开始迁移`);
+        console.debug(`[StoryFramework] 存档格式 v${cur} → v${target}，开始迁移`);
         for (let v = cur; v < target; v++) {
             const fn = (StoryFramework.SAVE_MIGRATIONS || {})[v];
             if (typeof fn !== 'function') continue;
@@ -386,7 +386,7 @@ class StoryFramework {
             this.storyState = { ...this.storyState, ...data, lastVariables: {} };
             // v3.27.5：读档即自愈（旧档 items 等容器可能已被历史版本的行式指令污染）
             try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e) { }
-            console.log('[StoryFramework] 读取存档成功，共', this.storyState.conversationHistory.length, '条历史');
+            console.debug('[StoryFramework] 读取存档成功，共', this.storyState.conversationHistory.length, '条历史');
             if (fromBak) {
                 console.warn('[StoryFramework] 主存档损坏，已从自动备份恢复');
                 window.showToast?.('⚠ 主存档已损坏，已自动从上一份备份恢复', 'info');
@@ -428,7 +428,7 @@ class StoryFramework {
                     if (merged.length > inline.length) {
                         this.storyState.conversationHistory = merged;
                         this._trFlushedLen = merged.length;
-                        console.log('[StoryFramework] 已从 IndexedDB 恢复全量对话，共', merged.length, '条历史');
+                        console.debug('[StoryFramework] 已从 IndexedDB 恢复全量对话，共', merged.length, '条历史');
                     }
                     return this.storyState;
                 }).catch(() => this.storyState);
@@ -448,7 +448,7 @@ class StoryFramework {
                     this.storyState = { ...this.storyState, ...d, lastVariables: {} };
                     // v3.27.5：IDB 大档恢复同样走容器自愈
                     try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e2) { }
-                    console.log('[StoryFramework] localStorage 配额不足，已从 IndexedDB 恢复存档，共', this.storyState.conversationHistory.length, '条历史');
+                    console.debug('[StoryFramework] localStorage 配额不足，已从 IndexedDB 恢复存档，共', this.storyState.conversationHistory.length, '条历史');
                     window.showToast?.('💾 存档较大，已从浏览器大容量存储（IndexedDB）恢复', 'info');
                 } catch (e) { }
             }).catch(() => { });

@@ -3089,7 +3089,9 @@ textarea.wiz-input { resize: vertical; min-height: 58px; line-height: 1.6; }
     color: var(--primary);
     letter-spacing: 2px;
 }
-.modal-close { background: none; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; }
+/* v5.1.1 修 P3：关闭键此前只有 14px 宽（手机上点不中，t_mobile.py 判为「小热区」）。
+   现在给足可点面积（32×32 视觉上仍是那个小叉，但命中区放大）。 */
+.modal-close { background: none; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; min-width: 32px; min-height: 32px; padding: 6px 10px; }
 .modal-close:hover { color: var(--primary); }
 .modal-body { padding: 17px 21px; overflow-y: auto; min-height: 0; flex: 1 1 auto; }
 .form-row { margin-bottom: 13px; }

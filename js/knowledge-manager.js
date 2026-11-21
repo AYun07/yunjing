@@ -94,7 +94,7 @@ const StoryKnowledge = {
     const self = this;
     this._ensureKB().then(function () {
       self._injectPreset();
-      console.log(`[StoryKnowledge] 知识库已加载（${self.genre}）：本界 ${self._localCount()} 条 + 全局 ${self._globalKB.length} 条`);
+      console.debug(`[StoryKnowledge] 知识库已加载（${self.genre}）：本界 ${self._localCount()} 条 + 全局 ${self._globalKB.length} 条`);
       try { document.dispatchEvent(new CustomEvent("story:kb-ready", { detail: { genre: self.genre } })); } catch (e) { }
     });
   },
@@ -154,7 +154,7 @@ const StoryKnowledge = {
         const added = self._mergePresets(presets);
         if (added) self.save({ silent: true });
         try { document.dispatchEvent(new CustomEvent("story:kb-ext-ready", { detail: { genre: g, added } })); } catch (e) { }
-        if (added) console.log(`[StoryKnowledge] 世界书扩展包已补齐 ${added} 条（${g}）`);
+        if (added) console.debug(`[StoryKnowledge] 世界书扩展包已补齐 ${added} 条（${g}）`);
       });
       });
     };
@@ -253,7 +253,7 @@ const StoryKnowledge = {
       const ok = added ? this.save({ silent: true }) : true;
       if (ok) {
         localStorage.setItem(this._presetFlagKey, this._presetVersion);
-        if (added) console.log(`[StoryKnowledge] 已注入/补齐 ${this.genre} 预置知识 ${added} 条（${this._presetVersion}）`);
+        if (added) console.debug(`[StoryKnowledge] 已注入/补齐 ${this.genre} 预置知识 ${added} 条（${this._presetVersion}）`);
       } else {
         console.warn(`[StoryKnowledge] 预置知识未能落盘（存储空间不足），本次仍完整可用；下次进界会重新补齐。可在「工具箱 → 🛡 存档体检 → 世界书缓存」清理其它世界的缓存。`);
       }
@@ -877,7 +877,7 @@ ${this._contentText(item.content).slice(0, perItem)}
       triggered: triggered.length,
       relevant: relevant.length
     };
-    console.log(`[StoryKnowledge] 本轮注入（${lite ? "低配" : "标准"}档）：常驻 ${always.length} 条（top:${always.filter((i) => i.priority === "top").length}/high:${always.filter((i) => i.priority === "high").length}/medium:${always.filter((i) => i.priority === "medium").length}/low:${always.filter((i) => !i.priority || i.priority === "low").length} → 实投 top ${top.kept}${top.squeezed ? `(压${top.squeezed})` : ""}/high ${high.kept}${high.squeezed ? `(压${high.squeezed})` : ""}），触发 ${triggered.length} 条，检索 ${relevant.length} 条`);
+    console.debug(`[StoryKnowledge] 本轮注入（${lite ? "低配" : "标准"}档）：常驻 ${always.length} 条（top:${always.filter((i) => i.priority === "top").length}/high:${always.filter((i) => i.priority === "high").length}/medium:${always.filter((i) => i.priority === "medium").length}/low:${always.filter((i) => !i.priority || i.priority === "low").length} → 实投 top ${top.kept}${top.squeezed ? `(压${top.squeezed})` : ""}/high ${high.kept}${high.squeezed ? `(压${high.squeezed})` : ""}），触发 ${triggered.length} 条，检索 ${relevant.length} 条`);
     return messages;
   },
   /**

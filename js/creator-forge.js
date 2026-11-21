@@ -241,7 +241,7 @@
     if (!KB) return;
     var list = (KB.knowledgeBase || []).filter(function (i) { return i.source === SRC; });
     if (!list.length) {
-      alert('还没有原创条目可导出。先用上面的模板建一个吧。');
+      yjAlert('还没有原创条目可导出。先用上面的模板建一个吧。');
       return;
     }
     var pkg = {
@@ -262,9 +262,9 @@
     var fr = new FileReader();
     fr.onload = function () {
       var pkg;
-      try { pkg = JSON.parse(String(fr.result)); } catch (e) { alert('不是合法的 JSON 文件'); return; }
+      try { pkg = JSON.parse(String(fr.result)); } catch (e) { yjAlert('不是合法的 JSON 文件'); return; }
       var list = Array.isArray(pkg) ? pkg : (pkg.entries || pkg.knowledge || []);
-      if (!list.length) { alert('文件里没有条目'); return; }
+      if (!list.length) { yjAlert('文件里没有条目'); return; }
       var n = 0;
       list.forEach(function (e) {
         if (!e || !e.title) return;
@@ -275,7 +275,7 @@
         });
         n++;
       });
-      alert('已导入 ' + n + ' 条原创设定。');
+      yjAlert('已导入 ' + n + ' 条原创设定。');
       CreatorForge.close();
       if (KB.open) KB.open();
     };
@@ -488,7 +488,7 @@
       var t = TYPES[S.type];
       var btn = document.getElementById('fgAiBtn');
       var skeleton = buildContent(S.type, v);
-      if (!val(v.name)) { alert('先填一个名称，AI 才知道要给谁写。'); return; }
+      if (!val(v.name)) { yjAlert('先填一个名称，AI 才知道要给谁写。'); return; }
       var prompt = '你要为一条网络小说的世界书（设定库）写条目。\n\n' +
         '【条目类型】' + t.name + '\n【已有字段（作者填的骨架，不要改写事实，只做补全与润色）】\n' + skeleton +
         '\n\n【要求】\n1. 输出纯条目正文，Markdown，第一行是「## 名称」；\n2. 保留上面已有字段的全部信息，空缺处按设定合理补全（自己编，但要自洽）；\n3. 用「**字段名**：内容」分节，语言精炼，总分不超过 600 字；\n4. 不写任何与设定无关的说明、客套、前后缀；\n5. 不写性内容，不涉及未成年人。\n\n直接输出条目正文：';
@@ -504,21 +504,21 @@
         var p = window.callStoryAI ? window.callStoryAI(prompt, false, { maxTokens: 1200 }) : null;
         if (p && p.then) p.then(done).catch(function (e) {
           if (btn) { btn.disabled = false; btn.textContent = '✨ 让 AI 补完'; }
-          alert('AI 补写失败：' + (e && e.message ? e.message : e));
+          yjAlert('AI 补写失败：' + (e && e.message ? e.message : e));
         });
-        else { alert('未配置可用的 AI 接口，或接口调用不可用。可以先手填，或到「⚙ 接口」配好再来。'); if (btn) { btn.disabled = false; btn.textContent = '✨ 让 AI 补完'; } }
+        else { yjAlert('未配置可用的 AI 接口，或接口调用不可用。可以先手填，或到「⚙ 接口」配好再来。'); if (btn) { btn.disabled = false; btn.textContent = '✨ 让 AI 补完'; } }
       } catch (e) {
         if (btn) { btn.disabled = false; btn.textContent = '✨ 让 AI 补完'; }
-        alert('AI 补写失败：' + (e && e.message ? e.message : e));
+        yjAlert('AI 补写失败：' + (e && e.message ? e.message : e));
       }
     },
     save: function () {
       var KB = window.StoryKnowledge;
-      if (!KB) { alert('知识库尚未就绪，请稍后再试。'); return; }
+      if (!KB) { yjAlert('知识库尚未就绪，请稍后再试。'); return; }
       S.extra = readExtra();
       var v = readForm();
       var name = val(v.name);
-      if (!name) { alert('名称是必填的。'); return; }
+      if (!name) { yjAlert('名称是必填的。'); return; }
       var pv = document.getElementById('fgPreview');
       var content = pv ? pv.value.trim() : '';
       if (!content) content = buildContent(S.type, v);
