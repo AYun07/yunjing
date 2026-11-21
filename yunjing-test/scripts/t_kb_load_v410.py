@@ -5,11 +5,13 @@
 wangyou 嵌套数组展开的 34 条原创地点可检索、零 pageerror。
 运行：python3 yunjing-test/scripts/t_kb_load_v410.py
 """
-import json, sys
+import json, sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, kb_index
 from playwright.sync_api import sync_playwright
 
 BASE = "http://127.0.0.1:8899"
-IDX = json.load(open('/workspace/yunjing/js/kb/_index.json', encoding='utf-8'))
+IDX = json.load(open(kb_index(), encoding='utf-8'))
 GENRES = sorted(IDX['genres'].keys())
 
 results = []
@@ -43,7 +45,17 @@ def main():
         stats = {}
         for g in GENRES:
             pg.goto(BASE + "/studio.html?genre=" + g, wait_until="domcontentloaded", timeout=45000)
-            pg.wait_for_timeout(700)
+            # v5.1.1 修 P2-4：原来固定等 700ms，而世界书是**异步注入**的
+            # （kb/<界>.core.js → _common.js → kb/<界>.ext.js 分三批加载），
+            # 700ms 时多数界还没挂上 → 误判成「空库 36」。
+            # 改成「等知识库就绪」，超时才算空库，判定口径与真实产品行为一致。
+            try:
+                pg.wait_for_function(
+                    "() => !!(window.StoryKnowledge && window.StoryKnowledge.knowledgeBase && window.StoryKnowledge.knowledgeBase.length > 0)",
+                    timeout=20000)
+            except Exception:
+                pass
+            pg.wait_for_timeout(400)   # 留一点余量让 ext 批补齐
             stats[g] = pg.evaluate(PROBE)
         b.close()
 

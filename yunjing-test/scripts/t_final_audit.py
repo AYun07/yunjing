@@ -20,6 +20,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # t_player.py 顶层有 key 检查；这里只是占位，全程不发起任何模型请求
 os.environ.setdefault("YJ_TEST_KEY", "offline-audit")
 import t_player as tp
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 OUT = "/workspace/云境-v4.09.0-终验复判.json"
 SINCE = float(os.environ.get("YJ_SINCE", "0"))
@@ -67,7 +69,7 @@ def selftest():
 def main():
     selftest()
     print("终验复判自检：降级检出 + 新旧口径差异 + 变异灵敏度 → 通过")
-    files = sorted(glob.glob("/tmp/yj_journey_*.txt"))
+    files = out_glob("yj_journey_*.txt")
     files = [f for f in files if not f.endswith(".raw.txt")
              and os.path.basename(f)[:-4].rsplit("_", 1)[-1] in VALID_STEPS
              and (not SINCE or os.path.getmtime(f) >= SINCE)]

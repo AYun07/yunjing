@@ -25,6 +25,8 @@ from playwright.async_api import async_playwright
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import truthdiff
 from truthdiff import TruthJudge
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 K = os.environ.get("YJ_TEST_KEY", "")
@@ -38,7 +40,7 @@ if not K:
     print("⚠ 未设置 YJ_TEST_KEY（仓库内不存密钥）")
     raise SystemExit(2)
 
-ALL_GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
+ALL_GENRES = genres()
 
 # ── 页面侧：引擎真值快照 ─────────────────────────────────────
 # 直接调用产品里的 TruthSnapshot 模块（js/truth-snapshot.js），
@@ -305,14 +307,14 @@ async def main():
                 # 记录本轮真值与主张，供下一轮做跨轮次倒退检测
                 judge.commit(snap_post, txt)
                 try:
-                    io.open("/tmp/yj_td_%s_%s.txt" % (g, sname), "w", encoding="utf-8").write(txt)
+                    io.open(out_path("yj_td_%s_%s.txt" % (g, sname)), "w", encoding="utf-8").write(txt)
                 except Exception:
                     pass
             if perr:
                 issues.append({"genre": g, "step": "pageerror", "bad": {"pageerror": perr[:3]}})
                 perr.clear()
     json.dump({"results": results, "issues": issues},
-              open("/tmp/yj_truthdiff.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+              open(out_path("yj_truthdiff.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print("\n=== 汇总 ===")
     print("请求 %d ｜ 有问题 %d" % (len(results), len(issues)))
     from collections import Counter

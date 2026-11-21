@@ -15,14 +15,16 @@ v4.07.2 交付报告的未闭环项之一：「移动端视觉——本轮截图
 同时输出截图，供人工复核。
 
 用法：
-  cd /workspace/yunjing && python3 -m http.server 8899 --bind 127.0.0.1 &
+  cd <仓库根> && python3 -m http.server 8899 --bind 127.0.0.1 &
   python3 yunjing-test/scripts/t_mobile.py
 """
 import asyncio, json, os, sys
 from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
-OUT = "/tmp/mobile_probe.json"
+OUT = out_path("mobile_probe.json")
 def _current_ver():
     """截图目录跟随 studio.html 的 YJ_VER —— 发版后不再把新截图写进上一版目录。"""
     try:
@@ -65,7 +67,8 @@ BOOT = """(g)=>{
 }"""
 
 # 布局测量：横向溢出 / 文本溢出 / 小热区 / 遮挡
-MEASURE = """(g)=>{
+# v5.1.1：用 r""" 原始串，避免 JS 里的 \s / \d 被 Python 当转义序列（此前每次跑都刷 SyntaxWarning）
+MEASURE = r"""(g)=>{
   const out = {overflow:[], tiny:[], clipped:[], docW:0, clientW:0, offenders:[]};
   try {
     out.docW = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
@@ -127,7 +130,7 @@ MEASURE = """(g)=>{
 }"""
 
 # 输入框被固定元素遮挡？
-OCCLUDE = """(g)=>{
+OCCLUDE = r"""(g)=>{
   const out = {};
   try {
     const inp = document.getElementById('userInput');

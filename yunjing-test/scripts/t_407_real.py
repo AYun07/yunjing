@@ -9,8 +9,10 @@
   ③ 玩家势力：模型提到的势力名必须在面板/本界势力表内，不编造
 另有两组对照界，确认没有回归。
 """
-import asyncio, io, json, os, re, time
+import asyncio, io, json, os, re, time, sys
 from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 # 密钥一律走环境变量：YJ_TEST_KEY。仓库内不存任何真实口令。
@@ -185,7 +187,7 @@ def judge(kind, g, t, places, panel_lv, board=None):
     board = board or {"offers": [], "active": []}
     # 完整正文落盘，便于人工复核判定（例如模型到底编了哪个等级）
     try:
-        io.open("/tmp/yj_real_%s_%s.txt" % (MODEL.replace(".", "_"), kind), "w", encoding="utf-8").write(t)
+        io.open(out_path("yj_real_%s_%s.txt" % (MODEL.replace(".", "_"), kind)), "w", encoding="utf-8").write(t)
     except Exception:
         pass
     lv_hits = [int(x) for x in FAKE_LV.findall(t)]
@@ -230,7 +232,7 @@ def judge(kind, g, t, places, panel_lv, board=None):
         "model": MODEL, "case": kind, "genre": g, "len": len(t),
         "head": t[:70].replace("\n", " "),
         # 完整正文另存一份，便于人工复核判定（例如模型到底编了哪个等级）
-        "text_file": ("/tmp/yj_real_%s_%s.txt" % (MODEL.replace(".", "_"), kind)),
+        "text_file": out_path("yj_real_%s_%s.txt" % (MODEL.replace(".", "_"), kind)),
         # 诊断信息放 bad 之外：bad 的每个字段都会被当作「非空即失败」
         "lvHits": lv_hits, "panelLv": panel_lv,
         "placeHit": [p for p in places if p in t],

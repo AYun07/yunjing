@@ -10,10 +10,12 @@
 另统计「产品降级提示」：模型只吐思维链时产品返回明确提示而非空白卡片，
 这同样是兜底（不是模型正常输出），必须单独计数、不能混进通过数。
 
-输入：/tmp/yj_journey_<界>_<步>.txt (shown) 与 .raw.txt (raw，仅在两者不同时落盘)
+输入：yunjing-test/out/yj_journey_<界>_<步>.txt (shown) 与 .raw.txt (raw，仅在两者不同时落盘)
 输出：/workspace/云境-v4.09.0-清洗效果.json
 """
-import glob, json, os, re
+import glob, json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 OUT = "/workspace/云境-v4.09.0-清洗效果.json"
 
@@ -77,7 +79,7 @@ def selftest():
 def main():
     selftest()
     print("统计自检：正向检出 + 零误伤 + 变异灵敏度 → 通过")
-    files = sorted(glob.glob("/tmp/yj_journey_*.txt"))
+    files = out_glob("yj_journey_*.txt")
     files = [f for f in files if not f.endswith(".raw.txt")]
     # 两道过滤：① 本轮 GENERIC 三步（排除深度旅程 class/combat/quest 等旧名）；
     # ② mtime 晚于本轮旅程启动（YJ_SINCE，epoch 秒），排除上一轮 all 的同名旧文件。

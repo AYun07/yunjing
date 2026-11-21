@@ -6,13 +6,15 @@
 只压产品自身的并发面：多标签页共享 localStorage、落盘风暴、切档竞态、
 主笔并发门闩。因此不与硬约束冲突，同时补上「更高并发未做平台级压测」这一缺口。
 
-输出：/tmp/concurrency_probe.json + 控制台摘要
+输出：yunjing-test/out/concurrency_probe.json + 控制台摘要
 """
-import asyncio, json, os
+import asyncio, json, os, sys
 from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
-OUT = "/tmp/concurrency_probe.json"
+OUT = out_path("concurrency_probe.json")
 GENRE = "wangyou"
 
 KEYS = """()=>{const a=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k)a.push(k);}return a.sort();}"""

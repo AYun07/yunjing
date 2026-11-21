@@ -17,7 +17,8 @@
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
-    <script src="js/id-migrate.js?v=5.1.0"></script>
+    <script src="js/toast-helper.js?v=5.1.0"></script>
+<script src="js/id-migrate.js?v=5.1.0"></script>
     <!-- v4.08.0 存档键统一注册表：全项目 20+ 处模块各自拼 localStorage 键名，
          格式至少 5 种（后缀 / 槽位居中 / 冒号 / 点号）。此模块把「键名怎么拼」
          与「某槽位名下有哪些键」收敛到一处，供删档/清档/切档统一调用。
@@ -1176,10 +1177,14 @@ window.Snapshots = Snapshots;
 })();</script>
 
 <script>
-    /* PWA：HTTPS 部署时启用离线缓存（本地 http 服务与安卓 APK 内 file:// 均不启用，零影响） */
-    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    /* PWA：HTTPS 部署时启用离线缓存；本地 http://127.0.0.1 / localhost 也是安全上下文，一并启用；
+       安卓 APK 内 file:// 不启用，零影响。v5.1.1：注册失败不再静默。 */
+    var yjLocalHost = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '[::1]';
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || yjLocalHost)) {
         window.addEventListener('load', function () {
-            navigator.serviceWorker.register('sw.js').catch(function () { });
+            navigator.serviceWorker.register('sw.js').catch(function (err) {
+                console.warn('[云境] Service Worker 注册失败：', err && err.message || err);
+            });
         });
     }
 </script>

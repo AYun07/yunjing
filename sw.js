@@ -53,7 +53,8 @@ GENRES.forEach(g => {
    涓流预热白跑 76 次缓存查询，还可能同批并发 add 同一 URL。 */
 GEN.push('js/kb/_index.json');   /* 整包回退前的轻量索引（1KB），避免为无数据的界白下 9MB */
 GEN.push('js/kb/_common.js');   /* v3.95.0 跨题材通用常识库：小参数模型的背景兜底，全界共用一份 */
-const CORE2 = CORE.concat(GEN, [
+GEN.push('js/kb/names.js');     /* v5.1.1 修 P2：全界共用的命名库，此前不在任何清单里 → 离线必 404 */
+const EXTRA = [
   /* v3.93.0 势力舆图：静态据点表 + 原著补录 + 时代层（studio.html 同步脚本），离线也必须可用 */
   'js/faction-atlas-data.js','js/atlas-supplement.js','js/atlas-eras.js','js/atlas-potato.js',
   /* --- 基础样式 --- */
@@ -178,12 +179,45 @@ const CORE2 = CORE.concat(GEN, [
      不进清单则 PWA 离线打开必 404（slot-registry 缺失会让全部存档键名退回旧拼接口径） */
   'js/slot-registry.js','js/truth-snapshot.js','js/number-scrubber.js',
   /* v4.18.0 新增：新手引导 / 即时反馈 / 作品分享 / 提示词调试器，离线也要可用 */
-  'js/first-run-guide.js','js/live-feedback.js','js/share-export.js','js/prompt-inspector.js'
-]);
+  'js/first-run-guide.js','js/live-feedback.js','js/share-export.js','js/prompt-inspector.js',
+  /* v5.1.1 修 P3：轻提示桥（yjAlert → showToast）。离线时也要能弹提示。 */
+  'js/toast-helper.js',
+  /* v5.1.1 修 P2：小云立绘（默认态 12 张 + 大厅吉祥物 12 张 + 头像 12 张，约 5.4MB）。
+     此前一张都不在清单里 → 离线打开创作室，小云面板头像直接破图（实测 brokenImgs=1）。
+     只收「默认态 / 大厅态 / 头像」三组；wave/battle 等情绪态由运行时按需缓存，
+     不让预缓存体积失控（assets/videos 另有 469MB，本来也不走预缓存）。 */
+  'assets/xiaoyun-aojiao-happy.png','assets/xiaoyun-gaoguai-happy.png','assets/xiaoyun-jiaohua-happy.png',
+  'assets/xiaoyun-keai-happy.png','assets/xiaoyun-kusa-happy.png','assets/xiaoyun-linjia-happy.png',
+  'assets/xiaoyun-luo-happy.png','assets/xiaoyun-qingchun-happy.png','assets/xiaoyun-wenrou-happy.png',
+  'assets/xiaoyun-youtai-happy.png','assets/xiaoyun-yu-happy.png','assets/xiaoyun-zhixing-happy.png',
+  'assets/xiaoyun-chibi-aojiao.png','assets/xiaoyun-chibi-gaoguai.png','assets/xiaoyun-chibi-jiaohua.png',
+  'assets/xiaoyun-chibi-keai.png','assets/xiaoyun-chibi-kusa.png','assets/xiaoyun-chibi-linjia.png',
+  'assets/xiaoyun-chibi-luo.png','assets/xiaoyun-chibi-qingchun.png','assets/xiaoyun-chibi-wenrou.png',
+  'assets/xiaoyun-chibi-youtai.png','assets/xiaoyun-chibi-yu.png','assets/xiaoyun-chibi-zhixing.png',
+  'assets/xiaoyun-face-aojiao.png','assets/xiaoyun-face-gaoguai.png','assets/xiaoyun-face-jiaohua.png',
+  'assets/xiaoyun-face-keai.png','assets/xiaoyun-face-kusa.png','assets/xiaoyun-face-linjia.png',
+  'assets/xiaoyun-face-luo.png','assets/xiaoyun-face-qingchun.png','assets/xiaoyun-face-wenrou.png',
+  'assets/xiaoyun-face-youtai.png','assets/xiaoyun-face-yu.png','assets/xiaoyun-face-zhixing.png'
+];
+const CORE2 = CORE.concat(GEN, EXTRA);
+/* v5.1.1 修 P2：预缓存不再「一失败全归零」，且失败可见。
+   旧实现 install 用 cache.addAll（原子操作）：CORE 里任何一条取不到，
+   addAll 整体 reject，被 .catch(() => {}) 吞掉 → SW 照样安装成功，
+   但缓存里可能一条都没有，玩家完全不知道自己「离线其实没备好」。 */
+async function precacheAll(cache, urls, label) {
+  const results = await Promise.allSettled(urls.map(u => cache.add(new Request(u, { cache: 'reload' }))));
+  const failed = [];
+  results.forEach((r, i) => { if (r.status === 'rejected') failed.push(urls[i]); });
+  if (failed.length) console.warn('[sw] ' + label + '预缓存失败 ' + failed.length + ' 项：', failed.slice(0, 12));
+  return failed;
+}
+
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(SW_VER).then((c) =>
-    c.addAll(CORE.map(u => new Request(u, { cache: 'reload' }))).catch(() => {})
-  ).then(() => self.skipWaiting()));
+  e.waitUntil((async () => {
+    const c = await caches.open(SW_VER);
+    await precacheAll(c, CORE, '核心');
+    await self.skipWaiting();
+  })());
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((keys) =>
@@ -223,18 +257,42 @@ self.addEventListener('fetch', (e) => {
   );
 });
 
-/* 涓流预热:激活 8 秒后开始,每次只取 2 个,绝不阻塞页面 */
+/* 涓流预热：激活后开始后台补齐，绝不阻塞页面。
+   v5.1.1 修 P2：旧口径「每 150ms 取 2 个」→ 400+ 条要跑约 60 秒，
+   玩家在这段窗口里断网，进任何一个没访问过的界都会半残（实测白屏级）。
+   现在：① 先取应用外壳（核心 + 引擎/样式），再取 38 界的世界书；
+        ② 每批 6 个、间隔 60ms，约 10 秒内跑完；
+        ③ 失败项记进 /__sw_diag__，不再静默吞掉。 */
+const WARM_BATCH = 6, WARM_GAP = 60;
 let _warmed = false;
-function trickleWarmup() {
+async function trickleWarmup() {
   if (_warmed) return; _warmed = true;
-  caches.open(SW_VER).then((c) => {
-    let i = 0;
-    function next2() {
-      if (i >= CORE2.length) return;
-      const batch = CORE2.slice(i, i + 2); i += 2;
-      Promise.all(batch.map(u => c.match(u).then(hit => hit ? null : c.add(u).catch(() => {})))).then(() => setTimeout(next2, 150));
+  const c = await caches.open(SW_VER);
+  const order = CORE.concat(EXTRA).concat(GEN);   /* 外壳优先，界资源随后 */
+  const failed = [];
+  let i = 0;
+  async function nextBatch() {
+    if (i >= order.length) {
+      if (failed.length) {
+        console.warn('[sw] 预热未完成 ' + failed.length + ' 项：', failed.slice(0, 12));
+        try {
+          await c.put(new Request('/__sw_diag__'),
+            new Response(JSON.stringify({ failed: failed, total: order.length, at: Date.now() }),
+              { headers: { 'Content-Type': 'application/json' } }));
+        } catch (e) {}
+      }
+      return;
     }
-    next2();
-  });
+    const batch = order.slice(i, i + WARM_BATCH); i += WARM_BATCH;
+    await Promise.all(batch.map(async (u) => {
+      try {
+        const hit = await c.match(u);
+        if (hit) return;
+        await c.add(u);
+      } catch (e) { failed.push(u); }
+    }));
+    setTimeout(nextBatch, WARM_GAP);
+  }
+  nextBatch();
 }
-self.addEventListener('activate', (e) => { setTimeout(trickleWarmup, 8000); });
+self.addEventListener('activate', (e) => { setTimeout(trickleWarmup, 1500); });

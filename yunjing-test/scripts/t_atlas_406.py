@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 """v4.05.0 舆图细节化浏览器验收（无外部 API）。
 三段：① 全 38 界逐层回归 + 新增细节指标；② 悬停速览与详情增补；③ 全 38 界 375px 无横向溢出。
+
+v5.1.1 修 P2-4：本用例必须用**全量 Chrome**（channel="chromium"）跑。
+Playwright 默认的 headless shell 在渲染本项目的舆图 SVG（大量 feGaussianBlur 滤镜）
+时会**随机把渲染进程跑崩**（Target crashed，且每次崩的界都不一样）——
+实测同一份代码换全量 Chrome（--headless=new）38 界全过，真实 Chrome 也不崩。
+那是 headless shell 自身的渲染缺陷，不是产品问题；但测试必须用能跑通的环境。
 """
-import asyncio, glob, os, json
+import asyncio, glob, os, json, sys
 from playwright.async_api import async_playwright
 
-ROOT = os.environ.get('YJ_ROOT', '/workspace/yunjing')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT as _ROOT
+
+ROOT = os.environ.get('YJ_ROOT', _ROOT)
 GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob(ROOT + '/js/kb/*.core.js'))
 BASE = 'http://127.0.0.1:8899/studio.html'
 
@@ -65,7 +74,7 @@ async def open_map_stable(pg, g):
 
 async def main():
     async with async_playwright() as p:
-        b = await p.chromium.launch(args=["--no-sandbox"])
+        b = await p.chromium.launch(args=["--no-sandbox"], channel="chromium")
 
         # ---- ① 逐层回归 ----
         ctx = await b.new_context(viewport={"width": 1400, "height": 1000}, service_workers="block")

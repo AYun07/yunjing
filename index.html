@@ -17,7 +17,8 @@
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <!-- v4.36.0 开场入口分派：读 ?entry= 触发 续梦(存档)/观星(设置)；须在业务脚本之后执行，故 defer -->
-    <script defer src="js/opening-entry.js?v=5.1.0"></script>
+    <script src="js/toast-helper.js?v=5.1.0"></script>
+<script defer src="js/opening-entry.js?v=5.1.0"></script>
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
     <script src="js/id-migrate.js?v=5.1.0"></script>
     <!-- v4.08.0 存档键统一注册表（早于所有业务脚本） -->
@@ -720,10 +721,15 @@
     </script>
 
 <script>
-    /* PWA：HTTPS 部署时启用离线缓存（本地 http 服务与安卓 APK 内 file:// 均不启用，零影响） */
-    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    /* PWA：HTTPS 部署时启用离线缓存；本地 http://127.0.0.1 / localhost 也是安全上下文，
+       一并启用（本地玩家同样能拿到离线能力）；安卓 APK 内 file:// 不启用，零影响。
+       v5.1.1：注册失败不再静默——把原因打到控制台，便于自检定位。 */
+    var yjLocalHost = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '[::1]';
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || yjLocalHost)) {
         window.addEventListener('load', function () {
-            navigator.serviceWorker.register('sw.js').catch(function () { });
+            navigator.serviceWorker.register('sw.js').catch(function (err) {
+                console.warn('[云境] Service Worker 注册失败：', err && err.message || err);
+            });
         });
     }
 </script>

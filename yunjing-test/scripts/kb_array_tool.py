@@ -15,10 +15,12 @@
   --report      只读诊断（默认）
 """
 import re, json, glob, os, sys, argparse, shutil, collections
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 KB_DIR = os.path.join(ROOT, 'js', 'kb')
-BACKUP = '/tmp/yj_kb_backup_v410'
+BACKUP = out_path('yj_kb_backup_v410')
 
 # 与 knowledge-manager.js 的 KB_isCodeFragment() 完全一致：
 # 只认「世界观铁律/世界观设定 · <明确 JS token>」，避免误伤「速查/条文汇编/总纲/档案」等合法条目。

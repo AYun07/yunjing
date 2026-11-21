@@ -80,3 +80,8 @@ Brand-安卓启动屏预览.png
 /node_modules/
 # 验收截图（本地留证）
 PC客户端-运行验证.png
+
+# v5.1.1 修 P3：浏览器级测试的产物目录（探针 JSON / 截图）不入库
+yunjing-test/out/
+# v5.1.1：浏览器下载落地的存档导出（动辄数百 MB），不入库
+xinghai/

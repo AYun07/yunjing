@@ -81,3 +81,58 @@ jobs:
 
       - name: '⑦ 世界书条目体检'
         run: node scripts/kb-vet.mjs
+
+  # ==========================================================================
+  # ⑧ 浏览器级回归（v5.1.1 新增）
+  # --------------------------------------------------------------------------
+  # 为什么要单独一个 job：此前 25 个浏览器级脚本（正文清洗端到端、移动端触控、
+  # 存档持久化、并发、浸泡、压力…）**从不在 CI 里跑**，所以
+  # 「木剑才卖 5 金币」没被清洗、19×44px 的关闭按钮这类红灯可以长期挂着。
+  # 这里把它们拉进 CI；需要真实大模型密钥的用例用 --no-key 跳过。
+  # ==========================================================================
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: '装 Playwright + Chromium'
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: '起本地静态服务（8899，浏览器级脚本的固定 BASE）'
+        run: |
+          python3 -m http.server 8899 --bind 127.0.0.1 --directory . > /tmp/yj-server.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8899/index.html > /dev/null; then echo "server up"; break; fi
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8899/index.html > /dev/null
+
+      - name: '浏览器级回归（不含需真 API key 的用例）'
+        env:
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: '1'
+          YJ_BASE: http://127.0.0.1:8899
+        run: node yunjing-test/run-all.mjs --all --no-key
+
+      - name: '上传浏览器级产物（截图 / 探针 JSON）'
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yj-browser-artifacts
+          path: |
+            yunjing-test/out/
+            **/云境-*-截图/
+          retention-days: 7
+          if-no-files-found: ignore

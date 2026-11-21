@@ -5,18 +5,26 @@
   · 动作是否抛错 / 返回异常类型
   · 动作后模块状态是否出现 NaN / 负数 / 非法值
   · 动作是否为「死按钮」（既无提示也无任何状态变化）
-输出：/tmp/func_probe.json + 控制台摘要
+输出：yunjing-test/out/func_probe.json + 控制台摘要
 """
 import asyncio, glob, json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path
 from playwright.async_api import async_playwright
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
-OUT = "/tmp/func_probe.json"
+OUT = out_path("func_probe.json")
 
-GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
+GENRES = genres()
 
 # 通用 20 模块 + 各界专属
-GEN_MODS = json.load(open("/tmp/mod_actions.json", encoding="utf-8"))
+# 模块动作清单是外部夹具（作者本机生成，不入库）；
+# 缺失时本用例无法运行 —— 明确跳过，而不是抛 FileNotFoundError 让整段测试崩掉。
+MOD_ACTIONS = os.environ.get("YJ_MOD_ACTIONS") or os.path.join(ROOT, "yunjing-test", "mod_actions.json")
+if not os.path.exists(MOD_ACTIONS):
+    print("  [SKIP] 缺模块动作清单 %s（可用环境变量 YJ_MOD_ACTIONS 指定）" % MOD_ACTIONS)
+    sys.exit(0)
+GEN_MODS = json.load(open(MOD_ACTIONS, encoding="utf-8"))
 GEN_MODS["wr_rpg"] = ["skill", "rest", "loot", "teleport", "qaccept", "qturnin", "qgiveup",
                       "guild", "setclass", "mode", "enhance", "buy", "sell", "equipbag",
                       "usepotion", "arena", "party", "pet", "buff", "addpoint", "questclaim",

@@ -37,6 +37,13 @@ const ONLY_ALL = has('--all');
 const FILTER = valOf('--filter');
 const AS_JSON = has('--json');
 const LIST_ONLY = has('--list');
+/* v5.1.1 修 P2-4：浏览器级脚本要进 CI，就得能「只挑指定几个跑」和「跳过要真 API key 的」。
+   --only a,b,c  只跑这些（按 base 名，不带扩展名）
+   --no-key      跳过必须配 YJ_TEST_KEY 的用例（CI 没有密钥时用） */
+const ONLY_LIST = valOf('--only').split(',').map(s => s.trim()).filter(Boolean);
+const NO_KEY = has('--no-key');
+/* 需要真实大模型密钥的用例（仓库不存密钥，CI 默认无） */
+const KEY_NEEDED = /^(t_407_real|t_player|t_rejudge|t_truthdiff|truthdiff|semantic_judge|shots_4072|sim_407|t_v4071_ui)$/;
 
 /* 需要浏览器/本地服务的脚本（其余按离线处理）。
    这些脚本自带 serve/playwright 依赖，离线跑会因端口或浏览器缺失而误报失败。 */
@@ -67,6 +74,8 @@ function main() {
   let tests = discover();
   if (!ONLY_ALL) tests = tests.filter((t) => t.level === 'offline');
   if (FILTER) tests = tests.filter((t) => t.base.includes(FILTER) || t.file.includes(FILTER));
+  if (ONLY_LIST.length) tests = tests.filter((t) => ONLY_LIST.includes(t.base));
+  if (NO_KEY) tests = tests.filter((t) => !KEY_NEEDED.test(t.base));
 
   if (LIST_ONLY) {
     console.log(`将运行 ${tests.length} 个脚本：`);
@@ -108,7 +117,10 @@ function main() {
       total: results.length, passed: results.length - failed.length, failed: failed.length,
       ms: totalMs,
       results: results.map(({ out, ...rest }) => rest),
-      failures: failed.map((f) => ({ file: f.file, code: f.code, key: f.key, tail: out.split('\n').slice(-12).join('\n') })),
+      /* v5.1.1 修 P2：原来这里写的是 `out.split(...)`——out 是上面 for 循环里的
+         块级变量，出了循环就不存在了 → `--json` 模式直接抛
+         ReferenceError: out is not defined，文档里宣传的机器可读模式根本用不了。 */
+      failures: failed.map((f) => ({ file: f.file, code: f.code, key: f.key, tail: String(f.out || '').split('\n').slice(-12).join('\n') })),
     }, null, 1));
   } else {
     console.log('');

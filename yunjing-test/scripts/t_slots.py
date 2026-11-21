@@ -18,14 +18,16 @@ v4.07.2 交付报告的未闭环项之一：「多存档槽的隔离逻辑存在
 断言口径：全部用「localStorage 键集合差集」做纯函数判定，避免假阳性。
 
 用法：
-  cd /workspace/yunjing && python3 -m http.server 8899 --bind 127.0.0.1 &
+  cd <仓库根> && python3 -m http.server 8899 --bind 127.0.0.1 &
   python3 yunjing-test/scripts/t_slots.py
 """
 import asyncio, json, os, sys
 from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
-OUT = "/tmp/slot_probe.json"
+OUT = out_path("slot_probe.json")
 GENRE = os.environ.get("YJ_GENRE", "shrouding")
 
 # ---------------------------------------------------------------- 浏览器侧脚本
