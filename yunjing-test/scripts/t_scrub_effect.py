@@ -15,7 +15,7 @@
 """
 import glob, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 OUT = "/workspace/云境-v4.09.0-清洗效果.json"
 

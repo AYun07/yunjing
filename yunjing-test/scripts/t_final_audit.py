@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("YJ_TEST_KEY", "offline-audit")
 import t_player as tp
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 OUT = "/workspace/云境-v4.09.0-终验复判.json"
 SINCE = float(os.environ.get("YJ_SINCE", "0"))

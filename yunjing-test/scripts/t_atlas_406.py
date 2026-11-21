@@ -12,7 +12,7 @@ import asyncio, glob, os, json, sys
 from playwright.async_api import async_playwright
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT as _ROOT
+from yj_paths import ROOT as _ROOT
 
 ROOT = os.environ.get('YJ_ROOT', _ROOT)
 GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob(ROOT + '/js/kb/*.core.js'))

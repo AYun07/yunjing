@@ -16,7 +16,7 @@
 """
 import re, json, glob, os, sys, argparse, shutil, collections
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 KB_DIR = os.path.join(ROOT, 'js', 'kb')

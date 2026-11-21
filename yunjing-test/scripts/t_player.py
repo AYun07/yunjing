@@ -15,7 +15,7 @@
 import asyncio, glob, io, json, os, re, sys
 from playwright.async_api import async_playwright
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 K = os.environ.get("YJ_TEST_KEY", "")

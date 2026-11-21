@@ -232,7 +232,7 @@
   }
 
   return {
-    version: "5.1.0",
+    version: "5.1.1",
     legalNumbers: legalNumbers,
     legalMoney: legalMoney,
     legalPairs: legalPairs,

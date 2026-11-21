@@ -28,7 +28,7 @@ except Exception:
 
 import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 MODEL = "agnes-3.0-flash"

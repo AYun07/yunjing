@@ -9,7 +9,7 @@
 """
 import asyncio, glob, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path
+from yj_paths import ROOT, genres, out_path
 from playwright.async_api import async_playwright
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")

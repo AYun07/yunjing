@@ -156,11 +156,22 @@ ${detail.join('\n\n') || title || ''}
  * YJ_VER 为唯一来源，把 ?v= / &v= / sw.js / 页面标题 / README / VERSIONS 全对齐，
  * 顺带把版本计数口径校正到速查表实际行数。 */
 try {
-  sh('node scripts/sync-version.mjs');
-  sh('node scripts/update-readme.mjs');
+  /* 用 process.execPath 而不是字面量 'node'：发版机不一定把 node 放进 PATH
+     （本次实测就是 'node' is not recognized，导致同步器没跑成、版本不同源、CI 直接红）。 */
+  sh(`"${process.execPath}" scripts/sync-version.mjs`);
+  sh(`"${process.execPath}" scripts/update-readme.mjs`);
 } catch (e) { console.error('版本同源同步器执行失败：', e && e.message || e); }
 
 console.log(`版本号 ${curVer} → ${nextVer}，改动文件 ${[...new Set(touched)].length} 个`);
+/* v5.1.1：发版自检——同步器必须真的把版本同源跑绿，否则这一版就是带着红灯发的
+   （本次实测：同步器因 node 不在 PATH 静默失败，CI ② 版本同源直接红）。
+   这里在提交前强制校验一次，不绿就不许发。 */
+try {
+  sh(`"${process.execPath}" scripts/sync-version.mjs --check`);
+} catch (e) {
+  console.error('✗ 版本号仍不同源，已中止发版。运行 node scripts/sync-version.mjs 修正后再试。');
+  process.exit(1);
+}
 if (DRY) { console.log('[dry] 到此为止，未提交未推送'); process.exit(0); }
 
 /* ---------- 4. 提交 / 打标签 / 推送 ---------- */

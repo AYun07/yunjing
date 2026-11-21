@@ -7,7 +7,7 @@ wangyou 嵌套数组展开的 34 条原创地点可检索、零 pageerror。
 """
 import json, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, kb_index
+from yj_paths import ROOT, kb_index
 from playwright.sync_api import sync_playwright
 
 BASE = "http://127.0.0.1:8899"

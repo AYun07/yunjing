@@ -12,7 +12,7 @@
 import asyncio, io, json, os, re, time, sys
 from playwright.async_api import async_playwright
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 # 密钥一律走环境变量：YJ_TEST_KEY。仓库内不存任何真实口令。

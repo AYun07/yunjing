@@ -14,7 +14,7 @@
 import sys, json, os
 from playwright.sync_api import sync_playwright
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = "http://127.0.0.1:8899"
 IDX = json.load(open(kb_index(), encoding='utf-8'))

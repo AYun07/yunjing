@@ -12,7 +12,7 @@
 """
 import asyncio, json, os, re, sys, importlib.util
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _paths import ROOT, genres, out_path, out_glob, kb_index
+from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 spec = importlib.util.spec_from_file_location("tp", os.path.join(ROOT, "yunjing-test", "scripts", "t_player.py"))
