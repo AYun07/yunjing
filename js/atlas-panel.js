@@ -15010,7 +15010,15 @@
     const g = ATLAS_DATA[genre];
     if (!g) return [];
     const out = [];
-    g.layers.forEach((l) => l.nodes.forEach((n) => out.push({ ...n, layerId: l.id })));
+    /* v5.1.1 修 P1 崩溃：舆图三件套是懒加载的，玩家**可能在数据到位前**就打开图鉴，
+       此时某些界的 layers / 某层的 nodes 还没挂上（undefined）。
+       旧代码直接 g.layers.forEach(l => l.nodes.forEach(...)) →
+       TypeError「Cannot read properties of undefined」；在 headless Chromium 上
+       甚至直接把渲染进程跑崩（实测遮天/圣墟：开图鉴 → Target crashed）。
+       现在全部按空数组兜底：面板照常打开，数据到位后自动重绘。 */
+    (Array.isArray(g.layers) ? g.layers : []).forEach((l) => {
+      (Array.isArray(l.nodes) ? l.nodes : []).forEach((n) => out.push({ ...n, layerId: l.id }));
+    });
     (state.dyn || []).forEach((d) => out.push(d));
     return out;
   }
@@ -16422,8 +16430,29 @@
     const genre = state.genre, g = ATLAS_DATA[genre], wrap = $("atlasPanel");
     if (!g || !wrap) return;
     const P = pal();
-    if (!state.layerId || !g.layers.some((l) => l.id === state.layerId)) state.layerId = g.layers[0].id;
-    const layer = g.layers.find((l) => l.id === state.layerId);
+    /* v5.1.1 修 P1 崩溃：舆图数据懒加载，玩家可能早于数据到位就开面板 →
+       g.layers 可能是 undefined（此前直接 .some/.find → TypeError，
+       headless 下会把渲染进程跑崩）。现在按空数组兜底并给出可读的提示。 */
+    const layers = Array.isArray(g.layers) ? g.layers : [];
+    if (!layers.length) {
+      wrap.innerHTML = `
+        <div class="atlas-inner">
+          <div class="atlas-head">
+            <img class="atlas-crest" src="assets/atlas/compass-rose.png" alt="" aria-hidden="true">
+            <div>
+              <div class="atlas-title" style="color:${P.primary};">${escA(g.name || "行迹图鉴")}</div>
+              <div class="atlas-flavor">舆图数据还在路上，稍候片刻…</div>
+            </div>
+            <div class="atlas-hbtns">
+              <button class="atlas-close" onclick="StoryAtlas.toggle(false)">✕</button>
+            </div>
+          </div>
+          <div class="atlas-generic" style="border-color:${hexA(P.accent, 0.38)};color:${P.muted};">✦ 本界舆图正在加载，落位后会自动补绘。</div>
+        </div>`;
+      return;
+    }
+    if (!state.layerId || !layers.some((l) => l.id === state.layerId)) state.layerId = layers[0].id;
+    const layer = layers.find((l) => l.id === state.layerId) || layers[0];
     const presetNodes = allNodes(genre).filter((n) => !n.dyn);
     const presetIds = new Set(presetNodes.map((n) => n.id));
     const totalN = presetNodes.length;
@@ -17332,7 +17361,12 @@
           try {
             const POT = window.ATLAS_POTATO || {};
             Object.keys(POT).forEach((g) => {
-              if (!ATLAS_DATA[g] && POT[g] && Array.isArray(POT[g].layers)) ATLAS_DATA[g] = POT[g];
+              /* v5.1.1 修 P1：若本界此前已被 ensureGenreData 放了**通用兜底**配置，
+                 土豆宇宙的真实舆图就再也并不进来（大主宰/武动乾坤/元尊/万相之王
+                 会永远显示「行迹图鉴」）。现在兜底配置也允许被真实数据替换。 */
+              const cur = ATLAS_DATA[g];
+              const isFallback = cur && cur.generic && cur.fallback;
+              if ((!cur || isFallback) && POT[g] && Array.isArray(POT[g].layers)) ATLAS_DATA[g] = POT[g];
             });
           } catch (e) { }
           try { fitLayers(); } catch (e) { }
@@ -17340,7 +17374,10 @@
           try { injectSupplement(); } catch (e) { }
           try { relaxSupp(); } catch (e) { }
           try { if (state.genre) load(state.genre); } catch (e) { }
-          if (window.YJ_DEBUG) console.log("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
+          /* v5.1.1：数据到位后必须重绘一次，否则玩家看到的还是兜底空图
+             （load() 只恢复足迹状态，不负责渲染）。 */
+          try { if (state.open) render(); } catch (e) { }
+          if (window.YJ_DEBUG) console.debug("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
         }).catch(() => { });
       }
     } catch (e) { }
