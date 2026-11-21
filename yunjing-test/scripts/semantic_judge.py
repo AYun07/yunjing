@@ -34,7 +34,7 @@ E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 MODEL = "agnes-3.0-flash"
 GAP = float(os.environ.get("YJ_GAP", "4.0"))
 TIMEOUT = int(os.environ.get("YJ_TIMEOUT", "180"))
-OUT = "/workspace/云境-v4.09.0-语义复核.json"
+OUT = out_path("云境-v4.09.0-语义复核.json")
 
 PROMPT = """你是中文小说正文的审校员。下面是一段玩家在游戏里读到的小说正文。
 请只检查以下四类「硬伤」，逐条报告；没有问题就报告空列表。

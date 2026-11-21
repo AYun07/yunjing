@@ -11,13 +11,13 @@
 这同样是兜底（不是模型正常输出），必须单独计数、不能混进通过数。
 
 输入：yunjing-test/out/yj_journey_<界>_<步>.txt (shown) 与 .raw.txt (raw，仅在两者不同时落盘)
-输出：/workspace/云境-v4.09.0-清洗效果.json
+输出：yunjing-test/out/云境-v4.09.0-清洗效果.json
 """
 import glob, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
-OUT = "/workspace/云境-v4.09.0-清洗效果.json"
+OUT = out_path("云境-v4.09.0-清洗效果.json")
 
 # 确定性 UI 字段 / 结算增量 / UI 进度对（与 number-scrubber.js 的 A/B/D 类同口径）
 UI_PAT = re.compile(

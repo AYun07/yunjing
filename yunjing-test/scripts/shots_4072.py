@@ -9,8 +9,10 @@
 """
 import asyncio, os
 from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from yj_paths import out_path
 
-OUT = "/workspace/云境-v4.07.2-截图"
+OUT = out_path("云境-v4.07.2-截图")
 os.makedirs(OUT, exist_ok=True)
 BASE = "http://127.0.0.1:8899/studio.html?genre=wangyou"
 

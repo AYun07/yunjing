@@ -12,7 +12,7 @@
 TruthSnapshot 真值快照判定，此处不重复、不放宽。
 
 用法：YJ_SINCE=<本轮旅程启动 epoch> python3 t_final_audit.py
-输出：/workspace/云境-v4.09.0-终验复判.json
+输出：yunjing-test/out/云境-v4.09.0-终验复判.json
 """
 import glob, json, os, re, sys
 
@@ -23,7 +23,7 @@ import t_player as tp
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
-OUT = "/workspace/云境-v4.09.0-终验复判.json"
+OUT = out_path("云境-v4.09.0-终验复判.json")
 SINCE = float(os.environ.get("YJ_SINCE", "0"))
 VALID_STEPS = {"open", "act", "act2"}
 DEGRADED = tp.DEGRADED_NOTE

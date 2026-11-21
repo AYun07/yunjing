@@ -36,7 +36,7 @@ def _current_ver():
         return "unknown"
 
 
-SHOT_DIR = os.environ.get("YJ_SHOT_DIR", "/workspace/云境-v%s-截图" % _current_ver())
+SHOT_DIR = os.environ.get("YJ_SHOT_DIR") or out_path("云境-v%s-截图" % _current_ver())
 GENRE = os.environ.get("YJ_GENRE", "wangyou")
 
 BOOT = """(g)=>{
