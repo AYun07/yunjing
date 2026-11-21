@@ -203,15 +203,21 @@
     var s = body.replace(PANEL_FRAG, "");
     s = s.replace(GAIN_FRAG, function (m, field) { return GAIN_WORD[field] || "略有所得"; });
 
-    /* 没有真值快照时不做数量改写，避免误伤合法数字（A/B 类仍照常剥离） */
-    if (hasTruth) {
-      s = s.replace(MONEY_PRE, function (m, num, q, unit) {
-        return legal[String(Number(fold(num)))] ? m : "些许" + unit;
-      });
-      s = s.replace(MONEY_POST, function (m, unit, num) {
-        return legal[String(Number(fold(num)))] ? m : unit + "些许";
-      });
-    }
+    /* v5.1.1 修 P1：C 类（货币/资源数量）不再整条挂在「有没有金币真值」上。
+       旧口径是「拿不到快照就不改写数字，避免误伤合法数字」——可这等于把
+       「没有金币引擎的界 / 新档开局阶段」变成编造数字的免检区：
+       实测 free / shrouding / wangyou 三界 snapshot().nums 为空，
+       「木剑才卖 5 金币」原样进正文（上游验收脚本 t_body_probe 正是红的）。
+       新口径：
+         · 有真值：照旧按白名单放行（合法余额/报酬不动），非法数量模糊化；
+         · 无真值：货币/资源数量一律模糊化，但**只动带货币单位的数字**——
+           裸数字、中文数字、百分比、日期、进度对一律不碰，零误伤面不变。 */
+    s = s.replace(MONEY_PRE, function (m, num, q, unit) {
+      return legal[String(Number(fold(num)))] ? m : "些许" + unit;
+    });
+    s = s.replace(MONEY_POST, function (m, unit, num) {
+      return legal[String(Number(fold(num)))] ? m : unit + "些许";
+    });
     s = s.replace(PROG_FRAG, function (m, a, b, off, str) {
       /* 日期形态（2024/11、11/8 号）原样保留，不当 UI 进度对剥离 */
       var tail = str.slice(off + m.length, off + m.length + 2);
@@ -226,7 +232,7 @@
   }
 
   return {
-    version: "4.48.0",
+    version: "5.1.0",
     legalNumbers: legalNumbers,
     legalMoney: legalMoney,
     legalPairs: legalPairs,

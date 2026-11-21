@@ -82,6 +82,10 @@
 .xy-form input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(170,160,255,.3);border-radius:11px;color:#fff;font-size:13px;padding:9px 12px;outline:none}
 .xy-form input::placeholder{color:#9a94c0}
 .xy-form button{background:linear-gradient(120deg,#7e8cff,#b78cff);border:none;border-radius:11px;color:#fff;font-weight:700;font-size:13px;padding:0 16px;cursor:pointer}
+/* v5.1.1 修 P1 死锁：请求在途时的「停止」键（暖红，与主笔的「停止生成」同一语义） */
+.xy-form .xy-stop{background:linear-gradient(120deg,#e0645f,#c94a52);padding:0 14px;white-space:nowrap}
+.xy-form .xy-stop:hover{filter:brightness(1.08)}
+.xy-form .xy-stop:active{transform:translateY(1px)}
 .xy-forms{flex:0 0 auto;display:flex;gap:6px;padding:0 14px 13px;flex-wrap:wrap}
 .xy-f{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.28);background:transparent;border-radius:999px;padding:4px 11px;cursor:pointer;transition:.2s}
 .xy-f.on,.xy-f:hover{color:#fff;background:rgba(140,130,255,.35)}

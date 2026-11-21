@@ -67,7 +67,30 @@
   var LLM_ON_KEY = "yunjingSemanticLLMOn~" + slot();
   var LLM_TTL = 7 * 24 * 3600 * 1000;   /* 7 天：语意解读不必反复花钱 */
   var LLM_BATCH_MAX = 8;                 /* 每次最多解读 8 条文本，控制单次成本 */
+  var LLM_TIMEOUT_MS = 120000;           /* v5.1.1：大模型解读默认 120 秒无响应即判超时 */
   var llmInflight = {};                  /* 内存级去重：同一文本在途只发一次 */
+
+  /* v5.1.1：自带截止时间的 fetch（拿不到全局 fetchWithTimeout 时的兜底：
+     Node 沙箱 / 老缓存）。AbortController 在截止时刻 abort，
+     响应头之后的正文流读取也会被打断，不会「头到了、正文卡死」。 */
+  function timedFetch(url, opts, ms) {
+    var timeoutMs = ms || LLM_TIMEOUT_MS;
+    var ctrl = (typeof AbortController === "function") ? new AbortController() : null;
+    var o = {};
+    for (var k in (opts || {})) o[k] = opts[k];
+    if (ctrl) o.signal = ctrl.signal;
+    var p;
+    try { p = Promise.resolve(G.fetch(url, o)); } catch (e) { p = Promise.reject(e); }
+    if (!ctrl) return p;
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () {
+        try { ctrl.abort(); } catch (e) {}
+        reject(new Error("语义解读接口超时（" + Math.round(timeoutMs / 1000) + " 秒无响应）"));
+      }, timeoutMs);
+      p.then(function (r) { clearTimeout(timer); resolve(r); },
+             function (e) { clearTimeout(timer); reject(e); });
+    });
+  }
 
   /** 大模型解读是否开启（默认开：用户明确要双重解读；可一键关回纯本地省钱） */
   function llmEnabled() {
@@ -511,28 +534,31 @@
     var reply = "";
     try {
       var isGemini = cfg.type === "gemini";
-      var doFetch;
+      var reqUrl, reqBody;
       if (isGemini) {
-        var url = String(cfg.endpoint).replace(/\/+$/, "") + "/models/" + cfg.model + ":generateContent?key=" + cfg.apiKey;
+        reqUrl = String(cfg.endpoint).replace(/\/+$/, "") + "/models/" + cfg.model + ":generateContent?key=" + cfg.apiKey;
         var contents = todo.map(function (t) { return { role: "user", parts: [{ text: t }] }; });
         contents.unshift({ role: "user", parts: [{ text: llmPrompt(todo) }] });
-        doFetch = function () {
-          return G.fetch(url, { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: contents, generationConfig: { temperature: 0.2, maxOutputTokens: 1024 } }) });
-        };
+        reqBody = { contents: contents, generationConfig: { temperature: 0.2, maxOutputTokens: 1024 } };
       } else {
-        var url2 = String(cfg.endpoint).replace(/\/+$/, "") + "/chat/completions";
-        doFetch = function () {
-          return G.fetch(url2, { method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + cfg.apiKey },
-            body: JSON.stringify({ model: cfg.model, temperature: 0.2, max_tokens: 1024, messages: messages }) });
-        };
+        reqUrl = String(cfg.endpoint).replace(/\/+$/, "") + "/chat/completions";
+        reqBody = { model: cfg.model, temperature: 0.2, max_tokens: 1024, messages: messages };
       }
+      var reqOpts = { method: "POST", headers: { "Content-Type": "application/json" } };
+      if (!isGemini) reqOpts.headers.Authorization = "Bearer " + cfg.apiKey;
+      reqOpts.body = JSON.stringify(reqBody);
       var resp;
-      if (G.MoNetGuard && G.MoNetGuard.fetchWithRetry) {
-        resp = await G.MoNetGuard.fetchWithRetry(doFetch, { label: "语义解读", throttleKey: "语义解读", silent: true });
+      /* v5.1.1 修 P1：语义解读的大模型请求过去是裸 fetch —— 接口挂死则
+         await 永不返回，调用方（bonus-engine 的 enrich 链）整条挂起。
+         现在统一走带超时的封装：有全局 fetchWithTimeout 就用它（自带
+         AbortController + MoNetGuard 重试），否则用本地 timedFetch 兜底。 */
+      if (typeof G.fetchWithTimeout === "function") {
+        resp = await G.fetchWithTimeout(reqUrl, reqOpts, LLM_TIMEOUT_MS, { label: "语义解读", throttleKey: "语义解读", silent: true });
+      } else if (G.MoNetGuard && G.MoNetGuard.fetchWithRetry) {
+        resp = await G.MoNetGuard.fetchWithRetry(function () { return timedFetch(reqUrl, reqOpts, LLM_TIMEOUT_MS); },
+          { label: "语义解读", throttleKey: "语义解读", silent: true });
       } else {
-        resp = await doFetch();
+        resp = await timedFetch(reqUrl, reqOpts, LLM_TIMEOUT_MS);
       }
       var data = await resp.json();
       if (isGemini) {
