@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.1">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +315,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v5.1.1</span>
+                <span class="entry-date">2026-11-21</span>
+            </div>
+            <h3 class="entry-title">云境 v5.1.1 · 全量挑刺修复：小云超时可中止 · 货币清洗解耦 · 离线提速 · 验收进 CI</h3>
+            <p class="entry-text">全量挑刺修复版：把 v5.1.0 自带的两道红 CI、三处崩溃级缺陷、以及「最有价值的那层测试从未进 CI」的流程漏洞一次性收口。 **小云挂死修复（P1）**：此前小云的三处大模型调用是裸 fetch，接口一旦挂死（对端不回、代理半开），请求永不落地，thinking 锁永不释放，之后所有消息被静默丢弃，且面板里没有停止键——玩家既看不到原因也按不了停止，小云就此永久失灵。现改为 AbortController + 120 秒超时（截止时间独立计时，不依赖底层 fetch 是否理会 signal），面板新增「⏹ 停止」键，超时/失败/中止都会给玩家一句看得懂的提示。语义解读引擎（semantic-engine）的请求同样补上超时，此前接口挂死会让整条 enrich 链永久挂起。 **数值真值清洗解耦（P1）**：货币/资源数量的模糊化此前整条挂在「引擎里有没有金币真值」上——自由人生、地球、新档开局等无数值快照的界，AI 编造的「木剑才卖 5 金币」会原样进入正文，而本模块存在的意义就是拦它。现改为：有真值按白名单放行（合法余额/报酬不动），无真值也模糊化带货币单位的数字；裸数字、中文数字、百分比、日期、进度对一律不碰，零误伤面不变。上游自带的验收脚本 t_body_probe 由此转绿。 **PWA 离线可用性（P2）**：install 阶段原先用 cache.addAll（原子操作），任何一条取不到就整批归零，且异常被 .catch(()=&gt;{}) 吞掉——SW 照样安装成功，缓存里却什么都没有。后台预热「每 150ms 取 2 个」要跑约 60 秒，这期间断网后进入任何没访问过的界都会半残（实测：页面正文 79 字、14+ 个核心脚本 ERR_FAILED、0 张世界卡）。现改为：install 分批 allSettled + 失败可见；预热提速到 6 个/60ms、外壳优先，约 10 秒补完全量；补进此前漏掉的 js/kb/names.js 与 36 张小云立绘（离线开图鉴不再破图）；本地 http://127.0.0.1 / localhost 也是安全上下文，一并注册 Service Worker。实测：干净上下文断网后进入从未访问过的界，0 个失败请求、0 张破图、正文 3216 字。 **行旅图鉴崩溃修复（P1）**：舆图三件套是懒加载的，玩家在数据到位前打开图鉴时，某些界的 layers 或某层的 nodes 还没挂上，旧代码直接 .forEach/.some/.find → TypeError（真 Chrome 复现「Cannot read properties of undefined」），headless 下甚至会把渲染进程跑崩。现全部按空数组兜底，先渲染「舆图加载中」占位，数据到位后自动重绘；土豆宇宙四界（大主宰/武动乾坤/元尊/万相之王）此前会被通用兜底配置占住、真实舆图再也并不进来（永远显示「行迹图鉴」），现允许兜底配置被真实数据替换。 **验收体系进 CI（P2）**：此前 25 个浏览器级脚本（正文清洗端到端、移动端触控、存档持久化、并发、浸泡、压力…）从不在 CI 里跑，所以「货币不洗」「19×44px 的关闭按钮」这类红灯可以长期挂着。现新增 browser job：装 Playwright+Chromium、起 8899 静态服务、跑 25 个不依赖模型接口的浏览器级用例并上传产物；run-all.mjs 修掉 --json 模式崩溃并新增 --only/--no-key。**模型接口一律由玩家自行配置，仓库不存密钥、CI 也不需要密钥**（需密钥的 8 个用例只供维护者本地手动跑）。同时：17 个测试脚本不再写死 /workspace/yunjing 与 /tmp（新增 _paths.py 统一按仓库位置推导）；t_kb_load_v410 / t_registry_v410 原固定等 650~700ms 而世界书与注册表都是懒加载，误报「空库 36」「五新界缺失」，改为等目标就绪后实测 38 界 31846 条、9/9 通过；t_atlas_406 改用全量 Chrome（Playwright 的 headless shell 渲染本项目舆图 SVG 会随机崩渲染进程，是其自身缺陷，换全量 Chrome 38 界全过）。 **版本同源与其它规范（P3）**：v5.1.0 自带两道红 CI——版本同源（number-scrubber 模块号还写 4.48.0、README 逐版表首行还是 v4.48.0 却标「当前」）、网络韧性（就是上述裸 fetch）。现已全部转绿，并把版本戳同步扩到 &amp;v= 形式（index.html 44 处入口链接的历史版本号）、修正版本计数口径（此前漏统计「同批发布」标记行，README 102 版 vs VERSIONS 101 版）、统一 README/VERSIONS 三处互相矛盾的版本数。另：两个随仓库发布的页面必然 4 张破图（引用了被 .gitignore 排除的验收实拍）→ 改为缺图时显示说明框；移动端 19×44 与 14×44 的关闭键 → 放大到 32×32 命中区；35 处原生 alert（阻塞 UI、与全站 toast 体系割裂）→ 新增 yjAlert() 统一走 toast；生产代码 92 处 console.log → console.debug。 **上游坏树修复**：origin/main 的树里有 4 个文件名被写坏（首字符是字面引号且含反斜杠），read-tree/checkout 会直接报 invalid path——任何平台、任何人都检不出 v5.1.0。这 4 个条目与树中同名正常文件是同一个 blob，删除后内容零损失，本版已修。 **回归结果**：7 道 CI 闸门全绿（语法 412/0、版本同源、预缓存、核心回归 34/0、网络体检、世界书体检、项目自检 71/71）；离线套件 9/9；浏览器级套件 25/25（修复前 16/25）。</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布 语义引擎 大模型 双重解读 成本治理" style="--entry-hue:#7a5ac0;">
             <div class="entry-head">
@@ -1021,7 +1030,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
