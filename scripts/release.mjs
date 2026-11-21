@@ -184,6 +184,8 @@ const body = [
   `**与上一版差异**：https://github.com/${REPO}/compare/v${curVer}...${tag}`,
   '',
   `**在线预览该版源码**：https://github.com/${REPO}/tree/${tag}`,
+  '',
+  '[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)',
 ].join('\n');
 const res = await fetch(`https://api.github.com/repos/${REPO}/releases`, {
   method: 'POST',
