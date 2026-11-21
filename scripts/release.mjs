@@ -62,13 +62,16 @@ function sub(file, re, rep) {
   if (n !== s) { fs.writeFileSync(p, n); touched.push(file); }
 }
 const esc = curVer.replace(/\./g, '\\.');
+/* v5.1.1：版本戳有两种形式 —— `?v=`（资源引用）与 `&v=`（index.html 的入口链接，
+   如 studio.html?genre=xxx&v=1.6.9）。原来只换 `?v=`，发版后 `&v=` 会留在旧号上，
+   导致 scripts/sync-version.mjs --check 直接红（v5.1.0 就是这么红的）。两种一起换。 */
 for (const f of fs.readdirSync(ROOT).filter((f) => /\.(html)$/.test(f))) {
-  sub(f, new RegExp(`\\?v=${esc}`, 'g'), `?v=${nextVer}`);
+  sub(f, new RegExp(`([?&])v=${esc}`, 'g'), (m) => m[1] + 'v=' + nextVer);
   sub(f, new RegExp(`云境 v${esc}`, 'g'), `云境 v${nextVer}`);
 }
 // js 里写死的资源参数
 for (const f of fs.readdirSync(path.join(ROOT, 'js')).filter((f) => f.endsWith('.js'))) {
-  sub(path.join('js', f), new RegExp(`\\?v=${esc}`, 'g'), `?v=${nextVer}`);
+  sub(path.join('js', f), new RegExp(`([?&])v=${esc}`, 'g'), (m) => m[1] + 'v=' + nextVer);
 }
 sub('studio.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
 sub('index.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
@@ -146,6 +149,16 @@ ${detail.join('\n\n') || title || ''}
   }
   if (out !== rm) { write('README.md', out); touched.push('README.md'); }
 }
+
+/* ---------- 3.8 版本同源兜底（v5.1.1）----------
+ * 发版脚本自己改了十几个锚点，但仍可能漏（v5.1.0 就漏了 number-scrubber 模块号与
+ * README 两处，还漏了 `&v=` 形式）。这里统一再跑一次同步器：它以 studio.html 的
+ * YJ_VER 为唯一来源，把 ?v= / &v= / sw.js / 页面标题 / README / VERSIONS 全对齐，
+ * 顺带把版本计数口径校正到速查表实际行数。 */
+try {
+  sh('node scripts/sync-version.mjs');
+  sh('node scripts/update-readme.mjs');
+} catch (e) { console.error('版本同源同步器执行失败：', e && e.message || e); }
 
 console.log(`版本号 ${curVer} → ${nextVer}，改动文件 ${[...new Set(touched)].length} 个`);
 if (DRY) { console.log('[dry] 到此为止，未提交未推送'); process.exit(0); }
