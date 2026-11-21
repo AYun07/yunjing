@@ -64,14 +64,17 @@ function sub(file, re, rep) {
 const esc = curVer.replace(/\./g, '\\.');
 /* v5.1.1：版本戳有两种形式 —— `?v=`（资源引用）与 `&v=`（index.html 的入口链接，
    如 studio.html?genre=xxx&v=1.6.9）。原来只换 `?v=`，发版后 `&v=` 会留在旧号上，
-   导致 scripts/sync-version.mjs --check 直接红（v5.1.0 就是这么红的）。两种一起换。 */
+   导致 scripts/sync-version.mjs --check 直接红（v5.1.0 就是这么红的）。两种一起换。
+   ⚠ 替换函数的签名是 (match, p1, p2, ...) —— 捕获组要从**第二个参数**取，
+   写成 (m) => m[1] 会取到「匹配串的第 2 个字符」，把 "?v=5.1.0" 写成 "vv=5.1.1"，
+   全站资源 404（本项目真的踩过这个坑，见 v5.1.1 事故复盘）。 */
 for (const f of fs.readdirSync(ROOT).filter((f) => /\.(html)$/.test(f))) {
-  sub(f, new RegExp(`([?&])v=${esc}`, 'g'), (m) => m[1] + 'v=' + nextVer);
+  sub(f, new RegExp(`([?&])v=${esc}`, 'g'), (m, p1) => p1 + 'v=' + nextVer);
   sub(f, new RegExp(`云境 v${esc}`, 'g'), `云境 v${nextVer}`);
 }
 // js 里写死的资源参数
 for (const f of fs.readdirSync(path.join(ROOT, 'js')).filter((f) => f.endsWith('.js'))) {
-  sub(path.join('js', f), new RegExp(`([?&])v=${esc}`, 'g'), (m) => m[1] + 'v=' + nextVer);
+  sub(path.join('js', f), new RegExp(`([?&])v=${esc}`, 'g'), (m, p1) => p1 + 'v=' + nextVer);
 }
 sub('studio.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
 sub('index.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
