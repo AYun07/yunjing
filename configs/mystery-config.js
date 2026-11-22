@@ -1,6 +1,6 @@
 /**
  * 悬疑推理类型配置 - Mystery Story Configuration
- * 模仿「觅长生」daoguiyixian-config.js 的结构：
+ * 道诡异仙世界配置的结构：
  *   fullSystemPrompt        → 类型总纲（写作法则）
  *   defaultSystemPrompt     → 变量检查清单 + 开局模板 + 角色档案指令
  *   defaultDynamicWorldPrompt → 灵感引擎提示词（动态世界）

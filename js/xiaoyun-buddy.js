@@ -186,9 +186,9 @@
         var r = runTool('saves.ui');
         bot(r && r.ok ? r.msg : (window.SaveSlots ? '已帮你打开存档管理。' : (r && r.msg) || '存档系统未加载。'));
         if (r && !r.ok && window.SaveSlots) { try { SaveSlots.open(); } catch (e) {} }
-      } else if (/预设|酒馆|第三方/.test(t)) {
+      } else if (/预设|前端|第三方/.test(t)) {
         var p = runTool('preset.info'); var g = runTool('regex.info');
-        bot((p && p.msg || '') + '\n' + (g && g.msg || '') + '\n想换成你自己的酒馆预设？创作室 → 云起预设面板 → 导入预设，或直接把 JSON 发给我（接入 API 后我自己导）。');
+        bot((p && p.msg || '') + '\n' + (g && g.msg || '') + '\n想换成你自己的预设？创作室 → 云起预设面板 → 导入预设，或直接把 JSON 发给我（接入 API 后我自己导）。');
       } else if (/格式|排版乱|修复正文|AI腔/.test(t)) {
         var r2 = runTool('format.repair');
         if (r2 && r2.ok) {

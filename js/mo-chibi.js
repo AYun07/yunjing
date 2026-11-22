@@ -1157,7 +1157,7 @@ const MoChibi = {
   },
   _boot() {
     this.ensureDOM(); // v3.92.1：不再渲染第二只小云，MoChibi 仅作 API 兼容层
-    console.log("[小云] 旧墨枢小云已并入 xiaoyun-buddy（单一云灵）；MoChibi 仅保留 API 兼容层");
+    console.log("[小云] 旧版小云已并入 xiaoyun-buddy（单一云灵）；MoChibi 仅保留 API 兼容层");
   }
 };
 window.MoChibi = MoChibi;

@@ -127,7 +127,7 @@
       }
       const fname = `${npcName.replace(/[\\/:*?"<>|]/g, "_")}.png`;
       window.CardIO.download(bytes, fname);
-      (_h = window.showToast) == null ? void 0 : _h.call(window, `✓ 「${npcName}」已导出为标准角色卡${book ? `（含世界书 ${book.entries.length} 条）` : ""}，可在 RisuAI / Chub 等通用前端 使用`, "success");
+      (_h = window.showToast) == null ? void 0 : _h.call(window, `✓ 「${npcName}」已导出为标准角色卡${book ? `（含世界书 ${book.entries.length} 条）` : ""}，可在常见前端工具中使用`, "success");
       return bytes;
     },
     _currentScenario() {
@@ -265,7 +265,7 @@ ${norm.first_mes}`,
       w.innerHTML = `
             <div class="chub-overlay" onclick="if(event.target===this)CardHub.close()">
                 <div class="chub-modal">
-                    <div class="chub-head"><b>🃏 角色卡互通</b><span class="chub-sub">Character Card V2/V3 · 与 RisuAI / Chub 等通用前端 生态互通</span>
+                    <div class="chub-head"><b>🃏 角色卡互通</b><span class="chub-sub">Character Card V2/V3 · 与常见前端工具生态互通</span>
                         <button class="chub-x" onclick="CardHub.close()">✕</button></div>
                     <div class="chub-body">${bodyHTML}</div>
                 </div>
@@ -313,11 +313,11 @@ ${norm.first_mes}`,
       return `
                 <div class="chub-sec">📤 导出 · 众生相 NPC → 标准角色卡</div>
                 ${npcRows}
-                <div class="chub-note">导出内容：角色档案（身份/描述/关系/台词）+ 相关知识库条目打包为专属世界书${"+"}立绘作卡面底图。生成的 PNG 可直接导入 RisuAI 等通用前端，或上传 Chub 分享。</div>
+                <div class="chub-note">导出内容：角色档案（身份/描述/关系/台词）+ 相关知识库条目打包为专属世界书${"+"}立绘作卡面底图。生成的 PNG 可直接导入常见前端工具，或上传社区分享。</div>
                 <div class="chub-sec">📥 导入 · 标准角色卡 → 本工坊</div>
                 <div class="chub-drop" onclick="document.getElementById('cardHubFile').click()">
                     <b style="color:#d8cba8">点击选择角色卡文件</b><br>
-                    支持 PNG 角色卡（Chub / ST / RisuAI 导出）与 JSON 卡<br>
+                    支持 PNG 角色卡（各前端工具导出）与 JSON 卡<br>
                     导入后：众生相登记角色 · 知识库建档 · 世界书转关键词触发条目
                 </div>
                 <input type="file" id="cardHubFile" accept=".png,.json,image/png,application/json" style="display:none" onchange="CardHub.onFile(this)">

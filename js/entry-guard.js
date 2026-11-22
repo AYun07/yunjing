@@ -7,7 +7,7 @@
   "use strict";
   try {
     var q = location.search || "";
-    // ① 开发者显式豁免：?dev=1 或本机一次性解锁开关（CLI/部署/酒馆/智能体接入都走这条）
+    // ① 开发者显式豁免：?dev=1 或本机一次性解锁开关（CLI/部署/第三方前端/智能体接入都走这条）
     if (/(?:^|[?&])dev=1(?:&|$)/.test(q)) { markDev(); return; }
     try { if (localStorage.getItem("yunjingDevUnlock") === "1") return; } catch (e) {}
 
