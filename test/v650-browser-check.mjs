@@ -30,7 +30,7 @@ try {
   ok(mods.gh === 'object' && mods.dlRaw === 'function', 'GithubClient.downloadGistRaw 就绪');
   ok(mods.hub === 'object' && mods.install === 'function', 'CreationHub 增量安装入口就绪');
   ok(mods.ta === 'object', 'TimeAxis 已加载');
-  ok(/^6\.5\.\d+$/.test(mods.ver || ''), 'YJ_VER=6.5.x (got ' + mods.ver + ')');
+  ok(/^6\.[56]\.\d+$/.test(mods.ver || ''), 'YJ_VER=6.5.x/6.6.x (got ' + mods.ver + ')');
 
   console.log('\n【2】浏览器内打包 → 解包字节一致');
   const roundtrip = await p.evaluate(async () => {

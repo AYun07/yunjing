@@ -196,8 +196,13 @@
       'POST', { title: title, body: body, labels: [LABEL] });
   }
 
-  /* ---------- 唯一包体目录（v6.5.1）：community/packages/ ---------- */
-  var PACKAGE_DIR = 'community/packages';
+  /* ---------- 唯一创意工坊总文件夹（v6.6.0）：community/works/ ----------
+     DR-053：全部二创集中到这一个总文件夹；每件作品一个 <时间戳>-<slug>/ 子文件夹，
+     README.md(四段式) + meta.json + package.zip 同处；catalog.json 按时间倒序。
+     community/packages/ 与「二创投稿」Issues 仅历史只读，不再写入、不删除。 */
+  var WORKS_DIR = 'community/works';
+  var PACKAGE_DIR = 'community/packages'; // 兼容常量：历史只读，不再作为写入目标
+  var K_WORKS_CACHE = 'yj_works_cache';
   /** 把作品包 base64 传到唯一包体目录（contents API：存在则带 sha 覆盖，不存在则新建）。
    *  返回 {ok,path,html_url,rawUrl,error}。文件名由调用方给（含时间戳，唯一不撞）。 */
   async function uploadPackageFile(fileName, b64, commitMsg) {
@@ -217,6 +222,162 @@
     if (!put.ok) return { ok: false, error: put.error, path: path };
     var c = put.data && put.data.content || {};
     return { ok: true, path: path, html_url: c.html_url || '', rawUrl: c.download_url || '', sha: c.sha || '' };
+  }
+
+  /* ---------- 唯一创意工坊总文件夹 API（v6.6.0 / DR-053） ---------- */
+  function sanitizeSlug(s) {
+    // 只保留 字母数字_中文-，去掉点（杜绝 .. 穿越）、斜杠与空白
+    return String(s || '').replace(/[^\w\u4e00-\u9fa5-]/g, '_');
+  }
+  function worksPath(slug, file) {
+    var base = WORKS_DIR + '/' + sanitizeSlug(slug);
+    return file ? base + '/' + file : base;
+  }
+  function worksCacheGet() { try { return JSON.parse(store().getItem(K_WORKS_CACHE) || 'null'); } catch (e) { return null; } }
+  function worksCacheSet(items) { try { store().setItem(K_WORKS_CACHE, JSON.stringify({ at: Date.now(), items: items || [] })); } catch (e) {} }
+
+  /** 列作品清单：读 catalog.json（多线路），按 createdAt 倒序；失败回退本机缓存。
+   *  返回 {ok, items, cached, error}。 */
+  async function listWorks() {
+    var r = repo();
+    var path = worksPath('', 'catalog.json').replace(/\/$/, ''); // community/works/catalog.json
+    path = WORKS_DIR + '/catalog.json';
+    var apiPath = '/repos/' + encodeURIComponent(r.owner) + '/' + encodeURIComponent(r.repo) +
+      '/contents/' + path.split('/').map(encodeURIComponent).join('/');
+    var res = await read(apiPath);
+    if (res.ok && res.data && res.data.content) {
+      try {
+        var txt = decodeBase64Content(res.data.content);
+        var obj = JSON.parse(txt);
+        var items = Array.isArray(obj) ? obj : (Array.isArray(obj.items) ? obj.items : []);
+        items.sort(function (a, b) { return String(b.createdAt || '').localeCompare(String(a.createdAt || '')); });
+        worksCacheSet(items);
+        return { ok: true, items: items, cached: false };
+      } catch (e) { /* JSON 损坏 → 落缓存 */ }
+    }
+    var c = worksCacheGet();
+    if (c && c.items) {
+      c.items.sort(function (a, b) { return String(b.createdAt || '').localeCompare(String(a.createdAt || '')); });
+      return { ok: true, items: c.items, cached: true, error: res.error || '清单解析失败，显示本机缓存' };
+    }
+    return { ok: false, error: res.error || '无法读取作品清单', items: [] };
+  }
+
+  /** 读作品子文件夹里的文本文件（README.md / meta.json） */
+  async function readWorkFile(slug, file) {
+    var r = repo();
+    var path = worksPath(slug, file);
+    var apiPath = '/repos/' + encodeURIComponent(r.owner) + '/' + encodeURIComponent(r.repo) +
+      '/contents/' + path.split('/').map(encodeURIComponent).join('/');
+    var res = await read(apiPath);
+    if (!res.ok || !res.data || !res.data.content) return { ok: false, error: res.error || '文件不存在' };
+    return { ok: true, text: decodeBase64Content(res.data.content), sha: res.data.sha || '' };
+  }
+
+  /** package.zip 的 raw 下载地址（供云境内 fetch，无需打开网页）
+   *  注意：raw.githubusercontent 有 CDN 缓存，刚发布有传播延迟；安装优先用 getWorkPackageBytes。 */
+  function getPackageUrl(slug) {
+    var r = repo();
+    return 'https://raw.githubusercontent.com/' + encodeURIComponent(r.owner) + '/' +
+      encodeURIComponent(r.repo) + '/main/' + worksPath(slug, 'package.zip').split('/').map(encodeURIComponent).join('/');
+  }
+
+  /** 通过 contents API 读 package.zip 字节（无 CDN 缓存、始终最新、带 token 绕限流）。
+   *  返回 {ok, bytes(Uint8Array), error}。安装器优先走此路径。 */
+  async function getWorkPackageBytes(slug) {
+    var r = repo();
+    var path = worksPath(slug, 'package.zip');
+    var apiPath = '/repos/' + encodeURIComponent(r.owner) + '/' + encodeURIComponent(r.repo) +
+      '/contents/' + path.split('/').map(encodeURIComponent).join('/');
+    var res = await read(apiPath);
+    if (!res.ok || !res.data || !res.data.content) return { ok: false, error: res.error || '包体不存在' };
+    var b64 = String(res.data.content).replace(/\s/g, '');
+    try {
+      var bin = atob(b64), u8 = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      return { ok: true, bytes: u8 };
+    } catch (e) { return { ok: false, error: '包体解码失败' }; }
+  }
+
+  /** decode contents API 的 base64 content（可能含换行；兼容 UTF-8 中文） */
+  function decodeBase64Content(b64) {
+    var s = String(b64 || '').replace(/\s/g, '');
+    if (typeof atob === 'function') {
+      var bin = atob(s), u8 = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      if (typeof TextDecoder !== 'undefined') return new TextDecoder('utf-8').decode(u8);
+      return bin;
+    }
+    if (typeof Buffer !== 'undefined') return Buffer.from(s, 'base64').toString('utf8');
+    return s;
+  }
+
+  /** 写单个作品文件到 works/<slug>/<file>（contents API：存在带 sha 覆盖） */
+  async function putWorkFile(slug, file, contentB64, commitMsg) {
+    var r = repo();
+    var path = worksPath(slug, file);
+    var apiPath = '/repos/' + encodeURIComponent(r.owner) + '/' + encodeURIComponent(r.repo) +
+      '/contents/' + path.split('/').map(encodeURIComponent).join('/');
+    var sha = null;
+    try {
+      var g = await once(apiPath + '?ref=main', { method: 'GET', headers: headers(false) }, 15000);
+      if (g.ok) { var gj = await g.json(); sha = gj.sha || null; }
+    } catch (e) {}
+    var payload = { message: commitMsg || ('二创作品：' + path), content: String(contentB64 || ''), branch: 'main' };
+    if (sha) payload.sha = sha;
+    var put = await write(apiPath, 'PUT', payload);
+    if (!put.ok) return { ok: false, error: put.error, path: path };
+    var c = put.data && put.data.content || {};
+    return { ok: true, path: path, html_url: c.html_url || '', sha: c.sha || '' };
+  }
+
+  /** 发布一件作品：写 README/meta/package 到子文件夹 + CAS 更新 catalog。
+   *  files: [{name:'README.md',b64:'...'}, {name:'meta.json',...}, {name:'package.zip',...}]
+   *  info:  {slug,title,author,createdAt,summary,size,hash} */
+  async function publishWork(info, files) {
+    var slug = sanitizeSlug(info.slug);
+    if (!slug) return { ok: false, error: '作品标识为空' };
+    for (var i = 0; i < (files || []).length; i++) {
+      var f = files[i];
+      var up = await putWorkFile(slug, f.name, f.b64, '二创作品[' + (info.title || slug) + ']：' + f.name);
+      if (!up.ok) return { ok: false, error: '写入 ' + f.name + ' 失败：' + (up.error || '网络'), path: up.path };
+    }
+    // catalog CAS 写回：读当前 sha → 追加/替换本作品条目 → 带 sha 写回（冲突则报错，不静默丢）
+    var r = repo();
+    var catPath = WORKS_DIR + '/catalog.json';
+    var catApi = '/repos/' + encodeURIComponent(r.owner) + '/' + encodeURIComponent(r.repo) +
+      '/contents/' + catPath.split('/').map(encodeURIComponent).join('/');
+    var items = [], catSha = null;
+    try {
+      var g = await once(catApi + '?ref=main', { method: 'GET', headers: headers(false) }, 15000);
+      if (g.ok) {
+        var gj = await g.json();
+        catSha = gj.sha || null;
+        var obj = JSON.parse(decodeBase64Content(gj.content));
+        items = Array.isArray(obj) ? obj : (Array.isArray(obj.items) ? obj.items : []);
+      }
+    } catch (e) {}
+    items = items.filter(function (it) { return it.slug !== slug; });
+    items.push({
+      slug: slug, title: info.title || slug, author: info.author || '',
+      createdAt: info.createdAt || new Date().toISOString(),
+      summary: info.summary || '', size: info.size || 0, hash: info.hash || '',
+      readme: worksPath(slug, 'README.md'), package: worksPath(slug, 'package.zip')
+    });
+    items.sort(function (a, b) { return String(b.createdAt || '').localeCompare(String(a.createdAt || '')); });
+    var catB64;
+    if (typeof btoa === 'function') {
+      var txt = JSON.stringify({ schema: 1, items: items }, null, 2);
+      var bytes = new TextEncoder ? new TextEncoder().encode(txt) : null;
+      if (bytes) { var bs = ''; for (var k = 0; k < bytes.length; k++) bs += String.fromCharCode(bytes[k]); catB64 = btoa(bs); }
+      else catB64 = btoa(unescape(encodeURIComponent(txt)));
+    } else catB64 = Buffer.from(JSON.stringify({ schema: 1, items: items }, null, 2), 'utf8').toString('base64');
+    var catPayload = { message: '更新二创清单：' + (info.title || slug), content: catB64, branch: 'main' };
+    if (catSha) catPayload.sha = catSha;
+    var cres = await write(catApi, 'PUT', catPayload);
+    if (!cres.ok) return { ok: false, error: '更新清单失败（可能并发冲突，请重发）：' + cres.error };
+    worksCacheSet(items);
+    return { ok: true, path: worksPath(slug), catalogSha: cres.data && cres.data.content && cres.data.content.sha || '' };
   }
 
   /* ---------- 断网队列 ---------- */
@@ -250,7 +411,7 @@
 
   /** 校验 token 范围提示（v6.5.1：包体走仓库 community/packages/，需 Contents + Issues 写） */
   function scopeHint() {
-    return '需要 fine-grained token，勾选 Contents(写) 与 Issues(写)；或 classic token 的 public_repo 权限。包体统一存仓库 community/packages/，不再用 Gist。';
+    return '需要 fine-grained token，勾选 Contents(读+写)；或 classic token 的 public_repo 权限。作品统一存仓库 community/works/ 唯一文件夹，浏览/下载无需 token，仅发布需要。';
   }
 
   globalThis.GithubClient = {
@@ -261,6 +422,9 @@
     whoami: whoami, scopeHint: scopeHint, LABEL: LABEL,
     downloadGistRaw: downloadGistRaw, createPrivateGist: createPrivateGist, parseVolumes: parseVolumes,
     uploadPackageFile: uploadPackageFile, PACKAGE_DIR: PACKAGE_DIR,
+    WORKS_DIR: WORKS_DIR, worksPath: worksPath, listWorks: listWorks, readWorkFile: readWorkFile,
+    getPackageUrl: getPackageUrl, putWorkFile: putWorkFile, publishWork: publishWork,
+    getWorkPackageBytes: getWorkPackageBytes, decodeBase64Content: decodeBase64Content,
     _read: read, _write: write
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = globalThis.GithubClient;

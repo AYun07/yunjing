@@ -1192,3 +1192,22 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 决定："打包源码"= 玩家在云境内改动过的**内容层明文数据**（manifest.json + content/*.json：DLC/世界书/预设/插件定义/正则/存档/资源），这些是"玩家能继续改的源码"。桌面手动授权项目目录后附加真 .js 为可选轨，非默认。
 - 后果：诚实披露边界，不做"手机一键改源码"的假按钮；四段里的"打包源码"段落明确写清文件路径/sha256/文件清单，玩家拿到的是可读可改的增量数据。
 - 失效条件：若未来引入浏览器内建源码编辑器且能导出完整可运行工程，可重审定义。
+
+## DR-052 · CI 长期 failure 的根因与修复（v6.6.0）
+
+- 背景：用户发现"推送后 CI 总是报错"。实地查 GitHub Actions：64 次 run 全部 failure，卡在第②道闸 `sync-version.mjs --check`。
+- 根因：v6.3.14 起多次升版本只改 studio.html 的 YJ_VER，从未运行 `scripts/sync-version.mjs`。后果：43 处静态引用 ?v= / title / README / VERSIONS / index.html YJ_VER(停在6.3.6) 不同源；第④离线套件 15 项不同源、第⑤核心回归 2 项失败，均为同一根因；changelog 当前版本条目停在 v5.1.0。第①③⑥⑦闸本来就过。
+- 决定：① 用 `sync-version.mjs` 统一升版本与同步（该脚本用精确锚点，只改当前版本锚点、不碰历史版本号，正是为防"全局替换改坏历史"的事故而写）；② 人工补 changelog 当前版本条目（脚本明确不代写正文）；③ 以后每次升版本必须先跑该脚本，写进发版清单。
+- 取舍：不改 CI 阈值、不跳过闸、不放水；修数据本身。
+- 失效条件：若改用别的版本来源（如 package.json），重写同步器与决策。
+- 验证：本地 `--check` 退出 0、regression 34/34；推送后远端 CI run 转 success（API 实地核验）。
+
+## DR-053 · 二创收敛为单一总文件夹 + 云境内创意工坊（v6.6.0）
+
+- 背景：用户要求"二创区域在一个单独的总文件夹内、一目了然按时间顺序"、"打包文件和简介说明在一起、可直接一键下载"、"玩家在自己云境直接联通这个文件夹，像创意工坊，不用非得来 GitHub"。v6.5.1 现状：元数据在 Issues、包体在 community/packages/，两处分散，玩家找不到包体。
+- 候选：①维持 Issues+packages（拒绝：分散、找不到包体）；②玩家自建仓库（拒绝：新手门槛高、不统一管理）；③仓库内单一总文件夹 community/works/ + 每件作品一个带时间戳子文件夹（README+meta+zip 同处）+ catalog.json 清单（采纳）。
+- 技术前提实测：contents API 可列目录（带 token 可用）；匿名读撞 IP 级限流（60/hr）、raw 直连超时、jsDelivr 对 1500+ 文件大仓库 301 回 raw 不可靠 → 清单读取走 Contents API 多线路 + 本机缓存；完全脱离 GitHub 的公共存储需后端，违反零后端定位，不做。
+- 决定：创作区唯一根 `community/works/`（常量写死）；每件作品 = `<时间戳>-<slug>/` 含 README.md(四段式)+meta.json+package.zip；catalog.json 按 createdAt 倒序；云境内 renderList/log 数据源改为 listWorks；一键下载复用 openInstall；发布走 publishWork（contents PUT + catalog CAS 写回）；旧 packages/ 与 Issues 保留为历史只读、不删除、不再写入。
+- 取舍：牺牲"匿名无障碍"（要限流/缓存/token 上传），换"单一区域、简介与包体同处、云境内一站式体验"。token 只存本机。
+- 失效条件：引入后端/自有存储、或用户改主意要多板块，重写本决策。
+- 验证：v660-schema Node + v660-browser + 真机造作品写入 works、清单更新、新档一键安装不坏档、CI 远端转绿。

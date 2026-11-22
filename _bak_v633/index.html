@@ -27,11 +27,11 @@
     })();
     </script>
     <!-- v4.36.0 开场入口分派：读 ?entry= 触发 续梦(存档)/观星(设置)；须在业务脚本之后执行，故 defer -->
-    <script defer src="js/opening-entry.js?v=5.2.0"></script>
+    <script defer src="js/opening-entry.js?v=6.6.0"></script>
     <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
-    <script src="js/id-migrate.js?v=5.2.0"></script>
+    <script src="js/id-migrate.js?v=6.6.0"></script>
     <!-- v4.08.0 存档键统一注册表（早于所有业务脚本） -->
-    <script src="js/slot-registry.js?v=5.2.0"></script>
+    <script src="js/slot-registry.js?v=6.6.0"></script>
     <title>云境 v6.3.2 · AI创作与开放世界扮演</title>
     <style>
         /* v3.93.0 大厅：css/lobby-themes.css 六套风格皮肤 + css/lobby-layouts.css 六套异构骨架（旧 8 套深紫玻璃版式已移除） */
@@ -43,16 +43,16 @@
     </style>
 
     <!-- v3.76.0 字体全面自托管（国内网络/离线均可渲染）：霞鹜文楷切片 + 思源宋体子集 + Cormorant 子集 -->
-    <link rel="stylesheet" href="css/fonts-local.css?v=5.2.0">
+    <link rel="stylesheet" href="css/fonts-local.css?v=6.6.0">
     <!-- v3.93.0 大厅：基础版式 + 六套风格皮肤 + 六套异构骨架（杂志/手帐/Y2K/水墨/瑞士/终端） -->
-    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=5.2.0">
-    <link rel="stylesheet" href="css/lobby-themes.css?v=5.2.0">
+    <link rel="stylesheet" href="css/lobby-xiaoyun.css?v=6.6.0">
+    <link rel="stylesheet" href="css/lobby-themes.css?v=6.6.0">
     <!-- 骨架层必须在皮肤层之后：六种风格各有自己的排版结构，不是换配色 -->
-    <link rel="stylesheet" href="css/lobby-layouts.css?v=5.2.0">
-    <link rel="stylesheet" href="css/yj-splash-anim.css?v=5.2.0">
+    <link rel="stylesheet" href="css/lobby-layouts.css?v=6.6.0">
+    <link rel="stylesheet" href="css/yj-splash-anim.css?v=6.6.0">
     <!-- 主题切换器：同步挂 html[data-theme]，首屏不闪色；六套主题可见可切可记忆 -->
-    <script src="js/lobby-themes.js?v=5.2.0"></script>
-    <script src="js/theme-studio.js?v=5.2.0"></script>
+    <script src="js/lobby-themes.js?v=6.6.0"></script>
+    <script src="js/theme-studio.js?v=6.6.0"></script>
 </head>
 
 <body class="page-index">
@@ -66,7 +66,7 @@
         <div class="splash-line"></div>
         <div class="splash-hint">轻触任意处 展卷</div>
     </div>
-    <script src="js/yj-splash.js?v=5.2.0"></script>
+    <script src="js/yj-splash.js?v=6.6.0"></script>
 
     <div class="container">
         <div class="masthead">
@@ -604,7 +604,7 @@
     </div>
 
     <!-- v3.38.1 错误哨兵：脚本加载失败/运行异常时屏幕直接显示出错文件 -->
-    <script defer src="js/boot-error-guard.js?v=5.2.0"></script>
+    <script defer src="js/boot-error-guard.js?v=6.6.0"></script>
     <script>
         // 响应式模式类（与 studio.html 同策略；判空防异常，媒体查询兜底已内置）
         (function () {
@@ -750,18 +750,18 @@
 })();
 </script>
 <!-- v3.84.0 小云：大厅即全功能可用（世界书/存档/预设/正文急救/造物工坊） -->
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=5.2.0">
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=6.6.0">
 <!-- v4.16.0：移动端触控目标补丁（≤640px 生效，只抬最小可点尺寸，不改视觉） -->
-<link rel="stylesheet" href="css/touch-targets.css?v=5.2.0">
-<script src="js/worldbook-seeds.js?v=5.2.0"></script>
-<script src="js/world-book.js?v=5.2.0"></script>
+<link rel="stylesheet" href="css/touch-targets.css?v=6.6.0">
+<script src="js/worldbook-seeds.js?v=6.6.0"></script>
+<script src="js/world-book.js?v=6.6.0"></script>
 <!-- v4.41.0 全局动态并发闸门：早于小云（小云的大模型 fetch 需过闸） -->
-<script src="js/ai-governor.js?v=5.2.0"></script>
-<script src="js/xiaoyun-ops.js?v=5.2.0"></script>
-<script src="js/xiaoyun-buddy.js?v=5.2.0"></script>
-<script src="js/xiaoyun-emotion.js?v=5.2.0"></script>
-<script src="js/first-run-guide.js?v=5.2.0"></script>
-<script src="js/yj-license.js?v=5.2.0"></script>
+<script src="js/ai-governor.js?v=6.6.0"></script>
+<script src="js/xiaoyun-ops.js?v=6.6.0"></script>
+<script src="js/xiaoyun-buddy.js?v=6.6.0"></script>
+<script src="js/xiaoyun-emotion.js?v=6.6.0"></script>
+<script src="js/first-run-guide.js?v=6.6.0"></script>
+<script src="js/yj-license.js?v=6.6.0"></script>
 <script>
   /* v3.87.0 P3-3：首页版本徽标与 YJ_VER 同源（此前写死 v3.84.0，与实际版本长期不符） */
   window.YJ_VER = '6.3.2';

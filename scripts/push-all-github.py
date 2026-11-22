@@ -105,7 +105,7 @@ def main():
     new_tree = api('POST', f'/repos/{OWNER}/{REPO}/git/trees', {'base_tree': base_tree, 'tree': entries})
     print('  新 tree:', new_tree['sha'][:10], flush=True)
 
-    msg = 'release: v6.5.1 二创四段式正文(简介/特点/二创内容/打包源码)+唯一区域(标签二创投稿/目录community/packages) · 全量同步（只增改不删）'
+    msg = 'release: v6.6.0 创意工坊单一文件夹(community/works 简介与包体同处+云境内一键下载安装)+修复CI版本同源 · 全量同步（只增改不删）'
     new_commit = api('POST', f'/repos/{OWNER}/{REPO}/git/commits', {
         'message': msg, 'tree': new_tree['sha'], 'parents': [commit_sha]
     })

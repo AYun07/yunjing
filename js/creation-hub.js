@@ -31,8 +31,8 @@
   function shell() {
     return '<div style="max-width:900px;margin:0 auto;padding:8px 4px 40px;font-family:inherit;">' +
       '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">' +
-        '<h2 style="margin:0;font-size:22px;color:#f4d896;font-family:' + "'Noto Serif CJK SC',serif" + ';">✦ 云境 · 二创版块</h2>' +
-        '<span style="font-size:12px;color:#9a94c0;">玩家作品 · 按时间排列 · 开发者不参与</span>' +
+        '<h2 style="margin:0;font-size:22px;color:#f4d896;font-family:' + "'Noto Serif CJK SC',serif" + ';">✦ 云境 · 创意工坊</h2>' +
+        '<span style="font-size:12px;color:#9a94c0;">唯一文件夹 community/works/ · 按时间排列 · 云境内下载安装 · 开发者不参与</span>' +
         '<span style="flex:1"></span>' +
         '<button id="ch-publish" style="cursor:pointer;border:1px solid #f4d896;background:#f4d896;color:#1a1530;font-weight:700;border-radius:9px;padding:8px 16px;font-size:13px;">＋ 发布我的二创</button>' +
       '</div>' +
@@ -53,71 +53,91 @@
     return '未连接 GitHub — 浏览/下载无需连接；<b style="color:#c9b6ff">发布</b>需填自己的 token（只存本机）。';
   }
 
-  /* ---------- 浏览列表 ---------- */
+  /* ---------- 浏览列表（v6.6.0：数据源=唯一总文件夹 community/works 的清单） ---------- */
+  var LIST_SEQ = 0; // 防止旧的异步渲染覆盖新的
   async function renderList() {
     var box = document.getElementById('ch-list');
     if (!box) return;
+    var mySeq = ++LIST_SEQ;
     var tb = document.getElementById('ch-tokenbar');
     if (tb) tb.innerHTML = tokenBar();
     var lo = document.getElementById('ch-logout');
     if (lo) lo.onclick = function (e) { e.preventDefault(); if (confirm('断开 GitHub 连接？（仅清除本机 token，不影响作品）')) { globalThis.GithubClient.clearToken(); renderList(); } };
     var GC = globalThis.GithubClient;
-    // v6.4.0：加载超时保护——国内 GitHub 常断，多线路重试最坏近百秒，
-    // 这里 8 秒竞速，超时即给明确提示，不让玩家干等（后台请求仍继续，不取消）。
+    if (!GC || !GC.listWorks) { box.innerHTML = '<div style="color:#f0b0b0;font-size:13px;">创意工坊组件未就绪，请刷新页面。</div>'; return; }
     var res;
     try {
       res = await Promise.race([
-        GC.listFanworks(50),
-        new Promise(function (r) { setTimeout(function () { r({ ok: false, error: '连接超时' }); }, 8000); })
+        GC.listWorks(),
+        new Promise(function (r) { setTimeout(function () { r({ ok: false, error: '连接超时' }); }, 10000); })
       ]);
     } catch (e) { res = { ok: false, error: (e && e.message) || '网络错误' }; }
+    if (mySeq !== LIST_SEQ) return; // 已被新一次渲染取代
     if (!res.ok) {
-      box.innerHTML = '<div style="color:#f0b0b0;font-size:13px;line-height:1.8;">二创列表加载失败：' + esc(res.error || '网络不通') +
-        '<br>国内直连 GitHub 可能不稳定，请稍后重试（已内置多线路自动切换）。浏览不影响你的存档。</div>';
+      box.innerHTML = '<div style="color:#f0b0b0;font-size:13px;line-height:1.8;">创意工坊清单加载失败：' + esc(res.error || '网络不通') +
+        '<br>浏览/下载在云境内完成（已内置多线路自动切换与本机缓存）；首次需联网，断网时读上次缓存。上传需填自己的 token。</div>';
       return;
     }
     var items = res.items || [];
     if (!items.length) {
-      box.innerHTML = '<div style="color:#9a94c0;font-size:13px;">暂无二创作品。成为第一个发布者吧 ✦</div>';
+      box.innerHTML = '<div style="color:#9a94c0;font-size:13px;">创意工坊还没有作品。成为第一个发布者吧 ✦<br><span style="font-size:12px;color:#8f89a8;">（作品统一存于仓库 community/works/ 单一文件夹，按时间排列）</span></div>';
       return;
     }
-    box.innerHTML = items.map(function (it) {
-      var gist = parseGist(it.body);
-      var sec = parseSections(it.body);
-      var installBtn = gist && gist.rawUrl
-        ? '<button class="ch-install" data-title="' + esc(it.title) + '" style="cursor:pointer;border:1px solid #c9b6ff;background:rgba(201,182,255,.12);color:#d9c9ff;border-radius:8px;padding:5px 11px;font-size:12px;">⚙ 增量安装</button>'
-        : '';
-      var dl = gist && gist.rawUrl
-        ? '<a href="' + esc(gist.rawUrl) + '" target="_blank" rel="noopener" style="color:#8fd6a8;font-size:12px;text-decoration:none;">⬇ 下载原包</a>'
-        : (gist && gist.url ? '<a href="' + esc(gist.url) + '" target="_blank" rel="noopener" style="color:#8fd6a8;font-size:12px;text-decoration:none;">🔗 查看作品包</a>' : '<span style="color:#8f89a8;font-size:12px;">（包体见正文）</span>');
-      var na = sec.v2 ? '' : '（旧版作品未分段）';
+    box.innerHTML = items.map(function (it, idx) {
+      var sec = it._sec; // 由下方并发读取填充
+      var rawUrl = GC.getPackageUrl(it.slug);
+      var na = '';
       function row(label, val, color) {
         return '<div style="margin:5px 0;font-size:12.5px;line-height:1.65;color:' + (color || '#c6c0d6') + ';"><b style="color:#e7c899;">' + label + '：</b><span style="white-space:pre-wrap;">' + esc(val || na || '—') + '</span></div>';
       }
-      // 打包源码段：pkg 是 JSON 文本，抽文件数展示
-      var pkgDisp = sec.pkg;
-      if (sec.v2 && sec.pkg) { try { var po = JSON.parse(sec.pkg); pkgDisp = (po.dir || '') + ' · ' + ((po.files||[]).length) + ' 个包体文件 · ' + ((po.innerFiles||[]).length) + ' 个内容文件'; } catch (e) {} }
-      return '<div style="background:rgba(24,20,48,.72);border:1px solid rgba(244,216,150,.28);border-radius:14px;padding:14px 16px;">' +
+      var pkgDisp = (it.package || ('community/works/' + it.slug + '/package.zip')) +
+        (it.size ? ' · ' + Math.round(it.size / 1024) + ' KB' : '') + ' · 真 zip 包体与说明同处';
+      return '<div class="ch-work" data-idx="' + idx + '" style="background:rgba(24,20,48,.72);border:1px solid rgba(244,216,150,.28);border-radius:14px;padding:14px 16px;">' +
         '<div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;">' +
           '<b style="color:#f4d896;font-size:15px;">' + esc(it.title) + '</b>' +
-          '<span style="font-size:11px;color:#9a94c0;">by ' + esc(it.author) + ' · ' + fmtTime(it.createdAt) + (sec.v2 ? ' · 四段式' : ' · 旧版') + '</span>' +
+          '<span style="font-size:11px;color:#9a94c0;">by ' + esc(it.author || '匿名') + ' · ' + fmtTime(it.createdAt) + '</span>' +
         '</div>' +
-        row('① 简介', sec.intro, '#c6c0d6') +
-        row('② 特点', sec.feature, '#bfb9d4') +
-        row('③ 二创内容', sec.content, '#c9bfe0') +
-        row('④ 打包源码', pkgDisp, '#8fd6a8') +
-        '<div style="display:flex;gap:14px;align-items:center;margin-top:8px;flex-wrap:wrap;">' + installBtn + dl +
-          '<a href="' + esc(it.url) + '" target="_blank" rel="noopener" style="color:#c9b6ff;font-size:12px;text-decoration:none;">💬 原帖</a>' +
+        row('① 简介', (sec && sec.intro) || it.summary, '#c6c0d6') +
+        row('② 特点', sec && sec.feature, '#bfb9d4') +
+        row('③ 二创内容', sec && sec.content, '#c9bfe0') +
+        row('📦 打包源码', pkgDisp, '#8fd6a8') +
+        '<div style="font-size:11px;color:#7f7a9a;margin-top:4px;">作品路径：' + esc('community/works/' + it.slug + '/') + '</div>' +
+        '<div style="display:flex;gap:12px;align-items:center;margin-top:9px;flex-wrap:wrap;">' +
+          '<button class="ch-install" data-idx="' + idx + '" style="cursor:pointer;border:1px solid #c9b6ff;background:rgba(201,182,255,.14);color:#d9c9ff;border-radius:8px;padding:6px 12px;font-size:12px;">⚡ 一键下载安装</button>' +
+          '<a href="' + esc(rawUrl) + '" target="_blank" rel="noopener" style="color:#8fd6a8;font-size:12px;text-decoration:none;">⬇ 下载包体</a>' +
         '</div>' +
       '</div>';
-    }).join('');
-    // v6.5.0：绑定"增量安装"按钮
+    }).join('') + (res.cached ? '<div style="color:#f0c98f;font-size:12px;margin-top:10px;">⚠ 离线 · 显示上次缓存的清单</div>' : '');
+
+    // 并发（上限 5）读每个作品的 README 解析四段，回填后再刷新文本（不影响已显示的时间/标题/下载）
+    var queue = items.slice();
+    async function worker() {
+      while (queue.length) {
+        var work = queue.shift();
+        var i = items.indexOf(work);
+        try {
+          var r = await GC.readWorkFile(work.slug, 'README.md');
+          if (r.ok) work._sec = parseSections(r.text);
+        } catch (e) {}
+        if (mySeq !== LIST_SEQ) return;
+        // 就地更新该卡片的三段文本
+        var card = box.querySelector('.ch-work[data-idx="' + i + '"]');
+        if (card && work._sec) {
+          var spans = card.querySelectorAll('span[style*="white-space"]');
+          if (spans[0]) spans[0].textContent = work._sec.intro || work.summary || '—';
+          if (spans[1]) spans[1].textContent = work._sec.feature || '—';
+          if (spans[2]) spans[2].textContent = work._sec.content || '—';
+        }
+      }
+    }
+    await Promise.all([worker(), worker(), worker(), worker(), worker()]);
+
     [].slice.call(box.querySelectorAll('.ch-install')).forEach(function (btn) {
       btn.onclick = function () {
-        var idx = [].slice.call(box.querySelectorAll('.ch-install')).indexOf(btn);
-        var it = items[idx];
+        var i = parseInt(btn.getAttribute('data-idx'), 10);
+        var it = items[i];
         if (!it) return;
-        openInstall(parseGist(it.body), { title: it.title });
+        openInstall({ slug: it.slug, rawUrl: GC.getPackageUrl(it.slug) }, { title: it.title });
       };
     });
   }
@@ -150,7 +170,14 @@
   }
   async function fetchPackage(gist) {
     var GC = globalThis.GithubClient;
-    if (!gist || !gist.rawUrl) return { ok: false, error: '该作品没有可用的包体链接' };
+    if (!gist) return { ok: false, error: '该作品没有可用的包体链接' };
+    // v6.6.0：works 作品优先走 contents API 取字节（无 raw CDN 缓存、始终最新、带 token 绕限流）
+    if (gist.slug && GC.getWorkPackageBytes) {
+      var wb = await GC.getWorkPackageBytes(gist.slug);
+      if (wb.ok) return { ok: true, u8: wb.bytes, via: 'contents' };
+      // contents 失败（如匿名限流）再回退 raw
+    }
+    if (!gist.rawUrl) return { ok: false, error: '该作品没有可用的包体链接' };
     var parts = gist.parts && gist.parts.length ? gist.parts : [{ rawUrl: gist.rawUrl }];
     var segs = [], rawBytes = [];
     for (var i = 0; i < parts.length; i++) {
@@ -348,8 +375,9 @@
     w.innerHTML =
       '<h3 style="color:#e7c899;font-size:17px;margin:0 0 12px;">发布二创作品</h3>' +
       '<div style="font-size:12.5px;color:#bfb9d4;line-height:1.8;margin-bottom:12px;">' +
-        '作品以<b>增量补丁包</b>形式打包（v6.5.0）：以当前云境为基线，<b>只打包你改动过的部分</b>（新增/修改/删除），未动的不传。' +
+        '作品以<b>增量补丁包</b>形式打包：以当前云境为基线，<b>只打包你改动过的部分</b>（新增/修改/删除），未动的不传。' +
         '覆盖 DLC/插件/小云工具/预设/世界书/世界/新内容/资源包/图片/视频/文件等；存档默认<b>剔除密钥</b>。token 永不入包。' +
+        '<br>发布后落到创意工坊<b>唯一总文件夹</b> <code>community/works/时间戳-作品名/</code>，四段式说明（README.md）和包体（package.zip）<b>同处一个文件夹</b>，其它玩家在云境内即可一键下载安装。' +
       '</div>' +
       '<label style="display:block;font-size:12.5px;color:#c6c0d6;margin-bottom:6px;">作品名称</label>' +
       '<input id="wz-title" placeholder="例如：剑来·武夫境界增强版" style="width:100%;box-sizing:border-box;background:#16132e;border:1px solid rgba(244,216,150,.3);color:#efeaf8;border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;margin-bottom:10px;">' +
@@ -360,7 +388,7 @@
       '<textarea id="wz-feature" rows="3" placeholder="例如：十一境数值细化；剑气长城地图考据；新增 8 个 DLC 词条。" style="width:100%;box-sizing:border-box;background:#16132e;border:1px solid rgba(244,216,150,.3);color:#efeaf8;border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:10px;"></textarea>' +
       '<div style="background:rgba(201,182,255,.07);border:1px solid rgba(201,182,255,.22);border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:12px;color:#c9bfe0;line-height:1.8;">' +
         '<b style="color:#d9c9ff;">③ 二创内容</b>：发布时由系统自动比对基线生成改动清单（改了哪些 DLC / 世界书 / 预设 / 存档等），只读、不可手填。<br>' +
-        '<b style="color:#d9c9ff;">④ 打包源码</b>：发布时自动打包你改动过的内容层明文（manifest + 逐项 JSON），并上传到唯一包体目录 <code>community/packages/</code>。这是"玩家可继续修改的源码"，<b>不是</b>云境主程序 .js（浏览器读不到，主程序归开发者）。' +
+        '<b style="color:#d9c9ff;">④ 打包源码</b>：发布时自动打包你改动过的内容层明文（manifest + 逐项 JSON）为 package.zip，与四段式 README.md 一起放进 <code>community/works/时间戳-作品名/</code>。这是"玩家可继续修改的源码"，<b>不是</b>云境主程序 .js（浏览器读不到，主程序归开发者）。' +
       '</div>' +
       '<div style="background:rgba(220,80,80,.08);border:1px solid rgba(220,120,120,.3);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:12.5px;color:#f0d7d7;line-height:1.9;">' +
         '<b style="color:#ff9b9b">发布前确认（四项必须全勾）</b>' +
@@ -470,52 +498,61 @@
         return;
       }
 
-      log.textContent = '⑥ 正在上传作品包到唯一目录 community/packages/…';
-      var ts = Date.now();
-      var slug = String(title || 'work').replace(/[^\w\u4e00-\u9fa5-]+/g, '_').slice(0, 24);
-      var parts = [];
-      // 唯一区域：包体一律进 community/packages/，分卷也只是该目录下的多个文件，不新建目录、不用 Gist
-      var chunkLen = Math.ceil(b64.length / vols.count);
-      for (var vi = 0; vi < vols.count; vi++) {
-        var seg = vols.count <= 1 ? b64 : b64.slice(vi * chunkLen, (vi + 1) * chunkLen);
-        var fname = slug + '-' + ts + (vols.count > 1 ? '.part' + (vi + 1) : '') + '.zip.b64';
-        var up = await GC.uploadPackageFile(fname, seg, '二创包体：' + title + '（' + (vi + 1) + '/' + vols.count + '）');
-        if (!up.ok) { log.style.color = '#f0c98f'; log.textContent = '包体上传失败（' + (up.error || '网络') + '）。已入待发队列，联网后重试。'; GC.publishOrQueue(title, '<!--YJ_PENDING_PKG-->' + intro); return; }
-        parts.push({ i: vi, n: vols.count, url: up.html_url, rawUrl: up.rawUrl, path: up.path, sha: up.sha });
-        if (vols.count > 1) log.textContent = '⑥ 正在上传包体分卷 ' + (vi + 1) + '/' + vols.count + '…';
+      // 超过分卷上限 → 明确提示（works 每件作品单包，超大走外链），不静默失败
+      if (vols.count > 1) {
+        log.style.color = '#f0c98f';
+        log.textContent = '作品体积较大（约 ' + Math.round(fullSize / 1024 / 1024) + 'MB），单文件建议 < 20MB。请把大图片/视频改为网盘外链写在特点里后再发布（文本/metadata 仍可打包）。本次未上传。';
+        return;
       }
 
-      // ④ 打包源码段：可读的文件清单 + 路径 + sha256（浏览器侧无 sha256 API，用内核哈希占位并标注）
+      log.textContent = '⑥ 正在写入创意工坊 community/works/…';
+      var ts = Date.now();
+      var pad = function (n) { return String(n).padStart(2, '0'); };
+      var d = new Date(ts);
+      var stamp = '' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+      var slug = stamp + '-' + String(title || 'work').replace(/[^\w\u4e00-\u9fa5-]+/g, '_').slice(0, 20);
+      var hash = PE.hash(zip && zip.length ? String(zip.length) : String(fullSize));
+      // ④ 打包源码段：可读文件清单 + 路径 + 哈希
       var pkgMeta = {
-        dir: GC.PACKAGE_DIR,
-        files: parts.map(function (p) { return p.path; }),
+        dir: GC.WORKS_DIR + '/' + slug,
+        files: ['package.zip'],
         innerFiles: entries.map(function (e) { return e.name; }),
-        rawUrl: parts[0].rawUrl,
-        size: fullSize,
-        hash: PE.hash(zip && zip.length ? String(zip.length) : String(fullSize)),
+        path: GC.WORKS_DIR + '/' + slug + '/package.zip',
+        size: zip ? zip.length : fullSize,
+        hash: hash,
         note: '内容层明文源码（manifest + 逐项 JSON），非云境主程序 .js'
       };
-      var body = PE.buildFourSectionBody({
-        intro: intro,
-        feature: feature,
-        content: contentSummary,
-        pkg: pkgMeta
-      }) + '\n\n' +
-        // 兼容 v6.5.0 安装器与老解析：保留 YJ_GIST（指向唯一目录里的包体）
-        '<!--YJ_GIST-->' + JSON.stringify({ url: parts[0].url, rawUrl: parts[0].rawUrl, path: parts[0].path, parts: parts }) + '<!--/YJ_GIST-->\n' +
-        (parts.length > 1 ? '<!--YJ_VOLUMES-->' + JSON.stringify({ parts: parts.map(function (p) { return p.rawUrl; }) }) + '<!--/YJ_VOLUMES-->\n' : '') +
-        (containsSave ? '\n> ⚠ 本作品含私密存档，密钥已剔除；如需完整存档请向作者另行索取。\n' : '') +
-        '\n---\n由云境·二创版块自动发布 · 四段式(schema 3) · 基于云境 v' + (window.YJ_VER || '?') + ' · 唯一区域 community/ · 开源非盈利 · 风险自负';
-
-      log.textContent = '⑦ 正在发布到版块…';
-      var pub = await GC.publishOrQueue(title, body);
+      // README.md = 四段式正文（玩家直接可读），与 package.zip 同处一个文件夹
+      var readme = PE.buildFourSectionBody({ intro: intro, feature: feature, content: contentSummary, pkg: pkgMeta }) +
+        '\n\n---\n由云境·二创版块自动发布 · 四段式(schema 3) · 基于云境 v' + (window.YJ_VER || '?') + ' · 唯一区域 community/works/ · 开源非盈利 · 风险自负\n' +
+        (containsSave ? '> ⚠ 本作品含私密存档，密钥已剔除；如需完整存档请向作者另行索取。\n' : '');
+      var meta = {
+        title: title, author: GC.getUser() || '匿名', createdAt: new Date(ts).toISOString(),
+        baseVersion: window.YJ_VER || 'unknown', license: '开源·非盈利',
+        slug: slug, package: 'package.zip', size: zip ? zip.length : fullSize, hash: hash,
+        changes: manifest.changes.length, containsSave: !!containsSave
+      };
+      var toB64 = function (textOrBytes) {
+        var u8 = typeof textOrBytes === 'string' ? new TextEncoder().encode(textOrBytes) : textOrBytes;
+        var chunk = 0x8000, ss = [];
+        for (var i = 0; i < u8.length; i += chunk) ss.push(String.fromCharCode.apply(null, u8.subarray(i, i + chunk)));
+        return btoa(ss.join(''));
+      };
+      var files = [
+        { name: 'README.md', b64: toB64(readme) },
+        { name: 'meta.json', b64: toB64(JSON.stringify(meta, null, 2)) },
+        { name: 'package.zip', b64: bytesToBase64(zip) }
+      ];
+      var pub = await GC.publishWork(
+        { slug: slug, title: title, author: GC.getUser() || '匿名', createdAt: meta.createdAt,
+          summary: intro, size: meta.size, hash: hash },
+        files
+      );
       if (pub.ok) {
-        log.style.color = '#8fd6a8'; log.textContent = '✅ 发布成功！作品已出现在二创版块（按时间排列）。' + (pub.data && pub.data.html_url ? ' <a href="' + esc(pub.data.html_url) + '" target="_blank" rel="noopener" style="color:#c9b6ff;">查看</a>' : '');
+        log.style.color = '#8fd6a8'; log.textContent = '✅ 发布成功！作品已存入 community/works/' + slug + '/，四段式说明与包体同处，其它玩家可在云境内一键下载安装。';
         setTimeout(function () { document.getElementById('ch-wizard').style.display = 'none'; renderList(); }, 2200);
-      } else if (pub.queued) {
-        log.style.color = '#f0c98f'; log.textContent = '⚠ 网络不通，已存入本机待发队列（' + GC.queueSize() + ' 条）。联网后打开版块会提示重试。';
       } else {
-        log.style.color = '#ff9b9b'; log.textContent = '发布失败：' + (pub.error || '未知错误');
+        log.style.color = '#ff9b9b'; log.textContent = '发布失败：' + (pub.error || '未知错误') + '（token 需有 Contents 读写权限）。';
       }
     } catch (e) {
       log.style.color = '#ff9b9b'; log.textContent = '发布异常：' + (e && e.message || e);
