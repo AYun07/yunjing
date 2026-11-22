@@ -1,6 +1,6 @@
 {
   "name": "yunjing",
-  "version": "6.3.6",
+  "version": "6.6.0",
   "private": true,
   "description": "云境 · AI 互动小说 + 开放世界扮演（纯前端静态站，零运行时依赖）",
   "scripts": {
