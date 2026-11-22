@@ -55,13 +55,13 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v5.1.4（2026-11-22 · 唯一当前版）
+## 🆕 当前版本：v5.1.5（2026-11-22 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v5.1.4** | 2026-11-22 | **当前** | 给「玩家最常走的那条路」补上守门人：新增一条不需要任何 API Key 的端到端闭环用例，并把上一版 CI 偶发假红的判定口径修正掉。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.4.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.4) |
+| **v5.1.5** | 2026-11-22 | **当前** | 本地布局归位 + 「以后拉新版本」一条命令。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.5.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.5) |
 
-**看版本**：[📚 版本页（106 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v5.1.3 的差异](https://github.com/AYun07/yunjing/compare/v5.1.3...v5.1.4) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.4)
+**看版本**：[📚 版本页（107 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v5.1.4 的差异](https://github.com/AYun07/yunjing/compare/v5.1.4...v5.1.5) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.5)
 
 > 逐版沿革、历史功能说明与验收数据统一由 [VERSIONS.md](VERSIONS.md) 维护；本板块由 `scripts/update-readme.mjs` 自动生成，**主页不再展开版本列表**。新增版本请插到 VERSIONS.md 最上方。
 
