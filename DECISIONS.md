@@ -1230,3 +1230,13 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 取舍：完整包含大媒体（658MB）牺牲下载体积，换"下载解压即离线可跑、小云情绪动画与考据地图不缺"；源码包轻量但不含媒体。两者并存，README 明示区别。
 - 失效条件：若改用 CDN 托管媒体改用外链，可缩小完整包；或造出"发版脚本自动打包+上传 asset"后，人工这步可省。
 - 验证：v6.6.0 包 CRC 全过、sw.js=6.6.0、四入口+核心引擎在、132 视频 webm+115 地图资产在；四个 release 各有 1 个附件（v6.6.0 657.8MB / 三个历史 25.2MB）；完整包下载直链 HTTP 200、Content-Length=689758134；README raw 已回读到新链接。
+
+### DR-055 补充 · 用户质疑后的实测复核（2026-11-23 00:30）
+
+- 背景：用户担心"完整包真的是完整最新版吗、功能真实现了吗"。不空口，实测复核。
+- 实测证据：① 远端 asset digest 与本地包 sha256 字节一致（0b7782b2…，替换后 c238d9c0…）；② 远端 main 1564 blob vs 包内文件逐文件比对——226 个差异全是 _bak_*/yunjing-test/.codebuddy/shots-*/预览稿/需求单等非运行文件，0 个运行必需文件漏掉、0 个多余文件；③ 用包内代码直接跑测试：回归 34/0、核心引擎 50/0、跨层数值 32/0、楼层回档 503/0、二创补丁 36/0、works 工坊 19/0，全绿；④ 包内真实代码 WORKS_DIR=community/works、listWorks/publishWork/getWorkPackageBytes 全在（v651 测试里的 community/packages 是测试脚本旧断言，非包内实现）。
+- 实测中发现并修复的两个真瑕疵：
+  1. package.json version=6.3.6——根因是远端 main 本身如此（DR-052 的 sync-version 没覆盖 package.json），非打包抓错。已改本地+远端为 6.6.0，`sync-version.mjs --check` 通过。
+  2. selftest.html + map-preview/map-verified/手机端启动.html 未进包——打包白名单遗漏。已重打包补齐（1343 文件，CRC 全过）。
+- 踩坑：upload_assets.py 只删"同名"旧 asset，但旧 asset 已被 PATCH 改名，导致新包中文名被清洗成 -v6.6.0-.zip 后与旧名不匹配、release 一度有 2 个附件。修正：删全部旧 asset + 直接用英文名 yunjing-v6.6.0-full.zip 上传（避开中文清洗）。最终 asset 唯一、digest=c238d9c0=本地新包、下载直链 200。
+- 验证：修正后包重解压重跑六套测试全绿；asset 数=1、名字/大小/digest/直链全对。
