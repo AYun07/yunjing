@@ -1,21 +1,14 @@
 <!--YJ_V2-->
-## ① 简介
-为剑来世界补充武夫十一境的完整突破体系，数值与原著设定钉死。
+## 简介
+<!--YJ_INTRO-->为剑来世界补充武夫十一境的完整突破体系，数值与原著设定钉死。<!--/YJ_INTRO-->
 
-## ② 特点
-- 武夫十一境逐境细化，止境武夫单列
-- 增量补丁，只含改动项，不覆盖你的其它内容
-- 四段式说明与包体同处一个文件夹
+## 特点
+<!--YJ_FEATURE-->武夫十一境逐境细化，止境武夫单列；增量补丁只含改动项；四段式说明与包体同处。<!--/YJ_FEATURE-->
 
-## ③ 二创内容
-DLC×1
-· [dlc] dlc/storyDLC_剑来（add）
+## 二创内容
+<!--YJ_CONTENT-->DLC×1
+· [dlc] dlc/storyDLC_free（add）<!--/YJ_CONTENT-->
 
-## ④ 打包源码
-- 作品文件夹：community/works/20261122-234646-剑来武夫增强工坊版/
-- 包体：package.zip（真二进制 zip）
-- 内含文件：manifest.json, content/0.json
-- 大小：698 字节
-- sha256：a01b4ad641c43f0d747ea5a7d9f69bcf8ef6fa1f698eef576bbd284efaaec456
-- 说明：内容层明文源码（manifest + 逐项 JSON），非云境主程序 .js
+## 打包源码
+<!--YJ_PACKAGE-->{"dir":"community/works","files":["package.zip"],"innerFiles":["manifest.json","content/0.json"],"size":803,"hash":"3e9f3e92","note":"内容层明文源码，非云境主程序 .js"}<!--/YJ_PACKAGE-->
 <!--/YJ_V2-->
