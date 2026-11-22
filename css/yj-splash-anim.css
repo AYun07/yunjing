@@ -33,12 +33,16 @@
   50%      { opacity: 0.9;  transform: scale(1.25); box-shadow: 0 0 8px 2px rgba(255,233,184,.6); }
 }
 
-/* 月晕 */
+/* 月晕
+   v5.1.1 修：原来固定 460×460，窄屏（375/414）下比视口还宽，
+   呼吸动画 scale(1.06) 还会再放大一圈 → 移动端横向溢出（CI t_mobile 抓到）。
+   现在尺寸随视口收敛（最多 90vw），桌面端仍是原来的 460px。 */
 .yj-splash-halo {
   position: absolute;
   left: 50%; top: 33%;
-  width: 460px; height: 460px;
-  margin: -230px 0 0 -230px;
+  --halo: min(460px, 90vw);
+  width: var(--halo); height: var(--halo);
+  margin: calc(var(--halo) / -2) 0 0 calc(var(--halo) / -2);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(232,196,119,.28) 0%, rgba(232,196,119,.10) 40%, transparent 70%);
   animation: yjHaloBreath 3.6s ease-in-out infinite;
