@@ -1,0 +1,14 @@
+{
+  "index.html": {
+    "label": "大厅",
+    "staticCssKB": 260,
+    "staticJsKB": 300,
+    "staticJsCount": 16
+  },
+  "studio.html": {
+    "label": "创作室",
+    "staticCssKB": 460,
+    "staticJsKB": 370,
+    "staticJsCount": 24
+  }
+}

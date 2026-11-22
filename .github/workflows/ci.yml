@@ -9,7 +9,7 @@
 #     · css/touch-targets.css 被页面引用却没进预缓存清单
 #   这些都不是「不小心」，而是**流程缺兜底**。本工作流把可机械校验的部分全部自动化。
 #
-# 七道闸
+# 八道闸
 #   ① 语法      —— 全量 JS/MJS 过一遍 node --check（12 万行手写 JS 的第一道网）
 #   ② 版本同源  —— scripts/sync-version.mjs --check（单一来源派生，杜绝漏改）
 #   ③ 预缓存    —— scripts/sync-precache.mjs（清单 vs 文件系统 vs HTML 引用三方对齐）
@@ -17,9 +17,10 @@
 #   ⑤ 核心回归  —— test/regression.mjs（存档/填表规则/多值字段等 33 项断言）
 #   ⑥ 网络体检  —— scripts/net-vitals.mjs（裸 fetch 静态扫描，基线只拦新增）
 #   ⑦ 世界书体检—— scripts/kb-vet.mjs（占位符/灌水/重复句，基线只拦新增）
+#   ⑧ 载荷闸门  —— scripts/size-budget.mjs（首屏静态 CSS/JS 体积预算，锁住首屏膨胀）
 #
-# 需要浏览器/外部接口的 27 个脚本不在这里跑（见 run-all.mjs --all），
-# 它们要么需要 Playwright 浏览器，要么需要真实的 LLM 接口，不适合每次提交都跑。
+# 浏览器级用例（25 个，不含需真实 LLM 接口的）在单独的 browser job 里跑；
+# 需要真实模型接口的 8 个脚本只供维护者本地手动跑（见 run-all.mjs --all --no-key）。
 
 name: CI
 
@@ -81,6 +82,9 @@ jobs:
 
       - name: '⑦ 世界书条目体检'
         run: node scripts/kb-vet.mjs
+
+      - name: '⑧ 首屏载荷闸门（静态 CSS/JS 体积预算）'
+        run: node scripts/size-budget.mjs
 
   # ==========================================================================
   # ⑧ 浏览器级回归（v5.1.1 新增）
