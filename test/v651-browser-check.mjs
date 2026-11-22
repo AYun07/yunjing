@@ -76,7 +76,20 @@ try {
   ok(list.s1v2 === true && list.s1intro === 'I1', '四段作品解析正确', list);
   ok(list.s2v2 === false && list.s2intro === 'OLD', '老作品回退正确', list);
 
-  console.log('\n【5】零 JS 报错');
+  console.log('\n【5】包体下载魔数兼容（v6.5.1 实地 bug 修复）');
+  // 验证：contents API 存原始 zip 时，下载端按 PK 魔数识别而非当 b64 解码
+  const binCheck = await p.evaluate(async () => {
+    const ZW = window.ZipWriter;
+    const zip = await ZW.makeZip([{ name: 'manifest.json', data: '{"app":"yunjing-patch","schema":3}' }]);
+    const first = String.fromCharCode(zip[0], zip[1], zip[2]);
+    const isZip = zip[0] === 0x50 && zip[1] === 0x4b && zip[2] === 0x03;
+    const out = await ZW.unzip(zip);
+    return { isZip, first, entries: out.length, manifest: ZW.entryText(out[0]) };
+  });
+  ok(binCheck.isZip && binCheck.first === 'PK\u0003', 'zip 魔数识别正确');
+  ok(binCheck.entries === 1 && binCheck.manifest.includes('schema'), '原始 zip 可解包');
+
+  console.log('\n【6】零 JS 报错');
   ok(errs.length === 0, '无 console/page 错误', errs.slice(0, 4));
 
 } catch (e) {

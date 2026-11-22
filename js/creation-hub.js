@@ -152,14 +152,25 @@
     var GC = globalThis.GithubClient;
     if (!gist || !gist.rawUrl) return { ok: false, error: '该作品没有可用的包体链接' };
     var parts = gist.parts && gist.parts.length ? gist.parts : [{ rawUrl: gist.rawUrl }];
-    var segs = [];
+    var segs = [], rawBytes = [];
     for (var i = 0; i < parts.length; i++) {
       var r = await GC.downloadGistRaw(parts[i].rawUrl);
       if (!r.ok) return { ok: false, error: '下载第 ' + (i + 1) + '/' + parts.length + ' 卷失败：' + (r.error || '') };
       segs.push(r.text);
+      rawBytes.push(r.bytes);
     }
-    var b64 = segs.join('');
-    try { return { ok: true, u8: b64ToBytes(b64) }; }
+    // v6.5.1 兼容：包体若以 zip 魔数 PK\x03\x04 开头 → GitHub 存的是原始二进制，直接用；
+    // 否则是 b64 文本（旧版 Gist / 分卷片段），按 base64 解码。
+    var first = String(segs[0] || '');
+    if (first.charCodeAt(0) === 0x50 && first.charCodeAt(1) === 0x4b && first.charCodeAt(2) === 0x03) {
+      var all = [], off = 0, k;
+      for (k = 0; k < rawBytes.length; k++) {
+        var b = rawBytes[k] || b64ToBytes(segs[k]);
+        for (var j = 0; j < b.length; j++) all[off++] = b[j];
+      }
+      return { ok: true, u8: new Uint8Array(all) };
+    }
+    try { return { ok: true, u8: b64ToBytes(segs.join('')) }; }
     catch (e) { return { ok: false, error: '包体 base64 解码失败' }; }
   }
 

@@ -137,7 +137,14 @@
     for (var i = 0; i < bases.length; i++) {
       try {
         var r = await once(bases[i], { method: 'GET', headers: { 'Accept': '*/*' } }, 20000);
-        if (r.ok) return { ok: true, text: await r.text(), line: bases[i] };
+        if (r.ok) {
+          // v6.5.1：包体可能存为原始 zip 二进制（contents API 解码 b64 后所得），
+          // 也可能存为 b64 文本（旧版 Gist）。同时返回文本与字节，由上层按魔数判定。
+          var ab = null;
+          try { ab = await r.arrayBuffer(); } catch (e) {}
+          var text = ab ? (function (u8) { var s = ''; for (var j = 0; j < u8.length; j++) s += String.fromCharCode(u8[j]); return s; })(new Uint8Array(ab)) : await r.text();
+          return { ok: true, text: text, bytes: ab ? new Uint8Array(ab) : null, line: bases[i] };
+        }
         lastErr = 'HTTP ' + r.status;
       } catch (e) { lastErr = (e && e.message) || '网络错误'; }
     }
