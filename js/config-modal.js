@@ -1136,7 +1136,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="mmSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            云境工坊原创内置预设（通用前端兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 通用前端预设整份替换。
+                            云境工坊原创内置预设（常见前端工具兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 常见前端工具预设整份替换。
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">📦 当前预设 <span class="api-role-chip" id="mmPresetChip"></span></div>
@@ -1148,7 +1148,7 @@ const ConfigModal = {
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
-                                支持 通用前端预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
+                                支持 常见前端工具预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
                                 导入后整份替换内置预设，旧的逐条开关会自动清空；随时可一键恢复内置。
                             </div>
                         </div>
