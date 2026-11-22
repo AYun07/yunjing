@@ -709,11 +709,13 @@ class StoryFramework {
      * 回档到指定轮（任意回合），覆盖式：丢弃 target 之后的轮次。
      * @param {number} index 目标轮的绝对轮号
      * @param {string} mode  'before'=回到该轮开始前（丢弃本轮及之后）；'after'=保留该轮、只丢之后
+     * @param {object} opts  v6.4.0：{ includePersistent:boolean } 是否连足迹/传承一起退回，默认否
      * @returns {Promise<object|null>} 还原用的现场快照（含 user 指令），失败返回 null
      */
-    async rewindTo(index, mode) {
+    async rewindTo(index, mode, opts) {
         const s = this.storyState;
         mode = (mode === 'after') ? 'after' : 'before';
+        const includePersistent = !!(opts && opts.includePersistent);
         // 先等归档队列排空，否则残留的归档写会基于旧档案复活已删轮次
         try { if (this._arcQueue) await this._arcQueue; } catch (e) { }
         try { if (this._fsQueue) await this._fsQueue; } catch (e) { }
@@ -735,8 +737,8 @@ class StoryFramework {
                 FS.pushUndo(this, undoSnap);
             } catch (e) { }
 
-            // 1) 全量还原 storyState 各字段 + 所有旁路键
-            const restoredHistLen = FS.restore(this, fullTarget);
+            // 1) 全量还原 storyState 各字段 + 所有旁路键（v6.4.0：持久项按玩家勾选决定）
+            const restoredHistLen = FS.restore(this, fullTarget, includePersistent);
             // 2) 对话历史按目标长度截断（只缩不扩）
             if (typeof restoredHistLen === 'number' && restoredHistLen >= 0 && restoredHistLen <= s.conversationHistory.length) {
                 s.conversationHistory.length = restoredHistLen;

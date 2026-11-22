@@ -105,7 +105,7 @@ def main():
     new_tree = api('POST', f'/repos/{OWNER}/{REPO}/git/trees', {'base_tree': base_tree, 'tree': entries})
     print('  新 tree:', new_tree['sha'][:10], flush=True)
 
-    msg = 'release: v6.3.14 全量楼层快照与任意层回档 · 全量同步本地工作区（只增改不删）'
+    msg = 'release: v6.4.0 玩家二创版块 + 回档自选足迹传承 · 全量同步（只增改不删）'
     new_commit = api('POST', f'/repos/{OWNER}/{REPO}/git/commits', {
         'message': msg, 'tree': new_tree['sha'], 'parents': [commit_sha]
     })

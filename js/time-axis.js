@@ -11,6 +11,7 @@
   var OVERLAY = 'taOverlay';
   var selected = null;   // 当前选中的轮 index
   var rows = [];         // 当前渲染的轮次数据
+  var includePersistent = false;  // v6.4.0：是否连足迹/传承一起退回（玩家自选，默认否）
 
   function fw() { return window.storyFramework; }
   function toast(m, t) { try { window.showToast && window.showToast(m, t || 'info'); } catch (e) { } }
@@ -86,7 +87,11 @@
         (hotOnly
           ? '<span class="ta-warn">当前为老存档，仅有最近 40 轮快照可精确回档；继续游玩后会自动记录全部回合</span>'
           : '<span>本档已记录全部回合，可回档到任意一轮</span>') +
-        '<span class="ta-warn">回档为覆盖式：所选回合之后的剧情会被丢弃，且不可撤销</span>';
+        '<label class="ta-persist" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#c9b6ff;cursor:pointer;border:1px solid rgba(201,182,255,.4);border-radius:8px;padding:4px 9px;">' +
+          '<input type="checkbox" id="taPersist" ' + (includePersistent ? 'checked' : '') + ' onchange="TimeAxis.setPersistent(this.checked)">' +
+          '连足迹/传承一起退回' +
+        '</label>' +
+        '<span class="ta-warn">回档为覆盖式：所选回合之后的剧情会被丢弃（可点「撤销上次回档」救回）</span>';
 
       if (!list.length) {
         listEl.innerHTML = '<div class="ta-empty">还没有可回档的回合。<br>先和云境聊几轮，这里就会记录下每一个回合。</div>';
@@ -134,6 +139,9 @@
 
   function select(index) { selected = index; render(); }
 
+  /** v6.4.0：切换"连足迹/传承一起退"——只记状态，不整表重渲染，避免滚动/选中位置丢失 */
+  function setPersistent(v) { includePersistent = !!v; }
+
   function guard() {
     var f = fw();
     if (f && f.isProcessing) { toast('✍ 正在创作中，等这段写完再操作哦～', 'info'); return false; }
@@ -147,13 +155,16 @@
     var f = fw();
     if (!f || !f.rewindTo) { toast('回档引擎未就绪，请刷新页面', 'error'); return; }
     var label = mode === 'after' ? '保留第 ' + (index + 1) + ' 轮、丢弃其后的全部剧情' : '删除第 ' + (index + 1) + ' 轮及其后的全部剧情';
+    var extra = includePersistent
+      ? '\n⚠ 已勾选「连足迹/传承一起退回」：行旅图鉴足迹与周目传承点数也会回到该层。'
+      : '\n（行旅足迹/周目传承为跨书永久进度，默认不退回；如需一起退，请先勾选上方选项。）';
     window.UIDialog.confirm({
       title: mode === 'after' ? '保留本轮 · 丢弃之后' : '回档到本轮前',
-      message: '将' + label + '，故事状态回到对应节点。\n此操作不可撤销（覆盖式回档），确定继续？',
+      message: '将' + label + '，故事状态回到对应节点。' + extra + '\n确定继续？',
       danger: true, confirmText: '确定回档', cancelText: '再想想'
     }).then(function (ok) {
       if (!ok) return;
-      return f.rewindTo(index, mode).then(function (rr) {
+      return f.rewindTo(index, mode, { includePersistent: includePersistent }).then(function (rr) {
         if (!rr) { toast('该回合快照不可用', 'error'); return; }
         toast('↩ 已回档，故事已还原到所选节点', 'info');
         selected = null;
@@ -194,6 +205,7 @@
 
   window.TimeAxis = {
     open: open, close: close, select: select, act: act, roll: roll, undo: undo, render: render,
-    _collect: collect
+    setPersistent: setPersistent,
+    _collect: collect, _persistent: function () { return includePersistent; }
   };
 })();

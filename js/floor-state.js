@@ -34,16 +34,39 @@
     try { return JSON.stringify(a) === JSON.stringify(b); } catch (e) { return a === b; }
   }
 
-  /** 当前槽位的旁路键集合（只取"随楼层演化"的，排除全局持久项） */
+  /* v6.4.0：跨书/跨周目持久项——默认不随回档退，玩家可勾选。
+     worldLegacyBank（全局传承银行）、worldLegacyGranted~slot（本世是否已发放）、
+     storyAtlas_<genre>（行旅足迹：走过哪些地点/势力态） */
+  var PERSIST_RE = /^(worldLegacyBank|worldLegacyGranted|storyAtlas_)/;
+
+  /** 当前槽位的旁路键集合（只取"随楼层演化"的，排除持久项） */
   function sideKeys(fw) {
     var out = [];
     try {
       if (!global.SlotRegistry || !global.SlotRegistry.keysOf) return out;
       var all = global.SlotRegistry.keysOf(fw.slotId || 'main', fw.genre);
-      var EXCLUDE = /^(worldLegacyBank|worldLegacyGranted|storyAtlas_)/;
-      all.forEach(function (k) { if (!EXCLUDE.test(k)) out.push(k); });
+      all.forEach(function (k) { if (!PERSIST_RE.test(k)) out.push(k); });
     } catch (e) {}
     return out;
+  }
+
+  /** 持久项键：SlotRegistry 枚举 + localStorage 前缀扫描（storyAtlas 带 genre 后缀） */
+  function persistKeys(fw) {
+    var set = {};
+    try {
+      if (global.SlotRegistry && global.SlotRegistry.keysOf) {
+        global.SlotRegistry.keysOf(fw.slotId || 'main', fw.genre).forEach(function (k) {
+          if (PERSIST_RE.test(k)) set[k] = 1;
+        });
+      }
+    } catch (e) {}
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && PERSIST_RE.test(k)) set[k] = 1;
+      }
+    } catch (e) {}
+    return Object.keys(set);
   }
 
   /** 采集"当前这一层"的全量快照（不含对话正文） */
@@ -53,19 +76,22 @@
     var lastUser = '';
     var ch = s.conversationHistory || [];
     for (var i = ch.length - 1; i >= 0; i--) { if (ch[i] && ch[i].role === 'user') { lastUser = ch[i].content || ''; break; } }
-    var snap = { ss: {}, sk: {}, histLen: ch.length, user: lastUser };
+    var snap = { ss: {}, sk: {}, persist: {}, histLen: ch.length, user: lastUser };
     SS_FIELDS.forEach(function (f) {
       if (s[f] !== undefined) snap.ss[f] = clone(s[f]);
     });
     sideKeys(fw).forEach(function (k) {
       try { var v = localStorage.getItem(k); if (v != null) snap.sk[k] = v; } catch (e) {}
     });
+    persistKeys(fw).forEach(function (k) {
+      try { var v = localStorage.getItem(k); if (v != null) snap.persist[k] = v; } catch (e) {}
+    });
     return snap;
   }
 
   /** 求 diff：full 相对 prev 变化的顶层字段；histLen 恒带上 */
   function diff(full, prev) {
-    var d = { histLen: full.histLen, user: full.user, ss: {}, sk: {} };
+    var d = { histLen: full.histLen, user: full.user, ss: {}, sk: {}, persist: {} };
     Object.keys(full.ss).forEach(function (f) {
       if (!prev || !jsonEq(full.ss[f], prev.ss && prev.ss[f])) d.ss[f] = full.ss[f];
     });
@@ -78,12 +104,19 @@
     if (prev && prev.sk) Object.keys(prev.sk).forEach(function (k) {
       if (!(k in full.sk)) d.sk[k] = null; // 键被删除
     });
+    Object.keys(full.persist || {}).forEach(function (k) {
+      if (!prev || full.persist[k] !== (prev.persist && prev.persist[k])) d.persist[k] = full.persist[k];
+    });
+    if (prev && prev.persist) Object.keys(prev.persist).forEach(function (k) {
+      if (!(k in (full.persist || {}))) d.persist[k] = null;
+    });
     return d;
   }
 
   /** 应用 diff 到 full（就地），返回新的全量 */
   function apply(full, d) {
-    if (!full) full = { ss: {}, sk: {}, histLen: 0 };
+    if (!full) full = { ss: {}, sk: {}, persist: {}, histLen: 0 };
+    if (!full.persist) full.persist = {};
     if (!d) return full;
     if (typeof d.histLen === 'number') full.histLen = d.histLen;
     if ('user' in d) full.user = d.user;
@@ -92,6 +125,9 @@
     });
     Object.keys(d.sk || {}).forEach(function (k) {
       if (d.sk[k] === null) delete full.sk[k]; else full.sk[k] = d.sk[k];
+    });
+    Object.keys(d.persist || {}).forEach(function (k) {
+      if (d.persist[k] === null) delete full.persist[k]; else full.persist[k] = d.persist[k];
     });
     return full;
   }
@@ -172,8 +208,10 @@
     return fw._fsQueue;
   }
 
-  /** 把一个全量状态应用到运行时（storyState + 旁路键），不动对话正文（由调用方按 histLen 截断） */
-  function restore(fw, full) {
+  /** 把一个全量状态应用到运行时（storyState + 旁路键），不动对话正文（由调用方按 histLen 截断）
+   *  includePersistent=false（默认）：足迹/传承等跨书持久项保持当前值，不退。
+   *  includePersistent=true ：连持久项一起还原到该层。 */
+  function restore(fw, full, includePersistent) {
     if (!full) return false;
     var s = fw.storyState;
     SS_FIELDS.forEach(function (f) {
@@ -187,6 +225,13 @@
         else localStorage.removeItem(k);
       } catch (e) {}
     });
+    if (includePersistent) {
+      persistKeys(fw).forEach(function (k) {
+        try {
+          if (k in (full.persist || {})) { if (full.persist[k] != null) localStorage.setItem(k, full.persist[k]); }
+        } catch (e) {}
+      });
+    }
     return full.histLen;
   }
 
@@ -233,8 +278,9 @@
     record: record, load: load, rebuild: rebuild, truncate: truncate,
     restore: restore, capture: capture, clear: clear,
     pushUndo: pushUndo, popUndo: popUndo,
+    diff: diff, apply: apply,
     ANCHOR_EVERY: ANCHOR_EVERY, SS_FIELDS: SS_FIELDS,
-    _key: key, _sideKeys: sideKeys
+    _key: key, _sideKeys: sideKeys, _persistKeys: persistKeys
   };
   global.FloorState = API;
 })(typeof window !== 'undefined' ? window : globalThis);
