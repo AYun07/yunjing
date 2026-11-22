@@ -30,9 +30,19 @@
       return arr;
     },
     _write(arr) {
+      /* v5.1.2 修 P2（存储配额）：原来写失败是**空 catch**——玩家新建的书档
+         在内存里有、磁盘上没有，全程零提示，刷新后档位凭空消失（存进去的内容也一起丢）。
+         现在写失败返回 false，并明确提示玩家「这次没能存上」。 */
       try {
         localStorage.setItem(this.regKey(this.genre()), JSON.stringify(arr));
+        return true;
       } catch (e) {
+        try {
+          if (window.showToast) {
+            window.showToast("⚠ 存档位写入失败：浏览器本地存储已满或被禁用，本次改动没存上（刷新后会还原）。建议「导出存档」或清理站点数据。", "error");
+          }
+        } catch (e2) {}
+        return false;
       }
     },
     activeId() {
@@ -86,7 +96,13 @@
       const id = "s" + Date.now().toString(36);
       const arr = this.list();
       arr.push({ id, name: name || `书档 ${arr.length}`, createdAt: Date.now(), updatedAt: Date.now() });
-      this._write(arr);
+      /* v5.1.2：写失败时不要把「没存上的档位」当成成功交出去 ——
+         内存里有、磁盘没有，刷新即消失，玩家存进去的内容也会一起丢。
+         写失败就回滚数组并抛出可读错误，由调用方提示。 */
+      if (!this._write(arr)) {
+        arr.pop();
+        throw new Error("新建书档失败：浏览器本地存储已满或被禁用");
+      }
       return id;
     },
     rename(slotId, name) {
@@ -734,7 +750,15 @@
         name = prompt("新书档名（如：第二卷）", `书档 ${this.list().length + 1}`);
       }
       if (name === null) return;
-      const id = this.create(name.trim() || void 0);
+      /* v5.1.2：create() 现在会在写失败时抛错，这里接住并提示，
+         避免「新建失败」变成一个未捕获异常直接打断面板交互。 */
+      let id;
+      try {
+        id = this.create(name.trim() || void 0);
+      } catch (e) {
+        try { window.showToast && window.showToast("⚠ " + (e && e.message || "新建书档失败"), "error"); } catch (e2) {}
+        return;
+      }
       this.switchTo(id);
     },
     async renamePrompt(slotId) {

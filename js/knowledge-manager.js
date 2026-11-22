@@ -398,33 +398,63 @@ const StoryKnowledge = {
       updatedAt: now
     };
   },
+  /* v5.1.2 修 P2（存储配额）：落盘失败时**回滚内存态**。
+     旧实现先把条目塞进 knowledgeBase 再 save()；配额满时 save() 返回 false，
+     但条目仍留在内存里 —— 玩家在面板里看得见这条，刷新后却凭空消失，
+     「看起来存上了」比「明确没存上」更坑。
+     现在保存失败就撤回这次改动，并明确告诉玩家：这条没存上，刷新会丢。 */
+  _saveOrRevert(undo, what) {
+    const ok = this.save();
+    if (ok) return true;
+    try { undo(); } catch (e) {}
+    try {
+      if (window.showToast) {
+        window.showToast("⚠ " + (what || "这次改动") + "没存上：浏览器本地存储已满或被禁用。已撤销本次操作，刷新后不会留下半条数据。建议「工具箱 → 🛡 存档体检」清理或先导出备份。", "error");
+      }
+    } catch (e2) {}
+    return false;
+  },
   addItem(raw) {
     const entry = this._normalizeEntry(raw);
     const idx = this.knowledgeBase.findIndex((e) => e.id === entry.id);
+    const prev = idx !== -1 ? this.knowledgeBase[idx] : null;
     if (idx !== -1) this.knowledgeBase[idx] = entry;
     else this.knowledgeBase.push(entry);
     delete this._vecCache[entry.id];
     delete this._bm25Cache[entry.id];
-    this.save();
+    this._saveOrRevert(() => {
+      const i = this.knowledgeBase.findIndex((e) => e.id === entry.id);
+      if (i === -1) return;
+      if (prev) this.knowledgeBase[i] = prev; else this.knowledgeBase.splice(i, 1);
+    }, "新增的知识条目");
     return entry;
   },
   updateItem(id, patch) {
     const idx = this.knowledgeBase.findIndex((e) => e.id === id);
     if (idx === -1) return null;
-    const merged = { ...this.knowledgeBase[idx], ...patch, id, updatedAt: (/* @__PURE__ */ new Date()).toISOString() };
+    const before = this.knowledgeBase[idx];
+    const merged = { ...before, ...patch, id, updatedAt: (/* @__PURE__ */ new Date()).toISOString() };
     this.knowledgeBase[idx] = this._normalizeEntry(merged);
     delete this._vecCache[id];
     delete this._bm25Cache[id];
-    this.save();
+    this._saveOrRevert(() => {
+      const i = this.knowledgeBase.findIndex((e) => e.id === id);
+      if (i !== -1) this.knowledgeBase[i] = before;
+    }, "知识条目的修改");
     return this.knowledgeBase[idx];
   },
   deleteItem(id) {
     const idx = this.knowledgeBase.findIndex((e) => e.id === id);
     if (idx === -1) return false;
+    const before = this.knowledgeBase[idx];
     this.knowledgeBase.splice(idx, 1);
     delete this._vecCache[id];
     delete this._bm25Cache[id];
-    return this.save();
+    return this._saveOrRevert(() => {
+      if (!this.knowledgeBase.some((e) => e.id === id)) {
+        this.knowledgeBase.splice(Math.min(idx, this.knowledgeBase.length), 0, before);
+      }
+    }, "知识条目的删除");
   },
   /** 调整注入方式：'' → 检索模式；top/high/medium/low → 常驻（模仿原框架 changeKBPriority） */
   setPriority(id, priority) {
