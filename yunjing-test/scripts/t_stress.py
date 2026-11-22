@@ -12,16 +12,14 @@ t_funcprobe.py 的口径是「单次调用 + 合法参数」，漏掉了三类�
 每个场景之间把模块状态回滚到基线（ensureState 返回内部引用，可整体还原），
 保证一个动作的副作用不会污染下一个场景的判定。
 
-输出：yunjing-test/out/stress_probe.json + 控制台摘要
+输出：/tmp/stress_probe.json + 控制台摘要
 """
 import asyncio, glob, json, os, re, sys
 from playwright.async_api import async_playwright
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
-OUT = out_path("stress_probe.json")
-GENRES = genres()
+OUT = "/tmp/stress_probe.json"
+GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
 
 BOOT = """(g)=>{
   try{

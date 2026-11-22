@@ -11,13 +11,11 @@
 
 运行：python3 yunjing-test/scripts/t_registry_v410.py
 """
-import sys, json, os
+import sys, json
 from playwright.sync_api import sync_playwright
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = "http://127.0.0.1:8899"
-IDX = json.load(open(kb_index(), encoding='utf-8'))
+IDX = json.load(open('/workspace/yunjing/js/kb/_index.json', encoding='utf-8'))
 GENRES = sorted(IDX['genres'].keys())
 NEW5 = ["dazhuzai", "wangyou", "wanxiangzhiwang", "wudongqiankun", "yuanzun"]
 NOVEL4 = ["dazhuzai", "wanxiangzhiwang", "wudongqiankun", "yuanzun"]
@@ -62,16 +60,7 @@ def main():
         stats = {}
         for g in GENRES:
             pg.goto(BASE + "/studio.html?genre=" + g, wait_until="domcontentloaded", timeout=45000)
-            # v5.1.1 修 P2-4：原来固定等 650ms，而这几个注册表（yunqi-bridge /
-            # image-gen / ambience-layer）都是 **yj-lazy 懒加载**，650ms 时还没注入
-            # → 误判成「五新界缺失」。改成等模块真正就绪再读。
-            try:
-                pg.wait_for_function(
-                    "() => !!(window.YunqiPresetBridge && window.StoryImageGen && window.AmbienceLayer)",
-                    timeout=20000)
-            except Exception:
-                pass
-            pg.wait_for_timeout(250)
+            pg.wait_for_timeout(650)
             # world-seals.js 是 yj-lazy「demand」组，页面初始只有占位 function，
             # 必须注入真身才能读到真实的 SEALS 表（与 F11 / P1-10 同型）。
             is_stub = pg.evaluate("() => typeof window.WorldSeals === 'function'")

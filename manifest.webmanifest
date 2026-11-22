@@ -4,7 +4,7 @@
     "description": "万象入云，一念一世界。AI 互动叙事工坊：多世界观角色扮演、世界线管理、地图集与长期记忆。",
     "lang": "zh-CN",
     "dir": "ltr",
-    "start_url": "./index.html",
+    "start_url": "./opening.html",
     "scope": "./",
     "display": "standalone",
     "orientation": "any",

@@ -419,7 +419,7 @@ var REGISTRY = {
   "fingerprint": "body|根骨,comprehension|悟性,fortune|气运,temperament|心性,soul|灵魂,ties|人脉"
  },
  "dibao": {
-  "name": "盗墓",
+  "name": "帝霸",
   "mode": "roleplay",
   "axes": [
    {
@@ -536,7 +536,7 @@ var REGISTRY = {
   "fingerprint": "body|根骨,psyche|神识,comprehension|悟性,will|道心,fortune|气运,connections|人脉"
  },
  "ditandali": {
-  "name": "大地铁犁",
+  "name": "开局地摊卖大力",
   "mode": "roleplay",
   "axes": [
    {
@@ -927,7 +927,7 @@ var REGISTRY = {
   "fingerprint": "body|体质,intellect|智力,charm|魅力,will|意志,agility|敏捷,knowledge|学识"
  },
  "fanrenxiuxian": {
-  "name": "凡人修仙",
+  "name": "凡人修仙传",
   "mode": "roleplay",
   "axes": [
    {
@@ -1339,7 +1339,7 @@ var REGISTRY = {
   "fingerprint": "learning|学识,mind|心性,combat|体术,spirit|灵性,eloquence|口才,fortune|幸运"
  },
  "guzhenren": {
-  "name": "古真人",
+  "name": "蛊真人",
   "mode": "roleplay",
   "axes": [
    {
@@ -2095,7 +2095,7 @@ var REGISTRY = {
   "fingerprint": "body|体能,agility|身手,mind|心智,grit|狠劲,fortune|气运,connections|人脉"
  },
  "quanzhifashi": {
-  "name": "全知法师",
+  "name": "全职法师",
   "mode": "roleplay",
   "axes": [
    {
@@ -2802,7 +2802,7 @@ var REGISTRY = {
   "fingerprint": "body|根骨,psyche|精神,comprehension|悟性,will|意志,fortune|气运,connections|人脉"
  },
  "wangyou": {
-  "name": "网游创作",
+  "name": "寰宇纪元",
   "mode": "roleplay",
   "axes": [
    {
@@ -3001,7 +3001,7 @@ var REGISTRY = {
   "fingerprint": "aptitude|资质,comprehension|悟性,fortune|气运,temperament|心性,foundation|底蕴,reputation|名望"
  },
  "wanxiangzhiwang": {
-  "name": "万象之王",
+  "name": "万相之王",
   "mode": "roleplay",
   "axes": [
    {
@@ -3764,7 +3764,7 @@ var REGISTRY = {
   "fingerprint": "body|根骨,comprehension|悟性,fortune|气运,temperament|心性,soul|神魂,ties|人脉"
  },
  "zhanhen": {
-  "name": "战痕",
+  "name": "我在精神病院学斩神",
   "mode": "roleplay",
   "axes": [
    {
@@ -3881,7 +3881,7 @@ var REGISTRY = {
   "fingerprint": "body|体能,agility|身手,mind|心智,grit|胆魄,fortune|气运,connections|人脉"
  },
  "zhongshengdushi": {
-  "name": "重生都市",
+  "name": "重生之都市修仙",
   "mode": "roleplay",
   "axes": [
    {

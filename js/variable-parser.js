@@ -1,6 +1,14 @@
 /* v4.28.0 填表规则：严格演算走引擎钳制/补涨；玩家自由跳过钳制与补涨，玩家填多少算多少。 */
-function yjEngineOn() { return !(window.FillRule && window.FillRule.shouldEnforceEngine && !window.FillRule.shouldEnforceEngine()); }
-function yjGrowthOn() { return !(window.FillRule && window.FillRule.shouldSettleGrowth && !window.FillRule.shouldSettleGrowth()); }
+/* v6.3.6：引擎钳制开关 = FillRule 严格 且 本轮玩家未明确要求放行。
+   优先用 AttributeEngine.shouldEnforceNow()（已综合两条件）；引擎未加载时退回只看 FillRule。 */
+function yjEngineOn() {
+  if (window.AttributeEngine && window.AttributeEngine.shouldEnforceNow) return window.AttributeEngine.shouldEnforceNow();
+  return !(window.FillRule && window.FillRule.shouldEnforceEngine && !window.FillRule.shouldEnforceEngine());
+}
+function yjGrowthOn() {
+  if (window.AttributeEngine && window.AttributeEngine.shouldEnforceNow) return window.AttributeEngine.shouldEnforceNow();
+  return !(window.FillRule && window.FillRule.shouldSettleGrowth && !window.FillRule.shouldSettleGrowth());
+}
 
 const VariableInstructionParser = {
   /** 保留容器名：出现在 "xxx.字段" 前缀时按容器处理而非角色 */
@@ -44,6 +52,25 @@ const VariableInstructionParser = {
        window.SchemaValidator 守卫：未加载时跳过，解耦脚本加载顺序。 */
     if (window.SchemaValidator && res && res.newVariables) {
       try { res.newVariables = window.SchemaValidator.sanitize(res.newVariables, currentVars); } catch (e) { console.warn("[SchemaValidator] sanitize 失败：", e.message); }
+    }
+    /* v6.3.6 数值规则卡死：钳制回执 → 玩家可见提示 + 存档供下一轮回写 AI。
+       仅 strict 且确有拦截时提示；合并成一条轻提示，不逐条刷屏。 */
+    if (AE && AE.getTurnClamps) {
+      try {
+        var clamps = AE.getTurnClamps();
+        if (clamps.length) {
+          AE.stashClampsForNextTurn();
+          if (AE.shouldEnforceNow && AE.shouldEnforceNow()) {
+            var parts = clamps.slice(0, 3).map(function (c) {
+              return c.stat + ' 请求' + (c.request > 0 ? '+' : '') + c.request + '→实际' + (c.actual > 0 ? '+' : '') + c.actual + '（' + c.reason + '）';
+            });
+            var more = clamps.length > 3 ? ' 等' + clamps.length + '项' : '';
+            window.showToast && window.showToast('🧮 数值已按规则钳制：' + parts.join('；') + more, 'info');
+          }
+        } else {
+          AE.stashClampsForNextTurn();   // 本轮无拦截：清空上一轮回执，避免回写陈旧信息
+        }
+      } catch (e) { }
     }
     return res;
   },

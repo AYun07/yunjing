@@ -63,7 +63,7 @@
   }
   function openTrash() {
     var arr = KBTrash.list();
-    if (!arr.length) { yjAlert('回收站是空的(本界)'); return; }
+    if (!arr.length) { alert('回收站是空的(本界)'); return; }
     var html = arr.map(function (it, i) {
       return i + '. ' + (it.entry.title || '无题') + ' <button data-tr="' + i + '" style="margin:2px 4px;padding:2px 10px">恢复</button>';
     }).join('<br>') + '<br><br><button id="trClear" style="padding:2px 10px">清空回收站</button>';
@@ -75,7 +75,7 @@
       var t = ev.target;
       if (t.id === 'trClear') { KBTrash.clear(); d.remove(); return; }
       if (t.dataset && t.dataset.tr != null) {
-        yjAlert(KBTrash.restore(parseInt(t.dataset.tr, 10)));
+        alert(KBTrash.restore(parseInt(t.dataset.tr, 10)));
         var bar = document.querySelector('[data-kbstats]');
         if (bar) bar.innerHTML = buildStats();
       }
@@ -108,7 +108,7 @@
     } catch (e) {}
   }
   MoUtils.pollUntil(mountUI, { interval: 2500, max: 80 });
-  console.debug('[KBEnhance] 统计条+序号+回收站 就绪');
+  console.log('[KBEnhance] 统计条+序号+回收站 就绪');
 })();
 
 /* ---- v1.4 预设多份管理:整库快照/一键切换/删除 ---- */
@@ -169,10 +169,10 @@
           var t = ev.target;
           if (t.id === 'pSave') {
             var n = (d.querySelector('#pName').value || '').trim() || ('快照' + new Date().toLocaleDateString());
-            yjAlert(KBProfiles.save(n)); d.remove(); return;
+            alert(KBProfiles.save(n)); d.remove(); return;
           }
-          if (t.dataset && t.dataset.pload) { yjAlert(KBProfiles.load(t.dataset.pload)); d.remove(); return; }
-          if (t.dataset && t.dataset.pdel) { yjAlert(KBProfiles.del(t.dataset.pdel)); d.remove(); return; }
+          if (t.dataset && t.dataset.pload) { alert(KBProfiles.load(t.dataset.pload)); d.remove(); return; }
+          if (t.dataset && t.dataset.pdel) { alert(KBProfiles.del(t.dataset.pdel)); d.remove(); return; }
           if (t === d) d.remove();
         });
       };

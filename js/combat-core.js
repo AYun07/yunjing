@@ -119,7 +119,7 @@ function simulate(g, foeId, opts){
     fields:{damage:totalDmg,shield:totalShield,turn:turn,end:end}};
 }
 var genre=WR.genre;var injected=false;
-function inject(){if(injected)return true;if(!window.WorldExt||!window.WorldExt.hasModules||!window.WorldExt.hasModules())return false;try{WorldExt.injectModules(genre,[combatModule(genre)]);console.debug("[CombatCore] "+genre+" 就位")}catch(e){console.warn("[CombatCore]",e.message)}injected=true;return true}
+function inject(){if(injected)return true;if(!window.WorldExt||!window.WorldExt.hasModules||!window.WorldExt.hasModules())return false;try{WorldExt.injectModules(genre,[combatModule(genre)]);console.log("[CombatCore] "+genre+" 就位")}catch(e){console.warn("[CombatCore]",e.message)}injected=true;return true}
 /* v3.55.29：同上，改为单飞 + 有界的 YJWait，杜绝定时器裂变 */
 if(window.YJWait)YJWait.for(inject,null,{name:"combat-core",base:140,max:60});
 else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inject);else inject();

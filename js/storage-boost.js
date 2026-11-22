@@ -92,7 +92,7 @@
                     }
                     /* 切换：清缓存后本会话后续 store() 一律新库名（已含全部最新数据） */
                     self._store = null;
-                    console.debug('[存储扩容] 品牌库迁移收尾完成：', from, '→', to, '，补写', copied, '键，已切换新库');
+                    console.log('[存储扩容] 品牌库迁移收尾完成：', from, '→', to, '，补写', copied, '键，已切换新库');
                 } catch (e) {
                     console.warn('[存储扩容] 迁移收尾失败（保留旧库，下次会话重试）:', e && e.message);
                 }

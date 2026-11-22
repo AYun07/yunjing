@@ -49,7 +49,7 @@ M("wr_meditate","🧘","神秘学冥想","灵性/扮演",{spirit2:{v:20,max:100,
 ]}};
 var injected=false;
 function inject(){if(injected)return true;if(!window.WorldExt)return false;if(window.WorldExt.hasModules&&!window.WorldExt.hasModules())return false
-var defs=[npcModule(),creatorModule()];var nwf=NEW_WORLDS[genre];var nw=nwf?nwf():[];nw.forEach(function(m){if(m)defs.push(m)});try{WorldExt.injectModules(genre,defs);console.debug("[ModuleForge] "+genre+" 注入 "+defs.length+" 模块")}catch(e){console.warn("[ModuleForge]",e.message)}injected=true;return true}
+var defs=[npcModule(),creatorModule()];var nwf=NEW_WORLDS[genre];var nw=nwf?nwf():[];nw.forEach(function(m){if(m)defs.push(m)});try{WorldExt.injectModules(genre,defs);console.log("[ModuleForge] "+genre+" 注入 "+defs.length+" 模块")}catch(e){console.warn("[ModuleForge]",e.message)}injected=true;return true}
 /* v3.55.29：改用 YJWait（单飞 + 有界） */
 if(window.YJWait)YJWait.for(inject,null,{name:"module-forge",base:140,max:60});
 else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inject);else inject();

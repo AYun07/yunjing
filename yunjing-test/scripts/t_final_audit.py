@@ -12,7 +12,7 @@
 TruthSnapshot 真值快照判定，此处不重复、不放宽。
 
 用法：YJ_SINCE=<本轮旅程启动 epoch> python3 t_final_audit.py
-输出：yunjing-test/out/云境-v4.09.0-终验复判.json
+输出：/workspace/云境-v4.09.0-终验复判.json
 """
 import glob, json, os, re, sys
 
@@ -20,10 +20,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # t_player.py 顶层有 key 检查；这里只是占位，全程不发起任何模型请求
 os.environ.setdefault("YJ_TEST_KEY", "offline-audit")
 import t_player as tp
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
-OUT = out_path("云境-v4.09.0-终验复判.json")
+OUT = "/workspace/云境-v4.09.0-终验复判.json"
 SINCE = float(os.environ.get("YJ_SINCE", "0"))
 VALID_STEPS = {"open", "act", "act2"}
 DEGRADED = tp.DEGRADED_NOTE
@@ -69,7 +67,7 @@ def selftest():
 def main():
     selftest()
     print("终验复判自检：降级检出 + 新旧口径差异 + 变异灵敏度 → 通过")
-    files = out_glob("yj_journey_*.txt")
+    files = sorted(glob.glob("/tmp/yj_journey_*.txt"))
     files = [f for f in files if not f.endswith(".raw.txt")
              and os.path.basename(f)[:-4].rsplit("_", 1)[-1] in VALID_STEPS
              and (not SINCE or os.path.getmtime(f) >= SINCE)]

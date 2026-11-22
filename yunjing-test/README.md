@@ -1,4 +1,4 @@
-# 云境验收脚本（v4.07.0 · v5.1.1 更新）
+# 云境验收脚本（v4.07.0）
 
 本目录是**发版验收的可复现脚本**，随版本入库，任何人都能按同一口径复跑。
 
@@ -8,40 +8,21 @@
 yunjing-test/
 ├── MODEL_WHITELIST.md          # 允许调用的模型 ID 白名单
 ├── check_model_whitelist.py    # 枚举法扫描全库，校验无白名单外调用
-├── yj_paths.py                 # 仓库根 / 产物目录 / 界清单（不再写死绝对路径）
 └── scripts/
     ├── t_quests_v407.js        # 沙盒化动态委托系统验收（纯 Node vm，无浏览器）
     ├── sim_407.js              # 300 轮长程数值模拟（玩家视角，纯 Node vm）
     ├── t_v4071_ui.py           # 界面与链路定向回归（真实浏览器，24 项）
     ├── t_atlas_406.py          # 全 38 界舆图逐层截图 + 几何验收
-    ├── t_player_local.py       # **端到端玩家闭环（不需任何密钥）**：建角→存档→切档→
-    │                          #   导出→改坏→全量恢复→刷新，全程零 pageerror
     └── t_407_real.py           # 真实模型实测（调用 agnes-3.0-flash）
-```
-
-## 关于「需要配 API 的用例」——一律不进 CI
-
-**模型接口是玩家自己配的**：仓库里不存任何密钥，CI 也不需要、不应该、不会去调任何模型接口。
-
-- 需 `YJ_TEST_KEY` 的用例（`t_407_real` / `t_player` / `t_rejudge` / `t_truthdiff` /
-  `semantic_judge` / `shots_4072` / `sim_407` / `t_v4071_ui`）**只供维护者本地手动跑**，
-  密钥仅走环境变量；CI 一律用 `--no-key` 把它们排除。
-- CI 的 `browser` job 只跑**不依赖任何模型接口**的浏览器级用例（25 个，全部离线自洽）。
-- 其余验收（7 道闸门 + 9 个离线脚本 + 25 个浏览器级用例）全部可在无密钥环境复跑。
-
-```bash
-# CI 等价命令（无密钥、无模型接口）
-node yunjing-test/run-all.mjs --all --no-key
 ```
 
 ## 环境变量
 
 | 变量 | 默认值 | 说明 |
 |---|---|---|
-| `YJ_ROOT` | 由脚本位置推导 | 项目根目录（旧的 `/workspace/yunjing` 硬编码已移除） |
+| `YJ_ROOT` | `/workspace/yunjing` | 项目根目录（Node 脚本用） |
 | `YJ_BASE` | `http://127.0.0.1:8899` | 本地静态服务地址（Python 脚本用） |
-| `YJ_OUT_DIR` | `yunjing-test/out/` | 产物目录（探针 JSON / 截图） |
-| `YJ_TEST_KEY` | 无 | **真实模型密钥，仅走环境变量，仓库内不存任何口令**；只给本地手动跑真实模型用例用，CI 不需要 |
+| `YJ_TEST_KEY` | 无 | **真实模型密钥，仅走环境变量，仓库内不存任何口令** |
 | `YJ_TEST_ENDPOINT` | `https://apihub.agnes-ai.com/v1` | 模型接口地址 |
 
 ## 运行
@@ -56,15 +37,12 @@ python3 yunjing-test/check_model_whitelist.py
 node yunjing-test/scripts/t_quests_v407.js     # 期望 37/37
 node yunjing-test/scripts/sim_407.js             # 期望「数值异常（无）」
 
-# 3) 界面与舆图（需先起静态服务；服务根目录 = 仓库根）
-python3 -m http.server 8899 --directory . &
+# 3) 界面与舆图（需先起静态服务）
+python3 -m http.server 8899 --directory /workspace/yunjing &
 python3 yunjing-test/scripts/t_v4071_ui.py      # 期望 24/24
 python3 yunjing-test/scripts/t_atlas_406.py      # 期望「总判定: PASS 全量通过」
 
-# 4) 一键跑全套（CI 等价：无密钥、不调模型接口）
-node yunjing-test/run-all.mjs --all --no-key
-
-# 5) 真实模型实测（**仅维护者本地手动跑**，需自备密钥；并发 1、间隔 ≥4s、免费模型）
+# 4) 真实模型实测（需密钥；并发 1、间隔 ≥4s、免费模型）
 YJ_TEST_KEY=<你的密钥> python3 yunjing-test/scripts/t_407_real.py
 YJ_TEST_KEY=<你的密钥> python3 yunjing-test/scripts/t_407_real.py sandbox   # 单例复跑
 ```

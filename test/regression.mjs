@@ -301,10 +301,8 @@ G('5. 静态不变量');
       scanAll += '\n' + fs.readFileSync(path.join(ROOT, f), 'utf8');
     }
   } catch (e) {}
-  /* v5.1.1：原来只扫 `?v=`，漏掉 `&v=` 形式（index.html 入口链接 44 处
-     studio.html?genre=xxx&v=1.6.9 就是这种），断言形同虚设 → 现在两种都扫。 */
-  const cacheParams = scanAll.match(/[?&]v=\d+\.\d+\.\d+/g) || [];
-  const stale = cacheParams.filter(v => v.slice(1) !== 'v=' + CUR);
+  const cacheParams = scanAll.match(/\?v=\d+\.\d+\.\d+/g) || [];
+  const stale = cacheParams.filter(v => v !== '?v=' + CUR);
   ok('缓存参数无旧版本残留(全JS+HTML)', stale.length === 0, [...new Set(stale)].slice(0, 5).join(','));
   ok('sw.js 预缓存含 save-slots.js', read('sw.js').includes('save-slots.js'));
   ok('studio.html 加载 save-slots.js', read('studio.html').includes('save-slots.js'));

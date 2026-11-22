@@ -14,8 +14,6 @@
 """
 import asyncio, glob, io, json, os, re, sys
 from playwright.async_api import async_playwright
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 K = os.environ.get("YJ_TEST_KEY", "")
@@ -32,7 +30,7 @@ if not K:
     print("⚠ 未设置 YJ_TEST_KEY（仓库内不存密钥）")
     raise SystemExit(2)
 
-ALL_GENRES = genres()
+ALL_GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
 
 # ── 校验用正则 ───────────────────────────────────────────────
 # v4.07.2 收紧：初版口径过宽，把「领口的粗布衣襟」误判成金币 62、把「红名不能在主城」
@@ -685,15 +683,15 @@ async def main():
                 results.append({"genre": g, "step": sname, "len": len(txt), "bad": bad})
                 try:
                     # 落盘两份：shown=用户所见正文；raw=模型原始返回（仅供诊断泄漏）
-                    io.open(out_path("yj_journey_%s_%s.txt" % (g, sname)), "w", encoding="utf-8").write(txt)
+                    io.open("/tmp/yj_journey_%s_%s.txt" % (g, sname), "w", encoding="utf-8").write(txt)
                     if out.get("raw") and out.get("raw") != txt:
-                        io.open(out_path("yj_journey_%s_%s.raw.txt" % (g, sname)), "w", encoding="utf-8").write(out["raw"])
+                        io.open("/tmp/yj_journey_%s_%s.raw.txt" % (g, sname), "w", encoding="utf-8").write(out["raw"])
                 except Exception:
                     pass
             if perr:
                 issues.append({"genre": g, "step": "pageerror", "bad": {"pageerror": perr[:3]}})
                 perr.clear()
-    json.dump({"results": results, "issues": issues}, open(out_path("yj_journey.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    json.dump({"results": results, "issues": issues}, open("/tmp/yj_journey.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print("\n=== 汇总 ===")
     print("请求 %d ｜ 有问题 %d" % (len(results), len(issues)))
     from collections import Counter

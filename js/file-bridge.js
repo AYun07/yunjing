@@ -429,7 +429,7 @@
     supported: supported,
     hasRoot: function () { return !!root; },
     authorize: async function () {
-      if (!supported()) { yjAlert('当前浏览器不支持文件授权，请使用 Chrome / Edge 打开。'); return; }
+      if (!supported()) { alert('当前浏览器不支持文件授权，请使用 Chrome / Edge 打开。'); return; }
       try {
         var h = await window.showDirectoryPicker({ id: 'yunjing', mode: 'readwrite' });
         root = h;

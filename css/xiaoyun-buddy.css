@@ -68,8 +68,7 @@
 .xy-mood{margin-left:auto;font-size:11px;color:#cfc8f0;background:rgba(150,140,255,.18);padding:3px 10px;border-radius:999px}
 /* v4.37.0 归位按钮 */
 .xy-home{flex:0 0 auto;font-size:11px;color:#b8b2dd;background:transparent;border:1px solid rgba(170,160,255,.3);
-  /* v5.1.2：原来只有 22px 高，低于 26px 的可点下限（手机上点不中）→ 抬到 28px */
-  border-radius:999px;padding:6px 10px;min-height:28px;cursor:pointer;transition:.2s;white-space:nowrap}
+  border-radius:999px;padding:3px 9px;cursor:pointer;transition:.2s;white-space:nowrap}
 .xy-home:hover{color:#fff;background:rgba(140,130,255,.32)}
 .xy-chat{flex:0 0 auto;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:80px;max-height:130px}
 .xy-msg{max-width:86%;font-size:13px;line-height:1.7;padding:9px 13px;border-radius:14px}
@@ -83,14 +82,8 @@
 .xy-form input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(170,160,255,.3);border-radius:11px;color:#fff;font-size:13px;padding:9px 12px;outline:none}
 .xy-form input::placeholder{color:#9a94c0}
 .xy-form button{background:linear-gradient(120deg,#7e8cff,#b78cff);border:none;border-radius:11px;color:#fff;font-weight:700;font-size:13px;padding:0 16px;cursor:pointer}
-/* v5.1.1 修 P1 死锁：请求在途时的「停止」键（暖红，与主笔的「停止生成」同一语义） */
-.xy-form .xy-stop{background:linear-gradient(120deg,#e0645f,#c94a52);padding:0 14px;white-space:nowrap}
-.xy-form .xy-stop:hover{filter:brightness(1.08)}
-.xy-form .xy-stop:active{transform:translateY(1px)}
 .xy-forms{flex:0 0 auto;display:flex;gap:6px;padding:0 14px 13px;flex-wrap:wrap}
-.xy-f{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.28);background:transparent;border-radius:999px;
-  /* v5.1.2：原来 24px 高，低于 26px 可点下限 → 抬到 28px（视觉几乎不变） */
-  padding:6px 12px;min-height:28px;cursor:pointer;transition:.2s}
+.xy-f{font-size:11px;color:#b8b2dd;border:1px solid rgba(170,160,255,.28);background:transparent;border-radius:999px;padding:4px 11px;cursor:pointer;transition:.2s}
 .xy-f.on,.xy-f:hover{color:#fff;background:rgba(140,130,255,.35)}
 /* v3.92.1 模块区：让单只云灵也是全功能云灵（世界动态/手机/太虚阁/上下文/资料库/大势账本/行旅图鉴/灵宠/小队/身份/立场…） */
 /* v3.92.1 修正：此前模块区未声明 flex 收缩规则，在 70vh 面板里被压到接近 0（10 个按钮只剩一条）。

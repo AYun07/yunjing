@@ -85,7 +85,7 @@ class StoryFramework {
      * 初始化创作框架
      */
     init() {
-        console.debug('[StoryFramework] 初始化创作框架:', this.config.genreName);
+        console.log('[StoryFramework] 初始化创作框架:', this.config.genreName);
         this.loadApiConfig();
         this.loadSave();
         if (this.config.onInit) {
@@ -349,7 +349,7 @@ class StoryFramework {
         const target = StoryFramework.SAVE_SCHEMA || 0;
         if (cur >= target) return data;
         let d = data;
-        console.debug(`[StoryFramework] 存档格式 v${cur} → v${target}，开始迁移`);
+        console.log(`[StoryFramework] 存档格式 v${cur} → v${target}，开始迁移`);
         for (let v = cur; v < target; v++) {
             const fn = (StoryFramework.SAVE_MIGRATIONS || {})[v];
             if (typeof fn !== 'function') continue;
@@ -386,7 +386,7 @@ class StoryFramework {
             this.storyState = { ...this.storyState, ...data, lastVariables: {} };
             // v3.27.5：读档即自愈（旧档 items 等容器可能已被历史版本的行式指令污染）
             try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e) { }
-            console.debug('[StoryFramework] 读取存档成功，共', this.storyState.conversationHistory.length, '条历史');
+            console.log('[StoryFramework] 读取存档成功，共', this.storyState.conversationHistory.length, '条历史');
             if (fromBak) {
                 console.warn('[StoryFramework] 主存档损坏，已从自动备份恢复');
                 window.showToast?.('⚠ 主存档已损坏，已自动从上一份备份恢复', 'info');
@@ -428,7 +428,7 @@ class StoryFramework {
                     if (merged.length > inline.length) {
                         this.storyState.conversationHistory = merged;
                         this._trFlushedLen = merged.length;
-                        console.debug('[StoryFramework] 已从 IndexedDB 恢复全量对话，共', merged.length, '条历史');
+                        console.log('[StoryFramework] 已从 IndexedDB 恢复全量对话，共', merged.length, '条历史');
                     }
                     return this.storyState;
                 }).catch(() => this.storyState);
@@ -448,7 +448,7 @@ class StoryFramework {
                     this.storyState = { ...this.storyState, ...d, lastVariables: {} };
                     // v3.27.5：IDB 大档恢复同样走容器自愈
                     try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e2) { }
-                    console.debug('[StoryFramework] localStorage 配额不足，已从 IndexedDB 恢复存档，共', this.storyState.conversationHistory.length, '条历史');
+                    console.log('[StoryFramework] localStorage 配额不足，已从 IndexedDB 恢复存档，共', this.storyState.conversationHistory.length, '条历史');
                     window.showToast?.('💾 存档较大，已从浏览器大容量存储（IndexedDB）恢复', 'info');
                 } catch (e) { }
             }).catch(() => { });
@@ -478,6 +478,7 @@ class StoryFramework {
             if (window.StorageBoost && StorageBoost.ready()) {
                 StorageBoost.remove('主档/' + this.getSaveKey());
                 StorageBoost.remove('transcript/' + this.getSaveKey());
+                StorageBoost.remove(this._arcKey());   // v6.3.5：全量轮次档案一并清，防旧剧情幽灵复活
             }
         } catch (e) { }
         this._trFlushedLen = 0;   /* v3.55.22 transcript 节流游标归零 */
@@ -583,6 +584,8 @@ class StoryFramework {
             driftBefore: Array.isArray(s.driftNotes) ? s.driftNotes.slice() : null
         });
         if (s.turns.length > 40) s.turns.shift(); // 防存档膨胀（index 为绝对轮号，滑动无需重编号）
+        // v6.3.5：异步备一份到全量档案，突破 40 轮热栈限制以支持任意回合回档
+        try { this.archiveTurn(s.turns[s.turns.length - 1]); } catch (e) { }
     }
 
     /**
@@ -644,6 +647,151 @@ class StoryFramework {
         }
         this.updateStatusPanel();
         return t;
+    }
+
+    /* ==================== v6.3.5 全量轮次档案（任意回合回档） ==================== */
+    /* 背景：turns[] 热栈硬上限 40 轮（内存治理 DR-036），更早轮次的变量快照被 shift 掉，
+       无法精确回档。这里把每一轮的快照异步备一份到 IndexedDB（轻量结构化数据，不含图片，
+       不占 localStorage、不与内存治理冲突），使"选定任意回合回档"成为可能。
+       老存档没有全量档案时，rewindTo 自动降级为 40 轮热栈内可选。 */
+
+    /** 本档全量轮次档案的 IDB 键 */
+    _arcKey() { return 'turnArc/' + this.getSaveKey(); }
+
+    /**
+     * 把一轮快照写入全量档案（pushTurnSnapshot 后调用，异步、失败静默降级）。
+     * 以 index 为唯一标识覆盖写，天然去重；读端按 index 排序即得完整时间轴。
+     * v6.3.5 修正：连续多轮会并发调用，get→改→put 若并发会互相覆盖（lost update，
+     * 实测 5 连发只剩最后一轮）。这里用实例级 Promise 队列把读改写串行化。
+     */
+    archiveTurn(snap) {
+        if (!snap || typeof snap.index !== 'number') return;
+        try {
+            if (!(window.StorageBoost && StorageBoost.ready())) return;
+            const key = this._arcKey();
+            const copy = {
+                index: snap.index, user: snap.user, histLen: snap.histLen,
+                varsBefore: snap.varsBefore, digestBefore: snap.digestBefore,
+                driftBefore: snap.driftBefore, turnCount: snap.turnCount,
+                savedAt: Date.now()
+            };
+            const write = () => StorageBoost.get(key).then(raw => {
+                let arr = [];
+                if (raw) { try { const p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } catch (e) { } }
+                const i = arr.findIndex(x => x && x.index === snap.index);
+                if (i >= 0) arr[i] = copy; else arr.push(copy);
+                arr.sort((a, b) => a.index - b.index);
+                return StorageBoost.put(key, JSON.stringify(arr));
+            }).catch(() => { });
+            // 串行队列：无论调用多密集，读-改-写一次一个
+            this._arcQueue = (this._arcQueue || Promise.resolve()).then(write, write);
+        } catch (e) { }
+    }
+
+    /** 读取本档全量轮次档案（Promise<Array>）；无档案返回 [] */
+    loadTurnArchive() {
+        try {
+            if (!(window.StorageBoost && StorageBoost.ready())) return Promise.resolve([]);
+            return StorageBoost.get(this._arcKey()).then(raw => {
+                if (!raw) return [];
+                try { const a = JSON.parse(raw); return Array.isArray(a) ? a.sort((x, y) => x.index - y.index) : []; }
+                catch (e) { return []; }
+            }).catch(() => []);
+        } catch (e) { return Promise.resolve([]); }
+    }
+
+    /**
+     * 回档到指定轮（任意回合），覆盖式：丢弃 target 之后的轮次。
+     * @param {number} index 目标轮的绝对轮号
+     * @param {string} mode  'before'=回到该轮开始前（丢弃本轮及之后）；'after'=保留该轮、只丢之后
+     * @returns {Promise<object|null>} 还原用的现场快照（含 user 指令），失败返回 null
+     */
+    async rewindTo(index, mode) {
+        const s = this.storyState;
+        mode = (mode === 'after') ? 'after' : 'before';
+        // 先等归档队列排空，否则残留的归档写会基于旧档案复活已删轮次
+        try { if (this._arcQueue) await this._arcQueue; } catch (e) { }
+        const arc = await this.loadTurnArchive();
+        // 目标现场：before 用该轮快照；after 用该轮之后一轮的快照（= 该轮结束后的状态）
+        let target = null, cutIndex = index;
+        if (mode === 'after') {
+            const nextSnap = arc.find(x => x.index === index + 1);
+            if (nextSnap) { target = nextSnap; cutIndex = index + 1; }
+            else {
+                // 该轮是末轮或档案缺失后继：用内存末轮状态作"结束后"现场
+                target = {
+                    index: index + 1, varsBefore: JSON.parse(JSON.stringify(s.variables || {})),
+                    histLen: s.conversationHistory.length,
+                    digestBefore: (s.digest && s.digest.summary) ? JSON.parse(JSON.stringify(s.digest)) : null,
+                    driftBefore: Array.isArray(s.driftNotes) ? s.driftNotes.slice() : null,
+                    turnCount: s.turnCount
+                };
+            }
+        } else {
+            target = arc.find(x => x.index === index);
+        }
+        // 档案无该轮：降级到 40 轮热栈内查找
+        if (!target) {
+            const hot = (s.turns || []).find(x => x && x.index === (mode === 'after' ? index + 1 : index));
+            if (hot) { target = hot; cutIndex = mode === 'after' ? index + 1 : index; }
+        }
+        if (!target) return null;
+
+        // 1) 还原变量 / 摘要 / 漂移 / 轮数
+        s.variables = target.varsBefore ? JSON.parse(JSON.stringify(target.varsBefore)) : {};
+        if (target.digestBefore !== undefined) {
+            s.digest = target.digestBefore || undefined;
+            if (s.digest && typeof s.digest.upToIndex === 'number' && s.digest.upToIndex > (target.histLen || 0)) {
+                s.digest.upToIndex = Math.max(0, target.histLen || 0);
+            }
+        }
+        if (target.driftBefore !== undefined) s.driftNotes = target.driftBefore || [];
+        if (typeof target.turnCount === 'number') s.turnCount = target.turnCount;
+        s._rollbackEpoch = (Number(s._rollbackEpoch) || 0) + 1;
+
+        // 2) 截断内存对话历史（只缩不扩）
+        if (typeof target.histLen === 'number' && target.histLen >= 0 && target.histLen <= s.conversationHistory.length) {
+            s.conversationHistory.length = target.histLen;
+        }
+
+        // 3) 更新内存 turns 热栈：只保留 index < cutIndex 的快照
+        if (Array.isArray(s.turns)) s.turns = s.turns.filter(x => x && typeof x.index === 'number' && x.index < cutIndex);
+
+        // 4) 同步 IDB 全量档案：删除 index >= cutIndex 的轮次，防刷新后旧剧情复活
+        try {
+            if (window.StorageBoost && StorageBoost.ready()) {
+                const kept = arc.filter(x => x && typeof x.index === 'number' && x.index < cutIndex);
+                StorageBoost.put(this._arcKey(), JSON.stringify(kept));
+            }
+        } catch (e) { }
+
+        // 5) 同步 IndexedDB transcript：按目标 histLen 截断（改写 upTo+floors）
+        try {
+            if (window.StorageBoost && StorageBoost.ready() && typeof target.histLen === 'number') {
+                const trKey = this.getSaveKey();
+                StorageBoost.put('transcript/' + trKey, JSON.stringify({
+                    upTo: target.histLen, floors: s.conversationHistory.slice(0, target.histLen)
+                }));
+                this._trFlushedLen = target.histLen;
+                try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+            }
+        } catch (e) { }
+
+        // 6) DOM 卡片：删除 data-turn >= cutIndex 的卡片；并让虚拟滚动整体重挂
+        const container = document.getElementById('chatMessages');
+        if (container) {
+            for (const el of Array.from(container.children)) {
+                const raw = el.getAttribute ? el.getAttribute('data-turn') : null;
+                if (raw === null || raw === undefined || raw === '') continue;
+                const v = Number(raw);
+                if (!Number.isNaN(v) && v >= cutIndex) container.removeChild(el);
+            }
+        }
+        // 整体重建（虚拟器 remount / replayHistory）由调用方统一执行，避免重复竞态
+
+        this.updateStatusPanel();
+        this.saveStory();
+        return { index: index, user: target.user || '', mode: mode, cutIndex: cutIndex };
     }
 
     // ==================== 状态更新 ====================

@@ -85,13 +85,10 @@ function walkAssets(dir, out) {
 }
 const assetFiles = walkAssets(ROOT, []).filter((r) => !r.startsWith('changelog/'));
 for (const rel of assetFiles) {
-  /* v5.1.1：原来只扫 `?v=`，漏掉了 `&v=` 形式（index.html 的入口链接
-     studio.html?genre=xxx&v=1.6.9 就是这种）。项目自订规则是「静态资源版本戳
-     一律等于当前版本号」，回归断言也必须能看见 &v= 这一支。 */
-  fix(rel, (s) => s.replace(/([?&])v=[\d.]+/g, `$1v=${VER}`), `静态资源引用版本戳 → ${VER}`);
+  fix(rel, (s) => s.replace(/\?v=[\d.]+/g, `?v=${VER}`), `静态资源引用 ?v= → ${VER}`);
 }
 /* changelog 自带一份 CSS 引用，也要同步（但历史条目的正文版本号绝不动） */
-fix('changelog/index.html', (s) => s.replace(/([?&])v=[\d.]+/g, `$1v=${VER}`), `changelog 资源引用版本戳 → ${VER}`);
+fix('changelog/index.html', (s) => s.replace(/\?v=[\d.]+/g, `?v=${VER}`), `changelog 资源引用 ?v= → ${VER}`);
 
 /* ---------- 3. sw.js 缓存版本 ---------- */
 fix('sw.js', (s) => s.replace(/const SW_VER = 'yunjing-v[\d.]+'/, `const SW_VER = 'yunjing-v${VER}'`), 'SW_VER');
@@ -122,10 +119,8 @@ fix('VERSIONS.md', (s) => {
     .replace(/版本分层（v[\d.]+ 口径）/, `版本分层（v${VER} 口径）`)
     .replace(/首行 \*\*v[\d.]+ 为当前版本\*\*/, `首行 **v${VER} 为当前版本**`)
     .replace(/当前口径（v[\d.]+）/, `当前口径（v${VER}）`);
-  /* 版本计数：总数 = 速查表行数；旧版本数 = 总数 - 1
-     v5.1.1：原正则漏掉了「同批发布」标记行（`| **v3.93.0** * |`），
-     导致计数比实际版本段少 1（README 写 102 版、VERSIONS 写 101 版）。 */
-  const rows = (out.match(/^\| \*\*v[\d.]+\*\*\s*\*?\s*\|/gm) || []).length;
+  /* 版本计数：总数 = 速查表行数；旧版本数 = 总数 - 1 */
+  const rows = (out.match(/^\| \*\*v[\d.]+\*\* \|/gm) || []).length;
   if (rows > 0) {
     out = out.replace(/共 \*\*\d+\*\* 个版本/, `共 **${rows}** 个版本`)
              .replace(/其余 \*\*\d+ 个版本均为旧版本\*\*/, `其余 **${rows - 1} 个版本均为旧版本**`)

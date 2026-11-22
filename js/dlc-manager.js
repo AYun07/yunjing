@@ -18,7 +18,7 @@ class StoryDLCManager {
       this.dlcPackages = [];
     }
     this.activatedDLCs = new Set(this.dlcPackages.filter((d2) => d2.activated).map((d2) => d2.id));
-    console.debug(`[StoryDLCManager] 已加载 ${this.dlcPackages.length} 个 DLC 知识包（${this.genre}）`);
+    console.log(`[StoryDLCManager] 已加载 ${this.dlcPackages.length} 个 DLC 知识包（${this.genre}）`);
   }
   save() {
     var _a;
@@ -72,7 +72,7 @@ class StoryDLCManager {
     };
     this.dlcPackages.push(dlc);
     this.save();
-    console.debug(`[StoryDLCManager] 创建 DLC 包: ${name} (${dlc.id})`);
+    console.log(`[StoryDLCManager] 创建 DLC 包: ${name} (${dlc.id})`);
     return dlc;
   }
   getDLCList() {
@@ -117,7 +117,7 @@ class StoryDLCManager {
     dlc.activated = true;
     this.activatedDLCs.add(dlcId);
     this.save();
-    console.debug(`[StoryDLCManager] 已激活 DLC「${dlc.name}」：注入 ${added} 条，跳过 ${skipped} 条`);
+    console.log(`[StoryDLCManager] 已激活 DLC「${dlc.name}」：注入 ${added} 条，跳过 ${skipped} 条`);
     return { dlc, added, skipped };
   }
   /** 停用 DLC：按 dlcId 反查并从知识库整体移除（模仿原框架 deactivateDLC） */
@@ -135,7 +135,7 @@ class StoryDLCManager {
     dlc.activated = false;
     this.activatedDLCs.delete(dlcId);
     this.save();
-    console.debug(`[StoryDLCManager] 已停用 DLC「${dlc.name}」：移除 ${removed} 条知识`);
+    console.log(`[StoryDLCManager] 已停用 DLC「${dlc.name}」：移除 ${removed} 条知识`);
     return { dlc, removed };
   }
   /** 更新包内知识条目（已激活时：停用 → 更新 → 重新激活，保证知识库同步，模仿原框架） */
@@ -159,7 +159,7 @@ class StoryDLCManager {
     this.dlcPackages.splice(idx, 1);
     this.activatedDLCs.delete(dlcId);
     this.save();
-    console.debug(`[StoryDLCManager] 已删除 DLC: ${dlc.name}`);
+    console.log(`[StoryDLCManager] 已删除 DLC: ${dlc.name}`);
     return dlc;
   }
   /** 导入 DLC 包（按 id 去重：已存在则覆盖更新，强制 deactivated，模仿原框架 importDLC） */
@@ -180,10 +180,10 @@ class StoryDLCManager {
     if (idx !== -1) {
       this.dlcPackages[idx] = { ...normalized, activated: false };
       this.activatedDLCs.delete(normalized.id);
-      console.debug(`[StoryDLCManager] 覆盖更新 DLC 包: ${normalized.name}`);
+      console.log(`[StoryDLCManager] 覆盖更新 DLC 包: ${normalized.name}`);
     } else {
       this.dlcPackages.push(normalized);
-      console.debug(`[StoryDLCManager] 导入 DLC 包: ${normalized.name}`);
+      console.log(`[StoryDLCManager] 导入 DLC 包: ${normalized.name}`);
     }
     this.save();
     return normalized;

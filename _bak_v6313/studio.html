@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <!-- v6.3.3 唯一启动界面守卫：单独打开本页（无参数/无封面会话/非同源）弹回封面；开发者 ?dev=1 豁免 -->
+    <script src="js/entry-guard.js?v=6.3.3"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- PWA / iOS 主屏安装（v3.27.1）：Safari「加入主屏幕」后全屏独立运行，HTTPS 部署时离线可玩 -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <!-- v3.93.0 创作室补齐 icon link：缺 rel=icon 时浏览器会回退请求根目录 favicon.ico（墨枢遗留已删），导致 404 -->
+    <link rel="apple-touch-icon" href="assets/yj-icon-apple.png">
+    <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
+    <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="云境">
+    <meta name="theme-color" content="#1a1512">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <!-- v3.51.1 机读标识迁移：旧 moshu* 键/库名 → yunjing*，必须在任何业务脚本之前同步跑完 -->
+    <script src="js/id-migrate.js?v=5.5.0"></script>
+    <!-- v4.08.0 存档键统一注册表：全项目 20+ 处模块各自拼 localStorage 键名，
+         格式至少 5 种（后缀 / 槽位居中 / 冒号 / 点号）。此模块把「键名怎么拼」
+         与「某槽位名下有哪些键」收敛到一处，供删档/清档/切档统一调用。
+         必须早于所有业务脚本加载。 -->
+    <script src="js/slot-registry.js?v=5.5.0"></script>
+    <!-- v4.08.0 引擎真值快照：把「本界所有模块状态 + 引擎数值 + 运行时派生事实」
+         压平成可 diff 的表。判定器靠它做「本轮差分」与「跨轮次倒退检测」——
+         静态名单判不出「上一轮 Lv.3、这一轮正文却写 Lv.1」这类幻觉。
+         纯诊断设施，采集失败不打断主流程。 -->
+    <script src="js/truth-snapshot.js?v=5.5.0"></script>
+    <script src="js/number-scrubber.js?v=5.5.0"></script>
+    <!-- v3.93.0 本界势力据点基准表：同步加载，保证开局播种势力时（地图脚本仍懒加载）也能落到真实位置 -->
+    <script src="js/faction-atlas-data.js?v=5.5.0"></script>
+    <!-- v3.93.0 33 界舆图补录：从 configs 原著势力谱系逐条审定抽出的地点/势力，运行期锚定落图
+         v4.17.0 首屏瘦身：改为懒加载。这份数据 509KB（占首屏约 27%），且**只有舆图面板会读**——
+         此前却在每次打开页面时同步下载。改懒加载后首屏少下 509KB，舆图打开时按需取得。 -->
+    <script type="text/yj-lazy" data-src="js/atlas-supplement.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ATLAS_SUPPLEMENT"></script>
+    <script src="js/rpg-quests.js?v=5.5.0"></script>
+    <!-- v3.97.0 时代地图层：按时代/位面/续作舞台各做一张独立舆图，供 atlas-panel 合并
+         v4.17.0 首屏瘦身：同 supplement，改为懒加载（55KB）。注意 ATLAS_POTATO 依赖 ATLAS_ERAS，
+         两者同组且保持文档顺序，懒加载器按插入顺序执行，依赖关系不变。 -->
+    <script type="text/yj-lazy" data-src="js/atlas-eras.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ATLAS_ERAS"></script>
+    <!-- v3.98.0 天蚕土豆宇宙四界舆图（大主宰/武动乾坤/元尊/万相之王），供 atlas-panel 合并
+         v4.17.0 首屏瘦身：改为懒加载（88KB）。 -->
+    <script type="text/yj-lazy" data-src="js/atlas-potato.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ATLAS_POTATO"></script>
+    <!-- v3.94.0 边界说明：用户提供的 Agnes / 硅基流动 API 只用于「开发期测试与完善」，
+         模型准入清单仅由 yunjing-test 下的评估脚本加载，绝不注入产品运行时。
+         玩家在「⚙ 接口设置」里可自由配置自己的模型与厂商，云境不做任何限制。 -->
+    <title>云境 v5.1.0 · AI短篇小说创作室</title>
+    <link rel="stylesheet" href="css/base-style.css?v=5.5.0">
+    <link rel="stylesheet" href="css/npc-chronicle.css?v=5.5.0">
+    <link rel="stylesheet" href="css/augment-ui.css?v=5.5.0">
+    <link rel="stylesheet" href="css/personality-codex.css?v=5.5.0">
+    <link rel="stylesheet" href="css/immersive-style.css?v=5.5.0">
+    <!-- v4.04.0 网游三部曲共用多标签面板皮肤（七标签 / 四态 / 品级色阶） -->
+    <link rel="stylesheet" href="css/rpg-suite.css?v=5.5.0">
+    <link rel="stylesheet" href="css/rpg-polish-405.css?v=5.5.0">
+    <!-- v5.3.0 五线深度舆图：壁纸级五级下钻，独立样式可整体回滚 -->
+    <link rel="stylesheet" href="css/atlas-drilldown.css?v=5.5.0">
+    <link rel="stylesheet" href="css/atlas-faction-layer.css?v=5.5.0">
+    <link rel="stylesheet" href="css/atlas-canon-layer.css?v=6.1.0">
+    <!-- v6.3.0 世界舆图资料库：玩家补充/优化地点 + 新建 DLC 大世界 -->
+    <link rel="stylesheet" href="css/atlas-library.css?v=6.3.1">
+    <!-- v6.3.5 对话时光轴：任意回合回档 / 重 roll -->
+    <link rel="stylesheet" href="css/time-axis.css?v=6.3.5">
+    <!-- v3.38.1 错误哨兵：必须最先加载（ES5 写法，任何内核可解析）——
+         脚本加载失败/运行异常时屏幕直接显示出错文件，玩家可截图反馈 -->
+    <script src="js/boot-error-guard.js?v=5.5.0"></script>
+    <!-- v3.47.5-opt 优化基础层：公共工具 + 安全存储门面（须最先于业务模块加载） -->
+    <!-- v3.55.28 分层加载器：非首屏脚本改为分帧/按需加载（首屏 JS 2.78MB → <0.8MB） -->
+    <!-- v3.55.29 依赖等待器：必须在所有用它的世界模块之前直出（它们都在 batch/demand 组里后加载） -->
+    <script src="js/dep-wait.js?v=5.5.0"></script>
+    <script defer src="js/lazy-boot.js?v=5.5.0"></script>
+    <script src="js/mo-utils.js?v=5.5.0"></script>
+    <script src="js/mo-store.js?v=5.5.0"></script>
+    <!-- v3.55.20 世界是活的·续：玩家身份(穿越者/本地人)与原著主角关系(同伴/敌对/陌路) + 世界自主演化 + 本界资料库；前版(叙事立场三选一/机缘账本/上下文面板)见下 -->
+    <script src="js/story-stance.js?v=5.5.0"></script>
+    <script src="js/beast-system.js?v=5.5.0"></script>
+    <script src="js/squad-system.js?v=5.5.0"></script>
+    <script src="js/canon-ledger.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="js/npc-chronicle.js?v=5.5.0" data-yj-group="batch" data-yj-globals="NPCChronicle"></script>
+    <script type="text/yj-lazy" data-src="js/context-panel.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.55.20 玩家身份(穿越者/本地人)与原著主角关系(同伴/敌对/陌路) -->
+    <script src="js/story-identity.js?v=5.5.0"></script>
+    <!-- v3.55.20 本界资料库：每界一份 lore 库，可增补/从故事抽取/注入主笔 -->
+    <!-- v3.84.0 世界书种子库外置（29 界 418 条，需先于 world-book.js 载入） -->
+    <script type="text/yj-lazy" data-src="js/worldbook-seeds.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-book.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.84.0 小云技能中枢：云境有的小云都会做（伙伴组件挂 body 尾） -->
+    <script type="text/yj-lazy" data-src="js/xiaoyun-ops.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/canon-timeline.js?v=5.5.0" data-yj-group="batch"></script>
+    <script defer src="js/chat-virtualizer.js?v=5.5.0"></script>
+    <!-- v3.55.3 流畅模式：非 defer 抢在首帧前自举，低配机不先渲染重特效再降级 -->
+    <script src="js/perf-mode.js?v=5.5.0"></script>
+    <script>
+        /* 响应式模式：≤900px 挂 mobile 类（含桌面缩窗），≤380px 再挂 narrow
+           注意：脚本位于 head，body 可能尚未解析——先判空，DOMContentLoaded 再补一次 */
+        (function () {
+            let lastMobile = null;
+            function fitMode() {
+                if (!document.body) return;
+                const coarse = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+                const isMobile = window.innerWidth <= 900 || (coarse && window.innerWidth <= 1100);
+                document.body.classList.toggle('mobile', isMobile);
+                document.body.classList.toggle('narrow', window.innerWidth <= 380);
+                // v3.13.1 修复：跨断点（缩窗/旋转/开发者工具开合）时清理抽屉残留——
+                // 旧版在桌面宽窗点过「状态面板」会挂上 .open/.show（桌面无样式、用户无感知），
+                // 之后窗口缩到 <900px 切入抽屉模式，残留的 .open 会让面板/backdrop 凭空弹出挡屏
+                if (lastMobile !== null && lastMobile !== isMobile) {
+                    const panel = document.getElementById('statusPanel');
+                    const backdrop = document.getElementById('panelBackdrop');
+                    if (panel) panel.classList.remove('open', 'pulse');
+                    if (backdrop) backdrop.classList.remove('show');
+                }
+                lastMobile = isMobile;
+                // 手机端用短占位符，避免被截成"给主笔 A…"
+                const inp = document.getElementById('userInput');
+                if (inp) inp.placeholder = isMobile ? '给主笔 AI 的指令…' : '给主笔 AI 下一道指令…（回车发送，或点上方快捷指令）';
+            }
+            window.addEventListener('resize', fitMode);
+            window.addEventListener('orientationchange', fitMode);
+            document.addEventListener('DOMContentLoaded', fitMode);
+            window.addEventListener('load', fitMode);
+            fitMode();
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/ui-polish.css?v=5.5.0">
+    <link rel="stylesheet" href="css/yunjing-theme.css?v=5.5.0">
+    <!-- v3.71.0 主界面视觉升级层：设定台/顶栏/状态面板精致化（作用域 .page-studio，可整体移除回滚） -->
+    <link rel="stylesheet" href="css/ui-refresh.css?v=5.5.0">
+    <!-- v3.72.0 多板式皮肤：默认全部关闭（media="not all"），?theme=ink|star|gold|cloud 时只启用其一；ui-refresh 作为基础结构层 -->
+    <link rel="stylesheet" href="css/theme-ink.css?v=5.5.0" id="skinInk" media="not all">
+    <link rel="stylesheet" href="css/theme-star.css?v=5.5.0" id="skinStar" media="not all">
+    <link rel="stylesheet" href="css/theme-gold.css?v=5.5.0" id="skinGold" media="not all">
+    <link rel="stylesheet" href="css/theme-cloud.css?v=5.5.0" id="skinCloud" media="not all">
+    <script>
+      (function () {
+        try {
+          var t = (new URLSearchParams(location.search).get('theme') || '').toLowerCase();
+          var map = { ink: 'skinInk', star: 'skinStar', gold: 'skinGold', cloud: 'skinCloud' };
+          if (map[t]) {
+            var el = document.getElementById(map[t]);
+            if (el) el.media = 'all';
+            document.documentElement.setAttribute('data-skin', t);
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <!-- v3.53.0 主题工坊：head 内同步执行——先上色再解析 body，切主题不闪屏 -->
+    <script type="text/yj-lazy" data-src="js/theme-studio.js?v=5.5.0" data-yj-group="batch"></script>
+</head>
+
+<body class="page-studio">
+    <!-- 顶栏 -->
+    <div class="top-bar">
+        <a href="index.html" class="back-link" title="返回工坊大厅"><span class="ico">←</span><span class="txt">大厅</span></a>
+        <span id="gameTitle">加载中…</span>
+        <span class="ver-dot" id="verDot" title="云境版本号">v6.3.2</span>
+        <div class="top-actions">
+            <!-- v3.8.3 极简顶栏：功能按钮全部收进 ☰ 工具箱（桌面/移动同构），只留状态面板与工具箱两个常驻入口 -->
+            <button class="top-btn" id="panelToggle" onclick="togglePanel()" title="状态面板"><span class="ico">📊</span><span class="txt">状态</span></button>
+            <!-- v3.53.0 主题工坊快捷入口：一键换阅读外观，不用翻设置 -->
+            <button class="top-btn" id="themeBtn" onclick="ThemeStudio.open()" title="主题工坊：换阅读外观（跟随世界 / 宣纸墨韵 / 深宵青瓷 / 霓虹夜航 / 森野苔痕 / 琥珀暖灯 / 极简白纸），可导入导出自己的主题"><span class="ico">🎨</span><span class="txt">主题</span></button>
+            <button class="top-btn" id="readingToggle" onclick="ImmersionPlus.toggleReading()" title="沉浸阅读态：隐去顶栏侧栏，正文居中全宽（快捷键 R / Esc 退出）"><span class="ico">📖</span><span class="txt">沉浸</span></button>
+            <button class="top-btn" id="toolboxBtn" onclick="Toolbox.open()" title="工具箱：全部功能收纳于此（图鉴 / 前情 / 质检 / 通道 / 知识库 / 书架 / 快照 / 朗读 / 字号 / 导出 / 接口…）"><span class="ico">☰</span><span class="txt">工具</span></button>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <!-- 左：设定向导 或 创作区 -->
+        <div id="setupWrap">
+            <div id="setupContainer"></div>
+        </div>
+
+        <div id="chatArea">
+            <div id="chatMessages"></div>
+            <div class="input-area">
+                <!-- v3.8.3 阅读工具条（快照/朗读/字号）收进 ☰ 工具箱，输入区只留快捷指令 + 输入框 -->
+                <div id="quickBar"></div>
+                <div class="input-row">
+                    <input id="userInput" type="text" placeholder="给主笔 AI 下一道指令…（回车发送，或点上方快捷指令）" aria-label="给主笔 AI 下一道指令">
+                    <button id="sendBtn">发送 ⏎</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右：状态面板（桌面为侧栏，移动端为抽屉） -->
+        <div id="statusPanel">
+            <div class="drawer-head">
+                <span class="drawer-title">📊 创作状态</span>
+                <button class="drawer-close" onclick="togglePanel()" title="收起面板" aria-label="收起面板">✕</button>
+            </div>
+            <div id="statusPanelContainer"></div>
+            <!-- v3.18.0 舞台快照徽标：renderBadge 填充，无数据时隐藏 -->
+            <!-- v4.17.0 无障碍：原本是纯 div+onclick，**键盘完全够不到**（Tab 跳不过去、回车没反应）。
+             改为可聚焦按钮语义，并补键盘激活（Enter/Space）。backdrop 类遮罩无需键盘语义，
+             另有 Esc 关闭，故标 aria-hidden。 -->
+        <div id="ssPanelBadge" style="display:none" onclick="SceneState.open()" role="button" tabindex="0" aria-label="打开舞台状态面板" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();SceneState.open();}"></div>
+            <div class="panel-utils">
+                <button class="btn-ghost" onclick="StoryInput.exportSave()">导出存档</button>
+                <button class="btn-ghost" onclick="document.getElementById('importFile').click()">导入存档</button>
+                <button class="btn-ghost danger" onclick="StoryInput.restart()">重新开篇</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="StoryInput.importSave(this.files[0])">
+            </div>
+        </div>
+    </div>
+
+    <!-- 移动端抽屉遮罩 -->
+    <div id="panelBackdrop" onclick="togglePanel()" aria-hidden="true"></div>
+
+    <!-- 工具箱抽屉（移动端收纳全部功能，带文字说明） -->
+    <div class="sheet-overlay" id="toolboxSheet" onclick="if(event.target===this)Toolbox.close()" aria-hidden="true">
+        <div class="sheet-box">
+            <div class="sheet-header">
+                <span>☰ 工具箱</span>
+                <button class="modal-close" onclick="Toolbox.close()" aria-label="关闭工具箱">✕</button>
+            </div>
+            <div class="sheet-body">
+                <!-- v3.8.3 工具箱扩容：顶栏与阅读工具条的功能全部收纳于此，按场景分组 -->
+                <div class="sheet-sec">创作辅助</div>
+                <button class="sheet-item" onclick="Toolbox.act('mo')">
+                    <span class="si-ico">🖋</span>
+                    <span class="si-main"><b>小云 · AI 管家</b><i>聊天解闷 / 剧情灵感 / 卡文急救 / 工坊体检</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('inspToggle')">
+                    <span class="si-ico">🌌</span>
+                    <span class="si-main"><b>灵感引擎</b><i>开启后每 3 轮正文自动送来支线灵感</i></span>
+                    <span class="si-state" id="tbInspState">关</span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('inspRun')">
+                    <span class="si-ico">✨</span>
+                    <span class="si-main"><b>来点灵感</b><i>立即生成 3 条支线灵感，点击即可采纳</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('dwPanel')">
+                    <span class="si-ico">🌍</span>
+                    <span class="si-main"><b>世界动态</b><i>额外 AI 推演的远方事件，可查看 / 立即生成</i></span>
+                </button>
+                <!-- v3.19.0 万象扩展版：灵感骰子（仙侠名词骰盅）——地球界隐藏（仙侠名词与真实世界不符） -->
+                <button class="sheet-item" id="tbDiceItem" onclick="Toolbox.act('dice')">
+                    <span class="si-ico">🎲</span>
+                    <span class="si-main"><b>灵感骰子</b><i>仙侠名词骰盅：人名/功法/法宝/丹药等十二类 · 机缘卡组合抽取</i></span>
+                </button>
+                <!-- v4.29.0 行动判定骰：按属性+资质+难度判定行动成败，与灵感骰子定位不同 -->
+                <button class="sheet-item" onclick="window.ActionCheck && ActionCheck.open()">
+                    <span class="si-ico">🎯</span>
+                    <span class="si-main"><b>行动判定骰</b><i>骰点 + 世界专属属性 + 资质 + 难度判成败 · 判定自动入账本</i></span>
+                </button>
+                <!-- v4.36.0 成长账本：数值增减 + 判定留痕的统一回看面板 -->
+                <button class="sheet-item" onclick="window.GrowthLedger && GrowthLedger.open()">
+                    <span class="si-ico">📈</span>
+                    <span class="si-main"><b>成长账本</b><i>六维增减 / 战斗伤愈 / 修行 / 判定留痕 · 带事由可追溯</i></span>
+                </button>
+                <div class="sheet-sec">面板与资料</div>
+                <button class="sheet-item" onclick="Toolbox.act('panel')">
+                    <span class="si-ico">📊</span>
+                    <span class="si-main"><b>状态面板</b><i>章节 / 仪表盘 / 角色档案等创作状态总览</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('atlas')">
+                    <span class="si-ico">🗺</span>
+                    <span class="si-main"><b>行旅图鉴</b><i id="tbAtlasDesc">世界地图随足迹自动点亮，附原著地点资料</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('atlaslib')">
+                    <span class="si-ico">🗂</span>
+                    <span class="si-main"><b>世界舆图 · 资料库</b><i>38 世界原著地点逐条对照 · 补充优化地点 · 自建 DLC 大世界</i></span>
+                </button>
+                <!-- v6.3.5 对话时光轴：任意回合回档 / 重 roll -->
+                <button class="sheet-item" onclick="Toolbox.act('timeaxis')">
+                    <span class="si-ico">🕰</span>
+                    <span class="si-main"><b>对话时光轴</b><i>选定任意回合：回到本轮前 / 保留本轮丢之后 / 原指令重写</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('recap')">
+                    <span class="si-ico">📖</span>
+                    <span class="si-main"><b>前情提要</b><i>AI 的长篇记忆——查看 / 压缩 / 亲笔修订</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('portrait')">
+                    <span class="si-ico">🎭</span>
+                    <span class="si-main"><b>立绘本</b><i>NPC 登场自动画像 · IndexedDB 大容量存 30 人</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('quality')">
+                    <span class="si-ico">🔬</span>
+                    <span class="si-main"><b>质检中心</b><i>文风画像 / 角色圣经 / 节奏伏笔 / 责编自审 / 多候选择优</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('channel')">
+                    <span class="si-ico">🔌</span>
+                    <span class="si-main"><b>通道枢纽</b><i>摘要官 / 责编官 / 群演道 / 文风道 分道配置</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('knowledge')">
+                    <span class="si-ico">📚</span>
+                    <span class="si-main"><b>知识库</b><i>管理世界观与设定资料，AI 写作时自动引用</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('dlc')">
+                    <span class="si-ico">📦</span>
+                    <span class="si-main"><b>DLC 知识包</b><i>成套设定资料包，一键激活 / 停用</i></span>
+                </button>
+                <!-- v3.18.0 万卡归宗版：角色卡互通 / 分层记忆 / 舞台追踪 -->
+                <button class="sheet-item" onclick="Toolbox.act('card')">
+                    <span class="si-ico">🃏</span>
+                    <span class="si-main"><b>角色卡互通</b><i>NPC 导出标准卡 · 导入 Chub / ST 社区角色</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('memory')">
+                    <span class="si-ico">🧠</span>
+                    <span class="si-main"><b>记忆分层</b><i>五层长期记忆明账：事实 / 关系 / 秘密 / 场景 / 故事弧</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('scene')">
+                    <span class="si-ico">🎬</span>
+                    <span class="si-main"><b>舞台快照</b><i>地点 / 时辰 / 在场人物 / 着装 · 防场景漂移</i></span>
+                </button>
+                <!-- v3.19.0 万象扩展版：人物关系网 + 干支纪年 -->
+                <button class="sheet-item" onclick="Toolbox.act('graph')">
+                    <span class="si-ico">🕸</span>
+                    <span class="si-main"><b>人物关系网</b><i>记忆关系史织成可拖拽关系图 · 情感着色 · 点击聚焦</i></span>
+                </button>
+                <button class="sheet-item" onclick="window.NPCChronicleUI && NPCChronicleUI.open()">
+                    <span class="si-ico">📜</span>
+                    <span class="si-main"><b>角色编年史</b><i>四轴态度 · 生平经历 · 离场动向 · 只增不删档案</i></span>
+                </button>
+                <button class="sheet-item" onclick="window.IntimacyUI && IntimacyUI.open()">
+                    <span class="si-ico">💞</span>
+                    <span class="si-main"><b>动态关系档案 · R18</b><i>五维可升降 · 负面关系 · 随时空演化 · 玩家锁定 · 表达尺度</i></span>
+                </button>
+                <button class="sheet-item" onclick="window.PersonalityCodexUI && PersonalityCodexUI.open()">
+                    <span class="si-ico">📖</span>
+                    <span class="si-main"><b>人物性格世界书</b><i>全 38 界所有人 · 正面/负面/奇葩 · 每人独特 · 影响关系演化</i></span>
+                </button>
+                <button class="sheet-item" onclick="window.AIAugmentUI && AIAugmentUI.open()">
+                    <span class="si-ico">✨</span>
+                    <span class="si-main"><b>AI 增强中心</b><i>大模型增强开关 · 采样策略 · 真实调用与成本明细</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('lunar')">
+                    <span class="si-ico">🏮</span>
+                    <span class="si-main"><b>干支纪年</b><i>故事世界历法随轮推进 · 今日黄历 · 八字五行排盘</i></span>
+                </button>
+                <div class="sheet-sec">阅读工具</div>
+                <!-- v3.17.0 长卷导航三件套 + 系统守望：目录 / 搜索 / 书签 / 密度仪表 / 周报 / 体检 / 护眼 -->
+                <button class="sheet-item" onclick="Toolbox.act('toc')">
+                    <span class="si-ico">📑</span>
+                    <span class="si-main"><b>章节目录</b><i>按章跳转 · 全文搜索 · 名场面书签</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('meter')">
+                    <span class="si-ico">📐</span>
+                    <span class="si-main"><b>质量仪表</b><i>对话密度逐章条形图 · 三幕结构地图</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('week')">
+                    <span class="si-ico">📅</span>
+                    <span class="si-main"><b>创作周报</b><i>本周字数 / 新人物 / 新成就 · 周周有交代</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('snap')">
+                    <span class="si-ico">💾</span>
+                    <span class="si-main"><b>进度快照</b><i>3 个槽位一键存档 / 读档，写崩随时回滚</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('tts')">
+                    <span class="si-ico">🔊</span>
+                    <span class="si-main"><b>朗读正文</b><i>朗读最近一章，再点一次停止</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('font')">
+                    <span class="si-ico">🔤</span>
+                    <span class="si-main"><b>字号调节</b><i>正文字号 0.85~1.40 档位，即时生效</i></span>
+                    <span class="si-font">
+                        <button class="util-chip square" onclick="event.stopPropagation();StoryInput.setFontScale(-0.05)" title="减小字号">A⁻</button>
+                        <button class="util-chip square" onclick="event.stopPropagation();StoryInput.setFontScale(0.05)" title="增大字号">A⁺</button>
+                    </span>
+                </button>
+                <div class="sheet-sec">书架与导出</div>
+                <button class="sheet-item" onclick="Toolbox.act('slots')">
+                    <span class="si-ico">📚</span>
+                    <span class="si-main"><b>多存档书架</b><i>一个世界多本书，每格独立存档</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('txt')">
+                    <span class="si-ico">📄</span>
+                    <span class="si-main"><b>导出 TXT</b><i>将已生成正文存为纯文本文件</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('md')">
+                    <span class="si-ico">📝</span>
+                    <span class="si-main"><b>导出 Markdown</b><i>带书名与字数信息的 md 文稿</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('save')">
+                    <span class="si-ico">💾</span>
+                    <span class="si-main"><b>导出存档</b><i>含全部进度与变量，可跨设备恢复</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('import')">
+                    <span class="si-ico">📂</span>
+                    <span class="si-main"><b>导入存档</b><i>读取之前导出的 JSON 进度文件</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('worldpack')">
+                    <span class="si-ico">🌐</span>
+                    <span class="si-main"><b>导出世界包</b><i>世界书+设定打成一个 JSON，可备份可分享</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('share')">
+                    <span class="si-ico">🔗</span>
+                    <span class="si-main"><b>生成分享码</b><i>把整个世界变成一段文本，发给朋友导入</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('importshare')">
+                    <span class="si-ico">📥</span>
+                    <span class="si-main"><b>导入分享码</b><i>粘贴别人的分享码，还原他的世界书</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('promptlab')">
+                    <span class="si-ico">🔬</span>
+                    <span class="si-main"><b>提示词调试器</b><i>看本轮模型收到什么 · token 用量与成本估算</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('usage')">
+                    <span class="si-ico">📊</span>
+                    <span class="si-main"><b>调用与消耗</b><i>各接口调用次数 · token 用量 · 花费估算</i></span>
+                </button>
+                <div class="sheet-sec">系统</div>
+                <button class="sheet-item" onclick="Toolbox.act('config')">
+                    <span class="si-ico">⚙</span>
+                    <span class="si-main"><b>接口设置</b><i>配置 API 地址 / 密钥 / 模型</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('checkup')">
+                    <span class="si-ico">🛡</span>
+                    <span class="si-main"><b>存档体检</b><i>存储配额 / 占用排行 / 存档完整性</i></span>
+                </button>
+                <button class="sheet-item" onclick="Toolbox.act('night')">
+                    <span class="si-ico">🌙</span>
+                    <span class="si-main"><b>深夜护眼</b><i>暖光低亮滤镜，跟随系统自动开启</i></span>
+                </button>
+                <!-- v3.55.3 流畅模式：低配设备性能档（动画/毛玻璃/粒子全停） -->
+                <button class="sheet-item" onclick="Toolbox.act('perf')">
+                    <span class="si-ico">⚡</span>
+                    <span class="si-main"><b>流畅模式</b><i>低配设备提速：停动效/毛玻璃/粒子，只留功能</i></span>
+                    <span class="si-state" id="tbPerfState">关</span>
+                </button>
+                <!-- v3.19.0 万象扩展版：庆典特效开关（成就金花雨/金榜礼炮） -->
+                <button class="sheet-item" onclick="Toolbox.act('celebrToggle')">
+                    <span class="si-ico">🎉</span>
+                    <span class="si-main"><b>庆典特效</b><i>成就解锁金花雨 · 金榜刷新礼炮 · 掷骰星屑</i></span>
+                    <span class="si-state" id="tbCelebrState">开</span>
+                </button>
+                <!-- v3.29.0 剧情主导权开关：自由扮演（剧情由玩家主导，AI 不推剧情） / 跟随原著 -->
+                <button class="sheet-item" id="tbFreedomItem" onclick="Toolbox.act('freedomToggle')">
+                    <span class="si-ico">🕊</span>
+                    <span class="si-main"><b>自由扮演</b><i>剧情由你主导 · AI 不推剧情 · 原著线可偏转</i></span>
+                    <span class="si-state" id="tbFreedomState">自由</span>
+                </button>
+                <button class="sheet-item danger" onclick="Toolbox.act('restart')">
+                    <span class="si-ico">🔄</span>
+                    <span class="si-main"><b>重新开篇</b><i>清空当前进度，回到故事设定台</i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- v1.9.0 进度快照面板（3 槽位存 / 读档） -->
+    <div class="sheet-overlay" id="snapSheet" onclick="if(event.target===this)Snapshots.close()" aria-hidden="true">
+        <div class="sheet-box snap-box">
+            <div class="sheet-header">
+                <span>💾 进度快照</span>
+                <button class="modal-close" onclick="Snapshots.close()" aria-label="关闭快照">✕</button>
+            </div>
+            <p class="snap-tip">关键时刻一键存档，写崩了随时读回——比导出 JSON 更快的读档方式（数据保存在本机浏览器）。</p>
+            <div class="sheet-body" id="snapList"></div>
+        </div>
+    </div>
+    <input type="file" id="toolboxImport" accept=".json" style="display:none" onchange="StoryInput.importSave(this.files[0])">
+
+    <!-- 框架核心（模仿原框架的脚本加载顺序：框架 → 功能模块 → 配置） -->
+    <script defer src="story-framework.js?v=6.3.5"></script>
+    <!-- v3.31.3：安卓 WebView 下载桥终于接上线（此前 js/android-bridge.js 一直在包里却没有任何页面加载，
+         APK 内导出存档/卡片/图片会静默失败；浏览器环境此文件自动休眠，零影响） -->
+    <script defer src="js/android-bridge.js?v=5.5.0"></script>
+    <script defer src="js/ui-dialog.js?v=5.5.0"></script>
+    <!-- v4.41.0 全局动态并发闸门：必须早于所有会发大模型请求的模块（net-guard / api-calling / 变量AI / 小云） -->
+    <script defer src="js/ai-governor.js?v=5.5.0"></script>
+    <script defer src="js/net-guard.js?v=5.5.0"></script>
+    <script defer src="js/content-scale.js?v=5.5.0"></script>
+    <script defer src="js/api-calling-functions.js?v=5.5.0"></script>
+    <!-- v4.16.0：跨域守卫（预判 / 探测 / 本地代理互转）。必须在 user-input-handler 与懒加载的 config-modal 之前 -->
+    <script defer src="js/cors-guard.js?v=5.5.0"></script>
+    <!-- v4.17.3：世界专属状态预设（每界不同的组开关 / 专属字段 / 字段改名）。
+         必须早于 status-schema 的首次渲染，故放在 cors-guard 之后就位。 -->
+    <script defer src="js/status-world-fields.js?v=5.5.0"></script>
+    <script defer src="js/status-presets.js?v=5.5.0"></script>
+    <script defer src="js/api-status-badge.js?v=5.5.0"></script>
+    <script defer src="js/usage-panel.js?v=5.5.0"></script>
+    <!-- v4.17.3：插件运行时。小云用 FileBridge 把插件写到玩家磁盘，本模块负责把它们加载起来
+         （此前全库没有任何插件加载机制，写出来的插件文件永远不会被执行）。 -->
+    <script defer src="js/plugin-runtime.js?v=5.5.0"></script>
+    <!-- v4.17.2：推理强度五档（关闭/弱/中/高/完全思考）。按端点+模型名自动映射到
+         各厂商不同的参数名（reasoning_effort / thinking / thinkingConfig / enable_thinking）。 -->
+    <script defer src="js/reasoning-effort.js?v=5.5.0"></script>
+    <!-- v4.17.0：每轮请求总预算。四层重试（内部/自检/纠偏/续写）此前互不知情，
+         最坏一次点击会向上游发 6+ 次请求；现在重试前先问它。 -->
+    <script defer src="js/turn-budget.js?v=5.5.0"></script>
+    <!-- v4.35.0 每世界专属维度规则档：38 界维度定义 + 新世界运行时自动发现，需在属性引擎之前 -->
+    <script defer src="js/world-rules.js?v=6.3.9"></script>
+    <!-- v6.3.7 境界规则档 + 数值比对引擎：38 界原著境界阶梯钉死 + 跨境界越级/极境/破例/自创比对；需在 fill-rule 之前就位 -->
+    <script defer src="js/realm-rules.js?v=6.3.12"></script>
+    <script defer src="js/compare-engine.js?v=6.3.12"></script>
+    <script defer src="js/attribute-engine.js?v=6.3.6"></script>
+    <script defer src="js/growth-ledger.js?v=5.5.0"></script>
+    <script defer src="js/world-schema.js?v=5.5.0"></script>
+    <script defer src="js/entity-editor.js?v=5.5.0"></script>
+    <script defer src="js/sim-core.js?v=5.5.0"></script>
+    <script defer src="js/world-clock.js?v=5.5.0"></script>
+    <script defer src="js/world-alive.js?v=5.5.0"></script>
+    <script defer src="js/planner.js?v=5.5.0"></script>
+    <script defer src="js/mo-tools.js?v=5.5.0"></script>
+    <script defer src="js/npc-spawn.js?v=5.5.0"></script>
+    <script defer src="js/life-mode.js?v=5.5.0"></script>
+    <script defer src="js/variable-parser.js?v=6.3.6"></script>
+    <!-- v3.55.10 基础小模型适配：参数安全锁 / 轻量协议块 / 辅助AI静默 / 复读自检 -->
+    <script defer src="js/base-model-mode.js?v=5.5.0"></script>
+    <!-- v3.55.5 内置「云起预设」（云境原创）：数据 + 渲染引擎 + 世界对齐桥 -->
+    <!-- 云起预设数据(170KB)按需加载：首屏不解析，load 后空闲预热；发送/打开预设面板时强制等待 -->
+    <script>
+      window.YJEnsureMiaoPreset = (function () {
+        var pend = null;
+        return function () {
+          if (window.YUNQI_PRESET) return Promise.resolve();
+          if (pend) return pend;
+          pend = new Promise(function (res) {
+            var s = document.createElement('script');
+            s.src = 'js/preset-yunqi.js?v=5.5.0';
+            s.onload = function () { res(); };
+            s.onerror = function () { pend = null; res(); }; // 失败放行，走内置降级
+            document.head.appendChild(s);
+          });
+          return pend;
+        };
+      })();
+      window.addEventListener('load', function () {
+        var idle = window.requestIdleCallback || function (f) { setTimeout(f, 300); };
+        idle(function () { window.YJEnsureMiaoPreset(); });
+      });
+    </script>
+    <!-- v3.51.1 预设/正则导入替换层（必须在引擎之前，引擎用它取"当前预设"） -->
+    <script type="text/yj-lazy" data-src="js/preset-io.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/regex-io.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/yunqi-engine.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/yunqi-bridge.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.55.5 云起正则（云境原创）：数据 + 引擎（协议块转卡片 / 去 AI 味 / 上下文裁剪） -->
+    <script type="text/yj-lazy" data-src="js/yunqi-regex-data.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/yunqi-regex.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.55.10 云起预设云端同步：从 GitHub 拉最新版，预设更新不用再导入 -->
+    <script type="text/yj-lazy" data-src="js/yunqi-sync.js?v=5.5.0" data-yj-group="batch"></script>
+    <script defer src="js/ai-message-builder.js?v=5.5.0"></script>
+    <script defer src="js/ai-response-handler.js?v=6.3.5"></script>
+    <!-- v4.17.0：AI 输出统一校验闸门。必须晚于 base-model-mode（复用其语种/失控判据）
+         与 ai-response-handler（复用其正文提取口径），早于 user-input-handler（它要查询裁决）。 -->
+    <script defer src="js/ai-output-gate.js?v=5.5.0"></script>
+    <!-- v4.17.0：提示词编译唯一入口 + 组成留痕（纯委托，不改拼装逻辑） -->
+    <script defer src="js/prompt-compiler.js?v=5.5.0"></script>
+    <script defer src="js/story-status-renderer.js?v=5.5.0"></script>
+    <script defer src="js/live-feedback.js?v=5.5.0"></script>
+    <script defer src="js/share-export.js?v=5.5.0"></script>
+    <script defer src="js/prompt-inspector.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="js/atlas-panel.js?v=5.5.0" data-yj-group="demand" data-yj-globals="StoryAtlas"></script>
+    <!-- v5.3.0 五线深度舆图：数据 + 下钻模块（零侵入挂载，删这 3 行即回滚）
+         必须用同步 script 保证 data 先于 module 执行（module 顶部读取 ATLAS_DRILL） -->
+    <script src="js/atlas-drill-data.js?v=6.2.0"></script>
+    <script src="js/atlas-drilldown.js?v=6.2.0"></script>
+    <!-- v6.3 38世界校对数据 + 玩家扩展层 + 适配层（顺序：内置数据→玩家合并写回→按genre切树，均在show()前就绪） -->
+    <script src="js/atlas-verified-all.js?v=6.3.11"></script>
+    <script src="js/atlas-userdata.js?v=6.3.1"></script>
+    <script>window.AtlasUserData && window.AtlasUserData.apply();</script>
+    <script src="js/atlas-verified-adapter.js?v=6.3.1"></script>
+    <!-- v6.3 世界舆图资料库 UI（独立 overlay，工具箱入口打开） -->
+    <script src="js/atlas-library.js?v=6.3.1"></script>
+    <!-- v6.3.5 对话时光轴：任意回合回档 / 重 roll（依赖 story-framework / user-input-handler） -->
+    <script src="js/time-axis.js?v=6.3.5"></script>
+    <!-- v5.4.1 动态势力上图：权威位置表 + 零侵入注入层，删这几行 + 上面 css 行即回滚 -->
+    <script src="js/atlas-faction-anchors.js?v=5.5.0"></script>
+    <script src="js/atlas-faction-layer.js?v=5.5.0"></script>
+    <!-- v5.5.0 原著地点上图：固化数据 + 注入层，删这 3 行 + 上面 css 行即回滚 -->
+    <script src="js/atlas-canon-places.js?v=6.2.0"></script>
+    <script src="js/atlas-canon-layer.js?v=6.1.0"></script>
+    <script type="text/yj-lazy" data-src="js/ambience-layer.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/game-layer.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-seals.js?v=5.5.0" data-yj-group="demand" data-yj-globals="WorldSeals"></script>
+    <script type="text/yj-lazy" data-src="js/reader-letters.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/immersive-suite.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ImmersiveSuite"></script>
+    <script type="text/yj-lazy" data-src="js/immersion-plus.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/timeline-branch.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/story-setup-wizard.js?v=5.5.0" data-yj-group="demand" data-yj-globals="StorySetupWizard"></script>
+    <script defer src="js/user-input-handler.js?v=6.3.5"></script>
+    <script defer src="js/inspiration-engine.js?v=5.5.0"></script>
+    <script defer src="js/dynamic-world.js?v=5.5.0"></script>
+    <script defer src="js/connection-profiles.js?v=5.5.0"></script>
+    <script defer src="js/variable-ai.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="js/image-gen.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/prompt-engineer.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/mo-assistant.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.53.0 原创设计工坊：自设势力/人物/道具/技能等模板化入世界书 -->
+    <script type="text/yj-lazy" data-src="js/creator-forge.js?v=5.5.0" data-yj-group="demand" data-yj-globals="CreatorForge"></script>
+    <!-- v3.53.0 状态栏字段全集（含成人向字段组与破限开关） -->
+    <script defer src="js/status-skins.js?v=5.5.0"></script>
+    <script defer src="js/world-portal.js?v=5.5.0"></script>
+    <script defer src="js/fill-rule.js?v=6.3.7"></script>
+    <!-- v6.3.7 境界数值比对面板：填表规则区的「⚔ 境界比对」入口，依赖 CompareEngine -->
+    <script defer src="js/compare-panel.js?v=6.3.12"></script>
+    <script defer src="js/status-schema.js?v=5.5.0"></script>
+    <!-- v3.53.0 文件桥：内置助手自检并直接改项目文件 -->
+    <script type="text/yj-lazy" data-src="js/file-bridge.js?v=5.5.0" data-yj-group="demand" data-yj-globals="FileBridge"></script>
+    <!-- v4.17.5 小云研发中枢：自主巡检 / 模块地图 / 自我验证 / 批量重构影响面 -->
+    <script type="text/yj-lazy" data-src="js/mo-devtools.js?v=5.5.0" data-yj-group="demand" data-yj-globals="MoDevtools"></script>
+    <script type="text/yj-lazy" data-src="js/mo-chibi.js?v=5.5.0" data-yj-group="demand" data-yj-globals="MoChibi"></script>
+    <script type="text/yj-lazy" data-src="js/config-modal.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ConfigModal"></script>
+    <!-- v3.53.0 保险箱：存档 / 配置 / 整机 三档导入导出 + 回滚 -->
+    <script type="text/yj-lazy" data-src="js/vault.js?v=5.5.0" data-yj-group="demand" data-yj-globals="YunjingVault"></script>
+    <!-- v3.53.0 世界书装载改由 knowledge-manager 按需注入（见 _ensureKB）：
+         旧版在这里用 document.write 抢解析期装载，实测两个内联块之间没有执行屏障——
+         第二个块检查 __KB_SPLIT_OK__ 时第一个块写入的脚本还没跑，于是"分界"与"整包"双双被加载，
+         每次进世界白拉 9.4MB（实测首屏 12.7MB JS）。现在只留一个版本号给动态加载用。 -->
+    <script>window.YJ_VER = '6.3.12';
+      /* v3.87.0 P3-3：顶栏版本徽标改为与 YJ_VER 同源，杜绝「界面显示旧号、实际是新版」 */
+      document.addEventListener('DOMContentLoaded', function () {
+        var d = document.getElementById('verDot');
+        if (d) { d.textContent = 'v' + window.YJ_VER; d.title = '云境 v' + window.YJ_VER + ' · 版本号与 git tag / SW_VER 同源'; }
+        /* v4.18.0 新手引导深链 / v6.3.3 观星入口：自动打开接口设置。
+           fromGuide=1（首引最后一步）或 goto=settings（封面观星）都走这条。
+           历史遗留：index.html 旧大厅未加载 config-modal，观星曾指向 index.html?entry=settings 导致面板永远出不来；
+           现统一收口到 studio.html?goto=settings —— 此页 config-modal 为懒加载模块，ensure 后必可用。 */
+        try {
+          var _sp = new URLSearchParams(location.search);
+          if (_sp.get('fromGuide') === '1' || _sp.get('goto') === 'settings') {
+            var openCfg = function () { if (window.ConfigModal && ConfigModal.open) ConfigModal.open(); };
+            if (window.YJLazy && YJLazy.ensure) YJLazy.ensure('config-modal').then(openCfg).catch(openCfg);
+            else setTimeout(openCfg, 800);
+          }
+          /* v4.36.0 造物中枢深链：从造物页跳来，按 goto 自动打开对应创造面板。
+             goto=dlc  → DLC 知识包管理；goto=forge → 原创设计工坊。 */
+          var _goto = new URLSearchParams(location.search).get('goto');
+          if (_goto === 'dlc' || _goto === 'forge') {
+            var _openPanel = function () {
+              if (_goto === 'dlc' && window.StoryDLCUI && StoryDLCUI.manage) StoryDLCUI.manage();
+              else if (_goto === 'forge' && window.CreatorForge && CreatorForge.open) CreatorForge.open();
+            };
+            var _glob = _goto === 'dlc' ? 'StoryDLCUI' : 'CreatorForge';
+            if (window.YJLazy && YJLazy.ensure) YJLazy.ensure(_glob).then(_openPanel).catch(function(){ setTimeout(_openPanel, 800); });
+            else setTimeout(_openPanel, 1200);
+          }
+        } catch (e) {}
+      });
+    </script>
+    <script defer src="js/antibagu-guard.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="js/knowledge-manager.js?v=5.5.0" data-yj-group="batch"></script>
+    <script defer src="js/kb-vector.js?v=5.5.0"></script>
+    <script defer src="js/transcript-retrieval.js?v=5.5.0"></script>
+<script type="text/yj-lazy" data-src="js/st-import.js?v=5.5.0" data-yj-group="demand" data-yj-globals="STImport,STExportWB"></script>
+<script type="text/yj-lazy" data-src="js/kb-enhance.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/dlc-manager.js?v=5.5.0" data-yj-group="demand" data-yj-globals="storyDLCManager,StoryDLCUI"></script>
+    <script defer src="js/prompt-budget.js?v=5.5.0"></script>
+    <script defer src="js/save-codec.js?v=5.5.0"></script>
+    <script defer src="js/save-slots.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="js/recap-engine.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/welcome-recap.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/npc-portrait.js?v=5.5.0" data-yj-group="demand" data-yj-globals="NpcPortrait"></script>
+    <!-- v3.17.0 长卷守望版：craft-meter 先于 chapter-nav（目录行内消费密度函数） -->
+    <script type="text/yj-lazy" data-src="js/craft-meter.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/chapter-nav.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ChapterNav"></script>
+    <script type="text/yj-lazy" data-src="js/system-guard.js?v=6.3.4" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/weekly-report.js?v=5.5.0" data-yj-group="demand" data-yj-globals="WeeklyReport"></script>
+    <!-- v3.18.0 万卡归宗版：card-io 先于 card-hub（互通中枢消费 PNG 读写引擎）；
+         memory-layers / scene-state 挂轮次事件（story:turn-saved 由 ai-response-handler 广播） -->
+    <script type="text/yj-lazy" data-src="js/card-io.js?v=5.5.0" data-yj-group="demand" data-yj-globals="CardIO"></script>
+    <script type="text/yj-lazy" data-src="js/card-hub.js?v=5.5.0" data-yj-group="demand" data-yj-globals="CardHub"></script>
+    <script type="text/yj-lazy" data-src="js/memory-layers.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/scene-state.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/quality-suite.js?v=5.5.0" data-yj-group="demand" data-yj-globals="QualitySuite"></script>
+    <script type="text/yj-lazy" data-src="js/draft-lab.js?v=5.5.0" data-yj-group="demand" data-yj-globals="DraftLab"></script>
+    <script type="text/yj-lazy" data-src="js/channel-hub.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.32.0 实体玩法引擎：账本/住户/工程三组件（须先于 world-ext-core 装载，
+         define() 挂载点检测 window.EE） -->
+    <script type="text/yj-lazy" data-src="js/entity-engine.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.55.29：world-ext-core 必须早于 {genre}-ext.js 存在（ext 里是 `if (window.WorldExt) WorldExt.define(...)`，
+     WorldExt 不在就静默跳过、模块永不注册），故提回首屏直出，不再走延后加载。仅 29KB。 -->
+    <script src="js/world-ext/world-ext-core.js?v=5.5.0"></script>
+    <!-- v3.26.0 玩家随身套装：每界自动挂「玩家面板+背包」随身器官（须先于界扩展装载，
+         define() 钩子在 {genre}-ext.js 注册时调用 PlayerKit.augment） -->
+    <!-- v3.55.29：PlayerKit 被 world-ext-core 的 init() 同步依赖（PlayerKit.augment 必须返回真数组），
+     放按需组时影子对象会让 modules 变成 Promise → hasModules() 永久 false → 界专属模块静默全挂。改回 batch -->
+    <script type="text/yj-lazy" data-src="js/player-kit.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.33.0→v3.36.1 世界专属功能四件套：模块数值自定义面板 → 通讯形态注册表 → 通讯中枢 → 装备设备系统
+         （经 WorldExt.injectModules 挂载，与界扩展 define() 先后无关；v3.34.0 通讯/装备 22 界全覆盖） -->
+    <script type="text/yj-lazy" data-src="js/module-settings.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/comm-configs.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/comm-core.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/gear-core.js?v=5.5.0" data-yj-group="batch"></script>
+    <!-- v3.34.0→v3.36.1 界专属玩法深化 · 第二扩展槽：焚决融合/猎魂小队/武者量化/灵植园/凶兽猎录/淬炼台/
+         天逆珠/掌天瓶/主线面板 + 符箓画案/复仇清单/学院任务板/黄金市场/摊位经营/荣耀角色卡/弟子名册/
+         猎者任务板/领地建设/异果采摘录/镖局账本/星图航程/调查员档案（22 界玩法器官全配齐） -->
+    <script type="text/yj-lazy" data-src="js/world-plus.js?v=5.5.0" data-yj-group="demand" data-yj-globals="WorldPlus"></script>
+    <!-- v3.36.1 移动端深度适配层：≤640px 触屏规则——通讯浮层全屏聊天页(安全区/16px 输入)、
+         设置弹窗底部抽屉、按钮/阶梯/装备格触屏尺寸、浮层期间锁滚动；须最后装载 -->
+    <script defer src="js/mobile-fit.js?v=5.5.0"></script>
+    <!-- v3.19.0 万象扩展版：五件第三方扩展（libs/ 全部本地文件零外联）。
+         localforage/confetti 随首屏加载（29KB/11KB，特效与存储讲究即时）；
+         lunar/cytoscape/仙侠名词库为大库（307KB/373KB/49KB）由各模块
+         loadLibOnce 按需懒加载，首屏零负担。加载顺序晚于消费方
+         （npc-portrait/game-layer/scene-state）无碍——消费点全部在运行期
+         （config onload / 轮次钩子 / 面板打开），届时早已就绪 -->
+    <script defer src="libs/localforage.min.js?v=5.5.0"></script>
+<script defer src="js/store-guard.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="libs/confetti.browser.min.js?v=5.5.0" data-yj-group="batch"></script>
+    <script defer src="js/storage-boost.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="js/lunar-stamp.js?v=5.5.0" data-yj-group="demand" data-yj-globals="LunarStamp"></script>
+    <script type="text/yj-lazy" data-src="js/inspiration-dice.js?v=5.5.0" data-yj-group="demand" data-yj-globals="InspirationDice"></script>
+    <script type="text/yj-lazy" data-src="js/action-check.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ActionCheck"></script>
+    <script type="text/yj-lazy" data-src="js/celebration.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/relationship-graph.js?v=5.5.0" data-yj-group="demand" data-yj-globals="RelationGraph"></script>
+    <!-- v3.39.0-3.44.0 World Runtime 全家桶 -->
+    <link rel="stylesheet" href="css/world-runtime.css?v=5.5.0">
+    <script type="text/yj-lazy" data-src="js/world-runtime.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/npc-bridge.js?v=5.5.0" data-yj-group="batch" data-yj-globals="NPCBridge"></script>
+    <script type="text/yj-lazy" data-src="js/npc-chronicle-ui.js?v=5.5.0" data-yj-group="batch" data-yj-globals="NPCChronicleUI"></script>
+    <!-- v4.47.0 心理模型 + 动态关系 + 性格世界书 + AI 增强层（依赖顺序：心理模型→核心→桥接→UI，同 batch 组按序加载） -->
+    <script type="text/yj-lazy" data-src="js/ai-augment.js?v=5.5.0" data-yj-group="batch" data-yj-globals="AIAugment"></script>
+    <script type="text/yj-lazy" data-src="js/psyche-model.js?v=5.5.0" data-yj-group="batch" data-yj-globals="PsycheModel"></script>
+    <script type="text/yj-lazy" data-src="js/personality-codex.js?v=5.5.0" data-yj-group="batch" data-yj-globals="PersonalityCodex"></script>
+    <script type="text/yj-lazy" data-src="js/intimacy-archive.js?v=5.5.0" data-yj-group="batch" data-yj-globals="IntimacyArchive"></script>
+    <script type="text/yj-lazy" data-src="js/relation-codex-bridge.js?v=5.5.0" data-yj-group="batch" data-yj-globals="RelationCodexBridge"></script>
+    <script type="text/yj-lazy" data-src="js/ai-augment-bridge.js?v=5.5.0" data-yj-group="batch" data-yj-globals="AIAugmentBridge"></script>
+    <script type="text/yj-lazy" data-src="js/intimacy-ui.js?v=5.5.0" data-yj-group="batch" data-yj-globals="IntimacyUI"></script>
+    <script type="text/yj-lazy" data-src="js/personality-codex-ui.js?v=5.5.0" data-yj-group="batch" data-yj-globals="PersonalityCodexUI"></script>
+    <script type="text/yj-lazy" data-src="js/ai-augment-ui.js?v=5.5.0" data-yj-group="batch" data-yj-globals="AIAugmentUI"></script>
+    <!-- v4.48.0 随行存在专属档案桥接：依赖上面的编年史/性格/心理/亲密系统，故排 batch 末尾（beast-system 在首屏已定义） -->
+    <script type="text/yj-lazy" data-src="js/beast-profile-bridge.js?v=5.5.0" data-yj-group="batch" data-yj-globals="BeastProfileBridge"></script>
+    <!-- v5.0.0 语义词缀引擎：任意文本按语意解读加成 + 情境动态生成 + 玩家自定义；须先于 bonus-engine -->
+    <script type="text/yj-lazy" data-src="js/semantic-engine.js?v=5.5.0" data-yj-group="batch" data-yj-globals="SemanticEngine"></script>
+    <!-- 统一加成层 + 称号：bonus-engine 须先于 combat-core（战斗读其净值），title-system 延迟解析 BonusEngine -->
+    <script type="text/yj-lazy" data-src="js/bonus-engine.js?v=5.5.0" data-yj-group="batch" data-yj-globals="BonusEngine"></script>
+    <script type="text/yj-lazy" data-src="js/title-system.js?v=5.5.0" data-yj-group="batch" data-yj-globals="TitleSystem"></script>
+    <script type="text/yj-lazy" data-src="js/world-bus.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/opportunity-system.js?v=5.5.0" data-yj-group="batch" data-yj-globals="OpportunitySystem"></script>
+    <script type="text/yj-lazy" data-src="js/module-forge.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/combat-core.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/rpg-core.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/quest-chain.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-stage.js?v=5.5.0" data-yj-group="batch"></script>
+    <script defer src="js/story-hooks.js?v=5.5.0"></script>
+    <script type="text/yj-lazy" data-src="js/world-director.js?v=5.5.0" data-yj-group="batch"></script>
+    <script type="text/yj-lazy" data-src="js/world-legacy.js?v=5.5.0" data-yj-group="batch"></script>
+
+    <script>function togglePanel() {
+  const panel = document.getElementById("statusPanel");
+  const backdrop = document.getElementById("panelBackdrop");
+  if (!panel) return;
+  const isDrawer = window.getComputedStyle(panel).position === "fixed";
+  if (!isDrawer) {
+    panel.classList.remove("pulse");
+    void panel.offsetWidth;
+    panel.classList.add("pulse");
+    return;
+  }
+  const open = panel.classList.toggle("open");
+  backdrop.classList.toggle("show", open);
+}
+const Toolbox = {
+  open() {
+    this.syncInspState();
+    this.syncCelebrState();
+    this.syncFreedomState();
+    this.syncEarthState();
+    this.syncPerfState();
+    document.getElementById("toolboxSheet").classList.add("show");
+  },
+  close() {
+    document.getElementById("toolboxSheet").classList.remove("show");
+  },
+  syncInspState() {
+    var _a;
+    const el = document.getElementById("tbInspState");
+    if (el) el.textContent = ((_a = window.StoryInspiration) == null ? void 0 : _a.isEnabled()) ? "开" : "关";
+  },
+  /** v3.55.3 流畅模式开关状态回显 */
+  syncPerfState() {
+    const el = document.getElementById("tbPerfState");
+    if (el) el.textContent = (window.YJPerf && window.YJPerf.enabled) ? "开" : "关";
+  },
+  /* v3.19.0 庆典特效开关状态同步（工具箱打开时刷新） */
+  syncCelebrState() {
+    var _a;
+    const el = document.getElementById("tbCelebrState");
+    if (el) el.textContent = ((_a = window.Celebration) == null ? void 0 : _a.isEnabled()) ? "开" : "关";
+  },
+  /* v3.29.0 剧情主导权状态同步：自由扮演为默认；跟随原著保留旧版铁律。
+   * 仅扮演模式显示该条目——创作模式的章节结构推进是写作功能，不适用 */
+  syncFreedomState() {
+    var _a, _b, _c;
+    const item = document.getElementById("tbFreedomItem");
+    const isRP = !!(((_b = (_a = window.storyFramework) == null ? void 0 : _a.config) == null ? void 0 : _b.mode) === "roleplay");
+    if (item) item.style.display = isRP ? "" : "none";
+    const el = document.getElementById("tbFreedomState");
+    /* v3.55.20：在叙事立场之上，新增玩家身份(穿越者/本地人)与原著主角关系(同伴/敌对/陌路) */
+    if (el) {
+      const st = window.StoryStance ? StoryStance.info() : null;
+      el.textContent = st ? st.ico + " " + st.short : window.StoryFreedom && StoryFreedom.isFree() ? "自由" : "原著";
+      el.title = st ? st.desc : "";
+    }
+  },
+  /* v3.31.1 地球界条目裁剪：仙侠骰盅与「跟随原著」开关与真实地球世界不符——
+   * 地球本就无剧情无原著（自由是铁律），藏之；其他界照常 */
+  syncEarthState() {
+    var _a, _b;
+    const isEarth = !!(((_b = (_a = window.storyFramework) == null ? void 0 : _a.config) == null ? void 0 : _b.genreKey) === "earth");
+    const dice = document.getElementById("tbDiceItem");
+    if (dice) dice.style.display = isEarth ? "none" : "";
+    const free = document.getElementById("tbFreedomItem");
+    if (free && isEarth) free.style.display = "none";
+    else if (free) this.syncFreedomState();
+    const atlasDesc = document.getElementById("tbAtlasDesc");
+    if (atlasDesc) atlasDesc.textContent = isEarth ? "真实世界地图随足迹自动点亮，附风土地理资料" : "世界地图随足迹自动点亮，附原著地点资料";
+  },
+  act(key) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+    const SI = window.StoryInput;
+    switch (key) {
+      case "mo":
+        this.close();
+        (_a = window.MoAssistant) == null ? void 0 : _a.openPanel();
+        return;
+      case "inspToggle":
+        window.StoryInspiration.toggle();
+        this.syncInspState();
+        return;
+      case "inspRun":
+        this.close();
+        window.StoryInspiration.run(true);
+        return;
+      case "dwPanel":
+        this.close();
+        (_b = window.DynamicWorld) == null ? void 0 : _b.openPanel();
+        return;
+      case "panel":
+        this.close();
+        togglePanel();
+        return;
+      case "atlas":
+        this.close();
+        (_c = window.StoryAtlas) == null ? void 0 : _c.toggle();
+        return;
+      case "atlaslib":
+        this.close();
+        (window.AtlasLibrary && window.AtlasLibrary.open)
+          ? window.AtlasLibrary.open()
+          : (window.showToast && showToast("世界舆图资料库未就绪，请刷新页面", "error"));
+        return;
+      case "recap":
+        this.close();
+        (_d = window.RecapEngine) == null ? void 0 : _d.open();
+        return;
+      case "portrait":
+        this.close();
+        (_e = window.NpcPortrait) == null ? void 0 : _e.open();
+        return;
+      case "toc":
+        this.close();
+        (_f = window.ChapterNav) == null ? void 0 : _f.open();
+        return;
+      case "meter":
+        this.close();
+        (_g = window.CraftMeter) == null ? void 0 : _g.open();
+        return;
+      case "week":
+        this.close();
+        (_h = window.WeeklyReport) == null ? void 0 : _h.open();
+        return;
+      case "timeaxis":
+        this.close();
+        (window.TimeAxis && window.TimeAxis.open)
+          ? window.TimeAxis.open()
+          : (window.showToast && showToast("对话时光轴未就绪，请刷新页面", "error"));
+        return;
+      case "checkup":
+        this.close();
+        (_i = window.SystemGuard) == null ? void 0 : _i.openCheckup();
+        return;
+      case "night":
+        (_j = window.SystemGuard) == null ? void 0 : _j.toggleNight();
+        return;
+      case "perf":
+        window.YJPerf && window.YJPerf.toggle();
+        return;
+      case "card":
+        this.close();
+        (_k = window.CardHub) == null ? void 0 : _k.open();
+        return;
+      case "memory":
+        this.close();
+        (_l = window.MemoryLayers) == null ? void 0 : _l.open();
+        return;
+      case "scene":
+        this.close();
+        (_m = window.SceneState) == null ? void 0 : _m.open();
+        return;
+      case "dice":
+        this.close();
+        (_n = window.InspirationDice) == null ? void 0 : _n.open();
+        return;
+      case "graph":
+        this.close();
+        (_o = window.RelationGraph) == null ? void 0 : _o.open();
+        return;
+      case "lunar":
+        this.close();
+        (_p = window.LunarStamp) == null ? void 0 : _p.open();
+        return;
+      case "celebrToggle":
+        (_r = (_q = window.Celebration) == null ? void 0 : _q.toggle) == null ? void 0 : _r.call(_q);
+        this.syncCelebrState();
+        return;
+      case "freedomToggle": {
+        /* v3.62.0 三态身份循环：原著主角 → 原著配角 → 完全原创 */
+        if (window.StoryStance) {
+          const id = StoryStance.cycle();
+          const info = StoryStance.info();
+          this.syncFreedomState();
+          const canon = StoryStance.canonHeroName();
+          const tip = id === "hero"
+            ? `👑 原著主角：你就是${canon}本人，原著主线由你亲历，大势不可改、小势可调`
+            : id === "side"
+              ? `🎭 原著配角：你成为某位原著配角，按其在原著的定位活出自己的人生线`
+              : `✨ 完全原创：你是完全自创角色，路径与际遇全由你把控，大模型辅助推演`;
+          (_t = window.showToast) == null ? void 0 : _t.call(window, tip + "（再点可切换）");
+        } else {
+          const free = (_s = window.StoryFreedom) == null ? void 0 : _s.toggle();
+          this.syncFreedomState();
+          (_t = window.showToast) == null ? void 0 : _t.call(window, free ? "🕊 自由扮演已开启" : "📖 跟随原著已开启");
+        }
+        return;
+      }
+      case "quality":
+        this.close();
+        (_u = window.QualitySuite) == null ? void 0 : _u.open();
+        return;
+      case "channel":
+        this.close();
+        (_v = window.ChannelHub) == null ? void 0 : _v.open();
+        return;
+      case "snap":
+        this.close();
+        (_w = window.Snapshots) == null ? void 0 : _w.open();
+        return;
+      case "tts":
+        this.close();
+        (_x = SI == null ? void 0 : SI.readAloud) == null ? void 0 : _x.call(SI);
+        return;
+      case "font": {
+        const SI2 = window.StoryInput;
+        const key2 = SI2 == null ? void 0 : SI2.FS_KEY;
+        if (!key2 || !(SI2 == null ? void 0 : SI2.applyFontScale)) return;
+        const cur = parseFloat(localStorage.getItem(key2)) || 1;
+        const steps = [1, 1.15, 1.3];
+        const idx = steps.findIndex((s) => Math.abs(s - cur) < 0.026);
+        const next = steps[(idx + 1) % steps.length] || 1;
+        localStorage.setItem(key2, next);
+        SI2.applyFontScale();
+        (_y = window.showToast) == null ? void 0 : _y.call(window, `字号 ${Math.round(next * 100)}%（A⁻ / A⁺ 可微调）`);
+        return;
+      }
+      case "slots":
+        this.close();
+        (_z = window.SaveSlots) == null ? void 0 : _z.open();
+        return;
+      case "txt":
+        this.close();
+        SI.exportStory("txt");
+        return;
+      case "md":
+        this.close();
+        SI.exportStory("md");
+        return;
+      case "save":
+        this.close();
+        SI.exportSave();
+        return;
+      case "import":
+        this.close();
+        document.getElementById("toolboxImport").click();
+        return;
+      case "worldpack":
+        this.close();
+        (window.WorldShare && WorldShare.exportWorldPack) ? WorldShare.exportWorldPack() : (window.showToast && showToast('分享模块未就绪，请刷新', 'error'));
+        return;
+      case "share":
+        this.close();
+        (window.WorldShare && WorldShare.makeShareCode) ? WorldShare.makeShareCode() : (window.showToast && showToast('分享模块未就绪，请刷新', 'error'));
+        return;
+      case "importshare":
+        this.close();
+        (window.WorldShare && WorldShare.importShareCode) ? WorldShare.importShareCode() : (window.showToast && showToast('分享模块未就绪，请刷新', 'error'));
+        return;
+      case "promptlab":
+        this.close();
+        (window.PromptInspector && PromptInspector.open) ? PromptInspector.open() : (window.showToast && showToast('调试器未就绪，请刷新', 'error'));
+        return;
+      case "usage":
+        this.close();
+        (window.UsagePanel && UsagePanel.open) ? UsagePanel.open() : (window.showToast && showToast('用量面板未就绪，请刷新', 'error'));
+        return;
+      case "knowledge":
+        this.close();
+        window.StoryKnowledge.open();
+        return;
+      case "dlc":
+        this.close();
+        window.StoryDLCUI.manage();
+        return;
+      case "config":
+        this.close();
+        window.ConfigModal.open();
+        return;
+      case "restart":
+        this.close();
+        SI.restart();
+        return;
+      default:
+        /* v4.18.0：未就绪/演示功能不再静默无响应——给明确占位，说明状态。 */
+        this.close();
+        window.showToast && showToast('「' + key + '」这个工具还在路上或为演示占位，正式功能会在后续版本接入～', 'info');
+        return;
+    }
+  }
+};
+window.Toolbox = Toolbox;
+const Snapshots = {
+  open() {
+    this.render();
+    document.getElementById("snapSheet").classList.add("show");
+  },
+  close() {
+    document.getElementById("snapSheet").classList.remove("show");
+  },
+  /** v1.9.1 修复：快照标题/章号来自存档数据（可被导入污染），渲染前转义防 XSS */
+  esc(s) {
+    return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  },
+  render() {
+    const list = window.StoryInput.snapList();
+    const box = document.getElementById("snapList");
+    if (!box) return;
+    box.innerHTML = "";
+    list.forEach((snap, i) => {
+      var _a, _b;
+      const row = document.createElement("div");
+      row.className = "snap-row" + (snap ? " filled" : "");
+      const info = snap ? `<b>第 ${this.esc((_a = snap.chapter) != null ? _a : "?")} 章 · 约 ${this.esc((_b = snap.wordCount) != null ? _b : 0)} 字</b>
+                           <i>《${this.esc(snap.title || "未命名")}》 · ${new Date(snap.ts).toLocaleString("zh-CN")}</i>` : `<b class="empty">空槽位</b><i>尚未存入快照</i>`;
+      row.innerHTML = `
+                        <div class="snap-idx">${i + 1}</div>
+                        <div class="snap-info">${info}</div>
+                        <div class="snap-acts">
+                            <button class="snap-btn save" onclick="StoryInput.saveSnapshot(${i})">${snap ? "覆盖" : "存入"}</button>
+                            ${snap ? `<button class="snap-btn load" onclick="StoryInput.loadSnapshot(${i})">读取</button>
+                                      <button class="snap-btn del" onclick="StoryInput.clearSnapshot(${i})" title="清空该槽位" aria-label="清空该槽位">✕</button>` : ""}
+                        </div>`;
+      box.appendChild(row);
+    });
+  }
+};
+window.Snapshots = Snapshots;
+(function() {
+  const params = new URLSearchParams(location.search);
+  const genre = params.get("genre") || "free";
+  const validGenres = ["mystery", "scifi", "wuxia", "cthulhu", "free", "swallowedstar", "shrouding", "quanzhigaoshou", "doupocangqiong", "wanmeishijie", "douluodalu", "daoguiyixian", "zhongshengdushi", "dibao", "longzu", "quanzhifashi", "limingzhijian", "lunhuileyuan", "wulianfengdian", "shengxu", "shenmifusu", "ditandali", "fanrenxiuxian", "xianni", "earth", "freeworld", "quanqiubingfeng", "chaoshenxueyuan", "zhanhen", "jianlai", "guimi", "guzhenren", "xuanjianxianzu", "dazhuzai", "wudongqiankun", "yuanzun", "wanxiangzhiwang","wangyou"];
+  if (!validGenres.includes(genre)) {
+    location.replace("studio.html?genre=free");
+    return;
+  }
+  const themeLink = document.createElement("link");
+  themeLink.rel = "stylesheet";
+  themeLink.href = `css/${genre}-style.css?v=5.5.0`;
+  document.head.appendChild(themeLink);
+  const configScript = document.createElement("script");
+  configScript.src = `configs/${genre}-config.js?v=5.5.0`;
+  configScript.onerror = () => {
+    document.body.innerHTML = `<div style="padding:40px;font-family:monospace;color:#e0a84c;">
+                    配置文件加载失败：configs/${genre}-config.js<br>请通过本地 HTTP 服务（如 python -m http.server）访问本项目。</div>`;
+  };
+  configScript.onload = () => {
+    const extScript = document.createElement("script");
+    extScript.src = `js/world-ext/${genre}-ext.js?v=5.5.0`;
+    extScript.onerror = () => {
+      console.warn(`[WorldExt] 本界无专属扩展文件：${genre}`);
+      bootFramework();
+    };
+    extScript.onload = bootFramework;
+    document.head.appendChild(extScript);
+  };
+  document.head.appendChild(configScript);
+  /* v4.17.3：手机分身不再只给「真实地球」注入。
+     用户要求「小手机功能仅限于近现代世界才能使用」——由**模块自身的时代判定**决定：
+     能解析出近现代年份（含都市/科幻/维多利亚/蒸汽等世界的默认年份）就给微信/QQ/短信界面，
+     古代与玄幻世界自动 none、手机不出现。
+     旧写法只给 earth 注入，等于把判定权交给了这里的一行 if，其他近现代世界全被挡在门外。 */
+  {
+    const phScript = document.createElement("script");
+    phScript.src = "js/phone-panel.js?v=5.5.0";
+    phScript.onerror = () => console.warn("[PhonePanel] 手机分身模块加载失败（不影响主流程）");
+    document.head.appendChild(phScript);
+  }
+  function bootFramework() {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u;
+    /* v4.16.0 修：真玩家 38 界实测发现 earth 界**永远停在建角台**，控制台报
+       「StoryFramework is not defined」。
+       根因：上面的 config / ext 脚本是**动态插入**的（document.head.appendChild），
+       动态脚本默认 async，可能在 defer 的 story-framework.js 之前执行，于是这里
+       new StoryFramework 时类还没挂到 window。earth 界额外插入 phone-panel.js
+       改变了时序而稳定踩中。
+       修法：用项目自带的依赖等待器 YJWait 等类就位（单飞 + 有界 + 停表，
+       不会像手写 setTimeout 递归那样裂变定时器），就绪后重新进入本函数。
+       另加 storyFramework 已存在即返回的幂等保护，避免重复实例化。 */
+    if (window.storyFramework) return;
+    if (typeof StoryFramework === "undefined") {
+      if (window.YJWait) {
+        window.YJWait.for(function () { return typeof StoryFramework !== "undefined"; },
+          function () { bootFramework(); }, { name: "story-framework-boot" });
+      } else {
+        setTimeout(bootFramework, 120);
+      }
+      return;
+    }
+    const config = window.GenreStoryConfig;
+    if (!config) {
+      console.error("配置未注册：window.GenreStoryConfig");
+      return;
+    }
+    window.storyFramework = new StoryFramework(config);
+    window.storyFramework.init();
+    window.StoryInput.bindEvents();
+    (_b = (_a = window.StoryInspiration) == null ? void 0 : _a.init) == null ? void 0 : _b.call(_a);
+    (_d = (_c = window.MoAssistant) == null ? void 0 : _c.init) == null ? void 0 : _d.call(_c);
+    (_f = (_e = window.MoChibi) == null ? void 0 : _e.init) == null ? void 0 : _f.call(_e);
+    (_h = (_g = window.SystemGuard) == null ? void 0 : _g.mount) == null ? void 0 : _h.call(_g);
+    (_j = (_i = window.SystemGuard) == null ? void 0 : _i.applyNight) == null ? void 0 : _j.call(_i);
+    (_l = (_k = window.WeeklyReport) == null ? void 0 : _k.install) == null ? void 0 : _l.call(_k);
+    (_n = (_m = window.MemoryLayers) == null ? void 0 : _m.install) == null ? void 0 : _n.call(_m);
+    (_p = (_o = window.SceneState) == null ? void 0 : _o.install) == null ? void 0 : _p.call(_o);
+    const fw = window.storyFramework;
+    if (fw.storyState.isStoryStarted && fw.storyState.conversationHistory.length) {
+      enterChatMode();
+      /* v3.55.4 分帧回放：等回放完成再插系统卡/渲染历史，防卡片中途插队 */
+      const after = () => {
+        (_q = window.DynamicWorld) == null ? void 0 : _q.renderHistory();
+        fw.updateStatusPanel();
+        /* v3.55.23 读档恢复后立刻喂地图当前位置，足迹与「此刻」不用等打开面板 */
+        try {
+          /* v3.55.28：地图未加载时不必为一条通知去下 400KB，等用户点开地图时自会同步 */
+          if (window.StoryAtlas && (!window.YJLazy || window.YJLazy.has("StoryAtlas")) && StoryAtlas.onVars) StoryAtlas.onVars(fw.storyState.variables);
+        } catch (e) {}
+        window.StoryResponseHandler.renderSystemMessage(
+          `↩ 已恢复上次创作进度（第 ${fw.storyState.variables.chapter || "?"} 章 · ${fw.storyState.variables.wordCount || 0} 字）。继续输入指令即可接着写。`,
+          "info"
+        );
+        (_s = (_r = window.WelcomeRecap) == null ? void 0 : _r.maybeShow) == null ? void 0 : _s.call(_r);
+        (_u = (_t = window.NpcPortrait) == null ? void 0 : _t.init) == null ? void 0 : _u.call(_t);
+      };
+      /* v3.55.22 几千楼：replayHistory 前先 await 全量 transcript 从 IDB 恢复，
+         否则虚拟器只拿到内联的 80 轮，几千楼变 80 楼。 */
+      const start = () => {
+        const rp = replayHistory();
+        if (rp && typeof rp.then === "function") rp.then(after, after);
+        else after();
+      };
+      Promise.resolve(fw.whenTranscriptLoaded ? fw.whenTranscriptLoaded() : null).then(start).catch(start);
+    } else {
+      /* v3.55.28：开局向导是首屏主内容，按需加载但立即取（不等空闲） */
+      if (window.YJLazy && window.YJLazy.ensure) {
+        window.YJLazy.ensure("story-setup-wizard").then(function () {
+          window.StorySetupWizard && window.StorySetupWizard.render();
+        });
+      } else {
+        window.StorySetupWizard.render();
+      }
+    }
+  }
+  function enterChatMode() {
+    const setupWrap = document.getElementById("setupWrap");
+    if (setupWrap) setupWrap.style.display = "none";
+    const chatArea = document.getElementById("chatArea");
+    if (chatArea) chatArea.style.display = "flex";
+  }
+  function replayHistory() {
+    const fw = window.storyFramework;
+    const handler = window.StoryResponseHandler;
+    const msgs = fw.storyState.conversationHistory || [];
+    /* v3.55.22 几千楼不卡顿：优先走聊天虚拟化器（只渲染可视窗口，DOM 节点数恒定有界）。
+       虚拟器不可用时退回原始全量分帧回放（旧行为，长档会卡，仅兜底）。 */
+    if (window.ChatVirtualizer && msgs.length) {
+      window.ChatVirtualizer.mount(msgs, fw.storyState.turns, fw);
+      return Promise.resolve();
+    }
+    const container = document.getElementById("chatMessages");
+    const turns = fw.storyState.turns || [];
+    let cursor = 0;
+    let idx = 0;
+    fw.replayTurnCursor = null;
+    const stepOne = () => {
+      const msg = msgs[idx];
+      if (!msg) return;
+      if (msg.role === "user") {
+        const t = turns[cursor];
+        if (t) {
+          t.histLen = idx;
+          if (container) t.domLen = container.children.length;
+        }
+        fw.replayTurnCursor = t ? cursor : null;
+        cursor++;
+        handler.renderUserMessage(msg.content);
+      } else if (msg.role === "assistant") {
+        fw.replayTurnCursor = cursor > 0 && turns[cursor - 1] ? cursor - 1 : null;
+        const parser = window.VariableInstructionParser;
+        /* v3.51.1：回放也先过一遍预设正则（<selection> → 【行动选项】、去 AI 味），
+           否则读档后选项按钮会丢、<selection> 标签会裸在正文里。
+           实时轮走 handle() 的同一步，两条路径从此同源。 */
+        const raw = window.YunqiPresetRegex && window.YunqiPresetRegex.preParse
+          ? window.YunqiPresetRegex.preParse(msg.content)
+          : msg.content;
+        const block = parser.extractUpdateBlock(raw);
+        const options = handler.extractOptions(raw);
+        const body = handler.extractBody(raw, options);
+        handler.renderStoryMessage(body, block, options, fw.storyState.variables, handler.detectOptionsLabel(raw), { live: false });
+      }
+      idx++;
+    };
+    /* v3.55.4 分帧回放：长档一次同步渲几十张卡会卡死低配机首屏，
+       改按每帧 ≤12ms 时间片推进；返回 Promise，调用方等完成后再插系统卡 */
+    return new Promise((resolve) => {
+      const raf = window.requestAnimationFrame || ((f) => setTimeout(f, 16));
+      const pump = () => {
+        const t0 = Date.now();
+        while (idx < msgs.length && Date.now() - t0 < 12) stepOne();
+        if (idx < msgs.length) raf(pump);
+        else {
+          fw.replayTurnCursor = null;
+          resolve();
+        }
+      };
+      pump();
+    });
+  }
+  window.StudioReplay = { enterChatMode, replayHistory };
+})();</script>
+
+<script>
+    /* PWA：HTTPS 部署时启用离线缓存（本地 http 服务与安卓 APK 内 file:// 均不启用，零影响） */
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('sw.js').catch(function () { });
+        });
+    }
+</script>
+<!-- v3.84.0 小云伙伴：大厅与创作室通用，全技能可用 -->
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=5.5.0">
+<!-- v4.16.0：移动端触控目标补丁（≤640px 生效，只抬最小可点尺寸，不改视觉） -->
+<link rel="stylesheet" href="css/touch-targets.css?v=5.5.0">
+<script src="js/xiaoyun-buddy.js?v=5.5.0"></script>
+<script src="js/xiaoyun-emotion.js?v=5.5.0"></script>
+<script src="js/yj-license.js?v=5.5.0"></script>
+</body>
+
+</html>

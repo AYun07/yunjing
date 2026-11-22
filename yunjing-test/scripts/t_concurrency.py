@@ -6,15 +6,13 @@
 只压产品自身的并发面：多标签页共享 localStorage、落盘风暴、切档竞态、
 主笔并发门闩。因此不与硬约束冲突，同时补上「更高并发未做平台级压测」这一缺口。
 
-输出：yunjing-test/out/concurrency_probe.json + 控制台摘要
+输出：/tmp/concurrency_probe.json + 控制台摘要
 """
-import asyncio, json, os, sys
+import asyncio, json, os
 from playwright.async_api import async_playwright
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
-OUT = out_path("concurrency_probe.json")
+OUT = "/tmp/concurrency_probe.json"
 GENRE = "wangyou"
 
 KEYS = """()=>{const a=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k)a.push(k);}return a.sort();}"""
@@ -89,30 +87,10 @@ def storm_pass(storm, bad, keys):
     return bool(storm["ok"]) and not bad and len(keys) > 0
 
 
-def _probe_keys(ks):
-    """只取本用例自己写的探针键（probe_conc_*）。"""
-    return sorted(k for k in ks if k.startswith("probe_conc_"))
-
-
 def tabs_pass(writes, key_sets, bads, probe_count):
-    """多标签同槽并发的判定。
-
-    v5.1.3 修判定口径：旧口径比较的是**整个 localStorage 键集合**在三张标签页里
-    是否完全一致。但应用自己的运行时键（时间戳、每标签各自的运行态）本来就可能
-    各标签不同，把它算进判定会偶发假红——CI 上真抓到过：三次写入全 ok、
-    探针键 75 条齐全，却因 keySetsConsistent=False 判红。
-
-    真正要守的不变量只有一条：**三个标签互相写的探针键，互相都看得见、且没写坏**。
-    其余键不属于本用例的判定范围。
-    """
-    if not (all(w["ok"] for w in writes) and not any(bads)):
-        return False
-    if probe_count < 75:
-        return False
-    sets = [_probe_keys(ks) for ks in key_sets]
-    if not sets[0]:
-        return False
-    return all(s == sets[0] for s in sets) and len(sets[0]) >= 75
+    return (all(w["ok"] for w in writes)
+            and all(ks == key_sets[0] for ks in key_sets)
+            and not any(bads) and probe_count >= 75)
 
 
 def selftest():
@@ -125,15 +103,11 @@ def selftest():
                  (good_s, [], [])]:
         assert not storm_pass(*case), case
     gw = [{"ok": True}] * 3
-    P75 = ["probe_conc_%d" % i for i in range(75)]
-    good_sets = [list(P75) for _ in range(3)]
-    assert tabs_pass(gw, good_sets, [[], [], []], 75)
-    # 非探针键各标签不同不应判红（v5.1.3 的口径修正）
-    assert tabs_pass(gw, [P75 + ["x"], P75 + ["y"], P75 + ["z"]], [[], [], []], 75)
-    for case in [([{"ok": False}] + gw[1:], good_sets, [[], [], []], 75),
-                 (gw, [P75, P75[:-1], P75], [[], [], []], 75),
-                 (gw, good_sets, [["bad"], [], []], 75),
-                 (gw, good_sets, [[], [], []], 74)]:
+    assert tabs_pass(gw, [["k"], ["k"], ["k"]], [[], [], []], 75)
+    for case in [([{"ok": False}] + gw[1:], [["k"]] * 3, [[], [], []], 75),
+                 (gw, [["k"], ["x"], ["k"]], [[], [], []], 75),
+                 (gw, [["k"]] * 3, [["bad"], [], []], 75),
+                 (gw, [["k"]] * 3, [[], [], []], 74)]:
         assert not tabs_pass(*case), case
     return True
 
@@ -176,16 +150,12 @@ async def main():
         writes = await asyncio.gather(*[q.evaluate(TAB_WRITE, "T%d" % i) for i, q in enumerate(pages)])
         key_sets = await asyncio.gather(*[q.evaluate(KEYS) for q in pages])
         bads = await asyncio.gather(*[q.evaluate(BAD_JSON) for q in pages])
-        # 三个标签共享同源 localStorage：**探针键**应互相可见且一致
-        # （只比探针键，不比应用自己的运行时键 —— 后者各标签不同是正常的）
-        probes = _probe_keys(key_sets[0])
-        probe_sets = [_probe_keys(ks) for ks in key_sets]
-        consistent = all(s == probe_sets[0] for s in probe_sets)
-        diff = sorted(set(probe_sets[0]) ^ set(probe_sets[-1]))[:6] if not consistent else []
+        # 三个标签共享同源 localStorage：键集合应一致，且每个标签的写入都在
+        probes = [k for k in key_sets[0] if k.startswith("probe_conc_")]
+        consistent = all(ks == key_sets[0] for ks in key_sets)
         check("多标签同槽并发", tabs_pass(writes, key_sets, bads, len(probes)),
               {"writes": [w["ok"] for w in writes], "probeKeys": len(probes),
-               "probeSetsConsistent": consistent, "probeDiff": diff,
-               "badJSON": [len(x) for x in bads]}, report)
+               "keySetsConsistent": consistent, "badJSON": [len(x) for x in bads]}, report)
 
         # 3) 主笔并发门闩
         latch = await pg.evaluate(LATCH)

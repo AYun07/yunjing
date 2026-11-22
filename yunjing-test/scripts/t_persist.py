@@ -12,16 +12,14 @@
      - 「改了但没存」= 丢数据（缺陷）
      - 「改了、没存、但该字段本就是临时量」= 需人工确认（不直接判失败）
 
-输出：yunjing-test/out/persist_probe.json + 控制台摘要
+输出：/tmp/persist_probe.json + 控制台摘要
 """
-import asyncio, glob, json, os, re, sys
+import asyncio, glob, json, os, re
 from playwright.async_api import async_playwright
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
-OUT = out_path("persist_probe.json")
-GENRES = genres()
+OUT = "/tmp/persist_probe.json"
+GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
 
 BOOT = """(g)=>{
   try{

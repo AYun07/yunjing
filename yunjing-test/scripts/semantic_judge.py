@@ -27,14 +27,12 @@ except Exception:
     pass
 
 import requests
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 MODEL = "agnes-3.0-flash"
 GAP = float(os.environ.get("YJ_GAP", "4.0"))
 TIMEOUT = int(os.environ.get("YJ_TIMEOUT", "180"))
-OUT = out_path("云境-v4.09.0-语义复核.json")
+OUT = "/workspace/云境-v4.09.0-语义复核.json"
 
 PROMPT = """你是中文小说正文的审校员。下面是一段玩家在游戏里读到的小说正文。
 请只检查以下四类「硬伤」，逐条报告；没有问题就报告空列表。
@@ -145,7 +143,7 @@ def selftest():
 
 def collect_samples(limit):
     """读取广度旅程落盘的玩家所见正文 + 规则层结果"""
-    files = out_glob("yj_journey_*.txt")
+    files = sorted(glob.glob("/tmp/yj_journey_*.txt"))
     files = [f for f in files if not f.endswith(".raw.txt")]
     out = []
     skipped = 0
@@ -184,15 +182,15 @@ def main():
     print("语义判定自检：正反样本 + 结构解析 + 变异灵敏度 → 通过")
 
     samples = collect_samples(a.limit)
-    print("待复核正文 %d 条（来源 yunjing-test/out/yj_journey_*.txt）" % len(samples))
+    print("待复核正文 %d 条（来源 /tmp/yj_journey_*.txt）" % len(samples))
     if not samples:
         print("⚠ 没有可用正文样本，请先跑 t_player.py all")
         return
 
     rule_issues = []
-    if os.path.exists(out_path("yj_journey.json")):
+    if os.path.exists("/tmp/yj_journey.json"):
         try:
-            rule_issues = json.load(open(out_path("yj_journey.json"), encoding="utf-8")).get("issues", [])
+            rule_issues = json.load(open("/tmp/yj_journey.json", encoding="utf-8")).get("issues", [])
         except Exception:
             pass
 

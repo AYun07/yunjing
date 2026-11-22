@@ -9,7 +9,7 @@
 #     · css/touch-targets.css 被页面引用却没进预缓存清单
 #   这些都不是「不小心」，而是**流程缺兜底**。本工作流把可机械校验的部分全部自动化。
 #
-# 八道闸
+# 七道闸
 #   ① 语法      —— 全量 JS/MJS 过一遍 node --check（12 万行手写 JS 的第一道网）
 #   ② 版本同源  —— scripts/sync-version.mjs --check（单一来源派生，杜绝漏改）
 #   ③ 预缓存    —— scripts/sync-precache.mjs（清单 vs 文件系统 vs HTML 引用三方对齐）
@@ -17,10 +17,9 @@
 #   ⑤ 核心回归  —— test/regression.mjs（存档/填表规则/多值字段等 33 项断言）
 #   ⑥ 网络体检  —— scripts/net-vitals.mjs（裸 fetch 静态扫描，基线只拦新增）
 #   ⑦ 世界书体检—— scripts/kb-vet.mjs（占位符/灌水/重复句，基线只拦新增）
-#   ⑧ 载荷闸门  —— scripts/size-budget.mjs（首屏静态 CSS/JS 体积预算，锁住首屏膨胀）
 #
-# 浏览器级用例（25 个，不含需真实 LLM 接口的）在单独的 browser job 里跑；
-# 需要真实模型接口的 8 个脚本只供维护者本地手动跑（见 run-all.mjs --all --no-key）。
+# 需要浏览器/外部接口的 27 个脚本不在这里跑（见 run-all.mjs --all），
+# 它们要么需要 Playwright 浏览器，要么需要真实的 LLM 接口，不适合每次提交都跑。
 
 name: CI
 
@@ -82,61 +81,3 @@ jobs:
 
       - name: '⑦ 世界书条目体检'
         run: node scripts/kb-vet.mjs
-
-      - name: '⑧ 首屏载荷闸门（静态 CSS/JS 体积预算）'
-        run: node scripts/size-budget.mjs
-
-  # ==========================================================================
-  # ⑧ 浏览器级回归（v5.1.1 新增）
-  # --------------------------------------------------------------------------
-  # 为什么要单独一个 job：此前 25 个浏览器级脚本（正文清洗端到端、移动端触控、
-  # 存档持久化、并发、浸泡、压力…）**从不在 CI 里跑**，所以
-  # 「木剑才卖 5 金币」没被清洗、19×44px 的关闭按钮这类红灯可以长期挂着。
-  # 这里把它们拉进 CI；需要真实大模型密钥的用例用 --no-key 跳过。
-  # ==========================================================================
-  browser:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: '装 Playwright + Chromium'
-        run: |
-          python -m pip install --upgrade pip
-          pip install playwright
-          python -m playwright install --with-deps chromium
-
-      - name: '起本地静态服务（8899，浏览器级脚本的固定 BASE）'
-        run: |
-          python3 -m http.server 8899 --bind 127.0.0.1 --directory . > /tmp/yj-server.log 2>&1 &
-          for i in $(seq 1 30); do
-            if curl -sf http://127.0.0.1:8899/index.html > /dev/null; then echo "server up"; break; fi
-            sleep 1
-          done
-          curl -sf http://127.0.0.1:8899/index.html > /dev/null
-
-      - name: '浏览器级回归（不含需真 API key 的用例）'
-        env:
-          PYTHONIOENCODING: utf-8
-          PYTHONUTF8: '1'
-          YJ_BASE: http://127.0.0.1:8899
-        run: node yunjing-test/run-all.mjs --all --no-key
-
-      - name: '上传浏览器级产物（截图 / 探针 JSON）'
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: yj-browser-artifacts
-          path: |
-            yunjing-test/out/
-            **/云境-*-截图/
-          retention-days: 7
-          if-no-files-found: ignore

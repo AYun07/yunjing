@@ -124,7 +124,7 @@
     _last = snap;
     _history.push(snap);
     if (_history.length > 20) _history.shift();
-    if (window.YJ_DEBUG) console.debug('[PromptCompiler] 编译完成', snap.stats, snap.env);
+    if (window.YJ_DEBUG) console.log('[PromptCompiler] 编译完成', snap.stats, snap.env);
   }
 
   /** 人可读的组成报告（排查「为什么模型收到的是这样」时用） */

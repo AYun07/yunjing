@@ -4,85 +4,15 @@
    · 接入大模型 API 后：小云获得完整对话与工具调用（⟦tool⟧ 协议，最多2轮），
      可自主增补世界书条目、修格式、查变量、管存档、换预设、开发新模块。 */
 (function () {
-  /* v4.41.0 全局并发闸门：小云的大模型请求统一从这里过闸。
-     run() 自带 acquire/finally-release；闸门未加载时（老缓存）无缝降级为原生 fetch。
-     v5.1.1 修 P1 死锁：旧实现是裸 fetch —— 接口一旦挂死（对端不回、代理半开），
-     请求永不落地，thinking 锁永不释放，之后所有消息被 `if (thinking) return;` 静默丢弃，
-     玩家看不到原因、也按不了停止，小云就此永久失灵。
-     现在每次请求都自带 AbortController + 超时（覆盖响应头与正文流两个阶段），
-     面板出现「停止」键可随时中止；超时/中止都会给玩家一句看得懂的提示。 */
-  /* 小云对话默认 120 秒无响应即判超时；可用 window.XY_LLM_TIMEOUT_MS 覆盖（自检/压测用） */
-  var XY_LLM_TIMEOUT_MS = (typeof window !== 'undefined' && window.XY_LLM_TIMEOUT_MS) ? window.XY_LLM_TIMEOUT_MS : 120000;
-  var inflight = null;              /* 当前在途请求：{ controller, promise, timer } */
-  var inflightTimer = null;
-  var userStopped = false;          /* 本次中止是否由玩家点的「停止」触发 */
-
-  function gfetch(url, opts, ms) {
-    /* 超时值每次现取：自检/压测可在运行时改 window.XY_LLM_TIMEOUT_MS */
-    var timeoutMs = ms
-      || (typeof window !== 'undefined' && window.XY_LLM_TIMEOUT_MS)
-      || XY_LLM_TIMEOUT_MS;
-    var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
-    var o = {};
-    for (var k in (opts || {})) o[k] = opts[k];
-    if (ctrl) o.signal = ctrl.signal;
-    function doFetch() { return fetch(url, o); }
-    var inner;
+  /* v4.41.0 全局并发闸门：小云的三处大模型 fetch 直连（绕过 MoNetGuard），统一从这里过闸。
+     run() 自带 acquire/finally-release；闸门未加载时（老缓存）无缝降级为原生 fetch。 */
+  function gfetch(url, opts) {
     try {
-      inner = (window.AIGovernor && window.AIGovernor.run)
-        ? window.AIGovernor.run('小云', doFetch)
-        : doFetch();
-    } catch (e) { inner = Promise.reject(e); }
-    /* 截止时间独立计时：到点必 reject。
-       不依赖底层 fetch 是否理会 signal（中间件/代理替换过 fetch 时尤其重要），
-       否则又会出现「请求挂死 → 永久转圈」。 */
-    var p = new Promise(function (resolve, reject) {
-      inflightTimer = setTimeout(function () {
-        try { if (ctrl) ctrl.abort(); } catch (e) {}
-        var te = new Error('接口超时：' + Math.round(timeoutMs / 1000) + ' 秒没有响应');
-        te.name = 'TimeoutError';
-        reject(te);
-      }, timeoutMs);
-      Promise.resolve(inner).then(function (r) {
-        try { if (inflightTimer) { clearTimeout(inflightTimer); inflightTimer = null; } } catch (e) {}
-        resolve(r);
-      }, function (e) {
-        try { if (inflightTimer) { clearTimeout(inflightTimer); inflightTimer = null; } } catch (e) {}
-        if (userStopped && e && e.name === 'AbortError') {
-          var se = new Error('已停止'); se.name = 'AbortError'; se.stopped = true; reject(se); return;
-        }
-        reject(e);
-      });
-    });
-    if (ctrl) {
-      inflight = { controller: ctrl, promise: p };
-      p.then(function () { if (inflight && inflight.promise === p) inflight = null; },
-             function () { if (inflight && inflight.promise === p) inflight = null; });
-    }
-    return p;
-  }
-
-  /* 请求体也要在截止时间内读完：响应头到了但正文卡住，同样算超时 */
-  function gjson(url, opts, ms) {
-    return gfetch(url, opts, ms).then(function (r) {
-      return r.text().then(function (txt) {
-        var j = null;
-        try { j = JSON.parse(txt); } catch (e) { j = null; }
-        if (!r.ok) throw new Error((j && j.error && j.error.message) || ('HTTP ' + r.status));
-        return j;
-      });
-    });
-  }
-
-  /* 玩家点「停止」：中止在途请求 */
-  function abortInflight() {
-    if (!inflight) return false;
-    userStopped = true;
-    try { inflight.controller.abort(); } catch (e) {}
-    try { if (inflight.timer) clearTimeout(inflight.timer); } catch (e) {}
-    try { if (inflightTimer) { clearTimeout(inflightTimer); inflightTimer = null; } } catch (e) {}
-    inflight = null;
-    return true;
+      if (window.AIGovernor && window.AIGovernor.run) {
+        return window.AIGovernor.run('小云', function () { return fetch(url, opts); });
+      }
+    } catch (e) {}
+    return fetch(url, opts);
   }
   var FORMS = [
     { k: 'wenrou', n: '温柔', img: 'assets/xiaoyun-wenrou-happy.png', hi: '今天想写点什么呢？我在哦～', tips: ['需要帮忙吗？点我！', '卡文了？我可以急救～', '今天也要一起加油呀'] },
@@ -115,12 +45,7 @@
   var modules = el('div', 'xy-modules');
   var input = el('input'); input.placeholder = '和小云说点什么…（可让我加世界书条目 / 修格式 / 管存档）';
   var send = el('button', null, '发送');
-  /* v5.1.1 修 P1 死锁：请求在途时给出「停止」键。
-     旧实现接口挂死 → 永久转圈且无处可逃；现在随时可中止。 */
-  var stop = el('button', 'xy-stop', '⏹ 停止');
-  stop.type = 'button';
-  stop.style.display = 'none';
-  form.appendChild(input); form.appendChild(send); form.appendChild(stop);
+  form.appendChild(input); form.appendChild(send);
   panel.appendChild(head); panel.appendChild(chat); panel.appendChild(quick); panel.appendChild(modules); panel.appendChild(form); panel.appendChild(forms);
   root.appendChild(panel); root.appendChild(orb);
   document.body.appendChild(root);
@@ -185,16 +110,13 @@
   function llm(messages, cb) {
     var a = apiCfg();
     if (!a) { cb(null); return; }
-    gjson(a.base + '/chat/completions', {
+    gfetch(a.base + '/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + a.key },
       body: JSON.stringify({ model: a.model, temperature: 0.7, messages: messages })
-    }).then(function (j) {
-      var c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content || '';
-      cb(String(c));
-    }).catch(function (e) {
-      cb(null, (e && e.message) || '未知错误', !!(e && e.stopped));
-    });
+    }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); return j; }); })
+      .then(function (j) { var c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content || ''; cb(String(c)); })
+      .catch(function (e) { cb(null, e.message); });
   }
   function parseTools(text) {
     var out = [], re = /⟦tool⟧(\{[^\n⟦]*\})/g, m;
@@ -207,20 +129,14 @@
   function think(userText) {
     var a = apiCfg();
     if (!a) { localReply(userText); return; }
-    /* v5.1.1：上一句还没回时，不再静默丢弃新消息——给玩家一句提示，
-       顺便告诉他可以点「停止」把上一句掐掉重来。 */
-    if (thinking) { bot('我还在想上一句呢，稍等一下～（着急的话点「停止」让我重来）'); return; }
+    if (thinking) return;
     thinking = true;
-    userStopped = false;
-    showStop(true);
     var msgs = [{ role: 'system', content: sysPrompt() }, { role: 'user', content: userText }];
     var round = 0;
     function step(ind) {
-      llm(msgs, function (text, err, stopped) {
+      llm(msgs, function (text, err) {
         if (ind) ind.remove();
         thinking = false;
-        showStop(false);
-        if (stopped) { bot('好，先停在这儿。想继续随时说～'); return; }
         if (text == null) { bot('大模型接口这会儿没通：' + (err || '未知错误') + '。先用我的本地技能顶着～'); localReply(userText); return; }
         var calls = parseTools(text);
         if (calls.length && round < 2) {
@@ -369,22 +285,6 @@
   }
   send.onclick = function () { var v = input.value; if (!v) return; me(v); input.value = ''; reply(v); };
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send.onclick(); });
-  /* 「停止」：中止在途请求 + 清掉「正在思考」提示 + 释放 thinking 锁 */
-  function showStop(on) {
-    if (!stop) return;
-    stop.style.display = on ? 'inline-block' : 'none';
-  }
-  stop.onclick = function () {
-    if (abortInflight()) {
-      thinking = false;
-      showStop(false);
-      var typing = chat.querySelector('.xy-typing');
-      if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
-      bot('好，先停在这儿。想继续随时说～');
-    } else {
-      bot('现在没有在跑的任务～');
-    }
-  };
   /* v3.92.1：打开面板时按需重建「模块」区，反映当前题材已加载的子系统 */
   orb.addEventListener('click', function () {
     if (__xyDragSuppressed) { __xyDragSuppressed = false; return; }
@@ -477,6 +377,10 @@
        v4.17.7 手机修复：窄屏(<640px)创作室的输入框铺满整宽，气泡用 right:104px 向左横穿，
        实测正好盖住「主角小传」等输入框的 placeholder。窄屏一律不自动弹，玩家主动点小云
        仍照常出现（say() 独立路径），功能不丢，只是不再自动遮挡输入。 */
+    /* v5.2.1（全量视觉审阅 P0）：创作室也不再自动轮播招呼气泡。
+       气泡用 right:104px 向左横穿，实测在 1400px 宽创作室压住底部输入框与发送按钮（逐屏截图证实）。
+       大厅/窄屏本就不弹；现统一为「全站不自动弹」，玩家主动点小云仍照常 say() 出现，功能不丢。 */
+    return;
     if (document.body && document.body.classList.contains('page-index')) return;
     if (window.matchMedia && window.matchMedia('(max-width:640px)').matches) return;
     var f = face(); tip.textContent = f.tips[Math.floor(Math.random() * f.tips.length)];
@@ -543,7 +447,7 @@
     if (DEV.fix < 2 && DEV.api && DEV.api.key && DEV.api.base) {
       DEV.fix++; DEV.busy = true;
       st.className = 'status'; st.textContent = '⚠ 自检出运行错误，小云正在自修复（第 ' + DEV.fix + '/2 轮）…';
-      gjson(DEV.api.base.replace(/\/$/, '') + '/chat/completions', {
+      gfetch(DEV.api.base.replace(/\/$/, '') + '/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEV.api.key },
         body: JSON.stringify({ model: DEV.api.model, temperature: 0.4, messages: [
@@ -552,7 +456,7 @@
           { role: 'assistant', content: DEV.html },
           { role: 'user', content: '该模块运行时发生错误：' + msg + '。请修复并重新输出完整可运行的HTML（仍然只输出代码本身，不要解释）。' }
         ] })
-      }).then(function (j) {
+      }).then(function (r) { return r.json(); }).then(function (j) {
         DEV.busy = false;
         var html = j.choices && j.choices[0] && j.choices[0].message.content.replace(/^```[a-z]*\n?|```\n?$/g, '');
         if (html) { mountHTML(html); st.textContent = '🔧 修复完成，重新自检中…'; }
@@ -643,11 +547,11 @@
       var key = inK.value.trim(), base = inU.value.trim(), model = inM.value.trim();
       curAPI = (key && base) ? { key: key, base: base, model: model } : null;
       if (key && base) {
-        gjson(base.replace(/\/$/, '') + '/chat/completions', {
+        gfetch(base.replace(/\/$/, '') + '/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
           body: JSON.stringify({ model: model, messages: [{ role: 'system', content: SYS }, { role: 'user', content: wish }], temperature: 0.7 })
-        })
+        }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error && j.error.message || ('HTTP ' + r.status)); return j; }); })
           .then(function (j) {
             var html = j.choices[0].message.content.replace(/^```[a-z]*\n?|```\n?$/g, '');
             done(html, wish, false);

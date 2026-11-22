@@ -1,0 +1,467 @@
+#!/usr/bin/env python3.11
+# -*- coding: utf-8 -*-
+"""
+云境 · 小云动态视频批量生成管线
+模型: agnes-video-2.5-flash (apihub.agnes-ai.com)
+方式: mode=reference 图生视频 —— 每张立绘作为参考图，锁定角色形象
+产物: assets/videos/xiaoyun-{form}-{view}.mp4  (12 形态 × 5 动作 = 60 条)
+
+纪律:
+  · 密钥只从环境变量 AGNES_API_KEY 读取，绝不写入文件/日志
+  · 严格并发与速率控制（免费额度 429 极紧）：默认并发 1，提交节流 + 指数退避
+  · 断点续传：state.json 记录每条状态；任务已成功但下载失败时只补下载、不重新生成
+  · 可重入：任何时候中断，重跑会从断点继续
+
+用法:
+  export AGNES_API_KEY=...
+  python3.11 scripts/gen-xiaoyun-videos.py --probe          # 只探测 content 端点是否恢复
+  python3.11 scripts/gen-xiaoyun-videos.py --one aojiao/happy   # 出 1 条样片
+  python3.11 scripts/gen-xiaoyun-videos.py --all            # 全量 60 条（断点续传）
+  python3.11 scripts/gen-xiaoyun-videos.py --download-only  # 只补下载已成功的任务
+  python3.11 scripts/gen-xiaoyun-videos.py --watch          # 守护：端点恢复后自动跑 --all
+
+可选:
+  --concurrency N   并发上限（默认 1，最大建议 2）
+  --submit-gap S    两次提交最小间隔秒数（默认 12）
+  --recovery-gap S  --watch 下探测间隔（默认 60）
+  --max-wait M      --watch 最多等待分钟（默认 0=不限）
+"""
+import os, sys, json, time, base64, io, argparse, urllib.parse
+from datetime import datetime
+
+# ---------------- 配置 ----------------
+BASE = "https://apihub.agnes-ai.com"
+MODEL = "agnes-video-2.5-flash"
+GEN_PATH = "/v1/video/generations"
+KEY = os.environ.get("AGNES_API_KEY", "")
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ASSETS = os.path.join(ROOT, "assets")
+VIDEOS = os.path.join(ASSETS, "videos")
+STATE = os.path.join(ROOT, ".codebuddy", "xiaoyun-video-state.json")
+os.makedirs(VIDEOS, exist_ok=True)
+os.makedirs(os.path.dirname(STATE), exist_ok=True)
+
+FORMS = ["luo", "yu", "jiaohua", "qingchun", "linjia", "kusa",
+         "wenrou", "aojiao", "keai", "gaoguai", "youtai", "zhixing"]
+VIEWS = ["happy", "wave", "battle", "chibi", "face"]
+
+FORM_CN = {"luo": "萝莉", "yu": "御姐", "jiaohua": "校花", "qingchun": "清纯",
+           "linjia": "邻家", "kusa": "酷飒", "wenrou": "温柔", "aojiao": "傲娇",
+           "keai": "可爱", "gaoguai": "搞怪", "youtai": "幼态", "zhixing": "知性"}
+VIEW_CN = {"happy": "欢呼", "wave": "挥手", "battle": "战斗", "chibi": "Q版全身", "face": "头像特写"}
+
+# 12 形态服装/发型识别词（与生图脚本同源，配合参考图锁定身份）
+OUTFIT = {
+    "luo": "cute pastel frilly dress with cloud motifs",
+    "yu": "elegant champagne-gold off-shoulder long dress",
+    "jiaohua": "academy school blazer with pleated skirt",
+    "qingchun": "blue-and-white sailor school uniform",
+    "linjia": "soft cozy casual home outfit holding a small white cat",
+    "kusa": "black leather jacket and dark punk streetwear",
+    "wenrou": "light lavender long dress",
+    "aojiao": "blue-and-white frilled maid dress with blue ribbons and white thigh-high socks",
+    "keai": "fluffy white cloud-themed hoodie",
+    "gaoguai": "colorful playful patchwork outfit",
+    "youtai": "fluffy soft fleece dress",
+    "zhixing": "cream knit sweater and thin-frame round glasses",
+}
+HAIR = {
+    "luo": "short fluffy bob with two tiny low pigtails and a curly ahoge",
+    "yu": "long straight silky hair worn down with loose waves, no tails",
+    "jiaohua": "sleek high ponytail with a ribbon headband",
+    "qingchun": "two tidy braided twin pigtails with blue ribbons",
+    "linjia": "soft low half-up hairstyle with side-swept bangs",
+    "kusa": "sharp high single ponytail with choppy layered bangs",
+    "wenrou": "hime-cut long straight hair with blunt cheek-length side locks",
+    "aojiao": "big fluffy twin tails tied with red ribbons and cloud ornaments",
+    "keai": "two round puffy buns high on the head with cloud hair clips",
+    "gaoguai": "asymmetrical mismatched twin tails with colorful star clips",
+    "youtai": "short bob with rounded inward curled ends and a tiny top ahoge",
+    "zhixing": "neat low bun / tidy braided up-do with thin-frame round glasses",
+}
+EXPR = {
+    "luo": "excited playful childlike joy, sparkling wide eyes, happy open laugh",
+    "yu": "elegant confident poise, distinctly half-lidded eyes, faint smirk",
+    "jiaohua": "bright confident school-queen, wide open eyes, clear teeth-showing smile",
+    "qingchun": "shy and flustered, downward eyes, obvious red blush, pressed lips",
+    "linjia": "eyes closed in happy crescent curves, warm smile, hugging the white cat",
+    "kusa": "cool aloof rebellious, sharp narrowed eyes, one brow raised, no smile",
+    "wenrou": "serene tender warmth, softly half-closed eyes, faint tiny smile",
+    "aojiao": "classic tsundere pout, puffed cheeks, sidelong glare, 'hmph' mouth",
+    "keai": "maximum bright cuteness, eyes curved in happy arcs, huge open grin",
+    "gaoguai": "silly goofy comic face, one eye winking, tongue out, lopsided grin",
+    "youtai": "innocent baby wonder, very wide curious eyes, small round 'o' mouth",
+    "zhixing": "calm intellectual composure, hand resting under chin, thoughtful eyes",
+}
+# 5 动作的运动描述（这是"动态"的核心）
+MOTION = {
+    "happy": ("She raises both arms in a joyful celebratory cheer, bounces lightly once, "
+              "beaming smile, hair and skirt flare softly with the motion."),
+    "wave": ("She raises one hand and waves it toward the viewer in a friendly greeting, "
+             "gentle smile, slight body sway, hair tips and sleeve sway naturally."),
+    "battle": ("She shifts into a dynamic fighting stance, one arm thrust forward, "
+               "hair and skirt whip with the quick motion, determined focused gaze, "
+               "a faint burst of light particles behind her."),
+    "chibi": ("She stands in a relaxed cute pose and sways gently side to side, "
+              "tiny playful hop, hair and skirt bob softly, cheerful idle animation."),
+    "face": ("Close-up portrait: she blinks once slowly, smiles warmly, "
+             "a few strands of hair drift across her face, subtle breathing motion."),
+}
+FRAMING = {
+    "happy": "full body visible head to feet", "wave": "full body visible head to feet",
+    "battle": "full body visible head to feet", "chibi": "full body visible head to feet",
+    "face": "head and shoulders close-up, face fills frame",
+}
+# 每个 view 的画布与输出比例（参考图与输出比例对齐，避免裁切）
+# full-body 竖版 -> 9:16；头像 -> 1:1
+CANVAS = {"happy": (576, 1024), "wave": (576, 1024), "battle": (576, 1024),
+          "chibi": (576, 1024), "face": (640, 640)}
+ASPECT = {"happy": "9:16", "wave": "9:16", "battle": "9:16", "chibi": "9:16", "face": "1:1"}
+
+# 背景策略：纯色绿幕便于后续抠成透明，避免接入云境时出现白底方块
+BG_GREEN = ("STUDIO BACKGROUND: solid pure flat chroma green (#00FF00), completely uniform, "
+            "no gradient, no shadows, no floor, no objects, no other elements.")
+STYLE = ("Clean Japanese anime illustration, crisp lineart, soft cel shading, high detail, "
+         "smooth gentle motion, stable character identity, no camera movement, no zoom, "
+         "no extra characters, no text, no watermark, seamless loop feel.")
+
+
+def log(*a):
+    print(f"[{datetime.now().strftime('%H:%M:%S')}]", *a, flush=True)
+
+
+def key_of(form, view):
+    return f"{form}/{view}"
+
+
+def src_png(form, view):
+    name = f"xiaoyun-{view}-{form}.png" if view in ("chibi", "face") else f"xiaoyun-{form}-{view}.png"
+    return os.path.join(ASSETS, name)
+
+
+def out_mp4(form, view):
+    name = f"xiaoyun-{view}-{form}.mp4" if view in ("chibi", "face") else f"xiaoyun-{form}-{view}.mp4"
+    return os.path.join(VIDEOS, name)
+
+
+# ---------------- 参考图预处理 ----------------
+def make_reference(form, view):
+    """合成到纯色底、规范到画布尺寸(>=256)，返回 data URL。"""
+    from PIL import Image
+    im = Image.open(src_png(form, view)).convert("RGBA")
+    W, H = CANVAS[view]
+    # 等比 contain 到画布 78% 高度/宽度
+    maxw, maxh = int(W * 0.82), int(H * 0.86)
+    r = min(maxw / im.width, maxh / im.height)
+    nw, nh = max(256, round(im.width * r)), max(256, round(im.height * r))
+    # 保证缩放后仍 >=256（小图会被放大以满足 API 约束）
+    if min(nw, nh) < 256:
+        s = 256 / min(nw, nh); nw, nh = round(nw * s), round(nh * s)
+    im = im.resize((nw, nh), Image.LANCZOS)
+    # 纯绿底（视频里人物站在绿幕前）
+    bg = Image.new("RGBA", (W, H), (0, 255, 0, 255))
+    bg.alpha_composite(im, ((W - nw) // 2, (H - nh) // 2))
+    buf = io.BytesIO(); bg.convert("RGB").save(buf, format="JPEG", quality=88)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode(), (W, H)
+
+
+def build_prompt(form, view):
+    return (f"Animate the EXACT anime girl shown in the reference image into a short looping clip. "
+            f"Keep her identical: {HAIR[form]}, big bright blue eyes, silver-white hair, "
+            f"small white cloud hair ornaments, wearing {OUTFIT[form]}. "
+            f"Her expression: {EXPR[form]}. "
+            f"MOTION: {MOTION[view]} {FRAMING[view]}. "
+            f"{BG_GREEN} {STYLE}")
+
+
+# ---------------- HTTP（带退避）----------------
+import requests
+
+def headers(json_ct=True):
+    h = {"Authorization": f"Bearer {KEY}"}
+    if json_ct: h["Content-Type"] = "application/json"
+    return h
+
+
+def request_with_backoff(method, url, *, tag="", json_body=None, timeout=60,
+                         retries=6, base_wait=8, accept_429=True):
+    """带 429/5xx/网络异常指数退避的请求。返回 (resp, err)。"""
+    wait = base_wait
+    for attempt in range(retries):
+        try:
+            if method == "POST":
+                r = requests.post(url, headers=headers(), json=json_body, timeout=timeout)
+            else:
+                r = requests.get(url, headers=headers(False), timeout=timeout, allow_redirects=False)
+            code = r.status_code
+            if code == 200:
+                return r, None
+            if (accept_429 and code == 429) or code >= 500:
+                log(f"  [{tag}] HTTP {code}，退避 {wait}s 后重试 ({attempt+1}/{retries})")
+                time.sleep(wait); wait = min(wait * 2, 300)
+                continue
+            return r, f"HTTP {code}: {r.text[:200]}"
+        except Exception as e:
+            log(f"  [{tag}] 网络异常 {type(e).__name__}，退避 {wait}s ({attempt+1}/{retries})")
+            time.sleep(wait); wait = min(wait * 2, 300)
+    return None, f"{tag} 重试 {retries} 次仍失败"
+
+
+def submit(form, view, submit_gap, last_submit):
+    """提交任务，返回 task_id。遵守提交节流。"""
+    ref, _ = make_reference(form, view)
+    body = {"model": MODEL, "mode": "reference", "prompt": build_prompt(form, view),
+            "images": [ref], "aspect_ratio": ASPECT[view], "n": 1}
+    # 提交节流
+    gap = time.time() - last_submit[0]
+    if gap < submit_gap:
+        time.sleep(submit_gap - gap)
+    r, err = request_with_backoff("POST", BASE + GEN_PATH, tag=f"submit {form}/{view}",
+                                  json_body=body, timeout=90, retries=8, base_wait=15)
+    last_submit[0] = time.time()
+    if err: return None, err
+    j = r.json()
+    tid = j.get("id") or j.get("task_id")
+    if not tid: return None, f"响应无 task_id: {str(j)[:200]}"
+    return tid, None
+
+
+def poll(tid, form, view, max_sec=600, interval=15):
+    """轮询任务到终态。返回 (status, result_url, fail_reason)。"""
+    url = f"{BASE}{GEN_PATH}/{tid}"
+    t0 = time.time()
+    while time.time() - t0 < max_sec:
+        r, err = request_with_backoff("GET", url, tag=f"poll {form}/{view}",
+                                      timeout=30, retries=4, base_wait=8)
+        if err:
+            time.sleep(interval); continue
+        d = r.json().get("data", {})
+        st = d.get("status")
+        if st == "SUCCESS":
+            return "SUCCESS", d.get("result_url"), None
+        if st == "FAILURE":
+            return "FAILURE", None, str(d.get("fail_reason"))[:300]
+        time.sleep(interval)
+    return "TIMEOUT", None, f"轮询超过 {max_sec}s"
+
+
+def download(result_url, dest, form, view, retries=8, base_wait=20):
+    """下载 content 到 dest，校验是 mp4。502 持续时返回 False 供后续补取。"""
+    wait = base_wait
+    for attempt in range(retries):
+        r, err = request_with_backoff("GET", result_url, tag=f"dl {form}/{view}",
+                                      timeout=90, retries=1, base_wait=wait, accept_429=False)
+        if r is not None and r.status_code == 200:
+            ct = r.headers.get("content-type", "")
+            data = r.content
+            if len(data) > 5000 and "html" not in ct and "text/plain" not in ct and data[:4] != b"\x00\x00\x00\x00":
+                open(dest, "wb").write(data)
+                return True, f"{len(data)//1024}KB"
+            log(f"  [dl {form}/{view}] 非视频内容 ct={ct[:30]} len={len(data)}")
+        else:
+            code = r.status_code if r is not None else "ERR"
+            log(f"  [dl {form}/{view}] 下载失败 HTTP {code}，{wait}s 后重试 ({attempt+1}/{retries})")
+        time.sleep(wait); wait = min(wait * 2, 180)
+    return False, "content 端点持续不可用"
+
+
+# ---------------- 状态管理 ----------------
+def load_state():
+    if os.path.exists(STATE):
+        try: return json.load(open(STATE, encoding="utf-8"))
+        except Exception: pass
+    return {}
+
+
+def save_state(st):
+    tmp = STATE + ".tmp"
+    open(tmp, "w", encoding="utf-8").write(json.dumps(st, ensure_ascii=False, indent=1))
+    os.replace(tmp, STATE)
+
+
+def all_jobs():
+    return [(f, v) for f in FORMS for v in VIEWS]
+
+
+def is_done(st, form, view, dest):
+    e = st.get(key_of(form, view), {})
+    return e.get("status") == "downloaded" and os.path.exists(dest) and os.path.getsize(dest) > 5000
+
+
+# ---------------- 端点恢复探测 ----------------
+def probe_endpoint(st=None):
+    """探测 content 端点是否恢复。用 state 里所有已成功任务的 result_url 作探针
+    （另含一条已知的真实任务兜底）。任一返回真实视频即视为恢复——不依赖单个任务文件。
+    返回 (ok, detail)。
+    """
+    urls = []
+    if st:
+        for e in st.values():
+            u = e.get("result_url")
+            if u and isinstance(u, str) and u.startswith("http") and u not in urls:
+                urls.append(u)
+    fallback = f"{BASE}/v1/videos/task_J5eRTetGhmTlrNbwKxD0cdnnFPNWHRkf/content"
+    if fallback not in urls: urls.append(fallback)
+    details = []
+    for url in urls[:6]:  # 最多探 6 个，控制开销
+        try:
+            r = requests.get(url, headers=headers(False), timeout=25, allow_redirects=False)
+            ct = r.headers.get("content-type", "")
+            ok = (r.status_code == 200 and len(r.content) > 5000
+                  and "html" not in ct and "text/plain" not in ct)
+            details.append(f"{r.status_code}/{ct[:12]}")
+            if ok:
+                return True, f"已恢复 ({url.split('/')[-2][:16]}… 返回 {len(r.content)//1024}KB)"
+        except Exception as e:
+            details.append(type(e).__name__)
+    return False, "探针均不可用 [" + ", ".join(details[:4]) + "]"
+
+
+# ---------------- 主流程 ----------------
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def run(jobs, args, st):
+    """滑动窗口并发：每批最多 W 个任务。
+    批内逐个提交(遵守 submit_gap 节流)，提交完后统一轮询——多个异步生成任务
+    的等待时间重叠，从而提速；同时把"提交"这一最易触发 429 的动作严格节流。
+    任务已成功但下载失败的，本批只补下载、不重新生成。
+    """
+    W = max(1, args.concurrency)
+    todo = [(f, v) for f, v in jobs if not is_done(st, f, v, out_mp4(f, v))]
+    total = len(jobs)
+    done = sum(1 for f, v in jobs if is_done(st, f, v, out_mp4(f, v)))
+    log(f"待处理 {len(todo)} 条，窗口并发 W={W}，提交间隔 {args.submit_gap}s")
+
+    for bi, chunk in enumerate(chunks(todo, W), 1):
+        log(f"--- 批次 {bi}（{len(chunk)} 条）---")
+        last_submit = [0.0]
+        active = []  # (form, view, tid|None, result_url|None)
+
+        # 阶段 1：补下载记录 or 提交新任务（严格节流）
+        for form, view in chunk:
+            k = key_of(form, view); e = st.get(k, {})
+            if e.get("status") in ("success", "download_failed") and e.get("result_url"):
+                active.append((form, view, None, e["result_url"]))
+                log(f"  [{k}] 任务已成功，本批补下载")
+            else:
+                tid, err = submit(form, view, args.submit_gap, last_submit)
+                if err:
+                    log(f"  ❌ [{k}] 提交失败: {err}")
+                    st[k] = {"status": "submit_failed", "error": err}; save_state(st)
+                    continue
+                st[k] = {"status": "submitted", "task_id": tid,
+                         "at": datetime.now().isoformat()}; save_state(st)
+                log(f"  [{k}] 已提交 task={tid}")
+                active.append((form, view, tid, None))
+
+        # 阶段 2：统一轮询（重叠等待，提速关键）
+        polled = []
+        for form, view, tid, result_url in active:
+            if result_url:  # 只需补下载
+                polled.append((form, view, tid, result_url)); continue
+            log(f"  [{form}/{view}] 轮询中…")
+            status, url, reason = poll(tid, form, view, max_sec=args.poll_max)
+            k = key_of(form, view)
+            if status != "SUCCESS":
+                log(f"  ❌ [{k}] 任务 {status}: {reason}")
+                st[k] = {"status": "gen_failed", "task_id": tid,
+                         "error": reason}; save_state(st)
+                continue
+            st[k] = {"status": "success", "task_id": tid,
+                     "result_url": url}; save_state(st)
+            polled.append((form, view, tid, url))
+
+        # 阶段 3：下载
+        for form, view, tid, url in polled:
+            k = key_of(form, view); dest = out_mp4(form, view)
+            log(f"  [{k}] 下载中…")
+            ok, info = download(url, dest, form, view,
+                                retries=args.dl_retries, base_wait=args.dl_wait)
+            if ok:
+                st[k] = {"status": "downloaded", "task_id": tid, "result_url": url,
+                         "file": os.path.basename(dest), "size": info,
+                         "at": datetime.now().isoformat()}
+                done += 1; log(f"  ✅ [{k}] 完成 {info}")
+            else:
+                st[k] = {"status": "download_failed", "task_id": tid,
+                         "result_url": url}
+                log(f"  ⏳ [{k}] 生成成功但下载失败，保留 task_id 待续（不重生成）")
+            save_state(st)
+        log(f"--- 批次 {bi} 结束，累计 {done}/{total} ---")
+    return done, total
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--probe", action="store_true", help="只探测 content 端点是否恢复")
+    p.add_argument("--one", help="只生成 1 条，格式 form/view，如 aojiao/happy")
+    p.add_argument("--all", action="store_true", help="全量 60 条")
+    p.add_argument("--download-only", action="store_true", help="只补下载已成功的任务")
+    p.add_argument("--watch", action="store_true", help="守护：端点恢复后自动跑 --all")
+    p.add_argument("--status", action="store_true", help="打印当前进度")
+    p.add_argument("--concurrency", type=int, default=1)
+    p.add_argument("--submit-gap", type=int, default=12, help="两次提交最小间隔秒")
+    p.add_argument("--recovery-gap", type=int, default=60, help="--watch 探测间隔秒")
+    p.add_argument("--max-wait", type=int, default=0, help="--watch 最多等待分钟，0=不限")
+    p.add_argument("--poll-max", type=int, default=600)
+    p.add_argument("--dl-retries", type=int, default=8)
+    p.add_argument("--dl-wait", type=int, default=20)
+    args = p.parse_args()
+
+    if not KEY and not (args.probe or args.status):
+        log("❌ 未设置环境变量 AGNES_API_KEY"); sys.exit(2)
+
+    st = load_state()
+
+    if args.status:
+        cnt = {}
+        for k, e in st.items(): cnt[e.get("status", "?")] = cnt.get(e.get("status", "?"), 0) + 1
+        log("状态统计:", cnt)
+        for k, e in sorted(st.items()):
+            if e.get("status") != "downloaded":
+                log(f"  未完成 {k}: {e.get('status')} {e.get('error','')[:60]}")
+        return
+
+    if args.probe:
+        ok, detail = probe_endpoint(st)
+        log("端点" + ("✅ 已恢复" if ok else "❌ 仍不可用"), detail)
+        sys.exit(0 if ok else 1)
+
+    if args.watch:
+        log(f"👀 守护启动：每 {args.recovery_gap}s 探测端点，恢复后自动全量生成")
+        t0 = time.time()
+        while True:
+            ok, detail = probe_endpoint(load_state())
+            if ok:
+                log("✅ 端点恢复！启动全量生成"); break
+            if args.max_wait and (time.time() - t0) > args.max_wait * 60:
+                log(f"⏰ 等待超过 {args.max_wait} 分钟仍不可用，退出（脚本可重入，随时重跑）"); return
+            log(f"  端点未恢复 ({detail})，{args.recovery_gap}s 后再探")
+            time.sleep(args.recovery_gap)
+        st = load_state()  # 恢复到最新断点，再跑全量
+        jobs = all_jobs(); run(jobs, args, st); return
+
+    if args.one:
+        parts = args.one.split("/")
+        if len(parts) != 2 or parts[0] not in FORMS or parts[1] not in VIEWS:
+            log("❌ --one 格式应为 form/view，如 aojiao/happy"); sys.exit(2)
+        jobs = [(parts[0], parts[1])]
+    elif args.download_only:
+        jobs = [(f, v) for f, v in all_jobs()
+                if st.get(key_of(f, v), {}).get("status") in ("success", "download_failed")]
+    elif args.all:
+        jobs = all_jobs()
+    else:
+        p.print_help(); return
+
+    log(f"开始，共 {len(jobs)} 条任务，并发={args.concurrency}，提交间隔={args.submit_gap}s")
+    done, total = run(jobs, args, st)
+    log(f"=== 完成 {done}/{total} ===")
+
+
+if __name__ == "__main__":
+    main()

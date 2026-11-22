@@ -62,19 +62,13 @@ function sub(file, re, rep) {
   if (n !== s) { fs.writeFileSync(p, n); touched.push(file); }
 }
 const esc = curVer.replace(/\./g, '\\.');
-/* v5.1.1：版本戳有两种形式 —— `?v=`（资源引用）与 `&v=`（index.html 的入口链接，
-   如 studio.html?genre=xxx&v=1.6.9）。原来只换 `?v=`，发版后 `&v=` 会留在旧号上，
-   导致 scripts/sync-version.mjs --check 直接红（v5.1.0 就是这么红的）。两种一起换。
-   ⚠ 替换函数的签名是 (match, p1, p2, ...) —— 捕获组要从**第二个参数**取，
-   写成 (m) => m[1] 会取到「匹配串的第 2 个字符」，把 "?v=5.1.0" 写成 "vv=5.1.1"，
-   全站资源 404（本项目真的踩过这个坑，见 v5.1.1 事故复盘）。 */
 for (const f of fs.readdirSync(ROOT).filter((f) => /\.(html)$/.test(f))) {
-  sub(f, new RegExp(`([?&])v=${esc}`, 'g'), (m, p1) => p1 + 'v=' + nextVer);
+  sub(f, new RegExp(`\\?v=${esc}`, 'g'), `?v=${nextVer}`);
   sub(f, new RegExp(`云境 v${esc}`, 'g'), `云境 v${nextVer}`);
 }
 // js 里写死的资源参数
 for (const f of fs.readdirSync(path.join(ROOT, 'js')).filter((f) => f.endsWith('.js'))) {
-  sub(path.join('js', f), new RegExp(`([?&])v=${esc}`, 'g'), (m, p1) => p1 + 'v=' + nextVer);
+  sub(path.join('js', f), new RegExp(`\\?v=${esc}`, 'g'), `?v=${nextVer}`);
 }
 sub('studio.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
 sub('index.html', /window\.YJ_VER = '[\d.]+'/g, `window.YJ_VER = '${nextVer}'`);
@@ -153,28 +147,7 @@ ${detail.join('\n\n') || title || ''}
   if (out !== rm) { write('README.md', out); touched.push('README.md'); }
 }
 
-/* ---------- 3.8 版本同源兜底（v5.1.1）----------
- * 发版脚本自己改了十几个锚点，但仍可能漏（v5.1.0 就漏了 number-scrubber 模块号与
- * README 两处，还漏了 `&v=` 形式）。这里统一再跑一次同步器：它以 studio.html 的
- * YJ_VER 为唯一来源，把 ?v= / &v= / sw.js / 页面标题 / README / VERSIONS 全对齐，
- * 顺带把版本计数口径校正到速查表实际行数。 */
-try {
-  /* 用 process.execPath 而不是字面量 'node'：发版机不一定把 node 放进 PATH
-     （本次实测就是 'node' is not recognized，导致同步器没跑成、版本不同源、CI 直接红）。 */
-  sh(`"${process.execPath}" scripts/sync-version.mjs`);
-  sh(`"${process.execPath}" scripts/update-readme.mjs`);
-} catch (e) { console.error('版本同源同步器执行失败：', e && e.message || e); }
-
 console.log(`版本号 ${curVer} → ${nextVer}，改动文件 ${[...new Set(touched)].length} 个`);
-/* v5.1.1：发版自检——同步器必须真的把版本同源跑绿，否则这一版就是带着红灯发的
-   （本次实测：同步器因 node 不在 PATH 静默失败，CI ② 版本同源直接红）。
-   这里在提交前强制校验一次，不绿就不许发。 */
-try {
-  sh(`"${process.execPath}" scripts/sync-version.mjs --check`);
-} catch (e) {
-  console.error('✗ 版本号仍不同源，已中止发版。运行 node scripts/sync-version.mjs 修正后再试。');
-  process.exit(1);
-}
 if (DRY) { console.log('[dry] 到此为止，未提交未推送'); process.exit(0); }
 
 /* ---------- 4. 提交 / 打标签 / 推送 ---------- */
@@ -198,8 +171,6 @@ const body = [
   `**与上一版差异**：https://github.com/${REPO}/compare/v${curVer}...${tag}`,
   '',
   `**在线预览该版源码**：https://github.com/${REPO}/tree/${tag}`,
-  '',
-  '[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)',
 ].join('\n');
 const res = await fetch(`https://api.github.com/repos/${REPO}/releases`, {
   method: 'POST',

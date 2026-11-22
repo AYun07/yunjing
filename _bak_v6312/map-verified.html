@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>云境 · 38世界原著地点校对舆图</title>
+<link rel="stylesheet" href="css/atlas-drilldown.css?v=6.2.0">
+<style>
+  html,body{margin:0;height:100%;background:#070c12;overflow:hidden}
+  #bootTip{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    color:#d9b46a;font:15px "Noto Serif SC",serif;letter-spacing:2px;z-index:1}
+  #vHint{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:9500;
+    color:#9fd8c0;font:12px "Noto Serif SC",serif;letter-spacing:1px;opacity:.8;pointer-events:none;text-align:center}
+</style>
+</head>
+<body>
+<div id="bootTip">正在展开原著地点校对舆图…</div>
+<script src="js/atlas-drill-data.js?v=6.2.0"></script>
+<script src="js/atlas-drilldown.js?v=6.2.0"></script>
+<script src="js/atlas-verified-all.js?v=6.3.11"></script>
+<script src="js/atlas-verified-adapter.js?v=6.2.0"></script>
+<script>
+  (function(){
+    var g = new URLSearchParams(location.search).get('genre') || 'douluodalu';
+    function open(){
+      if (!window.AtlasDrill || !window.AtlasVerifiedAdapter || !window.ATLAS_VERIFIED){ setTimeout(open,120); return; }
+      // 把校对数据转成深度舆图树（斗罗用原生精细树）
+      var ok = window.AtlasVerifiedAdapter.ensure(g);
+      document.getElementById('bootTip').style.display='none';
+      window.AtlasDrill.show(g);
+      var v = window.ATLAS_VERIFIED[g];
+      var h=document.createElement('div'); h.id='vHint';
+      h.innerHTML='<b style="color:#d9b46a">'+(v?v.name:g)+'</b> · 原著地点 ' +
+        ((v&&v.eras||[]).reduce(function(a,e){return a+(e.places||[]).length;},0)) + ' 处 · ' +
+        ((v&&v.eras||[]).length) + ' 个时代/位面 · ' +
+        (ok?'适配层生成树':'原生精细树') + ' · 出处：'+(v?v.source:'');
+      document.body.appendChild(h);
+    }
+    open();
+  })();
+</script>
+</body>
+</html>

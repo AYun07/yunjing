@@ -318,7 +318,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       if (fw && fw.storyState && fw.storyState.variables) onVars(fw.storyState.variables, Number(fw.storyState.variables.chapter) || 0);
     } catch (e) {
     }
-    console.debug(`[WorldExt] ${genre} 界专属模块就位：${modules.map((m) => m.name).join(" / ")}${entMod ? "（实体引擎已挂载）" : ""}`);
+    console.log(`[WorldExt] ${genre} 界专属模块就位：${modules.map((m) => m.name).join(" / ")}${entMod ? "（实体引擎已挂载）" : ""}`);
     mountStrip();
   }
   /* v3.55.29：PlayerKit 不可用（尚未加载 / 加载失败）时，原逻辑「这次不在就永远算了」——
@@ -337,7 +337,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
     modules = mergeDefs(got, modules);
     load();
     modules.forEach(ensureState);
-    console.debug(`[WorldExt] ${genre} 随身器官已挂载：${got.map((m) => m.name).join(" / ")}｜本界模块共 ${modules.length} 个`);
+    console.log(`[WorldExt] ${genre} 随身器官已挂载：${got.map((m) => m.name).join(" / ")}｜本界模块共 ${modules.length} 个`);
     return true;
   }
   /* 本界是否已挂随身器官（面板/背包/自定义槽） */
@@ -376,7 +376,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
         modules = mergeDefs(modules, pending);
         if (modules.length !== before) {
           modules.forEach(ensureState);
-          console.debug(`[WorldExt] ${genre} 界注入模块合流：${modules.map((m) => m.name).join(" / ")}`);
+          console.log(`[WorldExt] ${genre} 界注入模块合流：${modules.map((m) => m.name).join(" / ")}`);
           mountStrip();
         }
       }

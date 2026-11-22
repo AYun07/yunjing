@@ -120,7 +120,7 @@ ${text}`
         fw.storyState.memoryLayers = { ...merged, _upTo: Number(fw.storyState.turnCount) || 0, _ts: Date.now() };
         (_e = fw.saveStory) == null ? void 0 : _e.call(fw);
         const n = LAYERS.reduce((a, k) => a + (parsed[k] ? parsed[k].length : 0), 0);
-        console.debug(`[记忆分层] 提取完成：新增 ${n} 条，累计 ${this.stats().total} 条`);
+        console.log(`[记忆分层] 提取完成：新增 ${n} 条，累计 ${this.stats().total} 条`);
         if (manual) (_f = window.showToast) == null ? void 0 : _f.call(window, `✓ 记忆提取完成：新增 ${n} 条，五层累计 ${this.stats().total} 条`, "success");
         return true;
       } catch (e) {
@@ -345,7 +345,7 @@ ${block.join("\n\n")}`
         if (this.due()) this.extract().catch(() => {
         });
       }, 12e4);
-      console.debug("[记忆分层] 已安装（每 " + EXTRACT_EVERY + " 轮自动提取）");
+      console.log("[记忆分层] 已安装（每 " + EXTRACT_EVERY + " 轮自动提取）");
     }
   };
   window.MemoryLayers = MemoryLayers;

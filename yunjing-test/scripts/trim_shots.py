@@ -8,10 +8,8 @@ RPG 抽屉是固定高度的浮层，截图会把下方大块背景一起带进�
 """
 import os, sys
 from PIL import Image
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import out_path
 
-OUT = sys.argv[1] if len(sys.argv) > 1 else out_path("云境-v4.07.2-截图")
+OUT = sys.argv[1] if len(sys.argv) > 1 else "/workspace/云境-v4.07.2-截图"
 
 def trim(path, pad=12):
     im = Image.open(path).convert("RGB")

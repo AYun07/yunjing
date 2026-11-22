@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0e0b1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="云境">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/yj-favicon.ico">
+<title>云境 · 手机端启动</title>
+<style>
+  :root{--gold:#f4d896;--gold-soft:#e7c899;--ink:#0e0b1e;--line:rgba(244,216,150,.28);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;min-height:100%;background:var(--ink);color:#f3efe4;
+    font-family:"Noto Serif CJK SC","Songti SC",serif;}
+  body{position:relative;padding:34px 20px 44px;display:flex;flex-direction:column;align-items:center;
+    background-image:url('上架素材/开场底图-竖版.png');background-size:cover;background-position:center top;background-attachment:fixed;}
+  body::before{content:"";position:fixed;inset:0;z-index:0;
+    background:linear-gradient(180deg,rgba(10,8,24,.85),rgba(10,8,24,.82) 55%,rgba(8,7,20,.96));}
+  body > *{position:relative;z-index:1;width:100%;max-width:440px;}
+  .brand{text-align:center;margin:6px 0 22px;}
+  .brand h1{margin:0;font-size:clamp(38px,12vw,58px);letter-spacing:.2em;color:var(--gold);
+    text-shadow:0 2px 14px rgba(0,0,0,.7);}
+  .brand p{margin:.5em 0 0;font-size:clamp(13px,3.6vw,17px);letter-spacing:.1em;color:var(--gold-soft);}
+  .card{background:rgba(20,17,40,.78);border:1px solid var(--line);border-radius:18px;
+    padding:18px 18px 20px;margin-bottom:16px;backdrop-filter:blur(6px);}
+  .card h2{margin:0 0 12px;font-size:17px;color:var(--gold);letter-spacing:.08em;}
+  .addr{font:12px/1.6 ui-monospace,monospace;color:#bfb9d4;word-break:break-all;
+    background:rgba(0,0,0,.28);border-radius:8px;padding:8px 10px;margin-bottom:12px;}
+  .btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;cursor:pointer;
+    font-family:inherit;font-size:18px;font-weight:700;letter-spacing:.08em;transition:.15s;
+    background:linear-gradient(135deg,#f4d896,#c9a86a);color:#1a1426;}
+  .btn:active{transform:scale(.98);}
+  .btn.ghost{background:rgba(244,216,150,.08);color:var(--gold);border:1px solid var(--line);
+    font-size:15px;padding:12px;margin-top:10px;}
+  input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;
+    background:rgba(0,0,0,.3);color:#f3efe4;font-size:14px;font-family:ui-monospace,monospace;}
+  .hint{font-size:12.5px;color:#a9a3bb;line-height:1.8;margin:12px 0 0;}
+  .steps{margin:0;padding-left:20px;font-size:13.5px;color:#cfc9dc;line-height:2;}
+  .steps b{color:var(--gold-soft);}
+  .seg{display:flex;gap:8px;margin-bottom:12px;}
+  .seg button{flex:1;border:1px solid var(--line);border-radius:9px;padding:8px;cursor:pointer;
+    background:rgba(255,255,255,.03);color:#cfc9dc;font-size:13px;font-family:inherit;}
+  .seg button.on{background:rgba(244,216,150,.16);color:var(--gold);border-color:var(--gold);}
+  .foot{text-align:center;font-size:11.5px;color:#7a7490;margin-top:8px;}
+  .note{font-size:12.5px;color:#b6b0c8;background:rgba(244,216,150,.07);
+    border-left:3px solid var(--gold);border-radius:8px;padding:9px 12px;line-height:1.7;}
+  @media (min-width:560px){ body{padding-top:48px;} }
+</style>
+</head>
+<body>
+  <div class="brand"><h1>云 境</h1><p>手机端 · 一键启动</p></div>
+
+  <div class="card">
+    <h2>进入云境</h2>
+    <div class="addr" id="addr">正在探测服务地址…</div>
+    <button class="btn" id="go">▶ 启动云境</button>
+    <button class="btn ghost" id="install">＋ 添加到主屏幕（以后点图标即启动）</button>
+    <p class="hint">点「启动云境」直接进入封面，从中选择踏云 / 续梦 / 观星 / 造物。故事与存档只留在这台设备。</p>
+  </div>
+
+  <div class="card">
+    <h2>换设备 / 局域网访问</h2>
+    <p class="note" id="schemeNote">若当前不是通过本地服务打开，可手动填入电脑端启动程序显示的手机地址（同一 WiFi）。</p>
+    <div style="height:10px"></div>
+    <input type="text" id="urlInput" placeholder="http://192.168.1.10:8080" autocomplete="off" autocapitalize="off">
+    <button class="btn ghost" id="useUrl">用这个地址启动</button>
+  </div>
+
+  <div class="card">
+    <h2>添加到主屏幕 · 三步</h2>
+    <div class="seg">
+      <button data-os="ios" class="on">iPhone / iPad</button>
+      <button data-os="android">安卓</button>
+    </div>
+    <ol class="steps" id="steps"></ol>
+    <p class="hint">添加后桌面会出现「云境」图标，点它全屏打开——这就是你的手机端启动程序，和电脑上双击启动器一样。</p>
+  </div>
+
+  <div class="foot">云境 · 万象入云，一念一世界 · 纯本地运行，不上传</div>
+
+<script>
+(function(){
+  var STEPS = {
+    ios: ['用 <b>Safari</b> 打开本页', '点底部 <b>分享</b> 按钮（方框向上箭头）', '选 <b>添加到主屏幕</b> → 确认'],
+    android: ['用 <b>Chrome</b> 打开本页', '点右上角 <b>⋮</b> 菜单', '选 <b>添加到主屏幕 / 安装应用</b> → 确认']
+  };
+  var os='ios';
+  function renderSteps(){
+    document.getElementById('steps').innerHTML = STEPS[os].map(function(s){return '<li>'+s+'</li>';}).join('');
+  }
+  renderSteps();
+  Array.prototype.forEach.call(document.querySelectorAll('.seg button'),function(b){
+    b.addEventListener('click',function(){
+      os=b.getAttribute('data-os');
+      Array.prototype.forEach.call(document.querySelectorAll('.seg button'),function(x){x.classList.toggle('on',x===b);});
+      renderSteps();
+    });
+  });
+
+  // 探测当前服务地址：优先当前 origin（本地服务/部署地址都对）
+  var origin = (location.protocol==='http:'||location.protocol==='https:') ? location.origin : '';
+  var addrEl=document.getElementById('addr');
+  var urlInput=document.getElementById('urlInput');
+  var isFile = location.protocol==='file:';
+  if(origin){
+    addrEl.textContent = origin + '  （当前地址）';
+    urlInput.value = origin;
+    document.getElementById('schemeNote').textContent='当前已通过本地服务/在线地址打开，可直接启动，或填入另一台设备的地址。';
+  }else{
+    addrEl.textContent = '当前为本地文件预览，无法直接启动';
+    document.getElementById('schemeNote').textContent='检测到你是双击文件打开的。请改用电脑端启动程序显示的「手机地址」在手机浏览器打开本页，或填入该地址后启动。';
+  }
+
+  function go(base){
+    if(!/^https?:\/\//.test(base)){ alert('请填写完整的 http:// 或 https:// 地址'); return; }
+    // 写封面会话令牌（在目标 origin 下），保证跳过去后守卫放行
+    try{
+      var u=new URL(base);
+      // 同源直接写；跨源无法预写 localStorage——由 URL 的 from=phone 参数放行
+      if(u.origin===location.origin) sessionStorage.setItem('yunjing_cover_seen','1');
+    }catch(e){}
+    location.href = base.replace(/\/$/,'') + '/opening.html?from=phone';
+  }
+  document.getElementById('go').addEventListener('click',function(){
+    if(origin) go(origin); else { urlInput.focus(); alert('请先在上方填入手机可访问的服务地址'); }
+  });
+  document.getElementById('useUrl').addEventListener('click',function(){ go(urlInput.value.trim()); });
+  document.getElementById('install').addEventListener('click',function(){
+    alert(os==='ios'
+      ? 'iPhone：点底部「分享」按钮 →「添加到主屏幕」→「添加」。完成后回到桌面点云境图标即可启动。'
+      : '安卓：点右上角「⋮」→「添加到主屏幕」或「安装应用」→ 确认。完成后回到桌面点云境图标即可启动。');
+  });
+})();
+</script>
+</body>
+</html>

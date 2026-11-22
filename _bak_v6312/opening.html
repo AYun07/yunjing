@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e0b1e">
+<title>云境 · 万象入云，一念一世界</title>
+  <link rel="icon" href="assets/yj-favicon.ico">
+  <!-- v6.3.3 唯一启动界面：封面为唯一落地页，四入口语义对齐，读档/选择器带封面级底图 -->
+  <link rel="stylesheet" href="css/cover-portal.css?v=6.3.3">
+  <link rel="stylesheet" href="css/resume-portal.css?v=6.3.3">
+  <link rel="stylesheet" href="css/atlas-drilldown.css?v=5.5.0">
+  <link rel="stylesheet" href="css/atlas-faction-layer.css?v=5.5.0">
+  <link rel="stylesheet" href="css/atlas-canon-layer.css?v=6.1.0">
+  <link rel="stylesheet" href="css/atlas-library.css?v=6.3.1">
+<style>
+  :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:var(--ink); overflow:hidden;
+    font-family:"Noto Serif CJK SC","Songti SC","STSong",serif; }
+  .stage{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+  .bg{ position:absolute; inset:0; background-size:cover; background-position:center;
+       background-repeat:no-repeat; transition:opacity .5s ease; }
+  /* 用无字底图：文字由下方 HTML 层渲染成真可点入口，避免与图上印字重影 */
+  .bg.landscape{ background-image:url('上架素材/开场底图-横版.png'); }
+  .bg.portrait{ background-image:url('上架素材/开场底图-竖版.png'); }
+  /* 极轻的底部氛围渐变仅为按钮区提供对比，不构成可见色块（保留画面通透） */
+  .veil{ position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(180deg,transparent 0%,transparent 62%,rgba(10,8,24,.28) 100%); }
+
+  .brand{ position:absolute; pointer-events:none; color:var(--gold); text-align:center;
+    text-shadow:0 2px 10px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.9); }
+  .brand h1{ margin:0; font-size:clamp(44px,9vw,104px); letter-spacing:.18em; font-weight:700; }
+  .brand p{ margin:.4em 0 0; font-size:clamp(14px,2.4vw,30px); letter-spacing:.12em; color:var(--gold-soft); }
+
+  /* 入口区：透明按钮热区，位置贴合封面文字 */
+  .menu{ position:absolute; display:flex; flex-direction:column; gap:clamp(10px,2.2vh,22px); z-index:3; }
+  .entry{ display:flex; align-items:baseline; gap:.7em; cursor:pointer; user-select:none;
+    background:transparent; border:0; padding:6px 12px; color:#faf8f2; text-align:left;
+    font-family:inherit; transition:transform .18s ease,color .18s ease,text-shadow .18s ease;
+    text-shadow:0 2px 8px rgba(0,0,0,.75),0 0 3px rgba(0,0,0,.9); }
+  .entry:hover,.entry:focus-visible{ transform:translateX(8px); color:var(--gold); outline:none;
+    text-shadow:0 2px 14px rgba(244,216,150,.6),0 0 3px rgba(0,0,0,.9); }
+  .entry .mark{ color:var(--gold); font-size:clamp(15px,2.4vw,24px); }
+  .entry .name{ font-size:clamp(22px,4.2vw,46px); font-weight:700; letter-spacing:.1em; }
+  .entry .sub{ font-size:clamp(11px,1.8vw,21px); color:#fff; letter-spacing:.08em;
+    /* v4.38.0 修 P2-2：副标题叠在浅色云海上偏糊，加深多重描边 + 局部暗底确保可读 */
+    text-shadow:0 1px 3px rgba(0,0,0,1),0 0 8px rgba(0,0,0,.95),0 0 2px rgba(0,0,0,1);
+    background:rgba(8,8,20,.32); border-radius:6px; padding:1px 8px; backdrop-filter:blur(2px); }
+  .entry[data-active="1"] .bar{ width:4px; height:1.1em; background:var(--gold); border-radius:2px; flex:none; }
+  .entry .bar{ width:4px; height:1.1em; background:transparent; border-radius:2px; flex:none; }
+
+  /* 横屏布局：封面左上标题 + 左下入口 */
+  @media (orientation:landscape){
+    .brand{ left:11%; top:20%; text-align:left; }
+    .menu{ left:11%; bottom:16%; }
+  }
+  /* 竖屏布局：封面顶部标题 + 底部入口 */
+  @media (orientation:portrait){
+    .brand{ left:0; right:0; top:4.5%; }
+    .menu{ left:8%; bottom:8%; }
+  }
+
+  .hint{ position:absolute; right:16px; bottom:12px; z-index:4; color:rgba(230,225,240,.55);
+    font-size:12px; font-family:system-ui,sans-serif; pointer-events:none; }
+  @media (max-width:520px){ .hint{ display:none; } }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="bg" id="bg"></div>
+  <div class="veil"></div>
+  <div class="brand"><h1>云 境</h1><p>万象入云 · 一念一世界</p></div>
+  <nav class="menu" id="menu" aria-label="开场入口">
+    <button class="entry" data-active="1" data-go="new"><span class="bar"></span><span class="mark">◆</span><span class="name">踏云</span><span class="sub">开启新篇</span></button>
+    <button class="entry" data-go="continue"><span class="bar"></span><span class="mark">◆</span><span class="name">续梦</span><span class="sub">再续前尘</span></button>
+    <button class="entry" data-go="settings"><span class="bar"></span><span class="mark">◆</span><span class="name">观星</span><span class="sub">天地设置</span></button>
+    <button class="entry" data-go="forge"><span class="bar"></span><span class="mark">◆</span><span class="name">造物</span><span class="sub">万象工坊</span></button>
+  </nav>
+  <div class="hint">点选入口进入 · 横竖屏自适应</div>
+  <div id="deniedTip" style="display:none;position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:20;
+    background:rgba(14,11,30,.92);border:1px solid rgba(244,216,150,.45);color:#f4d896;border-radius:10px;
+    padding:9px 18px;font:13px system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.5);white-space:nowrap;">
+    请从上方入口进入云境，避免存档异常</div>
+</div>
+<script>
+  // v6.3.3 唯一启动界面：打开封面即写入会话令牌，之后从本标签跳任意子页均视为「从封面进入」。
+  // 直接新开标签输入子页 URL 则无令牌、无同源来源 → 被子页守卫弹回封面。
+  try { sessionStorage.setItem('yunjing_cover_seen','1'); } catch(e) {}
+  // 被守卫弹回时给一次性轻提示，告诉玩家应从入口进入（不阻断任何操作）
+  try {
+    if (/[?&]denied=1/.test(location.search)) {
+      window.__yjDenied = true;
+      history.replaceState(null,'',location.pathname);
+      window.addEventListener('DOMContentLoaded', function(){
+        var t = document.getElementById('deniedTip');
+        if (t) { t.style.display = 'block'; setTimeout(function(){ t.style.display='none'; }, 4200); }
+      });
+    }
+  } catch(e) {}
+
+  // 按屏幕方向切换封面（与图上文字位置一致）
+  var bg = document.getElementById('bg');
+  function pickBg(){
+    var portrait = window.innerHeight > window.innerWidth;
+    bg.className = 'bg ' + (portrait ? 'portrait' : 'landscape');
+  }
+  pickBg();
+  window.addEventListener('resize', pickBg);
+
+  // 四入口跳转（v6.3.3 语义对齐）：踏云=新档(被 cover-portal 接管)、续梦=读档(被 resume-portal 接管)、
+  // 观星=设置、造物=工坊。new/continue 保留兜底 URL，正常情况被各自的捕获监听抢先拦截。
+  var TARGET = {
+    new:      'index.html?entry=new',
+    continue: 'index.html?entry=continue',
+    settings: 'studio.html?goto=settings',  // v6.3.3 观星=设置（收口到 studio，旧大厅 config-modal 未加载是历史坏落点）
+    forge:    'studio.html?goto=forge'      // v6.3.3 造物=原创工坊面板（原 xiaoyun.html 仅为能力介绍页）
+  };
+  document.getElementById('menu').addEventListener('click', function(e){
+    var btn = e.target.closest('.entry');
+    if(!btn) return;
+    location.href = TARGET[btn.dataset.go] || 'index.html';
+  });
+  // 键盘上下选择 + 回车，方便无鼠标场景
+  var items = Array.prototype.slice.call(document.querySelectorAll('.entry'));
+  var idx = 0;
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();
+      items[idx].removeAttribute('data-active');
+      idx = (idx + (e.key==='ArrowDown'?1:items.length-1)) % items.length;
+      items[idx].setAttribute('data-active','1');
+    } else if(e.key==='Enter'){
+      location.href = TARGET[items[idx].dataset.go] || 'index.html';
+    }
+  });
+</script>
+<!-- v6.3.3：世界目录 + 舆图/资料库数据层 + 封面选择器 + 续梦读档浮层（顺序敏感：数据层先于 UI 层） -->
+<script src="js/world-catalog.js?v=6.3.3"></script>
+<script src="js/atlas-drill-data.js?v=6.2.0"></script>
+<script src="js/atlas-drilldown.js?v=6.2.0"></script>
+<script src="js/atlas-verified-all.js?v=6.3.11"></script>
+<script src="js/atlas-userdata.js?v=6.3.1"></script>
+<script src="js/atlas-verified-adapter.js?v=6.3.1"></script>
+<script src="js/atlas-library.js?v=6.3.1"></script>
+<script src="js/first-run-guide.js?v=6.3.3"></script>
+<script src="js/cover-portal.js?v=6.3.3"></script>
+<script src="js/resume-portal.js?v=6.3.3"></script>
+</body>
+</html>

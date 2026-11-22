@@ -393,7 +393,7 @@
         var kind = document.getElementById("ctlKind").value;
         var name = document.getElementById("ctlName").value.trim();
         var note = document.getElementById("ctlNote").value.trim();
-        if (!name) { yjAlert("请先填名称"); return; }
+        if (!name) { alert("请先填名称"); return; }
         if (kind === "bond") {
           CanonTimeline.bond(name, note || "玩家", { note: "" });
         } else {

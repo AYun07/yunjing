@@ -413,7 +413,7 @@
         const defs = SEALS[key] || SEALS._workshop;
         try {
             const n = window.GameLayer && window.GameLayer.registerSeals(defs);
-            if (n) console.debug(`[WorldSeals] ${key} 界专属成就就位：${n} 枚`);
+            if (n) console.log(`[WorldSeals] ${key} 界专属成就就位：${n} 枚`);
         } catch (e) { /* 注册失败不影响主流程 */ }
         return window.WorldSeals;
     }

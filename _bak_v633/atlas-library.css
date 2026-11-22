@@ -1,0 +1,80 @@
+/* 云境 v6.3.0 · 世界舆图资料库（AtlasLibrary）独立样式，零侵入 */
+#atlasLibraryOverlay {
+  position: fixed; inset: 0; z-index: 9999; display: none;
+  background: #0b1017; color: #efe4cc;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  overflow: auto;
+}
+#atlasLibraryOverlay.al-open { display: block; }
+#atlasLibraryOverlay * { box-sizing: border-box; }
+#atlasLibraryOverlay .al-wrap { max-width: 1500px; margin: 0 auto; padding: 24px 20px 80px; }
+#atlasLibraryOverlay h1 { font-size: 25px; color: #d9b46a; letter-spacing: 2px; margin: 0 0 4px; }
+#atlasLibraryOverlay .al-sub { color: #9a9385; font-size: 12.5px; margin-bottom: 16px; }
+#atlasLibraryOverlay .al-bar {
+  position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  background: rgba(11,16,23,.96); backdrop-filter: blur(6px);
+  padding: 10px 0; border-bottom: 1px solid rgba(217,180,106,.2); margin-bottom: 18px;
+}
+#atlasLibraryOverlay .al-btn {
+  border: 1px solid rgba(217,180,106,.4); background: rgba(20,29,39,.9); color: #e9dcc0;
+  padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-family: inherit;
+}
+#atlasLibraryOverlay .al-btn:hover { background: rgba(217,180,106,.18); }
+#atlasLibraryOverlay .al-btn.primary { background: rgba(217,180,106,.22); border-color: #d9b46a; color: #fff3d8; }
+#atlasLibraryOverlay .al-btn.danger { border-color: rgba(224,122,156,.5); color: #f0a9c0; }
+#atlasLibraryOverlay .al-btn.mini { padding: 3px 8px; font-size: 11px; border-radius: 6px; }
+#atlasLibraryOverlay .al-spacer { flex: 1; }
+#atlasLibraryOverlay .al-stat { font-size: 11.5px; color: #9fd8c0; }
+#atlasLibraryOverlay .al-sec-title { font-size: 16px; color: #d9b46a; margin: 18px 0 12px; }
+#atlasLibraryOverlay .al-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; }
+#atlasLibraryOverlay .al-card {
+  border: 1px solid rgba(217,180,106,.28); border-radius: 10px; overflow: hidden; cursor: pointer;
+  background: #121a23; transition: .18s;
+}
+#atlasLibraryOverlay .al-card:hover { border-color: #d9b46a; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+#atlasLibraryOverlay .al-card.dlc { border-color: rgba(159,216,192,.5); }
+#atlasLibraryOverlay .al-thumb { height: 86px; background-size: cover; background-position: center; filter: saturate(.95); background-color:#1b2735; }
+#atlasLibraryOverlay .al-cinfo { padding: 8px 10px; }
+#atlasLibraryOverlay .al-cinfo b { display: block; color: #e9dcc0; font-size: 13.5px; }
+#atlasLibraryOverlay .al-cinfo span { font-size: 10.5px; color: #9a9385; }
+#atlasLibraryOverlay .al-dlctag { font-size: 10px; color: #9fd8c0; border: 1px solid #9fd8c0; border-radius: 4px; padding: 0 4px; margin-left: 4px; }
+#atlasLibraryOverlay .al-detail {
+  background: linear-gradient(160deg,#131c26,#0d141c); border: 1px solid rgba(217,180,106,.28);
+  border-radius: 12px; padding: 18px 20px; margin-top: 14px;
+}
+#atlasLibraryOverlay .al-detail h2 { margin: 0 0 4px; color: #d9b46a; font-size: 20px; }
+#atlasLibraryOverlay .al-meta { font-size: 11.5px; color: #9fd8c0; }
+#atlasLibraryOverlay .al-note { font-size: 11.5px; color: #9a9385; font-style: italic; margin: 6px 0 12px; }
+#atlasLibraryOverlay .al-era { margin-top: 16px; }
+#atlasLibraryOverlay .al-era h3 { font-size: 13.5px; color: #e9dcc0; margin: 0 0 8px; border-left: 3px solid #9fd8c0; padding-left: 9px; }
+#atlasLibraryOverlay .al-era h3 small { color: #9a9385; font-weight: 400; }
+#atlasLibraryOverlay table { width: 100%; border-collapse: collapse; font-size: 11px; }
+#atlasLibraryOverlay th, #atlasLibraryOverlay td { border: 1px solid rgba(217,180,106,.16); padding: 4px 7px; text-align: left; vertical-align: top; }
+#atlasLibraryOverlay th { color: #d9b46a; background: rgba(217,180,106,.06); }
+#atlasLibraryOverlay tr:hover td { background: rgba(255,255,255,.03); }
+#atlasLibraryOverlay .al-nm { color: #f0e4c8; white-space: nowrap; }
+#atlasLibraryOverlay .al-where { color: #c3b79c; max-width: 360px; }
+#atlasLibraryOverlay .al-xy { color: #9fd8c0; white-space: nowrap; font-family: monospace; }
+#atlasLibraryOverlay .al-lv { color: #b8a9d8; white-space: nowrap; }
+#atlasLibraryOverlay .al-src { color: #8fa0aa; max-width: 200px; }
+#atlasLibraryOverlay .al-cat { border: 1px solid var(--c); color: var(--c); border-radius: 4px; padding: 0 5px; font-size: 10px; white-space: nowrap; }
+#atlasLibraryOverlay .al-usr { font-size: 9.5px; color: #9fd8c0; border: 1px solid #9fd8c0; border-radius: 4px; padding: 0 3px; margin-left: 3px; }
+#atlasLibraryOverlay .al-ops { white-space: nowrap; }
+#atlasLibraryOverlay .al-tip { background: rgba(159,216,192,.08); border-left: 3px solid #9fd8c0; padding: 9px 13px; border-radius: 4px; font-size: 12px; line-height: 1.75; margin-bottom: 14px; }
+#atlasLibraryOverlay .al-empty { color: #9a9385; padding: 30px; text-align: center; }
+
+/* 编辑弹窗 */
+#alEditModal { position: fixed; inset: 0; z-index: 10000; display: none; background: rgba(0,0,0,.7); align-items: center; justify-content: center; padding: 16px; }
+#alEditModal.al-open { display: flex; }
+#alEditModal .al-modal { background: #131c26; border: 1px solid rgba(217,180,106,.4); border-radius: 12px; width: min(560px, 96vw); max-height: 92vh; overflow: auto; padding: 20px 22px; }
+#alEditModal h3 { color: #d9b46a; margin: 0 0 14px; font-size: 17px; }
+#alEditModal label { display: block; font-size: 11.5px; color: #c3b79c; margin: 9px 0 3px; }
+#alEditModal input, #alEditModal select, #alEditModal textarea {
+  width: 100%; background: #0d141c; border: 1px solid rgba(217,180,106,.28); color: #efe4cc;
+  border-radius: 6px; padding: 7px 9px; font-family: inherit; font-size: 12.5px;
+}
+#alEditModal textarea { min-height: 56px; resize: vertical; }
+#alEditModal .al-row { display: flex; gap: 10px; }
+#alEditModal .al-row > div { flex: 1; }
+#alEditModal .al-mfoot { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+#alEditModal .al-hint { font-size: 10.5px; color: #9a9385; margin-top: 4px; }

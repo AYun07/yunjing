@@ -76,9 +76,6 @@
             color: var(--text-muted);
             text-decoration: none;
             margin-bottom: 18px;
-            /* v5.1.2：原来只有 15px 高（手机上点不中）→ 抬到 28px 命中区 */
-            min-height: 28px;
-            line-height: 28px;
             transition: color 0.2s;
         }
         .back-link:hover { color: var(--primary); }
@@ -140,8 +137,6 @@
             border: 1px solid var(--line);
             border-radius: 99px;
             padding: 5px 13px;
-            /* v5.1.2：原来只有 24px 高，低于 26px 的可点下限（手机上点不中）→ 抬到 28px */
-            min-height: 28px;
             cursor: pointer;
             transition: all 0.18s;
         }
@@ -283,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.5">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.0">
 </head>
 
 <body class="page-changelog">
@@ -320,51 +315,6 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
-
-        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
-            <div class="entry-head">
-                <span class="entry-ver">v5.1.5</span>
-                <span class="entry-date">2026-11-22</span>
-            </div>
-            <h3 class="entry-title">云境 v5.1.5 · 项目统一归位到 云境\ 目录 · 拉取新版本一条命令</h3>
-            <p class="entry-text">本地布局归位 + 「以后拉新版本」一条命令。 **整个云境项目统一收纳到 `云境\` 目录**：含 git 仓库、全部资源、历次发布的完整工程，与工作区里并排的其它项目彻底分开。仓库历史、标签、远端指向全部原样保留；迁移后当场复跑——8 道闸门全绿、27 个浏览器级用例 27/27 通过，说明工程本身不依赖任何绝对路径。 **新增「拉取新版本」一条命令**（Windows 双击 `拉取新版本.bat`，macOS 双击 `拉取新版本.command`）：①拉取上游最新版本 → ②在 `云境\versions\vX.Y.Z\` **自动建该版本的文件夹** → ③把该版本的**完整可用工程**放进去，并附一份「版本信息.txt」（版本号 / 提交 / 日期 / 与上一版差异链接 / 发布页链接）。每个版本文件夹都能直接用 start-windows.bat 独立运行，与仓库当前版本互不影响，方便留着旧版对比或随时回退；`node scripts\snapshot-version.mjs --list` 可列出已有快照。 **快照取数走 git archive（zip 通道）**：只导出该版本提交里的内容，不含 .git、不含未跟踪文件；仓库近 1GB（图片 493MB + 视频 469MB），归档流直接写盘、不整包进内存（否则 ENOBUFS）；Windows 的 tar 遇到仓库里的中文文件名会报「Error opening archive」，故改用 zip + Expand-Archive（UTF-8 文件名稳定得多）。另提供 `--no-media`（不含视频素材，体积小很多）与 `--force`（覆盖已有快照）。 **踩过的坑都留了痕**：快照目录正被本地静态服务占用时，现在给出明确提示而不是抛 EPERM 崩掉；工具脚本不再写死绝对路径（仓库根一律由 __file__ 推导，整个项目挪目录也不受影响）。</p>
-        </article>
-
-        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
-            <div class="entry-head">
-                <span class="entry-ver">v5.1.4</span>
-                <span class="entry-date">2026-11-22</span>
-            </div>
-            <h3 class="entry-title">云境 v5.1.4 · 新增不需密钥的端到端闭环用例 · 消除 CI 偶发假红</h3>
-            <p class="entry-text">给「玩家最常走的那条路」补上守门人：新增一条**不需要任何 API Key** 的端到端闭环用例，并把上一版 CI 偶发假红的判定口径修正掉。 **新增 t_player_local：端到端玩家闭环（不需密钥，已进 CI）**。此前的 26 个浏览器级用例里，主线闭环（建角 → 存档 → 切档 → 导出 → 导入 → 刷新恢复）没有任何一条完整覆盖；而需要真模型的用例又因为「密钥由玩家自配」不能进 CI——于是玩家最常走的那条路实际上没人守，一次存档路径的改动就可能悄悄弄坏它。新用例只走纯本地能力，逐条断言：①大厅 → 进入某界（真实链接）→ 创作室核心模块就绪；②**未配 API 时点「开始创作」必须有明确引导**（系统提示 + 自动打开接口设置，不能静默无反应）；③本地设定立场/身份/关系（不调模型）；④写正文并落盘、可从 localStorage 读回；⑤新建第二档 → 切档 → 切回主档 → 主档正文还在；⑥导出全量备份（**真实下载**，校验文件落地且是合法 JSON/gzip）；⑦**先把存档标题改坏，再走全量恢复** → 备份能把数据原样盖回来（备份的意义就在这儿，之前只验了「接口存在」等于没验）；⑧刷新页面后存档仍在；⑨全程零 pageerror。命名特意用 t_player_local 而非 t_player：后者是需要真密钥、CI 会跳过的用例；本用例不需要任何密钥。 **修正 t_concurrency 的判定口径（消除 CI 偶发假红）**。旧口径要求三个标签页的**整个 localStorage 键集合**完全一致，但应用自己的运行时键（时间戳、每标签各自的运行态）本来就可能各标签不同——CI 上真抓到过：三次写入全 ok、探针键 75 条齐全，却因 keySetsConsistent=False 判红。现在只比较本用例自己写的 probe_conc_* 探针键（三标签互相可见且一致、探针键 ≥75、无坏 JSON、写入无异常），这才是该场景真正要守的不变量；反向灵敏度自检同步更新，并补了一条「非探针键各标签不同不应判红」的正向样本。 **本轮回归**：8 道 CI 闸门全绿；浏览器级用例由 26 个增至 **27 个，全部通过**；端到端用例本地单跑 10/10。</p>
-        </article>
-
-        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
-            <div class="entry-head">
-                <span class="entry-ver">v5.1.3</span>
-                <span class="entry-date">2026-11-22</span>
-            </div>
-            <h3 class="entry-title">云境 v5.1.3 · 存储满不再假成功 · 新增首屏载荷闸门</h3>
-            <p class="entry-text">健壮性一轮：把「存储满时的假成功」和「首屏悄悄变胖」这两类隐患钉死。 **存储配额满时的「假成功」修掉（三处）**：①知识库新增/修改/删除条目——旧实现先把条目塞进内存再落盘，配额满时落盘失败但条目仍留在面板里，玩家以为存上了，刷新后却凭空消失；现在落盘失败会**撤销本次改动**，并明确提示「没存上，已撤销，刷新不会留下半条数据」。②新建存档档——注册表写失败原本是空 catch、零提示，刷新后新档连同存进去的内容一起消失；现在写失败会回滚并抛出可读错误，界面提示「这次没存上（刷新后会还原）」。③知识库开关与接口配置的失败提示此前已具备，本版用故障注入一并复测确认仍有效。 **新增第 ⑧ 道闸门：首屏载荷预算**（scripts/size-budget.mjs + scripts/size-budget.json）。首屏**时序**指标随机器与网络波动，做成 CI 闸门必然变成红绿灯噪声；但首屏**静态载荷**是确定的——某个模块被不小心从懒加载挪回静态、或有人往 index.html 塞了个大文件，都会让首屏字节悄悄膨胀而没人察觉。现在锁字节不锁毫秒：大厅静态 CSS+JS ≤ 560KB、创作室 ≤ 830KB，静态脚本个数也设了上限；CI 每次提交都会校验，超了直接失败并说明差多少（确认有意为之可跑 --init 重写预算）。 **性能基线（首次量化，供参考）**：大厅 FCP 约 0.6~0.8 秒（本地静态服务器环境），首屏静态载荷 487KB；创作室 FCP 约 0.24 秒、首屏静态载荷 728KB，另有 91 个模块共 3.8MB 走「首屏后分帧加载 / 首次交互再预取」的懒加载，设计上不阻塞首屏；世界书单界注入 57ms；仓库体积：运行时代码 20.9MB、世界书数据 14.9MB、图片 493MB、视频 469MB（视频不参与预缓存）。 **验收结论**：8 道 CI 闸门全绿；26 个浏览器级用例全绿；存储配额故障注入（让 localStorage.setItem 一律抛 QuotaExceededError）逐条走存档落盘/知识库增删改/资料库开关/新建档位/接口配置五条写入路径，均有玩家可见提示、无未捕获异常、无内存与磁盘不一致。</p>
-        </article>
-
-        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
-            <div class="entry-head">
-                <span class="entry-ver">v5.1.2</span>
-                <span class="entry-date">2026-11-22</span>
-            </div>
-            <h3 class="entry-title">云境 v5.1.2 · 升级不丢离线 · 极窄屏不溢出 · 小热区可点</h3>
-            <p class="entry-text">稳定性与鲁棒性一轮：把「升级即丢离线」「小屏横向溢出」「小热区点不中」这三类玩家真会遇到的问题收干净。 **Service Worker 升级鲁棒性**：此前 activate 阶段会**立刻删掉上一版缓存**，而新版本的预热要十几秒——升级后这段时间只要断网，玩家既没有新版缓存、又把旧版删了，离线内容直接归零（比不升级还糟）。现在旧缓存先留着（caches.match 跨缓存查找天然当兜底），等新版本预热完成再清理；预热失败超过 5 项就保留旧缓存——离线可用性优先于磁盘整洁。 **极窄屏（≤380px）顶栏不再横向溢出**：320px 小屏（iPhone SE 一代等）下，返回键 + 标题 + 4 个顶栏按钮合计超过视口，整页横向滚动 7px（实测 doc=327 / vw=320）。现在极窄屏收紧按钮内边距与字号、标题用省略号截断，按钮始终完整可见——不做「容器内横向滚动」（那会把按钮推出视口，反被移动端体检判红）。真机模拟（is_mobile + touch，body.mobile 规则生效）下 320/360/390 三档复测：溢出 0、小热区 0。 **小云创造中枢窄屏卡片溢出**：xiaoyun.html 的卡片栅格固定 minmax(330px,1fr)，320px 下轨道被撑到 330px → 整页横向滚动 30px。改用 minmax(min(330px,100%),1fr)，小屏自动退化为单列。 **小热区统一抬到 28px**：小云面板的形态切换键（24px）与归位键（22px）、版本页的 12 个筛选按钮（24px）与返回链接（15px）都低于 26px 的可点下限，手机上点不中。视觉几乎不变，命中区统一抬到 28px；版本页正文里的行内文字链接保持原样（行内链接不属于独立点击目标）。 **验收结论**：本地连续两轮全量浏览器级用例 26/26 全绿（无 flaky）；7 道 CI 闸门全绿；多视口体检（320/360/375/414/768/1024/1440 × 大厅/创作室/小云/版本页/多界创作室）横向溢出与小热区全部归零。</p>
-        </article>
-
-        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
-            <div class="entry-head">
-                <span class="entry-ver">v5.1.1</span>
-                <span class="entry-date">2026-11-21</span>
-            </div>
-            <h3 class="entry-title">云境 v5.1.1 · 全量挑刺修复：小云超时可中止 · 货币清洗解耦 · 离线提速 · 验收进 CI</h3>
-            <p class="entry-text">全量挑刺修复版：把 v5.1.0 自带的两道红 CI、三处崩溃级缺陷、以及「最有价值的那层测试从未进 CI」的流程漏洞一次性收口。 **小云挂死修复（P1）**：此前小云的三处大模型调用是裸 fetch，接口一旦挂死（对端不回、代理半开），请求永不落地，thinking 锁永不释放，之后所有消息被静默丢弃，且面板里没有停止键——玩家既看不到原因也按不了停止，小云就此永久失灵。现改为 AbortController + 120 秒超时（截止时间独立计时，不依赖底层 fetch 是否理会 signal），面板新增「⏹ 停止」键，超时/失败/中止都会给玩家一句看得懂的提示。语义解读引擎（semantic-engine）的请求同样补上超时，此前接口挂死会让整条 enrich 链永久挂起。 **数值真值清洗解耦（P1）**：货币/资源数量的模糊化此前整条挂在「引擎里有没有金币真值」上——自由人生、地球、新档开局等无数值快照的界，AI 编造的「木剑才卖 5 金币」会原样进入正文，而本模块存在的意义就是拦它。现改为：有真值按白名单放行（合法余额/报酬不动），无真值也模糊化带货币单位的数字；裸数字、中文数字、百分比、日期、进度对一律不碰，零误伤面不变。上游自带的验收脚本 t_body_probe 由此转绿。 **PWA 离线可用性（P2）**：install 阶段原先用 cache.addAll（原子操作），任何一条取不到就整批归零，且异常被 .catch(()=&gt;{}) 吞掉——SW 照样安装成功，缓存里却什么都没有。后台预热「每 150ms 取 2 个」要跑约 60 秒，这期间断网后进入任何没访问过的界都会半残（实测：页面正文 79 字、14+ 个核心脚本 ERR_FAILED、0 张世界卡）。现改为：install 分批 allSettled + 失败可见；预热提速到 6 个/60ms、外壳优先，约 10 秒补完全量；补进此前漏掉的 js/kb/names.js 与 36 张小云立绘（离线开图鉴不再破图）；本地 http://127.0.0.1 / localhost 也是安全上下文，一并注册 Service Worker。实测：干净上下文断网后进入从未访问过的界，0 个失败请求、0 张破图、正文 3216 字。 **行旅图鉴崩溃修复（P1）**：舆图三件套是懒加载的，玩家在数据到位前打开图鉴时，某些界的 layers 或某层的 nodes 还没挂上，旧代码直接 .forEach/.some/.find → TypeError（真 Chrome 复现「Cannot read properties of undefined」），headless 下甚至会把渲染进程跑崩。现全部按空数组兜底，先渲染「舆图加载中」占位，数据到位后自动重绘；土豆宇宙四界（大主宰/武动乾坤/元尊/万相之王）此前会被通用兜底配置占住、真实舆图再也并不进来（永远显示「行迹图鉴」），现允许兜底配置被真实数据替换。 **验收体系进 CI（P2）**：此前 25 个浏览器级脚本（正文清洗端到端、移动端触控、存档持久化、并发、浸泡、压力…）从不在 CI 里跑，所以「货币不洗」「19×44px 的关闭按钮」这类红灯可以长期挂着。现新增 browser job：装 Playwright+Chromium、起 8899 静态服务、跑 25 个不依赖模型接口的浏览器级用例并上传产物；run-all.mjs 修掉 --json 模式崩溃并新增 --only/--no-key。**模型接口一律由玩家自行配置，仓库不存密钥、CI 也不需要密钥**（需密钥的 8 个用例只供维护者本地手动跑）。同时：17 个测试脚本不再写死 /workspace/yunjing 与 /tmp（新增 _paths.py 统一按仓库位置推导）；t_kb_load_v410 / t_registry_v410 原固定等 650~700ms 而世界书与注册表都是懒加载，误报「空库 36」「五新界缺失」，改为等目标就绪后实测 38 界 31846 条、9/9 通过；t_atlas_406 改用全量 Chrome（Playwright 的 headless shell 渲染本项目舆图 SVG 会随机崩渲染进程，是其自身缺陷，换全量 Chrome 38 界全过）。 **版本同源与其它规范（P3）**：v5.1.0 自带两道红 CI——版本同源（number-scrubber 模块号还写 4.48.0、README 逐版表首行还是 v4.48.0 却标「当前」）、网络韧性（就是上述裸 fetch）。现已全部转绿，并把版本戳同步扩到 &amp;v= 形式（index.html 44 处入口链接的历史版本号）、修正版本计数口径（此前漏统计「同批发布」标记行，README 102 版 vs VERSIONS 101 版）、统一 README/VERSIONS 三处互相矛盾的版本数。另：两个随仓库发布的页面必然 4 张破图（引用了被 .gitignore 排除的验收实拍）→ 改为缺图时显示说明框；移动端 19×44 与 14×44 的关闭键 → 放大到 32×32 命中区；35 处原生 alert（阻塞 UI、与全站 toast 体系割裂）→ 新增 yjAlert() 统一走 toast；生产代码 92 处 console.log → console.debug。 **上游坏树修复**：origin/main 的树里有 4 个文件名被写坏（首字符是字面引号且含反斜杠），read-tree/checkout 会直接报 invalid path——任何平台、任何人都检不出 v5.1.0。这 4 个条目与树中同名正常文件是同一个 blob，删除后内容零损失，本版已修。 **回归结果**：7 道 CI 闸门全绿（语法 412/0、版本同源、预缓存、核心回归 34/0、网络体检、世界书体检、项目自检 71/71）；离线套件 9/9；浏览器级套件 25/25（修复前 16/25）。</p>
-        </article>
 
         <article class="log-entry" data-tags="版本 发布 语义引擎 大模型 双重解读 成本治理" style="--entry-hue:#7a5ac0;">
             <div class="entry-head">
@@ -1071,7 +1021,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.5 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

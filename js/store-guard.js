@@ -99,5 +99,5 @@
     rescue: rescue
   };
   rescue();
-  console.debug('[StoreGuard] 存储防线就绪(镜像+配额自愈)');
+  console.log('[StoreGuard] 存储防线就绪(镜像+配额自愈)');
 })();

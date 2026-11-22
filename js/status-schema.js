@@ -690,7 +690,7 @@
     },
     setAdult: function (on) {
       if (on && !adultConfirmed()) {
-        yjAlert('请先在「⚙ 接口 → 内容尺度」里确认已成年，再来开启。');
+        alert('请先在「⚙ 接口 → 内容尺度」里确认已成年，再来开启。');
         render(); this.openSettings(); return;
       }
       setAdult(on);
@@ -750,7 +750,7 @@
       var nv = prompt('修改「' + f.label + '」（留空表示清空）：', cur);
       if (nv == null) return;
       if (writeField(f, nv)) { render(); if (window.showToast) window.showToast('已更新 ' + f.label, 'ok'); }
-      else yjAlert('写入失败：故事尚未初始化。');
+      else alert('写入失败：故事尚未初始化。');
     },
     closeMultiEditor: closeMultiEditor,
     multiAdd: function () {
@@ -790,7 +790,7 @@
       if (writeField(_multiF, vals)) {
         closeMultiEditor(); render();
         if (window.showToast) window.showToast('已保存 ' + vals.length + ' 项到「' + _multiF.label + '」', 'ok');
-      } else yjAlert('写入失败：故事尚未初始化。');
+      } else alert('写入失败：故事尚未初始化。');
     },
     openSettings: function () {
       var m = document.getElementById('yjStatusSettings');

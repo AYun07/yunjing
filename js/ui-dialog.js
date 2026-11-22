@@ -100,7 +100,7 @@ const UIDialog = /* @__PURE__ */ (() => {
       return wait(root, "confirm");
     },
     /** 提示框 → Promise<void> */
-    yjAlert(opts) {
+    alert(opts) {
       const { root } = render(opts, "alert");
       return wait(root, "alert").then(() => {
       });

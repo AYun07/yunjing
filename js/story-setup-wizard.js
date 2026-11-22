@@ -1740,7 +1740,8 @@ const StorySetupWizard = {
 主角小传（玩家亲笔，际遇与抉择须与之自洽）：${setup.heroBio}` : ""}`;
     }
     const safeOpening = window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()) ? window.VariableAI.sanitizePrompt(openingInstruction) : openingInstruction;
-    await window.StoryInput.send(safeOpening);
+    /* v5.2.1：这处开局 send 补 silent 标记，与前两处一致——开篇正文不算玩家回合，世界保持静止直至玩家首次指令 */
+    await window.StoryInput.send(safeOpening, { silent: true });
   }
 };
 window.StorySetupWizard = StorySetupWizard;

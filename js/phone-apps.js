@@ -1945,7 +1945,7 @@ ${panel.contactBrief()}` : "",
           this.snakeDir(Math.abs(dx) > Math.abs(dy) ? dx > 0 ? "right" : "left" : dy > 0 ? "down" : "up");
         }, { passive: true });
       }
-      console.debug("[PhoneApps] 🏠 手机分身·App 生态就位（锁屏 / 桌面 / 音乐 / 短视频 / 相册 / 天气 / 计算器 / 时钟 / 贪吃蛇）");
+      console.log("[PhoneApps] 🏠 手机分身·App 生态就位（锁屏 / 桌面 / 音乐 / 短视频 / 相册 / 天气 / 计算器 / 时钟 / 贪吃蛇）");
     }
   };
   window.PhoneApps = PhoneApps;

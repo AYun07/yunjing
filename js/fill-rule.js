@@ -54,7 +54,20 @@
   /* ---------- 契约分叉：给 AI 的填表指令 ----------
      由 buildReportDirective() 追加到状态栏上报契约末尾，两种模式给出截然不同的行为准则。 */
   function directive() {
-    return isStrict() ? strictDirective() : freeDirective();
+    var base = isStrict() ? strictDirective() : freeDirective();
+    /* v6.3.7：严格演算下追加「本世界境界数值比对」契约（原著阶梯钉死 + 跨境界越级规则）。
+       free 模式玩家说了算，不注入境界钳制。CompareEngine/RealmRules 缺失或异常时静默跳过，不影响原逻辑。 */
+    if (isStrict()) {
+      try {
+        var genre = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey)
+          || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('genre')) || '';
+        if (genre && window.CompareEngine && window.CompareEngine.contractLine) {
+          var line = window.CompareEngine.contractLine(genre);
+          if (line) base += '\n' + line;
+        }
+      } catch (e) { /* 境界契约异常不影响填表规则 */ }
+    }
+    return base;
   }
 
   function strictDirective() {
@@ -79,6 +92,27 @@
   function shouldEnforceEngine() { return isStrict(); }   // applyStatDelta 钳制
   function shouldSettleGrowth() { return isStrict(); }    // settleTimeGrowth 自动补涨
 
+  /* ---------- v6.3.6 玩家每轮明确要求识别 ----------
+     默认 strict 卡死，但玩家在某轮发言里用「强指令句式」明确要数值/境界/物品/身份时，
+     该轮数值写入按 free 放行，无需手动切模式。只认明确祈使，不把普通剧情叙述当要求，
+     控制误报。返回 true=本轮玩家明确要求放行。 */
+  var PLAYER_WANT_PATTERNS = [
+    /我\s*(?:直接|立刻|马上)?\s*(?:突破|晋级|升到|到达|达到|变成|拥有|获得|得到|有)\s*(?:到)?\s*(?:筑基|金丹|元婴|化神|炼虚|合体|大乘|渡劫|仙人|神|魂圣|魂帝|魂王|斗罗|[一二三四五六七八九十百千万\d]+\s*(?:阶|级|层|环|重|段))/i,
+    /(?:给我|赏我|赐我|我要|我想要|我要一?件?|请给我|直接给我|我要成为|我要拥有)\s*(?:一?[件把颗枚座个数只头名]?)?\s*(?:神器|仙器|法宝|神兵|至宝|丹药|功法|灵药|魂环|魂骨|武器|装备|身份|血脉|天赋|灵根)/i,
+    /(?:我\s*有|我\s*得到|我\s*获得|我\s*拿到)\s*[一二三四五六七八九十百千万\d]+\s*(?:个|枚|件|条|道|只|头|阶|级|层|环|重)/i,
+    /(?:直接|立即|马上)\s*(?:把|将)?\s*(?:我的)?\s*(?:修为|境界|等级|属性|数值|灵力|魂力|力量|体质)\s*(?:提到|拉到|涨到|升到|设为|变成|加到)\s*[一二三四五六七八九十百千万\d]+/i,
+    /(?:无视规则|打破规则|不受限制|我要开挂|开挂|作弊|口胡吧|随便写|我要\d+\s*点|给我\d+\s*点)/i
+  ];
+  function playerWantsException(text) {
+    if (!isStrict()) return false;   // free 模式本来就放行，无需识别
+    var s = String(text || '');
+    if (!s) return false;
+    for (var i = 0; i < PLAYER_WANT_PATTERNS.length; i++) {
+      if (PLAYER_WANT_PATTERNS[i].test(s)) return true;
+    }
+    return false;
+  }
+
   /* ---------- 面板开关 HTML（嵌入 status-schema 设置面板） ---------- */
   function settingsHTML() {
     var m = mode();
@@ -89,7 +123,11 @@
         '<button type="button" class="yj-fill-opt' + (m === 'free' ? ' on' : '') + '" onclick="FillRule.setFromUI(\'free\')">' +
           '<b>🪶 玩家自由</b><i>玩家说有什么就有什么，玩家说了算</i></button>' +
       '</div>' +
-      '<div class="yj-set-note">' + meta().desc + '。切换立即生效，随存档保留。</div>';
+      '<div class="yj-set-note">' + meta().desc + '。切换立即生效，随存档保留。</div>' +
+      /* v6.3.7 境界数值比对入口：查看本世界原著阶梯、跨境界越级比对、自创体系对标 */
+      '<div class="yj-set-sec">境界数值比对（v6.3.7）</div>' +
+      '<div class="yj-set-note">原著境界阶梯已钉死；顶级天骄可跨境界对敌、极境按原著明示、玩家自创体系按能级对标——均给出数值比对报告。</div>' +
+      '<button type="button" class="btn-ghost btn-mini" onclick="window.ComparePanel && ComparePanel.open()" title="查看本世界境界阶梯 / 跨境界比对 / 自创体系对标">⚔ 打开境界比对面板</button>';
   }
 
   function setFromUI(v) {
@@ -112,6 +150,7 @@
     isStrict: isStrict, isFree: isFree, meta: meta,
     directive: directive,
     shouldEnforceEngine: shouldEnforceEngine, shouldSettleGrowth: shouldSettleGrowth,
+    playerWantsException: playerWantsException,
     settingsHTML: settingsHTML, flagHTML: flagHTML
   };
 })();

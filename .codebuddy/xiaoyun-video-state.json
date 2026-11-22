@@ -1,0 +1,530 @@
+{
+ "aojiao/wave": {
+  "status": "downloaded",
+  "file": "xiaoyun-aojiao-wave.mp4",
+  "size": "997KB"
+ },
+ "aojiao/happy": {
+  "status": "downloaded",
+  "file": "xiaoyun-aojiao-happy.mp4",
+  "size": "1496KB"
+ },
+ "yu/happy": {
+  "status": "downloaded",
+  "file": "xiaoyun-yu-happy.mp4",
+  "size": "1107KB"
+ },
+ "luo/happy": {
+  "status": "downloaded",
+  "task_id": "task_3wLHf5dfKAGFI3OyEFBbREOYR5dGuwuv",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMTU5YmUyMzI4MDMxMGY2OGM3NDA2YzFlNjI4NzgyMmYzN2QxNDk3NzAwYjBiNWU5O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_159be23280310f68c7406c1e6287822f37d1497700b0b5e9.mp4",
+  "file": "xiaoyun-luo-happy.mp4",
+  "size": "1368KB",
+  "at": "2026-11-18T02:30:36.962384"
+ },
+ "luo/wave": {
+  "status": "downloaded",
+  "task_id": "task_3AnGpUbjmTnPUJ0mPeOJx1pDdSuyBDly",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMGI5NGQ5YWY4ODA4NGExZjgwNjc3YmQzYjA0NjUwMjhkOTZkMzgyZjgyMzI1M2ViO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_0b94d9af88084a1f80677bd3b0465028d96d382f823253eb.mp4",
+  "file": "xiaoyun-luo-wave.mp4",
+  "size": "880KB",
+  "at": "2026-11-18T02:30:39.602646"
+ },
+ "luo/battle": {
+  "status": "downloaded",
+  "task_id": "task_J1x9BEB9J5CYFbC56aCp8ZjG9r2tvIaP",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZDdlN2QyOTA2ODlhNWQyNzcyOWMxY2JmYzM0ODY2ZWUzMDZkZDdlZGY2NGQ2NWQxO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_d7e7d290689a5d27729c1cbfc34866ee306dd7edf64d65d1.mp4",
+  "file": "xiaoyun-luo-battle.mp4",
+  "size": "1439KB",
+  "at": "2026-11-18T02:32:23.940483"
+ },
+ "luo/chibi": {
+  "status": "downloaded",
+  "task_id": "task_6JzzeSkkXTbmVhB9BMe2xkJN84i8lnZ8",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMjQ2NjAyZDA3YjM0ZjgyODBhNjQ2ODYwMWQ2NGI1Njk0MjZmYjM4ZDVkOGYzZDhmO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_246602d07b34f8280a6468601d64b569426fb38d5d8f3d8f.mp4",
+  "file": "xiaoyun-chibi-luo.mp4",
+  "size": "977KB",
+  "at": "2026-11-18T02:32:26.468406"
+ },
+ "luo/face": {
+  "status": "downloaded",
+  "task_id": "task_lGjgDuWhgIMTqCVnKW4gIEyc1V9kdhBb",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYTEyNjAyMTI5ZjAzZTA3ZWEyMDZhNTFkYmRmY2UxMmZhMTZlYmM5NjllYWZlMWRjO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_a12602129f03e07ea206a51dbdfce12fa16ebc969eafe1dc.mp4",
+  "file": "xiaoyun-face-luo.mp4",
+  "size": "573KB",
+  "at": "2026-11-18T02:34:10.220026"
+ },
+ "yu/wave": {
+  "status": "downloaded",
+  "task_id": "task_hNKlOamLnJM9RPQ71kRHUywmsnZtZA6n",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMjk1ZGIzZDY0NmJkYzcxYzhkNTdmNDIyNmZiZWM1ZWZjMzk4YzU2NWVmM2U5YWY4O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_295db3d646bdc71c8d57f4226fbec5efc398c565ef3e9af8.mp4",
+  "file": "xiaoyun-yu-wave.mp4",
+  "size": "567KB",
+  "at": "2026-11-18T02:34:12.572366"
+ },
+ "yu/battle": {
+  "status": "downloaded",
+  "task_id": "task_WVpyW2ncdQBowq27Gix1ciWpYvowezPE",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZDkzNjg3ZDg0NGM0YjE4MWVhZjlmZjFjOGZmMzQ1OGU3YzM3YjhkMDUyNGI2MGViO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_d93687d844c4b181eaf9ff1c8ff3458e7c37b8d0524b60eb.mp4",
+  "file": "xiaoyun-yu-battle.mp4",
+  "size": "1107KB",
+  "at": "2026-11-18T02:35:57.021669"
+ },
+ "yu/chibi": {
+  "status": "downloaded",
+  "task_id": "task_2aAnWmZvAcaaIF2qHnhzaem3mRnHIdc2",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fN2EyMjhkM2Y5MDU3MTAwMGU2NzA2ODdmYzgxYmQwY2NjNTI3ZmVjYzgzMjhiYTlkO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_7a228d3f90571000e670687fc81bd0ccc527fecc8328ba9d.mp4",
+  "file": "xiaoyun-chibi-yu.mp4",
+  "size": "755KB",
+  "at": "2026-11-18T02:35:59.333535"
+ },
+ "yu/face": {
+  "status": "downloaded",
+  "task_id": "task_5hZI4xlfRh5RwJOK0N7vX6eZXCBAFZtO",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMTFiYzUzM2E0ZDdlZWFkZDI2MjNmNWUwYmVjYmYzMTRmZjlkMjcxNmU5YTkwYzU1O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_11bc533a4d7eeadd2623f5e0becbf314ff9d2716e9a90c55.mp4",
+  "file": "xiaoyun-face-yu.mp4",
+  "size": "516KB",
+  "at": "2026-11-18T02:37:42.724114"
+ },
+ "jiaohua/happy": {
+  "status": "downloaded",
+  "task_id": "task_5yzKBmutCBC4ICRNwHolIcr7ilKdDCHU",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZTAzY2QzZDA1NDcwOWJjYTk5ZmYyMzU1NWU3ZmZlNGU5MjE2OTdlYWUxZDQ0MzAzO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_e03cd3d054709bca99ff23555e7ffe4e921697eae1d44303.mp4",
+  "file": "xiaoyun-jiaohua-happy.mp4",
+  "size": "1759KB",
+  "at": "2026-11-18T02:37:45.788590"
+ },
+ "jiaohua/wave": {
+  "status": "downloaded",
+  "task_id": "task_26a8DM08d3eiH3qlrQWWiC6wTJkQfo5t",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZjNhMTcxYmU5ZDE4NDZlMGZmMGNhNDhhMWU0ZjYzNDdmODYwNmEwNjc5N2E3ZmNmO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_f3a171be9d1846e0ff0ca48a1e4f6347f8606a06797a7fcf.mp4",
+  "file": "xiaoyun-jiaohua-wave.mp4",
+  "size": "1036KB",
+  "at": "2026-11-18T11:16:39.391643"
+ },
+ "jiaohua/battle": {
+  "status": "downloaded",
+  "task_id": "task_0YkuO7qtiIk2HsHExxklN45HwSafBY4J",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZTMzOTk2NTI4NjUzY2M3ZjhhYmUxNzhmNDM2MWM3ZGI4NGUyZGQ5NzhiZjEyNDQ0O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_e33996528653cc7f8abe178f4361c7db84e2dd978bf12444.mp4",
+  "file": "xiaoyun-jiaohua-battle.mp4",
+  "size": "1342KB",
+  "at": "2026-11-18T11:16:42.726595"
+ },
+ "jiaohua/chibi": {
+  "status": "downloaded",
+  "task_id": "task_kCfXecQtZH4nhOZ7KsyLsCaDyYzhgd7E",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fM2M4ZWMxNDYwNGI2Yjg0OWRjOWVjOTY4OThjMjRkMTgzOTQ0OTAyMmNlZTE3NGVjO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_3c8ec14604b6b849dc9ec96898c24d1839449022cee174ec.mp4",
+  "file": "xiaoyun-chibi-jiaohua.mp4",
+  "size": "916KB",
+  "at": "2026-11-18T11:18:32.615935"
+ },
+ "jiaohua/face": {
+  "status": "downloaded",
+  "task_id": "task_hK1tmmvLkwTgrQzPkpGaEYrIN3F17OSs",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fOGM0ZDBjZjkwODY1MThjNTczM2M3ZmY1ZmY0MDRlYTA0ZDBkNGE1MjI4ZWExNDNlO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_8c4d0cf9086518c5733c7ff5ff404ea04d0d4a5228ea143e.mp4",
+  "file": "xiaoyun-face-jiaohua.mp4",
+  "size": "602KB",
+  "at": "2026-11-18T11:18:35.709143"
+ },
+ "qingchun/happy": {
+  "status": "downloaded",
+  "task_id": "task_DluRfAhP2LTkcMo0RcwRZMxBnglx55wa",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fOGFiMWQ4YzVhNTE2M2RjMDE2OGY1N2I3NDRkYjBhZjNjNjVhNzQwY2IxYTFiYWMzO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_8ab1d8c5a5163dc0168f57b744db0af3c65a740cb1a1bac3.mp4",
+  "file": "xiaoyun-qingchun-happy.mp4",
+  "size": "1178KB",
+  "at": "2026-11-18T11:20:23.535864"
+ },
+ "qingchun/wave": {
+  "status": "downloaded",
+  "task_id": "task_KlmHtP8vNlPlRLNT1HVx1DQKVkVJCpXg",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYWZlY2Y4ZTkwNGExZjZhOWVjMzQzZWYwODI2N2Q3OTdlMzlhOWQ1ZTc0ZWNiNjM0O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_afecf8e904a1f6a9ec343ef08267d797e39a9d5e74ecb634.mp4",
+  "file": "xiaoyun-qingchun-wave.mp4",
+  "size": "1238KB",
+  "at": "2026-11-18T11:20:27.247524"
+ },
+ "qingchun/battle": {
+  "status": "downloaded",
+  "task_id": "task_xuzmVtuLI3I5USEtvZrzt1DkMk25fN3v",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNGNkMTRlNGM0ODFjMjRlYTliNGRkZWEyM2I4NDA5MGI0ZDJjOTk4MzMyODBjMzUwO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_4cd14e4c481c24ea9b4ddea23b84090b4d2c99833280c350.mp4",
+  "file": "xiaoyun-qingchun-battle.mp4",
+  "size": "1553KB",
+  "at": "2026-11-18T11:27:57.885385"
+ },
+ "qingchun/chibi": {
+  "status": "downloaded",
+  "task_id": "task_JZt10iFhblfRYkUBIYiRvnmIsmbV2bOH",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNTlmYzU1OGU2ZGU3ZmNkMTkzYWZkOTc3NDY1NzczYWZkMmI2MTFiZDQyYmU0ZGViO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_59fc558e6de7fcd193afd977465773afd2b611bd42be4deb.mp4",
+  "file": "xiaoyun-chibi-qingchun.mp4",
+  "size": "776KB",
+  "at": "2026-11-18T11:28:01.431092"
+ },
+ "qingchun/face": {
+  "status": "downloaded",
+  "task_id": "task_LwX9bt758b3Kn6CWIkPuk0SOf3msdwsD",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZmRjMzZkOWMwYTczNGQyZTQ2MjE4M2ZiMzUzYjMyNGNkZWEwOGUxMDQ0NzdhN2Q2O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_fdc36d9c0a734d2e462183fb353b324cdea08e104477a7d6.mp4",
+  "file": "xiaoyun-face-qingchun.mp4",
+  "size": "534KB",
+  "at": "2026-11-18T11:29:26.770712"
+ },
+ "linjia/happy": {
+  "status": "downloaded",
+  "task_id": "task_7XejQF2hD7Wlq2BEZbaypklCsaVpm06w",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMjI4NTM5NjQ0NWMzYTMzNDQzOGM2MmIwZjQwZWJiOTNkYjI0YmJkZDg3ODZkOTc1O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_2285396445c3a334438c62b0f40ebb93db24bbdd8786d975.mp4",
+  "file": "xiaoyun-linjia-happy.mp4",
+  "size": "925KB",
+  "at": "2026-11-18T11:29:29.300986"
+ },
+ "linjia/wave": {
+  "status": "downloaded",
+  "task_id": "task_YtCu0Sf7XVG19nXjkmamcXJJYwi632oO",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMWE4ODhiZjYyNWM2ZGYyNGQ4Y2E2ZmJkOTI0ODlhOWMzOGZkZDJiNjM0MmM5YjMyO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_1a888bf625c6df24d8ca6fbd92489a9c38fdd2b6342c9b32.mp4",
+  "file": "xiaoyun-linjia-wave.mp4",
+  "size": "637KB",
+  "at": "2026-11-18T11:31:22.532362"
+ },
+ "linjia/battle": {
+  "status": "downloaded",
+  "task_id": "task_cTLP5C1CdSROKrJemjQmLzaObNSQkFBH",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYzNhZGVkZTUzNGI1NzY3MDM0ZGM1NDUxMzhiZWZkNGYyMTQ4Njc2MTg3ZjBkODkzO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_c3adede534b5767034dc545138befd4f2148676187f0d893.mp4",
+  "file": "xiaoyun-linjia-battle.mp4",
+  "size": "1177KB",
+  "at": "2026-11-18T11:31:26.249528"
+ },
+ "linjia/chibi": {
+  "status": "downloaded",
+  "task_id": "task_3XEwKwaep3XjHdv7BujceSluO7MCc2xk",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZmVjMDQyOTMwYjcxYmU4NzAxYThiNzk1ZmRkNDBkZDk3NzI3NzUxNjk2YmUwMGVmO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_fec042930b71be8701a8b795fdd40dd97727751696be00ef.mp4",
+  "file": "xiaoyun-chibi-linjia.mp4",
+  "size": "689KB",
+  "at": "2026-11-18T11:33:18.989828"
+ },
+ "linjia/face": {
+  "status": "downloaded",
+  "task_id": "task_Ec0W6483fSpVWyj2pDedfAW0PT78BT4F",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZmVjNjY1NGMyZDE3MmViZTQ3NmVmNWJlOTI0MmRmMDRlYmYxYWY0MjNhNzVjN2FlO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_fec6654c2d172ebe476ef5be9242df04ebf1af423a75c7ae.mp4",
+  "file": "xiaoyun-face-linjia.mp4",
+  "size": "470KB",
+  "at": "2026-11-18T11:33:21.848268"
+ },
+ "kusa/happy": {
+  "status": "downloaded",
+  "task_id": "task_PxH1h3Gyi2h5h3E58FQA59h3Z0yyYugG",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYTM5YmYxZTRlYmI5MGYyNTBlYzg0OGM1N2IyOTE0ZjEzNGZmMjlhMTNjY2Y1N2U0O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_a39bf1e4ebb90f250ec848c57b2914f134ff29a13ccf57e4.mp4",
+  "file": "xiaoyun-kusa-happy.mp4",
+  "size": "1725KB",
+  "at": "2026-11-18T11:35:10.691651"
+ },
+ "kusa/wave": {
+  "status": "downloaded",
+  "task_id": "task_v0M3z5Nu4IrLwAfzPGfdQAJIscl041bk",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNjQ3YzYwMDc3NGNlMTRiMmVkOWRmZDcyYTgxNzY2MTczOTZiMjk0NzE0MWRlY2RhO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_647c600774ce14b2ed9dfd72a8176617396b2947141decda.mp4",
+  "file": "xiaoyun-kusa-wave.mp4",
+  "size": "1155KB",
+  "at": "2026-11-18T11:35:14.006805"
+ },
+ "kusa/battle": {
+  "status": "downloaded",
+  "task_id": "task_Ra410CPzkoDZz7PVyjVgTmZX1aRFQeFX",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMjkxYzY2ODc1NGJmZTk5OGY3OWU2ZTgyNmU5MmNlZDZhM2UyNDlhOWY0YTllOTRiO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_291c668754bfe998f79e6e826e92ced6a3e249a9f4a9e94b.mp4",
+  "file": "xiaoyun-kusa-battle.mp4",
+  "size": "1187KB",
+  "at": "2026-11-18T11:38:11.884732"
+ },
+ "kusa/chibi": {
+  "status": "downloaded",
+  "task_id": "task_OPUtoAbiINZ5I8ce0yrOVpJ99aNukjiR",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fN2YxNGY2ZjFmZTkwYmM5OTVhODlkMTUwNTE1NmI2ZGUwNmUzYmYxODFkYTBkMzM5O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_7f14f6f1fe90bc995a89d1505156b6de06e3bf181da0d339.mp4",
+  "file": "xiaoyun-chibi-kusa.mp4",
+  "size": "818KB",
+  "at": "2026-11-18T11:38:15.640891"
+ },
+ "kusa/face": {
+  "status": "downloaded",
+  "task_id": "task_n5azkgfjfabbY8DuVSpDfRkHDDWdn1n4",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNTM3ZTM2ODkwYTZhNDE3OGQzZjBiMzhlNjFjMTlkM2FkZTY4ZmNlYzFmNTNiZGJmO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_537e36890a6a4178d3f0b38e61c19d3ade68fcec1f53bdbf.mp4",
+  "file": "xiaoyun-face-kusa.mp4",
+  "size": "567KB",
+  "at": "2026-11-18T11:39:45.898933"
+ },
+ "wenrou/happy": {
+  "status": "downloaded",
+  "task_id": "task_ZjAjNqYVRwd92nZDJKMeYDe8QedymuVi",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZTJlN2I2NDc0YjYwN2IzYjViMGZiN2VhYzQ3NWY0M2M1NjRmZTBiZGZhOWEwM2M1O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_e2e7b6474b607b3b5b0fb7eac475f43c564fe0bdfa9a03c5.mp4",
+  "file": "xiaoyun-wenrou-happy.mp4",
+  "size": "995KB",
+  "at": "2026-11-18T11:39:51.548940"
+ },
+ "wenrou/wave": {
+  "status": "downloaded",
+  "task_id": "task_Is5nP0fS8Fd9BezOl3zlYo7itIk0DZ07",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fN2ZhYWQ1MGRjYTZmOWM2NzE0ZGE3NGJkNmIzYzhiYWNlM2QwYjM4ZjljN2JmNzc2O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_7faad50dca6f9c6714da74bd6b3c8bace3d0b38f9c7bf776.mp4",
+  "file": "xiaoyun-wenrou-wave.mp4",
+  "size": "625KB",
+  "at": "2026-11-18T11:41:41.392721"
+ },
+ "wenrou/battle": {
+  "status": "downloaded",
+  "task_id": "task_cvrKVTDtp8boAqYEdxabbAPeWx5R4AiV",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYjhhMDk4YzdiYTE3NGU4Y2EwYWMxNGY4NTM3YTI4ZTdkNTc4MmIzYjM5NDY3NmE4O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_b8a098c7ba174e8ca0ac14f8537a28e7d5782b3b394676a8.mp4",
+  "file": "xiaoyun-wenrou-battle.mp4",
+  "size": "1319KB",
+  "at": "2026-11-18T11:41:46.525326"
+ },
+ "wenrou/chibi": {
+  "status": "downloaded",
+  "task_id": "task_OJ4470dZyLV4VIL2nIIuoPAsFxCrpV70",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZTJmYTliMDFjZDk1ZmM4MmVlNjcwYjQxYjQwZjUwMzc5YmE4Yjk0NGIzZmZmZTBmO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_e2fa9b01cd95fc82ee670b41b40f50379ba8b944b3fffe0f.mp4",
+  "file": "xiaoyun-chibi-wenrou.mp4",
+  "size": "732KB",
+  "at": "2026-11-18T11:43:44.884780"
+ },
+ "wenrou/face": {
+  "status": "downloaded",
+  "task_id": "task_9T5viRkyOUe1R41fP9GGrgEBkDKdu4XS",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYjI2ZmFkZGFmNjZkNGQ4NjA1ZmJjZjNkOWFhOWVjY2EwYmE1NzZmNTliNjc1YTViO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_b26faddaf66d4d8605fbcf3d9aa9ecca0ba576f59b675a5b.mp4",
+  "file": "xiaoyun-face-wenrou.mp4",
+  "size": "487KB",
+  "at": "2026-11-18T11:43:47.858197"
+ },
+ "aojiao/battle": {
+  "status": "downloaded",
+  "task_id": "task_dJpZjbGNGYQPklEk4qpQLOvmPZiKEaHF",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMDQxOWVlY2I3NjNiYjQ3NjM4YzNmYWU5MDE3MWYxN2JkYzRiNmFlNGM4ZWE5Nzg5O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_0419eecb763bb47638c3fae90171f17bdc4b6ae4c8ea9789.mp4",
+  "file": "xiaoyun-aojiao-battle.mp4",
+  "size": "1139KB",
+  "at": "2026-11-18T11:45:38.150629"
+ },
+ "aojiao/chibi": {
+  "status": "downloaded",
+  "task_id": "task_sGIaZqSXmFFzFxS88AS3v9RQw5j1gZGQ",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZTcxNjcxNDQ5NjU3OTVjZTg3ODM1NDU1NDc1ODEzYWQxNjE3OGJhZmQ3Y2IwZDRkO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_e7167144965795ce87835455475813ad16178bafd7cb0d4d.mp4",
+  "file": "xiaoyun-chibi-aojiao.mp4",
+  "size": "1113KB",
+  "at": "2026-11-18T11:45:41.223267"
+ },
+ "aojiao/face": {
+  "status": "downloaded",
+  "task_id": "task_fl9tScSbYGPVW4SGipJGQeTWar6xJWK4",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fOTdiODZhMjA4NDMzMWU5M2UwMjVkMzYwOTQ3M2YwZTRmMThjOGNmM2FkNjBlNmNkO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_97b86a2084331e93e025d3609473f0e4f18c8cf3ad60e6cd.mp4",
+  "file": "xiaoyun-face-aojiao.mp4",
+  "size": "695KB",
+  "at": "2026-11-18T11:47:15.209028"
+ },
+ "keai/happy": {
+  "status": "downloaded",
+  "task_id": "task_YPptnvS0Sfg75ZhBdPNrP7yLSJSiosYn",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNzg2MjNmMzJiZGVhY2IyMmYzMTg3MjNkYzI3MjEyNTVkYzk0NjExOTYwZDQ0NDZkO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_78623f32bdeacb22f318723dc2721255dc94611960d4446d.mp4",
+  "file": "xiaoyun-keai-happy.mp4",
+  "size": "1088KB",
+  "at": "2026-11-18T11:47:19.057095"
+ },
+ "keai/wave": {
+  "status": "downloaded",
+  "task_id": "task_1vgEp469mGG0FSSR1ZxoBwtZjShK9g9d",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNzIyYjBkZGJlZjVlMDRjZDQ4ZDI1NTc0NDMxMDM2Mzc1ZmUxYjcxMmVhZjI3NTMyO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_722b0ddbef5e04cd48d25574431036375fe1b712eaf27532.mp4",
+  "file": "xiaoyun-keai-wave.mp4",
+  "size": "793KB",
+  "at": "2026-11-18T11:49:04.789554"
+ },
+ "keai/battle": {
+  "status": "downloaded",
+  "task_id": "task_G2IlxZA1dt4dbvkNp2gfkaaYpha5RB6E",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNjUwYjE3ZjI5N2I0Zjg2NTRhZmQ4NGUyOTE4NDMyYzQ1NzBiZDc5ZDk0NDY2NzI1O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_650b17f297b4f8654afd84e2918432c4570bd79d94466725.mp4",
+  "file": "xiaoyun-keai-battle.mp4",
+  "size": "1529KB",
+  "at": "2026-11-18T11:49:15.526844"
+ },
+ "keai/chibi": {
+  "status": "downloaded",
+  "task_id": "task_s7uhPlISXVw5pBKTylrWoZBA56HwdDwD",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMWU3OWFlZjM4NWZiMWVkOGQ2NjA4YmQ0OGY4ODlhMTI5MDhmOWQ4Zjk2ZjdhYzZiO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_1e79aef385fb1ed8d6608bd48f889a12908f9d8f96f7ac6b.mp4",
+  "file": "xiaoyun-chibi-keai.mp4",
+  "size": "752KB",
+  "at": "2026-11-18T11:51:04.807564"
+ },
+ "keai/face": {
+  "status": "downloaded",
+  "task_id": "task_KM3I2oTR2RNtJYwEeuaTARh2El9vSDtg",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZWExYmZmYjBiNWEyNmI3MWJmMDQ2YmQ0YzVkMGFlYTdjMzAwYWU2ODYyMmNmNzU4O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_ea1bffb0b5a26b71bf046bd4c5d0aea7c300ae68622cf758.mp4",
+  "file": "xiaoyun-face-keai.mp4",
+  "size": "508KB",
+  "at": "2026-11-18T11:51:07.993606"
+ },
+ "gaoguai/happy": {
+  "status": "downloaded",
+  "task_id": "task_IaYSsSnc7ap1S4QEFJElycLDHarM3uIG",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNzkxZDBlZmU3MzhjNDhlODJlYzhmM2E4NDIzNDlkZWE4NmE3ZjExZWIwOTNiM2U1O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_791d0efe738c48e82ec8f3a842349dea86a7f11eb093b3e5.mp4",
+  "file": "xiaoyun-gaoguai-happy.mp4",
+  "size": "1369KB",
+  "at": "2026-11-18T11:53:05.791414"
+ },
+ "gaoguai/wave": {
+  "status": "downloaded",
+  "task_id": "task_DVAFR49067D5ttVThPCb6SS9SzQmtsjo",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fY2Y2MDM2MGQ0MTUyYzFhYWFiMWZmMzMxMTEzZDM2ZTM5YjliODNhOTlmNmY4OWM0O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_cf60360d4152c1aaab1ff331113d36e39b9b83a99f6f89c4.mp4",
+  "file": "xiaoyun-gaoguai-wave.mp4",
+  "size": "915KB",
+  "at": "2026-11-18T11:53:10.939275"
+ },
+ "gaoguai/battle": {
+  "status": "downloaded",
+  "task_id": "task_g5pdaKLmfa9yZZ0Q3sHmndxE2MV0Iznc",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZGEyMGEyMGM4YzkxNDk2YmY3NTgwYmE3NzJiMzRjODU0YjY3YWM0NzhiZDQ0ODE3O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_da20a20c8c91496bf7580ba772b34c854b67ac478bd44817.mp4",
+  "file": "xiaoyun-gaoguai-battle.mp4",
+  "size": "1474KB",
+  "at": "2026-11-18T11:55:09.792097"
+ },
+ "gaoguai/chibi": {
+  "status": "downloaded",
+  "task_id": "task_CxYHioiya9VFIa3daNdVapuEuYjn4U6f",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYWVmMjNjM2IxOGEyZGNjNmQxYzZhNDUzNWZlNTQ3ZGE0MmRjYjQ5YTNhMDhlMmI3O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_aef23c3b18a2dcc6d1c6a4535fe547da42dcb49a3a08e2b7.mp4",
+  "file": "xiaoyun-chibi-gaoguai.mp4",
+  "size": "920KB",
+  "at": "2026-11-18T11:55:13.248283"
+ },
+ "gaoguai/face": {
+  "status": "downloaded",
+  "task_id": "task_hXqAA5mROpCoknJ1YlPJkoejUURvui7f",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNDNmOGIzZDQxMWRlNjIyZDNmODc4MzgyZDlkODRmNGYwYjAzNDdiMjMzYTE2MjdhO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_43f8b3d411de622d3f878382d9d84f4f0b0347b233a1627a.mp4",
+  "file": "xiaoyun-face-gaoguai.mp4",
+  "size": "621KB",
+  "at": "2026-11-18T11:56:41.211264"
+ },
+ "youtai/happy": {
+  "status": "downloaded",
+  "task_id": "task_iNxkSTgk7XXp6tMDOS1vEmqepXBKB0r8",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMDUxYzg3MTY0ZjAyNTNmN2Y5MWJkNGYxNjg5NjM3YWU4ZWIyMzRlYjlkMjFhM2FhO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_051c87164f0253f7f91bd4f1689637ae8eb234eb9d21a3aa.mp4",
+  "file": "xiaoyun-youtai-happy.mp4",
+  "size": "912KB",
+  "at": "2026-11-18T11:56:45.340276"
+ },
+ "youtai/wave": {
+  "status": "downloaded",
+  "task_id": "task_91lNxBKet5Iv71wg21WndLbKFyp8DupK",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fOGE5MGEwYmQ4ZmYyOTc0YTc1MmVlYWM4YWY0ZmYzYmFmZDlhYmM3OWRmZmY5ZjNhO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_8a90a0bd8ff2974a752eeac8af4ff3bafd9abc79dfff9f3a.mp4",
+  "file": "xiaoyun-youtai-wave.mp4",
+  "size": "477KB",
+  "at": "2026-11-18T11:58:33.284425"
+ },
+ "youtai/battle": {
+  "status": "downloaded",
+  "task_id": "task_FrApswhHZXe8M353f2F3SNHQ6nEOe8B6",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fODA0ZmI0NDhhMTE4NzMzNzUyMjQyNDdmYzFjNWNlNmNhMWE4MWNlY2U4YjI1ODQ3O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_804fb448a11873375224247fc1c5ce6ca1a81cece8b25847.mp4",
+  "file": "xiaoyun-youtai-battle.mp4",
+  "size": "1105KB",
+  "at": "2026-11-18T11:58:36.555531"
+ },
+ "youtai/chibi": {
+  "status": "downloaded",
+  "task_id": "task_DnPHWYn2IaAZPMHrPVq48bZxTYAZeNZU",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fNGI5MmEwZTBmM2FkN2IzNTE0YzkxYTU0MGYwOWUzODBlNjk3YTViZjY2NjQxYThlO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_4b92a0e0f3ad7b3514c91a540f09e380e697a5bf66641a8e.mp4",
+  "file": "xiaoyun-chibi-youtai.mp4",
+  "size": "675KB",
+  "at": "2026-11-18T12:00:47.450782"
+ },
+ "youtai/face": {
+  "status": "downloaded",
+  "task_id": "task_Y4qIUApsPZh9LPWbwWw9s0LJ49XoIFQV",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fOTJmNmZiODNmODJmNzUzOTMyOTgxMTAzNzkwYmUwNmE3MmRiNGNjMmIyMmRhZjU3O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_92f6fb83f82f753932981103790be06a72db4cc2b22daf57.mp4",
+  "file": "xiaoyun-face-youtai.mp4",
+  "size": "414KB",
+  "at": "2026-11-18T12:00:50.008809"
+ },
+ "zhixing/happy": {
+  "status": "downloaded",
+  "task_id": "task_mcoRg0tNVHJlkkaw13xLuGPfUGQidA7j",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYmM5Y2FiZDA4NmMwZjZhZDQ4MTcwNzQwOWZmMWFhOGNiYTQzOGE2MDc4OTllMTJlO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_bc9cabd086c0f6ad481707409ff1aa8cba438a607899e12e.mp4",
+  "file": "xiaoyun-zhixing-happy.mp4",
+  "size": "819KB",
+  "at": "2026-11-18T12:03:00.281231"
+ },
+ "zhixing/wave": {
+  "status": "downloaded",
+  "task_id": "task_IbtK7aJljrAmNEUOV6jIpf45Bo7ZZRUb",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fZjliMzliOGZmMjJiYTYzNzZlZDkwYTAxMTYxNzRlZjUwMDQxZjUwNjUyMjhmMTM0O2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_f9b39b8ff22ba6376ed90a0116174ef50041f5065228f134.mp4",
+  "file": "xiaoyun-zhixing-wave.mp4",
+  "size": "795KB",
+  "at": "2026-11-18T12:03:03.567894"
+ },
+ "zhixing/battle": {
+  "status": "downloaded",
+  "task_id": "task_KkcmgbXvHbQv4VZ2i5st5MPQ3EJIpwWP",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMmU5ZWQ2YjY4YzU2MzZjODY4NWQyOTU5NGY4OWI1NjcwNWQxMDE2YTYyNzc3ZWVhO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_2e9ed6b68c5636c8685d29594f89b56705d1016a62777eea.mp4",
+  "file": "xiaoyun-zhixing-battle.mp4",
+  "size": "1209KB",
+  "at": "2026-11-18T12:05:15.150305"
+ },
+ "zhixing/chibi": {
+  "status": "downloaded",
+  "task_id": "task_ipbgcGrZvX8zLVZpbHltSiOya92wYB5s",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fYmQxMWE1ZmMzNDk3NmRkZTc0ODk0N2FmOGFkMzAwMzIyYjg2NDBkYjdjNmZlMTAxO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_bd11a5fc34976dde748947af8ad300322b8640db7c6fe101.mp4",
+  "file": "xiaoyun-chibi-zhixing.mp4",
+  "size": "626KB",
+  "at": "2026-11-18T12:05:20.154821"
+ },
+ "zhixing/face": {
+  "status": "downloaded",
+  "task_id": "task_Etpey6pY1orpD2WbX1wHCUK675Q9cMcR",
+  "video_id": "video_bGl0ZWxsbTpjdXN0b21fbGxtX3Byb3ZpZGVyOm9wZW5haTttb2RlbF9pZDphZ25lcy12aWRlby1yZWYydmE7dmlkZW9faWQ6dmlkZW9fMjcyOTc3ZTA2OGRiMTVkNTg3YzIxZDM5MDdiM2I3ZDQ1YWQyMDkwNzg5ZmJmYTJkO2RlcGxveW1lbnRfaWQ6ZjRlMTE4NzMtNmQ1ZS00YTZhLTg3NTUtZjk1MjA1YWM0ZWU3",
+  "direct_url": "https://platform-outputs.agnes-ai.space/videos/agnes-video-2.5/video_272977e068db15d587c21d3907b3b7d45ad2090789fbfa2d.mp4",
+  "file": "xiaoyun-face-zhixing.mp4",
+  "size": "500KB",
+  "at": "2026-11-18T12:06:19.125473"
+ }
+}

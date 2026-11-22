@@ -19,7 +19,11 @@
     if (!el) {
       el = document.createElement('div');
       el.id = 'yjFeedbackLayer';
-      el.style.cssText = 'position:fixed;right:18px;bottom:190px;z-index:9950;display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none;font-family:"Noto Sans SC",sans-serif;';
+      /* v5.2.1（全量视觉审阅）：数值浮字原在 right:18px，正好压在右侧 330px 状态面板上
+         （遮挡身份/姓名字段）。宽屏(≥1100px)改到状态栏左缘之外(right:356px)，浮在正文区右侧；
+         窄屏状态面板不常驻右侧，仍回 right:18px，避免浮字跑出屏外。 */
+      var wide = window.matchMedia && window.matchMedia('(min-width:1100px)').matches;
+      el.style.cssText = 'position:fixed;right:' + (wide ? 356 : 18) + 'px;bottom:190px;z-index:9950;display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none;font-family:"Noto Sans SC",sans-serif;';
       document.body.appendChild(el);
     }
     return el;
@@ -51,12 +55,19 @@
   try { feed = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); if (!Array.isArray(feed)) feed = []; } catch (e) { feed = []; }
   function saveFeed() { try { localStorage.setItem(LOG_KEY, JSON.stringify(feed.slice(-30))); } catch (e) {} }
   var FEED_HIDE_KEY = 'yjWorldFeedHidden';
-  function feedHidden() { try { return localStorage.getItem(FEED_HIDE_KEY) === '1'; } catch (e) { return false; } }
-  function setFeedHidden(v) { try { localStorage.setItem(FEED_HIDE_KEY, v ? '1' : '0'); } catch (e) {} }
+  /* v5.2.1：默认收起，且「收起/展开」只在本会话内有效——刷新后总是回到干净的收起态。
+     不用 localStorage 记忆展开态，否则老玩家历史残留的「展开」会继续遮挡正文。
+     FEED_HIDE_KEY 保留仅为兼容旧调用，不再参与默认态判定。 */
+  var _feedHidden = true; /* 会话级：默认收起 */
+  function feedHidden() { return _feedHidden; }
+  function setFeedHidden(v) { _feedHidden = !!v; try { localStorage.setItem(FEED_HIDE_KEY, v ? '1' : '0'); } catch (e) {} }
 
   /* v4.38.0 修 P1-4：世界动态面板常驻左下、遮挡内容且不能整体收起。
      加一个「×」关闭按钮 → 隐藏面板并在左下留一个极小的「⏱」重开圆点（不再是碍眼大卡片）。
-     关闭状态记忆到 localStorage，刷新后保持；点重开圆点恢复。 */
+     关闭状态记忆到 localStorage，刷新后保持；点重开圆点恢复。
+     v5.2.1（全量视觉审阅 P0）：改为「默认收起」——世界动态是大卡片，常驻必然压住正文左下角
+     与快捷指令区（1003 张截图逐屏证实）。现默认只显示极小的 ⏱ 圆点，玩家主动点开才展开大面板，
+     不自动遮挡任何正文。玩家点开后本次会话内保持展开，点 × 或刷新后回到收起态。 */
   function ensureReopenDot() {
     if (document.getElementById('yjWorldFeedReopen')) return;
     var dot = document.createElement('button');
@@ -65,7 +76,11 @@
     dot.setAttribute('aria-label', '显示世界动态');
     dot.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9941;width:34px;height:34px;border-radius:50%;border:1px solid rgba(201,168,106,.4);background:rgba(14,16,30,.9);color:#e8c47a;font-size:15px;cursor:pointer;display:none;box-shadow:0 4px 14px rgba(0,0,0,.4)';
     dot.textContent = '⏱';
-    dot.onclick = function () { setFeedHidden(false); dot.style.display = 'none'; var el = ensureFeedPanel(); if (el) el.style.display = ''; };
+    dot.onclick = function () {
+      setFeedHidden(false); dot.style.display = 'none';
+      var rd = dot.querySelector('i'); if (rd) rd.remove(); /* 打开后清掉未读红点 */
+      var el = ensureFeedPanel(); if (el) el.style.display = '';
+    };
     (document.body || document.documentElement).appendChild(dot);
   }
   function ensureFeedPanel() {
@@ -75,7 +90,7 @@
       el = document.createElement('div');
       el.id = 'yjWorldFeed';
       el.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9940;width:250px;max-height:230px;overflow:hidden;border-radius:14px;background:rgba(14,16,30,.92);border:1px solid rgba(201,168,106,.3);color:#e8e2d0;font-family:"Noto Sans SC",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:12px;';
-      el.innerHTML = '<div data-head style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid rgba(201,168,106,.18);"><span data-toggle style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;"><b style="font-size:12px;">⏱ 世界动态</b><span data-dot style="width:7px;height:7px;border-radius:50%;background:#c94b4b;display:none;"></span></span><span data-caret style="cursor:pointer;opacity:.6;padding:0 4px;">▾</span><button data-close title="收起世界动态" aria-label="收起世界动态" style="cursor:pointer;background:transparent;border:none;color:#c9b78f;font-size:15px;line-height:1;padding:6px 12px;min-width:32px;min-height:32px;">×</button></div><div data-body style="max-height:170px;overflow:auto;padding:6px 12px;"></div>';
+      el.innerHTML = '<div data-head style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid rgba(201,168,106,.18);"><span data-toggle style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;"><b style="font-size:12px;">⏱ 世界动态</b><span data-dot style="width:7px;height:7px;border-radius:50%;background:#c94b4b;display:none;"></span></span><span data-caret style="cursor:pointer;opacity:.6;padding:0 4px;">▾</span><button data-close title="收起世界动态" aria-label="收起世界动态" style="cursor:pointer;background:transparent;border:none;color:#c9b78f;font-size:15px;line-height:1;padding:2px 4px;">×</button></div><div data-body style="max-height:170px;overflow:auto;padding:6px 12px;"></div>';
       document.body.appendChild(el);
       var head = el.querySelector('[data-toggle]'), body = el.querySelector('[data-body]'), caret = el.querySelector('[data-caret]');
       function toggleBody() { var open = body.style.display !== 'none'; body.style.display = open ? 'none' : ''; caret.textContent = open ? '▸' : '▾'; if (!open) el.querySelector('[data-dot]').style.display = 'none'; }
@@ -115,7 +130,15 @@
     saveFeed();
     ensureFeedPanel();
     renderFeed();
-    if (major) { var dot = document.querySelector('#yjWorldFeed [data-dot]'); if (dot) dot.style.display = 'block'; }
+    if (major) {
+      /* v5.2.1：面板默认收起，新重大事件要在「重开圆点」上给红点提示，否则玩家收起状态看不到任何动静 */
+      var dot = document.querySelector('#yjWorldFeed [data-dot]');
+      if (dot && dot.offsetParent !== null) dot.style.display = 'block';
+      var rd = document.createElement('i');
+      rd.style.cssText = 'position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#e05252;border:1px solid #fff;';
+      var reopen = document.getElementById('yjWorldFeedReopen');
+      if (reopen && !reopen.querySelector('i')) { reopen.style.position = 'relative'; reopen.appendChild(rd); }
+    }
   }
   window.addEventListener('yj:world-tick', function (e) {
     var d = (e && e.detail) || {};

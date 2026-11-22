@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<!-- v6.3.3 唯一启动界面守卫：单独打开本页（无参数/无封面会话/非同源）弹回封面；开发者 ?dev=1 豁免 -->
+<script src="js/entry-guard.js?v=6.3.3"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0e0b1e">
 <title>造物 · 小云创造中枢</title>
 <link rel="icon" href="assets/yj-favicon.ico">
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=5.1.5">
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=5.2.0">
 <style>
   :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; --panel:rgba(24,20,48,.72); --line:rgba(244,216,150,.28); --ok:#8fd6a8; }
   *{ box-sizing:border-box; }
@@ -27,9 +29,7 @@
   .verdict{ display:inline-block; margin:6px 0 26px; font-size:12.5px; color:#0e0b1e;
     background:linear-gradient(120deg,var(--gold),var(--gold-soft)); padding:6px 14px; border-radius:20px; font-weight:700; }
 
-  /* v5.1.2 修窄屏溢出：原来固定 minmax(330px,1fr)，320px 窄屏（容器约 280px）
-     轨道被撑到 330px → 整页横向滚动。现在用 min() 让轨道在小屏上退化为 100%。 */
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr)); gap:16px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:16px; }
   .card{ position:relative; background:var(--panel); border:1px solid var(--line); border-radius:18px;
     padding:20px 20px 18px; display:flex; flex-direction:column; gap:10px; transition:.18s; }
   .card:hover{ border-color:rgba(244,216,150,.55); transform:translateY(-2px);
@@ -138,13 +138,12 @@
 
 <!-- 造物工坊本体依赖的小云脚本 + 四项本页可用的基建 -->
 <!-- v4.41.0 全局动态并发闸门：早于小云（小云的大模型 fetch 需过闸） -->
-<script src="js/toast-helper.js?v=5.1.5"></script>
-<script src="js/ai-governor.js?v=5.1.5"></script>
-<script src="js/xiaoyun-ops.js?v=5.1.5"></script>
-<script src="js/xiaoyun-buddy.js?v=5.1.5"></script>
-<script src="js/file-bridge.js?v=5.1.5"></script>
-<script src="js/plugin-runtime.js?v=5.1.5"></script>
-<script src="js/mo-devtools.js?v=5.1.5"></script>
+<script src="js/ai-governor.js?v=5.2.0"></script>
+<script src="js/xiaoyun-ops.js?v=5.2.0"></script>
+<script src="js/xiaoyun-buddy.js?v=5.2.0"></script>
+<script src="js/file-bridge.js?v=5.2.0"></script>
+<script src="js/plugin-runtime.js?v=5.2.0"></script>
+<script src="js/mo-devtools.js?v=5.2.0"></script>
 <script>
 /* ================= 六项创造能力卡片 ================= */
 function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on');

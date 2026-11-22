@@ -176,6 +176,10 @@ input, select, textarea { font-size: 16px; } /* 防 iOS 聚焦自动放大 */
    ============================================================ */
 @media (min-width: 1100px) {
   body.page-studio #xyBuddy { right: 356px !important; }
+  /* v5.2.1（全量视觉审阅 P0）：小云立绘本身压住底部输入条。抬到输入区之上悬浮，
+     立绘底部距离视口底 128px（输入条约 60px + 快捷条 + 留白），彻底让开输入与发送按钮。 */
+  body.page-studio #xyBuddy { bottom: 128px !important; }
+  html[data-theme] body.page-studio #xyBuddy { right: 356px !important; bottom: 128px !important; }
 }
 
 /* v4.17.5：任何抽屉/弹窗打开时，小云自动隐身，绝不压住面板内容。

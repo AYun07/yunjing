@@ -389,5 +389,5 @@ ${window.PhonePanel.knowledgeBrief(String(name) + " 主动联系 找玩家 聊�
     }
   };
   window.PhoneAlive = Alive;
-  console.debug("[PhoneAlive] 💗 主动联系引擎就位——你不理 TA，TA 会来找你");
+  console.log("[PhoneAlive] 💗 主动联系引擎就位——你不理 TA，TA 会来找你");
 })();

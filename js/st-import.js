@@ -74,10 +74,10 @@
     fr.onload = function () {
       try {
         var es = parseST(String(fr.result));
-        if (!es.length) { yjAlert('未识别到可导入内容:需要世界书 entries / 角色卡 description / 预设 prompts'); return; }
+        if (!es.length) { alert('未识别到可导入内容:需要世界书 entries / 角色卡 description / 预设 prompts'); return; }
         var n = importEntries(es, asGlobal);
-        yjAlert('导入成功:共 ' + es.length + ' 条,新增 ' + n + ' 条(重名跳过)。重新打开知识库面板即可看到。');
-      } catch (e) { yjAlert('解析失败:' + e.message); }
+        alert('导入成功:共 ' + es.length + ' 条,新增 ' + n + ' 条(重名跳过)。重新打开知识库面板即可看到。');
+      } catch (e) { alert('解析失败:' + e.message); }
     };
     fr.readAsText(file, 'utf-8');
   }
@@ -109,12 +109,12 @@
       btn.setAttribute('data-st-import', '1');
       btn.textContent = '📥 导入通用预设';
       btn.style.cssText = 'padding:8px 12px;border-radius:10px;border:1px solid rgba(224,168,76,.45);background:rgba(224,168,76,.14);color:#e0a84c;cursor:pointer;font-size:13px;min-height:38px';
-      btn.onclick = function () { try { pick(); } catch (e) { yjAlert('导入功能异常:' + e.message); } };
+      btn.onclick = function () { try { pick(); } catch (e) { alert('导入功能异常:' + e.message); } };
       if (anchor.nextSibling) row.insertBefore(btn, anchor.nextSibling); else row.appendChild(btn);
     } catch (e) {}
   }MoUtils.pollUntil(function () { try { tryMount(); } catch (e) {} }, { interval: 2500, max: 80 });
   window.STImport = { pick: pick, parse: parseST, importEntries: importEntries };
-  console.debug('[STImport] 通用前端预设导入就绪(世界书/角色卡/预设)');
+  console.log('[STImport] 通用前端预设导入就绪(世界书/角色卡/预设)');
 })();
 
 /* ---- v1.1 知识库条目独立开/关(关闭=不进检索不进常驻,条目保留) ---- */
@@ -185,7 +185,7 @@
       });
     }
     MoUtils.pollUntil(mount, { interval: 2500, max: 80 });
-    console.debug('[KB] 条目开关就绪');
+    console.log('[KB] 条目开关就绪');
   }
   /* v3.55.29：改为有界等待（原为每 800ms 无限自轮询） */
   /* check 只判依赖就绪，boot 作为回调执行一次。
@@ -233,12 +233,12 @@
         var fr = new FileReader();
         fr.onload = function () {
           var card = pngCard(fr.result);
-          if (!card) { yjAlert('这张 PNG 里没有角色卡数据(需要通用前端导出的角色卡)'); return; }
+          if (!card) { alert('这张 PNG 里没有角色卡数据(需要通用前端导出的角色卡)'); return; }
           var core = card.data || card;
           var es = window.STImport.parse(JSON.stringify(core));
-          if (!es.length) { yjAlert('卡内无可导入字段'); return; }
+          if (!es.length) { alert('卡内无可导入字段'); return; }
           var n = STImport.importEntries(es, asGlobal);
-          yjAlert('PNG 角色卡导入成功:新增 ' + n + '/' + es.length + ' 条');
+          alert('PNG 角色卡导入成功:新增 ' + n + '/' + es.length + ' 条');
         };
         fr.readAsArrayBuffer(f);
       } else {
@@ -246,10 +246,10 @@
         fr2.onload = function () {
           try {
             var es = STImport.parse(String(fr2.result));
-            if (!es.length) { yjAlert('未识别到可导入内容'); return; }
+            if (!es.length) { alert('未识别到可导入内容'); return; }
             var n = STImport.importEntries(es, asGlobal);
-            yjAlert('导入成功:新增 ' + n + '/' + es.length + ' 条');
-          } catch (e) { yjAlert('解析失败:' + e.message); }
+            alert('导入成功:新增 ' + n + '/' + es.length + ' 条');
+          } catch (e) { alert('解析失败:' + e.message); }
         };
         fr2.readAsText(f, 'utf-8');
       }
@@ -302,7 +302,7 @@
         b2.setAttribute('data-st-exp', '1');
         b2.textContent = '📤 导出ST';
         b2.style.cssText = 'padding:8px 12px;border-radius:10px;border:1px solid rgba(138,180,200,.4);background:rgba(138,180,200,.1);color:#8ab4c8;cursor:pointer;font-size:13px;min-height:38px';
-        b2.onclick = function () { yjAlert(exportST()); };
+        b2.onclick = function () { alert(exportST()); };
         row.appendChild(b2);
       }
     } catch (e) {}
@@ -315,7 +315,7 @@
     if (mountTick > 3 && mountTick % 4 !== 0) return; /* 挂上后降到 10s 一巡 */
     try { mount(); } catch (e) {}
   }, 2500);
-  console.debug('[STImport] PNG卡+ST导出 就绪');
+  console.log('[STImport] PNG卡+ST导出 就绪');
 })();
 /* ---- v1.4 UI看门狗:清理关闭失败残留的幽灵遮罩 ----
    v3.55.3 性能：3s 强制布局巡检（getComputedStyle + getBoundingClientRect）是低配机

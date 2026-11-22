@@ -11,8 +11,6 @@
 零模型调用。
 """
 import asyncio, json, os, re, sys, importlib.util
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from yj_paths import ROOT, genres, out_path, out_glob, kb_index
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 spec = importlib.util.spec_from_file_location("tp", os.path.join(ROOT, "yunjing-test", "scripts", "t_player.py"))
@@ -102,13 +100,13 @@ async def collect():
     return out
 
 def rejudge(names):
-    d = json.load(open(out_path("yj_journey.json"), encoding="utf-8"))
+    d = json.load(open("/tmp/yj_journey.json", encoding="utf-8"))
     issues = d.get("issues") or []
     print("\n=== 离线重判（原判定器判失败的步骤）===")
     fixed, remain = [], []
     for it in issues:
         g, s = it.get("genre"), it.get("step")
-        f = out_path("yj_journey_%s_%s.txt" % (g, s))
+        f = "/tmp/yj_journey_%s_%s.txt" % (g, s)
         if not os.path.exists(f):
             print("  %-16s %-10s （无落盘正文，跳过）" % (g, s)); continue
         txt = open(f, encoding="utf-8").read()
@@ -124,12 +122,12 @@ def rejudge(names):
             print("  %-16s %-10s ✗ 仍有问题 %s" % (g, s, new[:120]))
             remain.append({"genre": g, "step": s, "bad": bad, "snap": snap})
     print("\n复判：原问题 %d 条 → 消解 %d 条，仍有 %d 条" % (len(issues), len(fixed), len(remain)))
-    json.dump({"fixed": fixed, "remain": remain}, open(out_path("yj_rejudge.json"), "w", encoding="utf-8"),
+    json.dump({"fixed": fixed, "remain": remain}, open("/tmp/yj_rejudge.json", "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     return remain
 
 if __name__ == "__main__":
-    cache = out_path("yj_names.json")
+    cache = "/tmp/yj_names.json"
     if os.path.exists(cache) and "--refresh" not in sys.argv:
         names = json.load(open(cache, encoding="utf-8"))
         print("复用已采集名单:", list(names.keys()))

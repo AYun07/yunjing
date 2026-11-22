@@ -390,16 +390,16 @@ const VariableAI = {
       const CHAR_FIELD_RE = /(?:^|\n)[^\n]{0,14}[.．]\s*(?:role|age|appearance|personality|speechPattern|mannerism|motivation|goal|secret|status|location|occupation|income|assets|realm|impression|relationship|trust|favor|firstAppearance|arc|note|isCanon|isCulprit|isPlayer|history|身份|年龄|外貌|性格|言谈|口癖|动机|目标|秘密|状态|位置|所在|信任|好感|关系|印象|轨迹|境遇|行当|收入|家当|首次出场|初登场)\s*[:：]/i;
       const hasCharLine = CHAR_FIELD_RE.test(block) || /["']?characters["']?\s*[:：]\s*[{[]/i.test(block);
       if (hasCharLine) {
-        window.YJ_DEBUG && console.debug("[变量AI] 主笔本轮自带变量块，跳过提取");
+        window.YJ_DEBUG && console.log("[变量AI] 主笔本轮自带变量块，跳过提取");
         return Promise.resolve();
       }
       const body = ((_a = window.StoryResponseHandler) == null ? void 0 : _a.extractBody) ? window.StoryResponseHandler.extractBody(reply) : reply;
       const hasDialogue = /[「“][^」”]{1,120}[」”]/.test(String(body));
       if (!hasDialogue) {
-        window.YJ_DEBUG && console.debug("[变量AI] 主笔本轮自带变量块，跳过提取");
+        window.YJ_DEBUG && console.log("[变量AI] 主笔本轮自带变量块，跳过提取");
         return Promise.resolve();
       }
-      window.YJ_DEBUG && console.debug("[变量AI] 主笔变量块无角色登记（正文有对白），登记官补位");
+      window.YJ_DEBUG && console.log("[变量AI] 主笔变量块无角色登记（正文有对白），登记官补位");
     }
     const run = () => this.extract(reply, false, turnIdx);
     this._pending = (this._pending || Promise.resolve()).then(run, run);
@@ -497,7 +497,7 @@ ${text}` }
       const summary = String(out || "").trim().slice(0, 600);
       if (!summary) return;
       if ((Number(fw.storyState._rollbackEpoch) || 0) !== epochAtStart) {
-        window.YJ_DEBUG && console.debug("[前情提要] 检测到回退/重生成，本轮摘要丢弃（防旧事复活）");
+        window.YJ_DEBUG && console.log("[前情提要] 检测到回退/重生成，本轮摘要丢弃（防旧事复活）");
         return;
       }
       const anchorMsg = hist[end];
@@ -507,7 +507,7 @@ ${text}` }
         anchor: anchorMsg ? String(anchorMsg.content || "").slice(0, 80) : void 0
       };
       fw.saveStory();
-      window.YJ_DEBUG && console.debug(`[前情提要] 已并入 ${older.length} 条旧消息（摘要覆盖 ${end}/${hist.length} 条）`);
+      window.YJ_DEBUG && console.log(`[前情提要] 已并入 ${older.length} 条旧消息（摘要覆盖 ${end}/${hist.length} 条）`);
     } catch (e) {
       console.warn("[前情提要] 摘要失败（下轮自动重试）:", e.message);
     } finally {
@@ -630,7 +630,7 @@ ${text}` }
       const card = document.querySelector(".va-card.va-error");
       if (card) card.remove();
       this.renderFallbackCard(updateBlock, turnIdx, names);
-      window.YJ_DEBUG && console.debug("[变量AI] 保底登记完成（" + (names.length ? "含新登场：" + names.join("、") : "仅基础事实") + "）");
+      window.YJ_DEBUG && console.log("[变量AI] 保底登记完成（" + (names.length ? "含新登场：" + names.join("、") : "仅基础事实") + "）");
       return true;
     } catch (e) {
       console.warn("[变量AI] 保底登记失败:", e);
@@ -708,7 +708,7 @@ ${text}` }
         this.renderCard({ updateBlock, chapter: merged.chapter, turnIdx });
       }
       fw.saveStory();
-      window.YJ_DEBUG && console.debug(`[变量AI] 第 ${(_d = merged.chapter) != null ? _d : "?"} 章状态登记完成（${updateBlock ? updateBlock.split("\n").filter(Boolean).length : 0} 条指令）`);
+      window.YJ_DEBUG && console.log(`[变量AI] 第 ${(_d = merged.chapter) != null ? _d : "?"} 章状态登记完成（${updateBlock ? updateBlock.split("\n").filter(Boolean).length : 0} 条指令）`);
     } catch (err) {
       console.error("[变量AI] 登记失败:", err);
       const via = this.isFallbackActive();
@@ -891,6 +891,19 @@ ${storyText}`);
     (_b = (_a = window.StoryResponseHandler) == null ? void 0 : _a.tagTurnCard) == null ? void 0 : _b.call(_a, card, turnIdx);
     container.appendChild(card);
     (_d = (_c = window.StoryResponseHandler) == null ? void 0 : _c.scrollToBottom) == null ? void 0 : _d.call(_c);
+    /* v5.2.1（全量视觉审阅 P2）：限流/超时是暂时性错误，不该让红色大卡常驻遮挡界面。
+       这类错误 6 秒后自动折叠成一行轻提示（保留重试按钮），非限流的真实错误保持原样供排查。 */
+    var msg = String((err && err.message) || err || "");
+    if (/429|Too Many Requests|超时|timeout|abort|限流|502|503|504|ECONNRESET/i.test(msg)) {
+      card.style.transition = "opacity .4s";
+      setTimeout(function () {
+        if (!card.isConnected) return;
+        var head = card.querySelector(".va-head"), errEl = card.querySelector(".va-err");
+        if (errEl) errEl.style.display = "none";
+        if (head) { var b = head.querySelector(".va-badge"); if (b) b.textContent = "🧾 登记暂缓（可重试）"; }
+        card.style.opacity = ".72";
+      }, 6000);
+    }
   }
 };
 window.VariableAI = VariableAI;

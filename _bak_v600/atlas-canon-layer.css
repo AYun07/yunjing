@@ -1,0 +1,140 @@
+/* 云境 v5.7.0 · 原著地点上图样式（AtlasCanonLayer）· 五类方位版
+ * 完全独立于 atlas-drilldown.css / atlas-faction-layer.css，可整体删除回滚。
+ * 视觉：五类各用 --ac 主色（国家金/势力玫/宗门青/地区绿/地点米），徽记+羊皮纸名牌。
+ */
+
+/* 层级标签 + 密度切换按钮 */
+.acp-lvtag { margin-left:auto; font-size:11px; letter-spacing:.5px; color:#e6c98a;
+  padding:2px 8px; border:1px solid rgba(230,170,80,.35); border-radius:10px;
+  background:rgba(40,28,10,.6); white-space:nowrap; }
+.acp-toggle { border:1px solid rgba(159,216,192,.4); color:#9fd8c0; background:rgba(18,40,36,.9); }
+
+/* 地点层：绝对定位覆盖在 .ad-marks 内，不拦截底图事件 */
+.acp-layer { position:absolute; inset:0; pointer-events:none; z-index:6; }
+.acp-mark { position:absolute; transform:translate(-50%,-50%); pointer-events:auto; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:2px; transition:transform .18s, filter .18s, opacity .18s;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.8)); }
+.acp-mark:hover { transform:translate(-50%,-58%) scale(1.14); z-index:15; filter:drop-shadow(0 0 10px var(--ac)); }
+.acp-mark.acp-hidden { display:none; }
+.acp-mark.acp-dim { opacity:.22; filter:grayscale(.8); }
+
+/* 徽记圆章：主色取自 --ac（按类别） */
+.acp-glyph {
+  width:27px; height:27px; display:grid; place-items:center;
+  font-size:14px; line-height:1; color:var(--ac);
+  background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.1),rgba(8,14,12,.92) 72%);
+  border:1.5px solid var(--ac);
+  border-radius:50%; box-shadow:0 0 0 2px rgba(8,16,14,.7),inset 0 0 8px var(--ac);
+}
+/* 国家/势力/宗门：方章更醒目 */
+.acp-cat-country .acp-glyph,
+.acp-cat-faction .acp-glyph,
+.acp-cat-sect .acp-glyph {
+  width:31px; height:31px; font-size:16px;
+  border-radius:6px; transform:rotate(-4deg);
+  box-shadow:0 0 0 2px rgba(10,7,3,.75),inset 0 0 10px var(--ac),0 0 12px var(--ac);
+}
+.acp-cat-faction .acp-glyph { transform:rotate(0); border-radius:50%; }
+.acp-cat-country .acp-glyph { clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%); border-radius:0; }
+
+/* ===== v5.9 三足鼎立：北天斗 / 中武魂殿 / 南星罗 ===== */
+/* 静态树同名节点被鼎立核心替代时隐藏，避免双标记重叠 */
+.ad-marks .ad-mark.acp-superseded { display:none !important; }
+
+/* 鼎立核心徽记：金色方鼎，明显大于五类普通徽记 */
+.acp-pole .acp-glyph {
+  width:40px; height:40px; font-size:18px; font-weight:700; color:#1a1206;
+  background:radial-gradient(circle at 36% 30%,#ffe9a8,#e0a83c 62%,#a9701c);
+  border:2px solid #ffe0a0; border-radius:7px;
+  box-shadow:0 0 0 3px rgba(24,14,2,.85),inset 0 0 12px rgba(255,225,150,.7),0 0 20px rgba(224,168,60,.7);
+  transform:rotate(0); clip-path:none;
+}
+.acp-pole-2 .acp-glyph { background:radial-gradient(circle at 36% 30%,#ffe9a8,#d98f2e 62%,#8a4f12); box-shadow:0 0 0 3px rgba(24,14,2,.85),inset 0 0 12px rgba(255,225,150,.7),0 0 24px rgba(230,150,50,.85); }
+.acp-pole .acp-name {
+  max-width:120px; font-size:11px; font-weight:700; color:#fff4d2; padding:2px 7px;
+  background:linear-gradient(180deg,rgba(96,62,18,.96),rgba(54,34,10,.97));
+  border-color:#f0c96a; box-shadow:0 1px 6px rgba(0,0,0,.75),0 0 10px rgba(224,168,60,.35);
+}
+
+/* L0 三足鼎立横幅（顶部居中，不遮挡面包屑） */
+.acp-tri-banner {
+  position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:9;
+  white-space:nowrap; padding:5px 16px; border-radius:20px; font-size:11.5px; letter-spacing:.3px;
+  color:#f0d9a8; background:linear-gradient(180deg,rgba(48,30,8,.94),rgba(28,18,6,.95));
+  border:1px solid rgba(240,201,106,.55); box-shadow:0 3px 14px rgba(0,0,0,.6),inset 0 0 14px rgba(224,168,60,.12);
+  pointer-events:none;
+}
+.acp-tri-banner b { color:#ffe0a0; letter-spacing:1px; }
+
+/* 详情卡：三足鼎立区块（区别于金色势力演变，用暗红+金） */
+.acp-card-tri { margin-top:10px; padding:10px 12px; border-radius:7px; font-size:12px; line-height:1.75;
+  color:#f3dfb4; background:linear-gradient(120deg,rgba(150,50,32,.18),rgba(224,168,60,.08));
+  border:1px solid rgba(224,168,60,.38); border-left:3px solid #e0a83c; }
+.acp-tri-t { display:block; font-size:11.5px; letter-spacing:1px; color:#f0c96a; margin-bottom:5px; font-weight:600; }
+
+/* 名牌：羊皮纸质感，描边随类别主色（v5.8 更紧凑去乱） */
+.acp-name {
+  max-width:92px; padding:1px 5px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+  font-size:9.5px; letter-spacing:.2px; color:#f0e4c8;
+  background:linear-gradient(180deg,rgba(58,48,34,.94),rgba(32,26,18,.96));
+  border:1px solid var(--ac); border-radius:4px;
+  box-shadow:0 1px 4px rgba(0,0,0,.7);
+}
+.acp-cat-country .acp-name,
+.acp-cat-faction .acp-name,
+.acp-cat-sect .acp-name { font-weight:600; color:#fff2d6; }
+
+/* 类别图例 + 筛选（L0） */
+.acp-legend {
+  position:absolute; left:14px; bottom:14px; z-index:12; display:flex; flex-wrap:wrap; gap:6px;
+  align-items:center; max-width:70%; padding:7px 10px; border-radius:10px;
+  background:linear-gradient(180deg,rgba(20,28,26,.94),rgba(12,18,16,.96));
+  border:1px solid rgba(217,180,106,.35); box-shadow:0 4px 16px rgba(0,0,0,.6);
+}
+.acp-lg-title { font-size:11px; letter-spacing:1px; color:#e6c98a; margin-right:2px; }
+.acp-lg-item {
+  --ac:#d8cba0; display:inline-flex; align-items:center; gap:4px; cursor:pointer;
+  font-size:11px; color:#b9c4be; padding:3px 8px; border-radius:12px;
+  border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03);
+  transition:all .16s;
+}
+.acp-lg-item .acp-lg-dot { color:var(--ac); font-size:12px; line-height:1; }
+.acp-lg-item i { font-style:normal; font-size:9px; opacity:.7; margin-left:1px; }
+.acp-lg-item:hover { border-color:var(--ac); color:#fff; }
+.acp-lg-item.on { border-color:var(--ac); color:#fff; background:rgba(255,255,255,.08); box-shadow:inset 0 0 8px color-mix(in srgb,var(--ac) 30%,transparent); }
+.acp-lg-all { cursor:pointer; font-size:11px; color:#8a97a1; padding:3px 9px; border-radius:12px;
+  border:1px solid rgba(255,255,255,.12); background:transparent; }
+.acp-lg-all.on { color:#e6c98a; border-color:rgba(230,170,80,.5); background:rgba(230,170,80,.1); }
+
+/* 详情卡：深色羊皮纸质感，居中浮层 */
+.acp-card {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:30; width:300px;
+  padding:16px 18px; border-radius:10px;
+  background:linear-gradient(160deg,#1a2530 0%,#101820 60%,#0c1218 100%);
+  border:1px solid rgba(217,180,106,.45);
+  box-shadow:0 10px 40px rgba(0,0,0,.75),inset 0 0 30px rgba(217,180,106,.05);
+  font-family:"Noto Serif SC","Songti SC",serif; color:#e9dcc0;
+}
+.acp-card::before { content:""; position:absolute; left:14px; right:14px; top:8px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(217,180,106,.5),transparent); }
+.acp-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.acp-card-kind { font-size:12px; letter-spacing:1px; }
+.acp-card-x { border:0; background:none; color:#8a97a1; cursor:pointer; font-size:14px; padding:2px 4px; }
+.acp-card-x:hover { color:#fff; }
+.acp-card-title { font-size:20px; font-weight:600; color:#fff2d6; letter-spacing:1px; margin-bottom:8px; }
+.acp-card-row { display:flex; justify-content:space-between; align-items:baseline; font-size:13px;
+  padding:6px 0; border-bottom:1px dashed rgba(217,180,106,.16); }
+.acp-card-row span { color:#94a2ad; }
+.acp-card-row b { color:#e9dcc0; font-weight:500; }
+/* 势力演变（武魂殿→武魂帝国等时序说明） */
+.acp-card-evo { margin-top:10px; padding:9px 11px; border-radius:7px; font-size:11.5px; line-height:1.7;
+  color:#f0d9a8; background:linear-gradient(120deg,rgba(230,170,80,.12),rgba(230,170,80,.03));
+  border:1px solid rgba(230,170,80,.3); }
+.acp-evo-t { display:block; font-size:11px; letter-spacing:1px; color:#e6b870; margin-bottom:4px; }
+.acp-card-desc { margin-top:12px; font-size:12px; line-height:1.85; color:#c3b596; font-style:italic; }
+.acp-card-src { margin-top:8px; font-size:11px; line-height:1.6; color:#9fd8c0; opacity:.9; }
+.acp-card-foot { margin-top:12px; padding-top:10px; border-top:1px solid rgba(217,180,106,.2);
+  font-size:11px; color:#7d8b96; letter-spacing:.5px; }
+
+/* 图例补一条原著地点说明 */
+.ad-legend::before { content:"⚑ 原著地点（点击查看出处）"; color:#9fd8c0; margin-right:14px; font-size:11px; }

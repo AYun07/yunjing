@@ -55,16 +55,16 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v5.1.5（2026-11-22 · 唯一当前版）
+## 🆕 当前版本：v4.48.0（2026-11-18 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v5.1.5** | 2026-11-22 | **当前** | 本地布局归位 + 「以后拉新版本」一条命令。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.5.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.5) |
+| **v4.48.0** | 2026-11-18 | **当前** | 规则引擎引入全 38 界：每界专属维度、世界自适应检定入账本、成长账本面板与本地差分存档，真浏览器 38 界冒烟全过。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.36.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v4.36.0) |
 
-**看版本**：[📚 版本页（107 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v5.1.4 的差异](https://github.com/AYun07/yunjing/compare/v5.1.4...v5.1.5) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.5)
+**看版本**：[📚 版本页（99 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v4.29.0 的差异](https://github.com/AYun07/yunjing/compare/v4.29.0...v4.36.0) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v4.36.0)
 
 > 逐版沿革、历史功能说明与验收数据统一由 [VERSIONS.md](VERSIONS.md) 维护；本板块由 `scripts/update-readme.mjs` 自动生成，**主页不再展开版本列表**。新增版本请插到 VERSIONS.md 最上方。
 
 <!-- YJ_CHANGELOG_END -->
 
-> 主页只介绍云境项目本身。**全部 102 个版本的沿革**（每版「做了什么」与「和上一版的区别」）、历史功能说明、验收数据，一律放在 [版本页 VERSIONS.md](VERSIONS.md)，不在主页展开。
+> 主页只介绍云境项目本身。**全部 86 个版本的沿革**（每版「做了什么」与「和上一版的区别」）、历史功能说明、验收数据，一律放在 [版本页 VERSIONS.md](VERSIONS.md)，不在主页展开。

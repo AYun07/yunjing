@@ -44,7 +44,7 @@
   function log(msg, level) {
     _log.push({ at: Date.now(), level: level || 'info', msg: String(msg) });
     if (_log.length > 200) _log.shift();
-    try { if (window.YJ_DEBUG) console.debug('[Plugin]', msg); } catch (e) { }
+    try { if (window.YJ_DEBUG) console.log('[Plugin]', msg); } catch (e) { }
   }
 
   function validate(manifest) {

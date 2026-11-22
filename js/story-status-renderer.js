@@ -170,7 +170,24 @@ const StoryStatusRenderer = {
     if (!area) return;
     const SS = window.SceneState;
     const ss = SS && SS.hasData && SS.hasData() ? SS.snap() : {};
-    const pick1 = (a, b) => a != null && String(a).trim() ? String(a).trim() : b || "";
+    /* v5.2.1（全量视觉审阅）：模型有时把 time/location 等字段上报成对象（如 {hour,minute} 或 {value,text}），
+       旧 pick1 直接 String(a) 会把对象渲染成字面量「[object Object]」（斗罗截图证实）。
+       现在：① 对象先尝试解包成可读字符串；② 解不出就跳过、回退到舞台快照补位。 */
+    const plain = (x) => {
+      if (x == null) return "";
+      if (typeof x === "object") {
+        for (const k of ["value", "text", "label", "name", "desc", "time", "clockTime"]) {
+          if (x[k] != null && typeof x[k] !== "object" && String(x[k]).trim()) return String(x[k]).trim();
+        }
+        /* 时刻对象常见 {hour, minute} / {h, m}：拼成 HH:MM */
+        const h = x.hour ?? x.h ?? x.hh, m = x.minute ?? x.min ?? x.mm;
+        if (h != null && m != null) return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+        return ""; /* 解不出，交给补位 */
+      }
+      const s = String(x).trim();
+      return s === "[object Object]" ? "" : s;
+    };
+    const pick1 = (a, b) => plain(a) || plain(b) || "";
     const chips = [
       ["🕰", "时代", pick1(v.era, "")],
       ["📅", "日期", pick1(v.date, "")],

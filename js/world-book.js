@@ -238,7 +238,7 @@
         var cat = document.getElementById("wbCat").value;
         var name = document.getElementById("wbName").value.trim();
         var text = document.getElementById("wbText").value.trim();
-        if (!name) { yjAlert("请先填条目名"); return; }
+        if (!name) { alert("请先填条目名"); return; }
         addEntry(cat, name, text, "user");
         document.getElementById("wbName").value = "";
         document.getElementById("wbText").value = "";

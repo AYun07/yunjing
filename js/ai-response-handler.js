@@ -56,9 +56,26 @@ const StoryResponseHandler = {
     fw.updateStatusPanel();
     fw.storyState.turnCount += 1;
     fw.saveStory();
-    try {
-      document.dispatchEvent(new CustomEvent("story:turn-saved", { detail: { turn: fw.storyState.turnCount } }));
-    } catch (e) {
+    /* v5.2.1（全量视觉审阅 · 开局世界静止）：
+       开局向导生成开篇正文那一次，StoryInput.send 以 {silent:true} 调用并打了 __yjOpeningTurn 标记。
+       开篇不是「玩家指令回合」——世界钟不得因此演化（否则玩家还没动，世界动态就冒出事件、日期跳到
+       第1日，逐屏截图证实）。故开局回复照常 +turnCount（下游计数正常），但不 dispatch story:turn-saved。
+       玩家此后每次真实指令都会正常 dispatch，世界随回合演化；显式 setMode('wall')/跳时间仍可脱离回合驱动。 */
+    var isOpening = false;
+    try { isOpening = !!window.__yjOpeningTurn; } catch (e) {}
+    if (isOpening) {
+      try { window.__yjOpeningTurn = false; } catch (e) {}
+      /* 明确把开局后的世界时间重置为初始静止态：清空因任何早期误触发积压的 pendingEvents，
+         并把 clockDay 归零，确保「玩家未指令前世界静止」不留残余。 */
+      try {
+        var vv = fw.storyState.variables;
+        if (vv && vv.时间) { vv.时间.pendingEvents = []; vv.时间.clockDay = 0; }
+      } catch (e) {}
+    } else {
+      try {
+        document.dispatchEvent(new CustomEvent("story:turn-saved", { detail: { turn: fw.storyState.turnCount } }));
+      } catch (e) {
+      }
     }
     if (IP && IP.onTurnRendered) IP.onTurnRendered(reply, body, newVariables);
     if (window.NpcPortrait && NpcPortrait.onTurnRendered) {
@@ -881,10 +898,13 @@ const StoryResponseHandler = {
         html += `<div class="next-hook"><span class="nh-tag">下回</span><span class="nh-text">${this.escapeHtml(opts.hook)}</span></div>`;
       }
     }
+    /* v6.3.5：按钮按所在卡片的 data-turn 操作【对应轮】，不再永远弹末轮栈；
+       无 data-turn（未开局卡片）时退回无参调用，保持旧行为。 */
     html += `
             <div class="turn-actions">
-                <button class="turn-act-btn" onclick="window.StoryInput.regenerate()" title="删除本轮并用原指令重新生成（换一种写法）">↻ 重新生成</button>
-                <button class="turn-act-btn warn" onclick="window.StoryInput.rollback()" title="删除本轮正文与登记，故事回到该轮开始前">↩ 回退本轮</button>
+                <button class="turn-act-btn" onclick="var t=this.closest('[data-turn]');window.StoryInput.regenerate(t?+t.getAttribute('data-turn'):undefined)" title="删除该轮并用原指令重新生成（换一种写法）">↻ 重新生成</button>
+                <button class="turn-act-btn warn" onclick="var t=this.closest('[data-turn]');window.StoryInput.rollback(t?+t.getAttribute('data-turn'):undefined)" title="删除该轮正文与登记，故事回到该轮开始前">↩ 回退本轮</button>
+                <button class="turn-act-btn" onclick="window.TimeAxis&&window.TimeAxis.open()" title="打开对话时光轴，选定任意回合回档/重写">⌛ 时光轴</button>
             </div>
         `;
     card.innerHTML = html;

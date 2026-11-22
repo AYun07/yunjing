@@ -4,8 +4,7 @@
  */
 const fs = require('fs');
 const vm = require('vm');
-const path = require('path');
-const ROOT = process.env.YJ_ROOT || path.resolve(__dirname, '..', '..');
+const ROOT = process.env.YJ_ROOT || '/workspace/yunjing';
 const FILE = ROOT + '/js/rpg-core.js';
 const code = fs.readFileSync(FILE, 'utf8');
 const GENRES = ['wangyou'];

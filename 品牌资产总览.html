@@ -20,9 +20,6 @@
   .iconrow figcaption{font-size:11px;color:var(--dim);margin-top:6px}
   .sizes{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
   .splash-shot{width:100%;max-height:420px;object-fit:contain;border-radius:12px;display:block;margin:0 auto}
-  /* v5.1.1 修 P3：预览图属于「本地留证」资产，被 .gitignore 排除（不入库）。
-     原先直接 <img> 引用 → 新克隆必然破图（实测 brokenImgs=2）。缺图时显示说明框。 */
-  .asset-fallback{width:100%;border:1px dashed rgba(255,255,255,.18);border-radius:12px;padding:26px 18px;color:var(--dim);font-size:13px;line-height:1.9;text-align:center}
   .promo{width:100%;border-radius:12px;display:block;margin-bottom:12px}
   ul{list-style:none;font-size:13.5px;line-height:2;color:var(--text)}
   ul li::before{content:"✦";color:var(--gold);margin-right:9px}
@@ -55,8 +52,7 @@
     <div class="card">
       <h2>◈ 开场动画 · 纯 CSS/SVG 三端通用</h2>
       <div style="background:#0b0c1c;border-radius:12px;padding:10px">
-        <img class="splash-shot" src="品牌开场动画-预览.png" alt="开场动画预览" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="asset-fallback" style="display:none">🎬 <b>开场动画预览</b>（<code>品牌开场动画-预览.png</code>）<br>属于本地留证资产，按项目规则不入库；本地自测时把同名文件放在项目根目录即可显示。</div>
+        <img class="splash-shot" src="品牌开场动画-预览.png" alt="开场动画预览">
       </div>
       <p style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.8">
         星点闪烁 · 金色月晕呼吸 · 云朵漂浮 · 小云发饰轻摆 · 云雾横流 · 标题渐显。
@@ -67,8 +63,7 @@
     <div class="card">
       <h2>◈ 安卓启动屏</h2>
       <div style="background:#0b0c1c;border-radius:12px;padding:10px;text-align:center">
-        <img src="Brand-安卓启动屏预览.png" alt="启动屏" style="max-height:420px;border-radius:10px" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="asset-fallback" style="display:none">📱 <b>安卓启动屏预览</b>（<code>Brand-安卓启动屏预览.png</code>）<br>属于本地留证资产，按项目规则不入库；本地自测时把同名文件放在项目根目录即可显示。</div>
+        <img src="Brand-安卓启动屏预览.png" alt="启动屏" style="max-height:420px;border-radius:10px">
       </div>
       <p style="font-size:12px;color:var(--dim);margin-top:14px;line-height:1.8">
         各密度竖屏/横屏全套生成，品牌图标 + 金色标题 + slogan，安装后开屏即见。

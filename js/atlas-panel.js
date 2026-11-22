@@ -14860,7 +14860,10 @@
   };
   /* v3.93.0 势力状态表：按归一化的势力名索引，随存档持久化。
      地图节点（含预置原著势力节点）在渲染时查此表，覆灭/新生/消长即时可见。 */
-  const state = { genre: null, layerId: null, currentId: null, visits: [], dyn: [], open: false, factionState: {} };
+  /* v5.2.1：denseMode=精简视图（默认开）——地点过多时折叠远处补录地标，
+     到访/当前/关键/覆灭地点始终保留，数据一个不删，只控制呈现密度。
+     默认开，因为逐屏截图证实大世界（网游214地标）默认全平铺会糊成一团。 */
+  const state = { genre: null, layerId: null, currentId: null, visits: [], dyn: [], open: false, factionState: {}, denseMode: true };
 
   /* ===== v3.92.0 · 地球界真实世界地图 =====
      底图：Natural Earth 1:110m 陆地（公有领域），已简化为 1606 点 / 16KB 内嵌。
@@ -14975,7 +14978,7 @@
     return `storyAtlas_${state.genre}`;
   }
   function save() {
-    const v = JSON.stringify({ layerId: state.layerId, currentId: state.currentId, visits: state.visits, dyn: state.dyn || [], factionState: state.factionState || {} });
+    const v = JSON.stringify({ layerId: state.layerId, currentId: state.currentId, visits: state.visits, dyn: state.dyn || [], factionState: state.factionState || {}, denseMode: state.denseMode });
     try {
       localStorage.setItem(storeKey(), v);
     } catch (e) {
@@ -15000,6 +15003,7 @@
         state.visits = Array.isArray(o.visits) ? o.visits : [];
         state.dyn = Array.isArray(o.dyn) ? o.dyn.filter((d) => d && d.id && d.n) : [];
         state.factionState = (o.factionState && typeof o.factionState === "object") ? o.factionState : {};
+        state.denseMode = typeof o.denseMode === "boolean" ? o.denseMode : true; /* v5.2.1 精简视图偏好 */
       } catch (e) {
         state.visits = [];
         state.dyn = [];
@@ -15010,15 +15014,7 @@
     const g = ATLAS_DATA[genre];
     if (!g) return [];
     const out = [];
-    /* v5.1.1 修 P1 崩溃：舆图三件套是懒加载的，玩家**可能在数据到位前**就打开图鉴，
-       此时某些界的 layers / 某层的 nodes 还没挂上（undefined）。
-       旧代码直接 g.layers.forEach(l => l.nodes.forEach(...)) →
-       TypeError「Cannot read properties of undefined」；在 headless Chromium 上
-       甚至直接把渲染进程跑崩（实测遮天/圣墟：开图鉴 → Target crashed）。
-       现在全部按空数组兜底：面板照常打开，数据到位后自动重绘。 */
-    (Array.isArray(g.layers) ? g.layers : []).forEach((l) => {
-      (Array.isArray(l.nodes) ? l.nodes : []).forEach((n) => out.push({ ...n, layerId: l.id }));
-    });
+    g.layers.forEach((l) => l.nodes.forEach((n) => out.push({ ...n, layerId: l.id })));
     (state.dyn || []).forEach((d) => out.push(d));
     return out;
   }
@@ -15821,9 +15817,13 @@
   function glyph(n, mode, P, lp, geo, lodNeed) {
     const isCur = mode === "cur", isStd = mode === "standby";
     const visited = mode === "vis" || isCur;
-    /* v3.93.0 势力覆灭：预置原著势力节点查状态表，动态实体节点自带 fallen */
+    /* v3.93.0 势力覆灭：预置原著势力节点查状态表，动态实体节点自带 fallen
+       v5.2.1：由「静态删除线」升级为「动态状态可视化」——active/destroyed/revived 三态，
+       覆灭标注发生回合、复兴用回升态，状态随 factionState 演化即时变化，不再画死横线。 */
     const fstate = factionStateOf(n.entName) || factionStateOf(n.n) || (n.fallen ? { status: "destroyed" } : null);
     const fallen = !!(fstate && fstate.status === "destroyed");
+    const revived = !!(fstate && fstate.status === "revived");
+    const factionRound = fstate && fstate.round;
     /* v4.04.0：旧版 0.62 把补录地标缩成一粒小点，40 界实测斗破 21/28、地球 75/99 都是这类点。
        放大到 0.82 并配类型迷你图标，层级仍比主地标小，但不再是「一堆圆点」。 */
     const k = (isCur || isStd ? 1.28 : 1) * (n.supp ? 0.95 : 1);
@@ -15985,18 +15985,26 @@
       if (absBx < 4.5) _sx = 4.5 - absBx;
       else if (absBx + tw > 95.5) _sx = 95.5 - (absBx + tw);
       const _bx = bx + _sx, _lx = lx + _sx;
-      return `<g class="atlas-lab" data-lod="${need}"${keyNode ? ' data-key="1"' : ""}${fallen ? ' data-fallen="1"' : ""}>
+      /* v5.2.1：去掉静态删除线，改用状态徽记 + CSS 动态样式（data-faction-state）。
+         覆灭=废墟态、复兴=回升态，状态由 factionState 驱动，演化时即时刷新。 */
+      return `<g class="atlas-lab" data-lod="${need}"${keyNode ? ' data-key="1"' : ""}${fallen || revived ? ' data-fallen="' + (fallen ? 1 : 0) + '"' : ""}${fstate ? ' data-faction-state="' + escA(fstate.status) + '"' : ''}>
                 ${_sx ? `<path d="M0,0 L${_bx.toFixed(2)},${ly.toFixed(2)}" stroke="${hexA(P.primary, 0.3)}" stroke-width=".14" stroke-dasharray="1.1 .8"/>` : leader}
                 <rect x="${_bx.toFixed(2)}" y="${by.toFixed(2)}" width="${tw.toFixed(2)}" height="${th.toFixed(2)}" rx="${(th / 2).toFixed(2)}" fill="${bgc}" stroke="${bdr}" stroke-width=".22"/>
-                <path d="M${(_bx + .55).toFixed(2)},${(by + th / 2).toFixed(2)} h1.05" stroke="${fallen ? hexA(P.muted, .7) : isCur ? P.primary : isStd ? P.accent : hexA(P.primary, 0.5)}" stroke-width=".34" stroke-linecap="round"/>
-                <text x="${_lx}" y="${ly}" font-size="${fs}" fill="${lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label"${fallen ? ' text-decoration="line-through"' : ""}>${lname}</text>
+                <path d="M${(_bx + .55).toFixed(2)},${(by + th / 2).toFixed(2)} h1.05" stroke="${fallen ? hexA(P.muted, .7) : revived ? '#6fd39a' : isCur ? P.primary : isStd ? P.accent : hexA(P.primary, 0.5)}" stroke-width=".34" stroke-linecap="round"/>
+                <text x="${_lx}" y="${ly}" font-size="${fs}" fill="${revived ? '#6fd39a' : lf}"${isCur || isStd ? ' font-weight="700"' : ""} text-anchor="${anchor}" class="atlas-label">${lname}${revived ? ' ↗' : ''}</text>
               </g>`;
     })();
-    const fallenMark = fallen ? `<g transform="translate(2.4,-2.6)" opacity=".92">
-                <circle r="1.6" fill="${hexA(P.deep, 0.94)}" stroke="${hexA(P.muted, 0.75)}" stroke-width=".22"/>
-                <path d="M-.62,-.62 L.62,.62 M.62,-.62 L-.62,.62" stroke="#d08a8a" stroke-width=".34" stroke-linecap="round"/>
+    /* v5.2.1：覆灭标记由「静态红叉」改为「动态状态徽章」——
+       覆灭=断裂石碑图标 + 回合数，复兴=回升箭头（绿色）。状态随 factionState 演化即时变化。 */
+    const fallenMark = fallen ? `<g transform="translate(2.4,-2.6)" opacity=".95" class="atlas-faction-badge">
+                <circle r="2" fill="${hexA(P.deep, 0.96)}" stroke="#c97070" stroke-width=".28"/>
+                <path d="M-.7,-.85 V.55 M.7,-.85 V.55 M-1,-.85 H1 M-1,.55 H1" stroke="#c97070" stroke-width=".26" stroke-linecap="round"/>
+                ${factionRound ? `<text x="0" y="1.75" text-anchor="middle" font-size="1.25" fill="#e0a0a0" font-family="sans-serif">${escA(String(factionRound))}</text>` : ''}
+            </g>` : revived ? `<g transform="translate(2.4,-2.6)" opacity=".95" class="atlas-faction-badge atlas-revived">
+                <circle r="1.9" fill="${hexA(P.deep, 0.96)}" stroke="#6fd39a" stroke-width=".28"/>
+                <path d="M-1,.6 L0,-.5 L1,.6 M0,-.5 V1" stroke="#6fd39a" stroke-width=".3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </g>` : "";
-    return `<g class="atlas-node${mode === "fog" ? " atlas-fogged" : ""}${fallen ? " atlas-fallen" : ""}" data-node="${n.id}" data-mode="${mode}" data-fallen="${fallen ? 1 : 0}" style="cursor:pointer;">
+    return `<g class="atlas-node${mode === "fog" ? " atlas-fogged" : ""}${fallen ? " atlas-fallen" : ""}${revived ? " atlas-revived" : ""}" data-node="${n.id}" data-mode="${mode}" data-fallen="${fallen ? 1 : 0}"${fstate ? ' data-faction-state="' + escA(fstate.status) + '"' : ''} style="cursor:pointer;">
             <g transform="translate(${n.x},${n.y})">
                 <g class="atlas-mark">${mark}
                 <g transform="scale(${k})"${fogAttr}>${n.supp ? "" : ring}${body}</g>
@@ -16006,6 +16014,10 @@
   }
   function layerSvg(layer) {
     const P = pal();
+    /* v5.2.2 生图地图底图：按「世界__层id」加载对应美术底图，斗罗每部各用各的、互不串图。
+       缺图时 onerror 隐藏该 <image>，自动回退到下方矢量地形 bgSvg，功能零影响。 */
+    const artKey = (state.genre || "") + "__" + String(layer.id || "main").replace(/^era_/, "");
+    const artImg = `<image href="assets/map-art/${escA(artKey)}.webp" x=".6" y=".6" width="98.8" height="98.8" preserveAspectRatio="xMidYMid slice" opacity=".85" pointer-events="none" clip-path="url(#agArtClip)" class="atlas-art" onerror="this.style.display='none'"/>`;
     const visitedIds = state.visits.map((v) => v.id);
     const layerNodes = layer.nodes.concat((state.dyn || []).filter((d) => d.layerId === layer.id));
     const byId = {};
@@ -16305,8 +16317,11 @@
                     <circle cx="1.3" cy="1.3" r=".08" fill="${hexA(P.text, 0.2)}"/>
                     <circle cx=".2" cy="2.1" r=".06" fill="${hexA(P.text, 0.12)}"/>
                 </pattern>
+                <clipPath id="agArtClip"><rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4"/></clipPath>
             </defs>
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agBg)"/>
+            ${artImg}
+            <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" class="atlas-art-veil" fill="${hexA(P.deep, 0.32)}" pointer-events="none"/>
             ${layer.geo === "world" ? geoWorldSvg(P) : bgSvg(layer.decor, P)}
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" fill="url(#agVig)" pointer-events="none"/>
             <rect x=".6" y=".6" width="98.8" height="98.8" rx="2.4" filter="url(#agPaper)" opacity=".22" pointer-events="none" class="atlas-soft"/>
@@ -16427,32 +16442,14 @@
   }
 
   function render() {
+    /* v5.2.2 渲染前兜底合并时代层：ERAS 懒加载可能晚于 init 的同步合并，
+       这里保证只要数据已到位，分部地图 tab 一定会出现（幂等，重复调用无副作用）。 */
+    mergeEras();
     const genre = state.genre, g = ATLAS_DATA[genre], wrap = $("atlasPanel");
     if (!g || !wrap) return;
     const P = pal();
-    /* v5.1.1 修 P1 崩溃：舆图数据懒加载，玩家可能早于数据到位就开面板 →
-       g.layers 可能是 undefined（此前直接 .some/.find → TypeError，
-       headless 下会把渲染进程跑崩）。现在按空数组兜底并给出可读的提示。 */
-    const layers = Array.isArray(g.layers) ? g.layers : [];
-    if (!layers.length) {
-      wrap.innerHTML = `
-        <div class="atlas-inner">
-          <div class="atlas-head">
-            <img class="atlas-crest" src="assets/atlas/compass-rose.png" alt="" aria-hidden="true">
-            <div>
-              <div class="atlas-title" style="color:${P.primary};">${escA(g.name || "行迹图鉴")}</div>
-              <div class="atlas-flavor">舆图数据还在路上，稍候片刻…</div>
-            </div>
-            <div class="atlas-hbtns">
-              <button class="atlas-close" onclick="StoryAtlas.toggle(false)">✕</button>
-            </div>
-          </div>
-          <div class="atlas-generic" style="border-color:${hexA(P.accent, 0.38)};color:${P.muted};">✦ 本界舆图正在加载，落位后会自动补绘。</div>
-        </div>`;
-      return;
-    }
-    if (!state.layerId || !layers.some((l) => l.id === state.layerId)) state.layerId = layers[0].id;
-    const layer = layers.find((l) => l.id === state.layerId) || layers[0];
+    if (!state.layerId || !g.layers.some((l) => l.id === state.layerId)) state.layerId = g.layers[0].id;
+    const layer = g.layers.find((l) => l.id === state.layerId);
     const presetNodes = allNodes(genre).filter((n) => !n.dyn);
     const presetIds = new Set(presetNodes.map((n) => n.id));
     const totalN = presetNodes.length;
@@ -16487,6 +16484,7 @@
             ${g.generic ? `<div class="atlas-generic" style="border-color:${hexA(P.accent, 0.38)};color:${P.muted};">${g.fallback ? "✦ 原创世界 · 行迹图鉴：此界暂无预置舆图——AI 每上报一处行踪即落一枚行迹地标，走到哪，记到哪" : genericHintFor(genre)}</div>` : ""}
             <div class="atlas-tabs">
                 ${g.layers.map((l) => `<button class="atlas-tab ${l.id === state.layerId ? "on" : ""}" style="--p:${P.primary};" onclick="StoryAtlas.switchLayer('${l.id}')"><i>${l.ico || "◈"}</i>${l.name}</button>`).join("")}
+                <button class="atlas-tab atlas-density ${state.denseMode ? 'on' : ''}" style="--p:${P.primary};" title="地点过多时切换精简视图：折叠远处小地标，到访过/关键的地点始终保留" onclick="StoryAtlas.toggleDensity()"><i>◫</i>${state.denseMode ? '精简' : '完整'}</button>
             </div>
             <div class="atlas-progress">
                 <div class="ap-txt"><span>足迹点亮 <b style="color:${P.primary};">${visitedN}</b> / ${totalN} 处${dynN ? ` · <span style="color:${P.accent};">${isTraceMode() ? "行迹" : "剧情"}地标 <b>${dynN}</b></span>` : ""}</span><span style="color:${P.primary};">${pct}%</span></div>
@@ -16507,7 +16505,7 @@
                 <span><b>${rd}</b> 条道路</span><span class="als-kind">${tr}底图${layer.era ? " · " + escA(layer.era) : ""}</span>
               </div>`;
             })()}
-            <div class="atlas-map" style="border-color:${hexA(P.primary, 0.3)};">${layerSvg(layer)}</div>
+            <div class="atlas-map" data-density="${state.denseMode ? 'compact' : 'full'}" data-art="${escA(state.genre + '__' + (layer.id || 'main'))}" style="border-color:${hexA(P.primary, 0.3)};">${layerSvg(layer)}</div>
             <div class="atlas-layhint" style="color:${P.muted};">${escA(layer.hint || "")}</div>
             <div id="atlasDetail"></div>
             ${(() => {
@@ -16524,17 +16522,25 @@
             ${(() => {
               /* v3.93.0 覆灭势力榜：节点废墟态只在所在层可见，跨层切换会看不见。
                  此榜不随切层消失，保证「哪个势力被灭了」在图鉴里任何一层都实时可见。 */
-              const dead = Object.entries(state.factionState || {}).filter(([, x]) => x && x.status === "destroyed");
-              if (!dead.length) return "";
-              return `<div class="atlas-fallen-list"><b>🏚 已覆灭势力</b>${dead.map(([k, x]) =>
-                `<span>${escA(k)} · 第 ${escA(x.round || "—")} 回合</span>`).join("")}</div>`;
+              /* v5.2.1：势力状态动态榜——覆灭/复兴分组，带发生回合，状态一变此处立即刷新 */
+              const fsAll = Object.entries(state.factionState || {});
+              const dead = fsAll.filter(([, x]) => x && x.status === "destroyed");
+              const risen = fsAll.filter(([, x]) => x && x.status === "revived");
+              if (!dead.length && !risen.length) return "";
+              let h = '<div class="atlas-fallen-list">';
+              if (dead.length) h += '<b>🏚 已覆灭势力</b>' + dead.map(([k, x]) =>
+                `<span data-fs="destroyed">${escA(k)} · 第 ${escA(x.round || "—")} 回合${x.note ? ' · ' + escA(String(x.note).slice(0, 10)) : ''}</span>`).join("");
+              if (risen.length) h += '<b style="color:#6fd39a;margin-left:6px;">↗ 复兴势力</b>' + risen.map(([k, x]) =>
+                `<span data-fs="revived" style="color:#6fd39a;border-color:rgba(111,211,154,.45)">${escA(k)} · 第 ${escA(x.round || "—")} 回合</span>`).join("");
+              return h + '</div>';
             })()}
             <div class="atlas-legend">
                 <span><i class="lg lg-cur" style="background:${P.primary};box-shadow:0 0 5px ${P.primary};"></i>当前</span>
                 <span><i class="lg" style="background:${hexA(P.primary, 0.9)};"></i>已到访</span>
                 <span><i class="lg lg-fog"></i>未到访 · 轮廓可见</span>
                 <span style="color:${P.accent};">✦ ${isTraceMode() ? "行迹" : "剧情"}地标</span>
-                ${Object.values(state.factionState || {}).some((x) => x && x.status === "destroyed") ? `<span style="color:#d08a8a;">✕ 已覆灭势力（灰·划线）</span>` : ""}
+                ${Object.values(state.factionState || {}).some((x) => x && x.status === "destroyed") ? `<span style="color:#c97070;">▤ 已覆灭（碑·标注回合）</span>` : ""}
+                ${Object.values(state.factionState || {}).some((x) => x && x.status === "revived") ? `<span style="color:#6fd39a;">↗ 复兴势力</span>` : ""}
                 <span class="lg-road" style="border-color:${hexA(P.primary, 0.55)};"></span>
                 <span class="lg-hint">悬停看速览 · 点击看详录</span>
             </div>
@@ -16942,6 +16948,14 @@
         .atlas-map[data-lod="0"] .atlas-lab[data-lod="1"],
         .atlas-map[data-lod="0"] .atlas-lab[data-lod="2"],
         .atlas-map[data-lod="1"] .atlas-lab[data-lod="2"]{display:none;}
+        /* v5.2.1 精简视图：地点过多时默认折叠远处补录地标，图标缩为小点、标签隐藏；
+           到访(vis)/当前(cur)/待发(standby)/关键(data-key=1)/覆灭复兴(data-faction-state) 一律保留——
+           「出现过的地点一定要有」这条底线不破，只降密度、不删数据。放大(zoom≥1×)或切「完整」即全显。 */
+        .atlas-map[data-density="compact"][data-lod="0"] .atlas-node[data-mode="fog"][data-fallen="0"]:not([data-faction-state]) .atlas-mark{opacity:.34;transform:scale(.7);transform-origin:center;}
+        .atlas-map[data-density="compact"][data-lod="0"] .atlas-lab[data-lod="1"]:not([data-key="1"]):not([data-fallen]):not(.atlas-keep),
+        .atlas-map[data-density="compact"][data-lod="0"] .atlas-lab[data-lod="2"]:not([data-key="1"]):not([data-fallen]):not(.atlas-keep),
+        .atlas-map[data-density="compact"][data-lod="1"] .atlas-lab[data-lod="2"]:not([data-key="1"]):not([data-fallen]):not(.atlas-keep){display:none;}
+        .atlas-node[data-faction-state="revived"] .atlas-mark{filter:drop-shadow(0 0 2px rgba(111,211,154,.5));}
         .atlas-zlevel{font-size:10px;letter-spacing:.5px;color:var(--primary,#c9a86a);text-align:center;
             background:rgba(10,12,20,.87);border:1px solid color-mix(in srgb,var(--primary,#c9a86a) 32%,transparent);
             border-radius:8px;padding:3px 0;line-height:1.2;}
@@ -16980,9 +16994,11 @@
             border:1px solid rgba(208,138,138,.34);border-radius:11px;
             background:linear-gradient(150deg,rgba(208,86,86,.09),rgba(0,0,0,.14));font-size:10.5px;}
         .atlas-fallen-list>b{font-weight:700;letter-spacing:1.5px;color:#d08a8a;}
-        .atlas-fallen-list span{padding:2px 8px;border-radius:99px;border:1px solid rgba(208,138,138,.28);
-            color:var(--text-muted,#a8a290);background:rgba(0,0,0,.14);letter-spacing:.5px;
-            text-decoration:line-through;text-decoration-color:rgba(208,138,138,.6);}
+        /* v5.2.1：覆灭势力徽章不再用静态删除线，改为动态状态胶囊（碑纹感 + 状态色） */
+        .atlas-fallen-list span{padding:2px 9px;border-radius:8px;border:1px solid rgba(208,138,138,.34);
+            color:#e0b0a8;background:rgba(120,30,30,.16);letter-spacing:.5px;
+            box-shadow:inset 0 0 8px rgba(120,30,30,.12);}
+        .atlas-fallen-list span[data-fs="revived"]{background:rgba(30,110,70,.16);}
         .atlas-legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:9px;font-size:11px;color:var(--text-muted,#a8a290);}
         .atlas-legend span{display:flex;align-items:center;gap:4px;}
         .lg{width:8px;height:8px;border-radius:50%;display:inline-block;}
@@ -17312,12 +17328,10 @@
     });
     return added;
   }
-  function init() {
-    injectStyle();
-    /* v3.97.0 时代地图层：把 ATLAS_ERAS 按层追加到对应世界的 layers。
-       render() 的 atlas-tab 由 g.layers.map() 自动生成，层切换零 UI 改动。
-       层 id 与节点 id 一律加前缀，避免与既有 ATLAS_DATA 的同名节点/层冲突（实测有 18 处同名）。
-       必须放在 injectSupplement() 之前，且新层节点不设 t:"start"，保证补录与势力动态链路按原规则走。 */
+  /* v5.2.2 时代地图层合并：抽成函数，同步 init 与 ERAS 懒加载异步补做都调用。
+     原来只在 init 同步合并一次，懒加载晚到时 era 层永远进不了 layers，
+     导致斗罗等世界的分部地图 tab 不出现（数据做了却看不见）。本函数幂等，可重复调用。 */
+  function mergeEras() {
     try {
       const ERAS = window.ATLAS_ERAS || {};
       Object.keys(ERAS).forEach((g) => {
@@ -17335,6 +17349,12 @@
         });
       });
     } catch (e) { if (window.YJ_DEBUG) console.warn("[StoryAtlas] 时代层合并失败:", e); }
+  }
+  function init() {
+    injectStyle();
+    /* v3.97.0 时代地图层：把 ATLAS_ERAS 按层追加到对应世界的 layers。
+       render() 的 atlas-tab 由 g.layers.map() 自动生成，层切换零 UI 改动。 */
+    mergeEras();
     /* v3.98.0 天蚕土豆宇宙四界舆图：把 ATLAS_POTATO 直接并入 ATLAS_DATA（新世界本体，非时代层）。
        节点 id 已带 d_/w_/y_/wx_ 前缀，与既有层/节点不会冲突。必须在 injectSupplement() 之前合并。 */
     try {
@@ -17361,23 +17381,16 @@
           try {
             const POT = window.ATLAS_POTATO || {};
             Object.keys(POT).forEach((g) => {
-              /* v5.1.1 修 P1：若本界此前已被 ensureGenreData 放了**通用兜底**配置，
-                 土豆宇宙的真实舆图就再也并不进来（大主宰/武动乾坤/元尊/万相之王
-                 会永远显示「行迹图鉴」）。现在兜底配置也允许被真实数据替换。 */
-              const cur = ATLAS_DATA[g];
-              const isFallback = cur && cur.generic && cur.fallback;
-              if ((!cur || isFallback) && POT[g] && Array.isArray(POT[g].layers)) ATLAS_DATA[g] = POT[g];
+              if (!ATLAS_DATA[g] && POT[g] && Array.isArray(POT[g].layers)) ATLAS_DATA[g] = POT[g];
             });
           } catch (e) { }
+          try { mergeEras(); } catch (e) { }  /* v5.2.2 补做时代层合并：让懒加载晚到的分部地图 tab 出现 */
           try { fitLayers(); } catch (e) { }
           try { packRegions(); } catch (e) { }
           try { injectSupplement(); } catch (e) { }
           try { relaxSupp(); } catch (e) { }
           try { if (state.genre) load(state.genre); } catch (e) { }
-          /* v5.1.1：数据到位后必须重绘一次，否则玩家看到的还是兜底空图
-             （load() 只恢复足迹状态，不负责渲染）。 */
-          try { if (state.open) render(); } catch (e) { }
-          if (window.YJ_DEBUG) console.debug("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
+          if (window.YJ_DEBUG) console.log("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
         }).catch(() => { });
       }
     } catch (e) { }
@@ -17395,9 +17408,18 @@
       WorldBook.onChange(() => { try { syncFromWorldBook(); } catch (e) {} });
     }
   }
+  /* v5.2.1：切换地点呈现密度（精简/完整）。只改 state + 重渲染，绝不动 ATLAS_DATA / visits / dyn——
+     「出现过的地点一定要有」是硬底线：精简只折叠远处未到访的补录小点，到访/当前/关键/势力状态点全保留。 */
+  function toggleDensity() {
+    state.denseMode = !state.denseMode;
+    try { save(); } catch (e) {}
+    if (state.open) { try { render(); } catch (e) {} }
+    return state.denseMode;
+  }
   const StoryAtlas = {
     toggle,
     switchLayer,
+    toggleDensity,
     onVars,
     init,
     resetFootprint,

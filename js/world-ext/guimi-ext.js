@@ -10,4 +10,4 @@ act:function(st,s,a,p){if(a==="file"){var line=String(p||"").trim().slice(0,40);
 actions:[{id:"file",label:"记录案件",icon:"🗂",desc:"案件名",control:"text",placeholder:"失踪的更夫",effect:{}},{id:"walk",label:"走访调查",icon:"👣",desc:"进度+12",cooldown:2,risk:{failP:0.4,winText:"关键证词",failText:"打草惊蛇",onWin:{stats:{solved:12},fact:"调查进展。"},onFail:{fact:"打草惊蛇。"}}}],
 hud:function(st){return[{i:"🗂",v:(st.solved||0)+"%",l:"案件",tone:(st.solved||0)>=60?"ok":"",mod:"wr_case"}]},
 directive:function(st){var v=st.solved||0;if(v>=60)return"案件接近真相——代价也该上桌了。";return"案件进度 "+v+"%。"}});
-WorldExt.define("guimi",[occult,casenotes]);console.debug("[WorldExt] 诡秘之主 界专属扩展就位")})();
+WorldExt.define("guimi",[occult,casenotes]);console.log("[WorldExt] 诡秘之主 界专属扩展就位")})();
