@@ -59,7 +59,9 @@
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v6.6.0** | 2026-11-22 | **当前** | 创意工坊单一文件夹 `community/works/`（简介与包体同处、云境内一键下载安装）+ CI 七闸从连续 64 次失败修到 success；跨层战力折算、任意楼层回档、二创增量补丁全部在线。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v6.6.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.6.0) |
+| **v6.6.0** | 2026-11-22 | **当前** | 创意工坊单一文件夹 `community/works/`（简介与包体同处、云境内一键下载安装）+ CI 七闸从连续 64 次失败修到 success；跨层战力折算、任意楼层回档、二创增量补丁全部在线。 | [完整包 658MB](https://github.com/AYun07/yunjing/releases/download/v6.6.0/yunjing-v6.6.0-full.zip) · [源码包](https://github.com/AYun07/yunjing/archive/refs/tags/v6.6.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.6.0) |
+
+> **完整包 vs 源码包**：「完整包」=`yunjing-v6.6.0-full.zip`（658MB），含小云情绪动画（470MB）、38 界考据地图等全部运行资产，下载解压即可离线运行；「源码包」= GitHub 自动生成的 tag zip（约 26MB），只含仓库源码、不含大体积媒体资产。二者版本号均为 v6.6.0。
 
 **看版本**：[📚 版本页（102 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v6.6.0)
 
