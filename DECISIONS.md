@@ -1211,3 +1211,12 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 取舍：牺牲"匿名无障碍"（要限流/缓存/token 上传），换"单一区域、简介与包体同处、云境内一站式体验"。token 只存本机。
 - 失效条件：引入后端/自有存储、或用户改主意要多板块，重写本决策。
 - 验证：v660-schema Node + v660-browser + 真机造作品写入 works、清单更新、新档一键安装不坏档、CI 远端转绿。
+
+## DR-054 · 主页 Latest 停在 v5.1.5 的根因与补 tag/release（2026-11-23）
+
+- 背景：用户发现"GitHub 最新版怎么还是 5.1.5"。实地核查：远端 main HEAD = `5f4462684a`（release: v6.6.0），sw.js/index.html/README 全是 6.6.0；但 `/releases/latest` = v5.1.5，tag 最新也停在 v5.1.5。
+- 根因：`scripts/push-all-github.py` 用 Git Data API 只推文件、建 commit、移动 main，**从不建 git tag 与 GitHub Release**。v5.1.5 之后所有版本（v6.3.x/v6.4/v6.5.x/v6.6.0）代码都在 main 里，但主页 Latest 只看 release，故一直挂 5.1.5。与 CI failure（DR-052）是不同的两个根因，互不连带。
+- 决定：① 补 v6.6.0 annotated tag（指向 `5f4462684a`）+ Release，让主页 Latest 变 6.6.0；② 修 README「当前版本」行的 zip/发布页链接，原来错指不存在的 v4.36.0（点了 404），改指 v6.6.0；③ 核查沙箱里真正保存了完整源码的历史版本，把有原生 zip 的 v4.17.7/v4.18.0/v4.19.0 用各自 zip 还原成独立 tree+commit（parents=0，不挂 main）+tag+release，绝不拿现版冒充。
+- 取舍：`_bak_v*` 目录只是改文件前的 2–12 个零散备份，不是完整可运行版本，**不**为它们造 tag（造了等于用现版代码冒充历史版，违背考据原则）。其余缺 tag 的历史号（v1.x/v3.x 等）同样无原生完整源码，不补。只补"确有原生完整包"的 4 个（v6.6.0 + 那 3 个）。
+- 失效条件：若将来找回某历史版本的原生完整源码/快照，可为其单独补 tag；若改造 push 脚本让每次发版自动建 tag+release，则本问题根治，可重审。
+- 验证：`/releases/latest` = v6.6.0；v6.6.0 zip 与 v4.17.7/v4.18.0/v4.19.0 zip 均 HTTP 200；逐个读 tag tree 内 sw.js = 对应版本号，三个历史 commit parents=0（独立快照）；README raw 已回读到新链接。
