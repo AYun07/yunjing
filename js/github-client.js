@@ -124,6 +124,44 @@
     return { ok: true, id: r.data.id, url: r.data.html_url, rawUrl: f.raw_url || '', data: r.data };
   }
 
+  /* ---------- Gist 下载 / 私密 Gist（v6.5.0 增量补丁） ---------- */
+  /** 下载 Gist raw 文本（包体 base64）；走多线路镜像把 raw.githubusercontent.com / gist.githubusercontent.com 也可达 */
+  async function downloadGistRaw(rawUrl) {
+    if (!rawUrl || !/^https?:\/\//i.test(rawUrl)) return { ok: false, error: '非法下载地址' };
+    var bases = [
+      rawUrl,
+      'https://ghproxy.net/' + rawUrl,
+      'https://gh-proxy.com/' + rawUrl
+    ];
+    var lastErr = null;
+    for (var i = 0; i < bases.length; i++) {
+      try {
+        var r = await once(bases[i], { method: 'GET', headers: { 'Accept': '*/*' } }, 20000);
+        if (r.ok) return { ok: true, text: await r.text(), line: bases[i] };
+        lastErr = 'HTTP ' + r.status;
+      } catch (e) { lastErr = (e && e.message) || '网络错误'; }
+    }
+    return { ok: false, error: lastErr || '下载失败' };
+  }
+
+  /** 创建私密 Gist（含密钥的存档专用；public=false） */
+  async function createPrivateGist(filename, content, description) {
+    var body = { description: description || '云境私密存档包（含密钥，仅本人可见）', public: false, files: {} };
+    body.files[filename] = { content: content };
+    var r = await write(WRITE_BASE + '/gists', 'POST', body);
+    if (!r.ok) return r;
+    var files = r.data.files || {};
+    var f = files[filename] || Object.values(files)[0] || {};
+    return { ok: true, id: r.data.id, url: r.data.html_url, rawUrl: f.raw_url || '', data: r.data };
+  }
+
+  /** 解析作品 Issue body 里的分卷清单标记 <!--YJ_VOLUMES-->{"parts":[...]}<!--/YJ_VOLUMES--> */
+  function parseVolumes(body) {
+    var m = String(body || '').match(/<!--YJ_VOLUMES-->([\s\S]*?)<!--\/YJ_VOLUMES-->/);
+    if (!m) return null;
+    try { return JSON.parse(m[1].trim()); } catch (e) { return null; }
+  }
+
   /* ---------- Issues：版块列表 / 投稿 ---------- */
   /** 列出二创投稿（按创建时间倒序） */
   async function listFanworks(perPage) {
@@ -191,6 +229,7 @@
     createGist: createGist, listFanworks: listFanworks, postFanwork: postFanwork,
     publishOrQueue: publishOrQueue, flushQueue: flushQueue, queueSize: queueSize,
     whoami: whoami, scopeHint: scopeHint, LABEL: LABEL,
+    downloadGistRaw: downloadGistRaw, createPrivateGist: createPrivateGist, parseVolumes: parseVolumes,
     _read: read, _write: write
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = globalThis.GithubClient;

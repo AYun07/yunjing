@@ -121,6 +121,69 @@
     return out;
   }
 
+  /* ---------- 解包（v6.5.0 增量补丁下载端） ---------- */
+  function get16(a, o) { return a[o] | (a[o + 1] << 8); }
+  function get32(a, o) { return (a[o] | (a[o + 1] << 8) | (a[o + 2] << 16) | (a[o + 3] << 24)) >>> 0; }
+
+  async function inflateRaw(u8) {
+    if (typeof DecompressionStream === 'undefined') throw new Error('当前环境不支持解压（DecompressionStream 不可用）');
+    try {
+      var ds = new DecompressionStream('deflate-raw');
+      var stream = new Blob([u8]).stream().pipeThrough(ds);
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    } catch (e) { throw new Error('解压失败：' + (e && e.message || e)); }
+  }
+
+  /**
+   * 解包 zip -> [{name, data:Uint8Array}]
+   * 支持 STORE(0)/DEFLATE(8)；用中央目录定位，校验签名，CRC 校验。
+   */
+  async function unzip(u8) {
+    if (!u8 || u8.length < 22) throw new Error('不是有效的 zip（过小）');
+    // 找 EOCD（从尾部最多搜 64KB）
+    var eocd = -1, min = Math.max(0, u8.length - 22 - 65535);
+    for (var i = u8.length - 22; i >= min; i--) {
+      if (get32(u8, i) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error('未找到 zip 结束记录（EOCD）');
+    var count = get16(u8, eocd + 10);
+    var cdOff = get32(u8, eocd + 16);
+    var out = [], p = cdOff;
+    for (var n = 0; n < count; n++) {
+      if (get32(u8, p) !== 0x02014b50) throw new Error('中央目录签名错误 @' + p);
+      var method = get16(u8, p + 10);
+      var crc = get32(u8, p + 16);
+      var csize = get32(u8, p + 20);
+      var usize = get32(u8, p + 24);
+      var nameLen = get16(u8, p + 28);
+      var extraLen = get16(u8, p + 30);
+      var commentLen = get16(u8, p + 32);
+      var localOff = get32(u8, p + 42);
+      var name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nameLen));
+      // 本地头
+      if (get32(u8, localOff) !== 0x04034b50) throw new Error('本地文件头签名错误：' + name);
+      var lnameLen = get16(u8, localOff + 26);
+      var lextraLen = get16(u8, localOff + 28);
+      var dataStart = localOff + 30 + lnameLen + lextraLen;
+      var comp = u8.subarray(dataStart, dataStart + csize);
+      var raw;
+      if (method === 0) raw = comp;
+      else if (method === 8) raw = await inflateRaw(comp);
+      else throw new Error('不支持的压缩方式 ' + method + '：' + name);
+      if (usize && raw.length !== usize) throw new Error('解压长度不符：' + name + ' (' + raw.length + '≠' + usize + ')');
+      if (raw.length && crc32(raw) !== crc) throw new Error('CRC 校验失败：' + name);
+      out.push({ name: name, data: raw });
+      p += 46 + nameLen + extraLen + commentLen;
+    }
+    return out;
+  }
+
+  /** 把解包项转为字符串文本（manifest / 内容 JSON 用） */
+  function entryText(entry) {
+    if (!entry) return '';
+    return new TextDecoder().decode(entry.data || new Uint8Array(0));
+  }
+
   function toBlob(u8) { return new Blob([u8], { type: 'application/zip' }); }
   function download(u8, filename) {
     var blob = toBlob(u8), url = URL.createObjectURL(blob);
@@ -132,7 +195,8 @@
 
   globalThis.ZipWriter = {
     makeZip: makeZip, crc32: crc32, toBlob: toBlob, download: download,
-    _canDeflate: canDeflate
+    unzip: unzip, entryText: entryText,
+    _canDeflate: canDeflate, _canInflate: function () { return typeof DecompressionStream !== 'undefined'; }
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = globalThis.ZipWriter;
 })();

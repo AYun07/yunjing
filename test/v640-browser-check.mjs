@@ -24,7 +24,7 @@ try {
   ok(mods.gh === 'object', 'GithubClient 已加载');
   ok(mods.hub === 'object', 'CreationHub 已加载');
   ok(mods.ta === 'object', 'TimeAxis 已加载');
-  ok(mods.ver === '6.4.0', 'YJ_VER=6.4.0 (got ' + mods.ver + ')');
+  ok(/^6\.(4|5)\./.test(mods.ver), 'YJ_VER>=6.4.0 (got ' + mods.ver + ')');
 
   console.log('\n【2】二创版块面板渲染');
   await p.evaluate(() => window.CreationHub.open());
