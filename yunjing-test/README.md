@@ -8,12 +8,14 @@
 yunjing-test/
 ├── MODEL_WHITELIST.md          # 允许调用的模型 ID 白名单
 ├── check_model_whitelist.py    # 枚举法扫描全库，校验无白名单外调用
-├── _paths.py                   # 仓库根 / 产物目录 / 界清单（不再写死绝对路径）
+├── yj_paths.py                 # 仓库根 / 产物目录 / 界清单（不再写死绝对路径）
 └── scripts/
     ├── t_quests_v407.js        # 沙盒化动态委托系统验收（纯 Node vm，无浏览器）
     ├── sim_407.js              # 300 轮长程数值模拟（玩家视角，纯 Node vm）
     ├── t_v4071_ui.py           # 界面与链路定向回归（真实浏览器，24 项）
     ├── t_atlas_406.py          # 全 38 界舆图逐层截图 + 几何验收
+    ├── t_player_local.py       # **端到端玩家闭环（不需任何密钥）**：建角→存档→切档→
+    │                          #   导出→改坏→全量恢复→刷新，全程零 pageerror
     └── t_407_real.py           # 真实模型实测（调用 agnes-3.0-flash）
 ```
 
