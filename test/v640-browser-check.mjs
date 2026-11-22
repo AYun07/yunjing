@@ -47,15 +47,16 @@ try {
     visible: document.getElementById('ch-wizard').style.display !== 'none',
     cks: document.querySelectorAll('.wz-ck').length,
     title: !!document.getElementById('wz-title'),
-    note: !!document.getElementById('wz-note')
+    note: !!document.getElementById('wz-note') || !!(document.getElementById('wz-intro') && document.getElementById('wz-feature'))
   }));
   ok(wizard.visible, '发布向导显示');
   ok(wizard.cks === 4, '四项确认勾选框 (got ' + wizard.cks + ')');
   ok(wizard.title && wizard.note, '标题/说明输入框存在');
 
-  // 未勾选直接发布 → 应拦截
+  // 未勾选直接发布 → 应拦截（v6.5.1 起字段为 intro/feature，兼容旧 note）
   await p.fill('#wz-title', '测试作品');
-  await p.fill('#wz-note', '新增了某境界数值');
+  if (await p.$('#wz-intro')) { await p.fill('#wz-intro', '作品简介'); await p.fill('#wz-feature', '作品特点'); }
+  else await p.fill('#wz-note', '新增了某境界数值');
   await p.click('#wz-go');
   await p.waitForTimeout(200);
   const blocked = await p.evaluate(() => document.getElementById('wz-log').textContent);

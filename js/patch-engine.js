@@ -266,6 +266,76 @@
   }
   PE.stripSecrets = stripSecrets;
 
+  /* ============================================================
+   * v6.5.1 四段式正文（唯一区域 schema 3）
+   * 四段固定顺序：简介 / 特点 / 二创内容 / 打包源码。
+   * 纯字符串编解码，不依赖 DOM。老作品无 YJ_V2 标记 → parse 返回 null，
+   * 由上层回退到单段 note。
+   * ============================================================ */
+  var TAG = {
+    intro:   ['<!--YJ_INTRO-->',   '<!--/YJ_INTRO-->'],
+    feature: ['<!--YJ_FEATURE-->', '<!--/YJ_FEATURE-->'],
+    content: ['<!--YJ_CONTENT-->', '<!--/YJ_CONTENT-->'],
+    pkg:     ['<!--YJ_PACKAGE-->', '<!--/YJ_PACKAGE-->']
+  };
+  function escBody(s) { return String(s == null ? '' : s).replace(/-->/g, '--&gt;'); }
+  function unescBody(s) { return String(s == null ? '' : s).replace(/--&gt;/g, '-->'); }
+  function wrap(tag, text) { return '## ' + LABEL_ZH[tag] + '\n' + TAG[tag][0] + escBody(text) + TAG[tag][1]; }
+  var LABEL_ZH = { intro: '简介', feature: '特点', content: '二创内容', pkg: '打包源码' };
+
+  /** 组装四段式正文。f = {title,intro,feature,content,pkg}；pkg 可为对象，自动 JSON 化 */
+  function buildFourSectionBody(f) {
+    f = f || {};
+    var pkg = f.pkg;
+    if (pkg && typeof pkg === 'object') pkg = JSON.stringify(pkg);
+    return '<!--YJ_V2-->\n' +
+      wrap('intro', f.intro || '') + '\n\n' +
+      wrap('feature', f.feature || '') + '\n\n' +
+      wrap('content', f.content || '') + '\n\n' +
+      wrap('pkg', pkg || '') + '\n' +
+      '<!--/YJ_V2-->';
+  }
+  PE.buildFourSectionBody = buildFourSectionBody;
+
+  function seg(body, tag) {
+    var m = String(body || '').match(new RegExp(TAG[tag][0] + '([\\s\\S]*?)' + TAG[tag][1]));
+    return m ? unescBody(m[1].trim()) : null;
+  }
+  /** 解析四段式正文；无 YJ_V2 标记返回 null（触发上层回退） */
+  function parseFourSectionBody(body) {
+    body = String(body || '');
+    if (body.indexOf('<!--YJ_V2-->') < 0) return null;
+    var pkgRaw = seg(body, 'pkg');
+    var pkg = pkgRaw;
+    if (pkgRaw) { try { pkg = JSON.parse(pkgRaw); } catch (e) { /* 保留原文 */ } }
+    return {
+      intro:   seg(body, 'intro') || '',
+      feature: seg(body, 'feature') || '',
+      content: seg(body, 'content') || '',
+      pkg:     pkg || null,
+      pkgText: pkgRaw || ''
+    };
+  }
+  PE.parseFourSectionBody = parseFourSectionBody;
+
+  /** 四段完整性校验：四段都必须非空。返回 {ok, missing:[中文段名]} */
+  function validateFourSection(f) {
+    f = f || {};
+    var missing = [];
+    if (!String(f.intro || '').trim()) missing.push(LABEL_ZH.intro);
+    if (!String(f.feature || '').trim()) missing.push(LABEL_ZH.feature);
+    if (!String(f.content || '').trim()) missing.push(LABEL_ZH.content);
+    var pkg = f.pkg;
+    if (pkg && typeof pkg === 'object') {
+      // 空对象视同未打包（没有任何实质字段）
+      pkg = Object.keys(pkg).length ? JSON.stringify(pkg) : '';
+    }
+    if (!String(pkg || '').trim()) missing.push(LABEL_ZH.pkg);
+    return { ok: missing.length === 0, missing: missing };
+  }
+  PE.validateFourSection = validateFourSection;
+  PE.FOUR_LABELS = LABEL_ZH;
+
   globalThis.PatchEngine = PE;
   if (typeof module !== 'undefined' && module.exports) module.exports = PE;
 })();

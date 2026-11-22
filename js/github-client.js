@@ -189,6 +189,29 @@
       'POST', { title: title, body: body, labels: [LABEL] });
   }
 
+  /* ---------- 唯一包体目录（v6.5.1）：community/packages/ ---------- */
+  var PACKAGE_DIR = 'community/packages';
+  /** 把作品包 base64 传到唯一包体目录（contents API：存在则带 sha 覆盖，不存在则新建）。
+   *  返回 {ok,path,html_url,rawUrl,error}。文件名由调用方给（含时间戳，唯一不撞）。 */
+  async function uploadPackageFile(fileName, b64, commitMsg) {
+    var r = repo();
+    var path = PACKAGE_DIR + '/' + fileName;
+    var base = WRITE_BASE + '/repos/' + encodeURIComponent(r.owner) + '/' + encodeURIComponent(r.repo) + '/contents/' +
+      path.split('/').map(encodeURIComponent).join('/');
+    // 先查现有 sha（覆盖写需要）；404 属正常（新文件）
+    var sha = null;
+    try {
+      var g = await once(base + '?ref=main', { method: 'GET', headers: headers(false) }, 15000);
+      if (g.ok) { var gj = await g.json(); sha = gj.sha || null; }
+    } catch (e) {}
+    var payload = { message: commitMsg || ('二创包体：' + fileName), content: String(b64 || ''), branch: 'main' };
+    if (sha) payload.sha = sha;
+    var put = await write(base, 'PUT', payload);
+    if (!put.ok) return { ok: false, error: put.error, path: path };
+    var c = put.data && put.data.content || {};
+    return { ok: true, path: path, html_url: c.html_url || '', rawUrl: c.download_url || '', sha: c.sha || '' };
+  }
+
   /* ---------- 断网队列 ---------- */
   function queueGet() { try { return JSON.parse(store().getItem(K_QUEUE) || '[]'); } catch (e) { return []; } }
   function queueSet(q) { try { store().setItem(K_QUEUE, JSON.stringify(q)); } catch (e) {} }
@@ -218,9 +241,9 @@
     return { ok: false, error: r.error || '无法读取用户信息' };
   }
 
-  /** 校验 token 范围足够（fine-grained 需 issues + gists 写权限）；此处仅返回提示 */
+  /** 校验 token 范围提示（v6.5.1：包体走仓库 community/packages/，需 Contents + Issues 写） */
   function scopeHint() {
-    return '需要 fine-grained token，勾选 Gists(write) 与 Issues(write)；或 classic token 的 gist / public_repo 权限。';
+    return '需要 fine-grained token，勾选 Contents(写) 与 Issues(写)；或 classic token 的 public_repo 权限。包体统一存仓库 community/packages/，不再用 Gist。';
   }
 
   globalThis.GithubClient = {
@@ -230,6 +253,7 @@
     publishOrQueue: publishOrQueue, flushQueue: flushQueue, queueSize: queueSize,
     whoami: whoami, scopeHint: scopeHint, LABEL: LABEL,
     downloadGistRaw: downloadGistRaw, createPrivateGist: createPrivateGist, parseVolumes: parseVolumes,
+    uploadPackageFile: uploadPackageFile, PACKAGE_DIR: PACKAGE_DIR,
     _read: read, _write: write
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = globalThis.GithubClient;

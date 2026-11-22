@@ -83,20 +83,30 @@
     }
     box.innerHTML = items.map(function (it) {
       var gist = parseGist(it.body);
-      var note = parseNote(it.body);
+      var sec = parseSections(it.body);
       var installBtn = gist && gist.rawUrl
         ? '<button class="ch-install" data-title="' + esc(it.title) + '" style="cursor:pointer;border:1px solid #c9b6ff;background:rgba(201,182,255,.12);color:#d9c9ff;border-radius:8px;padding:5px 11px;font-size:12px;">⚙ 增量安装</button>'
         : '';
       var dl = gist && gist.rawUrl
         ? '<a href="' + esc(gist.rawUrl) + '" target="_blank" rel="noopener" style="color:#8fd6a8;font-size:12px;text-decoration:none;">⬇ 下载原包</a>'
         : (gist && gist.url ? '<a href="' + esc(gist.url) + '" target="_blank" rel="noopener" style="color:#8fd6a8;font-size:12px;text-decoration:none;">🔗 查看作品包</a>' : '<span style="color:#8f89a8;font-size:12px;">（包体见正文）</span>');
+      var na = sec.v2 ? '' : '（旧版作品未分段）';
+      function row(label, val, color) {
+        return '<div style="margin:5px 0;font-size:12.5px;line-height:1.65;color:' + (color || '#c6c0d6') + ';"><b style="color:#e7c899;">' + label + '：</b><span style="white-space:pre-wrap;">' + esc(val || na || '—') + '</span></div>';
+      }
+      // 打包源码段：pkg 是 JSON 文本，抽文件数展示
+      var pkgDisp = sec.pkg;
+      if (sec.v2 && sec.pkg) { try { var po = JSON.parse(sec.pkg); pkgDisp = (po.dir || '') + ' · ' + ((po.files||[]).length) + ' 个包体文件 · ' + ((po.innerFiles||[]).length) + ' 个内容文件'; } catch (e) {} }
       return '<div style="background:rgba(24,20,48,.72);border:1px solid rgba(244,216,150,.28);border-radius:14px;padding:14px 16px;">' +
         '<div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;">' +
           '<b style="color:#f4d896;font-size:15px;">' + esc(it.title) + '</b>' +
-          '<span style="font-size:11px;color:#9a94c0;">by ' + esc(it.author) + ' · ' + fmtTime(it.createdAt) + '</span>' +
+          '<span style="font-size:11px;color:#9a94c0;">by ' + esc(it.author) + ' · ' + fmtTime(it.createdAt) + (sec.v2 ? ' · 四段式' : ' · 旧版') + '</span>' +
         '</div>' +
-        (note ? '<div style="font-size:12.5px;color:#c6c0d6;line-height:1.7;margin:8px 0;white-space:pre-wrap;">' + esc(note) + '</div>' : '') +
-        '<div style="display:flex;gap:14px;align-items:center;margin-top:6px;flex-wrap:wrap;">' + installBtn + dl +
+        row('① 简介', sec.intro, '#c6c0d6') +
+        row('② 特点', sec.feature, '#bfb9d4') +
+        row('③ 二创内容', sec.content, '#c9bfe0') +
+        row('④ 打包源码', pkgDisp, '#8fd6a8') +
+        '<div style="display:flex;gap:14px;align-items:center;margin-top:8px;flex-wrap:wrap;">' + installBtn + dl +
           '<a href="' + esc(it.url) + '" target="_blank" rel="noopener" style="color:#c9b6ff;font-size:12px;text-decoration:none;">💬 原帖</a>' +
         '</div>' +
       '</div>';
@@ -116,6 +126,14 @@
   function parseNote(body) {
     var m = String(body || '').match(/<!--YJ_NOTE-->([\s\S]*?)<!--\/YJ_NOTE-->/);
     return m ? m[1].trim() : '';
+  }
+  /** 四段式解析：有 YJ_V2 走四段，否则用老 note 回退（A7 兼容） */
+  function parseSections(body) {
+    var PE = globalThis.PatchEngine;
+    var four = PE && PE.parseFourSectionBody ? PE.parseFourSectionBody(body) : null;
+    if (four) return { v2: true, intro: four.intro, feature: four.feature, content: four.content, pkg: four.pkgText };
+    // 老作品单段回退
+    return { v2: false, intro: parseNote(body), feature: '', content: '', pkg: '' };
   }
   function parseGist(body) {
     var m = String(body || '').match(/<!--YJ_GIST-->([\s\S]*?)<!--\/YJ_GIST-->/);
@@ -324,14 +342,21 @@
       '</div>' +
       '<label style="display:block;font-size:12.5px;color:#c6c0d6;margin-bottom:6px;">作品名称</label>' +
       '<input id="wz-title" placeholder="例如：剑来·武夫境界增强版" style="width:100%;box-sizing:border-box;background:#16132e;border:1px solid rgba(244,216,150,.3);color:#efeaf8;border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;margin-bottom:10px;">' +
-      '<label style="display:block;font-size:12.5px;color:#c6c0d6;margin-bottom:6px;">与原版云境的区别 / 做了什么更新（必填）</label>' +
-      '<textarea id="wz-note" rows="4" placeholder="例如：新增了武夫十一境的细化数值、调整了剑气长城地图……" style="width:100%;box-sizing:border-box;background:#16132e;border:1px solid rgba(244,216,150,.3);color:#efeaf8;border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical;"></textarea>' +
+      '<div style="font-size:11.5px;color:#8f89a8;margin:2px 0 10px;">以下四段为作品正文固定结构（简介 / 特点 / 二创内容 / 打包源码），缺一不可发布。</div>' +
+      '<label style="display:block;font-size:12.5px;color:#c6c0d6;margin-bottom:6px;">① 简介（一句话概述，必填）</label>' +
+      '<textarea id="wz-intro" rows="2" placeholder="例如：为剑来世界补充武夫十一境的完整突破体系。" style="width:100%;box-sizing:border-box;background:#16132e;border:1px solid rgba(244,216,150,.3);color:#efeaf8;border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:10px;"></textarea>' +
+      '<label style="display:block;font-size:12.5px;color:#c6c0d6;margin-bottom:6px;">② 特点（亮点，必填）</label>' +
+      '<textarea id="wz-feature" rows="3" placeholder="例如：十一境数值细化；剑气长城地图考据；新增 8 个 DLC 词条。" style="width:100%;box-sizing:border-box;background:#16132e;border:1px solid rgba(244,216,150,.3);color:#efeaf8;border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical;margin-bottom:10px;"></textarea>' +
+      '<div style="background:rgba(201,182,255,.07);border:1px solid rgba(201,182,255,.22);border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:12px;color:#c9bfe0;line-height:1.8;">' +
+        '<b style="color:#d9c9ff;">③ 二创内容</b>：发布时由系统自动比对基线生成改动清单（改了哪些 DLC / 世界书 / 预设 / 存档等），只读、不可手填。<br>' +
+        '<b style="color:#d9c9ff;">④ 打包源码</b>：发布时自动打包你改动过的内容层明文（manifest + 逐项 JSON），并上传到唯一包体目录 <code>community/packages/</code>。这是"玩家可继续修改的源码"，<b>不是</b>云境主程序 .js（浏览器读不到，主程序归开发者）。' +
+      '</div>' +
       '<div style="background:rgba(220,80,80,.08);border:1px solid rgba(220,120,120,.3);border-radius:10px;padding:12px 14px;margin:12px 0;font-size:12.5px;color:#f0d7d7;line-height:1.9;">' +
         '<b style="color:#ff9b9b">发布前确认（四项必须全勾）</b>' +
         '<label style="display:block"><input type="checkbox" class="wz-ck"> 我同意本作品以<b>开源、非盈利</b>方式公开分享</label>' +
         '<label style="display:block"><input type="checkbox" class="wz-ck"> 我确认包内<b>不含</b>任何 API 密钥、密码或个人隐私</label>' +
         '<label style="display:block"><input type="checkbox" class="wz-ck"> 我理解下载者需<b>自行承担风险</b>，谨防病毒/恶意代码，作者与云境开发者不担责</label>' +
-        '<label style="display:block"><input type="checkbox" class="wz-ck"> 我已如实注明本版本与原版云境的区别/更新内容</label>' +
+        '<label style="display:block"><input type="checkbox" class="wz-ck"> 我已如实填写简介、特点，并理解二创内容与打包源码由系统自动生成</label>' +
       '</div>' +
       '<div id="wz-token" style="font-size:12.5px;color:#c6c0d6;margin-bottom:10px;"></div>' +
       '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
@@ -356,10 +381,12 @@
     var GC = globalThis.GithubClient;
     var log = document.getElementById('wz-log');
     var title = (document.getElementById('wz-title').value || '').trim();
-    var note = (document.getElementById('wz-note').value || '').trim();
+    var intro = (document.getElementById('wz-intro').value || '').trim();
+    var feature = (document.getElementById('wz-feature').value || '').trim();
     var cks = [].slice.call(document.querySelectorAll('.wz-ck'));
     if (!title) { log.style.color = '#ff9b9b'; log.textContent = '请填作品名称。'; return; }
-    if (!note) { log.style.color = '#ff9b9b'; log.textContent = '请填写与原版的区别/更新内容。'; return; }
+    if (!intro) { log.style.color = '#ff9b9b'; log.textContent = '请填写①简介。'; return; }
+    if (!feature) { log.style.color = '#ff9b9b'; log.textContent = '请填写②特点。'; return; }
     if (cks.length < 4 || cks.some(function (c) { return !c.checked; })) { log.style.color = '#ff9b9b'; log.textContent = '请勾选全部四项确认。'; return; }
     var tin = document.getElementById('wz-token-input');
     if (!GC.hasToken() && tin && tin.value.trim()) GC.setToken(tin.value.trim());
@@ -394,8 +421,17 @@
       var fullSize = entries.reduce(function (s, e) { return s + (e.data ? new Blob([e.data]).size : 0); }, 0);
       var vols = PE.suggestVolumes(fullSize);
       var containsSave = changes.some(function (c) { return c.kind === 'save'; });
+      // 二创内容摘要（③段）：由改动清单自动生成，逐项 kind + key
+      var kindCount = {};
+      changes.forEach(function (c) { kindCount[c.kind] = (kindCount[c.kind] || 0) + 1; });
+      var kindLabel = { dlc:'DLC', plugin:'插件', tool:'小云工具', save:'存档', preset:'预设', worldbook:'世界书', world:'世界', content:'新内容', pack:'资源包', image:'图片', video:'视频', file:'文件' };
+      var contentLines = Object.keys(kindCount).map(function (k) { return (kindLabel[k] || k) + '×' + kindCount[k]; });
+      var contentSummary = contentLines.join('；') + '\n' + changes.map(function (c) {
+        return '· [' + (kindLabel[c.kind] || c.kind) + '] ' + c.key + '（' + c.op + '）';
+      }).join('\n');
       var manifest = {
-        app: 'yunjing-patch', schema: 2, title: title, note: note,
+        app: 'yunjing-patch', schema: 3, title: title, note: intro,
+        intro: intro, features: feature, contentSummary: contentSummary,
         baseVersion: (window.YJ_VER || 'unknown'), author: GC.getUser() || '',
         createdAt: new Date().toISOString(), license: '开源·非盈利',
         changes: manifestChanges, volumes: vols.count, containsSave: containsSave, stripKeys: true,
@@ -423,34 +459,42 @@
         return;
       }
 
-      log.textContent = '⑥ 正在上传作品包（' + (containsSave ? '私密 Gist' : '公开 Gist') + '）…';
+      log.textContent = '⑥ 正在上传作品包到唯一目录 community/packages/…';
       var ts = Date.now();
+      var slug = String(title || 'work').replace(/[^\w\u4e00-\u9fa5-]+/g, '_').slice(0, 24);
       var parts = [];
-      if (vols.count <= 1) {
-        var fname = 'yunjing-patch-' + ts + '.zip.b64';
-        var gist = containsSave
-          ? await GC.createPrivateGist(fname, b64, '云境二创（含私密存档）：' + title)
-          : await GC.createGist(fname, b64, '云境二创补丁：' + title + '（开源非盈利）');
-        if (!gist.ok) { log.style.color = '#f0c98f'; log.textContent = '作品包上传失败（网络）：' + (gist.error || '') + '。可稍后重试。'; }
-        else parts.push({ i: 0, n: 1, url: gist.url, rawUrl: gist.rawUrl, id: gist.id });
-      } else {
-        // 分卷：把 base64 均分成 N 段，各建一个 Gist
-        var chunkLen = Math.ceil(b64.length / vols.count);
-        for (var vi = 0; vi < vols.count; vi++) {
-          var seg = b64.slice(vi * chunkLen, (vi + 1) * chunkLen);
-          var vname = 'yunjing-patch-' + ts + '.part' + (vi + 1) + '.b64';
-          var vg = await GC.createGist(vname, seg, '云境二创补丁分卷 ' + (vi + 1) + '/' + vols.count + '：' + title);
-          if (vg.ok) parts.push({ i: vi, n: vols.count, url: vg.url, rawUrl: vg.rawUrl, id: vg.id });
-          log.textContent = '⑥ 正在上传分卷 ' + (vi + 1) + '/' + vols.count + '…';
-        }
-        if (parts.length !== vols.count) { log.style.color = '#f0c98f'; log.textContent = '部分分卷上传失败（' + parts.length + '/' + vols.count + '），本次发布不完整，未提交。请重试。'; return; }
+      // 唯一区域：包体一律进 community/packages/，分卷也只是该目录下的多个文件，不新建目录、不用 Gist
+      var chunkLen = Math.ceil(b64.length / vols.count);
+      for (var vi = 0; vi < vols.count; vi++) {
+        var seg = vols.count <= 1 ? b64 : b64.slice(vi * chunkLen, (vi + 1) * chunkLen);
+        var fname = slug + '-' + ts + (vols.count > 1 ? '.part' + (vi + 1) : '') + '.zip.b64';
+        var up = await GC.uploadPackageFile(fname, seg, '二创包体：' + title + '（' + (vi + 1) + '/' + vols.count + '）');
+        if (!up.ok) { log.style.color = '#f0c98f'; log.textContent = '包体上传失败（' + (up.error || '网络') + '）。已入待发队列，联网后重试。'; GC.publishOrQueue(title, '<!--YJ_PENDING_PKG-->' + intro); return; }
+        parts.push({ i: vi, n: vols.count, url: up.html_url, rawUrl: up.rawUrl, path: up.path, sha: up.sha });
+        if (vols.count > 1) log.textContent = '⑥ 正在上传包体分卷 ' + (vi + 1) + '/' + vols.count + '…';
       }
 
-      var body = '<!--YJ_NOTE-->\n' + note + '\n<!--/YJ_NOTE-->\n' +
-        (parts.length ? '<!--YJ_GIST-->' + JSON.stringify({ url: parts[0].url, rawUrl: parts[0].rawUrl, id: parts[0].id, parts: parts }) + '<!--/YJ_GIST-->\n' : '') +
+      // ④ 打包源码段：可读的文件清单 + 路径 + sha256（浏览器侧无 sha256 API，用内核哈希占位并标注）
+      var pkgMeta = {
+        dir: GC.PACKAGE_DIR,
+        files: parts.map(function (p) { return p.path; }),
+        innerFiles: entries.map(function (e) { return e.name; }),
+        rawUrl: parts[0].rawUrl,
+        size: fullSize,
+        hash: PE.hash(zip && zip.length ? String(zip.length) : String(fullSize)),
+        note: '内容层明文源码（manifest + 逐项 JSON），非云境主程序 .js'
+      };
+      var body = PE.buildFourSectionBody({
+        intro: intro,
+        feature: feature,
+        content: contentSummary,
+        pkg: pkgMeta
+      }) + '\n\n' +
+        // 兼容 v6.5.0 安装器与老解析：保留 YJ_GIST（指向唯一目录里的包体）
+        '<!--YJ_GIST-->' + JSON.stringify({ url: parts[0].url, rawUrl: parts[0].rawUrl, path: parts[0].path, parts: parts }) + '<!--/YJ_GIST-->\n' +
         (parts.length > 1 ? '<!--YJ_VOLUMES-->' + JSON.stringify({ parts: parts.map(function (p) { return p.rawUrl; }) }) + '<!--/YJ_VOLUMES-->\n' : '') +
-        (containsSave ? '\n> ⚠ 本作品含私密存档包，下载者需向作者索取访问权限。\n' : '') +
-        '\n---\n由云境·二创版块自动发布 · 基于云境 v' + (window.YJ_VER || '?') + ' · 增量补丁(' + changes.length + '项改动) · 开源非盈利 · 风险自负';
+        (containsSave ? '\n> ⚠ 本作品含私密存档，密钥已剔除；如需完整存档请向作者另行索取。\n' : '') +
+        '\n---\n由云境·二创版块自动发布 · 四段式(schema 3) · 基于云境 v' + (window.YJ_VER || '?') + ' · 唯一区域 community/ · 开源非盈利 · 风险自负';
 
       log.textContent = '⑦ 正在发布到版块…';
       var pub = await GC.publishOrQueue(title, body);
@@ -499,6 +543,7 @@
   CH._renderList = renderList;
   CH._collectLocalContent = collectLocalContent;
   CH._scanSecrets = scanSecrets;
+  CH._parseSections = parseSections;
   globalThis.CreationHub = CH;
   if (typeof module !== 'undefined' && module.exports) module.exports = CH;
 })();
