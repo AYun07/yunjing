@@ -1,0 +1,21 @@
+import { chromium } from 'playwright';
+import { readFileSync } from 'fs';
+const B64=readFileSync('/tmp/e2e-downloaded.zip.b64','utf-8').trim();
+const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});
+const ctx=await b.newContext({viewport:{width:1366,height:900},});
+const p=await ctx.newPage();
+await p.goto('http://127.0.0.1:9155/studio.html?dev=1');
+await p.waitForFunction(()=>window.PatchEngine&&window.ContentAdapters&&window.ZipWriter,{timeout:20000});
+await p.waitForTimeout(500);
+const r=await p.evaluate(async(b64)=>{
+  const PE=window.PatchEngine,ZW=window.ZipWriter,CA=window.ContentAdapters;
+  const bin=atob(b64);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+  const files=await ZW.unzip(u8);const mf=JSON.parse(ZW.entryText(files.find(f=>f.name==='manifest.json')));
+  const theirs=mf.changes.map(c=>{const f=files.find(x=>x.name===c.file);const data=JSON.parse(ZW.entryText(f)).data;return{key:c.key,kind:c.kind,hash:c.newHash||PE.hash(data),data}});
+  const ours=CA.collect({}).items;
+  const base=[];
+  const d=PE.plan(base,ours,theirs);
+  return d.filter(x=>x.action==='conflict').map(x=>({key:x.key,kind:x.kind,conflictKeys:x.conflictKeys,oursLen:(x.ours||'').length,theirsLen:(x.theirs||'').length}));
+},B64);
+console.log('冲突项:',JSON.stringify(r,null,2));
+await b.close();

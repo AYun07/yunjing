@@ -15,7 +15,7 @@
   /* ---------- 12 类定义与 localStorage 前缀规则 ---------- */
   // kind -> { label, lsPatterns(RegExp[]), desc }
   var KINDS = {
-    dlc:       { label: 'DLC',       ls: [/^yunjing.*dlc/i, /^DLC/i, /^yj_.*dlc/i] },
+    dlc:       { label: 'DLC',       ls: [/^storyDLC_/i, /^yunjing.*dlc/i, /^DLC/i, /^yj_.*dlc/i] },
     plugin:    { label: '插件',       ls: [/^yunjing.*plugin/i, /^yj_.*plugin/i, /^plugin/i] },
     tool:      { label: '小云工具',   ls: [/^yj_.*tool/i, /^yunjing.*tool/i, /^moTool/i] },
     save:      { label: '存档',       ls: [/^storySave_/i, /^yunjingSave/i, /^saveSlot/i], sensitive: true },
