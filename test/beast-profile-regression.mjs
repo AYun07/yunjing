@@ -250,7 +250,7 @@ G('8. 版权：专属词与项目名零残留');
 {
   const bridge = read('js/beast-profile-bridge.js');
   const beast = read('js/beast-system.js');
-  const banned = ['SillyTavern', 'st-yuzi', 'Connection Profiles', 'zhushen-space', '契约者', '土著', '随从'];
+  const banned = ['常见前端工具', '某手机前端', '多连接配置', '旧项目空间', '契约者', '土著', '随从'];
   for (const kw of banned) {
     ok(bridge.indexOf(kw) < 0, '桥接层无「' + kw + '」');
     ok(beast.indexOf(kw) < 0, '本体无「' + kw + '」');

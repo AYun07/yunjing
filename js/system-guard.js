@@ -191,7 +191,7 @@
       }
       return { ls, lsTotal, quota, used, saveOK, saveBytes, mem: this.memorySafety() };
     },
-    /** 内存安全哨兵：专查「星海纪行式」病根——大对象/图片混进逐轮快照或变量。
+    /** 内存安全哨兵：专查「某同类产品式」病根——大对象/图片混进逐轮快照或变量。
         云境 turn 只存变量且硬限 40 轮，正常应恒绿；此处是防回归的可视化探针，平时静默。 */
     memorySafety() {
       const fw = window.storyFramework;

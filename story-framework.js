@@ -1,6 +1,6 @@
 /**
  * 通用小说创作框架 - Story Framework
- * 模仿「觅长生」game-framework.js 的配置驱动架构
+ * 模仿「某文字游戏框架」game-framework.js 的配置驱动架构
  * 提供故事状态管理、会话历史、API 配置持久化等通用功能
  * 可以被不同的类型配置文件（configs/*-config.js）使用
  */
