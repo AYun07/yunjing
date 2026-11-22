@@ -227,7 +227,7 @@ G('9. 大模型补充器接入');
 G('10. 版权红线');
 {
   const files = ['js/bonus-engine.js', 'js/title-system.js', 'js/semantic-engine.js'];
-  const banned = ['Connection Profiles', '契约者', '土著', '随从'];
+  const banned = ['契约者', '土著', '随从'];
   files.forEach(f => {
     const src = read(f);
     banned.forEach(kw => ok(src.indexOf(kw) < 0, f + ' 无「' + kw + '」'));

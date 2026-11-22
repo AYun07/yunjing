@@ -101,9 +101,19 @@ def main():
 
     entries = [{'path': rel, 'mode': '100644', 'type': 'blob', 'sha': sha}
                for rel, sha in sorted(sha_map.items())]
-    print('创建新 tree（base_tree=远端当前 tree，只增改不删）...', flush=True)
-    new_tree = api('POST', f'/repos/{OWNER}/{REPO}/git/trees', {'base_tree': base_tree, 'tree': entries})
-    print('  新 tree:', new_tree['sha'][:10], flush=True)
+    # 分批增量建 tree：GitHub 对单次 tree body 有大小上限，一次性提交 1500+ 项会 422 超时。
+    # 每批以上一批的 sha 作 base_tree，链式推进，只增改不删。
+    BATCH = 200
+    cur_base = base_tree
+    print(f'创建 tree（增量分批，每批 {BATCH}，共 {len(entries)} 项）...', flush=True)
+    for bi in range(0, len(entries), BATCH):
+        batch = entries[bi:bi+BATCH]
+        nt = api('POST', f'/repos/{OWNER}/{REPO}/git/trees',
+                 {'base_tree': cur_base, 'tree': batch})
+        cur_base = nt['sha']
+        print(f'  tree batch {bi//BATCH+1}/{(len(entries)+BATCH-1)//BATCH}: {cur_base[:10]}', flush=True)
+    new_tree = {'sha': cur_base}
+    print('  最终 tree:', new_tree['sha'][:10], flush=True)
 
     msg = 'release: v6.6.0 创意工坊单一文件夹(community/works 简介与包体同处+云境内一键下载安装)+修复CI版本同源 · 全量同步（只增改不删）'
     new_commit = api('POST', f'/repos/{OWNER}/{REPO}/git/commits', {
