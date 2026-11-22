@@ -3818,7 +3818,7 @@ body.mobile.narrow .top-btn { padding: 7px 7px; }
     .top-bar { gap: 8px; padding: 0 10px; }
     .back-link { padding: 7px 10px; }
     .back-link .txt { display: none; }
-    .top-actions { gap: 5px; overflow-x: auto; }
+    .top-actions { gap: 5px; }
     .top-btn { padding: 8px 10px; font-size: 13px; }
     .top-btn .txt { display: none; }
     .top-btn.mobile-only { display: inline-flex; }
@@ -3826,7 +3826,6 @@ body.mobile.narrow .top-btn { padding: 7px 7px; }
     #gameTitle { font-size: 13.5px; letter-spacing: 1px; }
 
     .drawer-head { display: flex; }
-
     /* 状态面板 → 右侧抽屉 */
     #statusPanel {
         position: fixed;
@@ -4879,3 +4878,28 @@ html.low-spec .typing-dot, html.low-spec .typing-dots span, html.low-spec .illus
   user-select: none;
 }
 .cv-sentinel.cv-top:hover { background: rgba(201,168,106,.14); }
+
+/* ============================================================================
+   v5.1.2 极窄屏顶栏（≤380px）——放在文件末尾以确保覆盖前面所有规则
+   --------------------------------------------------------------------------
+   问题：320px 窄屏（iPhone SE 一代等）下，返回键 + 标题 + 4 个顶栏按钮
+   合计超过视口 → 整页横向滚动 7px（实测 doc=327 / vw=320）。
+   注意：移动端另有两套 body.mobile 规则（7px 9px 与 8px 10px），
+   窄屏媒体查询必须写得比它们更靠后、且同样带上 body.mobile 前缀才压得住。
+   做法：极窄屏收紧按钮内边距与字号，标题用省略号截断（#gameTitle 已带 ellipsis），
+   按钮始终完整可见 —— 不做「容器内横向滚动」（那会把按钮推出视口，反被移动端体检判红）。
+   ============================================================================ */
+@media (max-width: 380px) {
+    .top-bar { gap: 6px; padding: 0 8px; }
+    .back-link { padding: 5px 7px; }
+    .top-btn { padding: 5px 7px; font-size: 12px; }
+    .top-btn .ico { font-size: 13px; }
+    .top-actions { gap: 4px; }
+    #gameTitle { font-size: 12.5px; letter-spacing: .5px; }
+    body.mobile .top-bar { gap: 6px; padding: 0 8px; }
+    body.mobile .back-link { padding: 5px 7px; }
+    body.mobile .top-btn { padding: 5px 7px; font-size: 12px; min-height: 32px; }
+    body.mobile .top-btn .ico { font-size: 13px; }
+    body.mobile .top-actions { gap: 4px; }
+    body.mobile #gameTitle { font-size: 12.5px; letter-spacing: .5px; }
+}

@@ -55,13 +55,13 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v5.1.1（2026-11-21 · 唯一当前版）
+## 🆕 当前版本：v5.1.2（2026-11-22 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v5.1.1** | 2026-11-21 | **当前** | 全量挑刺修复版：把 v5.1.0 自带的两道红 CI、三处崩溃级缺陷、以及「最有价值的那层测试从未进 CI」的流程漏洞一次性收口。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.1) |
+| **v5.1.2** | 2026-11-22 | **当前** | 稳定性与鲁棒性一轮：把「升级即丢离线」「小屏横向溢出」「小热区点不中」这三类玩家真会遇到的问题收干净。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.2.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.2) |
 
-**看版本**：[📚 版本页（103 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v5.1.0 的差异](https://github.com/AYun07/yunjing/compare/v5.1.0...v5.1.1) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.1)
+**看版本**：[📚 版本页（104 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v5.1.1 的差异](https://github.com/AYun07/yunjing/compare/v5.1.1...v5.1.2) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v5.1.2)
 
 > 逐版沿革、历史功能说明与验收数据统一由 [VERSIONS.md](VERSIONS.md) 维护；本板块由 `scripts/update-readme.mjs` 自动生成，**主页不再展开版本列表**。新增版本请插到 VERSIONS.md 最上方。
 

@@ -76,6 +76,9 @@
             color: var(--text-muted);
             text-decoration: none;
             margin-bottom: 18px;
+            /* v5.1.2：原来只有 15px 高（手机上点不中）→ 抬到 28px 命中区 */
+            min-height: 28px;
+            line-height: 28px;
             transition: color 0.2s;
         }
         .back-link:hover { color: var(--primary); }
@@ -137,6 +140,8 @@
             border: 1px solid var(--line);
             border-radius: 99px;
             padding: 5px 13px;
+            /* v5.1.2：原来只有 24px 高，低于 26px 的可点下限（手机上点不中）→ 抬到 28px */
+            min-height: 28px;
             cursor: pointer;
             transition: all 0.18s;
         }
@@ -278,7 +283,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.1">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.2">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +320,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v5.1.2</span>
+                <span class="entry-date">2026-11-22</span>
+            </div>
+            <h3 class="entry-title">云境 v5.1.2 · 升级不丢离线 · 极窄屏不溢出 · 小热区可点</h3>
+            <p class="entry-text">稳定性与鲁棒性一轮：把「升级即丢离线」「小屏横向溢出」「小热区点不中」这三类玩家真会遇到的问题收干净。 **Service Worker 升级鲁棒性**：此前 activate 阶段会**立刻删掉上一版缓存**，而新版本的预热要十几秒——升级后这段时间只要断网，玩家既没有新版缓存、又把旧版删了，离线内容直接归零（比不升级还糟）。现在旧缓存先留着（caches.match 跨缓存查找天然当兜底），等新版本预热完成再清理；预热失败超过 5 项就保留旧缓存——离线可用性优先于磁盘整洁。 **极窄屏（≤380px）顶栏不再横向溢出**：320px 小屏（iPhone SE 一代等）下，返回键 + 标题 + 4 个顶栏按钮合计超过视口，整页横向滚动 7px（实测 doc=327 / vw=320）。现在极窄屏收紧按钮内边距与字号、标题用省略号截断，按钮始终完整可见——不做「容器内横向滚动」（那会把按钮推出视口，反被移动端体检判红）。真机模拟（is_mobile + touch，body.mobile 规则生效）下 320/360/390 三档复测：溢出 0、小热区 0。 **小云创造中枢窄屏卡片溢出**：xiaoyun.html 的卡片栅格固定 minmax(330px,1fr)，320px 下轨道被撑到 330px → 整页横向滚动 30px。改用 minmax(min(330px,100%),1fr)，小屏自动退化为单列。 **小热区统一抬到 28px**：小云面板的形态切换键（24px）与归位键（22px）、版本页的 12 个筛选按钮（24px）与返回链接（15px）都低于 26px 的可点下限，手机上点不中。视觉几乎不变，命中区统一抬到 28px；版本页正文里的行内文字链接保持原样（行内链接不属于独立点击目标）。 **验收结论**：本地连续两轮全量浏览器级用例 26/26 全绿（无 flaky）；7 道 CI 闸门全绿；多视口体检（320/360/375/414/768/1024/1440 × 大厅/创作室/小云/版本页/多界创作室）横向溢出与小热区全部归零。</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -1030,7 +1044,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.2 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
