@@ -120,3 +120,21 @@ v6.3.13 跨层对敌上线时：①`layerTierOpts` 定义在 `html()` 内却从 
 - Source: e2e_visual_review
 - Related Files: js/compare-panel.js, js/compare-engine.js, test/compare-regression.mjs
 - Tags: 作用域, 分支优先级, 报告文本, undefined, E2E
+
+---
+
+## LRN-20251122-006 · 快照类功能的 E2E 构造必须复刻真实时序
+
+### Context
+v6.3.14 全量楼层快照 E2E 首轮 9 FAIL：回档后 storyState 字段全差 1（off-by-one），但旁路键和历史长度却对。
+
+### Details
+测试构造时把 `variables` 设在 `pushTurnSnapshot()` 之前、旁路键设在之后，导致二者在快照里的"所属轮"错开一位。实现本身正确（Node 单测 503/0 全过），是测试的构造时序不符合真实游戏——真实游戏里 `pushTurnSnapshot` 在轮开始前调用，此刻所有字段（storyState + 旁路）都还是上一轮结束后的结果，AI 回复落定后才推进。
+
+### Suggested Action
+①测"快照/回档"这类功能，E2E 造数据的顺序必须复刻真实主循环：先 pushTurnSnapshot，等写队列排空，再推进所有字段；②storyState 字段与旁路键必须在同一时点更新，不能一个在 push 前一个在 push 后；③Node 单测过而 E2E 字段错 1，优先怀疑测试构造时序，别急着改实现。
+
+### Metadata
+- Source: e2e_visual_review
+- Related Files: test/v6314-browser-check.mjs, story-framework.js, js/floor-state.js
+- Tags: E2E, 快照, 回档, 时序, off-by-one

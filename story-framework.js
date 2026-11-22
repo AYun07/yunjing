@@ -479,6 +479,7 @@ class StoryFramework {
                 StorageBoost.remove('主档/' + this.getSaveKey());
                 StorageBoost.remove('transcript/' + this.getSaveKey());
                 StorageBoost.remove(this._arcKey());   // v6.3.5：全量轮次档案一并清，防旧剧情幽灵复活
+                if (window.FloorState) { try { window.FloorState.clear(this); } catch (e) { } } // v6.3.14：楼层快照+撤销点一并清
             }
         } catch (e) { }
         this._trFlushedLen = 0;   /* v3.55.22 transcript 节流游标归零 */
@@ -586,6 +587,10 @@ class StoryFramework {
         if (s.turns.length > 40) s.turns.shift(); // 防存档膨胀（index 为绝对轮号，滑动无需重编号）
         // v6.3.5：异步备一份到全量档案，突破 40 轮热栈限制以支持任意回合回档
         try { this.archiveTurn(s.turns[s.turns.length - 1]); } catch (e) { }
+        /* v6.3.14：全量楼层快照。此刻状态 = 第 nextIdx 轮开始前 = 上一轮结束后，
+           与 turns[i].varsBefore / turnArc 语义一致。差量+锚点存到固定 IDB 键，
+           体积有界；失败静默降级不影响创作。 */
+        try { if (window.FloorState) window.FloorState.record(this, nextIdx); } catch (e) { }
     }
 
     /**
@@ -711,6 +716,73 @@ class StoryFramework {
         mode = (mode === 'after') ? 'after' : 'before';
         // 先等归档队列排空，否则残留的归档写会基于旧档案复活已删轮次
         try { if (this._arcQueue) await this._arcQueue; } catch (e) { }
+        try { if (this._fsQueue) await this._fsQueue; } catch (e) { }
+
+        /* v6.3.14：优先走全量楼层快照——任意层、所有随剧情演化的数据一起还原。
+           目标层 index 的快照语义 = 该轮开始前状态；'after' 用 index+1。
+           老存档无 floorState 时 targetFull 为 null，自动回落到下方原有 turnArc 逻辑。 */
+        const FS = window.FloorState;
+        let fullTarget = null;
+        if (FS) {
+            try { fullTarget = await FS.load(this, mode === 'after' ? index + 1 : index); } catch (e) { }
+        }
+        if (fullTarget) {
+            // 撤销点：回档前的当前全量状态 + 完整对话（上限 5，覆盖式）。
+            // 完整对话必须一并存——回档会截断 transcript，撤销时只能靠这里补回楼层。
+            try {
+                const undoSnap = FS.capture(this);
+                undoSnap.fullHistory = s.conversationHistory.slice();
+                FS.pushUndo(this, undoSnap);
+            } catch (e) { }
+
+            // 1) 全量还原 storyState 各字段 + 所有旁路键
+            const restoredHistLen = FS.restore(this, fullTarget);
+            // 2) 对话历史按目标长度截断（只缩不扩）
+            if (typeof restoredHistLen === 'number' && restoredHistLen >= 0 && restoredHistLen <= s.conversationHistory.length) {
+                s.conversationHistory.length = restoredHistLen;
+            }
+            if (typeof fullTarget.histLen === 'number' && fullTarget.histLen < s.conversationHistory.length) {
+                s.conversationHistory.length = fullTarget.histLen;
+            }
+            // 3) 回档代际 +1（让在飞的异步摘要/记忆作废，防跨回退复活）
+            s._rollbackEpoch = (Number(s._rollbackEpoch) || 0) + 1;
+            // 4) turns 热栈 / turnArc 同步裁剪，防刷新复活
+            const cut = (mode === 'after') ? index + 1 : index;
+            if (Array.isArray(s.turns)) s.turns = s.turns.filter(x => x && typeof x.index === 'number' && x.index < cut);
+            try {
+                const arc0 = await this.loadTurnArchive();
+                if (window.StorageBoost && StorageBoost.ready()) {
+                    StorageBoost.put(this._arcKey(), JSON.stringify(arc0.filter(x => x && typeof x.index === 'number' && x.index < cut)));
+                }
+            } catch (e) { }
+            // 5) 楼层快照本身截断 + transcript 按 histLen 截断
+            try { await FS.truncate(this, cut); } catch (e) { }
+            try {
+                if (window.StorageBoost && StorageBoost.ready()) {
+                    const trKey = this.getSaveKey();
+                    StorageBoost.put('transcript/' + trKey, JSON.stringify({
+                        upTo: s.conversationHistory.length, floors: s.conversationHistory.slice()
+                    }));
+                    this._trFlushedLen = s.conversationHistory.length;
+                    try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+                }
+            } catch (e) { }
+            // 6) DOM 卡片删除 data-turn >= cut
+            const container = document.getElementById('chatMessages');
+            if (container) {
+                for (const el of Array.from(container.children)) {
+                    const raw = el.getAttribute ? el.getAttribute('data-turn') : null;
+                    if (raw === null || raw === undefined || raw === '') continue;
+                    const v = Number(raw);
+                    if (!Number.isNaN(v) && v >= cut) container.removeChild(el);
+                }
+            }
+            this.updateStatusPanel();
+            this.saveStory();
+            return { index: index, user: fullTarget.user || (s.conversationHistory[restoredHistLen - 1] || {}).content || '', mode: mode, cutIndex: cut, full: true };
+        }
+
+        // ===== 以下为老存档降级：原有 turnArc 40 轮逻辑，一字未改 =====
         const arc = await this.loadTurnArchive();
         // 目标现场：before 用该轮快照；after 用该轮之后一轮的快照（= 该轮结束后的状态）
         let target = null, cutIndex = index;
@@ -792,6 +864,38 @@ class StoryFramework {
         this.updateStatusPanel();
         this.saveStory();
         return { index: index, user: target.user || '', mode: mode, cutIndex: cutIndex };
+    }
+
+    /**
+     * v6.3.14：撤销上一次回档。把回档前的全量状态（含对话长度）写回。
+     * 恢复点上限 5（FloorState 内覆盖式），误回档可一键撤回。
+     * @returns {Promise<boolean>} 是否成功撤销
+     */
+    async undoRewind() {
+        const FS = window.FloorState;
+        if (!FS) return false;
+        try { if (this._fsQueue) await this._fsQueue; } catch (e) { }
+        const full = await FS.popUndo(this);
+        if (!full) return false;
+        try { FS.restore(this, full); } catch (e) { return false; }
+        const s = this.storyState;
+        // 对话历史：优先用撤销点里存的完整副本（回档时已截断 transcript，只能靠这里补回）
+        if (Array.isArray(full.fullHistory)) {
+            s.conversationHistory = full.fullHistory.slice();
+        }
+        // 同步写回 transcript，防刷新后又被旧的长截断版覆盖
+        try {
+            if (window.StorageBoost && StorageBoost.ready()) {
+                StorageBoost.put('transcript/' + this.getSaveKey(), JSON.stringify({
+                    upTo: s.conversationHistory.length, floors: s.conversationHistory.slice()
+                }));
+                this._trFlushedLen = s.conversationHistory.length;
+            }
+        } catch (e) { }
+        s._rollbackEpoch = (Number(s._rollbackEpoch) || 0) + 1;
+        this.updateStatusPanel();
+        this.saveStory();
+        return true;
     }
 
     // ==================== 状态更新 ====================

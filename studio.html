@@ -456,7 +456,7 @@
     <input type="file" id="toolboxImport" accept=".json" style="display:none" onchange="StoryInput.importSave(this.files[0])">
 
     <!-- 框架核心（模仿原框架的脚本加载顺序：框架 → 功能模块 → 配置） -->
-    <script defer src="story-framework.js?v=6.3.5"></script>
+    <script defer src="story-framework.js?v=6.3.14"></script>
     <!-- v3.31.3：安卓 WebView 下载桥终于接上线（此前 js/android-bridge.js 一直在包里却没有任何页面加载，
          APK 内导出存档/卡片/图片会静默失败；浏览器环境此文件自动休眠，零影响） -->
     <script defer src="js/android-bridge.js?v=5.5.0"></script>
@@ -559,7 +559,7 @@
     <!-- v6.3 世界舆图资料库 UI（独立 overlay，工具箱入口打开） -->
     <script src="js/atlas-library.js?v=6.3.1"></script>
     <!-- v6.3.5 对话时光轴：任意回合回档 / 重 roll（依赖 story-framework / user-input-handler） -->
-    <script src="js/time-axis.js?v=6.3.5"></script>
+    <script src="js/time-axis.js?v=6.3.14"></script>
     <!-- v5.4.1 动态势力上图：权威位置表 + 零侵入注入层，删这几行 + 上面 css 行即回滚 -->
     <script src="js/atlas-faction-anchors.js?v=5.5.0"></script>
     <script src="js/atlas-faction-layer.js?v=5.5.0"></script>
@@ -603,7 +603,7 @@
          旧版在这里用 document.write 抢解析期装载，实测两个内联块之间没有执行屏障——
          第二个块检查 __KB_SPLIT_OK__ 时第一个块写入的脚本还没跑，于是"分界"与"整包"双双被加载，
          每次进世界白拉 9.4MB（实测首屏 12.7MB JS）。现在只留一个版本号给动态加载用。 -->
-    <script>window.YJ_VER = '6.3.13';
+    <script>window.YJ_VER = '6.3.14';
       /* v3.87.0 P3-3：顶栏版本徽标改为与 YJ_VER 同源，杜绝「界面显示旧号、实际是新版」 */
       document.addEventListener('DOMContentLoaded', function () {
         var d = document.getElementById('verDot');
@@ -695,6 +695,8 @@
 <script defer src="js/store-guard.js?v=5.5.0"></script>
     <script type="text/yj-lazy" data-src="libs/confetti.browser.min.js?v=5.5.0" data-yj-group="batch"></script>
     <script defer src="js/storage-boost.js?v=5.5.0"></script>
+    <!-- v6.3.14 全量楼层快照：回档到任意层时同步所有随剧情演化的数据。依赖 StorageBoost/SlotRegistry，均动态取用 -->
+    <script defer src="js/floor-state.js?v=6.3.14"></script>
     <script type="text/yj-lazy" data-src="js/lunar-stamp.js?v=5.5.0" data-yj-group="demand" data-yj-globals="LunarStamp"></script>
     <script type="text/yj-lazy" data-src="js/inspiration-dice.js?v=5.5.0" data-yj-group="demand" data-yj-globals="InspirationDice"></script>
     <script type="text/yj-lazy" data-src="js/action-check.js?v=5.5.0" data-yj-group="demand" data-yj-globals="ActionCheck"></script>

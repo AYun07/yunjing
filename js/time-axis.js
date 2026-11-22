@@ -126,6 +126,7 @@
         '<button class="ta-btn danger" onclick="TimeAxis.act(selected,\'before\')">↩ 回到本轮前</button>' +
         '<button class="ta-btn" onclick="TimeAxis.act(selected,\'after\')">✂ 保留本轮·丢之后</button>' +
         '<button class="ta-btn primary" onclick="TimeAxis.roll(selected)">↻ 从此轮重写</button>' +
+        '<button class="ta-btn" onclick="TimeAxis.undo()">⤺ 撤销上次回档</button>' +
         '<span class="ta-spacer" style="flex:1"></span>' +
         '<button class="ta-btn" onclick="TimeAxis.close()">返回故事</button>';
     });
@@ -170,8 +171,29 @@
     catch (e) { toast('重写失败：' + (e && e.message || '未知错误'), 'error'); }
   }
 
+  /** v6.3.14：撤销上一次回档（若有恢复点） */
+  function undo() {
+    if (!guard()) return;
+    var f = fw();
+    if (!f || !f.undoRewind) { toast('回档引擎未就绪，请刷新页面', 'error'); return; }
+    window.UIDialog.confirm({
+      title: '撤销上次回档',
+      message: '把故事恢复到最近一次回档之前的状态（含剧情与全部数据）。确定继续？',
+      confirmText: '确定撤销', cancelText: '再想想'
+    }).then(function (ok) {
+      if (!ok) return;
+      return f.undoRewind().then(function (done) {
+        if (!done) { toast('没有可撤销的回档', 'error'); return; }
+        toast('↩ 已撤销回档，故事恢复到回档前', 'info');
+        selected = null;
+        close();
+        try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch (e) { }
+      });
+    }).catch(function (e) { toast('撤销失败：' + (e && e.message || '未知错误'), 'error'); });
+  }
+
   window.TimeAxis = {
-    open: open, close: close, select: select, act: act, roll: roll, render: render,
+    open: open, close: close, select: select, act: act, roll: roll, undo: undo, render: render,
     _collect: collect
   };
 })();
