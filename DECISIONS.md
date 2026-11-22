@@ -1220,3 +1220,13 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 取舍：`_bak_v*` 目录只是改文件前的 2–12 个零散备份，不是完整可运行版本，**不**为它们造 tag（造了等于用现版代码冒充历史版，违背考据原则）。其余缺 tag 的历史号（v1.x/v3.x 等）同样无原生完整源码，不补。只补"确有原生完整包"的 4 个（v6.6.0 + 那 3 个）。
 - 失效条件：若将来找回某历史版本的原生完整源码/快照，可为其单独补 tag；若改造 push 脚本让每次发版自动建 tag+release，则本问题根治，可重审。
 - 验证：`/releases/latest` = v6.6.0；v6.6.0 zip 与 v4.17.7/v4.18.0/v4.19.0 zip 均 HTTP 200；逐个读 tag tree 内 sw.js = 对应版本号，三个历史 commit parents=0（独立快照）；README raw 已回读到新链接。
+
+## DR-055 · 发版必须附完整成品包（含媒体资产）到 Release（2026-11-23）
+
+- 背景：用户指出"最新版怎么没附源码/打包文件，之前说过每次更新都要附完整打包文件"。实地核查：v6.6.0 及历史所有 release 的 asset 数均为 0——DR-054 只补了 tag/release 元数据，没有上传成品包。沙箱里也只有 v4.x 的成品 zip，无 v6.6.0 成品包。
+- 根因：`push-all-github.py` 与 DR-054 的补 tag 脚本都只处理 git 对象/tree/commit/release 元数据，从未把"可离线运行的成品 zip"作为 release asset 上传。发版清单里漏了"附完整包"这一步。
+- 决定：① 从当前工作区按白名单（index/opening/studio/xiaoyun 四入口 + assets/css/js/libs/configs/scripts/test/changelog/releases/.github/community/docs/tools/client + 启动脚本；排除 _bak_*/node_modules/shots-*/yunjing-test/旧安装包/散落截图）打 v6.6.0 完整包，保留全部运行资产（小云情绪动画 470MB + 38 界考据地图 140MB），得 658MB zip；② 上传到 v6.6.0 release 作 asset `yunjing-v6.6.0-full.zip`；③ 补建的三个历史 tag（v4.17.7/v4.18.0/v4.19.0）各自上传原生成品包 `yunjing-v<ver>-full.zip`；④ README 当前版下载行改指完整包 asset，并区分"完整包（含媒体，658MB）"与"源码包（tag 自动生成，约 26MB）"。
+- 关键坑：uploads.github.com 的 `?name=<中文>` 参数会被服务端清洗成空（"云境-v6.6.0-成品完整包.zip" → "-v6.6.0-.zip"）。解法：先用任意名上传，再用 PATCH /releases/assets/{id} 改成可读英文名。
+- 取舍：完整包含大媒体（658MB）牺牲下载体积，换"下载解压即离线可跑、小云情绪动画与考据地图不缺"；源码包轻量但不含媒体。两者并存，README 明示区别。
+- 失效条件：若改用 CDN 托管媒体改用外链，可缩小完整包；或造出"发版脚本自动打包+上传 asset"后，人工这步可省。
+- 验证：v6.6.0 包 CRC 全过、sw.js=6.6.0、四入口+核心引擎在、132 视频 webm+115 地图资产在；四个 release 各有 1 个附件（v6.6.0 657.8MB / 三个历史 25.2MB）；完整包下载直链 HTTP 200、Content-Length=689758134；README raw 已回读到新链接。
