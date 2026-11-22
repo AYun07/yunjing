@@ -127,7 +127,7 @@
       }
       const fname = `${npcName.replace(/[\\/:*?"<>|]/g, "_")}.png`;
       window.CardIO.download(bytes, fname);
-      (_h = window.showToast) == null ? void 0 : _h.call(window, `✓ 「${npcName}」已导出为标准角色卡${book ? `（含世界书 ${book.entries.length} 条）` : ""}，可在 RisuAI / Chub 等通用前端 使用`, "success");
+      (_h = window.showToast) == null ? void 0 : _h.call(window, `✓ 「${npcName}」已导出为标准角色卡${book ? `（含世界书 ${book.entries.length} 条）` : ""}，可在 常见前端工具 / 社区卡库 等常见前端工具 使用`, "success");
       return bytes;
     },
     _currentScenario() {
@@ -263,41 +263,41 @@ ${norm.first_mes}`,
       const w = document.createElement("div");
       w.id = "cardHubPanel";
       w.innerHTML = `
-            <div class="chub-overlay" onclick="if(event.target===this)CardHub.close()">
-                <div class="chub-modal">
-                    <div class="chub-head"><b>🃏 角色卡互通</b><span class="chub-sub">Character Card V2/V3 · 与 RisuAI / Chub 等通用前端 生态互通</span>
-                        <button class="chub-x" onclick="CardHub.close()">✕</button></div>
-                    <div class="chub-body">${bodyHTML}</div>
+            <div class="cardhub-overlay" onclick="if(event.target===this)CardHub.close()">
+                <div class="cardhub-modal">
+                    <div class="cardhub-head"><b>🃏 角色卡互通</b><span class="cardhub-sub">Character Card V2/V3 · 与 常见前端工具 / 社区卡库 等常见前端工具 生态互通</span>
+                        <button class="cardhub-x" onclick="CardHub.close()">✕</button></div>
+                    <div class="cardhub-body">${bodyHTML}</div>
                 </div>
             </div>`;
       if (!document.getElementById("cardHubStyle")) {
         const st = document.createElement("style");
         st.id = "cardHubStyle";
         st.textContent = `
-.chub-overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(3px);z-index:9995;display:flex;align-items:center;justify-content:center;padding:18px}
-.chub-modal{width:min(680px,94vw);max-height:86vh;display:flex;flex-direction:column;background:linear-gradient(160deg,#211d17,#17140f);border:1px solid #c9a86a45;border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.6);overflow:hidden;animation:chubIn .3s ease both}
-@keyframes chubIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.chub-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #c9a86a25}
-.chub-head b{color:#e8dcc0;font-size:15px;letter-spacing:1px}
-.chub-sub{font-size:11px;color:#9a8c6e;margin-right:auto}
-.chub-x{background:none;border:none;color:#9a8c6e;font-size:16px;cursor:pointer;padding:4px 8px}
-.chub-x:hover{color:#e8dcc0}
-.chub-body{padding:16px 18px 18px;overflow-y:auto;flex:1}
-.chub-sec{font-size:12px;color:#c9a86a;letter-spacing:2px;margin:14px 0 10px;padding-bottom:6px;border-bottom:1px dashed #c9a86a30}
-.chub-sec:first-child{margin-top:0}
-.chub-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.035);border:1px solid #c9a86a2a;border-radius:11px;margin-bottom:7px;transition:border-color .2s}
-.chub-row:hover{border-color:#c9a86a66}
-.chub-name{color:#e8dcc0;font-size:13.5px;font-weight:600;min-width:88px}
-.chub-meta{font-size:11px;color:#9a8c6e;flex:1;line-height:1.6}
-.chub-btn{background:rgba(201,168,106,.14);border:1px solid #c9a86a44;color:#d8cba8;font-size:11.5px;padding:6px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s}
-.chub-btn:hover{background:rgba(201,168,106,.26);border-color:#c9a86a88}
-.chub-btn.primary{background:rgba(201,168,106,.24);border-color:#c9a86a88}
-.chub-drop{border:2px dashed #c9a86a3d;border-radius:13px;padding:26px 16px;text-align:center;color:#9a8c6e;font-size:12.5px;line-height:2;cursor:pointer;transition:all .2s;background:rgba(0,0,0,.18)}
-.chub-drop:hover{border-color:#c9a86a88;color:#d8cba8;background:rgba(201,168,106,.06)}
-.chub-empty{font-size:12px;color:#8a7d63;text-align:center;padding:14px;line-height:2}
-.chub-note{font-size:11px;color:#8a7d63;line-height:1.9;margin-top:10px;padding-top:10px;border-top:1px dashed #c9a86a30}
-.chub-res{font-size:12px;color:#a8d0a8;background:rgba(122,168,120,.1);border:1px solid #7aa87844;border-radius:9px;padding:10px 13px;margin-top:10px;line-height:1.8}
-.chub-res.err{color:#d8a8a8;background:rgba(216,122,122,.08);border-color:#d87a7a44}`;
+.cardhub-overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(3px);z-index:9995;display:flex;align-items:center;justify-content:center;padding:18px}
+.cardhub-modal{width:min(680px,94vw);max-height:86vh;display:flex;flex-direction:column;background:linear-gradient(160deg,#211d17,#17140f);border:1px solid #c9a86a45;border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,.6);overflow:hidden;animation:cardhubIn .3s ease both}
+@keyframes cardhubIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.cardhub-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #c9a86a25}
+.cardhub-head b{color:#e8dcc0;font-size:15px;letter-spacing:1px}
+.cardhub-sub{font-size:11px;color:#9a8c6e;margin-right:auto}
+.cardhub-x{background:none;border:none;color:#9a8c6e;font-size:16px;cursor:pointer;padding:4px 8px}
+.cardhub-x:hover{color:#e8dcc0}
+.cardhub-body{padding:16px 18px 18px;overflow-y:auto;flex:1}
+.cardhub-sec{font-size:12px;color:#c9a86a;letter-spacing:2px;margin:14px 0 10px;padding-bottom:6px;border-bottom:1px dashed #c9a86a30}
+.cardhub-sec:first-child{margin-top:0}
+.cardhub-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.035);border:1px solid #c9a86a2a;border-radius:11px;margin-bottom:7px;transition:border-color .2s}
+.cardhub-row:hover{border-color:#c9a86a66}
+.cardhub-name{color:#e8dcc0;font-size:13.5px;font-weight:600;min-width:88px}
+.cardhub-meta{font-size:11px;color:#9a8c6e;flex:1;line-height:1.6}
+.cardhub-btn{background:rgba(201,168,106,.14);border:1px solid #c9a86a44;color:#d8cba8;font-size:11.5px;padding:6px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.cardhub-btn:hover{background:rgba(201,168,106,.26);border-color:#c9a86a88}
+.cardhub-btn.primary{background:rgba(201,168,106,.24);border-color:#c9a86a88}
+.cardhub-drop{border:2px dashed #c9a86a3d;border-radius:13px;padding:26px 16px;text-align:center;color:#9a8c6e;font-size:12.5px;line-height:2;cursor:pointer;transition:all .2s;background:rgba(0,0,0,.18)}
+.cardhub-drop:hover{border-color:#c9a86a88;color:#d8cba8;background:rgba(201,168,106,.06)}
+.cardhub-empty{font-size:12px;color:#8a7d63;text-align:center;padding:14px;line-height:2}
+.cardhub-note{font-size:11px;color:#8a7d63;line-height:1.9;margin-top:10px;padding-top:10px;border-top:1px dashed #c9a86a30}
+.cardhub-res{font-size:12px;color:#a8d0a8;background:rgba(122,168,120,.1);border:1px solid #7aa87844;border-radius:9px;padding:10px 13px;margin-top:10px;line-height:1.8}
+.cardhub-res.err{color:#d8a8a8;background:rgba(216,122,122,.08);border-color:#d87a7a44}`;
         document.head.appendChild(st);
       }
       return w;
@@ -305,24 +305,24 @@ ${norm.first_mes}`,
     _renderBody() {
       const npcs = this.npcList();
       const npcRows = npcs.length ? npcs.map((n) => `
-                <div class="chub-row">
-                    <span class="chub-name">${this.esc(n.name)}</span>
-                    <span class="chub-meta">${this.esc(n.role || "身份未登记")} · 好感 ${n.favor} · ${n.hasPortrait ? "🖼 有立绘" : "无立绘（导出用占位底图）"}</span>
-                    <button class="chub-btn primary" onclick="CardHub.exportNPC('${this.esc(n.name).replace(/'/g, "")}')">📤 导出卡</button>
-                </div>`).join("") : '<div class="chub-empty">众生相还没有登记任何角色——写一段剧情，让角色登场后再来导出。</div>';
+                <div class="cardhub-row">
+                    <span class="cardhub-name">${this.esc(n.name)}</span>
+                    <span class="cardhub-meta">${this.esc(n.role || "身份未登记")} · 好感 ${n.favor} · ${n.hasPortrait ? "🖼 有立绘" : "无立绘（导出用占位底图）"}</span>
+                    <button class="cardhub-btn primary" onclick="CardHub.exportNPC('${this.esc(n.name).replace(/'/g, "")}')">📤 导出卡</button>
+                </div>`).join("") : '<div class="cardhub-empty">众生相还没有登记任何角色——写一段剧情，让角色登场后再来导出。</div>';
       return `
-                <div class="chub-sec">📤 导出 · 众生相 NPC → 标准角色卡</div>
+                <div class="cardhub-sec">📤 导出 · 众生相 NPC → 标准角色卡</div>
                 ${npcRows}
-                <div class="chub-note">导出内容：角色档案（身份/描述/关系/台词）+ 相关知识库条目打包为专属世界书${"+"}立绘作卡面底图。生成的 PNG 可直接导入 RisuAI 等通用前端，或上传 Chub 分享。</div>
-                <div class="chub-sec">📥 导入 · 标准角色卡 → 本工坊</div>
-                <div class="chub-drop" onclick="document.getElementById('cardHubFile').click()">
+                <div class="cardhub-note">导出内容：角色档案（身份/描述/关系/台词）+ 相关知识库条目打包为专属世界书${"+"}立绘作卡面底图。生成的 PNG 可直接导入 常见前端工具 等常见前端工具，或上传 社区卡库 分享。</div>
+                <div class="cardhub-sec">📥 导入 · 标准角色卡 → 本工坊</div>
+                <div class="cardhub-drop" onclick="document.getElementById('cardHubFile').click()">
                     <b style="color:#d8cba8">点击选择角色卡文件</b><br>
-                    支持 PNG 角色卡（Chub / ST / RisuAI 导出）与 JSON 卡<br>
+                    支持 PNG 角色卡（社区卡库 / ST / 常见前端工具 导出）与 JSON 卡<br>
                     导入后：众生相登记角色 · 知识库建档 · 世界书转关键词触发条目
                 </div>
                 <input type="file" id="cardHubFile" accept=".png,.json,image/png,application/json" style="display:none" onchange="CardHub.onFile(this)">
                 <div id="cardHubResult"></div>
-                <div class="chub-note">导入只写入本地知识库与众生相，不动当前存档的正文与变量；登场白可在预览确认后手动发送。</div>`;
+                <div class="cardhub-note">导入只写入本地知识库与众生相，不动当前存档的正文与变量；登场白可在预览确认后手动发送。</div>`;
     },
     async onFile(input) {
       var _a, _b, _c;
@@ -332,17 +332,17 @@ ${norm.first_mes}`,
       const show = (html) => {
         if (resBox) resBox.innerHTML = html;
       };
-      show(`<div class="chub-res">⏳ 正在解析「${this.esc(file.name)}」…</div>`);
+      show(`<div class="cardhub-res">⏳ 正在解析「${this.esc(file.name)}」…</div>`);
       const parsed = await this.parseFile(file);
       if (!parsed.ok) {
-        show(`<div class="chub-res err">✗ ${this.esc(parsed.msg)}</div>`);
+        show(`<div class="cardhub-res err">✗ ${this.esc(parsed.msg)}</div>`);
         (_a = window.showToast) == null ? void 0 : _a.call(window, parsed.msg, "error");
         input.value = "";
         return;
       }
       const norm = parsed.norm;
       const bookN = ((_c = (_b = norm.book) == null ? void 0 : _b.entries) == null ? void 0 : _c.length) || 0;
-      show(`<div class="chub-res">
+      show(`<div class="cardhub-res">
                 ✓ ${this.esc(parsed.msg)}<br>
                 <b style="color:#e8dcc0">${this.esc(norm.name || "(未命名)")}</b>
                 ${norm.creator ? ` · 作者 ${this.esc(norm.creator)}` : ""}${norm.character_version ? ` · v${this.esc(norm.character_version)}` : ""}<br>
@@ -350,8 +350,8 @@ ${norm.first_mes}`,
                 ${bookN ? `世界书 ${bookN} 条 · ` : ""}${norm.tags.length ? `标签：${this.esc(norm.tags.slice(0, 6).join("、"))}` : ""}
             </div>
             <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-                <button class="chub-btn primary" onclick="CardHub.confirmImport()">✓ 导入到本工坊</button>
-                ${norm.first_mes ? `<button class="chub-btn" onclick="CardHub.confirmImport(true)">✓ 导入并发登场白</button>` : ""}
+                <button class="cardhub-btn primary" onclick="CardHub.confirmImport()">✓ 导入到本工坊</button>
+                ${norm.first_mes ? `<button class="cardhub-btn" onclick="CardHub.confirmImport(true)">✓ 导入并发登场白</button>` : ""}
             </div>`);
       this._pending = norm;
       input.value = "";
@@ -362,7 +362,7 @@ ${norm.first_mes}`,
       const res = this.importCard(this._pending, { greeting: !!withGreeting });
       const resBox = document.getElementById("cardHubResult");
       if (resBox) {
-        resBox.innerHTML = res.ok ? `<div class="chub-res">✓ ${this.esc(res.msg)}</div>` : `<div class="chub-res err">✗ ${this.esc(res.msg)}</div>`;
+        resBox.innerHTML = res.ok ? `<div class="cardhub-res">✓ ${this.esc(res.msg)}</div>` : `<div class="cardhub-res err">✗ ${this.esc(res.msg)}</div>`;
       }
       (_a = window.showToast) == null ? void 0 : _a.call(window, res.msg, res.ok ? "success" : "error");
       if (res.ok) this._pending = null;

@@ -186,7 +186,7 @@ G('8. 降级保底');
 G('9. 版权红线');
 {
   const src = read('js/semantic-engine.js');
-  ['SillyTavern', 'st-yuzi', '契约者', '土著', '随从', '轮回乐园', '星海纪行'].forEach(kw =>
+  ['常见前端工具', '某手机前端', '契约者', '土著', '随从', '轮回乐园', '某同类产品'].forEach(kw =>
     ok(src.indexOf(kw) < 0, '语义引擎无「' + kw + '」'));
 }
 

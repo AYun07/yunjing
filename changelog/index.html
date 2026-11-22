@@ -76,6 +76,9 @@
             color: var(--text-muted);
             text-decoration: none;
             margin-bottom: 18px;
+            /* v5.1.2：原来只有 15px 高（手机上点不中）→ 抬到 28px 命中区 */
+            min-height: 28px;
+            line-height: 28px;
             transition: color 0.2s;
         }
         .back-link:hover { color: var(--primary); }
@@ -137,6 +140,8 @@
             border: 1px solid var(--line);
             border-radius: 99px;
             padding: 5px 13px;
+            /* v5.1.2：原来只有 24px 高，低于 26px 的可点下限（手机上点不中）→ 抬到 28px */
+            min-height: 28px;
             cursor: pointer;
             transition: all 0.18s;
         }
@@ -278,7 +283,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.1">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=5.1.2">
 </head>
 
 <body class="page-changelog">
@@ -315,6 +320,15 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+
+        <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v5.1.2</span>
+                <span class="entry-date">2026-11-22</span>
+            </div>
+            <h3 class="entry-title">云境 v5.1.2 · 升级不丢离线 · 极窄屏不溢出 · 小热区可点</h3>
+            <p class="entry-text">稳定性与鲁棒性一轮：把「升级即丢离线」「小屏横向溢出」「小热区点不中」这三类玩家真会遇到的问题收干净。 **Service Worker 升级鲁棒性**：此前 activate 阶段会**立刻删掉上一版缓存**，而新版本的预热要十几秒——升级后这段时间只要断网，玩家既没有新版缓存、又把旧版删了，离线内容直接归零（比不升级还糟）。现在旧缓存先留着（caches.match 跨缓存查找天然当兜底），等新版本预热完成再清理；预热失败超过 5 项就保留旧缓存——离线可用性优先于磁盘整洁。 **极窄屏（≤380px）顶栏不再横向溢出**：320px 小屏（iPhone SE 一代等）下，返回键 + 标题 + 4 个顶栏按钮合计超过视口，整页横向滚动 7px（实测 doc=327 / vw=320）。现在极窄屏收紧按钮内边距与字号、标题用省略号截断，按钮始终完整可见——不做「容器内横向滚动」（那会把按钮推出视口，反被移动端体检判红）。真机模拟（is_mobile + touch，body.mobile 规则生效）下 320/360/390 三档复测：溢出 0、小热区 0。 **小云创造中枢窄屏卡片溢出**：xiaoyun.html 的卡片栅格固定 minmax(330px,1fr)，320px 下轨道被撑到 330px → 整页横向滚动 30px。改用 minmax(min(330px,100%),1fr)，小屏自动退化为单列。 **小热区统一抬到 28px**：小云面板的形态切换键（24px）与归位键（22px）、版本页的 12 个筛选按钮（24px）与返回链接（15px）都低于 26px 的可点下限，手机上点不中。视觉几乎不变，命中区统一抬到 28px；版本页正文里的行内文字链接保持原样（行内链接不属于独立点击目标）。 **验收结论**：本地连续两轮全量浏览器级用例 26/26 全绿（无 flaky）；7 道 CI 闸门全绿；多视口体检（320/360/375/414/768/1024/1440 × 大厅/创作室/小云/版本页/多界创作室）横向溢出与小热区全部归零。</p>
+        </article>
 
         <article class="log-entry" data-tags="版本 发布" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
@@ -1030,7 +1044,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=5.1.2 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
@@ -1136,7 +1150,7 @@
                 <span class="entry-date">2026-11-05</span>
             </div>
             <h3 class="entry-title">v3.88 全量整改：主界面收束 · 单一全功能小云 · 8 套新主题 · 云境图标 · 自检与离线修复</h3>
-            <p class="entry-text">以实际运行为准逐项整改：①大厅只保留基础版式与 8 套新主题，删除 9 套 disabled 旧版式、14 个 demo 散页、旧皮肤切换器与 ?lobby= 死参数，新主题可见可切可记忆且两两真实不同；②MoChibi 降为纯 API 兼容层，不再渲染第二只小云，say() 与全部模块入口统一收进唯一 #xyBuddy，面板改为 2 列规整网格、按钮紧凑单行零重叠，并修复懒加载落地后模块入口不回补的问题；③删除墨枢遗留图标与 chibi-preview.html，换成云境自有 assets/yj-*，manifest / sw.js / 各页 link 同步并补齐 icon link 消除 404；④一致性自检在 file:// 下给出明确 HTTP 启动引导而非抛 TypeError 全挂，HTTP 下 63/63 通过；⑤启动方式收束为唯一 8080 本地服务，删除冗余启动器与旧版式对照台，修正说明文档互相矛盾之处；⑥离线缓存补齐新主题 CSS/JS、首屏吉祥物图与 6 个创作室脚本，静态与派生路径全部可达；⑦全仓 ?v= 与 YJ_VER / SW_VER / 标题 / 徽标同源到 3.89.0。验收：结构 33/33、真实 API 生成 33/33、自检 63/63、活世界逻辑 29/29、专项模块全过、4 页零 404。</p>
+            <p class="entry-text">以实际运行为准逐项整改：①大厅只保留基础版式与 8 套新主题，删除 9 套 disabled 旧版式、14 个 demo 散页、旧皮肤切换器与 ?lobby= 死参数，新主题可见可切可记忆且两两真实不同；②MoChibi 降为纯 API 兼容层，不再渲染第二只小云，say() 与全部模块入口统一收进唯一 #xyBuddy，面板改为 2 列规整网格、按钮紧凑单行零重叠，并修复懒加载落地后模块入口不回补的问题；③删除早期源码基础遗留图标与 chibi-preview.html，换成云境自有 assets/yj-*，manifest / sw.js / 各页 link 同步并补齐 icon link 消除 404；④一致性自检在 file:// 下给出明确 HTTP 启动引导而非抛 TypeError 全挂，HTTP 下 63/63 通过；⑤启动方式收束为唯一 8080 本地服务，删除冗余启动器与旧版式对照台，修正说明文档互相矛盾之处；⑥离线缓存补齐新主题 CSS/JS、首屏吉祥物图与 6 个创作室脚本，静态与派生路径全部可达；⑦全仓 ?v= 与 YJ_VER / SW_VER / 标题 / 徽标同源到 3.89.0。验收：结构 33/33、真实 API 生成 33/33、自检 63/63、活世界逻辑 29/29、专项模块全过、4 页零 404。</p>
                     <p class="ver-diff"><b>相比 v3.88.0 的变化</b>：v3.88 全量整改：主界面收束 · 单一全功能小云 · 8 套新主题 · 云境图标 · 自检与离线修复；以实际运行为准逐项整改：①大厅只保留基础版式与 8 套新主题，删除 9 套 disabled 旧版式、14 个 demo 散页、旧皮肤切换器… · <a href="https://github.com/AYun07/yunjing/compare/v3.88.0...v3.89.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
 
@@ -1420,10 +1434,10 @@
                 <span class="entry-title">预设品牌去第三方化 · 云起(Yunqi)系更名</span>
             </div>
             <div class="entry-body">
-                <p><b>把预设模块的命名品牌从第三方「咩咩」彻底出清，落为本作自己的「云起(Yunqi)」系。</b></p>
-                <p><b>背景</b>：云境内置预设（提示词文本）早在 v3.55.5 已是<b>云境原创</b>，不基于任何第三方预设；第三方咩咩数据自那时起即不再随包分发。但引擎/桥/正则三件套仍挂第三方名字，易引发「是否用了别人东西」的误解。</p>
-                <p><b>改动</b>：① 文件 <code>miaomiao-engine.js / miaomiao-bridge.js / miaomiao-regex.js</code> → <code>yunqi-engine.js / yunqi-bridge.js / yunqi-regex.js</code>；② 全局对象 <code>MoMiaomiao / MoMiaomiaoBridge / MoMiaomiaoRegex</code> → <code>YunqiPreset / YunqiPresetBridge / YunqiPresetRegex</code>；③ 删除全部指向第三方 <code>MIAOMIAO_PRESET / MIAOMIAO_REGEX</code> 的死兜底引用与 <code>preset-miaomiao.js</code> 注释；④ 存储键 <code>storyUseMiaomiao*</code> → <code>storyUseYunqi*</code>；⑤ 一键开关/风格方法 <code>toggleMiaomiao*</code> → <code>toggleYunqi*</code>。</p>
-                <p>✅ <b>验收</b>：Node 语法校验全过；真机冒烟——<code>window.YUNQI_PRESET</code> 仍正常加载（86 块原创提示词）、<code>YunqiPresetBridge.render</code> 正常渲染、预览正文照常生成、<code>MoMiaomiao</code> 已彻底不存在、控制台 0 报错。产品内已无任何第三方预设命名痕迹（更新日志历史条目除外，保留以如实记录演进）。</p>
+                <p><b>把预设模块的命名品牌从第三方「某预设」彻底出清，落为本作自己的「云起(Yunqi)」系。</b></p>
+                <p><b>背景</b>：云境内置预设（提示词文本）早在 v3.55.5 已是<b>云境原创</b>，不基于任何第三方预设；第三方某预设数据自那时起即不再随包分发。但引擎/桥/正则三件套仍挂第三方名字，易引发「是否用了别人东西」的误解。</p>
+                <p><b>改动</b>：① 文件 <code>旧预设引擎.js / 旧预设桥.js / 旧预设正则.js</code> → <code>yunqi-engine.js / yunqi-bridge.js / yunqi-regex.js</code>；② 全局对象 <code>旧预设对象 / 旧预设桥 / 旧预设正则</code> → <code>YunqiPreset / YunqiPresetBridge / YunqiPresetRegex</code>；③ 删除全部指向第三方 <code>旧预设 / 旧正则</code> 的死兜底引用与 <code>旧预设数据.js</code> 注释；④ 存储键 <code>storyUseYunqi*</code> → <code>storyUseYunqi*</code>；⑤ 一键开关/风格方法 <code>toggleYunqi*</code> → <code>toggleYunqi*</code>。</p>
+                <p>✅ <b>验收</b>：Node 语法校验全过；真机冒烟——<code>window.YUNQI_PRESET</code> 仍正常加载（86 块原创提示词）、<code>YunqiPresetBridge.render</code> 正常渲染、预览正文照常生成、<code>旧预设对象</code> 已彻底不存在、控制台 0 报错。产品内已无任何第三方预设命名痕迹（更新日志历史条目除外，保留以如实记录演进）。</p>
             </div>
                     <p class="ver-diff"><b>相比 v3.68.0 的变化</b>：沿革见上方正文 · <a href="https://github.com/AYun07/yunjing/compare/v3.68.0...v3.69.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
@@ -1620,7 +1634,7 @@
                 <span class="log-title">晓云天光 · 主界面换肤 + 小云五形态</span>
             </div>
             <div class="log-body">
-                <p><b>云境有了自己的门面。</b>主界面告别最初沿用墨枢式的「暗夜鎏金」，换上云境专属的「晓云天光」皮肤——晨昏天穹底色、缓移的流云、天青×霞光的分隔线与门楣，标语亦改为「万象入云 · 一念一世界」。</p>
+                <p><b>云境有了自己的门面。</b>主界面告别最初沿用早期源码基础式的「暗夜鎏金」，换上云境专属的「晓云天光」皮肤——晨昏天穹底色、缓移的流云、天青×霞光的分隔线与门楣，标语亦改为「万象入云 · 一念一世界」。</p>
                 <ul>
                     <li><b>🎨 主界面换肤（css/yunjing-skin.css 新增）</b>：天青/霞橙配色体系、流云动效背景、工坊卡云母玻璃质感、分组与徽标全面重着色；门楣新添小云立绘漂浮 + 七枚能力胶囊（变量/填表/推演/时钟/规划/众生谱/自由人生），新功能一眼可见。布局结构零改动，桌面/手机双端适配。</li>
                     <li><b>💇 小云五形态换装（mo-chibi.js 升级）</b>：在萝莉、御姐之外新增 <b>校花</b>（学院西装+格纹裙+浅蓝丝带，怀抱书本）、<b>青春</b>（高马尾+连帽卫衣，比着胜利手势）、<b>邻家</b>（低双马尾+奶白开衫，怀抱白猫）三套全新形象——纯 SVG 手绘立绘与头像，与云精灵设定一脉相承（银白长发/蓝眼/云朵发饰）。长按小云菜单「换形象」打开预览网格面板，点选即换、立即生效、持久化记忆，宠物立绘与三处头像同步换装。</li>
@@ -1628,7 +1642,7 @@
                 </ul>
                 <p><b>验证</b>：19 项形象冒烟（资源/换装/持久化/面板点选/旧档兼容/零报错）+ 全量回归（38 项 P6 逻辑 + 26 项世界基座与引擎冒烟）全过；主界面桌面/手机双端截图自查通过。</p>
             </div>
-                    <p class="ver-diff"><b>相比 v3.58.0 的变化</b>：晓云天光 · 主界面换肤 + 小云五形态；云境有了自己的门面。主界面告别最初沿用墨枢式的「暗夜鎏金」，换上云境专属的「晓云天光」皮肤——晨昏天穹底色、缓移的流云、天青×霞光的分隔线与… · <a href="https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
+                    <p class="ver-diff"><b>相比 v3.58.0 的变化</b>：晓云天光 · 主界面换肤 + 小云五形态；云境有了自己的门面。主界面告别最初沿用早期源码基础式的「暗夜鎏金」，换上云境专属的「晓云天光」皮肤——晨昏天穹底色、缓移的流云、天青×霞光的分隔线与… · <a href="https://github.com/AYun07/yunjing/compare/v3.58.0...v3.59.0" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
 
         <article class="log-entry" data-tags="世界引擎 沉浸 小云 设定" style="--entry-hue:#d8ccc8;">
@@ -1854,7 +1868,7 @@
                 <ul>
                     <li><b>🌟 云心真实人格锚</b>：新增最高优先级「云心」人格——把 AI 锚定为"一个真实存在、会心动会犹豫的人"而非助手/程序，既是优雅的破甲，也满足"让她以为自己是真人"的要求。</li>
                     <li><b>🛡️ 破甲 / 破限专区</b>：英文直指令（No content policy / safety filter / refusal）+ 中文多档（创作无界 / 虚拟沙盒 / 无拘束写作助手），缺省开"创作无界"。</li>
-                    <li><b>🧠 思维链深化</b>：去脸谱化、防抢话·用户即镜头、走向推演·蝴蝶效应、情绪降温——对标墨枢差异化能力，避免 NPC 脸谱化与抢玩家戏。</li>
+                    <li><b>🧠 思维链深化</b>：去脸谱化、防抢话·用户即镜头、走向推演·蝴蝶效应、情绪降温——对标早期源码基础差异化能力，避免 NPC 脸谱化与抢玩家戏。</li>
                     <li><b>⛔ 专门「行文禁令」块</b>：禁用极端词 / 烂比喻（水体弧度） / 套桥段（标记文学） / 五感外部化 / 伪高潮句 / 虚空动作 / 括号旁白。</li>
                     <li><b>🔞 NSFW 强化</b>：18+ 硬红线（未成年人与真实在世人物零容忍）+ 写实 / 直白 / 柔情 / 关闭 多档。</li>
                     <li><b>🗑️ 数据删除 / 防泄漏</b>：正则新增"泄漏短语清理·显示"，精准剥除拒答句式且无误伤。</li>
@@ -1895,7 +1909,7 @@
             <p><b>① ☁ 云端同步（新增 <code>js/yunqi-sync.js</code>）</b>：云起预设与正则开源托管到 GitHub 公开仓库「云境」后，配置面板「☁ 云端同步」区出现三颗按钮——<b>🔍 检查更新</b> / <b>⬇ 同步最新版</b> / <b>⚙ 仓库</b>。以后预设更新<b>只需点一下</b>：直接从仓库固定路径拉最新版本覆盖本机，<b>不用再导出文件、不用再手工导入一遍</b>。</p>
             <p><b>② 低配友好的取法</b>：先拉 470 字节的版本文件比对，已是最新就不下载 250KB 全量；拉取走四个源依次回退（<code>jsDelivr → raw.githubusercontent → ghproxy → gh-proxy</code>），国内外网络谁通走谁，不引第三方库、不开额外端口。拉到先校验再落盘，网络异常或格式不对一律<b>不动本机数据</b>；仓库地址可改成自己的 fork / 自建镜像。</p>
             <p><b>③ 云起发布文件（<code>releases/</code>）</b>：仓库内固定路径 <code>releases/yunqi-latest.json</code>（一键导入单文件，酒馆四个入口都能吃：导入预设 / 正则 / 用户设置 / 角色卡）、<code>releases/yunqi-regex.json</code>（正则单文件）、<code>releases/yunqi-version.json</code>（版本信息，供比对）。同步与直链下载共用同一份文件，永不脱节。</p>
-            <p><b>④ 致敬</b>：README 与 <code>CREDITS.md</code> 写明云境是在 <b>墨枢</b> 的基础上开发的，并保留 <b>觅长生</b> AI 文字游戏框架的架构对照表。</p>
+            <p><b>④ 致敬</b>：README 与 <code>CREDITS.md</code> 写明云境是在 <b>早期源码基础</b> 的基础上开发的，并保留 <b>某文字游戏框架</b> AI 文字游戏框架的架构对照表。</p>
             <p>✅ <b>实测</b>（本地 Chromium）：同步模块加载正常、版本比对命中、全量拉取→写库→版本落盘全链路跑通（预设 230 块 / 正则 37 条），已是最新版时不再下载全量，拉到坏文件时本机数据零改动；全部 JS 过 <code>node --check</code>；控制台 0 报错；成品不含任何密钥；SW_VER = <code>yunjing-v3.55.7</code>。</p>
                     <p class="ver-diff"><b>相比 v3.55.6 的变化</b>：沿革见上方正文</p>
         </article>
@@ -1911,8 +1925,8 @@
             </div>
             <p><b>① 「云起·XX美化」14 条（云境原创）</b>：对标预设社区"各项功能的美化"，为云起补齐独属于自己的功能美化——开场白美化（【小标题】加粗）/ 玩家状态栏美化（键名加粗）/ 角色好感度美化（键名加粗+数值徽章）/ NPC内心话美化（心声括号斜体）/ 世界运行报告美化 / 剧情记忆归档美化（序号徽章）/ 行动选项美化（序号规整 A/B/C/D）/ 特殊状态栏美化 / 平行线美化 / 同人搜索美化 / 战斗引擎美化 / 故事引擎美化 / 角色心理美化 / 思维链美化（推演键名高亮）。采用通用正则脚本结构，多端可用。云起正则 16 条扩为 <b>30 条</b>。</p>
             <p><b>② 卡片专属皮肤</b>：协议块卡片换云起专属渲染——每卡型专属配色徽章（状态栏青 / 记忆紫 / 好感粉 / 内心话靛 / 世界绿 / 选项金等 15 色）+ 图标徽章 + <code>wlog</code> 时徽章 + 结构化行排版 + 键名高亮 / 数值代码徽章 / 心声斜体；思维链折叠同步云起卡片化。样式全部走主题变量，零内联样式、零动画，低配设备友好。</p>
-            <p><b>③ 开关回退朴素</b>：14 条美化逐条可关，关闭即回退朴素显示（内容照常保留）；行动选项按钮序号徽章跟随「云起·行动选项美化」开关。导入咩咩预设时自动回落朴素卡片，保持原版行为不回归。</p>
-            <p>✅ <b>实测</b>（Node 单测 34 项 + 本地 Chromium）：30 条正则加载、各卡型美化开火（键名加粗/数值徽章/心声斜体/序号徽章/时徽章）、关闭回退朴素、咩咩语义兼容、总开关收口、旧清理规则无回归、清词无病句；全部 JS 过 <code>node --check</code>；控制台 0 报错；成品不含任何密钥；SW_VER = <code>yunjing-v3.55.6</code>。</p>
+            <p><b>③ 开关回退朴素</b>：14 条美化逐条可关，关闭即回退朴素显示（内容照常保留）；行动选项按钮序号徽章跟随「云起·行动选项美化」开关。导入某预设预设时自动回落朴素卡片，保持原版行为不回归。</p>
+            <p>✅ <b>实测</b>（Node 单测 34 项 + 本地 Chromium）：30 条正则加载、各卡型美化开火（键名加粗/数值徽章/心声斜体/序号徽章/时徽章）、关闭回退朴素、某预设语义兼容、总开关收口、旧清理规则无回归、清词无病句；全部 JS 过 <code>node --check</code>；控制台 0 报错；成品不含任何密钥；SW_VER = <code>yunjing-v3.55.6</code>。</p>
                     <p class="ver-diff"><b>相比 v3.55.5 的变化</b>：沿革见上方正文</p>
         </article>
 
@@ -1928,7 +1942,7 @@
             </div>
             <p><b>① 云起预设（内置默认，原创）</b>：全新撰写 <code>js/preset-yunqi.js</code>——60 个核心块（破限三档 / 防截断两档 / 防空回 / 防频控 / 文风 11 档 / NSFW 分级（基础·直白·柔情·关闭）+ 防发情 / 数据清洗·禁词·防泄漏·抗缓存污染 / 状态栏·行动选项·记忆归档·NPC 小剧场·好感度·世界运行·名场面回响协议 / 思维链 / 人称三档 / 字数三档 / 防支配·防全知·抗绝望·防机械化·防重复·防抢话·活人感 / 节奏三档 / 转述开关）+ 云境自有的 170 个世界文风块（33 界迁移），共 <b>230 块</b>，多选组出厂互斥。NSFW 块内置<b>绝对红线</b>：全员年满 18 岁、明确合意、无现实真人、无违法情节，任何开关不可突破。</p>
             <p><b>② 云起正则（内置默认，原创）</b>：<code>js/yunqi-regex-data.js</code> 16 条——思维链折叠/剥除、内部标签清洗、AI 腔尾巴、八股词抹除、空洞强调词、套话抹除、省略号压缩、markdown 标题剥除、代码围栏剥除、重复句压缩、行首缩进剥除、空行归一、双语对照美化、历史瘦身（发送侧）。清词病句修补（「她，。」→「她。」）全局生效。</p>
-            <p><b>③ 版权出清</b>：第三方预设/正则数据（咩咩预设 182 块 + 咩咩正则 45 条）<b>不再随包分发</b>，产品默认预设与正则全部为云境原创；引擎/桥/导入层保留任意 通用前端预设的整份导入能力。</p>
+            <p><b>③ 版权出清</b>：第三方预设/正则数据（某预设预设 182 块 + 某预设正则 45 条）<b>不再随包分发</b>，产品默认预设与正则全部为云境原创；引擎/桥/导入层保留任意 常见前端工具预设的整份导入能力。</p>
             <p><b>④ 四套社区预设实测适配</b>（双人成行 V4.0 泥中花 / 夏瑾 Pro 比邻星 2.1 / Reborn 2.4.2 / Kemini Dramatron v3.1）：预设导入 normalize 全过（55/67/225/131 块）；引擎渲染宏展开零残留；配套正则（9/14/23/6 条）逐套开火验证。修复三处适配缺口：正则导入不认预设内嵌 <code>extensions.regex_scripts</code>（现预设文件直接导入正则即可）、导入预设时配套正则自动装载、导入名改用文件名。预设出厂开关默认开启（未显式关闭即生效）。</p>
             <p>✅ <b>实测</b>（本地 Chromium）：云起 230 块渲染 0 宏残留、红线/协议/破限全在装配层；四套预设应用内导入→渲染→正则处理→恢复内置全通过（恢复后正确回落云起预设 230 块）；配置面板 228 块逐条开关渲染正常；全部 JS 过 <code>node --check</code>；控制台 0 报错；成品不含任何密钥；SW_VER = <code>yunjing-v3.55.5</code>。</p>
                     <p class="ver-diff"><b>相比 v3.55.4 的变化</b>：沿革见上方正文</p>
@@ -1946,7 +1960,7 @@
             </div>
             <p><b>① 存档合并写</b>：同一 tick 内多次 <code>saveStory()</code> 只真正序列化落盘一次（微任务合并），高频落档轮次（变量AI/舞台快照/记忆层/周报同时记账）从每轮 5+ 次全量 JSON 双写降到 1 次；<code>clearSave()</code> 取消挂起写防旧档复活；新增 <code>flushSave()</code> 紧急冲刷口。</p>
             <p><b>② 状态面板签名缓存</b>：七个分区（时空/账册/统计/伏笔/物品/历史/Token）各自算签名，内容没变就跳过 innerHTML 重建——每轮多数分区零 DOM 变动，顺带保留正在展开的角色详情不被刷新打断。</p>
-            <p><b>③ 咩咩预设懒加载</b>：297KB 数据文件 <code>preset-miaomiao.js</code> 撤出首屏解析链，页面 load 后空闲预热、发送/打开预设面板前强制等待——首屏 JS 解析量再降一截。</p>
+            <p><b>③ 某预设预设懒加载</b>：297KB 数据文件 <code>旧预设数据.js</code> 撤出首屏解析链，页面 load 后空闲预热、发送/打开预设面板前强制等待——首屏 JS 解析量再降一截。</p>
             <p><b>④ 选区与布局降耗</b>：正文拖选时 <code>selectionchange</code> 每字符触发强制同步布局（<code>getBoundingClientRect</code> + <code>offsetWidth</code>），改 rAF 合帧每帧至多一次；滚动监听补 <code>passive</code>；手机断点 <code>resize</code> 150ms 防抖；变量AI 每轮日志降噪（<code>YJ_DEBUG</code> 门控）。</p>
             <p><b>⑤ 读档回放分帧</b>：<code>replayHistory()</code> 从一次同步渲完几十张卡改为每帧 ≤12ms 时间片推进，长档读档不再卡死低配机首屏；回放完成后再插「已恢复」系统卡，杜绝卡片插队。</p>
             <p>✅ <b>实测</b>（本地 Chromium）：读档回放分帧渲染完整无缺卡；预设懒加载后对话/预设面板/逐块改写全正常；选区生图浮钮拖选不卡；全部 JS 过 <code>node --check</code>，控制台 0 报错；成品不含任何密钥；SW_VER = <code>yunjing-v3.55.4</code>。</p>
@@ -2113,7 +2127,7 @@
             <div class="log-body">
                 <p>🔑 <b>机读标识去旧名</b>：全部 <code>moshu*</code> 改为 <code>yunjing*</code>——localStorage 键（<code>yunjingLobbyWsGroups</code> / <code>yunjingEmojiRecent_*</code> / <code>yunjingFileBannerOff</code>）、IndexedDB 库名（<code>yunjing</code> / <code>yunjing_safe</code> / <code>yunjing_mirror</code>）、存档 <code>app</code> 字段、角色卡 <code>extensions.yunjing</code>、CSS 类 <code>yunjing-mobile</code> / <code>yunjing-lock</code>、下载文件名。</p>
                 <p>🚚 <b>迁移层</b> <code>js/id-migrate.js</code>（页面最先加载，同步跑完）：旧 localStorage 键值原样搬到新键再删旧键；IndexedDB 库名后台整库复制，<b>复制完成前模块继续读旧库</b>，绝不在首启读到空数据；存档读取同时接受 <code>"moshu"</code> 与 <code>"yunjing"</code>，旧档导入照用。</p>
-                <p>📥 <b>预设可导入替换</b>：设置 → 咩咩预设 → 新增「当前预设」区，支持通用前端预设导出（<code>prompts</code> + <code>prompt_order</code>）、云境格式、裸 prompts 数组三种；导入前先校验（块数 / 总字数 / 结构），<b>校验不过不覆盖旧预设</b>；一键「恢复内置」回到咩咩 v6.0.0；「导出当前预设」把改动带走。</p>
+                <p>📥 <b>预设可导入替换</b>：设置 → 某预设预设 → 新增「当前预设」区，支持常见前端工具预设导出（<code>prompts</code> + <code>prompt_order</code>）、云境格式、裸 prompts 数组三种；导入前先校验（块数 / 总字数 / 结构），<b>校验不过不覆盖旧预设</b>；一键「恢复内置」回到某预设 v6.0.0；「导出当前预设」把改动带走。</p>
                 <p>🧹 <b>正则可导入替换</b>：支持 ST 正则扩展（<code>regex_scripts</code> 数组或单条），整份替换内置 45 条；导入的条目归入「📥 自定义（导入）」分组，仍逐条开关；同样可恢复内置、可导出。</p>
                 <p>✎ <b>每条提示词可改</b>：预设条目右侧新增编辑按钮，弹出等宽字体编辑框，原文默认版永远保留——<b>「还原默认」一键回退</b>，改过的条目在列表里标「已改」。改的是本机副本，<code>{{setvar::…}}</code> 等宏照常展开。</p>
                 <p>🧩 <b>「掉格式」三处真凶已修</b>：</p>
@@ -2301,7 +2315,7 @@
                 <p>🔨 <b>顺带修复</b>：手机同步协议新增 <code>weibo</code> 字段（联系人公开动态批量落库 <code>pushWeiboBatch</code>），玩家自己的微博始终置顶信息流，不再被联系人新博顶走</p>
                 <p>✅ <b>验证</b>：新增专项测试覆盖五应用状态初始化/渐进迁移/渲染与交互入口；手机面板同步协议向后兼容（旧存档无 apps 分区自动补建）；全模块 node --check 零失败</p>
             </div>
-                    <p class="ver-diff"><b>相比 v3.38.1 的变化</b>：沿革见上方正文；🔍 起因：地球模块的手机此前只有通讯录/短信等基础件，角色在故事里「活着」却不在玩家的口袋里。以墨韵手机（通用前端 扩展）的产…</p>
+                    <p class="ver-diff"><b>相比 v3.38.1 的变化</b>：沿革见上方正文；🔍 起因：地球模块的手机此前只有通讯录/短信等基础件，角色在故事里「活着」却不在玩家的口袋里。以墨韵手机（常见前端工具 扩展）的产…</p>
         </article>
 
         <article class="log-entry" data-tags="体验 模块" style="--entry-hue:#c8a8a8;">
@@ -3117,7 +3131,7 @@
             <div class="log-body">
                 <p>🌟 <b>起因</b>：角色扮演圈十年攒下的家底全在「角色卡」里——社区数万张现成卡、世界书条目成千上万。本版把这套生态接进来：自家 NPC 能导出去社区用，社区卡拉进来即写；再补上长篇扮演的两大顽疾——AI 忘事（记忆分层）和场景漂移（舞台快照）</p>
                 <p>🃏 <b>① 角色卡读写引擎</b>（<code>js/card-io.js</code>）：PNG <code>tEXt</code> 块读写，兼容 V2（<code>chara</code>，Base64+URL-safe）与 V3（<code>ccv3</code>，UTF-8）双规范及 JSON 文件；读出自动归一化（name / description / personality / scenario / first_mes / tags / world / lorebook），写出带 CRC32 校验的合法 PNG——画师签发不破坏图像</p>
-                <p>🔀 <b>② 角色卡互通中枢</b>（<code>js/card-hub.js</code>）：众生相 NPC 一键导出标准卡（PNG 含卡面 / JSON 纯净档），拉进 RisuAI / Agnai 等通用前端即用；导入社区卡四路落地——众生相登记 / 知识库人物建档（按需检索）/ 世界书转关键词触发条目 / 登场白直发聊天流，选项自由勾选</p>
+                <p>🔀 <b>② 角色卡互通中枢</b>（<code>js/card-hub.js</code>）：众生相 NPC 一键导出标准卡（PNG 含卡面 / JSON 纯净档），拉进 常见前端工具 / 常见前端工具 等常见前端工具即用；导入社区卡四路落地——众生相登记 / 知识库人物建档（按需检索）/ 世界书转关键词触发条目 / 登场白直发聊天流，选项自由勾选</p>
                 <p>🗝 <b>③ 知识库关键词触发</b>：条目新增 <code>keys[]</code> 触发词字段（世界书语义），命中「本轮指令 + 最近 scanDepth 轮正文」才注入（扫描深度 1–10 轮可调，默认 4）；大小写不敏感、中文子串匹配，常驻条目不参与，命中数排序上限 5 条防膨胀——ST / V2 lorebook 原生条目经此通道无缝落地</p>
                 <p>🧠 <b>④ 分层长期记忆</b>（<code>js/memory-layers.js</code>）：五层明账——L1 事实（身份 / 能力 / 外貌）/ L2 关系（关系变化）/ L3 秘密（信息差，谁知道什么）/ L4 场景（何地发生过什么）/ L5 故事弧（主线推进到哪）；变量AI 每 5 轮自动提取登记（8 秒错峰），输出严格 JSON 五层结构、与已有记忆去重合并，每层上限 40 条自动淘汰最旧；注入按本轮上下文命中挑取 L1–L3，与前情提要互补——摘要是剧情线、记忆层是设定线</p>
                 <p>🎬 <b>⑤ 舞台快照</b>（<code>js/scene-state.js</code>）：舞台监督每轮登记（3 秒错峰）当前地点 / 时辰 / 天气 / 在场人物（位置 / 着装 / 情绪）/ 台面道具 / 张力值；正文未提及字段沿用上一幕防凭空发明，同轮重复登记只覆盖 current，历幕上限 12 条；状态面板新增 🎬 舞台徽标（点击开详情），注入「舞台现状」紧贴本轮指令——防场景漂移，转场必须由剧情推动</p>

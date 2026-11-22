@@ -1566,7 +1566,7 @@
  "regex_scripts": [
   {
    "id": "yq_st_card_1",
-   "scriptName": "云起·状态栏卡片(通用前端)",
+   "scriptName": "云起·状态栏卡片(常见前端工具)",
    "findRegex": "/<status>\\s*([\\s\\S]*?)\\s*<\\/status>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #7fb3ff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#7fb3ff22;border-bottom:1px solid #7fb3ff55\">📜 玩家状态栏</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1583,7 +1583,7 @@
   },
   {
    "id": "yq_st_card_2",
-   "scriptName": "云起·好感度卡片(通用前端)",
+   "scriptName": "云起·好感度卡片(常见前端工具)",
    "findRegex": "/<affinity>\\s*([\\s\\S]*?)\\s*<\\/affinity>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #ff8fb1;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#ff8fb122;border-bottom:1px solid #ff8fb155\">💞 角色好感度</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1600,7 +1600,7 @@
   },
   {
    "id": "yq_st_card_3",
-   "scriptName": "云起·NPC内心话卡片(通用前端)",
+   "scriptName": "云起·NPC内心话卡片(常见前端工具)",
    "findRegex": "/<npc_log>\\s*([\\s\\S]*?)\\s*<\\/npc_log>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #c39bff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#c39bff22;border-bottom:1px solid #c39bff55\">👁️ NPC内心话</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1617,7 +1617,7 @@
   },
   {
    "id": "yq_st_card_4",
-   "scriptName": "云起·记忆归档卡片(通用前端)",
+   "scriptName": "云起·记忆归档卡片(常见前端工具)",
    "findRegex": "/<memory_log>\\s*([\\s\\S]*?)\\s*<\\/memory_log>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #6fd3c0;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#6fd3c022;border-bottom:1px solid #6fd3c055\">📑 剧情记忆归档</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1634,7 +1634,7 @@
   },
   {
    "id": "yq_st_card_5",
-   "scriptName": "云起·世界运行卡片(通用前端)",
+   "scriptName": "云起·世界运行卡片(常见前端工具)",
    "findRegex": "/<wlog\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1651,7 +1651,7 @@
   },
   {
    "id": "yq_st_card_6",
-   "scriptName": "云起·行动选项卡片(通用前端)",
+   "scriptName": "云起·行动选项卡片(常见前端工具)",
    "findRegex": "/<selection>\\s*([\\s\\S]*?)\\s*<\\/selection>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #9ad06b;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#9ad06b22;border-bottom:1px solid #9ad06b55\">🎯 行动选项</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
    "trimStrings": [],
@@ -1668,7 +1668,7 @@
   },
   {
    "id": "yq_st_card_7",
-   "scriptName": "云起·世界运行卡片·时徽章(通用前端)",
+   "scriptName": "云起·世界运行卡片·时徽章(常见前端工具)",
    "findRegex": "/<wlog\\s+time=\"([^\"]*)\"\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
    "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告 · $1</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$2</div></details>",
    "trimStrings": [],
@@ -2249,7 +2249,7 @@
   "regex_scripts": [
    {
     "id": "yq_st_card_1",
-    "scriptName": "云起·状态栏卡片(通用前端)",
+    "scriptName": "云起·状态栏卡片(常见前端工具)",
     "findRegex": "/<status>\\s*([\\s\\S]*?)\\s*<\\/status>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #7fb3ff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#7fb3ff22;border-bottom:1px solid #7fb3ff55\">📜 玩家状态栏</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2266,7 +2266,7 @@
    },
    {
     "id": "yq_st_card_2",
-    "scriptName": "云起·好感度卡片(通用前端)",
+    "scriptName": "云起·好感度卡片(常见前端工具)",
     "findRegex": "/<affinity>\\s*([\\s\\S]*?)\\s*<\\/affinity>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #ff8fb1;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#ff8fb122;border-bottom:1px solid #ff8fb155\">💞 角色好感度</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2283,7 +2283,7 @@
    },
    {
     "id": "yq_st_card_3",
-    "scriptName": "云起·NPC内心话卡片(通用前端)",
+    "scriptName": "云起·NPC内心话卡片(常见前端工具)",
     "findRegex": "/<npc_log>\\s*([\\s\\S]*?)\\s*<\\/npc_log>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #c39bff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#c39bff22;border-bottom:1px solid #c39bff55\">👁️ NPC内心话</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2300,7 +2300,7 @@
    },
    {
     "id": "yq_st_card_4",
-    "scriptName": "云起·记忆归档卡片(通用前端)",
+    "scriptName": "云起·记忆归档卡片(常见前端工具)",
     "findRegex": "/<memory_log>\\s*([\\s\\S]*?)\\s*<\\/memory_log>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #6fd3c0;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#6fd3c022;border-bottom:1px solid #6fd3c055\">📑 剧情记忆归档</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2317,7 +2317,7 @@
    },
    {
     "id": "yq_st_card_5",
-    "scriptName": "云起·世界运行卡片(通用前端)",
+    "scriptName": "云起·世界运行卡片(常见前端工具)",
     "findRegex": "/<wlog\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2334,7 +2334,7 @@
    },
    {
     "id": "yq_st_card_6",
-    "scriptName": "云起·行动选项卡片(通用前端)",
+    "scriptName": "云起·行动选项卡片(常见前端工具)",
     "findRegex": "/<selection>\\s*([\\s\\S]*?)\\s*<\\/selection>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #9ad06b;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#9ad06b22;border-bottom:1px solid #9ad06b55\">🎯 行动选项</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
     "trimStrings": [],
@@ -2351,7 +2351,7 @@
    },
    {
     "id": "yq_st_card_7",
-    "scriptName": "云起·世界运行卡片·时徽章(通用前端)",
+    "scriptName": "云起·世界运行卡片·时徽章(常见前端工具)",
     "findRegex": "/<wlog\\s+time=\"([^\"]*)\"\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
     "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告 · $1</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$2</div></details>",
     "trimStrings": [],
@@ -2977,7 +2977,7 @@
    "regex_scripts": [
     {
      "id": "yq_st_card_1",
-     "scriptName": "云起·状态栏卡片(通用前端)",
+     "scriptName": "云起·状态栏卡片(常见前端工具)",
      "findRegex": "/<status>\\s*([\\s\\S]*?)\\s*<\\/status>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #7fb3ff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#7fb3ff22;border-bottom:1px solid #7fb3ff55\">📜 玩家状态栏</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -2994,7 +2994,7 @@
     },
     {
      "id": "yq_st_card_2",
-     "scriptName": "云起·好感度卡片(通用前端)",
+     "scriptName": "云起·好感度卡片(常见前端工具)",
      "findRegex": "/<affinity>\\s*([\\s\\S]*?)\\s*<\\/affinity>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #ff8fb1;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#ff8fb122;border-bottom:1px solid #ff8fb155\">💞 角色好感度</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3011,7 +3011,7 @@
     },
     {
      "id": "yq_st_card_3",
-     "scriptName": "云起·NPC内心话卡片(通用前端)",
+     "scriptName": "云起·NPC内心话卡片(常见前端工具)",
      "findRegex": "/<npc_log>\\s*([\\s\\S]*?)\\s*<\\/npc_log>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #c39bff;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#c39bff22;border-bottom:1px solid #c39bff55\">👁️ NPC内心话</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3028,7 +3028,7 @@
     },
     {
      "id": "yq_st_card_4",
-     "scriptName": "云起·记忆归档卡片(通用前端)",
+     "scriptName": "云起·记忆归档卡片(常见前端工具)",
      "findRegex": "/<memory_log>\\s*([\\s\\S]*?)\\s*<\\/memory_log>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #6fd3c0;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#6fd3c022;border-bottom:1px solid #6fd3c055\">📑 剧情记忆归档</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3045,7 +3045,7 @@
     },
     {
      "id": "yq_st_card_5",
-     "scriptName": "云起·世界运行卡片(通用前端)",
+     "scriptName": "云起·世界运行卡片(常见前端工具)",
      "findRegex": "/<wlog\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3062,7 +3062,7 @@
     },
     {
      "id": "yq_st_card_6",
-     "scriptName": "云起·行动选项卡片(通用前端)",
+     "scriptName": "云起·行动选项卡片(常见前端工具)",
      "findRegex": "/<selection>\\s*([\\s\\S]*?)\\s*<\\/selection>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #9ad06b;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#9ad06b22;border-bottom:1px solid #9ad06b55\">🎯 行动选项</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$1</div></details>",
      "trimStrings": [],
@@ -3079,7 +3079,7 @@
     },
     {
      "id": "yq_st_card_7",
-     "scriptName": "云起·世界运行卡片·时徽章(通用前端)",
+     "scriptName": "云起·世界运行卡片·时徽章(常见前端工具)",
      "findRegex": "/<wlog\\s+time=\"([^\"]*)\"\\s*>\\s*([\\s\\S]*?)\\s*<\\/wlog>/gi",
      "replaceString": "<details open style=\"margin:8px 0;border:1px solid #f0b357;border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden\"><summary style=\"cursor:pointer;list-style:none;padding:7px 12px;font-weight:600;font-size:13px;background:#f0b35722;border-bottom:1px solid #f0b35755\">🌍 世界运行报告 · $1</summary><div style=\"padding:9px 12px;font-size:12.5px;line-height:1.75;opacity:.86;white-space:pre-wrap\">$2</div></details>",
      "trimStrings": [],
