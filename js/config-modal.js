@@ -1254,7 +1254,7 @@ const ConfigModal = {
                                 预设自身按"多选一 / 二选一 / 三选一"设计，同类的请只留一个开着，否则后写的会覆盖先写的。
                             </div>
                             <div class="mm-toolbar">
-                                <input type="text" id="mmSearch" placeholder="🔍 搜索条目名（如：破甲 / 防截断 / 文风）" oninput="ConfigModal.renderMMFilter()">
+                                <input type="text" id="mmSearch" placeholder="🔍 搜索条目名（如：放开创作 / 防截断 / 文风）" oninput="ConfigModal.renderMMFilter()">
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmExpandAll(true)">全部展开</button>
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmExpandAll(false)">全部折叠</button>
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmResetOverrides()">恢复默认</button>
@@ -2678,7 +2678,7 @@ const ConfigModal = {
   /** 分组名（按条目名的 emoji 前缀归类） */
   MM_GROUP_LABEL: {
     '📕': '文风', '🧠': '思维模式', '🌍': '世界运行', '💬': '语言与转述',
-    '📹': '视角', '🪄': '视觉生成', '🥳': '沉浸', '🛡': '破甲', '🧷': '思维链',
+    '📹': '视角', '🪄': '视觉生成', '🥳': '沉浸', '🛡': '护盾', '🧷': '思维链',
     '👾': '状态栏', '📚': '人称与叙事', '📃': '叙事导演', '⭕': '角色', '🗑': '变量清空',
     '🕙': '推进节奏', '🖊': '写作基调', '⚙': '格式', '⚧': '性别', '🕹': '玩家状态',
     '💕': '好感度', '📊': '互动选项', '🪩': 'NPC小剧场', '📖': '世界书', '✂': '防截断',

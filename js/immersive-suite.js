@@ -1181,7 +1181,7 @@ const ImmersiveSuite = function() {
     return `
         <div class="imm-drawer" id="immDrawer" style="--ip:${th.primary};--ia:${th.accent};--id:${th.deep};--ipn:${th.panel};--itx:${th.text};--imt:${th.muted};">
             <div class="imm-head">
-                <div class="imm-title">⛩ 太虚阁 <span class="imm-sub">${esc(th.name)} · 沉浸万象</span></div>
+                <div class="imm-title">🎭 沉浸万象 <span class="imm-sub">${esc(th.name)} · 沉浸万象</span></div>
                 <button class="imm-x" onclick="ImmersiveSuite.toggle(false)">✕</button>
             </div>
             <div class="imm-rail">
@@ -1202,7 +1202,7 @@ const ImmersiveSuite = function() {
         const fab = document.createElement("button");
         fab.id = "immFab";
         fab.className = "imm-fab";
-        fab.title = "太虚阁 · 沉浸万象（拖动换位，长按归位）";
+        fab.title = "沉浸万象（拖动换位，长按归位）";
         fab.innerHTML = "⛩";
         document.body.appendChild(fab);
         /* v3.55.19 悬浮球收敛：界面只留小云一个悬浮球，太虚阁改由小云菜单进入。
@@ -1232,7 +1232,7 @@ const ImmersiveSuite = function() {
     } catch (e) {
       console.warn("[Immersive] 抽屉挂载失败:", e.message);
       m.innerHTML = `<div class="imm-drawer" id="immDrawer">
-                <div class="imm-head"><div class="imm-title">⛩ 太虚阁</div>
+                <div class="imm-head"><div class="imm-title">🎭 沉浸万象</div>
                 <button class="imm-x" onclick="ImmersiveSuite.toggle(false)">✕</button></div>
                 <div class="imm-body"><div style="padding:24px;color:var(--imt,#c9b68a)">抽屉渲染故障，门仍可用</div></div></div>`;
     }
@@ -1381,7 +1381,7 @@ const ImmersiveSuite = function() {
     try {
       html = (map[state.tab] || panelGallery)();
     } catch (e) {
-      console.warn("[太虚阁] 页签渲染故障:", e.message);
+      console.warn("[沉浸万象] 页签渲染故障:", e.message);
       html = emptyBox("🧭", "本页签渲染故障", (e.message || String(e)) + " —— 其余页签不受影响；多为 AI 上报的字段格式异常所致，可试「设置 → 清空本界沉浸档」修复");
     }
     body.innerHTML = html;
@@ -2614,7 +2614,7 @@ ${(() => {
             renderTab();
           }
         } catch (e) {
-          console.warn("[太虚阁] 打开故障:", e.message);
+          console.warn("[沉浸万象] 打开故障:", e.message);
         }
       } else if (d) d.classList.remove("show");
     },
@@ -2628,7 +2628,7 @@ ${(() => {
         }
         renderTab();
       } catch (e) {
-        console.warn("[太虚阁] 切页故障:", e.message);
+        console.warn("[沉浸万象] 切页故障:", e.message);
       }
     },
     toggleAmbient() {

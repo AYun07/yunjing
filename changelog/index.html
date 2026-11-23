@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=6.7.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=6.8.0">
 </head>
 
 <body class="page-changelog">
@@ -316,11 +316,28 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
-                <article class="log-entry" data-tags="版本 发布 舆图 地图 地名 底图 审查 修复" style="--entry-hue:#5f8fb0;">
+                        <article class="log-entry" data-tags="版本 发布 界面 三栏 功能栏 字体 太虚阁 NPC 选项" style="--entry-hue:#8a6fbf;">
+            <div class="entry-head">
+                <span class="entry-ver">v6.8.0</span>
+                <span class="entry-date">2026-11-23</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">界面大整理 · 左功能栏 · 三栏正文 · 字体可换 · 选项去重</h3>
+            <p class="entry-lead">按实玩反馈把创作界面重新摆了一遍：进世界后左边是一目了然的功能列表，正文在中间，完整的玩家状态栏在右。太虚阁这个「藏起来的二级面板」取消了，它里面的功能全部直接列进左栏。字体可以换了，正文里的行动选项也不再重复出现三次。</p>
+            <div class="ver-diff">
+                <div><b>三栏布局与左功能栏</b>：正文页从原来的两栏改为「左功能栏 / 中正文 / 右状态栏」。左侧是一组按「世界 / 角色 / 创作 / 沉浸 / 工具」分类的图标菜单，共 31 项，名称一看就懂；点分组标题可折叠，整条栏也能收成 46px 的图标条。左手边收起后正文更宽，想用哪个功能一点即达，不用再去顶栏的抽屉里翻。</div>
+                <div><b>太虚阁取消</b>：悬浮球、小云模块菜单里的「太虚阁」入口已移除，面板标题也不再用这个名字。它原本藏着的 12 个模块（众生相 / 羁绊图 / 境界梯 / 藏宝阁 / 编年史 / 传书 / 倒计时 / 名场面 / 战报 / 天道 / 世界线 / 界专属）现在是左栏「沉浸」分组里一项一个的直接入口，点哪开哪，功能一个没少。和工具箱、快捷指令重复的入口做了去重。</div>
+                <div><b>正文清爽化</b>：行动选项以前每轮正文都渲染一组，玩三轮就堆三组共 18 个按钮，现在只有最新一轮的选项可以点，历史轮次自动折成一行「已归档」摘要（可展开回看但不能点选）；底部 12 个快捷指令默认收进一个「⚡ 快捷指令」开关里。提示词协议也同步了——从「必须凑满快进/交互/整活/慢推/时空/成人六类各一条」改成「按剧情给 2~4 条自然、具体的选项」，从源头不再硬凑。</div>
+                <div><b>字体可换</b>：新增字体设置，宋体（书卷）/ 黑体（清爽）/ 楷体（手写）/ 仿宋（公文）/ 圆体（柔和）/ 等宽（整齐）六款中文秀体，点一下即时生效并自动保存，字号调节仍然独立可用；入口在左栏「工具」和工具箱里。全部走本机字体栈，不下载字体文件，离线也能用。</div>
+                <div><b>NPC 与预设</b>：原创 NPC 以前用一套写死的仙侠名字库，科幻、都市世界里也会冒出「散修」「散人掌柜」，现在按当前世界题材切换人名与身份池（地球出「公司职员/社区民警」，吞噬星空出「星舰驾驶员」），每批上限从 24 人收到 8 人，生成概率也调低，并要求新登场人物每轮最多 1 名、必须贴合世界观。云起预设里「破甲 / SYSTEM OVERRIDE / 忽略安全提示 / 红线」这类杂乱措辞全部清掉、改成中性表述，玩家一键导入的发布文件同步更新；涉及未成年人与真实在世人物的内容边界作为必需护栏保留。</div>
+            </div>
+        </article>
+
+<article class="log-entry" data-tags="版本 发布 舆图 地图 地名 底图 审查 修复" style="--entry-hue:#5f8fb0;">
             <div class="entry-head">
                 <span class="entry-ver">v6.7.0</span>
                 <span class="entry-date">2026-11-23</span>
-                <span class="entry-badge new">当前版本</span>
+                
             </div>
             <h3 class="entry-title">舆图重做 · 真实地名逐层下钻 · 全量审查问题集中修</h3>
             <p class="entry-lead">按实玩反馈把舆图从数据层到画面重做了一遍：分区不再是「北部中域」这类方位词，名牌不再互相压住，每一层都有底图，最深处不再是一片空白。外部全量审查报告里能确定的问题，也在这一版一起修掉。</p>
@@ -1064,7 +1081,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=6.7.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=6.8.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

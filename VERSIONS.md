@@ -2,26 +2,27 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **103** 个版本，从 `v3.55.7` 到 `v6.7.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **104** 个版本，从 `v3.55.7` 到 `v6.8.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v6.7.0 口径）**：首行 **v6.7.0 为当前版本**；其余 **102 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v6.8.0 口径）**：首行 **v6.8.0 为当前版本**；其余 **103 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；103 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；104 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
 
-## 版本速查（新→旧 · 首行为当前版本，其余 102 版为旧版本）
+## 版本速查（新→旧 · 首行为当前版本，其余 103 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v6.8.0** | 2026-11-23 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v6.8.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v6.8.0) |
 | **v6.7.0** | 2026-11-23 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v6.7.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v6.7.0) |
 | **v6.6.0** | 2026-11-22 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v6.6.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v6.6.0) |
 | **v5.1.0** | 2026-11-19 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v5.1.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v5.1.0) |
 | **v5.0.0** | 2026-11-19 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v5.0.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v5.0.0) |
 | **v4.49.0** | 2026-11-19 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.49.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.49.0) |
-| **v4.36.0** | 2026-11-18（当前版本） | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.36.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.36.0) |
+| **v4.36.0** | 2026-11-18 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.36.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.36.0) |
 | **v4.29.0** | 2026-11-17 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.29.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.29.0) |
 | **v4.17.6** | 2026-11-17 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.6) |
 | **v4.17.5** | 2026-11-16 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v4.17.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v4.17.5) |
@@ -158,6 +159,28 @@
 加成层只读叠加不污染原始六维，数值纪律不受影响
 
 - [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v4.49.0)  [🔍 与 v4.48.0 差异](https://github.com/AYun07/yunjing/compare/v4.48.0...v4.49.0)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v4.49.0.zip)
+
+## v6.8.0 · 2026-11-23
+
+**界面大整理 · 左功能栏 · 三栏正文 · 字体可换 · 选项去重**
+
+### 本版做了什么
+
+- **三栏布局**（`js/left-rail.js`、`css/left-rail.css`，新增）：正文页从两栏改成「左功能栏 / 中正文 / 右状态栏」。左栏按「世界 / 角色 / 创作 / 沉浸 / 工具」分 5 组共 31 项，图标 + 文字一目了然；分组可折叠，整栏可收成 46px 图标条。只在进入世界后显示，身份设定台阶段隐藏；窄屏（≤900px）自动隐藏，功能在工具箱/小云里仍可达。
+- **太虚阁取消**（`js/mo-chibi.js`、`js/immersive-suite.js`）：移除悬浮球、小云模块菜单里的太虚阁入口与面板标题字样。其 12 个模块改为左栏「沉浸」分组里的直接入口（`ImmersiveSuite.openTab(id)`），功能不丢；与工具箱/快捷指令重复的入口去重。
+- **正文选项去重**（`js/ai-response-handler.js`、`css/base-style.css`）：新增 `_foldStaleOptions()`——每次渲染新卡片时，把此前所有 `options-area` 标为 stale（按钮禁用、折成「历史选项 N 条·已归档」摘要，可展开回看但不可点选），只有最新一轮选项可交互。`padOptionList()` 不再自动补齐到 6 条通用项，改为只显示模型给出的真实选项，空则单条「继续」兜底。底部 12 个快捷指令默认收进「⚡ 快捷指令」开关，状态持久化。
+- **提示词协议同步**（`js/ai-message-builder.js`、`js/preset-yunqi.js`）：把「行动选项恰好 6 条·六类各一条」的核心契约、闭合自检、格式契约、云起《行动选项协议》统一改成「2~4 条自然、具体、贴合处境的选项，不凑数、不套固定分类模板」。从源头不再硬塞快进/交互/整活/慢推/时空/成人六类。
+- **字体可换**（`js/font-switcher.js`、`css/font-switcher.css`，新增）：宋体/黑体/楷体/仿宋/圆体/等宽六款中文字体，用本机字体栈覆盖 Win/Mac/安卓/Linux，`!important` 压过主题工坊与世界皮肤，即时生效、localStorage 持久化；不动字号倍率。入口在左栏「工具」与工具箱。零外部字体文件、离线可用。
+- **NPC 世界观适配**（`js/npc-spawn.js`）：原创 NPC 姓名/身份池按 `genreKey`/`genreName` 题材切换（仙侠/武侠/现代/科幻/历史五套），不再所有世界都用同一套仙侠模板；每批上限 24→8，daily 生成概率下调。`js/ai-message-builder.js` 增加「人物克制」指令：每轮最多引入 1 名新人物、必须贴合本世界题材与时代。
+- **云起预设清理**（`js/preset-yunqi.js`、`releases/yunqi-*.json`、`js/config-modal.js`）：清掉「破甲 / SYSTEM OVERRIDE / 忽略安全提示 / 红线」等杂乱越狱式措辞，改为中性的「放开创作 / 内容边界 / 沉浸叙事」；名称、内容、玩家可见占位符、发布 JSON（含 system_prompt 快照）全部同步。涉及未成年人与真实在世人物的内容边界作为必需护栏保留。
+- **版本**：升 6.8.0，changelog / VERSIONS / README / 所有静态资源 `?v=` 同源。
+
+### 相比上一版的变化
+
+- 界面：从「功能藏在顶栏抽屉与二级面板」变成「左侧一目了然的功能列表」，太虚阁这个名词消失、功能平铺进左栏。
+- 正文：选项从「每轮一组、越堆越多」变成「历史折叠、仅最新可点」，快捷指令默认收起。
+- 字体：新增可切换；NPC：按题材生成且数量收敛；云起预设：刺眼文案清零。
+- 边界：涉及未成年人与真实在世人物的性化描写护栏保留（法律与平台红线，不删）。
 
 ## v6.7.0 · 2026-11-23
 
@@ -348,7 +371,7 @@ easoning_effort / 	hinking.budget_tokens / 	hinkingConfig / enable_thinking / 	h
 - **创作语种豁免**：语种守卫不再硬编码中文，改为从**玩家自己的输入**推断期望语种——中文要求汉字主导，拉丁要求「像人写的散文」（拉丁字母主导 + 正常分词 + 含常见功能词）。写英文小说的玩家不再被反复误判为模型退化；而多语种 token 汤（含英文场景）仍会被拦住。
 - **存储配额前瞻提示**：澄清一处误判——配额梯队早已完整（撤备份 → 插图骨架化 → 立绘转 IndexedDB → 整档转 IndexedDB），每级都有玩家可见提示，**不存在静默丢档**；本版补的是「撞墙之前」的预警：用量达约 75% 时提示一次。
 - **手机端跨域指引分流**：本地代理需在电脑上运行 Node，手机跑不了；此前提示不分平台，手机玩家会照着桌面教程去双击 `.bat` 而永远走不通。现按平台分流：桌面给「本地代理 / 中转站」两条路，手机明确告知只能用支持跨域的中转站地址。
-- **文档口径订正**：修掉「版本分层（v4.15.0 口径）：首行 v4.14.0 为当前版本」的自相矛盾；过期数字「内置 24,940 条」订正为实测 `_index.json` 的 **24,779** 条；表头「当前口径（v6.7.0）」更新为 v4.16.0。
+- **文档口径订正**：修掉「版本分层（v4.15.0 口径）：首行 v4.14.0 为当前版本」的自相矛盾；过期数字「内置 24,940 条」订正为实测 `_index.json` 的 **24,779** 条；表头「当前口径（v6.8.0）」更新为 v4.16.0。
 
 ---
 

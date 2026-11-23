@@ -970,6 +970,27 @@ ${body.trim()}
     }
     const bar = document.getElementById("quickBar");
     if (bar) {
+      /* v6.8.0 修「行动选项重复/太乱」：12 个快捷指令默认收起，点「⚡ 快捷指令」才展开，
+         状态记在 localStorage。正文区不再一进来就堆一排同义按钮。 */
+      bar.classList.add("qb-collapsed");
+      try {
+        const toggle = document.createElement("button");
+        toggle.className = "quick-toggle";
+        toggle.type = "button";
+        const paint = () => {
+          const collapsed = bar.classList.contains("qb-collapsed");
+          toggle.textContent = collapsed ? "⚡ 快捷指令 ▾" : "⚡ 收起 ▴";
+          toggle.title = collapsed ? "展开常用指令" : "收起常用指令";
+        };
+        toggle.addEventListener("click", () => {
+          bar.classList.toggle("qb-collapsed");
+          try { localStorage.setItem("yjQuickBarCollapsed", bar.classList.contains("qb-collapsed") ? "1" : "0"); } catch (e) {}
+          paint();
+        });
+        if (localStorage.getItem("yjQuickBarCollapsed") === "0") bar.classList.remove("qb-collapsed");
+        bar.appendChild(toggle);
+        paint();
+      } catch (e) {}
       let cmds;
       if (fw.config.mode === "roleplay") {
         cmds = fw.config.genreKey === "earth" ? this.earthQuickCommands : fw.config.genreKey === "quanqiubingfeng" ? this.quanqiubingfengQuickCommands : fw.config.genreKey === "chaoshenxueyuan" ? this.chaoshenxueyuanQuickCommands : fw.config.genreKey === "zhanhen" ? this.zhanhenQuickCommands : fw.config.genreKey === "jianlai" ? this.jianlaiQuickCommands : fw.config.genreKey === "guimi" ? this.guimiQuickCommands : fw.config.genreKey === "guzhenren" ? this.guzhenrenQuickCommands : fw.config.genreKey === "xuanjianxianzu" ? this.xuanjianxianzuQuickCommands : this.roleplayQuickCommands;

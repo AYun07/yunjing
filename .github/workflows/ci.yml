@@ -122,3 +122,9 @@ jobs:
           PYTHONIOENCODING: utf-8
           YJ_PORT: '8899'
         run: python3 yunjing-test/scripts/t_atlas_map.py --all
+
+      - name: '⑩ 界面规整验收（三栏/功能栏/选项/字体/预设）'
+        env:
+          PYTHONIOENCODING: utf-8
+          YJ_PORT: '8899'
+        run: python3 yunjing-test/scripts/t_ui_layout.py

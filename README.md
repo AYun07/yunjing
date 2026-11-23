@@ -4,7 +4,7 @@
 
 > 打开网页就能用的 AI 互动小说加开放世界扮演。纯前端静态站，不用构建，没有后端，也不用注册账号。AI 接口自己填，故事和 Key 只留在本机浏览器里。封面只有一张，叫「万象入云」，四个入口进的是同一个世界。
 
-[![当前版本](https://img.shields.io/badge/version-v6.7.0-orange)](https://github.com/AYun07/yunjing/releases/tag/v6.7.0) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
+[![当前版本](https://img.shields.io/badge/version-v6.8.0-orange)](https://github.com/AYun07/yunjing/releases/tag/v6.8.0) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
 
 ---
 
@@ -89,11 +89,11 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v6.7.0（2026-11-22 · 唯一当前版）
+## 🆕 当前版本：v6.8.0（2026-11-22 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v6.7.0** | 2026-11-22 | **当前** | 创意工坊单一文件夹 `community/works/`（简介与包体同处、云境内一键下载安装）+ CI 七闸从连续 64 次失败修到 success；跨层战力折算、任意楼层回档、二创增量补丁全部在线。 | [完整包 680MB](https://github.com/AYun07/yunjing/releases/download/v6.6.0/yunjing-v6.6.0-full.zip) · [源码包](https://github.com/AYun07/yunjing/archive/refs/tags/v6.6.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.6.0) |
+| **v6.8.0** | 2026-11-22 | **当前** | 创意工坊单一文件夹 `community/works/`（简介与包体同处、云境内一键下载安装）+ CI 七闸从连续 64 次失败修到 success；跨层战力折算、任意楼层回档、二创增量补丁全部在线。 | [完整包 680MB](https://github.com/AYun07/yunjing/releases/download/v6.6.0/yunjing-v6.6.0-full.zip) · [源码包](https://github.com/AYun07/yunjing/archive/refs/tags/v6.6.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.6.0) |
 
 > **完整包和源码包的区别**。「完整包」是 `yunjing-v6.6.0-full.zip`，680MB，含小云情绪动画 470MB、38 界考据地图这些运行资产，下载解压就能离线跑。「源码包」是 GitHub 自动生成的 tag zip，约 26MB，只有仓库源码，不含大体积媒体。两个包的版本号都是 v6.6.0。
 

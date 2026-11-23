@@ -775,6 +775,14 @@ const StoryResponseHandler = {
    *  因此不影响续写判断、回放存档与正文剥离。 */
   padOptionList(options) {
     const opts = (options || []).slice(0, 6);
+    /* v6.8.0：不再自动补齐到 6 条通用项（快进/交互/整活/慢推/时空/成人）。
+       玩家实测反馈这些自动项「重复、乱」，且和真正可交互的选项混在一起分不清。
+       现在只显示模型给出的真实选项；一条都没有时用单条「继续」兜底，保证始终可互动。 */
+    try { if (localStorage.getItem("yjPadOptions") === "1") {
+      // 兼容：若玩家在设置里显式开启旧行为，仍走补齐逻辑
+    } else {
+      return opts.length ? opts : ["【继续】按当前处境自然推进下一步"];
+    } } catch (e) { if (!opts.length) return ["【继续】按当前处境自然推进下一步"]; }
     if (opts.length >= 6) return opts;
     const CATS = ["快进", "交互", "整活", "慢推", "时空", "成人"];
     const NEUTRAL = [
@@ -797,6 +805,44 @@ const StoryResponseHandler = {
     const m = String(reply || "").match(this.OPT_HEADER_RE);
     return m ? m[1] : "情节走向";
   },
+  /**
+   * v6.8.0：把上一轮及更早的行动选项折叠，只留最新一轮可点。
+   * 在插入新卡片前调用：先把容器内所有现存 options-area 标记为 stale，
+   * 并把里面的按钮从「可点」降级为「纯文本」。新卡片自带的选项区保持原样＝唯一可交互。
+   */
+  _foldStaleOptions(container, newCard) {
+    if (!container) return;
+    try {
+      const olds = container.querySelectorAll(".message-card .options-area:not(.stale)");
+      olds.forEach((area) => {
+        area.classList.add("stale");
+        const card = area.closest(".message-card");
+        if (card) card.classList.add("has-stale-options");
+        const btns = area.querySelectorAll(".option-btn");
+        const count = btns.length;
+        const title = area.querySelector(".options-title");
+        if (title && !title.querySelector(".stale-summary")) {
+          const summary = document.createElement("span");
+          summary.className = "stale-summary";
+          summary.textContent = "（历史选项 " + count + " 条 · 已归档，点此回看）";
+          title.appendChild(summary);
+          title.setAttribute("role", "button");
+          title.setAttribute("tabindex", "0");
+          title.title = "展开 / 收起历史选项（仅供回看，不能点选）";
+          const toggle = (ev) => { ev.stopPropagation(); area.classList.toggle("expanded"); };
+          title.addEventListener("click", toggle);
+          title.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(e); } });
+        }
+        btns.forEach((b) => {
+          b.classList.add("stale-opt");
+          b.removeAttribute("onclick");   // 禁用交互：历史选项不能点
+          b.setAttribute("disabled", "disabled");
+          b.setAttribute("data-stale", "1");
+        });
+      });
+    } catch (e) { /* 折叠失败不影响正文渲染 */ }
+  },
+
   /** 渲染一条小说正文卡片（optionsLabel：按钮区标题，扮演模式显示「行动选项」）
    *  v3.9.0 opts：{ live }——实时轮（handle 调用，默认 true）插图自动生成；
    *  回放轮（studio.html replayHistory 传 live:false）只查缓存，绝不自动烧钱 */
@@ -909,6 +955,10 @@ const StoryResponseHandler = {
         `;
     card.innerHTML = html;
     this.tagTurnCard(card, opts && opts.turnOverride);
+    /* v6.8.0 修「行动选项出现三次」：每一轮 AI 回复都带一组选项，多轮后旧选项堆满屏。
+       只保留最新一轮的选项可交互；更早的选项折叠成一行摘要（可点标题展开回看，但按钮禁用），
+       这样正文里始终只有一组「可以点的互动选项」。 */
+    this._foldStaleOptions(container, card);
     container.appendChild(card);
     if (window.StoryImageGen && window.StoryImageGen.processCard) {
       const fw = window.storyFramework;

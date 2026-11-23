@@ -1,0 +1,112 @@
+/* ============================================================
+   云境 · 左侧功能栏  v6.8.0
+   分组图标菜单 + 可折叠；三栏布局：左功能栏 / 中正文 / 右状态栏
+   ============================================================ */
+.left-rail {
+    width: 178px;
+    flex: 0 0 178px;
+    background: var(--bg-soft, #171a26);
+    border-right: 1px solid var(--line, rgba(232, 228, 216, .09));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    transition: width .18s ease, flex-basis .18s ease;
+}
+.left-rail.collapsed { width: 46px; flex-basis: 46px; }
+
+.lr-head {
+    flex: 0 0 auto;
+    padding: 8px 8px 6px;
+    border-bottom: 1px solid var(--line, rgba(232, 228, 216, .09));
+}
+.lr-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    background: rgba(224, 168, 76, .08);
+    border: 1px solid rgba(224, 168, 76, .18);
+    border-radius: 9px;
+    color: var(--primary, #e0a84c);
+    cursor: pointer;
+    font-size: 12.5px;
+    letter-spacing: .5px;
+}
+.lr-toggle:hover { background: rgba(224, 168, 76, .15); }
+.lr-toggle-ico { font-size: 15px; line-height: 1; }
+.lr-toggle-txt { font-weight: 600; }
+.left-rail.collapsed .lr-toggle-txt { display: none; }
+.left-rail.collapsed .lr-toggle { justify-content: center; padding: 7px 0; }
+.left-rail.collapsed .lr-toggle-ico::before { content: "☰"; }
+.left-rail.collapsed .lr-toggle-ico { font-size: 0; }
+.left-rail.collapsed .lr-toggle-ico::before { font-size: 15px; }
+
+.lr-groups {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 6px 6px 18px;
+}
+.lr-groups::-webkit-scrollbar { width: 6px; }
+.lr-groups::-webkit-scrollbar-thumb { background: rgba(232, 228, 216, .14); border-radius: 99px; }
+
+.lr-group { margin-bottom: 6px; }
+.lr-group-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 8px;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    color: var(--text-muted, #a8a290);
+    cursor: pointer;
+    font-size: 12px;
+    text-align: left;
+}
+.lr-group-head:hover { background: rgba(232, 228, 216, .05); color: var(--text, #e8e4d8); }
+.lr-gico { font-size: 14px; line-height: 1; }
+.lr-gname { flex: 1; font-weight: 600; letter-spacing: .5px; }
+.lr-arrow { font-size: 10px; opacity: .7; }
+
+.lr-items { display: flex; flex-direction: column; gap: 2px; padding: 2px 0 4px; }
+.lr-group.closed .lr-items { display: none; }
+.lr-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px 7px 12px;
+    background: transparent;
+    border: 0;
+    border-left: 2px solid transparent;
+    border-radius: 0 7px 7px 0;
+    color: var(--text, #e8e4d8);
+    cursor: pointer;
+    font-size: 12.5px;
+    text-align: left;
+    line-height: 1.3;
+}
+.lr-item:hover {
+    background: rgba(224, 168, 76, .1);
+    border-left-color: var(--primary, #e0a84c);
+}
+.lr-ico { font-size: 14px; flex: 0 0 18px; text-align: center; }
+.lr-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 折叠态：只显示每组第一个图标作为快捷入口，隐藏文字与二级项 */
+.left-rail.collapsed .lr-gname,
+.left-rail.collapsed .lr-arrow { display: none; }
+.left-rail.collapsed .lr-group-head { justify-content: center; padding: 8px 0; }
+.left-rail.collapsed .lr-items { display: none !important; }
+
+/* 三栏时正文与状态栏的衔接微调 */
+body.has-left-rail #chatArea { flex: 1 1 auto; min-width: 0; }
+
+/* 移动端：默认不占三栏，改为抽屉式（超窄屏把左栏藏起来，功能仍在顶栏工具箱/小云里可达） */
+@media (max-width: 900px) {
+    .left-rail { display: none !important; }
+}
