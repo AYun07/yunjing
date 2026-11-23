@@ -72,6 +72,16 @@ const StorySetupWizard = {
                     <input id="wiz_heroAge" class="wiz-input slim" style="width:86px;" type="number" min="8" max="90" placeholder="年龄">
                 </div>
                 <textarea id="wiz_heroBio" class="wiz-input" rows="2" maxlength="600" style="margin-top:8px;" placeholder="主角小传（选填）：性格 / 来历 / 所求 / 秘密…写多细，AI 执行多细——例：铁剑门弃徒，因师门蒙冤背负污名，性子外冷内热，一心查清旧案"></textarea>
+                <div class="cs-wrap" id="csWrap">
+                  <div class="cs-title">🎨 角色塑造助手 <span>AI 生成样貌 / 性格 / 图标，生成后可改下方小传</span></div>
+                  <div class="cs-btns">
+                    <button type="button" onclick="CharacterStudio.genLook().then(function(){CharacterStudio.refresh()})">✨ 生成样貌</button>
+                    <button type="button" onclick="CharacterStudio.genPersona().then(function(){CharacterStudio.refresh()})">🧠 生成性格</button>
+                    <button type="button" onclick="CharacterStudio.genIcon();CharacterStudio.refresh()">🖼 生成角色图标</button>
+                  </div>
+                  <div class="cs-preview" id="csPreview"></div>
+                  <div class="cs-status" id="csStatus"></div>
+                </div>
             </div>
 
             <div class="wiz-row three-col">
@@ -428,6 +438,18 @@ const StorySetupWizard = {
                 <div class="wiz-section">
                     <div class="wiz-label">${num()} 姓名 <button class="dice-btn" onclick="StorySetupWizard.dice('playerName')">🎲 随机</button></div>
                     <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" placeholder="你在原著世界的名字…">
+                </div>
+                <div class="wiz-section" style="grid-column:1/-1">
+                    <div class="cs-wrap" id="csWrap">
+                      <div class="cs-title">🎨 角色塑造助手 <span>AI 生成样貌 / 性格 / 图标，生成后可写进小传</span></div>
+                      <div class="cs-btns">
+                        <button type="button" onclick="CharacterStudio.genLook().then(function(){CharacterStudio.refresh()})">✨ 生成样貌</button>
+                        <button type="button" onclick="CharacterStudio.genPersona().then(function(){CharacterStudio.refresh()})">🧠 生成性格</button>
+                        <button type="button" onclick="CharacterStudio.genIcon();CharacterStudio.refresh()">🖼 生成角色图标</button>
+                      </div>
+                      <div class="cs-preview" id="csPreview"></div>
+                      <div class="cs-status" id="csStatus"></div>
+                    </div>
                 </div>
                 <div class="wiz-section">
                     <div class="wiz-label">${num()} 性别与年龄</div>
@@ -1056,6 +1078,18 @@ const StorySetupWizard = {
                     <div class="wiz-section">
                         <div class="wiz-label">姓名 <button class="dice-btn" onclick="StorySetupWizard.diceRoleplay('playerName')">🎲 随机</button></div>
                         <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" placeholder="你在这个世界的名字…">
+                    </div>
+                    <div class="wiz-section" style="grid-column:1/-1">
+                        <div class="cs-wrap" id="csWrap">
+                          <div class="cs-title">🎨 角色塑造助手 <span>AI 生成样貌 / 性格 / 图标</span></div>
+                          <div class="cs-btns">
+                            <button type="button" onclick="CharacterStudio.genLook().then(function(){CharacterStudio.refresh()})">✨ 生成样貌</button>
+                            <button type="button" onclick="CharacterStudio.genPersona().then(function(){CharacterStudio.refresh()})">🧠 生成性格</button>
+                            <button type="button" onclick="CharacterStudio.genIcon();CharacterStudio.refresh()">🖼 生成角色图标</button>
+                          </div>
+                          <div class="cs-preview" id="csPreview"></div>
+                          <div class="cs-status" id="csStatus"></div>
+                        </div>
                     </div>
                     <div class="wiz-section">
                         <div class="wiz-label">性别与年龄</div>

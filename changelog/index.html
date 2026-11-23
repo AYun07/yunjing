@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=6.8.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=6.9.0">
 </head>
 
 <body class="page-changelog">
@@ -316,11 +316,27 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+                        <article class="log-entry" data-tags="版本 发布 玩法分类 去重 设置页 角色塑造 遮挡 小云" style="--entry-hue:#4f9d8a;">
+            <div class="entry-head">
+                <span class="entry-ver">v6.9.0</span>
+                <span class="entry-date">2026-11-23</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">双玩法分类 · 功能去重 · 独立设置页 · 角色塑造助手 · 遮挡修复</h3>
+            <p class="entry-lead">按这轮实玩反馈，把「玩卡」和「写小说」两套玩法的功能彻底分开，左侧功能栏与工具箱不再出现同一个功能两遍；封面的「观星」进去是一张纯粹的全局设置页，不再混进创作界面；创作角色时多了样貌、性格、图标三个生成入口；小云精简回它本该做的事，主界面被挡住的按钮也修好了。</p>
+            <div class="ver-diff">
+                <div><b>两种玩法分开</b>：左栏顶部新增「🎴 玩卡 / ✒ 写小说」切换。玩卡模式只列卡与扮演相关功能（角色卡、立绘、关系网、灵宠、小队、性格世界书、角色编年史、动态关系 R18、行动判定、成长账本、身份/立场、沉浸记录）；写小说模式只列创作相关功能（世界设定、时光轴、前情、质检、章节目录、字体主题、护眼流畅、存档导出、接口调试）。切换即时生效并记住。</div>
+                <div><b>功能去重</b>：逐项比对左栏与工具箱，同一个功能只留一个入口。工具箱从 51 项精简到 23 项，只保留左栏没有的（灵感引擎、知识库、DLC、记忆分层、分享码、提示词调试等）；实测两者功能名交集为 0。小云（右下角那只）也不再重复列一遍云境已有的 11 个模块，回归 AI 管家本职——聊天、剧情灵感、资料召回、正文急救，立绘缩小并半透明，不再挡正文。</div>
+                <div><b>封面设置独立</b>：封面「观星 · 天地设置」现在进入一张独立的纯设置页（settings.html），只有设置、没有创作区；内容是全局的——主笔模型、字体、主题、字号、护眼/流畅/庆典开关、缓存清理，对全部世界与两种玩法统一生效，不再只是配置模型。设置只存本机浏览器。</div>
+                <div><b>角色塑造助手</b>：身份设定台的「主角设定」区新增一行：生成样貌、生成性格、生成角色图标。样貌/性格优先调用你配置的主笔模型生成，没配或失败时用本地模板兜底，结果写进主角小传、可再手改；角色图标用纯前端 canvas 按姓名与性别程序化绘制，不联网、随存档走。</div>
+                <div><b>遮挡修复与口径</b>：Chrome 三视口（1440/1280/900）实测定位并修掉三处遮挡——底部世界状态条盖住发送框、右下角小云立绘盖住选项与发送键、左栏折叠按钮被状态条文字压住。预设文案里的「行为底线」等刺眼字样改成中性表述；涉及未成年人与真实在世人物的内容边界作为法律与平台护栏保留。</div>
+            </div>
+        </article>
+
                         <article class="log-entry" data-tags="版本 发布 界面 三栏 功能栏 字体 太虚阁 NPC 选项" style="--entry-hue:#8a6fbf;">
             <div class="entry-head">
                 <span class="entry-ver">v6.8.0</span>
                 <span class="entry-date">2026-11-23</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">界面大整理 · 左功能栏 · 三栏正文 · 字体可换 · 选项去重</h3>
             <p class="entry-lead">按实玩反馈把创作界面重新摆了一遍：进世界后左边是一目了然的功能列表，正文在中间，完整的玩家状态栏在右。太虚阁这个「藏起来的二级面板」取消了，它里面的功能全部直接列进左栏。字体可以换了，正文里的行动选项也不再重复出现三次。</p>
@@ -1081,7 +1097,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=6.8.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=6.9.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

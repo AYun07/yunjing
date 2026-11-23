@@ -1,6 +1,6 @@
 /* ============================================================
-   云境 · 左侧功能栏  v6.8.0
-   分组图标菜单 + 可折叠；三栏布局：左功能栏 / 中正文 / 右状态栏
+   云境 · 左侧功能栏  v6.9.0
+   双玩法模式（玩卡 / 写小说）+ 分组图标菜单 + 可折叠；三栏布局
    ============================================================ */
 .left-rail {
     width: 178px;
@@ -42,6 +42,35 @@
 .left-rail.collapsed .lr-toggle-ico::before { content: "☰"; }
 .left-rail.collapsed .lr-toggle-ico { font-size: 0; }
 .left-rail.collapsed .lr-toggle-ico::before { font-size: 15px; }
+
+/* v6.9.0 双玩法模式切换 */
+.lr-modes {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 4px;
+    padding: 7px 6px 3px;
+}
+.lr-mode {
+    flex: 1;
+    padding: 7px 2px;
+    border-radius: 8px;
+    border: 1px solid var(--line, rgba(232, 228, 216, .12));
+    background: transparent;
+    color: var(--text-muted, #a8a290);
+    font-size: 11.5px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.lr-mode:hover { background: rgba(232, 228, 216, .06); }
+.lr-mode.on {
+    color: #f4d896;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(224,168,76,.24), rgba(224,168,76,.1));
+    border-color: rgba(224, 168, 76, .45);
+}
+.left-rail.collapsed .lr-modes { display: none; }
 
 .lr-groups {
     flex: 1 1 auto;

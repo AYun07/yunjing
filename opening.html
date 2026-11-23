@@ -7,8 +7,8 @@
 <title>云境 · 万象入云，一念一世界</title>
   <link rel="icon" href="assets/yj-favicon.ico">
   <!-- v6.3.3 唯一启动界面：封面为唯一落地页，四入口语义对齐，读档/选择器带封面级底图 -->
-  <link rel="stylesheet" href="css/cover-portal.css?v=6.8.0">
-  <link rel="stylesheet" href="css/resume-portal.css?v=6.8.0">
+  <link rel="stylesheet" href="css/cover-portal.css?v=6.9.0">
+  <link rel="stylesheet" href="css/resume-portal.css?v=6.9.0">
   <!-- v6.6.1 封面瘦身：atlas 地图 CSS 改为点「踏云」打开选择器时按需加载，见 cover-portal.js ensureAtlas() -->
 <style>
   :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; }
@@ -106,11 +106,11 @@
   window.addEventListener('resize', pickBg);
 
   // 四入口跳转（v6.3.3 语义对齐）：踏云=新档(被 cover-portal 接管)、续梦=读档(被 resume-portal 接管)、
-  // 观星=设置、造物=工坊。new/continue 保留兜底 URL，正常情况被各自的捕获监听抢先拦截。
+  // 观星=纯设置页、造物=工坊。new/continue 保留兜底 URL，正常情况被各自的捕获监听抢先拦截。
   var TARGET = {
     new:      'index.html?entry=new',
     continue: 'index.html?entry=continue',
-    settings: 'studio.html?goto=settings',  // v6.3.3 观星=设置（收口到 studio，旧大厅 config-modal 未加载是历史坏落点）
+    settings: 'settings.html?goto=settings',  // v6.9.0 观星=独立全局设置页（纯设置，不再混入创作界面；goto 参数放行入口守卫）
     forge:    'studio.html?goto=forge'      // v6.3.3 造物=原创工坊面板（原 xiaoyun.html 仅为能力介绍页）
   };
   document.getElementById('menu').addEventListener('click', function(e){
@@ -133,10 +133,10 @@
   });
 </script>
 <!-- v6.6.1 封面瘦身：首屏只加载封面自身所需脚本；atlas 舆图/资料库数据层改为点「踏云」时按需加载 -->
-<script src="js/world-catalog.js?v=6.8.0"></script>
-<script src="js/first-run-guide.js?v=6.8.0"></script>
-<script src="js/pwa-register.js?v=6.8.0"></script>
-<script src="js/cover-portal.js?v=6.8.0"></script>
-<script src="js/resume-portal.js?v=6.8.0"></script>
+<script src="js/world-catalog.js?v=6.9.0"></script>
+<script src="js/first-run-guide.js?v=6.9.0"></script>
+<script src="js/pwa-register.js?v=6.9.0"></script>
+<script src="js/cover-portal.js?v=6.9.0"></script>
+<script src="js/resume-portal.js?v=6.9.0"></script>
 </body>
 </html>

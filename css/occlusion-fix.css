@@ -1,0 +1,58 @@
+/* ============================================================
+   云境 · 主界面遮挡修复  v6.9.0
+   实测（Chrome 1440/1280/900 三视口）发现三处遮挡：
+   1) 底部世界状态条 .wr-hud（fixed,z50）盖住输入行/发送键
+   2) 右下角小云立绘盖住正文选项与发送键
+   3) 顶部"未配置模型"提示条占一行
+   本文件只做视觉层修正，不改任何功能逻辑。
+   ============================================================ */
+
+/* 1) 给正文区底部留出世界状态条的空间，输入行不再被盖住。
+   wr-hud 高度实测约 34~40px，留 52px 余量。 */
+body.has-left-rail #chatArea { padding-bottom: 54px; }
+body.has-left-rail #chatArea .input-row { position: relative; z-index: 60; }
+
+/* 世界状态条本身降到输入行之下，不再抢点击 */
+.wr-hud { z-index: 40; }
+
+/* 2) 小云立绘：缩小 + 半透明 + 穿透点击，只有 hover 时才恢复不透明与可点，
+   这样它不再挡住正文/选项/发送键，但仍是一个可见、可点开的 AI 管家入口。 */
+#xyBuddy .xy-orb {
+    width: 72px;
+    height: 92px;
+    opacity: .62;
+    transition: opacity .2s, transform .3s;
+}
+#xyBuddy:hover .xy-orb,
+#xyBuddy .xy-orb:hover { opacity: 1; }
+/* 立绘只在自身区域接收点击；展开的面板仍可正常交互 */
+#xyBuddy { pointer-events: none; }
+#xyBuddy .xy-orb,
+#xyBuddy .xy-panel { pointer-events: auto; }
+@media (min-width: 901px) {
+    /* 宽屏：立绘右移贴边，进一步远离正文中间 */
+    #xyBuddy { right: 10px; bottom: 46px; }
+}
+@media (max-width: 900px) {
+    /* 窄屏：立绘缩到更小、更靠边，避免盖住输入行 */
+    #xyBuddy { right: 6px; bottom: 44px; }
+    #xyBuddy .xy-orb { width: 58px; height: 74px; opacity: .55; }
+}
+
+/* 3) 顶部"未配置模型"提示条：压低存在感，一行内且可单行省略，
+   不要因为换行把正文往下顶。 */
+#apiHintBar, .api-hint-bar, [class*="apiHint"] {
+    max-height: 40px;
+    overflow: hidden;
+}
+#apiHintBar .ah-body, .api-hint-bar .ah-body {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 4) 世界时钟胶囊（world-clock.js，fixed z9000 left:12px top:60px）正好压在
+   左栏折叠按钮上。有左栏时把它移到左栏右缘之外（190px），不挡左栏也不进正文中心。 */
+body.has-left-rail #worldClockPill { left: 192px !important; }
+.left-rail { position: relative; z-index: 55; }
+#leftRail .lr-head { position: relative; z-index: 5; }
