@@ -44,7 +44,7 @@ const LIST_ONLY = has('--list');
 
 /* 需要浏览器/本地服务的脚本（其余按离线处理）。
    这些脚本自带 serve/playwright 依赖，离线跑会因端口或浏览器缺失而误报失败。 */
-const BROWSER_PAT = /^t_(player|stress|soak|mobile|persist|slots|concurrency|funcprobe|final_audit|audit_browser|body_probe|rejudge|scrub_effect|registry|kb_load|truthdiff|version_browser|v4071_ui|407_real|atlas_406|model_adaptive_browser|shots|semantic)|^(sim|truthdiff|shots_4072|semantic_judge)/;
+const BROWSER_PAT = /^t_(player|stress|soak|mobile|persist|slots|concurrency|funcprobe|final_audit|audit_browser|body_probe|rejudge|scrub_effect|registry|kb_load|truthdiff|version_browser|v4071_ui|407_real|atlas_406|ui_layout|model_adaptive_browser|shots|semantic)|^(sim|truthdiff|shots_4072|semantic_judge)/;
 
 /* 需要真实大模型 Key 的用例：模型/语义/正文生成类。没有 Key 时它们只能"⚠ 未设置"，不算回归失败。 */
 const KEY_PAT = /key|model|semantic|llm|ai_/i;
