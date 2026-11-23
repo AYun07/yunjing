@@ -1298,3 +1298,13 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 后果/验证：新 main = `c417131ae2a6c671171d14e6e81c0cff165ef72b`；从 raw CDN 读取远端 index.html 与 DECISIONS.md，与本地逐字节一致（47570 / 175042 字节），确认 `data-gkey="scifi"` 已上线、旧 key 0、DR-059 已上线、外部真名 0。
 - 回滚：上一版 main = `d7e26226e6ea07fea9f2d40f85f5ebcceb88408d`；脚本留底在 artifact 的 push-audit/push-all-github.py.bak；本地改动留底在 backup-xinghai-desensitize-20261123/ 与 backup-attribution-cleanup-20261123/。
 - 失效条件：若后续 release 重打包，需用本轮已脱敏的源码为源，避免把旧 key/旧归因打回包内。
+
+## DR-061：v6.6.0 完整包重打并替换 release asset（2026-11-23）
+- 背景：DR-060 后 GitHub 源码已脱敏，但 v6.6.0 release 的 658MB 完整包是脱敏前所打——解包实测 DECISIONS.md 含 3 处外部归因真名，与"下载的包也要彻底干净"的目标不符。用户裁决"好"（同意重打挂 release）。
+- 决定：
+  1. 以脱敏后工作区为源重打完整包，排除规则与旧包一致（排除 .git/node_modules/_bak_*/shots-*/.codebuddy/.learnings/内部资料/两个超大安装器 exe/apk），含 community/test/scripts/changelog/docs/assets。新包 1419 文件、679.8MB。
+  2. 版本号不动（6.6.0）、不改 tag/release 文案、不动 120 个 tag——只换 asset 内容，URL 保持 `yunjing-v6.6.0-full.zip`（英文名，避免中文文件名被 GitHub 清洗）。
+- 取舍：删旧 asset 再传新的（非追加），保证 release 只有一份干净包；代价是旧 asset 不可在 release 页直接取回，但已在 artifact 留底。
+- 后果/验证：全包 1419 文件精确词表扫描外部真名/归因 0、旧 key 0、DR-059/060 存在、版本同源 6.6.0、npm test 12 套全绿；上传后 GitHub asset digest = 本地 sha256 = `4744324673c946f4dafe696eda4c54a8c0908e0069da8afb313e6c1dad979b80`；Range 实测下载头 64KB 与本地逐字节一致；asset state=uploaded、size=712805984。完整 680MB 回拉因网络 12 分钟仅得 9MB 而中止，改用 digest + 头段实测替代（等价证明服务端字节完整）。
+- 回滚：旧包留底在 artifact 的 repack-v660-20261123/OLD-yunjing-v6.6.0-full.zip（sha256 `1984af61bd2ba08851b5cc80e64d461f006438c77ec949868ffb10fadc79c2e9`），旧 asset 原 URL 已记录；要退回删新 asset、重传旧包即可。
+- 失效条件：今后任何 release 重打包都必须以已脱敏工作区为源，并在上传后比对 GitHub digest 与本地 sha256；不可复用旧包。
