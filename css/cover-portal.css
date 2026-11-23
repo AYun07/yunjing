@@ -57,10 +57,11 @@
 .cp-group-name{display:flex;align-items:center;gap:10px;font-size:16px;color:var(--cp-gold-soft);
   letter-spacing:.08em;margin:0 0 12px;font-weight:700;}
 .cp-group-name::before{content:"";width:4px;height:16px;background:var(--cp-gold);border-radius:2px;}
-.cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:13px;}
-.cp-card{position:relative;display:flex;flex-direction:column;gap:7px;cursor:pointer;
+/* v6.6.1 去挤压：卡片加宽（宽屏一行约 6~7 张而非 8~9 张），给描述文字更多横向空间 */
+.cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(262px,1fr));gap:16px;}
+.cp-card{position:relative;display:flex;flex-direction:column;gap:8px;cursor:pointer;
   background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
-  border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 15px;
+  border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:15px 16px;
   transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;overflow:hidden;}
 .cp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--card-hue,#c9a86a);opacity:.85;}
 .cp-card:hover{transform:translateY(-4px);border-color:var(--card-hue,#c9a86a);
@@ -70,8 +71,8 @@
   background:var(--card-hue,#c9a86a);color:#161020;font-weight:700;font-size:19px;}
 .cp-card-name{font-size:16px;font-weight:700;color:#f6f1e4;letter-spacing:.03em;line-height:1.3;}
 .cp-card-group{font-size:11px;color:#9a93ac;margin-top:2px;}
-.cp-card-desc{font-size:12px;color:#bdb5c9;line-height:1.6;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:38px;}
+.cp-card-desc{font-size:13px;color:#c6bfd1;line-height:1.7;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:64px;}
 .cp-card-enter{margin-top:auto;font-size:12px;color:var(--card-hue,#c9a86a);font-weight:700;}
 
 /* 世界详情抽屉 */

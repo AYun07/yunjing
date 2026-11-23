@@ -108,7 +108,7 @@
     } catch (e) {}
   }
   MoUtils.pollUntil(mountUI, { interval: 2500, max: 80 });
-  console.log('[KBEnhance] 统计条+序号+回收站 就绪');
+  console.debug('[KBEnhance] 统计条+序号+回收站 就绪');
 })();
 
 /* ---- v1.4 预设多份管理:整库快照/一键切换/删除 ---- */

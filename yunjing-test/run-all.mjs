@@ -34,6 +34,10 @@ const has = (f) => argv.includes(f);
 const valOf = (f) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] : ''; };
 
 const ONLY_ALL = has('--all');
+/* v6.7.0：需要玩家自备大模型 Key 的用例单独一档。
+   这些用例本身没错——模型接口就该玩家自己配；把它们塞进 CI 只会变成"永远红"的噪声，
+   于是真正的回归会被红灯淹掉。默认排除，显式 --with-key 才跑。 */
+const WITH_KEY = has('--with-key') || !!process.env.YJ_TEST_KEY;
 const FILTER = valOf('--filter');
 const AS_JSON = has('--json');
 const LIST_ONLY = has('--list');
@@ -41,6 +45,16 @@ const LIST_ONLY = has('--list');
 /* 需要浏览器/本地服务的脚本（其余按离线处理）。
    这些脚本自带 serve/playwright 依赖，离线跑会因端口或浏览器缺失而误报失败。 */
 const BROWSER_PAT = /^t_(player|stress|soak|mobile|persist|slots|concurrency|funcprobe|final_audit|audit_browser|body_probe|rejudge|scrub_effect|registry|kb_load|truthdiff|version_browser|v4071_ui|407_real|atlas_406|model_adaptive_browser|shots|semantic)|^(sim|truthdiff|shots_4072|semantic_judge)/;
+
+/* 需要真实大模型 Key 的用例：模型/语义/正文生成类。没有 Key 时它们只能"⚠ 未设置"，不算回归失败。 */
+const KEY_PAT = /key|model|semantic|llm|ai_/i;
+function needsKey(base, file) {
+  if (KEY_PAT.test(base)) return true;
+  try {
+    const head = fs.readFileSync(path.join(SCRIPTS, file), 'utf8').slice(0, 4000);
+    return /YJ_TEST_KEY|OPENAI_API_KEY|API_KEY\s*=/.test(head);
+  } catch (e) { return false; }
+}
 
 function discover() {
   if (!fs.existsSync(SCRIPTS)) return [];
@@ -66,11 +80,19 @@ function runnerFor(t) {
 function main() {
   let tests = discover();
   if (!ONLY_ALL) tests = tests.filter((t) => t.level === 'offline');
+  const skippedKey = [];
+  if (!WITH_KEY) {
+    tests = tests.filter((t) => {
+      if (needsKey(t.base, t.file)) { skippedKey.push(t.file); return false; }
+      return true;
+    });
+  }
   if (FILTER) tests = tests.filter((t) => t.base.includes(FILTER) || t.file.includes(FILTER));
 
   if (LIST_ONLY) {
     console.log(`将运行 ${tests.length} 个脚本：`);
     for (const t of tests) console.log(`  [${t.level.padEnd(7)}] ${t.file}`);
+    if (skippedKey.length) console.log(`未运行（需玩家自备 Key，--with-key 可跑）：${skippedKey.join(' ')}`);
     return 0;
   }
 

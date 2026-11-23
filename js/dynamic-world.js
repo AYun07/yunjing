@@ -279,7 +279,7 @@ const DynamicWorld = {
       this.removeLoading();
       this.notifyNewEntry(entry);
       fw.saveStory();
-      console.log(`[动态世界] 第 ${entry.floor} 层生成成功`);
+      console.debug(`[动态世界] 第 ${entry.floor} 层生成成功`);
     } catch (err) {
       console.error("[动态世界] 生成失败:", err);
       this.removeLoading();

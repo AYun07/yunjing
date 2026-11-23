@@ -9,4 +9,4 @@ var fist=WR.module({id:"wr_fist",icon:"🥊",name:"拳桩功课",type:"console",
 actions:[{id:"walk",label:"六步走桩",icon:"🚶",desc:"拳法+7",cooldown:1,effect:{stats:{fist:7},fact:"走桩练拳。"}},{id:"pile",label:"上挨拳桩",icon:"🥊",desc:"进境快",cooldown:3,risk:{failP:0.4,winText:"筋骨硬了一分",failText:"挨狠了",onWin:{stats:{fist:12},fact:"上桩喂招，拳法大进。"},onFail:{stats:{fist:4},fact:"挨了狠的。"}}},{id:"spar",label:"与人切磋",icon:"🤼",desc:"胜负皆有得",cooldown:4,risk:{failP:0.45,winText:"得胜",failText:"落败赢得尊重",onWin:{stats:{fist:15},fact:"切磋得胜。"},onFail:{fact:"切磋落败，拳理更明。"}}}],
 hud:function(st){return[{i:"🥊",v:String(st.fist||0),l:"拳法",tone:(st.fist||0)>=60?"ok":"",mod:"wr_fist"}]},
 directive:function(st){var v=st.fist||0;if(v>=60)return"拳法有成——肉身就是最好的兵器。";return"拳法 "+v+"——武道没有捷径只有汗。"}});
-WorldExt.define("jianlai",[study,fist]);console.log("[WorldExt] 剑来 界专属扩展就位")})();
+WorldExt.define("jianlai",[study,fist]);console.debug("[WorldExt] 剑来 界专属扩展就位")})();

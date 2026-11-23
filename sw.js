@@ -8,7 +8,7 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v6.6.0';
+const SW_VER = 'yunjing-v6.7.0';
   /* v6.5.1 二创增量补丁：patch-engine（纯函数内核：FNV哈希/diff/三方plan/merge3/备份回滚/版本检查/分卷/密钥剔除）+ content-adapters（12类内容采集器）+ zip-writer 增解包 + github-client 增 Gist下载/私密Gist/分卷解析 + creation-hub 发布走"只打改动"、下载走"差异预览→同步/覆盖/合并/冲突→备份→安装→回滚"。文档：增量同步-需求回读确认单/设计契约 v6.5.1；决策 DR-049。v6.5.1 增四段式正文(简介/特点/二创内容/打包源码)+唯一区域(标签二创投稿/目录 community/packages)，决策 DR-050/051。v6.6.0：二创收敛为唯一总文件夹 community/works/（每件作品一个 <时间戳>-<slug>/ 子文件夹，README.md+meta.json+package.zip 同处，catalog.json 按时间倒序），云境内 listWorks/readWorkFile/publishWork 一站式浏览下载发布；修复 CI（版本同步器全站同步）；决策 DR-052/053。 */
   /* v6.3.13 跨层战力折算：嵌套世界各层加层位倍率factor与依据basis（基准层=1，全部标注估算/原著依据），compare-engine 新增 crossLayer()——层位比=对手÷我方倍率、层位差=round((比-1)×2)档叠加主阶梯档差，加成折可跨档、代价按档结算、必须写缘由、估算倍率显式标注；关联副体系层（地摊仙宫星空）从对应tier轴取境界；契约注入折算口径，面板加「④跨层对敌」tab。realm-rules/compare-engine/compare-panel ?v 升 6.3.13。 */
   /* v6.3.14 全量楼层快照与回档：新 js/floor-state.js——固定IDB键floorState/<档>覆盖写(绝不无限追加)、对话正文不进快照(只存histLen，正文走transcript)、差量+每20层锚点；rewindTo 优先走全量快照，回档到任意层时所有随剧情演化数据(storyState全字段+SlotRegistry全部旁路键)一起还原，全局持久项(传承/图鉴)排除；回档可撤销(上限5恢复点)，时光轴加撤销入口；老档无floorState自动降级turnArc。story-framework/time-axis/floor-state ?v 升 6.3.14。 */
@@ -81,6 +81,8 @@ const CORE2 = CORE.concat(GEN, [
   'css/atlas-drilldown.css','css/atlas-canon-layer.css','css/atlas-library.css',
   /* v6.3.2 封面即主界面：世界目录 + 分类世界选择器（离线也要能从封面选世界） */
   'js/world-catalog.js','js/cover-portal.js','css/cover-portal.css',
+  /* v6.7.0：封面/子页共用的 PWA 注册器与多模型档位（离线时也要在） */
+  'js/pwa-register.js','js/model-slots.js',
   /* --- 基础样式 --- */
   'css/base-style.css','css/immersive-style.css','css/yunjing-theme.css','css/ui-refresh.css',
   /* v4.13.0 新增的移动端触控目标补丁（窄屏 44px 命中层）。它被 studio.html 与
@@ -250,18 +252,23 @@ self.addEventListener('fetch', (e) => {
   );
 });
 
-/* 涓流预热:激活 8 秒后开始,每次只取 2 个,绝不阻塞页面 */
+/* v6.6.1 涓流预热（内存治理）：
+   旧版激活 8 秒后即以 150ms 间隔全速抓取整个 CORE2（含 1.16MB atlas + 38 界知识库），
+   玩家停在封面时预热已满负荷跑，实测封面进程内存净增约 112MB、开局明显卡顿。
+   改为：①延迟 8s→25s（让玩家先进入并稳定在游戏内）；②间隔 150ms→500ms（降低瞬时并发与内存峰值）；
+   ③一次只取 1 个（进一步削峰）。离线能力保留，只是缓存充满更久——用"稍慢充满"换"开局不卡"。 */
 let _warmed = false;
 function trickleWarmup() {
   if (_warmed) return; _warmed = true;
   caches.open(SW_VER).then((c) => {
     let i = 0;
-    function next2() {
+    function next1() {
       if (i >= CORE2.length) return;
-      const batch = CORE2.slice(i, i + 2); i += 2;
-      Promise.all(batch.map(u => c.match(u).then(hit => hit ? null : c.add(u).catch(() => {})))).then(() => setTimeout(next2, 150));
+      const url = CORE2[i++];
+      c.match(url).then(hit => hit ? null : c.add(url).catch(() => {}))
+       .then(() => setTimeout(next1, 500));
     }
-    next2();
+    setTimeout(next1, 1500);
   });
 }
-self.addEventListener('activate', (e) => { setTimeout(trickleWarmup, 8000); });
+self.addEventListener('activate', (e) => { setTimeout(trickleWarmup, 25000); });

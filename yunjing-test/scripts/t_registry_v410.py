@@ -14,8 +14,13 @@
 import sys, json
 from playwright.sync_api import sync_playwright
 
+import os
+
+ROOT = os.environ.get("YJ_ROOT") or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
 BASE = "http://127.0.0.1:8899"
-IDX = json.load(open('/workspace/yunjing/js/kb/_index.json', encoding='utf-8'))
+IDX = json.load(open(os.path.join(ROOT, 'js/kb/_index.json'), encoding='utf-8'))
 GENRES = sorted(IDX['genres'].keys())
 NEW5 = ["dazhuzai", "wangyou", "wanxiangzhiwang", "wudongqiankun", "yuanzun"]
 NOVEL4 = ["dazhuzai", "wanxiangzhiwang", "wudongqiankun", "yuanzun"]

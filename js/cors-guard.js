@@ -176,11 +176,17 @@
              + '（Mac 用 <code>start-proxy-mac.command</code>）后点【接入本地代理】；'
              + '<b>②</b>改用支持跨域的中转站地址。';
       case 'auth': return '🔑 Key 被拒绝（401/403）。核对 API Key 与地址是否属于同一家服务商。';
-      case 'notfound': return '🔍 路径或模型名不存在（404）。试试点「拉取模型列表」选一个可用模型。';
-      case 'ratelimit': return '⏳ 触发限流或额度不足（429）。等一分钟，或换一把 Key。';
-      case 'server': return '🔧 服务端 5xx，是对方接口的问题。稍后重试或换模型/中转。';
-      case 'timeout': return '⌛ 超时。到「接口设置」把超时秒数调大（长章建议 600），或换更快的模型。';
-      case 'network': return '📡 连不上：地址写错 / 离线 / 被防火墙拦。确认地址以 <code>/v1</code> 结尾且外网可达。';
+      case 'notfound': return '🔍 路径或模型名不存在（404）。常见三种原因，按顺序试：<br>'
+        + '① 地址只填了裸域名——公益站通常要填到 <code>/v1</code>（如 <code>https://站点域名/v1</code>），应用会自己补 <code>/chat/completions</code>；<br>'
+        + '② 模型名不对——点「拉取模型列表」选一个真实存在的；<br>'
+        + '③ 地址本身带完整路径——确认 path 没写重（如 <code>/v1/v1</code>）。';
+      case 'ratelimit': return '⏳ 触发限流或额度不足（429）。公益站常按分钟限流，等一分钟再试，或换一把 Key / 换一个站点。';
+      case 'server': return '🔧 服务端 5xx，是对方接口的问题（公益站不稳定时常见）。稍后重试或换模型/中转。';
+      case 'timeout': return '⌛ 超时。到「接口设置」把超时秒数调大（长章建议 600），或换更快的模型；公益站排队久时也会超时。';
+      case 'network': return '📡 连不上：地址写错 / 离线 / 被防火墙拦。公益站请确认：<br>'
+        + '① 地址填完整（一般以 <code>/v1</code> 结尾，别只填裸域名）；<br>'
+        + '② 地址前后没有多余空格；<br>'
+        + '③ 该站点当前没挂（公益站常关停，浏览器直接打开那个域名看看）。';
       default: return '❓ 未识别的失败原因，请看浏览器控制台的原始报错。';
     }
   }

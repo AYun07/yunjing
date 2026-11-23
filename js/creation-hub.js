@@ -12,7 +12,7 @@
   var host = null;
   var CH = globalThis.StoryHub = {};
 
-  function toast(t, type) { try { window.showToast && window.showToast(t, type || 'info'); } catch (e) { console.log('[CreationHub]', t); } }
+  function toast(t, type) { try { window.showToast && window.showToast(t, type || 'info'); } catch (e) { console.debug('[CreationHub]', t); } }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function fmtTime(iso) {
     try { var d = new Date(iso); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }

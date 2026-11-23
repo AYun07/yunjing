@@ -292,7 +292,16 @@
 
   function closeModal() { document.getElementById("alEditModal").classList.remove("al-open"); }
 
+  /* v6.7.0：38 世界校对数据改为按需加载，打开资料库时先把数据等到位，再渲染 */
   function open() {
+    if (window.AtlasVerifiedAdapter && window.AtlasVerifiedAdapter.loadData) {
+      window.AtlasVerifiedAdapter.loadData(openNow);
+      return;
+    }
+    openNow();
+  }
+
+  function openNow() {
     var host = ensureOverlay();
     if (!window.AtlasUserData) { toast("玩家数据层未就绪，请刷新页面", "error"); return; }
     // 打开前把玩家数据合并写回，保证资料库与舆图看到同一份

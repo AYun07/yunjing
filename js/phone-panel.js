@@ -463,7 +463,7 @@
           marked++;
         }
       }
-      if (marked) console.log(`[手机分身] 旧档迁移：${marked} 位从未谋面的远方NPC撤出通讯录（正文登场后会自然回归）`);
+      if (marked) console.debug(`[手机分身] 旧档迁移：${marked} 位从未谋面的远方NPC撤出通讯录（正文登场后会自然回归）`);
     },
     /* ==================== 第六接口调用（复用主笔 / 独立配置） ==================== */
     fetchWithTimeout(url, opts = {}, timeoutMs) {
@@ -956,7 +956,7 @@ ${this.knowledgeBrief(String(text).slice(0, 60))}
         this.refresh();
         fw.saveStory();
         if (manual) (_g = window.showToast) == null ? void 0 : _g.call(window, got ? `📱 手机已刷新：新增 ${got} 条动静` : "📱 手机很安静——大家都在忙自己的", "success");
-        console.log(`[手机分身] 刷新成功，新增 ${got} 条`);
+        console.debug(`[手机分身] 刷新成功，新增 ${got} 条`);
       } catch (err) {
         console.warn("[手机分身] 刷新失败:", err.message);
         if (manual) (_h = window.showToast) == null ? void 0 : _h.call(window, `📱 手机刷新失败：${err.message}`, "error");
@@ -2419,7 +2419,7 @@ ${notes.map((n) => "· " + n).join("\n")}
         } catch (e) {
         }
       });
-      console.log("[PhonePanel] 📱 地球开放世界·手机分身模块就位");
+      console.debug("[PhonePanel] 📱 地球开放世界·手机分身模块就位");
     }
   };
   window.PhonePanel = PhonePanel;
@@ -2427,20 +2427,20 @@ ${notes.map((n) => "· " + n).join("\n")}
     try {
       const link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "css/phone-style.css?v=6.6.0";
+      link.href = "css/phone-style.css?v=6.7.0";
       document.head.appendChild(link);
       PhonePanel.install();
       const aliveScript = document.createElement("script");
-      aliveScript.src = "js/phone-alive.js?v=6.6.0";
+      aliveScript.src = "js/phone-alive.js?v=6.7.0";
       aliveScript.onerror = () => console.warn("[PhoneAlive] 主动联系引擎加载失败（不影响手机基础功能）");
       document.head.appendChild(aliveScript);
       const appsScript = document.createElement("script");
-      appsScript.src = "js/phone-apps.js?v=6.6.0";
+      appsScript.src = "js/phone-apps.js?v=6.7.0";
       appsScript.onerror = () => console.warn("[PhoneApps] App 生态加载失败（不影响手机基础功能）");
       document.head.appendChild(appsScript);
       /* v3.47.0 墨韵融合：微博/匿名树洞/日历/商城/日记（CSS 由该模块自注入） */
       const socialScript = document.createElement("script");
-      socialScript.src = "js/phone-social.js?v=6.6.0";
+      socialScript.src = "js/phone-social.js?v=6.7.0";
       socialScript.onerror = () => console.warn("[PhoneSocial] 墨韵融合社交包加载失败（基础 App 不受影响）");
       document.head.appendChild(socialScript);
     } catch (e) {

@@ -114,7 +114,7 @@
     } catch (e) {}
   }MoUtils.pollUntil(function () { try { tryMount(); } catch (e) {} }, { interval: 2500, max: 80 });
   window.STImport = { pick: pick, parse: parseST, importEntries: importEntries };
-  console.log('[预设导入] 常见前端预设导入就绪(世界书/角色卡/预设)');
+  console.debug('[预设导入] 常见前端预设导入就绪(世界书/角色卡/预设)');
 })();
 
 /* ---- v1.1 知识库条目独立开/关(关闭=不进检索不进常驻,条目保留) ---- */
@@ -185,7 +185,7 @@
       });
     }
     MoUtils.pollUntil(mount, { interval: 2500, max: 80 });
-    console.log('[KB] 条目开关就绪');
+    console.debug('[KB] 条目开关就绪');
   }
   /* v3.55.29：改为有界等待（原为每 800ms 无限自轮询） */
   /* check 只判依赖就绪，boot 作为回调执行一次。
@@ -315,7 +315,7 @@
     if (mountTick > 3 && mountTick % 4 !== 0) return; /* 挂上后降到 10s 一巡 */
     try { mount(); } catch (e) {}
   }, 2500);
-  console.log('[STImport] PNG卡+ST导出 就绪');
+  console.debug('[STImport] PNG卡+ST导出 就绪');
 })();
 /* ---- v1.4 UI看门狗:清理关闭失败残留的幽灵遮罩 ----
    v3.55.3 性能：3s 强制布局巡检（getComputedStyle + getBoundingClientRect）是低配机

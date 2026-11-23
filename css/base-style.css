@@ -3901,8 +3901,15 @@ body.mobile.narrow .top-btn { padding: 7px 7px; }
 
 /* 极窄屏媒体查询兜底（≤380px） */
 @media (max-width: 380px) {
-    .top-btn { padding: 8px 8px; }
+    /* v6.7.0 修复（320px 横向溢出）：顶栏按钮组按内容自然宽度撑到 327px > 320px，
+       整页出现 7px 横向滚动。这里收紧按钮内边距/间距，并允许标题截断，把溢出按死在源头。 */
+    .top-btn { padding: 8px 6px; font-size: 12px; min-width: 0; }
+    .top-actions { gap: 4px; min-width: 0; flex-shrink: 1; justify-content: flex-end; }
+    .top-bar, .topbar { gap: 6px; min-width: 0; }
+    .top-bar h1, .top-title, .chapter-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .stats-grid { grid-template-columns: 1fr; }
+    .ad-body { width: 100vw; height: 100vh; border-radius: 0; }
+    .ad-legend { font-size: 10px; gap: 8px; }
 }
 
 /* ══════════════ v3.14.0 沉浸九艺（ImmersionPlus）══════════════ */

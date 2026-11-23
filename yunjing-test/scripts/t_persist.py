@@ -17,9 +17,14 @@
 import asyncio, glob, json, os, re
 from playwright.async_api import async_playwright
 
+import os
+
+ROOT = os.environ.get("YJ_ROOT") or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
 OUT = "/tmp/persist_probe.json"
-GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
+GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob(os.path.join(ROOT, "js/kb/*.core.js")))
 
 BOOT = """(g)=>{
   try{

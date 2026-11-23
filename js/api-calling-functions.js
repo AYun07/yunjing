@@ -374,26 +374,35 @@ function isEventStream(response) {
   const ct = response.headers && (response.headers.get ? response.headers.get("content-type") : "") || "";
   return /text\/event-stream/i.test(String(ct));
 }
+/* v6.6.1 公益站地址兼容：有的中转端点把 Key 放在查询串里（https://x.com/v1?key=xxx），
+   直接在整串后面拼 /chat/completions 会落到查询串内部而 404。这里把路径与 ?查询串 拆开，
+   后缀插到查询串之前；裸域名等形态保持原样，尊重玩家填什么。 */
+function _splitEndpointQuery(endpoint) {
+  const i = endpoint.indexOf("?");
+  return i < 0 ? { path: endpoint, query: "" }
+               : { path: endpoint.slice(0, i), query: endpoint.slice(i) };
+}
 function getFullEndpoint(baseEndpoint, apiType) {
-  let endpoint = baseEndpoint.trim();
+  let endpoint = String(baseEndpoint == null ? "" : baseEndpoint).trim().replace(/\s+/g, "");
   endpoint = endpoint.replace(/\/+$/, "");
   if (apiType === "openai" || apiType === "custom") {
-    if (!endpoint.includes("/chat/completions")) {
-      endpoint = endpoint + "/chat/completions";
+    const { path, query } = _splitEndpointQuery(endpoint);
+    if (!path.includes("/chat/completions")) {
+      return path + "/chat/completions" + query;
     }
   }
   return endpoint;
 }
 function getModelsEndpoint(baseEndpoint, apiType) {
-  let endpoint = baseEndpoint.trim();
+  let endpoint = String(baseEndpoint == null ? "" : baseEndpoint).trim().replace(/\s+/g, "");
   endpoint = endpoint.replace(/\/+$/, "");
   if (apiType === "gemini") {
     return endpoint + "/models?key=";
   }
-  if (endpoint.endsWith("/chat/completions")) {
-    endpoint = endpoint.replace("/chat/completions", "");
-  }
-  return endpoint + "/models";
+  const { path, query } = _splitEndpointQuery(endpoint);
+  let p = path;
+  if (p.endsWith("/chat/completions")) p = p.replace(/\/chat\/completions$/, "");
+  return p + "/models" + query;
 }
 async function fetchOpenAIModels(baseEndpoint, apiKey) {
   const modelsEndpoint = getModelsEndpoint(baseEndpoint, "openai");

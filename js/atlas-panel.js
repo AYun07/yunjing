@@ -17390,7 +17390,7 @@
           try { injectSupplement(); } catch (e) { }
           try { relaxSupp(); } catch (e) { }
           try { if (state.genre) load(state.genre); } catch (e) { }
-          if (window.YJ_DEBUG) console.log("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
+          if (window.YJ_DEBUG) console.debug("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
         }).catch(() => { });
       }
     } catch (e) { }

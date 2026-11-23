@@ -243,6 +243,45 @@
     }
   }
 
+  /* v6.6.1 封面瘦身：atlas 数据层(1.16MB 脚本 + 4 份地图 CSS)只在玩家点「踏云」打开世界选择器时
+     才按需加载，封面首屏不再解析这些重型资源。实测封面进程内存因此从净增约 112MB 下降。
+     依赖：catalog()/openDetail() 读 window.ATLAS_VERIFIED 合并玩家 DLC，必须在打开前加载完。 */
+  var ATLAS_JS = [
+    "js/atlas-drill-data.js", "js/atlas-drilldown.js", "js/atlas-verified-all.js",
+    "js/atlas-userdata.js", "js/atlas-verified-adapter.js", "js/atlas-library.js"
+  ];
+  var ATLAS_CSS = [
+    "css/atlas-drilldown.css", "css/atlas-faction-layer.css",
+    "css/atlas-canon-layer.css", "css/atlas-library.css"
+  ];
+  var V = "?v=6.7.0";
+  var atlasPromise = null;
+  function ensureAtlas() {
+    if (atlasPromise) return atlasPromise;
+    atlasPromise = new Promise(function (resolve) {
+      try {
+        var done = 0, total = ATLAS_JS.length + ATLAS_CSS.length;
+        function tick() { if (++done >= total) resolve(); }
+        ATLAS_CSS.forEach(function (href) {
+          if (document.querySelector('link[data-atlas-lazy="' + href + '"]')) { tick(); return; }
+          var l = document.createElement("link");
+          l.rel = "stylesheet"; l.href = href + V; l.setAttribute("data-atlas-lazy", href);
+          l.onload = tick; l.onerror = tick; document.head.appendChild(l);
+        });
+        ATLAS_JS.forEach(function (src) {
+          if (document.querySelector('script[data-atlas-lazy="' + src + '"]')) { tick(); return; }
+          var s = document.createElement("script");
+          s.src = src + V; s.setAttribute("data-atlas-lazy", src);
+          s.onload = tick; s.onerror = tick; document.body.appendChild(s);
+        });
+      } catch (e) { resolve(); }
+      // 兜底：3.5 秒后无论如何放行，绝不把玩家卡在选择器外
+      setTimeout(resolve, 3500);
+    });
+    return atlasPromise;
+  }
+  function openWithAtlas() { ensureAtlas().then(function () { open(); }); }
+
   // 接管封面「踏云」按钮（data-go="new"），其余三入口保持原样
   function wireCover() {
     var menu = document.getElementById("menu");
@@ -251,14 +290,14 @@
       var btn = e.target.closest('.entry[data-go="new"]');
       if (!btn) return;
       e.preventDefault(); e.stopPropagation();
-      open();
+      openWithAtlas();
     }, true); // 捕获阶段，先于封面原有跳转监听
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Enter" || !document.getElementById(OVERLAY)) return;
       var active = document.querySelector("#menu .entry[data-active='1']");
       if (active && active.getAttribute("data-go") === "new" &&
           !document.getElementById(OVERLAY).classList.contains("cp-open")) {
-        e.preventDefault(); e.stopPropagation(); open();
+        e.preventDefault(); e.stopPropagation(); openWithAtlas();
       }
     }, true);
   }
@@ -272,5 +311,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.CoverPortal = { open: open, close: close, version: "1.0.0" };
+  window.CoverPortal = { open: openWithAtlas, close: close, version: "1.0.1" };
 })();

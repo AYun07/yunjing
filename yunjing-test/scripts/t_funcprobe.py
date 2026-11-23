@@ -10,13 +10,18 @@
 import asyncio, glob, json, os, re, sys
 from playwright.async_api import async_playwright
 
+import os
+
+ROOT = os.environ.get("YJ_ROOT") or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
 BASE = os.environ.get("YJ_BASE", "http://127.0.0.1:8899")
 OUT = "/tmp/func_probe.json"
 
-GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
+GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob(os.path.join(ROOT, "js/kb/*.core.js")))
 
 # 通用 20 模块 + 各界专属
-GEN_MODS = json.load(open("/tmp/mod_actions.json", encoding="utf-8"))
+GEN_MODS = json.load(open(os.path.join(ROOT, "yunjing-test/_data/mod_actions.json"), encoding="utf-8"))
 GEN_MODS["wr_rpg"] = ["skill", "rest", "loot", "teleport", "qaccept", "qturnin", "qgiveup",
                       "guild", "setclass", "mode", "enhance", "buy", "sell", "equipbag",
                       "usepotion", "arena", "party", "pet", "buff", "addpoint", "questclaim",

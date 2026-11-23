@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=6.6.0">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=6.7.0">
 </head>
 
 <body class="page-changelog">
@@ -316,11 +316,40 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+                <article class="log-entry" data-tags="版本 发布 舆图 地图 地名 底图 审查 修复" style="--entry-hue:#5f8fb0;">
+            <div class="entry-head">
+                <span class="entry-ver">v6.7.0</span>
+                <span class="entry-date">2026-11-23</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">舆图重做 · 真实地名逐层下钻 · 全量审查问题集中修</h3>
+            <p class="entry-lead">按实玩反馈把舆图从数据层到画面重做了一遍：分区不再是「北部中域」这类方位词，名牌不再互相压住，每一层都有底图，最深处不再是一片空白。外部全量审查报告里能确定的问题，也在这一版一起修掉。</p>
+            <div class="ver-diff">
+                <div><b>舆图重做</b>：分区从「按坐标网格切块」改成「按原著地标聚类」——每一层显示的都是天南、大晋、云梦山、慕兰草原这样的真实地名，方位词彻底退出。每层数量封顶（分区 9、地点 11），超出就自动再分一级，从数据层就不会再挤成一团；渲染后再走一轮重要度加权防撞布局，被挪开的名牌会拉一条引线回指真实落点。原先只有斗罗有分级底图，其它 37 个世界点到二三四层是空渐变；现在统一用该世界底图按当前视野放大，叠一层等高线与经纬网做局部测绘质感，每一层都有图。点到最深处不再空场，改为「场景特写」：放大标 + 最近的真实周边地点 + 完整方位与出处。</div>
+                <div><b>正文与存档</b>：没有数值快照的世界（自由人生、地球、新档未开局）里，模型编的「木剑才卖 5 金币」以前会原样进正文，现在一律降级成「些许金币」，中文数字不误伤。存档书架新建档位、知识库增删改条目，落盘失败会回滚并当场提示，不再「看着存上了、刷新就没了」。</div>
+                <div><b>工程口径</b>：README 版本标题与同步器口径统一（少一个冒号就静默跳过的假绿已堵死），index.html 里 44 处界入口的历史版本戳统一到当前版本；本地 localhost / 127.0.0.1 也能注册 Service Worker，封面页补上注册，本地断网可用；1.19MB 的 38 世界校对数据改为打开舆图/资料库时才加载；320px 窄屏不再横向溢出；测试总入口默认排除「需玩家自备 Key」的用例，CI 不再被这类必红项淹掉。</div>
+            </div>
+        </article>
+
+<article class="log-entry" data-tags="版本 发布 性能优化 内存 多模型 入口收口" style="--entry-hue:#5aa08a;">
+            <div class="entry-head">
+                <span class="entry-ver">v6.6.1</span>
+                <span class="entry-date">2026-11-23</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">封面瘦身 · 存多个模型一键切换 · 关掉随便点开就能进的口子</h3>
+            <p class="entry-lead">按实玩反馈做的一轮清理：封面不再一上来就加载整套地图引擎，模型可以提前存好几个随时切，那些预览页和报告页不再双击就能直接打开。</p>
+            <div class="ver-diff">
+                <div><b>封面瘦身</b>：以前打开封面就把 1.16MB 的舆图数据和 4 份地图样式全拉进来，就算你只是看着菜单。现在改成点「踏云」那一刻才加载，封面首屏轻了很多；离线预缓存也从"激活就全速抓"改成延迟+降频，不再跟开局抢资源。</div>
+                <div><b>多模型档位</b>：主笔接口以前只能存一套。现在设置里多了一栏「模型档位」——填好地址/Key/模型后点「存当前为新档」，可以存好几个，下拉选一个点「切到选中档」立即生效，不用刷新。配置只存在你自己这台设备上。</div>
+                <div><b>入口收口</b>：地图预览、自检、品牌页、小云预览等 10 个内部页面，以前在文件夹里双击就能打开；现在单独打开会回到封面，只有从云境内正常进入或带 dev=1 才看得见。</div>
+            </div>
+        </article>
+
         <article class="log-entry" data-tags="版本 发布 二创 创意工坊 稳定 CI" style="--entry-hue:#c09a5a;">
             <div class="entry-head">
                 <span class="entry-ver">v6.6.0</span>
                 <span class="entry-date">2026-11-22</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">创意工坊单一文件夹 · 二创一处看全 · 顺带修好 CI</h3>
             <p class="entry-lead">玩家二创从"元数据在 Issue、包体在另一个目录"的两处分散，收敛为仓库内唯一总文件夹 community/works/：每件作品一个带时间戳的子文件夹，四段式说明与包体同处，按时间一目了然；云境内即可浏览、一键下载安装、发布，不用打开 GitHub 网页。同时修复了长期报红的 CI——根因是升版本未跑全站版本同步器。</p>
@@ -1035,7 +1064,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=6.6.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=6.7.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

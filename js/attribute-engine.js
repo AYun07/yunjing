@@ -435,7 +435,7 @@
           : ((capForTurn() - (TURN.total - Math.abs(r.delta))) < Math.abs(delta) - 0.01) ? ('本轮合计上限 ' + capForTurn())
           : '值域 0-100';
         TURN.clamps.push({ stat: dlabel, key: key, request: delta, actual: r.delta, reason: reason });
-        if (window.YJ_DEBUG) console.log("[AttributeEngine] 数值平衡钳制:", key, "请求Δ" + delta, "→ 实际Δ" + r.delta, reason);
+        if (window.YJ_DEBUG) console.debug("[AttributeEngine] 数值平衡钳制:", key, "请求Δ" + delta, "→ 实际Δ" + r.delta, reason);
       }
       /* v3.65.0 真实变动落审计账本 + 派发即时反馈事件（仅当确有增减） */
       if (r.delta !== 0) {
@@ -605,7 +605,7 @@
       tv.lastGrowth = applied;
       tv.lastGrowthTotal = sum;
       LAST_SETTLE = { days: days, chapter: chapter, text: TURN.span.text };
-      if (window.YJ_DEBUG) console.log("[AttributeEngine] 时间跨越结算:", daysText(days), TURN.act.name, JSON.stringify(applied));
+      if (window.YJ_DEBUG) console.debug("[AttributeEngine] 时间跨越结算:", daysText(days), TURN.act.name, JSON.stringify(applied));
       return { days: days, spanText: tv.spanText, activity: TURN.act.name, applied: applied, total: sum };
     } catch (e) {
       return null;

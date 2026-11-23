@@ -38,7 +38,7 @@ const constChecks = [
   ['index.html  页面标题',       'index.html',    new RegExp(`<title>云境 v${esc}`)],
   ['studio.html 页面标题',       'studio.html',   new RegExp(`<title>云境 v${esc}`)],
   ['QUICKSTART  抬头',           'QUICKSTART.txt',new RegExp(`云境工坊 v${esc}`)],
-  ['README      当前版本',       'README.md',     new RegExp(`## 🆕 当前版本：v${esc}（`)],
+  ['README      当前版本',       'README.md',     new RegExp(`## 🆕 当前版本[：:]?\\s*v${esc}（`)],
   ['VERSIONS    计数区终点',     'VERSIONS.md',   new RegExp(`到 \\\`v${esc}\\\``)],
   ['VERSIONS    速查表首行',     'VERSIONS.md',   new RegExp(`\\| \\*\\*v${esc}\\*\\* \\|`)],
   ['VERSIONS    详情段',         'VERSIONS.md',   new RegExp(`^## v${esc} ·`, 'm')],
@@ -68,15 +68,15 @@ let qvTotal = 0, qvBad = 0;
 const badFiles = [];
 for (const rel of files) {
   const s = read(rel);
-  const all = s.match(/\?v=[\d.]+/g) || [];
+  const all = s.match(/[?&]v=[\d.]+/g) || [];
   // 只统计「云境发版号世代」：x.y.z 且主版本号 >= 3（云境从 3.55.7 起，首位恒 >=3）。
   // 第三方库自身版本号（?v=0.1.18 / 1.7.3 / 1.4 / 1.12 等，首位 <3）历来不参与同源，天然豁免。
   const gen = all.filter((v) => {
-    const m = v.match(/^\?v=(\d+)\.\d+\.\d+$/);
+    const m = v.match(/^[?&]v=(\d+)\.\d+\.\d+$/);
     return m && Number(m[1]) >= 3;
   });
   qvTotal += gen.length;
-  const wrong = gen.filter((v) => v !== '?v=' + VER);
+  const wrong = gen.filter((v) => !v.endsWith('=' + VER));
   if (wrong.length) { qvBad += wrong.length; badFiles.push(`${rel}:${[...new Set(wrong)].join(',')}`); }
 }
 rec(`?v= 缓存参数同源（${qvTotal} 处）`, qvBad === 0, badFiles.join(' '));
