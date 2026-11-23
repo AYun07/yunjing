@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""云境 v6.8.0 · 界面规整验收（真实浏览器）
+"""云境 v6.9.0 · 界面规整验收（真实浏览器）
 
-逐条对应玩家 8 项反馈，全部 DOM 断言，不依赖大模型 Key：
+逐条对应玩家反馈，全部 DOM 断言，不依赖大模型 Key：
   L-1 三栏布局：左功能栏 / 中正文 / 右状态栏，顺序正确
-  L-2 左功能栏分组 + 太虚阁 12 模块入列 + 字体入口
+  L-2 左功能栏分组 + 双玩法切换 + 字体入口（v6.9：太虚阁 12 沉浸模块已删除并去重，
+      不再要求入列；其归属与去重由 t_ui_v69.py 的「功能归属/零重合」断言覆盖）
   L-3 可折叠（收成 46px 图标条）
   L-4 太虚阁入口从模块清单消失
   L-5 行动选项去重：只有最新一组可点
@@ -61,10 +62,11 @@ def main():
         left = pg.evaluate("""()=>{
           const gs=[...document.querySelectorAll('#leftRail .lr-group-head .lr-gname')].map(x=>x.textContent);
           const ns=[...document.querySelectorAll('#leftRail .lr-item .lr-label')].map(x=>x.textContent);
-          const imm=['众生相','羁绊图','境界梯','藏宝阁','编年史','传书','倒计时','名场面','战报','天道','世界线','界专属'];
-          return {gs, n:ns.length, imm:imm.filter(x=>ns.includes(x)).length, font:ns.includes('字体设置')}; }""")
-        rec("L-2 左栏分组+太虚阁功能入列", len(left["gs"]) >= 5 and left["imm"] == 12 and left["font"],
-            f"{len(left['gs'])}组/{left['n']}项/沉浸{left['imm']}项")
+          const modes=[...document.querySelectorAll('#leftRail .lr-mode')].map(x=>x.textContent.trim());
+          return {gs, n:ns.length, modes, dual:modes.some(x=>/玩卡/.test(x)) && modes.some(x=>/写小说/.test(x)),
+                  font:ns.some(x=>/字体/.test(x))}; }""")
+        rec("L-2 左栏分组+双玩法切换+字体入口", len(left["gs"]) >= 5 and left["dual"] and left["font"],
+            f"{len(left['gs'])}组/{left['n']}项/双玩法{'Y' if left['dual'] else 'N'}/字体{'Y' if left['font'] else 'N'}")
 
         pg.evaluate("()=>document.getElementById('lrToggle').click()")
         pg.wait_for_timeout(200)
