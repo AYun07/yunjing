@@ -115,7 +115,7 @@ def main():
     new_tree = {'sha': cur_base}
     print('  最终 tree:', new_tree['sha'][:10], flush=True)
 
-    msg = 'release: v6.6.0 创意工坊单一文件夹(community/works 简介与包体同处+云境内一键下载安装)+修复CI版本同源 · 全量同步（只增改不删）'
+    msg = 'docs: 题材分组 key 脱敏(xinghai→scifi) + 全项目外部来源归因口吻中性化(设计自研表述) + 增量对比报告移出发布范围 · 文档改动全量同步（只增改不删，未改功能与版本号）'
     new_commit = api('POST', f'/repos/{OWNER}/{REPO}/git/commits', {
         'message': msg, 'tree': new_tree['sha'], 'parents': [commit_sha]
     })
