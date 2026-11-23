@@ -169,12 +169,17 @@
     if (!box) return;
     var icon = read(ICON_KEY);
     var look = read(LOOK_KEY), persona = read(PERSONA_KEY);
-    box.innerHTML = (icon ? '<img class="cs-avatar" src="' + icon + '" alt="角色图标">' : '<div class="cs-avatar cs-ph">🖼</div>') +
+    var html = (icon ? '<img class="cs-avatar" src="' + icon + '" alt="角色图标">' : '<div class="cs-avatar cs-ph">🖼</div>') +
       '<div class="cs-info">' +
         (look ? '<div class="cs-line"><b>样貌</b>' + esc(look.slice(0, 46)) + '</div>' : "") +
         (persona ? '<div class="cs-line"><b>性格</b>' + esc(persona.slice(0, 46)) + '</div>' : "") +
         (!look && !persona ? '<div class="cs-empty">点上方按钮生成样貌 / 性格 / 图标</div>' : "") +
       '</div>';
+    /* v6.9.1：setupWrap 上的 MutationObserver 观察到本函数写 innerHTML 会再次触发 mount，
+       若每次都重写 DOM 就形成反馈死循环，永久占死主线程（舆图/设置等所有浏览器用例集体超时）。
+       内容未变则不写，从源头断掉反馈环。 */
+    if (box.innerHTML === html) return;
+    box.innerHTML = html;
   }
 
   function esc(s) {
@@ -185,7 +190,7 @@
 
   /* 在主角设定区注入 UI（幂等） */
   function mount() {
-    if ($("csWrap")) { renderPreview(); return; }
+    if ($("csWrap")) return;
     var hero = $("wiz_heroSection");
     if (!hero) return;
     var wrap = document.createElement("div");

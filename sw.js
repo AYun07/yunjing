@@ -85,6 +85,8 @@ const CORE2 = CORE.concat(GEN, [
   'js/pwa-register.js','js/model-slots.js',
   /* v6.8.0：左侧功能栏与字体切换（studio.html 直接引用，离线也要在） */
   'js/left-rail.js','css/left-rail.css','js/font-switcher.js','css/font-switcher.css',
+  /* v6.9.0：角色塑造助手与遮挡修复（studio.html 直接引用，离线也要在） */
+  'js/character-studio.js','css/character-studio.css','css/occlusion-fix.css',
   /* --- 基础样式 --- */
   'css/base-style.css','css/immersive-style.css','css/yunjing-theme.css','css/ui-refresh.css',
   /* v4.13.0 新增的移动端触控目标补丁（窄屏 44px 命中层）。它被 studio.html 与
