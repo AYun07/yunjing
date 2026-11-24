@@ -2,12 +2,12 @@
  * 云境 · 预设导入 / 替换 / 编辑层 preset-io.js（v3.51.0）
  * ------------------------------------------------------------
  * 目标（按玩家要求）：
- *   1) 以后有新的 SillyTavern 预设 → 直接导入，整份替换内置云起预设；
+ *   1) 以后有新的常见前端预设 → 直接导入，整份替换内置云起预设；
  *   2) 每一条预设提示词都能改（默认版永远留着，一键还原）；
  *   3) 导入失败要说清哪一步不对，绝不半途覆盖掉能用的旧预设。
  *
  * 兼容三种输入：
- *   A. SillyTavern 预设导出（{prompts, prompt_order} 或 {prompts, order}）
+ *   A. 常见前端预设导出（{prompts, prompt_order} 或 {prompts, order}）
  *   B. 云境自有格式（{name, version, prompts, order}）
  *   C. 只有 prompts 数组的裸 JSON
  *
@@ -59,7 +59,7 @@
     for (var i = 0; i < 4; i++) {
       if (!cur || typeof cur !== 'object' || Array.isArray(cur)) break;
       /* v3.55.10：当前层本身就有 prompts → 它就是预设本体，别再往 data 里钻。
-         酒馆「四入口通用」文件顶层同时带 prompts（预设）与 data（角色卡），
+         通用「四入口」文件顶层同时带 prompts（预设）与 data（角色卡），
          钻进 data 会只剩 system_prompt 一块（实测 230 块变 1 块）。 */
       if (cur.prompts || cur.prompt_list || cur.prompts_list) break;
       var inner = cur.data || cur.preset || cur.export || cur.payload;

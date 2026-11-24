@@ -35,7 +35,7 @@
 | 检查项 | before（v3.88.0） | after（v3.89.0） |
 |---|---|---|
 | 活动大厅主题 CSS | 1 套 + **10 套 disabled** | 2 套（基础 + 新主题）、**0 disabled** |
-| 图标引用 | 墨枢 `icon-192/favicon/apple-touch-icon` | 云境 `assets/yj-*` |
+| 图标引用 | 旧版 `icon-192/favicon/apple-touch-icon` | 云境 `assets/yj-*` |
 | 版本徽标 / `YJ_VER` / 标题 | `v3.88.0` | **三者同源 `v3.89.0`** |
 | 旧皮肤切换器 `.skin-toggle` | 存在 | **已移除** |
 | 创作室第二只小云 | `moChibi=true / visible` | **false / 不存在** |
@@ -50,7 +50,7 @@
 - **单一全功能小云**：`#moChibi` / `#moChibiRestore` / `.mc-menu` 全部不存在；`window.XYBuddy` 真实存在；`MoChibi.say()` 转发到唯一小云；模块网格 10 个入口、零重叠、零零尺寸。
 - **功能列表不再拥挤**：旧扇形菜单不再渲染；面板改 2 列规整网格，按钮紧凑单行（说明移到 hover），首屏可见 6 个模块按钮、输入框常驻视口内。
 - **8 套主题确实显示**：`colorful/compass/carousel/film/hero/scroll/sidebar/avatar` 的背景渐变、变量组、卡片形状各 8 种，两两不同，可切换并记忆。
-- **图标**：`assets/yj-icon-192/512/apple`、`yj-favicon.ico` HTTP 200；4 个墨枢旧图标文件已删除；补齐 studio / selftest / changelog 的 `rel=icon`，创作室 favicon 404 消失。
+- **图标**：`assets/yj-icon-192/512/apple`、`yj-favicon.ico` HTTP 200；4 个旧图标文件已删除；补齐 studio / selftest / changelog 的 `rel=icon`，创作室 favicon 404 消失。
 - **离线缓存**：CORE/CORE2 静态 **153 条** + GEN 派生 **166 条**路径全部 200；首页与创作室静态引用对照缓存清单**零缺失**；`addAll` 不会因单个 404 整体失败。
 - **版本统一**：168 处 `?v=3.89.0`；`YJ_VER` / `SW_VER` / 页面标题 / 徽标同源；修掉「徽标写死 3.89.0 被 `YJ_VER=3.88.0` 覆盖回旧号」的真实 bug。
 - **启动方式**：唯一 8080 本地服务；删除 `start-lan.bat`、`lobby-lab.html`（`?lobby=a~f` 已失效的死页面）、`style-lab.html`；README / QUICKSTART 不再有「任选其一 / 直接双击也能跑」。
@@ -73,7 +73,7 @@
 - 应用内（`modules-inapp.mjs`）：插图接口连通、插图真实生成一张、提示词工程师连通与改写、向量+重排连通、向量检索返回、页面错误 0 → **6/6**。其中「向量检索命中 0 条」是脚本「连通不报错」口径，不代表召回质量结论。
 - 灵宠·妖兽·伙伴 **14/14**、小队编成 **18/18**、身份三态 **19/19**、唯一小云能力 **9/9**（含 6 态切换、面板开关、`MoChibi.say` 路由、懒加载后自动补齐 10 入口）。
 - 活世界逻辑验收 A–H **29/29**。
-- 旧 `gen/smoke-anim.mjs`（v3.61.0 旧墨枢小云动画引擎）报 7 项失败：其断言全部指向 `#moChibi .mc-img`，该 DOM 已按「只能有一个全功能小云」移除，属**过时测试脚本**，不是产品回归。已用 `gen/smoke-xybuddy.mjs` 覆盖当前真实实现，9/9 通过。
+- 旧 `gen/smoke-anim.mjs`（v3.61.0 旧小云动画引擎）报 7 项失败：其断言全部指向 `#moChibi .mc-img`，该 DOM 已按「只能有一个全功能小云」移除，属**过时测试脚本**，不是产品回归。已用 `gen/smoke-xybuddy.mjs` 覆盖当前真实实现，9/9 通过。
 
 ## 短板体检（本地 mock，不消耗真实 API）
 

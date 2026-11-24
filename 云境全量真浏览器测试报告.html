@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<script src="js/entry-guard.js?v=6.9.4"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>云境 · 全量真浏览器测试报告</title>
@@ -34,6 +35,7 @@ img.shot{width:100%;max-width:900px;border:1px solid #30363d;border-radius:8px;m
 code{background:#1c2128;padding:2px 6px;border-radius:4px;font-size:12px;color:#79c0ff}
 .foot{text-align:center;color:#6e7681;font-size:12px;margin-top:40px}
 ul{margin:8px 0 8px 22px}li{margin:5px 0;font-size:13px}
+.shot-missing{display:flex;align-items:center;justify-content:center;min-height:120px;padding:18px;border:1px dashed rgba(217,180,106,.45);border-radius:10px;color:#9aa8b2;font-size:13px;text-align:center;background:rgba(217,180,106,.04)}
 </style>
 </head>
 <body>
@@ -131,9 +133,9 @@ ul{margin:8px 0 8px 22px}li{margin:5px 0;font-size:13px}
 
 <h2>六、测试截图证据</h2>
 <h3>创作室正常态（状态面板 + 小云立绘）</h3>
-<img class="shot" src="测试快照-玩家实操.png" alt="创作室正常态">
+<img class="shot" src="测试快照-玩家实操.png" alt="创作室正常态" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'shot shot-missing',textContent:'截图未随包分发（体积原因）· 结论以文中实测数据为准'}))">
 <h3>AI 正文生成成功（日志取证画面）</h3>
-<img class="shot" src="测试快照-AI正文生成成功.png" alt="AI正文生成">
+<img class="shot" src="测试快照-AI正文生成成功.png" alt="AI正文生成" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'shot shot-missing',textContent:'截图未随包分发（体积原因）· 结论以文中实测数据为准'}))">
 
 <h2>七、最终结论</h2>
 <div class="card good">

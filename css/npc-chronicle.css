@@ -1,0 +1,56 @@
+/* NPC 编年史面板 · 云境自有视觉 · nc- 命名空间 */
+.nc-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(8,6,14,.72);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: nc-fade .18s ease;
+}
+@keyframes nc-fade { from { opacity: 0; } to { opacity: 1; } }
+.nc-panel {
+  width: min(660px, 100%); max-height: 86vh; overflow: auto;
+  background: linear-gradient(160deg, #1b1530, #141020);
+  border: 1px solid rgba(201,168,106,.32);
+  border-radius: 16px; padding: 22px 24px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.5);
+  color: #e8dcc0;
+  font: 14px/1.65 -apple-system, "Microsoft YaHei", sans-serif;
+}
+.nc-top { display: flex; align-items: center; justify-content: space-between; }
+.nc-top h2 { margin: 0; color: #c9a86a; font-size: 19px; font-weight: 600; }
+.nc-close {
+  background: transparent; border: 1px solid rgba(201,168,106,.3);
+  color: #c9a86a; border-radius: 8px; width: 32px; height: 32px;
+  cursor: pointer; font-size: 15px;
+}
+.nc-close:hover { background: rgba(201,168,106,.14); }
+.nc-sub { margin: 4px 0 14px; color: #9a8fa8; font-size: 12.5px; }
+.nc-vault {
+  background: rgba(201,168,106,.07); border: 1px solid rgba(201,168,106,.18);
+  border-radius: 10px; padding: 8px 12px; margin-bottom: 14px;
+  color: #b9a98a; font-size: 12.5px;
+}
+.nc-vault b { color: #c9a86a; }
+.nc-list { display: grid; gap: 12px; }
+.nc-card {
+  background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px; padding: 12px 14px;
+}
+.nc-hd { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+.nc-hd b { color: #e8dcc0; font-size: 15px; }
+.nc-hd em { color: #9a8fa8; font-size: 12px; font-style: normal; }
+.nc-axes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin-bottom: 10px; }
+.nc-ax { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.nc-ax span { width: 30px; color: #9a8fa8; }
+.nc-ax-track { flex: 1; height: 6px; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; }
+.nc-ax-track i { display: block; height: 100%; border-radius: 4px; }
+.nc-ax b { width: 26px; text-align: right; color: #c9bda0; font-weight: 500; }
+.nc-deeds { list-style: none; margin: 0; padding: 0; border-top: 1px dashed rgba(255,255,255,.09); padding-top: 8px; }
+.nc-deeds li { font-size: 12.5px; color: #c8bda5; padding: 2px 0; }
+.nc-deeds li i { color: #8f8272; font-style: normal; margin-right: 8px; font-size: 11px; }
+.nc-empty { color: #7d7288; font-size: 12.5px; padding: 8px 0; }
+.nc-foot { margin-top: 16px; text-align: center; color: #6f6478; font-size: 11px; }
+@media (max-width: 520px) {
+  .nc-axes { grid-template-columns: 1fr; }
+  .nc-panel { padding: 16px; }
+}

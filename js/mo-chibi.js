@@ -58,7 +58,7 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=4.42.0" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=6.9.4" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
   /** 手动设定形态（合法 key），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
@@ -85,7 +85,7 @@ const MoChibi = {
     ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(8,14,22,.66);display:flex;align-items:center;justify-content:center;padding:18px;";
     const card = (k) => `
       <button data-style="${k}" style="width:31%;min-width:96px;padding:10px 6px;border:2px solid ${k === cur ? "#7ab8e8" : "rgba(140,180,220,.28)"};border-radius:14px;background:linear-gradient(160deg,rgba(20,32,48,.92),rgba(14,22,34,.92));cursor:pointer;text-align:center;transition:transform .15s;">
-        <img src="${this.IMGS[k]}?v=4.42.0" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
+        <img src="${this.IMGS[k]}?v=6.9.4" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
         <div style="font-size:13.5px;font-weight:700;color:#cfe6f8;margin-top:6px;">${this.STYLE_LABEL[k]}</div>
         <div style="font-size:10.5px;color:#7e9ab4;margin-top:2px;">${this.STYLE_DESC[k] || ""}</div>
       </button>`;
@@ -116,10 +116,10 @@ const MoChibi = {
     const img = document.querySelector("#moChibi .mc-img");
     if (img) {
       try { clearTimeout(this._poseTimer); this._poseTimer = null; } catch (e) {}
-      img.src = this.chibiSrc() + "?v=4.42.0";
+      img.src = this.chibiSrc() + "?v=6.9.4";
       img.classList.remove("mc-pose-pop"); void img.offsetWidth; img.classList.add("mc-pose-pop");
     }
-    const face = this.faceSrc() + "?v=4.42.0";
+    const face = this.faceSrc() + "?v=6.9.4";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
@@ -278,7 +278,7 @@ const MoChibi = {
         return;
       }
     } catch (e) {}
-    console.log("[小云]", String(text == null ? "" : text));
+    console.debug("[小云]", String(text == null ? "" : text));
   },
   hideBubble() {
   },
@@ -371,7 +371,6 @@ const MoChibi = {
       } },
       /* v3.55.19 悬浮球收敛：世界动态 / 手机 / 太虚阁 并入小云的「模块」二级面板。
          不直接摊在扇形菜单里——扇形 radius 110 / spread 150°，项数一多就互相压叠。 */
-      { ico: "🧰", label: "模块", act: () => this.openModules() },
       { ico: "💃", label: "秀一下", act: () => this.playAction("dance") },
       { ico: "🌙", label: "收起", act: () => this.hide() }
     ];
@@ -389,74 +388,10 @@ const MoChibi = {
     } catch (e) { return ""; }
   },
   moduleEntries() {
-    const list = [];
-    if (window.DynamicWorld) {
-      const u = this._dockUnread("dwDockBadge");
-      list.push({ ico: "🌍", name: "世界动态", note: u ? u + " 条未读" : "额外 AI 推演的远方事件", act: () => window.DynamicWorld.openPanel() });
-    }
-    try {
-      if (window.PhonePanel && this._isEarth() && window.PhonePanel.tier && window.PhonePanel.tier() !== "none") {
-        const u = this._dockUnread("phDockBadge");
-        list.push({ ico: "📱", name: "手机分身", note: u ? u + " 条未读" : "聊天 / 朋友圈", act: () => window.PhonePanel.open() });
-      }
-    } catch (e) {}
-    if (window.ImmersiveSuite && !this._isEarth()) {
-      list.push({ ico: "⛩", name: "太虚阁 · 沉浸万象", note: "人物志 / 藏宝阁 / 编年史", act: () => window.ImmersiveSuite.toggle(true) });
-    }
-    /* v3.55.19 剧情上下文：人物 / 机缘归属 / 伏笔 / 大事记 聚成一屏，两种视图可切 */
-    if (window.ContextPanel) {
-      list.push({ ico: "📖", name: "剧情上下文", note: "人物 · 机缘归属 · 伏笔 · 大事记", act: () => window.ContextPanel.open() });
-    }
-    /* v3.55.20 本界资料库：每个世界自己的 lore 库，可看 / 增补 / 从故事抽取 */
-    if (window.WorldBook) {
-      list.push({ ico: "📚", name: "本界资料库", note: "点开看 · 增补缺失的世界书 / 从故事抽取", act: () => window.WorldBook.open() });
-    }
-    /* v3.55.23 大势演化账本：诱因可断、大事可改道、羁绊可易主、新事可生 */
-    if (window.CanonTimeline) {
-      const nEv = CanonTimeline.all().length, nBd = CanonTimeline.allBonds().length;
-      list.push({ ico: "🌊", name: "大势演化账本", note: nEv + nBd ? "大事 " + nEv + " · 羁绊 " + nBd + " · 因果可改" : "原著大势可改 · 诱因亡则事亡", act: () => window.CanonTimeline.open() });
-    }
-    /* v3.55.23 行旅图鉴：可视化动态地图——足迹点亮、剧情地标、资料库地理上图 */
-    if (window.StoryAtlas) {
-      list.push({ ico: "🗺", name: "行旅图鉴 · 世界地图", note: "足迹走到哪 · 点亮到哪", act: () => window.StoryAtlas.toggle(true) });
-    }
-    /* v3.63.0 灵宠·妖兽·伙伴 */
-    if (window.BeastSystem) {
-      list.push({ ico: "🐾", name: "灵宠·妖兽·伙伴", note: "契约 / 养成 / 随队出战（" + window.BeastSystem.count() + "）", act: () => window.BeastSystem.openUI() });
-    }
-    /* v3.64.0 小队 */
-    if (window.SquadSystem) {
-      var _sq = window.SquadSystem.list().filter(function (x) { return x.type !== "player"; }).length;
-      list.push({ ico: "🛡", name: "小队编成", note: "邀请同伴 / 灵宠入队 · 协同作战（" + _sq + "）", act: () => window.SquadSystem.openUI() });
-    }
-    /* v3.55.20 玩家身份（穿越者 / 土著）与主角关系（同伴 / 敌对 / 陌路） */
-    if (window.StoryIdentity) {
-      const idn = window.StoryIdentity.infoIdentity();
-      list.push({ ico: idn.ico, name: "玩家身份：" + idn.name, note: "点按切换 · " + idn.desc, act: () => {
-        const id = window.StoryIdentity.cycleIdentity();
-        const info = window.StoryIdentity.infoIdentity();
-        this.say("玩家身份已切到「" + info.name + "」——" + info.hint, 4200);
-      } });
-      const rel = window.StoryIdentity.infoRelation();
-      if (rel) {
-        list.push({ ico: rel.ico, name: "主角关系：" + rel.name, note: "点按切换 · " + rel.desc, act: () => {
-          const id = window.StoryIdentity.cycleRelation();
-          const info = window.StoryIdentity.infoRelation();
-          if (!info) { this.say("取代主角立场下没有「关系」——你就是原著主角本人。", 3800); return; }
-          this.say("主角关系已切到「" + info.name + "」——" + info.hint, 4200);
-        } });
-      }
-    }
-    /* v3.55.19 叙事立场：取代主角 / 同行者 / 搅局者 */
-    if (window.StoryStance) {
-      const st = window.StoryStance.info();
-      list.push({ ico: st.ico, name: "叙事立场：" + st.name, note: "点按切换 · " + st.desc, act: () => {
-        const id = window.StoryStance.cycle();
-        const info = window.StoryStance.info();
-        this.say("叙事立场已切到「" + info.name + "」——" + info.desc, 4200);
-      } });
-    }
-    return list;
+    /* v6.9.0：这些功能（世界动态/手机/上下文/资料库/大势/图鉴/灵宠/小队/身份/立场）
+       已全部收进云境左侧功能栏。MoChibi 作为兼容层返回空列表，避免小云重复列同一批功能。
+       仍保留方法签名，供 20+ 依赖方安全调用。 */
+    return [];
   },
   openModules() {
     let host = document.getElementById("mcModules");
@@ -751,7 +686,7 @@ const MoChibi = {
      叠加既有 CSS 动效（hop/twirl…）。图片缺失时自动退回纯 CSS 动作。 */
   POSES: ["wave", "battle", "happy"],
   poseSrc(pose) {
-    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=4.42.0`;
+    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=6.9.4`;
   },
   _preloadPoses() {
     this._poseCache = {};
@@ -783,7 +718,7 @@ const MoChibi = {
   clearPose() {
     clearTimeout(this._poseTimer);
     this._poseTimer = null;
-    this._setImg(this.chibiSrc() + "?v=4.42.0");
+    this._setImg(this.chibiSrc() + "?v=6.9.4");
   },
   /** 公开动作 API：玩家/系统调用——做到"像动画一样可以做动作" */
   playAction(name, _internal) {
@@ -1157,7 +1092,7 @@ const MoChibi = {
   },
   _boot() {
     this.ensureDOM(); // v3.92.1：不再渲染第二只小云，MoChibi 仅作 API 兼容层
-    console.log("[小云] 旧墨枢小云已并入 xiaoyun-buddy（单一云灵）；MoChibi 仅保留 API 兼容层");
+    console.debug("[小云] 旧版小云已并入 xiaoyun-buddy（单一云灵）；MoChibi 仅保留 API 兼容层");
   }
 };
 window.MoChibi = MoChibi;

@@ -317,7 +317,11 @@
   }
 
   /* ---------- 数值平衡钳制 ---------- */
-  var TURN = { total: 0, gain: {}, allow: {}, span: { days: 0, text: "" }, spanQ: { minutes: 0, days: 0, text: "", level: "none" }, act: ACT_DEFAULT, tierRate: 1, actTotal: 0 };
+  var TURN = { total: 0, gain: {}, allow: {}, span: { days: 0, text: "" }, spanQ: { minutes: 0, days: 0, text: "", level: "none" }, act: ACT_DEFAULT, tierRate: 1, actTotal: 0,
+    playerException: false,   /* v6.3.6：本轮玩家发言是否明确要求放行数值规则 */
+    clamps: []                /* v6.3.6：本轮被钳制拦截的原因列表（供提示 + 回写 AI） */
+  };
+  var LAST_CLAMPS = [];       /* v6.3.6：上一轮钳制回执（跨轮留存，供 buildLiveBlock 回写 AI） */
   /**
    * 每轮开始：重置预算 + 解析本轮时间跨度 + 预算各属性的时间成长额度
    * @param {string} [replyText] AI 本轮回复全文（含变量块，用于检出跨度与期间状态）
@@ -328,6 +332,17 @@
     TURN.span = { days: 0, text: "" };
     TURN.spanQ = { minutes: 0, days: 0, text: "", level: "none" };
     TURN.act = ACT_DEFAULT; TURN.tierRate = 1; TURN.actTotal = 0;
+    TURN.clamps = [];
+    /* v6.3.6：识别本轮玩家发言里的明确数值要求（"我直接突破到筑基"等）——
+       命中则本轮数值写入按 free 放行，无需手动切模式。玩家输入在 user-input-handler 里写入。 */
+    TURN.playerException = false;
+    try {
+      if (window.FillRule && window.FillRule.playerWantsException) {
+        var pu = '';
+        try { pu = String(window.__yjLastUserInput || ''); } catch (e) { }
+        TURN.playerException = window.FillRule.playerWantsException(pu);
+      }
+    } catch (e) { }
     try {
       var fw = typeof window !== "undefined" ? window.storyFramework : null;
       var st = null;
@@ -408,7 +423,20 @@
       target[key] = r.val;
       /* 记录本轮该属性实际落表增量：供 settleTimeGrowth 抵充时间额度，避免重复给 */
       TURN.gain[key] = Math.round(((TURN.gain[key] || 0) + (r.val - cur)) * 10) / 10;
-      if (r.clipped && window.YJ_DEBUG) console.log("[AttributeEngine] 数值平衡钳制:", key, "请求Δ" + delta, "→ 实际Δ" + r.delta);
+      if (r.clipped) {
+        /* v6.3.6：拦截回执——记录被截原因，供玩家可见提示 + 回写下一轮 AI。
+           用 labelMap 把 key 转中文名（若有），原因分清"单项上限/本轮合计上限/值域"。 */
+        var dlabel = key;
+        try {
+          var _fw = window.storyFramework, _cfg = _fw && _fw.config;
+          (_cfg && _cfg.statKeys || []).forEach(function (sk) { if (sk && sk.key === key && sk.label) dlabel = sk.label; });
+        } catch (e) { }
+        var reason = (Math.abs(delta) > capForStat(key) + 0.01) ? ('单项单轮上限 ' + capForStat(key))
+          : ((capForTurn() - (TURN.total - Math.abs(r.delta))) < Math.abs(delta) - 0.01) ? ('本轮合计上限 ' + capForTurn())
+          : '值域 0-100';
+        TURN.clamps.push({ stat: dlabel, key: key, request: delta, actual: r.delta, reason: reason });
+        if (window.YJ_DEBUG) console.debug("[AttributeEngine] 数值平衡钳制:", key, "请求Δ" + delta, "→ 实际Δ" + r.delta, reason);
+      }
       /* v3.65.0 真实变动落审计账本 + 派发即时反馈事件（仅当确有增减） */
       if (r.delta !== 0) {
         var type = opts.type || (r.delta < 0 ? "injury" : "gain");
@@ -577,7 +605,7 @@
       tv.lastGrowth = applied;
       tv.lastGrowthTotal = sum;
       LAST_SETTLE = { days: days, chapter: chapter, text: TURN.span.text };
-      if (window.YJ_DEBUG) console.log("[AttributeEngine] 时间跨越结算:", daysText(days), TURN.act.name, JSON.stringify(applied));
+      if (window.YJ_DEBUG) console.debug("[AttributeEngine] 时间跨越结算:", daysText(days), TURN.act.name, JSON.stringify(applied));
       return { days: days, spanText: tv.spanText, activity: TURN.act.name, applied: applied, total: sum };
     } catch (e) {
       return null;
@@ -716,6 +744,19 @@
         discipline += "\n若本轮剧情发生时间跨越（数日/数月/数年），请在变量块写「时间.跨度: 三年」并让属性按幅度增长——引擎会据此放宽钳制、并按公式补齐未上报的成长。";
       }
       lines.push(discipline);
+      /* v6.3.6：把上一轮的数值钳制回执写进上下文，让主笔知道"上轮你上报的值被截了、原因是什么"，
+         避免同样的离谱数值反复出现。本轮玩家已明确要求放行时不回写（否则与放行语义打架）。 */
+      try {
+        if (!TURN.playerException && window.AttributeEngine && AttributeEngine.getLastClamps) {
+          var last = AttributeEngine.getLastClamps();
+          if (last.length) {
+            var rp = last.slice(0, 4).map(function (c) {
+              return c.stat + '：你上轮填 ' + (c.request > 0 ? '+' : '') + c.request + '，被引擎按规则截为 ' + (c.actual > 0 ? '+' : '') + c.actual + '（' + c.reason + '）';
+            });
+            lines.push('🧮 数值校验回执（上轮）：' + rp.join('；') + '。本轮请据实推导，勿再填越界值；若玩家本轮明确要求突破，以其要求为准并在正文写明。');
+          }
+        }
+      } catch (e) { }
       return lines.join("\n");
     } catch (e) {
       return "";
@@ -757,6 +798,24 @@
     recentChanges: recentChanges,
     specialtyOf: specialtyOf,
     recordStatLog: recordStatLog,
-    dispatchStatChange: dispatchStatChange
+    dispatchStatChange: dispatchStatChange,
+    /* v6.3.6 数值规则卡死：
+       shouldEnforceNow = FillRule 严格 且 本轮玩家未明确要求放行 —— 供 variable-parser 决定是否钳制。 */
+    shouldEnforceNow: function () {
+      var fr = window.FillRule;
+      var strict = !fr || (fr.shouldEnforceEngine ? fr.shouldEnforceEngine() : fr.isStrict());
+      return !!strict && !TURN.playerException;
+    },
+    /* 本轮玩家明确要求标记（只读） */
+    hasPlayerException: function () { return !!TURN.playerException; },
+    /* 本轮被钳制的回执（不清空），供 parse 末尾弹可见提示 */
+    getTurnClamps: function () { return (TURN.clamps || []).slice(); },
+    /* 把本轮回执存档为"上一次钳制"，供下一轮 buildLiveBlock 回写 AI；返回存档条数。 */
+    stashClampsForNextTurn: function () {
+      LAST_CLAMPS = (TURN.clamps || []).slice();
+      return LAST_CLAMPS.length;
+    },
+    /* 读取"上一次钳制"回执（回写 AI 用） */
+    getLastClamps: function () { return (LAST_CLAMPS || []).slice(); }
   };
 })();

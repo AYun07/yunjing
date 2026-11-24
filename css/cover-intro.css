@@ -1,0 +1,116 @@
+/* 云境 · 电影片头式入场 v8
+   云境大字浮现 → 淡出 → 画面推进到封面 → 粒子全程开启。纯前端 / 离线 / 零密钥。 */
+
+/* 开场覆盖层：深空起点（不再是死黑） */
+#coverIntro{
+  position:fixed; inset:0; z-index:9000; overflow:hidden;
+  background:radial-gradient(ellipse 120% 90% at 50% 38%, #171330 0%, #0c0a1d 46%, #05040f 100%);
+  opacity:1; transition:opacity .8s ease;
+}
+#coverIntro.out{ opacity:0; pointer-events:none; }
+#coverIntro.out.fast{ transition-duration:.3s; }
+
+/* 片头星云背景：纯 CSS 径向光晕 + 缓慢漂移/明灭，非图片非静态贴图，在封面推进时被自然盖住 */
+.ci-sky{ position:absolute; inset:-12%; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 34% 30% at 28% 26%, rgba(120,96,196,.26), transparent 70%),
+    radial-gradient(ellipse 40% 34% at 74% 22%, rgba(86,116,188,.20), transparent 72%),
+    radial-gradient(ellipse 52% 40% at 52% 82%, rgba(190,140,72,.16), transparent 74%),
+    radial-gradient(ellipse 24% 22% at 50% 40%, rgba(244,216,150,.12), transparent 72%);
+  filter:blur(6px);
+  animation:ci-sky-drift 16s ease-in-out infinite alternate;
+}
+@keyframes ci-sky-drift{
+  0%   { transform:scale(1) translate(0,0) rotate(0deg); opacity:.82; }
+  100% { transform:scale(1.09) translate(-1.5%,1%) rotate(2deg); opacity:1; }
+}
+
+/* 揭示层：封面动态视频，转场时从虚/暗/放大「推进」到清晰 */
+.ci-reveal{ position:absolute; inset:0; opacity:0; overflow:hidden;
+  transform-origin:50% 50%; will-change:opacity,transform,filter; }
+.ci-scene-video{ position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; object-position:center; display:block; }
+
+/* 粒子画布：全程开启，位于揭示层之上、标题卡之下 */
+.ci-fx{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+
+/* 暗角 */
+.ci-vignette{ position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 46%,transparent 50%,rgba(10,8,24,.28) 100%); }
+
+/* ===== 片头标题卡：纯 HTML 文字 + CSS 光效，非贴图非图片 ===== */
+.ci-titlecard{
+  position:absolute; inset:0; z-index:2; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; pointer-events:none;
+  will-change:opacity,transform,filter; color:var(--gold,#f4d896);
+}
+/* 呼吸光晕 */
+.tc-halo{
+  position:absolute; width:min(82vw,720px); height:min(82vw,720px); border-radius:50%;
+  background:radial-gradient(circle,rgba(244,216,150,.13) 0%,rgba(244,216,150,.05) 38%,rgba(244,216,150,0) 66%);
+  filter:blur(6px); animation:tc-breathe 3.2s ease-in-out infinite;
+}
+@keyframes tc-breathe{ 0%,100%{ transform:scale(.94); opacity:.7; } 50%{ transform:scale(1.06); opacity:1; } }
+
+.ci-titlecard h1{
+  position:relative; margin:0; font-size:clamp(66px,15vw,180px); font-weight:700;
+  letter-spacing:.28em; text-indent:.28em; line-height:1.1;
+  color:#f6dea2;
+  text-shadow:0 0 18px rgba(244,216,150,.55),0 0 46px rgba(244,216,150,.28),
+              0 2px 10px rgba(0,0,0,.7);
+  overflow:hidden;
+}
+/* 一道柔光横扫过「云境」二字：水平+垂直双向羽化，避免硬边方块露出 */
+.ci-titlecard h1::after{
+  content:""; position:absolute; top:-30%; left:-60%; width:44%; height:160%;
+  background:radial-gradient(ellipse 50% 42% at 50% 50%,rgba(255,250,232,.6),rgba(255,246,214,.16) 45%,transparent 72%);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 32%,#000 68%,transparent 100%);
+          mask-image:linear-gradient(180deg,transparent 0%,#000 32%,#000 68%,transparent 100%);
+  transform:skewX(-18deg); animation:tc-sweep 5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes tc-sweep{ 0%,16%{ left:-60%; } 62%,100%{ left:130%; } }
+
+/* 装饰金线：由中间向两端展开 */
+.tc-line{
+  width:clamp(120px,26vw,300px); height:1px; margin:clamp(18px,3vh,34px) 0 clamp(14px,2.4vh,26px);
+  background:linear-gradient(90deg,transparent,rgba(244,216,150,.85),transparent);
+  transform-origin:center; animation:tc-line 2.4s ease-out both;
+}
+@keyframes tc-line{ 0%{ transform:scaleX(0); opacity:0; } 60%{ opacity:1; } 100%{ transform:scaleX(1); opacity:1; } }
+
+.tc-sub{
+  margin:0; font-size:clamp(18px,3vw,34px); font-weight:600;
+  letter-spacing:.3em; text-indent:.3em;
+  color:#f6e2b4;
+  text-shadow:0 2px 6px rgba(0,0,0,.95),0 0 18px rgba(244,216,150,.35),0 0 3px rgba(0,0,0,.9);
+}
+
+/* 跳过按钮：全程可点 */
+.ci-skip{ position:absolute; right:20px; top:18px; z-index:3;
+  padding:9px 18px; border:1px solid rgba(244,216,150,.55); border-radius:22px;
+  background:rgba(14,11,30,.5); color:#f4d896; backdrop-filter:blur(5px);
+  font:14px/1 system-ui,sans-serif; letter-spacing:.12em; cursor:pointer;
+  opacity:.9; transition:opacity .3s,background .2s; }
+.ci-skip:hover{ opacity:1; background:rgba(14,11,30,.82); }
+@media (max-width:520px){ .ci-skip{ right:12px; top:12px; padding:8px 14px; font-size:13px; } }
+
+/* 片头阶段：隐藏原生封面元素，确保开场是纯黑 + 云境二字 */
+body.yjCoverIntro .brand,body.yjCoverIntro .menu,
+body.yjCoverIntro .bg,body.yjCoverIntro .veil{ opacity:0 !important; }
+.brand,.menu,.bg,.veil{ transition:opacity .85s ease,transform .85s ease; }
+
+/* ===== 封面页常驻动态层 =====
+   收尾后两层移交 #stage 常驻：场景视频(底) + 粒子(上)，视频继续 loop。
+   z-index:1 在四入口之下、标题之上。 */
+#coverFxLayer{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; background:transparent; }
+#coverFxLayer .ci-reveal{ position:absolute; inset:0; opacity:1; transform:none; filter:none; }
+#coverFxLayer .ci-scene-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
+#coverFxLayer .ci-fx{ position:absolute; inset:0; }
+/* 标题/氛围层抬到视频层之上、入口之下，避免被场景底图盖住 */
+.stage .brand,.stage .veil{ z-index:2; }
+
+@media (prefers-reduced-motion:reduce){
+  .tc-halo,.ci-titlecard h1::after,.tc-line{ animation:none; }
+  .ci-fx{ opacity:.5; }
+}

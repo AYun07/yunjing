@@ -1,0 +1,59 @@
+/* 云境 · AI 增强与亲密档案面板样式（本项目独立编写）
+   前缀 ia-（亲密档案）/ aia-（AI 增强中心），避免与现有样式冲突 */
+.ia-overlay,.aia-overlay{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(6,4,12,.68);backdrop-filter:blur(3px);animation:ia-fade .18s ease}
+@keyframes ia-fade{from{opacity:0}to{opacity:1}}
+.ia-panel,.aia-panel{width:min(92vw,680px);max-height:86vh;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#1b1530,#141024);border:1px solid #3a2f52;border-radius:16px;box-shadow:0 18px 60px rgba(0,0,0,.55)}
+.ia-head,.aia-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid #2e2740}
+.ia-head h3,.aia-head h3{margin:0;font-size:18px;color:#e8c987;letter-spacing:.5px}
+.ia-close,.aia-close{background:none;border:1px solid #3a2f52;color:#b9a9cf;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px}
+.ia-close:hover,.aia-close:hover{background:#2a2140;color:#fff}
+.ia-body,.aia-body{padding:18px 22px;overflow:auto}
+.ia-muted,.aia-muted{color:#8c819e;font-size:12.5px}
+.ia-on,.aia-on{color:#7fd6a8}.ia-off,.aia-off{color:#9a8fa8}
+.ia-status,.aia-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#cdbfe0;margin-bottom:12px}
+.ia-r18{font-size:10px;padding:2px 6px;border:1px solid #b06a6a;color:#e0a0a0;border-radius:5px;margin-left:6px;vertical-align:middle}
+.ia-toggle,.aia-master,.aia-task,.aia-reset{background:#2a2140;border:1px solid #4a3a68;color:#e8dcc0;border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer}
+.ia-toggle:hover,.aia-master:hover,.aia-task:hover,.aia-reset:hover{background:#3a2c58}
+.ia-notice,.aia-notice{background:#2a2035;border-left:3px solid #b08a4a;color:#c9bcd8;font-size:12px;padding:9px 12px;border-radius:6px;margin:0 0 14px}
+.ia-cards{display:flex;flex-direction:column;gap:12px}
+.ia-card{background:#171228;border:1px solid #2e2740;border-radius:12px;padding:14px 16px}
+.ia-card-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ia-card-head b{color:#e8dcc0;font-size:14px}
+.ia-stage{font-size:11px;color:#c9a86a;border:1px solid #6a5636;border-radius:5px;padding:1px 7px}
+.ia-pet{font-size:11px;color:#cbaad8;font-style:italic}
+.ia-ax{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:12px;color:#b9a9cf}
+.ia-ax span{width:44px;flex:none}
+.ia-ax-track{flex:1;height:7px;background:#241c38;border-radius:5px;overflow:hidden}
+.ia-ax-track i{display:block;height:100%;border-radius:5px}
+.ia-ax b{width:30px;text-align:right;color:#e8dcc0}
+.ia-bounds{font-size:11.5px;color:#9a8fa8;margin:8px 0}
+.ia-card details{margin-top:6px}
+.ia-card summary{cursor:pointer;font-size:12px;color:#c9a86a;padding:3px 0}
+.ia-list{margin:6px 0 0;padding-left:18px;color:#b9a9cf;font-size:12px;line-height:1.7}
+.aia-rows{display:flex;flex-direction:column;gap:8px}
+.aia-row{position:relative;background:#171228;border:1px solid #2e2740;border-radius:10px;padding:11px 14px;padding-right:84px}
+.aia-row-main{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.aia-row-main b{color:#e8dcc0;font-size:13px}
+.aia-tag{font-size:10px;color:#9a8fa8;background:#241c38;border-radius:4px;padding:1px 6px}
+.aia-every{font-size:11px;color:#7fbfa0}
+.aia-row-meta{font-size:11.5px;color:#9a8fa8;margin-top:4px}
+.aia-task{position:absolute;right:12px;top:50%;transform:translateY(-50%)}
+.aia-existing{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:#8fa9c9;border:1px solid #3a4a68;border-radius:6px;padding:4px 9px;background:#1b2436}
+.aia-total{margin-top:16px;padding-top:12px;border-top:1px solid #2e2740;font-size:12.5px;color:#cdbfe0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.aia-total b{color:#e8c987}
+/* v4.45.0 动态关系：表达尺度 / 五维双向条 / 锁定 / 变动轨迹 / 负面阶段 */
+.ia-exprbar{display:flex;align-items:center;gap:8px;margin:10px 0;flex-wrap:wrap}
+.ia-exprbar>span{font-size:12px;color:#9a8fa8}
+.ia-expr{font-size:11.5px;color:#b9a9cf;background:#241c38;border:1px solid #3a3050;border-radius:12px;padding:3px 12px;cursor:pointer}
+.ia-expr.on{background:#c9a86a;color:#1a1a1a;font-weight:600;border-color:#c9a86a}
+.ia-stage.neg{color:#e29a95;border-color:#7a3f3b}
+.ia-total{font-size:11px;color:#9a8fa8;margin-left:auto}
+.ia-ax-track{position:relative}
+.ia-ax-track .ia-mid{position:absolute;left:50%;top:0;width:1px;height:100%;background:#4a3f60;z-index:2}
+.ia-lock{font-size:10px;color:#8fbf9f;background:transparent;border:1px solid #3a5a46;border-radius:8px;padding:1px 7px;cursor:pointer;flex:none}
+.ia-lock:hover{background:rgba(90,160,120,.15)}
+.ia-hist li{font-size:11px}
+.ia-hist li i{color:#9a8fa8;font-style:normal}
+.ia-hist li span{color:#6f6578}
+.ia-notice{font-size:11.5px;line-height:1.6;color:#a9987a;background:rgba(201,168,106,.06);border-left:2px solid #6a5636;padding:7px 10px;border-radius:4px;margin:8px 0}
+@media(max-width:520px){.ia-panel,.aia-panel{width:96vw}.ia-body,.aia-body{padding:14px}}

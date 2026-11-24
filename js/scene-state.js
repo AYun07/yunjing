@@ -87,7 +87,7 @@ ${body.slice(0, 8e3)}`
         };
         (_c = fw.saveStory) == null ? void 0 : _c.call(fw);
         (_d = this.renderBadge) == null ? void 0 : _d.call(this);
-        console.log(`[舞台] 第 ${cur.turn} 轮：${cur.place || "未名地点"} · ${cur.time || "时辰未定"} · 在场 ${cur.cast.length} 人`);
+        console.debug(`[舞台] 第 ${cur.turn} 轮：${cur.place || "未名地点"} · ${cur.time || "时辰未定"} · 在场 ${cur.cast.length} 人`);
         return true;
       } catch (e) {
         console.error("[舞台] 登记失败:", e);
@@ -309,7 +309,7 @@ ${line.join("\n")}`
         }, 3e3);
       });
       setTimeout(() => this.renderBadge(), 1200);
-      console.log("[舞台] 已安装（每轮自动登记场景状态）");
+      console.debug("[舞台] 已安装（每轮自动登记场景状态）");
     }
   };
   window.SceneState = SceneState;

@@ -1,6 +1,6 @@
 /**
  * 通用小说创作框架 - Story Framework
- * 模仿「觅长生」game-framework.js 的配置驱动架构
+ * 配置驱动的架构
  * 提供故事状态管理、会话历史、API 配置持久化等通用功能
  * 可以被不同的类型配置文件（configs/*-config.js）使用
  */
@@ -478,6 +478,8 @@ class StoryFramework {
             if (window.StorageBoost && StorageBoost.ready()) {
                 StorageBoost.remove('主档/' + this.getSaveKey());
                 StorageBoost.remove('transcript/' + this.getSaveKey());
+                StorageBoost.remove(this._arcKey());   // v6.3.5：全量轮次档案一并清，防旧剧情幽灵复活
+                if (window.FloorState) { try { window.FloorState.clear(this); } catch (e) { } } // v6.3.14：楼层快照+撤销点一并清
             }
         } catch (e) { }
         this._trFlushedLen = 0;   /* v3.55.22 transcript 节流游标归零 */
@@ -583,6 +585,12 @@ class StoryFramework {
             driftBefore: Array.isArray(s.driftNotes) ? s.driftNotes.slice() : null
         });
         if (s.turns.length > 40) s.turns.shift(); // 防存档膨胀（index 为绝对轮号，滑动无需重编号）
+        // v6.3.5：异步备一份到全量档案，突破 40 轮热栈限制以支持任意回合回档
+        try { this.archiveTurn(s.turns[s.turns.length - 1]); } catch (e) { }
+        /* v6.3.14：全量楼层快照。此刻状态 = 第 nextIdx 轮开始前 = 上一轮结束后，
+           与 turns[i].varsBefore / turnArc 语义一致。差量+锚点存到固定 IDB 键，
+           体积有界；失败静默降级不影响创作。 */
+        try { if (window.FloorState) window.FloorState.record(this, nextIdx); } catch (e) { }
     }
 
     /**
@@ -644,6 +652,252 @@ class StoryFramework {
         }
         this.updateStatusPanel();
         return t;
+    }
+
+    /* ==================== v6.3.5 全量轮次档案（任意回合回档） ==================== */
+    /* 背景：turns[] 热栈硬上限 40 轮（内存治理 DR-036），更早轮次的变量快照被 shift 掉，
+       无法精确回档。这里把每一轮的快照异步备一份到 IndexedDB（轻量结构化数据，不含图片，
+       不占 localStorage、不与内存治理冲突），使"选定任意回合回档"成为可能。
+       老存档没有全量档案时，rewindTo 自动降级为 40 轮热栈内可选。 */
+
+    /** 本档全量轮次档案的 IDB 键 */
+    _arcKey() { return 'turnArc/' + this.getSaveKey(); }
+
+    /**
+     * 把一轮快照写入全量档案（pushTurnSnapshot 后调用，异步、失败静默降级）。
+     * 以 index 为唯一标识覆盖写，天然去重；读端按 index 排序即得完整时间轴。
+     * v6.3.5 修正：连续多轮会并发调用，get→改→put 若并发会互相覆盖（lost update，
+     * 实测 5 连发只剩最后一轮）。这里用实例级 Promise 队列把读改写串行化。
+     */
+    archiveTurn(snap) {
+        if (!snap || typeof snap.index !== 'number') return;
+        try {
+            if (!(window.StorageBoost && StorageBoost.ready())) return;
+            const key = this._arcKey();
+            const copy = {
+                index: snap.index, user: snap.user, histLen: snap.histLen,
+                varsBefore: snap.varsBefore, digestBefore: snap.digestBefore,
+                driftBefore: snap.driftBefore, turnCount: snap.turnCount,
+                savedAt: Date.now()
+            };
+            const write = () => StorageBoost.get(key).then(raw => {
+                let arr = [];
+                if (raw) { try { const p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } catch (e) { } }
+                const i = arr.findIndex(x => x && x.index === snap.index);
+                if (i >= 0) arr[i] = copy; else arr.push(copy);
+                arr.sort((a, b) => a.index - b.index);
+                return StorageBoost.put(key, JSON.stringify(arr));
+            }).catch(() => { });
+            // 串行队列：无论调用多密集，读-改-写一次一个
+            this._arcQueue = (this._arcQueue || Promise.resolve()).then(write, write);
+        } catch (e) { }
+    }
+
+    /** 读取本档全量轮次档案（Promise<Array>）；无档案返回 [] */
+    loadTurnArchive() {
+        try {
+            if (!(window.StorageBoost && StorageBoost.ready())) return Promise.resolve([]);
+            return StorageBoost.get(this._arcKey()).then(raw => {
+                if (!raw) return [];
+                try { const a = JSON.parse(raw); return Array.isArray(a) ? a.sort((x, y) => x.index - y.index) : []; }
+                catch (e) { return []; }
+            }).catch(() => []);
+        } catch (e) { return Promise.resolve([]); }
+    }
+
+    /**
+     * 回档到指定轮（任意回合），覆盖式：丢弃 target 之后的轮次。
+     * @param {number} index 目标轮的绝对轮号
+     * @param {string} mode  'before'=回到该轮开始前（丢弃本轮及之后）；'after'=保留该轮、只丢之后
+     * @param {object} opts  v6.4.0：{ includePersistent:boolean } 是否连足迹/传承一起退回，默认否
+     * @returns {Promise<object|null>} 还原用的现场快照（含 user 指令），失败返回 null
+     */
+    async rewindTo(index, mode, opts) {
+        const s = this.storyState;
+        mode = (mode === 'after') ? 'after' : 'before';
+        const includePersistent = !!(opts && opts.includePersistent);
+        // 先等归档队列排空，否则残留的归档写会基于旧档案复活已删轮次
+        try { if (this._arcQueue) await this._arcQueue; } catch (e) { }
+        try { if (this._fsQueue) await this._fsQueue; } catch (e) { }
+
+        /* v6.3.14：优先走全量楼层快照——任意层、所有随剧情演化的数据一起还原。
+           目标层 index 的快照语义 = 该轮开始前状态；'after' 用 index+1。
+           老存档无 floorState 时 targetFull 为 null，自动回落到下方原有 turnArc 逻辑。 */
+        const FS = window.FloorState;
+        let fullTarget = null;
+        if (FS) {
+            try { fullTarget = await FS.load(this, mode === 'after' ? index + 1 : index); } catch (e) { }
+        }
+        if (fullTarget) {
+            // 撤销点：回档前的当前全量状态 + 完整对话（上限 5，覆盖式）。
+            // 完整对话必须一并存——回档会截断 transcript，撤销时只能靠这里补回楼层。
+            try {
+                const undoSnap = FS.capture(this);
+                undoSnap.fullHistory = s.conversationHistory.slice();
+                FS.pushUndo(this, undoSnap);
+            } catch (e) { }
+
+            // 1) 全量还原 storyState 各字段 + 所有旁路键（v6.4.0：持久项按玩家勾选决定）
+            const restoredHistLen = FS.restore(this, fullTarget, includePersistent);
+            // 2) 对话历史按目标长度截断（只缩不扩）
+            if (typeof restoredHistLen === 'number' && restoredHistLen >= 0 && restoredHistLen <= s.conversationHistory.length) {
+                s.conversationHistory.length = restoredHistLen;
+            }
+            if (typeof fullTarget.histLen === 'number' && fullTarget.histLen < s.conversationHistory.length) {
+                s.conversationHistory.length = fullTarget.histLen;
+            }
+            // 3) 回档代际 +1（让在飞的异步摘要/记忆作废，防跨回退复活）
+            s._rollbackEpoch = (Number(s._rollbackEpoch) || 0) + 1;
+            // 4) turns 热栈 / turnArc 同步裁剪，防刷新复活
+            const cut = (mode === 'after') ? index + 1 : index;
+            if (Array.isArray(s.turns)) s.turns = s.turns.filter(x => x && typeof x.index === 'number' && x.index < cut);
+            try {
+                const arc0 = await this.loadTurnArchive();
+                if (window.StorageBoost && StorageBoost.ready()) {
+                    StorageBoost.put(this._arcKey(), JSON.stringify(arc0.filter(x => x && typeof x.index === 'number' && x.index < cut)));
+                }
+            } catch (e) { }
+            // 5) 楼层快照本身截断 + transcript 按 histLen 截断
+            try { await FS.truncate(this, cut); } catch (e) { }
+            try {
+                if (window.StorageBoost && StorageBoost.ready()) {
+                    const trKey = this.getSaveKey();
+                    StorageBoost.put('transcript/' + trKey, JSON.stringify({
+                        upTo: s.conversationHistory.length, floors: s.conversationHistory.slice()
+                    }));
+                    this._trFlushedLen = s.conversationHistory.length;
+                    try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+                }
+            } catch (e) { }
+            // 6) DOM 卡片删除 data-turn >= cut
+            const container = document.getElementById('chatMessages');
+            if (container) {
+                for (const el of Array.from(container.children)) {
+                    const raw = el.getAttribute ? el.getAttribute('data-turn') : null;
+                    if (raw === null || raw === undefined || raw === '') continue;
+                    const v = Number(raw);
+                    if (!Number.isNaN(v) && v >= cut) container.removeChild(el);
+                }
+            }
+            this.updateStatusPanel();
+            this.saveStory();
+            return { index: index, user: fullTarget.user || (s.conversationHistory[restoredHistLen - 1] || {}).content || '', mode: mode, cutIndex: cut, full: true };
+        }
+
+        // ===== 以下为老存档降级：原有 turnArc 40 轮逻辑，一字未改 =====
+        const arc = await this.loadTurnArchive();
+        // 目标现场：before 用该轮快照；after 用该轮之后一轮的快照（= 该轮结束后的状态）
+        let target = null, cutIndex = index;
+        if (mode === 'after') {
+            const nextSnap = arc.find(x => x.index === index + 1);
+            if (nextSnap) { target = nextSnap; cutIndex = index + 1; }
+            else {
+                // 该轮是末轮或档案缺失后继：用内存末轮状态作"结束后"现场
+                target = {
+                    index: index + 1, varsBefore: JSON.parse(JSON.stringify(s.variables || {})),
+                    histLen: s.conversationHistory.length,
+                    digestBefore: (s.digest && s.digest.summary) ? JSON.parse(JSON.stringify(s.digest)) : null,
+                    driftBefore: Array.isArray(s.driftNotes) ? s.driftNotes.slice() : null,
+                    turnCount: s.turnCount
+                };
+            }
+        } else {
+            target = arc.find(x => x.index === index);
+        }
+        // 档案无该轮：降级到 40 轮热栈内查找
+        if (!target) {
+            const hot = (s.turns || []).find(x => x && x.index === (mode === 'after' ? index + 1 : index));
+            if (hot) { target = hot; cutIndex = mode === 'after' ? index + 1 : index; }
+        }
+        if (!target) return null;
+
+        // 1) 还原变量 / 摘要 / 漂移 / 轮数
+        s.variables = target.varsBefore ? JSON.parse(JSON.stringify(target.varsBefore)) : {};
+        if (target.digestBefore !== undefined) {
+            s.digest = target.digestBefore || undefined;
+            if (s.digest && typeof s.digest.upToIndex === 'number' && s.digest.upToIndex > (target.histLen || 0)) {
+                s.digest.upToIndex = Math.max(0, target.histLen || 0);
+            }
+        }
+        if (target.driftBefore !== undefined) s.driftNotes = target.driftBefore || [];
+        if (typeof target.turnCount === 'number') s.turnCount = target.turnCount;
+        s._rollbackEpoch = (Number(s._rollbackEpoch) || 0) + 1;
+
+        // 2) 截断内存对话历史（只缩不扩）
+        if (typeof target.histLen === 'number' && target.histLen >= 0 && target.histLen <= s.conversationHistory.length) {
+            s.conversationHistory.length = target.histLen;
+        }
+
+        // 3) 更新内存 turns 热栈：只保留 index < cutIndex 的快照
+        if (Array.isArray(s.turns)) s.turns = s.turns.filter(x => x && typeof x.index === 'number' && x.index < cutIndex);
+
+        // 4) 同步 IDB 全量档案：删除 index >= cutIndex 的轮次，防刷新后旧剧情复活
+        try {
+            if (window.StorageBoost && StorageBoost.ready()) {
+                const kept = arc.filter(x => x && typeof x.index === 'number' && x.index < cutIndex);
+                StorageBoost.put(this._arcKey(), JSON.stringify(kept));
+            }
+        } catch (e) { }
+
+        // 5) 同步 IndexedDB transcript：按目标 histLen 截断（改写 upTo+floors）
+        try {
+            if (window.StorageBoost && StorageBoost.ready() && typeof target.histLen === 'number') {
+                const trKey = this.getSaveKey();
+                StorageBoost.put('transcript/' + trKey, JSON.stringify({
+                    upTo: target.histLen, floors: s.conversationHistory.slice(0, target.histLen)
+                }));
+                this._trFlushedLen = target.histLen;
+                try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+            }
+        } catch (e) { }
+
+        // 6) DOM 卡片：删除 data-turn >= cutIndex 的卡片；并让虚拟滚动整体重挂
+        const container = document.getElementById('chatMessages');
+        if (container) {
+            for (const el of Array.from(container.children)) {
+                const raw = el.getAttribute ? el.getAttribute('data-turn') : null;
+                if (raw === null || raw === undefined || raw === '') continue;
+                const v = Number(raw);
+                if (!Number.isNaN(v) && v >= cutIndex) container.removeChild(el);
+            }
+        }
+        // 整体重建（虚拟器 remount / replayHistory）由调用方统一执行，避免重复竞态
+
+        this.updateStatusPanel();
+        this.saveStory();
+        return { index: index, user: target.user || '', mode: mode, cutIndex: cutIndex };
+    }
+
+    /**
+     * v6.3.14：撤销上一次回档。把回档前的全量状态（含对话长度）写回。
+     * 恢复点上限 5（FloorState 内覆盖式），误回档可一键撤回。
+     * @returns {Promise<boolean>} 是否成功撤销
+     */
+    async undoRewind() {
+        const FS = window.FloorState;
+        if (!FS) return false;
+        try { if (this._fsQueue) await this._fsQueue; } catch (e) { }
+        const full = await FS.popUndo(this);
+        if (!full) return false;
+        try { FS.restore(this, full); } catch (e) { return false; }
+        const s = this.storyState;
+        // 对话历史：优先用撤销点里存的完整副本（回档时已截断 transcript，只能靠这里补回）
+        if (Array.isArray(full.fullHistory)) {
+            s.conversationHistory = full.fullHistory.slice();
+        }
+        // 同步写回 transcript，防刷新后又被旧的长截断版覆盖
+        try {
+            if (window.StorageBoost && StorageBoost.ready()) {
+                StorageBoost.put('transcript/' + this.getSaveKey(), JSON.stringify({
+                    upTo: s.conversationHistory.length, floors: s.conversationHistory.slice()
+                }));
+                this._trFlushedLen = s.conversationHistory.length;
+            }
+        } catch (e) { }
+        s._rollbackEpoch = (Number(s._rollbackEpoch) || 0) + 1;
+        this.updateStatusPanel();
+        this.saveStory();
+        return true;
     }
 
     // ==================== 状态更新 ====================

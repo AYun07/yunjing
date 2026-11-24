@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<script src="js/entry-guard.js?v=6.9.4"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>云境 · 五线深度舆图 · 实际预览</title>
+<link rel="stylesheet" href="css/atlas-drilldown.css?v=6.9.4">
+<link rel="stylesheet" href="css/atlas-faction-layer.css?v=6.9.4">
+<link rel="stylesheet" href="css/atlas-canon-layer.css?v=6.9.4">
+<style>
+  html,body{margin:0;height:100%;background:#070c12;overflow:hidden}
+  #bootTip{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    color:#d9b46a;font:15px "Noto Serif SC",serif;letter-spacing:2px;z-index:1}
+  #pvHint{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:9500;
+    color:#7d8b96;font:12px "Noto Serif SC",serif;letter-spacing:1px;opacity:.75;pointer-events:none;text-align:center}
+</style>
+</head>
+<body>
+<div id="bootTip">正在展开五线深度舆图…</div>
+<script src="js/atlas-drill-data.js?v=6.9.4"></script>
+<script src="js/atlas-drilldown.js?v=6.9.4"></script>
+<script src="js/atlas-faction-anchors.js?v=6.9.4"></script>
+<script src="js/atlas-faction-layer.js?v=6.9.4"></script>
+<script src="js/atlas-canon-places.js?v=6.9.4"></script>
+<script src="js/atlas-canon-layer.js?v=6.9.4"></script>
+<script>
+  (function(){
+    var g = new URLSearchParams(location.search).get('genre') || 'douluodalu';
+    // 预览页演示数据：模拟真实世界实体里的动态势力（无此数据时旗标层为空，符合真实逻辑）
+    function seedDemo(){
+      var fw = window.storyFramework = window.storyFramework || {};
+      fw.storyState = fw.storyState || {};
+      fw.storyState.variables = fw.storyState.variables || {};
+      var ents = fw.storyState.variables.entities = fw.storyState.variables.entities || {};
+      ents.factions = {
+        '玩家势力·破军盟': {name:'破军盟',origin:'player',influence:82,members:340,territory:'天斗城',status:'active',desc:'玩家亲手建立的横跨大陆的势力'},
+        '玩家势力·星火宗': {name:'星火宗',origin:'player',influence:52,members:88,territory:'史莱克学院',status:'active',desc:'新兴宗门'},
+        '传灵塔': {name:'传灵塔',origin:'world',influence:90,members:1200,territory:'传灵塔总部',status:'active',desc:'横跨大陆的巨无霸势力'},
+        '玩家势力·旧日王朝': {name:'旧日王朝',origin:'player',influence:8,members:12,territory:'星罗帝国',status:'destroyed',desc:'曾经辉煌，如今倾覆'},
+        '玩家势力·折剑行': {name:'折剑行',origin:'player',influence:45,members:60,territory:'天斗城',status:'revived',revived:true,desc:'覆灭后卷土重来'}
+      };
+    }
+    function open(){
+      if (!window.AtlasDrill || !window.AtlasFactionLayer){ setTimeout(open,120); return; }
+      seedDemo();
+      document.getElementById('bootTip').style.display='none';
+      window.AtlasDrill.show(g);
+      setTimeout(function(){ window.AtlasFactionLayer.inject && window.AtlasFactionLayer.inject(); }, 200);
+      var h=document.createElement('div'); h.id='pvHint';
+      h.textContent='点击金色⚑/蓝色⚔势力旗标看详情 · 规模不同落在不同层级 · 点击地名逐级下钻 · 顶部切换时代';
+      document.body.appendChild(h);
+    }
+    open();
+  })();
+</script>
+</body>
+</html>

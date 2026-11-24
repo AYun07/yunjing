@@ -279,7 +279,7 @@ const DynamicWorld = {
       this.removeLoading();
       this.notifyNewEntry(entry);
       fw.saveStory();
-      console.log(`[动态世界] 第 ${entry.floor} 层生成成功`);
+      console.debug(`[动态世界] 第 ${entry.floor} 层生成成功`);
     } catch (err) {
       console.error("[动态世界] 生成失败:", err);
       this.removeLoading();
@@ -306,7 +306,7 @@ const DynamicWorld = {
     const date = [v.date, v.日期, v.year].map((x) => String(x || "").trim()).find((x) => x && x !== "未上报") || "";
     return { era, date };
   },
-  /** 构建发给额外API的消息序列（模仿觅长生 buildOptimizedMessages 的分层策略） */
+  /** 构建发给额外API的消息序列（分层组装策略） */
   buildMessages(s) {
     const fw = window.storyFramework;
     const v = fw.storyState.variables;

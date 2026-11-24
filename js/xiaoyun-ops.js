@@ -121,7 +121,7 @@
     },
     /* —— 预设与正则 —— */
     "preset.info": {
-      desc: "查看当前生效的主笔预设（内置云起 / 玩家导入的第三方酒馆预设）", args: "{}",
+      desc: "查看当前生效的主笔预设（内置云起 / 玩家导入的第三方预设）", args: "{}",
       fn: function () {
         if (!window.YunjingPresetIO) return { ok: false, msg: "预设系统未加载。" };
         var i = window.YunjingPresetIO.info();
@@ -137,7 +137,7 @@
       }
     },
     "preset.importText": {
-      desc: "导入一份第三方（酒馆/SillyTavern 格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
+      desc: "导入一份第三方（常见格式）预设 JSON 文本并整份替换当前预设", args: "{json}",
       fn: function (a) {
         if (!window.YunjingPresetIO) return { ok: false, msg: "预设系统未加载。" };
         if (!a || !a.json) return { ok: false, msg: "缺少预设 JSON 文本。" };
@@ -156,7 +156,7 @@
       }
     },
     "regex.importText": {
-      desc: "导入一段酒馆格式正则 JSON 文本", args: "{json}",
+      desc: "导入一段通用格式正则 JSON 文本", args: "{json}",
       fn: function (a) {
         if (!window.YunjingRegexIO) return { ok: false, msg: "正则系统未加载。" };
         if (!a || !a.json) return { ok: false, msg: "缺少正则 JSON 文本。" };

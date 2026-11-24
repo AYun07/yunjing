@@ -15,6 +15,11 @@
 import asyncio, glob, io, json, os, re, sys
 from playwright.async_api import async_playwright
 
+import os
+
+ROOT = os.environ.get("YJ_ROOT") or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
 E = os.environ.get("YJ_TEST_ENDPOINT", "https://apihub.agnes-ai.com/v1")
 K = os.environ.get("YJ_TEST_KEY", "")
 MODEL = "agnes-3.0-flash"
@@ -30,7 +35,7 @@ if not K:
     print("⚠ 未设置 YJ_TEST_KEY（仓库内不存密钥）")
     raise SystemExit(2)
 
-ALL_GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob("/workspace/yunjing/js/kb/*.core.js"))
+ALL_GENRES = sorted(os.path.basename(f)[:-8] for f in glob.glob(os.path.join(ROOT, "js/kb/*.core.js")))
 
 # ── 校验用正则 ───────────────────────────────────────────────
 # v4.07.2 收紧：初版口径过宽，把「领口的粗布衣襟」误判成金币 62、把「红名不能在主城」

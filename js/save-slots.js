@@ -29,10 +29,23 @@
       }
       return arr;
     },
+    /* v6.7.0 修复（存储配额满时的"假成功"）：
+       旧版这里是空 catch——写注册表失败时书架内存里有这条档、磁盘上没有，玩家全程零提示，
+       刷新后档位连同存进去的内容一起消失。现在返回布尔值并把失败说给玩家听。 */
     _write(arr) {
       try {
         localStorage.setItem(this.regKey(this.genre()), JSON.stringify(arr));
+        return true;
       } catch (e) {
+        try {
+          var now = Date.now();
+          if (!this.__quotaToastAt || now - this.__quotaToastAt > 4000) {
+            this.__quotaToastAt = now;
+            if (window.showToast) window.showToast("存档书架写入失败：浏览器本地存储已满（档位未真正保存）。请到「工具箱 → 🛡 存档体检」清理空间后重试。", "error");
+          }
+        } catch (e2) {}
+        console.warn("[SaveSlots] 注册表写入失败:", e && e.name || e);
+        return false;
       }
     },
     activeId() {
@@ -86,16 +99,20 @@
       const id = "s" + Date.now().toString(36);
       const arr = this.list();
       arr.push({ id, name: name || `书档 ${arr.length}`, createdAt: Date.now(), updatedAt: Date.now() });
-      this._write(arr);
+      /* 落盘失败就当作没建成，返回 null——绝不返回一个"只存在于内存里"的档号 */
+      if (!this._write(arr)) return null;
       return id;
     },
     rename(slotId, name) {
       const arr = this.list();
       const r = arr.find((x) => x.id === slotId);
       if (r) {
+        const prev = r.name;
         r.name = String(name || r.name).slice(0, 24);
-        this._write(arr);
+        if (!this._write(arr)) { r.name = prev; return false; }
+        return true;
       }
+      return false;
     },
     /** 删除槽位（当前激活槽禁删——先切走再删；主档可删=清档） */
     remove(slotId) {
@@ -240,6 +257,7 @@
           const fw = window.storyFramework;
           if (pkg.genre && pkg.genre !== fw.genre) throw new Error(`该存档属于「${pkg.genre}」工坊，请去对应工坊导入`);
           const id = this.create((((_a = pkg.meta) == null ? void 0 : _a.name) || "导入档").slice(0, 24));
+          if (!id) throw new Error("存储空间不足，无法新建档位");
           const suffix = `~${id}`;
           localStorage.setItem(`storySave_${fw.genre}${suffix}`, JSON.stringify(pkg.save));
           /* v3.68.0 存档迁移修复：灵宠/小队随档恢复到新槽位 */
@@ -735,6 +753,7 @@
       }
       if (name === null) return;
       const id = this.create(name.trim() || void 0);
+      if (!id) return;   // 存储已满：已经弹过提示，不再切换到一个不存在的档
       this.switchTo(id);
     },
     async renamePrompt(slotId) {

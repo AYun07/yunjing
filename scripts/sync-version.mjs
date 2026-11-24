@@ -85,7 +85,9 @@ function walkAssets(dir, out) {
 }
 const assetFiles = walkAssets(ROOT, []).filter((r) => !r.startsWith('changelog/'));
 for (const rel of assetFiles) {
-  fix(rel, (s) => s.replace(/\?v=[\d.]+/g, `?v=${VER}`), `静态资源引用 ?v= → ${VER}`);
+  /* v6.7.0：连 `&v=`（界入口链接 `studio.html?genre=xxx&v=1.6.9`）一起同步。
+     旧版只认 `?v=`，于是 index.html 里 44 处带历史版本戳的入口链接既修不掉也检测不出。 */
+  fix(rel, (s) => s.replace(/([?&])v=[\d.]+/g, `$1v=${VER}`), `静态资源引用 ?v= / &v= → ${VER}`);
 }
 /* changelog 自带一份 CSS 引用，也要同步（但历史条目的正文版本号绝不动） */
 fix('changelog/index.html', (s) => s.replace(/\?v=[\d.]+/g, `?v=${VER}`), `changelog 资源引用 ?v= → ${VER}`);
@@ -109,8 +111,12 @@ fix('index.html', (s) => s.replace(/window\.YJ_VER = '[\d.]+'/, `window.YJ_VER =
    这是实测出来的回归：sync-version 说同源、t_version_sync 报 5 项不一致。 */
 fix('index.html', (s) => s.replace(/(id="verBadge"[^>]*>)v[\d.]+/, `$1v${VER}`), 'index.html 页脚徽标文本');
 fix('js/number-scrubber.js', (s) => s.replace(/version:\s*"[\d.]+"/, `version: "${VER}"`), 'number-scrubber 模块号');
-fix('README.md', (s) => s.replace(/## 🆕 当前版本：v[\d.]+/, `## 🆕 当前版本：v${VER}`), 'README 当前版本标题');
+/* 标题允许带/不带冒号两种写法都能被认出来（旧版写死冒号，README 少一个冒号就静默跳过 = 假绿） */
+fix('README.md', (s) => s.replace(/## 🆕 当前版本[：:]?\s*v[\d.]+/, `## 🆕 当前版本：v${VER}`), 'README 当前版本标题');
 fix('README.md', (s) => s.replace(/(\|\s*\*\*v)[\d.]+(\*\*\s*\|)/, `$1${VER}$2`), 'README 逐版表首行');
+/* 顶部 shields 徽标（badge/version-vX.Y.Z 与 release 链接两处），旧版漏了它 → 徽标长期停在旧版 */
+fix('README.md', (s) => s.replace(/badge\/version-v[\d.]+-orange\)\]\(https:\/\/github\.com\/[^)]*\/releases\/tag\/v[\d.]+\)/,
+  `badge/version-v${VER}-orange)](https://github.com/AYun07/yunjing/releases/tag/v${VER})`), 'README 版本徽标');
 
 /* ---------- 6. VERSIONS.md（只动「当前版本」相关锚点，历史条目保持史实）---------- */
 fix('VERSIONS.md', (s) => {

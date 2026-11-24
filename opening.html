@@ -5,7 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0e0b1e">
 <title>云境 · 万象入云，一念一世界</title>
-<link rel="icon" href="assets/yj-favicon.ico">
+  <!-- PWA / iOS 主屏安装：封面是唯一落地页，必须自带 manifest 与全屏标签，
+       否则 iOS/macOS「添加到主屏幕」从封面进入时不是全屏 App（免费方案的核心） -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/yj-icon-apple.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="云境">
+  <link rel="icon" href="assets/yj-favicon.ico">
+  <!-- v6.3.3 唯一启动界面：封面为唯一落地页，四入口语义对齐，读档/选择器带封面级底图 -->
+  <link rel="stylesheet" href="css/cover-portal.css?v=6.9.4">
+  <link rel="stylesheet" href="css/resume-portal.css?v=6.9.4">
+  <!-- v7.0 封面开场动画：用封面本身做运镜，播完淡出无缝接入封面页，可跳过 -->
+  <link rel="stylesheet" href="css/cover-intro.css?v=6.9.4">
+  <!-- v6.6.1 封面瘦身：atlas 地图 CSS 改为点「踏云」打开选择器时按需加载，见 cover-portal.js ensureAtlas() -->
 <style>
   :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; }
   *{ box-sizing:border-box; }
@@ -43,10 +56,10 @@
   .entry[data-active="1"] .bar{ width:4px; height:1.1em; background:var(--gold); border-radius:2px; flex:none; }
   .entry .bar{ width:4px; height:1.1em; background:transparent; border-radius:2px; flex:none; }
 
-  /* 横屏布局：封面左上标题 + 左下入口 */
+  /* 横屏布局：封面左上标题 + 左下入口（v7.0 拉开标题与入口，避免副标题与「踏云」叠字） */
   @media (orientation:landscape){
-    .brand{ left:11%; top:20%; text-align:left; }
-    .menu{ left:11%; bottom:16%; }
+    .brand{ left:11%; top:9%; text-align:left; }
+    .menu{ left:11%; bottom:7%; gap:clamp(6px,1.4vh,14px); }
   }
   /* 竖屏布局：封面顶部标题 + 底部入口 */
   @media (orientation:portrait){
@@ -71,8 +84,27 @@
     <button class="entry" data-go="forge"><span class="bar"></span><span class="mark">◆</span><span class="name">造物</span><span class="sub">万象工坊</span></button>
   </nav>
   <div class="hint">点选入口进入 · 横竖屏自适应</div>
+  <div id="deniedTip" style="display:none;position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:20;
+    background:rgba(14,11,30,.92);border:1px solid rgba(244,216,150,.45);color:#f4d896;border-radius:10px;
+    padding:9px 18px;font:13px system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.5);white-space:nowrap;">
+    请从上方入口进入云境，避免存档异常</div>
 </div>
 <script>
+  // v6.3.3 唯一启动界面：打开封面即写入会话令牌，之后从本标签跳任意子页均视为「从封面进入」。
+  // 直接新开标签输入子页 URL 则无令牌、无同源来源 → 被子页守卫弹回封面。
+  try { sessionStorage.setItem('yunjing_cover_seen','1'); } catch(e) {}
+  // 被守卫弹回时给一次性轻提示，告诉玩家应从入口进入（不阻断任何操作）
+  try {
+    if (/[?&]denied=1/.test(location.search)) {
+      window.__yjDenied = true;
+      history.replaceState(null,'',location.pathname);
+      window.addEventListener('DOMContentLoaded', function(){
+        var t = document.getElementById('deniedTip');
+        if (t) { t.style.display = 'block'; setTimeout(function(){ t.style.display='none'; }, 4200); }
+      });
+    }
+  } catch(e) {}
+
   // 按屏幕方向切换封面（与图上文字位置一致）
   var bg = document.getElementById('bg');
   function pickBg(){
@@ -82,12 +114,13 @@
   pickBg();
   window.addEventListener('resize', pickBg);
 
-  // 四入口跳转：全部落到 index.html，由 opening-entry.js 依据 entry 参数触发对应功能
+  // 四入口跳转（v6.3.3 语义对齐）：踏云=新档(被 cover-portal 接管)、续梦=读档(被 resume-portal 接管)、
+  // 观星=纯设置页、造物=工坊。new/continue 保留兜底 URL，正常情况被各自的捕获监听抢先拦截。
   var TARGET = {
     new:      'index.html?entry=new',
     continue: 'index.html?entry=continue',
-    settings: 'index.html?entry=settings',
-    forge:    'xiaoyun.html'   // 造物 = 小云全部能力展陈页，独立入口
+    settings: 'settings.html?goto=settings',  // v6.9.0 观星=独立全局设置页（纯设置，不再混入创作界面；goto 参数放行入口守卫）
+    forge:    'studio.html?goto=forge'      // v6.3.3 造物=原创工坊面板（原 xiaoyun.html 仅为能力介绍页）
   };
   document.getElementById('menu').addEventListener('click', function(e){
     var btn = e.target.closest('.entry');
@@ -108,5 +141,12 @@
     }
   });
 </script>
+<!-- v6.6.1 封面瘦身：首屏只加载封面自身所需脚本；atlas 舆图/资料库数据层改为点「踏云」时按需加载 -->
+<script src="js/world-catalog.js?v=6.9.4"></script>
+<script src="js/first-run-guide.js?v=6.9.4"></script>
+<script src="js/cover-intro.js?v=6.9.4"></script>
+<script src="js/pwa-register.js?v=6.9.4"></script>
+<script src="js/cover-portal.js?v=6.9.4"></script>
+<script src="js/resume-portal.js?v=6.9.4"></script>
 </body>
 </html>

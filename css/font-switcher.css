@@ -1,0 +1,39 @@
+/* ============================================================
+   云境 · 字体切换面板  v6.8.0
+   ============================================================ */
+#fsWrap { position: fixed; inset: 0; z-index: 9000; }
+.fs-mask { position: absolute; inset: 0; background: rgba(0, 0, 0, .55); backdrop-filter: blur(2px); }
+.fs-panel {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: min(440px, 92vw); max-height: 84vh; overflow-y: auto;
+    background: var(--panel, #1c2030);
+    border: 1px solid rgba(224, 168, 76, .28);
+    border-radius: 14px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+    padding: 20px 20px 24px;
+}
+.fs-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 16px; font-weight: 600; color: var(--primary, #e0a84c);
+    padding-bottom: 12px; border-bottom: 1px solid var(--line, rgba(232, 228, 216, .09));
+}
+.fs-close {
+    background: transparent; border: 0; color: var(--text-muted, #a8a290);
+    font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 6px;
+}
+.fs-close:hover { color: var(--text); background: rgba(232, 228, 216, .08); }
+.fs-hint { font-size: 11.5px; color: var(--text-faint, #6e6a5e); margin: 12px 2px 14px; line-height: 1.6; }
+.fs-list { display: flex; flex-direction: column; gap: 8px; }
+.fs-opt {
+    position: relative; display: flex; flex-direction: column; gap: 3px;
+    width: 100%; text-align: left; cursor: pointer;
+    background: var(--panel-2, #232839);
+    border: 1px solid var(--line, rgba(232, 228, 216, .09));
+    border-radius: 10px; padding: 12px 42px 12px 14px;
+    transition: all .16s;
+}
+.fs-opt:hover { border-color: rgba(224, 168, 76, .5); background: rgba(224, 168, 76, .08); }
+.fs-opt.active { border-color: var(--primary, #e0a84c); background: rgba(224, 168, 76, .13); }
+.fs-name { font-size: 16px; color: var(--text, #e8e4d8); }
+.fs-desc { font-size: 11px; color: var(--text-muted, #a8a290); }
+.fs-check { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--primary, #e0a84c); font-size: 16px; }

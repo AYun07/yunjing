@@ -461,6 +461,8 @@
           d = true;
         }
       }
+      /* v4.49.0：AI 随剧情换装/失装后重算词条加成 */
+      if (d) { try { if (window.BonusEngine) BonusEngine.refresh(); } catch (e) {} }
       return d;
     },
     /* 状态板：佩戴件数 + 首件名 */
@@ -501,10 +503,21 @@
           return `<option value="${bi}">${r.c ? "●" : ""}${esc(x.name)}${(x.count || 1) > 1 ? " ×" + x.count : ""}</option>`;
         }).join("")}</select>
                         <button class="wx-btn" onclick="WorldExt.act('gear','eq','${esc(sl.key)}|'+document.getElementById('grSel_${si}').value)">佩</button></div>` : `<div class="gr-fit"><em class="gr-none">囊中没有可佩之物</em></div>`;
+        /* v5.0.0 词条明细：语意引擎动态生成 + 玩家可自定义（特殊说明优先） */
+        let affixHTML = "";
+        try {
+          if (window.BonusEngine && it) {
+            const afs = BonusEngine.affixesFor(it.name);
+            const custom = (window.SemanticEngine && SemanticEngine.getCustomText('gear:' + it.name)) || '';
+            affixHTML = '<div class="gr-affix">' + afs.map((a) =>
+              `<span class="gr-tag ${a.tone === 'debuff' ? 'negative' : ''} ${a.source === 'custom' || a.source === 'explicit' ? 'custom' : ''}" title="${esc(a.desc || '')}">${esc(a.text)}</span>`).join("")
+              + `<span class="gr-tag edit" title="自定义词条：写下任意文本，按语意附加效果；可写显式数值直接指定" onclick="event.stopPropagation();BonusEngine.openAffixEditor('gear:${esc(it.name)}',{title:'✦ ${esc(it.name)} · 自定义词条'})">✎ ${custom ? '改' : '自定义'}</span></div>`;
+          }
+        } catch (e) {}
         const body = it ? `<div class="gr-on" style="--rc:${rc.c};">
                         <b title="${rc.n}">● ${esc(it.name)}</b>
                         <i class="gr-src">${it.src === "ai" ? "随剧情" : "手动"}${it.missing ? " · ⚠不在囊中" : ""}</i>
-                        <button class="gr-un" title="卸下" onclick="WorldExt.act('gear','un','${esc(sl.key)}')">✕</button></div>` : `<div class="gr-off">虚位以待</div>`;
+                        <button class="gr-un" title="卸下" onclick="WorldExt.act('gear','un','${esc(sl.key)}')">✕</button></div>${affixHTML}` : `<div class="gr-off">虚位以待</div>`;
         return `<div class="gr-slot${it ? "" : " empty"}" data-empty="${OPT("showEmpty", true)}">
                     <div class="gr-hd"><span>${sl.icon || "◈"}</span><b>${esc(sl.key)}</b>${sl.note ? `<i class="gr-note" title="${esc(sl.note)}">ⓘ</i>` : ""}</div>
                     ${body}${sel}</div>`;
@@ -514,8 +527,22 @@
                 ${s.custom.length ? s.custom.map((sl) => `<button class="wx-btn danger" onclick="WorldExt.act('gear','del','${esc(sl.key)}')">－ ${esc(sl.key)}</button>`).join("") : ""}
             </div>`;
       const log = s.log && s.log.length ? WXH.card("佩换留痕", s.log.map((t) => `<div class="wx-kv"><b style="font-weight:400;font-size:11.5px;color:var(--imt,#9a8c6e);">${esc(t)}</b></div>`).join(""), { icon: "📈", grow: true }) : "";
-      return `<div class="gr-grid">${cards}</div>${customMgr}${log}
-                <div class="wx-banner">佩戴与正文互相咬合：战斗/行路描写须与佩戴一致，本命级装备离手要写；AI 随剧情换装/失装也会落在此处——对不上的「⚠不在囊中」记得处理。</div>`;
+      /* v4.49.0 净加成汇总 + 称号阁入口 */
+      let summaryHTML = "";
+      try {
+        if (window.BonusEngine) {
+          BonusEngine.refresh();
+          const net = BonusEngine.netMods();
+          const curTitle = (window.TitleSystem && TitleSystem.current()) || net.title || "无";
+          summaryHTML = `<div class="gr-summary"><span class="gr-title-btn" onclick="window.TitleSystem&&TitleSystem.openUI()">🏅 称号阁</span>`
+            + `<b>净加成</b>（已计入战斗/检定）：${esc(BonusEngine.describe())}`
+            + (curTitle && curTitle !== "无" ? `<br>当前称号：<b>${esc(curTitle)}</b>` : "")
+            + (net.debuffs && net.debuffs.length ? `<br><span style="color:#e07070">减益：${net.debuffs.map((x) => esc(x.text)).join("、")}</span>` : "")
+            + `</div>`;
+        }
+      } catch (e) {}
+      return `${summaryHTML}<div class="gr-grid">${cards}</div>${customMgr}${log}
+                <div class="wx-banner">佩戴与正文互相咬合：战斗/行路描写须与佩戴一致，本命级装备离手要写；每件装备按品级自带词条，增益减益即时计入战斗与检定；称号在「称号阁」领取佩戴，加成同源叠加。</div>`;
     },
     /* ---------- 交互 ---------- */
     act(s, action, payload) {
@@ -529,7 +556,9 @@
         s.equipped[sl.key] = { name: nm, src: "bag", round: curRound() };
         s.log.unshift(`第${curRound()}回：${sl.key} → ${nm}（从行囊佩上）`);
         if (s.log.length > 8) s.log.length = 8;
-        return `${nm} 已佩入「${sl.key}」`;
+        /* v4.49.0：佩戴即重算词条加成（战斗/检定/面板/主笔统一真源） */
+        try { window.WorldExt && WorldExt.persist && WorldExt.persist(); if (window.BonusEngine) BonusEngine.refresh(); } catch (e) {}
+        return `${nm} 已佩入「${sl.key}」 · 词条加成已结算`;
       }
       if (action === "un") {
         const it = s.equipped[payload];
@@ -537,7 +566,9 @@
         delete s.equipped[payload];
         s.log.unshift(`第${curRound()}回：卸下${it.name}（${payload}）`);
         if (s.log.length > 8) s.log.length = 8;
-        return `已卸下「${payload}」的 ${it.name}`;
+        /* v4.49.0：卸下即重算，移除该装备的词条加成 */
+        try { window.WorldExt && WorldExt.persist && WorldExt.persist(); if (window.BonusEngine) BonusEngine.refresh(); } catch (e) {}
+        return `已卸下「${payload}」的 ${it.name} · 词条加成已更新`;
       }
       if (action === "add") {
         /* v4.07.2 修 D-09：此动作走 UIDialog.prompt 弹窗输入，实际结果在 async 回调里产生，
@@ -635,6 +666,15 @@
 .gr-fit{display:flex;gap:5px;align-items:center}
 .gr-sel{flex:1;min-width:0;background:rgba(0,0,0,.3);border:1px solid color-mix(in srgb,var(--ip,#c9a86a) 30%,transparent);color:var(--itx,#e8dcc0);border-radius:8px;padding:5px 7px;font-size:11.5px;outline:none}
 .gr-none{font-style:normal;font-size:10.5px;color:var(--imt,#9a8c6e);opacity:.7}
+.gr-affix{display:flex;gap:4px;flex-wrap:wrap;margin:-2px 0 7px}
+.gr-tag{font-size:9.5px;padding:1px 6px;border-radius:6px;background:rgba(143,217,168,.14);color:#8fd9a8;border:1px solid rgba(143,217,168,.28)}
+.gr-tag.negative{background:rgba(224,112,112,.14);color:#e07070;border-color:rgba(224,112,112,.3)}
+.gr-tag.custom{box-shadow:inset 0 0 0 1px #c9a86a66}
+.gr-tag.edit{cursor:pointer;background:rgba(201,168,106,.14);color:#c9a86a;border-color:rgba(201,168,106,.4);border-style:dashed}
+.gr-tag.edit:hover{background:rgba(201,168,106,.28)}
+.gr-summary{font-size:11.5px;line-height:1.6;padding:8px 10px;margin-bottom:10px;border-radius:10px;background:rgba(201,168,106,.08);border:1px solid rgba(201,168,106,.24);color:var(--itx,#e8dcc0)}
+.gr-summary b{color:var(--ip,#c9a86a)}
+.gr-title-btn{cursor:pointer;float:right;font-size:10.5px;padding:2px 8px;border-radius:7px;border:1px solid rgba(201,168,106,.4);background:rgba(201,168,106,.12);color:var(--ip,#c9a86a)}
 .gr-mgr{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}`;
     document.head.appendChild(st);
   }

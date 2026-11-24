@@ -145,6 +145,16 @@ function loadClockEvo(spanQ, subs) {
   sb.SimCore = { advance: () => { subs.sim++; } };
   sb.OpportunitySystem = { roll: () => { subs.opp++; } };
   sb.BeastSystem = { driftAll: () => { subs.beast++; } };
+  /* 舆图同步桩：记录每次 syncFactions 调用时的世界日，用于验证「批次末收口同步」。
+     逐拍调用发生在 SimCore/lifecycle 之前，收口调用应在所有逐拍之后且世界日=终值。 */
+  subs.atlasSyncDays = [];
+  subs.atlasOrder = [];
+  sb.StoryAtlas = { syncFactions: (vv) => {
+    subs.atlasSyncDays.push(vv && vv.时间 ? vv.时间.clockDay : -1);
+    subs.atlasOrder.push('sync');
+  } };
+  // 让 lifecycle 打点，验证最后一次 sync 在所有 lifecycle 之后
+  sb.WorldAlive.lifecycle = () => { subs.lifecycle++; subs.atlasOrder.push('life'); };
   loadModule('js/world-clock.js', sb);
   return { sb, fire: () => sb.document.dispatchEvent(new sb.CustomEvent('story:turn-saved', { detail: {} })) };
 }
@@ -200,6 +210,21 @@ G('3. 按时间规模逐日全量演化');
   const c = loadClockEvo({ minutes: 99999999, days: 99999, level: 'year' }, subs);
   c.fire();
   ok(c.sb.storyFramework.storyState.variables.时间.clockDay === 3650, '异常超大跨度封顶 3650 日（十年）');
+}
+G('3a. 舆图随世界演化同步（最后一拍收口，防「地图慢一拍」）');
+{
+  const subs = { npc: 0, life: 0, sim: 0, will: 0, seed: 0, lifecycle: 0, opp: 0, beast: 0 };
+  const c = loadClockEvo({ minutes: 4320, days: 3, level: 'day' }, subs);
+  c.fire();
+  // 逐拍 3 次 + 批次收口 1 次 = 4 次
+  ok(subs.atlasSyncDays.length === 4,
+    `3 日演化触发舆图同步 4 次（逐拍3 + 收口1），实际=${subs.atlasSyncDays.length}`);
+  const last = subs.atlasSyncDays[subs.atlasSyncDays.length - 1];
+  ok(last === 3, `最后一次同步在世界终值日（第${last}日），最后一拍势力变化能上图`);
+  // 顺序断言：最后两个打点必须是 life 然后 sync（收口在最后一个 lifecycle 之后）
+  const tail = subs.atlasOrder.slice(-2);
+  ok(tail[0] === 'life' && tail[1] === 'sync',
+    `收口同步发生在最后一个 lifecycle 之后（尾部顺序=${tail.join('→')}）`);
 }
 G('3b. 单飞锁排队不丢回合（v4.42 新增）');
 {

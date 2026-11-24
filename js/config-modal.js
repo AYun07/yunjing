@@ -11,11 +11,63 @@ const ConfigModal = {
     }
     this.fillForm();
     this.applyView();
+    this.renderModelSlots();
     modal.style.display = "flex";
   },
   /* v4.18.0 新手/专家两档视图。简洁模式只留主笔连接配置，副接口与高级参数折叠；
      偏好记在 localStorage，纯展示层切换，不动任何已填配置。 */
   _view: null,
+
+  /* ===== v6.6.1 主笔模型档位 UI ===== */
+  renderModelSlots() {
+    var sel = document.getElementById("ms_slotSelect");
+    if (!sel || !window.ModelSlots) return;
+    var arr = ModelSlots.list();
+    var active = ModelSlots.activeId();
+    var html = arr.length ? "" : '<option value="">（尚未保存档位）</option>';
+    arr.forEach(function (s) {
+      html += '<option value="' + String(s.id).replace(/"/g, '&quot;') + '"' + (s.id === active ? ' selected' : '') + '>'
+            + ModelSlots.label(s).replace(/</g, '&lt;') + '</option>';
+    });
+    sel.innerHTML = html;
+    var tip = document.getElementById("msSlotTip");
+    if (tip) tip.textContent = arr.length
+      ? ('已存 ' + arr.length + ' 个档位，选中后点「切到选中档」即时生效。')
+      : '填好下面的地址 / Key / 模型后点「存当前为新档」；以后下拉选一个点「切到选中档」即可即时生效。';
+  },
+  msSave() {
+    if (!window.ModelSlots) return;
+    var name = (this.readForm().model || "").trim();
+    // 用 prompt 让玩家给档位命名（默认取模型名）；纯前端交互，不上传
+    var nm = window.prompt("给这个模型档位起个名字（方便以后识别）：", name) || "";
+    if (!name && !nm.trim()) { window.showToast?.('请先在下方填好模型名称再存档', 'error'); return; }
+    var s = ModelSlots.saveCurrent(nm.trim());
+    if (!s) { window.showToast?.('当前主笔配置是空的，请先填地址 / Key / 模型', 'error'); return; }
+    this.renderModelSlots();
+    window.showToast?.('已保存模型档位「' + s.name + '」', 'success');
+  },
+  msActivate() {
+    if (!window.ModelSlots) return;
+    var sel = document.getElementById("ms_slotSelect");
+    var id = sel ? sel.value : "";
+    if (!id) { window.showToast?.('请先选择一个已保存的档位', 'error'); return; }
+    var ok = ModelSlots.activate(id);
+    if (!ok) { window.showToast?.('切换失败：该档位配置无效', 'error'); return; }
+    this.fillForm();       // 把切换后的配置回填到表单
+    this.renderModelSlots();
+    window.showToast?.('已切换模型档位，立即生效', 'success');
+  },
+  msRemove() {
+    if (!window.ModelSlots) return;
+    var sel = document.getElementById("ms_slotSelect");
+    var id = sel ? sel.value : "";
+    if (!id) { window.showToast?.('请先选择一个要删除的档位', 'error'); return; }
+    if (!window.confirm('确定删除这个模型档位吗？（不影响当前已生效的配置）')) return;
+    ModelSlots.remove(id);
+    this.renderModelSlots();
+    window.showToast?.('档位已删除', 'success');
+  },
+
   setView(v) {
     this._view = (v === 'full') ? 'full' : 'simple';
     try { localStorage.setItem('cfgViewMode', this._view); } catch (e) {}
@@ -319,6 +371,17 @@ const ConfigModal = {
                     <div class="dw-config-body" id="cfgSectionBody">
                         <div class="form-tip dw-intro">
                             <b>主笔</b>负责全部小说正文与开篇：文笔、长上下文最敏感。推荐长上下文高文笔模型（如 DeepSeek-V3 / qwen-max / kimi 长文本档 / claude 系）。
+                        </div>
+                        <!-- v6.6.1 主笔模型档位：提前存好多个模型，一键即时切换 -->
+                        <div class="dw-subgroup" id="msSlotBox" style="border:1px solid rgba(201,168,106,.35);border-radius:10px;padding:10px 12px;margin-bottom:12px;background:rgba(201,168,106,.06);">
+                            <div class="dw-sub-title" style="margin-bottom:8px;">🗂 模型档位 <span style="font-size:11px;opacity:.6;font-weight:400;">（存好多个模型，随时一键切换，配置不丢）</span></div>
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                <select id="ms_slotSelect" style="flex:1;min-width:180px;"><option value="">（尚未保存档位）</option></select>
+                                <button type="button" class="btn-ghost" onclick="ConfigModal.msSave()">＋ 存当前为新档</button>
+                                <button type="button" class="btn-ghost" onclick="ConfigModal.msActivate()">⇄ 切到选中档</button>
+                                <button type="button" class="btn-ghost" onclick="ConfigModal.msRemove()">✕ 删除</button>
+                            </div>
+                            <div class="form-tip" id="msSlotTip" style="margin-top:6px;font-size:11px;opacity:.7;">填好下面的地址 / Key / 模型后点「存当前为新档」；以后下拉选一个点「切到选中档」即可即时生效。</div>
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔌 连接配置</div>
@@ -696,7 +759,7 @@ const ConfigModal = {
                     </div>
                 </div>
 
-                <!-- 🔗 多连接配置（Connection Profiles · v3.55.30） -->
+                <!-- 🔗 多连接配置（连接配置档 · v3.55.30） -->
                 <div class="dw-config api-card">
                     <div class="dw-config-head api-card-head" id="cpSectionHead" onclick="ConfigModal.toggleCPSection()">
                         <span class="api-head-left">
@@ -708,7 +771,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="cpSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            借鉴酒馆 Connection Profiles：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
+                            参考通用多连接配置管理：把不同 AI 接口存成独立「连接」，再指派给副 AI 角色。
                             主笔只管写正文，机械活（状态登记 / 滚动摘要）交给廉价跟随模型——声线一致、还省钱。
                         </div>
                         <div id="cp_profileList" class="cp-profile-list"></div>
@@ -1136,7 +1199,7 @@ const ConfigModal = {
                     </div>
                     <div class="dw-config-body" id="mmSectionBody" style="display:none">
                         <div class="form-tip dw-intro">
-                            云境工坊原创内置预设（SillyTavern 兼容格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意 SillyTavern 预设整份替换。
+                            云境工坊原创内置预设（通用格式，全部提示词独立撰写）。启用后每轮把整份预设渲染进系统提示词——<b>破限三档、防截断、防空回、防频控、文风体系、NSFW 分级、数据清洗、状态栏、行动选项、NPC 小剧场、剧情记忆归档</b>随开关生效。世界文风已按云境的 33 个世界各写一套本土档位，随你开局选的文风自动选用；也可从外部导入任意常见前端预设整份替换。
                         </div>
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">📦 当前预设 <span class="api-role-chip" id="mmPresetChip"></span></div>
@@ -1148,7 +1211,7 @@ const ConfigModal = {
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
-                                支持 SillyTavern 预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
+                                支持常见前端预设导出（<code>prompts</code> + <code>prompt_order</code>）与云境自有格式。
                                 导入后整份替换内置预设，旧的逐条开关会自动清空；随时可一键恢复内置。
                             </div>
                         </div>
@@ -1191,7 +1254,7 @@ const ConfigModal = {
                                 预设自身按"多选一 / 二选一 / 三选一"设计，同类的请只留一个开着，否则后写的会覆盖先写的。
                             </div>
                             <div class="mm-toolbar">
-                                <input type="text" id="mmSearch" placeholder="🔍 搜索条目名（如：破甲 / 防截断 / 文风）" oninput="ConfigModal.renderMMFilter()">
+                                <input type="text" id="mmSearch" placeholder="🔍 搜索条目名（如：放开创作 / 防截断 / 文风）" oninput="ConfigModal.renderMMFilter()">
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmExpandAll(true)">全部展开</button>
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmExpandAll(false)">全部折叠</button>
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmResetOverrides()">恢复默认</button>
@@ -1768,7 +1831,7 @@ const ConfigModal = {
       // v3.27.6
     };
   },
-  /* ==================== 🔗 多连接配置（Connection Profiles · v3.55.30） ==================== */
+  /* ==================== 🔗 多连接配置（连接配置档 · v3.55.30） ==================== */
   toggleCPSection() {
     const body = document.getElementById("cpSectionBody");
     const caret = document.getElementById("cpCaret");
@@ -2615,7 +2678,7 @@ const ConfigModal = {
   /** 分组名（按条目名的 emoji 前缀归类） */
   MM_GROUP_LABEL: {
     '📕': '文风', '🧠': '思维模式', '🌍': '世界运行', '💬': '语言与转述',
-    '📹': '视角', '🪄': '视觉生成', '🥳': '沉浸', '🛡': '破甲', '🧷': '思维链',
+    '📹': '视角', '🪄': '视觉生成', '🥳': '沉浸', '🛡': '护盾', '🧷': '思维链',
     '👾': '状态栏', '📚': '人称与叙事', '📃': '叙事导演', '⭕': '角色', '🗑': '变量清空',
     '🕙': '推进节奏', '🖊': '写作基调', '⚙': '格式', '⚧': '性别', '🕹': '玩家状态',
     '💕': '好感度', '📊': '互动选项', '🪩': 'NPC小剧场', '📖': '世界书', '✂': '防截断',
@@ -2946,7 +3009,7 @@ const ConfigModal = {
   /* ==================== v3.51.0 预设 / 正则：导入替换 + 逐块编辑 ==================== */
   mmSay(msg, type) {
     if (window.showToast) window.showToast(msg, type || "info");
-    else console.log("[MM]", msg);
+    else console.debug("[MM]", msg);
   },
   /** 下载一段文本为 JSON 文件 */
   mmDownload(name, text) {

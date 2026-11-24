@@ -72,6 +72,16 @@ const StorySetupWizard = {
                     <input id="wiz_heroAge" class="wiz-input slim" style="width:86px;" type="number" min="8" max="90" placeholder="年龄">
                 </div>
                 <textarea id="wiz_heroBio" class="wiz-input" rows="2" maxlength="600" style="margin-top:8px;" placeholder="主角小传（选填）：性格 / 来历 / 所求 / 秘密…写多细，AI 执行多细——例：铁剑门弃徒，因师门蒙冤背负污名，性子外冷内热，一心查清旧案"></textarea>
+                <div class="cs-wrap" id="csWrap">
+                  <div class="cs-title">🎨 角色塑造助手 <span>AI 生成样貌 / 性格 / 图标，生成后可改下方小传</span></div>
+                  <div class="cs-btns">
+                    <button type="button" onclick="CharacterStudio.genLook().then(function(){CharacterStudio.refresh()})">✨ 生成样貌</button>
+                    <button type="button" onclick="CharacterStudio.genPersona().then(function(){CharacterStudio.refresh()})">🧠 生成性格</button>
+                    <button type="button" onclick="CharacterStudio.genIcon();CharacterStudio.refresh()">🖼 生成角色图标</button>
+                  </div>
+                  <div class="cs-preview" id="csPreview"></div>
+                  <div class="cs-status" id="csStatus"></div>
+                </div>
             </div>
 
             <div class="wiz-row three-col">
@@ -331,7 +341,7 @@ const StorySetupWizard = {
       stats: { ...config.baseAttributes || {} },
       remainingPoints: config.maxPoints || 100
     };
-    /* v3.55.20 玩家身份（穿越者 / 土著）与原著主角关系（同伴 / 敌对 / 陌路）：
+    /* v3.55.20 玩家身份（穿越者 / 本地人）与原著主角关系（同伴 / 敌对 / 陌路）：
        读取已存选择，用于模板里的动态「on」态；取代主角立场下关系失效 */
     const _idCur = (window.StoryIdentity && StoryIdentity.getIdentity()) || "transmigrator";
     const _relCur = (window.StoryIdentity && StoryIdentity.getRelation()) || "stranger";
@@ -397,7 +407,7 @@ const StorySetupWizard = {
                         <b>🌀 穿越者</b><i>先知先觉，但预知有界</i>
                     </button>
                     <button type="button" class="wiz-stance-btn ${_idCur === "native" ? "on" : ""}" data-identity="native" onclick="StorySetupWizard.setIdentity('native')">
-                        <b>🌱 土著</b><i>对原著一无所知</i>
+                        <b>🌱 本地人</b><i>对原著一无所知</i>
                     </button>
                 </div>
                 <div class="wiz-desc" id="wiz_idHint"></div>
@@ -428,6 +438,18 @@ const StorySetupWizard = {
                 <div class="wiz-section">
                     <div class="wiz-label">${num()} 姓名 <button class="dice-btn" onclick="StorySetupWizard.dice('playerName')">🎲 随机</button></div>
                     <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" placeholder="你在原著世界的名字…">
+                </div>
+                <div class="wiz-section" style="grid-column:1/-1">
+                    <div class="cs-wrap" id="csWrap">
+                      <div class="cs-title">🎨 角色塑造助手 <span>AI 生成样貌 / 性格 / 图标，生成后可写进小传</span></div>
+                      <div class="cs-btns">
+                        <button type="button" onclick="CharacterStudio.genLook().then(function(){CharacterStudio.refresh()})">✨ 生成样貌</button>
+                        <button type="button" onclick="CharacterStudio.genPersona().then(function(){CharacterStudio.refresh()})">🧠 生成性格</button>
+                        <button type="button" onclick="CharacterStudio.genIcon();CharacterStudio.refresh()">🖼 生成角色图标</button>
+                      </div>
+                      <div class="cs-preview" id="csPreview"></div>
+                      <div class="cs-status" id="csStatus"></div>
+                    </div>
                 </div>
                 <div class="wiz-section">
                     <div class="wiz-label">${num()} 性别与年龄</div>
@@ -726,7 +748,7 @@ const StorySetupWizard = {
     if (!info) { hint.textContent = "选择一位原著配角，按其原著定位展开人生线。"; return; }
     hint.textContent = info.name + " · " + info.role + "（" + info.realm + "）：" + info.fate + " 关系底子——" + info.rel + "。人生钩子：" + info.hook;
   },
-  /** v3.55.20 玩家身份：穿越者 / 土著 */
+  /** v3.55.20 玩家身份：穿越者 / 本地人 */
   setIdentity(id) {
     if (window.StoryIdentity && !StoryIdentity.IDENTITY[id]) id = "transmigrator";
     document.querySelectorAll(".wiz-stance-btn[data-identity]").forEach(function (b) {
@@ -1056,6 +1078,18 @@ const StorySetupWizard = {
                     <div class="wiz-section">
                         <div class="wiz-label">姓名 <button class="dice-btn" onclick="StorySetupWizard.diceRoleplay('playerName')">🎲 随机</button></div>
                         <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" placeholder="你在这个世界的名字…">
+                    </div>
+                    <div class="wiz-section" style="grid-column:1/-1">
+                        <div class="cs-wrap" id="csWrap">
+                          <div class="cs-title">🎨 角色塑造助手 <span>AI 生成样貌 / 性格 / 图标</span></div>
+                          <div class="cs-btns">
+                            <button type="button" onclick="CharacterStudio.genLook().then(function(){CharacterStudio.refresh()})">✨ 生成样貌</button>
+                            <button type="button" onclick="CharacterStudio.genPersona().then(function(){CharacterStudio.refresh()})">🧠 生成性格</button>
+                            <button type="button" onclick="CharacterStudio.genIcon();CharacterStudio.refresh()">🖼 生成角色图标</button>
+                          </div>
+                          <div class="cs-preview" id="csPreview"></div>
+                          <div class="cs-status" id="csStatus"></div>
+                        </div>
                     </div>
                     <div class="wiz-section">
                         <div class="wiz-label">性别与年龄</div>
@@ -1740,7 +1774,8 @@ const StorySetupWizard = {
 主角小传（玩家亲笔，际遇与抉择须与之自洽）：${setup.heroBio}` : ""}`;
     }
     const safeOpening = window.VariableAI && (window.VariableAI.isEnabled() || window.VariableAI.isFallbackActive()) ? window.VariableAI.sanitizePrompt(openingInstruction) : openingInstruction;
-    await window.StoryInput.send(safeOpening);
+    /* v5.2.1：这处开局 send 补 silent 标记，与前两处一致——开篇正文不算玩家回合，世界保持静止直至玩家首次指令 */
+    await window.StoryInput.send(safeOpening, { silent: true });
   }
 };
 window.StorySetupWizard = StorySetupWizard;

@@ -189,7 +189,32 @@
           saveOK = false;
         }
       }
-      return { ls, lsTotal, quota, used, saveOK, saveBytes };
+      return { ls, lsTotal, quota, used, saveOK, saveBytes, mem: this.memorySafety() };
+    },
+    /** 内存安全哨兵：专查存档膨胀病根，大对象/图片混进逐轮快照或变量。
+        云境 turn 只存变量且硬限 40 轮，正常应恒绿；此处是防回归的可视化探针，平时静默。 */
+    memorySafety() {
+      const fw = window.storyFramework;
+      const st = fw && fw.storyState;
+      if (!st) return { ok: true, turns: 0, bigInVars: 0, bigInTurns: 0, notes: [] };
+      const notes = [];
+      const isBig = (v) => typeof v === "string" && (v.length > 6e4 || /^data:image\//.test(v));
+      // 扫描一层：变量与 turn 快照里是否混进 base64 图片 / >60KB 大字符串
+      let bigInVars = 0;
+      try { for (const k in (st.variables || {})) if (isBig(st.variables[k])) bigInVars++; } catch (e) { }
+      let bigInTurns = 0;
+      const turns = Array.isArray(st.turns) ? st.turns : [];
+      try {
+        for (const t of turns) {
+          if (isBig(t && t.varsBefore)) bigInTurns++;
+          if (t && t.varsBefore) for (const k in t.varsBefore) if (isBig(t.varsBefore[k])) { bigInTurns++; break; }
+        }
+      } catch (e) { }
+      const overCap = turns.length > 40;
+      if (bigInVars) notes.push(`变量里有 ${bigInVars} 个大对象/图片（星海式病根，建议改用插图引擎存 IDB）`);
+      if (bigInTurns) notes.push(`轮次快照里有 ${bigInTurns} 条含大对象/图片，会被每轮复制留档`);
+      if (overCap) notes.push(`轮次快照 ${turns.length} 条，超过 40 条硬上限`);
+      return { ok: !notes.length, turns: turns.length, bigInVars, bigInTurns, notes };
     },
     async openCheckup() {
       var _a;
@@ -211,6 +236,14 @@
                     <span class="sg-v">${showQuota ? `${((r.used || 0) / 1048576).toFixed(1)} / ${(r.quota / 1048576).toFixed(0)} MB` : `${(r.lsTotal / 1048576).toFixed(2)} / 10 MB`}</span>
                 </div>` + (showQuota ? "" : '<div class="sg-note">浏览器 localStorage 上限约 5–10 MB（内核而异），此处以 10 MB 为参考线；本应用的大件立绘走 IndexedDB，不占这条线。</div>');
       const warn = barPct > 0.85 ? `<div class="sg-warn">⚠️ 存储占用偏高——建议「导出存档」留备份，清理旧书架槽位（书架内长按可删），并清理其它世界的世界书缓存。</div>` : "";
+      const mem = r.mem || { ok: true, turns: 0, bigInVars: 0, bigInTurns: 0, notes: [] };
+      const memSec = `
+                        <div class="sg-sec">内存安全哨兵</div>
+                        <div class="sg-chips">
+                            <span class="sg-chip ${mem.ok ? "ok" : "bad"}">${mem.ok ? "✅ 未发现膨胀风险" : "⚠️ 发现异常膨胀源"}</span>
+                            <span class="sg-chip">轮次快照 ${mem.turns} / 40</span>
+                        </div>
+                        ${mem.notes.length ? `<div class="sg-warn">${mem.notes.map((n) => this.esc(n)).join("；")}</div>` : '<div class="sg-note">逐轮快照只存变量、硬限 40 轮；插图走 IndexedDB 独立仓，不进快照。未发现「每轮复制整份状态树」这类会滚到 GB 级的写法。</div>'}`;
       const kbc = this.kbCache();
       const kbOthers = kbc.list.filter((x) => x.genre !== kbc.cur);
       const kbSec = kbc.list.length ? `
@@ -237,6 +270,7 @@
                         </div>
                         <div class="sg-sec">占用排行（前 8）</div>
                         ${top || '<div class="sg-note">无本地数据。</div>'}
+                        ${memSec}
                         ${kbSec}
                         <div class="sg-note">体检只读不写；「导出存档」在状态面板底部随时可做全量备份。</div>
                     </div>

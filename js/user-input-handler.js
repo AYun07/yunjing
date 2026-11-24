@@ -6,6 +6,10 @@ const StoryInput = {
     const message = (text !== void 0 ? text : input ? input.value : "").trim();
     /* v4.16.0：记下玩家本次输入，供「按玩家语言判退化」推断期望语种（写英文就不按中文要求） */
     try { window.__yjLastUserInput = message; } catch (e) { }
+    /* v5.2.1（开局世界静止）：silent 指令是开局向导生成开篇正文的内部调用，不是玩家回合指令。
+       打标记供 StoryResponseHandler 消费——开局回复不触发世界演化（不 dispatch story:turn-saved），
+       但 turnCount 照常推进，保证下游回合计数/章节/记忆等系统正常。玩家真实指令（非 silent）不受影响。 */
+    try { if (opts && opts.silent) window.__yjOpeningTurn = true; } catch (e) { }
     /* v4.17.0：玩家发起的这一次操作开一个新的「请求预算」周期。
        此后主笔首轮、空正文重试、自检重发、纠偏重写、截断续写都从这一份额度里扣，
        避免四层各自重试叠乘把额度打爆（本会话实测 503/ECONNRESET 成片的主因之一）。 */
@@ -62,7 +66,7 @@ const StoryInput = {
    * ↻ 重新生成末轮正文：还原现场后用同一条用户指令重发
    * （变量 / 历史 / 卡片先回滚到该轮开始前，再走完整发送流程）
    */
-  async regenerate() {
+  async regenerate(index) {
     var _a, _b, _c;
     const fw = window.storyFramework;
     if (fw.isProcessing) {
@@ -71,6 +75,34 @@ const StoryInput = {
     }
     if (!fw.storyState.turns || !fw.storyState.turns.length) {
       (_a = window.showToast) == null ? void 0 : _a.call(window, "没有可重新生成的正文", "error");
+      return;
+    }
+    /* v6.3.5：指定轮（非末轮）重生成——回档到该轮开始前，用该轮原指令重发。
+       会丢弃该轮之后的全部轮次（覆盖式），先做危险确认。末轮仍走原快速路径。 */
+    const curIdx = fw.currentTurnIndex();
+    if (typeof index === 'number' && index !== curIdx) {
+      const ok = await window.UIDialog.confirm({
+        title: "从这一轮重写",
+        message: `将从第 ${index + 1} 轮用原指令重新生成，该轮之后的全部剧情会被丢弃（覆盖式回档，不可撤销）。确定继续？`,
+        danger: true, confirmText: "重写这一轮", cancelText: "再想想"
+      });
+      if (!ok) return;
+      // 取该轮原指令：优先从全量档案，其次热栈
+      let userMsg = '';
+      try {
+        const arc = await fw.loadTurnArchive();
+        const snap = arc.find(x => x && x.index === index) || (fw.storyState.turns || []).find(x => x && x.index === index);
+        userMsg = (snap && snap.user) || '';
+      } catch (e) { }
+      const rr = await fw.rewindTo(index, 'before');
+      if (!rr) { window.showToast && showToast("该轮快照不可用（老存档仅支持最近 40 轮）", "error"); return; }
+      // 先把聊天列表重建到该轮前的干净状态（虚拟器下尤其必要），再重发
+      try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch (e) { }
+      fw.pushTurnSnapshot(userMsg || rr.user || '（继续）');
+      (_c = window.showToast) == null ? void 0 : _c.call(window, "↻ 已回滚到第 " + (index + 1) + " 轮前，正在用原指令重新生成……", "info");
+      if (userMsg || rr.user) window.StoryResponseHandler.renderUserMessage(userMsg || rr.user);
+      fw.storyState.conversationHistory.push({ role: "user", content: userMsg || rr.user || '（继续）' });
+      await this.requestAI(userMsg || rr.user || '（继续）');
       return;
     }
     if ((_b = window.VariableAI) == null ? void 0 : _b.pending) {
@@ -94,7 +126,7 @@ const StoryInput = {
   /**
    * ↩ 回退本轮：删掉末轮正文与全部附属内容，变量/轮数一并回滚（不重发）
    */
-  async rollback() {
+  async rollback(index) {
     var _a, _b;
     const fw = window.storyFramework;
     if (fw.isProcessing) {
@@ -103,6 +135,25 @@ const StoryInput = {
     }
     if (!fw.storyState.turns || !fw.storyState.turns.length) {
       (_a = window.showToast) == null ? void 0 : _a.call(window, "已在最早一轮，没有可回退的正文", "error");
+      return;
+    }
+    /* v6.3.5：指定轮（非末轮）回档——回到该轮开始前，丢弃该轮及之后，不重发。 */
+    const curIdx = fw.currentTurnIndex();
+    if (typeof index === 'number' && index !== curIdx) {
+      const ok2 = await window.UIDialog.confirm({
+        title: "回档到这一轮",
+        message: `将删除第 ${index + 1} 轮及其之后的全部剧情，故事回到该轮开始前（覆盖式回档，不可撤销）。确定继续？`,
+        danger: true, confirmText: "回档到这一轮", cancelText: "再想想"
+      });
+      if (!ok2) return;
+      const rr = await fw.rewindTo(index, 'before');
+      if (!rr) { window.showToast && showToast("该轮快照不可用（老存档仅支持最近 40 轮）", "error"); return; }
+      // 整体重建聊天列表（虚拟器下必须重挂，否则 floors[] 仍是回档前的旧楼）
+      try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch (e) { }
+      window.StoryResponseHandler.renderSystemMessage(
+        `↩ 已回档到第 ${index + 1} 轮开始前（指令「${String(rr.user).slice(0, 30)}${String(rr.user).length > 30 ? "…" : ""}」），其后的剧情已丢弃。`,
+        "info"
+      );
       return;
     }
     const ok = await window.UIDialog.confirm({
@@ -919,6 +970,27 @@ ${body.trim()}
     }
     const bar = document.getElementById("quickBar");
     if (bar) {
+      /* v6.8.0 修「行动选项重复/太乱」：12 个快捷指令默认收起，点「⚡ 快捷指令」才展开，
+         状态记在 localStorage。正文区不再一进来就堆一排同义按钮。 */
+      bar.classList.add("qb-collapsed");
+      try {
+        const toggle = document.createElement("button");
+        toggle.className = "quick-toggle";
+        toggle.type = "button";
+        const paint = () => {
+          const collapsed = bar.classList.contains("qb-collapsed");
+          toggle.textContent = collapsed ? "⚡ 快捷指令 ▾" : "⚡ 收起 ▴";
+          toggle.title = collapsed ? "展开常用指令" : "收起常用指令";
+        };
+        toggle.addEventListener("click", () => {
+          bar.classList.toggle("qb-collapsed");
+          try { localStorage.setItem("yjQuickBarCollapsed", bar.classList.contains("qb-collapsed") ? "1" : "0"); } catch (e) {}
+          paint();
+        });
+        if (localStorage.getItem("yjQuickBarCollapsed") === "0") bar.classList.remove("qb-collapsed");
+        bar.appendChild(toggle);
+        paint();
+      } catch (e) {}
       let cmds;
       if (fw.config.mode === "roleplay") {
         cmds = fw.config.genreKey === "earth" ? this.earthQuickCommands : fw.config.genreKey === "quanqiubingfeng" ? this.quanqiubingfengQuickCommands : fw.config.genreKey === "chaoshenxueyuan" ? this.chaoshenxueyuanQuickCommands : fw.config.genreKey === "zhanhen" ? this.zhanhenQuickCommands : fw.config.genreKey === "jianlai" ? this.jianlaiQuickCommands : fw.config.genreKey === "guimi" ? this.guimiQuickCommands : fw.config.genreKey === "guzhenren" ? this.guzhenrenQuickCommands : fw.config.genreKey === "xuanjianxianzu" ? this.xuanjianxianzuQuickCommands : this.roleplayQuickCommands;

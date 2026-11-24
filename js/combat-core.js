@@ -1,5 +1,12 @@
 /* Combat Core v1.2.0 — 31界专属回合制战斗 */
 (function(){"use strict";var WR=window.WorldRuntime;if(!WR||!window.WorldExt)return;function esc(x){return WR.H.esc(String(x==null?"":x))}function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+/* v4.49.0 统一加成层：读装备词条+称号净加成（单一真源），注入伤害/暴击/受击/气血。
+   加成为确定性数值，不改变原有可复现随机序列；引擎未加载时全为 0，旧行为不变。 */
+function BMods(){try{return (window.BonusEngine&&window.BonusEngine.combatMods)?window.BonusEngine.combatMods():{}}catch(e){return{}}}
+function atkBoost(d){var m=BMods();return Math.max(1,Math.round(d*(1+(Number(m.atkPct)||0)/100)+(Number(m.atk)||0)))}
+function critChance(){return 0.15+(Number((BMods().crit)||0))/100}
+function defCut(fd){var m=BMods();return Math.max(3,Math.round(fd-(Number(m.def)||0)-fd*(Number(m.defPct)||0)/100))}
+function hpBonus(){return Number((BMods().hp)||0)}
 var R={
 wangyou:{"name": "寰宇纪元 · 三服猎杀与国战", "hp": "气血", "qi": "寰宇能", "foes": [{"id": "m1", "n": "野狼谷苍狼首领", "ic": "🐺", "hp": 80, "atk": 11, "t": "swift", "tip": "靠卡位能越级单杀", "loot": [["蓝装", 1, 0.5]]}, {"id": "m2", "n": "瘟疫墓地守墓人", "ic": "💀", "hp": 130, "atk": 17, "t": "", "tip": "掉守墓人戒指", "loot": [["蓝装", 2, 0.7]]}, {"id": "m3", "n": "风流天下护法", "ic": "⚔", "hp": 180, "atk": 23, "t": "shield", "tip": "行会护卫", "loot": [["紫装", 1, 0.4]]}, {"id": "m4", "n": "巫妖王幻象", "ic": "👑", "hp": 250, "atk": 31, "t": "enrage", "tip": "守城终局", "loot": [["神装线索", 1, 0.3]]}, {"id": "l1", "n": "黄金史莱姆之王", "ic": "🟡", "hp": 85, "atk": 12, "t": "", "tip": "新手村首杀", "loot": [["黄金器", 1, 0.6]]}, {"id": "l2", "n": "浮冰塔风将军章邯", "ic": "⚔", "hp": 140, "atk": 18, "t": "shield", "tip": "副本守将", "loot": [["灵器", 2, 0.7]]}, {"id": "l3", "n": "黑暗军团先锋", "ic": "🌑", "hp": 190, "atk": 24, "t": "enrage", "tip": "诸神之怒后", "loot": [["仙器", 1, 0.4]]}, {"id": "l4", "n": "毁灭深渊·明宇", "ic": "🌋", "hp": 260, "atk": 33, "t": "healer", "tip": "持月之哀伤", "loot": [["神装", 1, 0.3]]}, {"id": "t1", "n": "毒蜂林蜂王", "ic": "🐝", "hp": 85, "atk": 12, "t": "swift", "tip": "新手练级区", "loot": [["青铜器", 2, 0.8]]}, {"id": "t2", "n": "浮雷古刹守阵者", "ic": "⚡", "hp": 145, "atk": 19, "t": "shield", "tip": "副本精英", "loot": [["暗金器", 2, 0.7]]}, {"id": "t3", "n": "烛龙公会精锐", "ic": "🐲", "hp": 195, "atk": 25, "t": "enrage", "tip": "领地战对手", "loot": [["鬼器", 1, 0.4]]}, {"id": "t4", "n": "青兽·国战君主", "ic": "👹", "hp": 265, "atk": 34, "t": "", "tip": "白马平原决战", "loot": [["神装线索", 1, 0.3]]}], "sk": [{"id": "s1", "n": "剑士狂暴", "ic": "🗡", "c": 6, "cd": 1, "d": 16}, {"id": "s2", "n": "潜伏", "ic": "🌑", "c": 7, "cd": 2, "d": 6, "e": "guard"}, {"id": "s3", "n": "神龙舞", "ic": "🐉", "c": 16, "cd": 3, "d": 35}, {"id": "s1", "n": "千刃箭", "ic": "🏹", "c": 6, "cd": 1, "d": 17}, {"id": "s2", "n": "冰甲术", "ic": "❄", "c": 7, "cd": 2, "d": 5, "e": "guard"}, {"id": "s3", "n": "龙缚术", "ic": "🐉", "c": 16, "cd": 3, "d": 35, "e": "pierce"}, {"id": "s1", "n": "诛刃", "ic": "🗡", "c": 6, "cd": 1, "d": 17}, {"id": "s2", "n": "鬼神盾", "ic": "🛡", "c": 7, "cd": 2, "d": 5, "e": "guard"}, {"id": "s3", "n": "武神·上古符印", "ic": "✨", "c": 16, "cd": 3, "d": 36, "e": "pierce"}], "lr": ["蓝装", "紫装", "神装线索", "黄金器", "灵器", "仙器", "神装", "青铜器", "暗金器", "鬼器", "圣器", "旷世圣器"]},
 mystery:{name:"对峙现场",hp:"状态",qi:"气势",foes:[{id:"t1",n:"码头打手",ic:"🥊",hp:70,atk:10,t:"",tip:"受雇吓人",loot:[["线索点",1,.8]]},{id:"t2",n:"装疯的目击者",ic:"🎭",hp:50,atk:6,t:"coward",tip:"没句真话",loot:[["线索点",2,.7]]},{id:"t3",n:"保镖头子",ic:"🕶",hp:110,atk:14,t:"shield",tip:"受过训练",loot:[["线索点",2,.9]]},{id:"t4",n:"幕后死士",ic:"🕴",hp:160,atk:20,t:"enrage",tip:"最后防线",loot:[["线索点",3,1]]}],sk:[{id:"s1",n:"步步紧逼",ic:"🗣",c:5,cd:1,d:15},{id:"s2",n:"虚晃一枪",ic:"🌀",c:8,cd:2,d:10,e:"guard"},{id:"s3",n:"擒拿制服",ic:"🤼",c:14,cd:3,d:30}],lr:["线索点","人气"]},
@@ -37,15 +44,15 @@ guimi:{name:"非凡冲突",hp:"状态",qi:"灵性",foes:[{id:"f1",n:"码头闹�
 function stageNow(){return window.WorldStage?window.WorldStage.current():1}
 function combatModule(g){var cfg=R[g]||R.mystery;var foeById={};cfg.foes.forEach(function(f){foeById[f.id]=f});
 function gainLoot(k,a){if(g==="quanqiubingfeng"){var l=WR.ledger();if(l){l.move(k,a,"战斗缴获","player");return k+"+"+a}}s.resources[k]=Math.max(0,(Number(s.resources[k])||0)+a);return k+"+"+a}
-function maxHp(st){return 100+(Number(st.growth)||0)}
+function maxHp(st){return 100+(Number(st.growth)||0)+hpBonus()}
 return WR.module({id:"wr_combat",icon:"⚔️",name:cfg.name,type:"console",tip:cfg.foes.map(function(f){return f.n}).join(" / "),contract:"战斗发生/胜负/重伤/缴获——正文须如实演绎",stats:{hp:{v:100,max:100,label:cfg.hp,icon:"❤️"}},res:(function(){var r={};(cfg.lr||[]).forEach(function(k){r[k]=0});return r})(),backfill:function(o,f){f.state.inBattle=false;f.state.foeId="";f.state.foeHp=0;f.state.foeMax=0;f.state.turn=0;f.state.guard=false;f.state.cd={};f.state.hurtUntil=0;f.state.wins=Number(o.wins)||0;f.state.losses=Number(o.losses)||0;f.state.growth=Number(o.growth)||0;f.state.pending=false;f.state.elite=false},
 hud:function(st){var items=[{i:"❤️",v:String(st.hp!=null?st.hp:100),l:cfg.hp,tone:st.hp<=25?"bad":"",mod:"wr_combat"}];if(st.inBattle&&st.foeId){var f=foeById[st.foeId];items.push({i:f?f.ic:"⚔️",v:st.foeHp+"/"+st.foeMax,l:f?f.n.slice(0,6):"战斗中",tone:"warn",mod:"wr_combat"})}return items},
-act:function(st,s,a,p){var round=WR.round();function mHp(){return 100+(Number(st.growth)||0)}function sNow(){return window.WorldStage?window.WorldStage.current():1}
+act:function(st,s,a,p){var round=WR.round();function mHp(){return 100+(Number(st.growth)||0)+hpBonus()}function sNow(){return window.WorldStage?window.WorldStage.current():1}
 if(a==="engage"){if(st.inBattle)return"已在战斗中";if(Number(st.hurtUntil)>round)return"重伤未愈（还需 "+(Number(st.hurtUntil)-round)+" 轮）";var foe=null,fi=-1;for(var i=0;i<cfg.foes.length;i++)if(cfg.foes[i].id===String(p||"")){foe=cfg.foes[i];fi=i;break}if(!foe)return"未知敌人";var need=fi>=3?3:fi>=2?2:1;if(sNow()<need)return"🔒 第"+need+"阶段解锁";st.inBattle=true;st.foeId=foe.id;st.foeIdx=fi;st.elite=false;st.foeHp=foe.hp;st.foeMax=foe.hp;if(fi>=1&&sNow()>=2&&Math.random()<0.35){st.elite=true;st.foeHp=Math.round(foe.hp*1.4);st.foeMax=st.foeHp}st.foeTrait=foe.t;st.turn=1;st.guard=false;st.pending=false;return"⚔️ 战斗开始——"+(st.elite?"【精英】":"")+"「"+foe.n+"」："+foe.tip}
 if(!st.inBattle){if(a==="rest"){var cap=mHp();if((Number(st.hp)||0)>=cap)return"状态正好";st.hp=Math.min(cap,(Number(st.hp)||0)+35);try{if(window.AttributeEngine&&AttributeEngine.applyEvent){var _ae2=window.storyFramework&&window.storyFramework.storyState&&window.storyFramework.storyState.variables&&window.storyFramework.storyState.variables.stats;if(_ae2){var _bk2=Object.keys(_ae2).filter(function(k){var _ax2=AttributeEngine.axisOf(k,k);return _ax2&&_ax2.id==="body";})[0];if(_bk2)AttributeEngine.applyEvent({type:"heal",reason:"休整回复",stats:(function(o){o[_bk2]=2;return o})({})})}}}catch(eR){}return"🛌 休整——"+cfg.hp+" → "+st.hp}return null}
 var foe=foeById[st.foeId];if(!foe){st.inBattle=false;return null}var msg="",hit=true,dn="";
-if(a==="strike"){var dmg=rnd(8,13);if(Math.random()<0.15){dmg=Math.round(dmg*1.7);msg="暴击！"}st.foeHp=Math.max(0,st.foeHp-dmg);dn="造成 "+dmg;s.resources[cfg.qi]=Math.min(30,(Number(s.resources[cfg.qi])||0)+3)}
-else if(a==="skill"){var sk=null;cfg.sk.forEach(function(x){if(x.id===p)sk=x});if(!sk)return"未知技能";var cd=(st.cd||(st.cd={}))[sk.id]||0;if(cd>0)return"「"+sk.n+"」冷却中";var have=Number(s.resources[cfg.qi])||0;if(have<sk.c)return cfg.qi+"不足（"+have+"/"+sk.c+"）";s.resources[cfg.qi]=have-sk.c;st.cd[sk.id]=sk.cd;var sd=sk.d+rnd(-2,3);if(sk.e==="pierce"&&foe.t==="shield"&&st.turn<=2)sd=Math.round(sd*1.2);if(foe.t==="shield"&&st.turn<=2&&sk.e!=="pierce")sd=Math.round(sd*0.5);st.foeHp=Math.max(0,st.foeHp-sd);if(sk.e==="guard"){st.guard=true;dn="造成 "+sd+"，护体"}else dn="造成 "+sd;msg=sk.ic+" "+sk.n+"——"}
+if(a==="strike"){var dmg=atkBoost(rnd(8,13));if(Math.random()<critChance()){dmg=Math.round(dmg*1.7);msg="暴击！"}st.foeHp=Math.max(0,st.foeHp-dmg);dn="造成 "+dmg;s.resources[cfg.qi]=Math.min(30,(Number(s.resources[cfg.qi])||0)+3)}
+else if(a==="skill"){var sk=null;cfg.sk.forEach(function(x){if(x.id===p)sk=x});if(!sk)return"未知技能";var cd=(st.cd||(st.cd={}))[sk.id]||0;if(cd>0)return"「"+sk.n+"」冷却中";var have=Number(s.resources[cfg.qi])||0;if(have<sk.c)return cfg.qi+"不足（"+have+"/"+sk.c+"）";s.resources[cfg.qi]=have-sk.c;st.cd[sk.id]=sk.cd;var sd=atkBoost(sk.d+rnd(-2,3));if(sk.e==="pierce"&&foe.t==="shield"&&st.turn<=2)sd=Math.round(sd*1.2);if(foe.t==="shield"&&st.turn<=2&&sk.e!=="pierce")sd=Math.round(sd*0.5);st.foeHp=Math.max(0,st.foeHp-sd);if(sk.e==="guard"){st.guard=true;dn="造成 "+sd+"，护体"}else dn="造成 "+sd;msg=sk.ic+" "+sk.n+"——"}
 else if(a==="guard"){st.guard=true;s.resources[cfg.qi]=Math.min(30,(Number(s.resources[cfg.qi])||0)+6);msg="🛡 防御——回气+6，";hit=false}
 else if(a==="flee"){if(Math.random()<0.55){st.inBattle=false;st.foeId="";st.guard=false;st.elite=false;return"🏃 脱离战斗"}msg="逃跑失败！"}else return null;
 for(var ck in st.cd)if(st.cd.hasOwnProperty(ck)&&st.cd[ck]>0)st.cd[ck]--;
@@ -53,6 +60,7 @@ if(st.foeHp<=0){st.inBattle=false;st.wins=(Number(st.wins)||0)+1;st.foeId="";st.
 if(hit&&foe.t==="coward"&&st.foeHp<=st.foeMax*0.3&&Math.random()<0.5){st.inBattle=false;st.foeId="";st.guard=false;return msg+dn+"——「"+foe.n+"」不敌逃窜！"}
 var fd=foe.atk+rnd(-2,2);if(st.elite)fd=Math.round(fd*1.25);if(foe.t==="enrage"&&st.foeHp<=st.foeMax*0.35)fd=Math.round(fd*1.45);fd=Math.max(3,fd);
 if(foe.t==="swift"&&Math.random()<0.18){}else if(Math.random()<0.12){fd=Math.round(fd*1.2)}
+fd=defCut(fd); /* v4.49.0：防御词条/称号减免受击 */
 if(st.guard){fd=Math.round(fd*0.5);st.guard=false}else if(a==="flee"){}
 st.hp=Math.max(0,(Number(st.hp)||0)-fd);st.turn=(Number(st.turn)||0)+1;try{if(window.AttributeEngine&&AttributeEngine.applyEvent){var _v=window.storyFramework&&window.storyFramework.storyState&&window.storyFramework.storyState.variables;if(_v&&_v.stats){var _bk=null;Object.keys(_v.stats).forEach(function(k){if(!_bk){var ax=AttributeEngine.axisOf(k,k);if(ax&&ax.id==="body")_bk=k;}});if(_bk){var _o={};_o[_bk]=-Math.min(6,Math.ceil(fd/8));AttributeEngine.applyEvent({type:"injury",reason:"战斗受创",stats:_o});}}}}catch(eA){}
 if(st.hp<=0){st.inBattle=false;st.losses=(Number(st.losses)||0)+1;st.hp=15;st.hurtUntil=round+2;st.foeId="";st.guard=false;st.elite=false;try{if(window.WorldBus)WorldBus.emit({type:"combat.loss",foe:foe.n})}catch(eB){}return"💀 重伤败退——静养 2 轮后再来"}
@@ -81,25 +89,26 @@ function simulate(g, foeId, opts){
   function rand(){s=(s*1664525+1013904223)>>>0;return s/4294967296;}
   function rnd(a,b){return a+Math.floor(rand()*(b-a+1));}
   var acts=opts.actions&&opts.actions.length?opts.actions:['strike','skill:s3','guard','strike','skill:s3','strike'];
-  var myHp=100,foeHp=foe.hp,qi=30,guard=false,turn=1,totalDmg=0,totalShield=0,end=null,log=[];
+  var myHp=100+hpBonus(),foeHp=foe.hp,qi=30,guard=false,turn=1,totalDmg=0,totalShield=0,end=null,log=[];
   for(var ai=0;ai<acts.length&&turn<=30;ai++){
     var act=acts[ai],dmg=0,shield=0,note='';
     if(act==='guard'){guard=true;qi=Math.min(30,qi+6);shield=Math.round(foe.atk*0.5);totalShield+=shield;note='防御姿态·减伤'+shield+'，回气+6';}
     else{
       if(act.indexOf('skill:')===0){
         var sid=act.split(':')[1],sk=null;cfg.sk.forEach(function(x){if(x.id===sid)sk=x;});
-        if(sk&&qi>=sk.c){qi-=sk.c;dmg=sk.d+rnd(-2,3);
+        if(sk&&qi>=sk.c){qi-=sk.c;dmg=atkBoost(sk.d+rnd(-2,3));
           if(foe.t==='shield'&&sk.e!=='pierce')dmg=Math.round(dmg*0.5);
           if(sk.e==='pierce'&&foe.t==='shield')dmg=Math.round(dmg*1.2);
           if(sk.e==='guard'){guard=true;shield=Math.round(foe.atk*0.5);totalShield+=shield;}
           note=sk.ic+' '+sk.n+'·造成'+dmg;}
-        else{dmg=rnd(8,13);note='技能不可用·改用普攻造成'+dmg;}
-      }else{dmg=rnd(8,13);note='普通攻击·造成'+dmg;}
+        else{dmg=atkBoost(rnd(8,13));note='技能不可用·改用普攻造成'+dmg;}
+      }else{dmg=atkBoost(rnd(8,13));note='普通攻击·造成'+dmg;}
+      if(rand()<critChance()-0.15){dmg=Math.round(dmg*1.7);note+='·暴击';}
       dmg=Math.max(1,dmg);foeHp=Math.max(0,foeHp-dmg);totalDmg+=dmg;qi=Math.min(30,qi+3);
     }
     var rec={turn:turn,action:act,damage:dmg,shield:shield,foeHp:foeHp,myHp:myHp,qi:qi,note:note};
     if(foeHp<=0){end='win';log.push(rec);break;}
-    var fd=foe.atk+rnd(-2,2);if(guard){fd=Math.round(fd*0.5);guard=false;}fd=Math.max(3,fd);
+    var fd=defCut(foe.atk+rnd(-2,2));if(guard){fd=Math.round(fd*0.5);guard=false;}fd=Math.max(3,fd);
     myHp=Math.max(0,myHp-fd);rec.counter=fd;rec.myHp=myHp;log.push(rec);
     if(myHp<=0){end='lose';break;}
     turn++;
@@ -110,7 +119,7 @@ function simulate(g, foeId, opts){
     fields:{damage:totalDmg,shield:totalShield,turn:turn,end:end}};
 }
 var genre=WR.genre;var injected=false;
-function inject(){if(injected)return true;if(!window.WorldExt||!window.WorldExt.hasModules||!window.WorldExt.hasModules())return false;try{WorldExt.injectModules(genre,[combatModule(genre)]);console.log("[CombatCore] "+genre+" 就位")}catch(e){console.warn("[CombatCore]",e.message)}injected=true;return true}
+function inject(){if(injected)return true;if(!window.WorldExt||!window.WorldExt.hasModules||!window.WorldExt.hasModules())return false;try{WorldExt.injectModules(genre,[combatModule(genre)]);console.debug("[CombatCore] "+genre+" 就位")}catch(e){console.warn("[CombatCore]",e.message)}injected=true;return true}
 /* v3.55.29：同上，改为单飞 + 有界的 YJWait，杜绝定时器裂变 */
 if(window.YJWait)YJWait.for(inject,null,{name:"combat-core",base:140,max:60});
 else if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",inject);else inject();

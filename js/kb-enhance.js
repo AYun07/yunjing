@@ -108,7 +108,7 @@
     } catch (e) {}
   }
   MoUtils.pollUntil(mountUI, { interval: 2500, max: 80 });
-  console.log('[KBEnhance] 统计条+序号+回收站 就绪');
+  console.debug('[KBEnhance] 统计条+序号+回收站 就绪');
 })();
 
 /* ---- v1.4 预设多份管理:整库快照/一键切换/删除 ---- */
@@ -198,7 +198,7 @@
       var b = document.createElement('button');
       b.className = 'wr-hud-toggle';
       b.textContent = localStorage.getItem(KEY) === '1' ? '▸' : '▾';
-      b.title = '收起/展开状态条(信息在太虚阁-玩家面板常驻可见)';
+      b.title = '收起/展开状态条(信息在左侧功能栏常驻可见)';
       b.style.cssText = 'flex:0 0 auto;border:none;background:rgba(232,228,216,.08);color:#a8a290;border-radius:6px;width:22px;height:22px;font-size:11px;cursor:pointer;margin-right:4px';
       b.onclick = function () {
         var next = localStorage.getItem(KEY) === '1' ? '0' : '1';

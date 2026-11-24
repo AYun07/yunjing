@@ -1,0 +1,109 @@
+/* 云境 v6.0.0 · 原著地点美术增强层样式（AtlasCanonLayer）· 父子地理树 + 类别分清版
+ * 完全独立于 atlas-drilldown.css / atlas-faction-layer.css，可整体删除回滚。
+ * v6.0：不再自绘平行标记，改为给静态树当前层的 .ad-mark 上五类配色（--ac）+ 详情强化。
+ * 五类主色：国家金 / 大型势力玫 / 宗门青 / 地区绿 / 地点米。
+ */
+
+/* 层级标签 + 密度切换按钮 */
+.acp-lvtag { margin-left:auto; font-size:11px; letter-spacing:.5px; color:#e6c98a;
+  padding:2px 8px; border:1px solid rgba(230,170,80,.35); border-radius:10px;
+  background:rgba(40,28,10,.6); white-space:nowrap; }
+.acp-toggle { border:1px solid rgba(159,216,192,.4); color:#9fd8c0; background:rgba(18,40,36,.9); }
+
+/* ===== v6.0 给静态树下钻标记上「原著五类」配色 ===== */
+/* 类别主色通过 --ac 注入到徽记与名牌的描边/辉光 */
+.ad-marks .ad-mark {
+  --ac:#d8cba0; /* 默认地点米色，JS 按类别覆盖 */
+  transition:filter .18s, opacity .18s, transform .18s;
+}
+.ad-marks .ad-mark .ad-glyph {
+  color:var(--ac);
+  text-shadow:0 0 8px color-mix(in srgb,var(--ac) 70%,transparent),0 1px 3px rgba(0,0,0,.9);
+}
+.ad-marks .ad-mark .ad-name {
+  border-color:color-mix(in srgb,var(--ac) 55%,rgba(90,76,52,.9)) !important;
+  color:#f3e8cf !important;
+  box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 8px color-mix(in srgb,var(--ac) 22%,transparent) !important;
+}
+/* 国家：金 —— 六边形方章感 */
+.ad-marks .ad-mark.acp-cat-country .ad-glyph { font-size:1.25em; }
+/* 大型势力：玫红 —— 加粗辉光，区别于普通宗门 */
+.ad-marks .ad-mark.acp-cat-faction .ad-glyph {
+  font-size:1.3em;
+  filter:drop-shadow(0 0 5px var(--ac));
+}
+.ad-marks .ad-mark.acp-cat-faction .ad-name { font-weight:700; }
+/* 宗门：青 —— 旗帜感 */
+.ad-marks .ad-mark.acp-cat-sect .ad-name { font-weight:600; color:#eafaf1 !important; }
+/* 精简模式下未入选 / 筛选不匹配：淡出 */
+.ad-marks .ad-mark.acp-dim { opacity:.2; filter:grayscale(.85); }
+/* 叶子节点：提示可看详情（hover 手型已由静态样式提供） */
+.ad-marks .ad-mark.acp-leaf .ad-drill-hint::after { content:"✧"; color:var(--ac); }
+
+/* 类别图例 + 筛选（仅 L0 时代大图） */
+.acp-legend {
+  position:absolute; left:14px; bottom:14px; z-index:12; display:flex; flex-wrap:wrap; gap:6px;
+  align-items:center; max-width:70%; padding:7px 10px; border-radius:10px;
+  background:linear-gradient(180deg,rgba(20,28,26,.94),rgba(12,18,16,.96));
+  border:1px solid rgba(217,180,106,.35); box-shadow:0 4px 16px rgba(0,0,0,.6);
+}
+.acp-lg-title { font-size:11px; letter-spacing:1px; color:#e6c98a; margin-right:2px; }
+.acp-lg-item {
+  --ac:#d8cba0; display:inline-flex; align-items:center; gap:4px; cursor:pointer;
+  font-size:11px; color:#b9c4be; padding:3px 8px; border-radius:12px;
+  border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03);
+  transition:all .16s;
+}
+.acp-lg-item .acp-lg-dot { color:var(--ac); font-size:12px; line-height:1; }
+.acp-lg-item i { font-style:normal; font-size:9px; opacity:.7; margin-left:1px; }
+.acp-lg-item:hover { border-color:var(--ac); color:#fff; }
+.acp-lg-item.on { border-color:var(--ac); color:#fff; background:rgba(255,255,255,.08); box-shadow:inset 0 0 8px color-mix(in srgb,var(--ac) 30%,transparent); }
+.acp-lg-all { cursor:pointer; font-size:11px; color:#8a97a1; padding:3px 9px; border-radius:12px;
+  border:1px solid rgba(255,255,255,.12); background:transparent; }
+.acp-lg-all.on { color:#e6c98a; border-color:rgba(230,170,80,.5); background:rgba(230,170,80,.1); }
+
+/* 详情卡：深色羊皮纸质感，居中浮层 */
+.acp-card {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:30; width:310px;
+  padding:16px 18px; border-radius:10px;
+  background:linear-gradient(160deg,#1a2530 0%,#101820 60%,#0c1218 100%);
+  border:1px solid rgba(217,180,106,.45);
+  box-shadow:0 10px 40px rgba(0,0,0,.75),inset 0 0 30px rgba(217,180,106,.05);
+  font-family:"Noto Serif SC","Songti SC",serif; color:#e9dcc0;
+}
+.acp-card::before { content:""; position:absolute; left:14px; right:14px; top:8px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(217,180,106,.5),transparent); }
+.acp-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.acp-card-kind { font-size:12px; letter-spacing:1px; }
+.acp-card-x { border:0; background:none; color:#8a97a1; cursor:pointer; font-size:14px; padding:2px 4px; }
+.acp-card-x:hover { color:#fff; }
+.acp-card-title { font-size:20px; font-weight:600; color:#fff2d6; letter-spacing:1px; margin-bottom:8px; }
+.acp-card-row { display:flex; justify-content:space-between; align-items:baseline; font-size:13px;
+  padding:6px 0; border-bottom:1px dashed rgba(217,180,106,.16); }
+.acp-card-row span { color:#94a2ad; }
+.acp-card-row b { color:#e9dcc0; font-weight:500; }
+/* 势力演变（武魂殿→武魂帝国等时序说明） */
+.acp-card-evo { margin-top:10px; padding:9px 11px; border-radius:7px; font-size:11.5px; line-height:1.7;
+  color:#f0d9a8; background:linear-gradient(120deg,rgba(230,170,80,.12),rgba(230,170,80,.03));
+  border:1px solid rgba(230,170,80,.3); }
+.acp-evo-t { display:block; font-size:11px; letter-spacing:1px; color:#e6b870; margin-bottom:4px; }
+.acp-card-desc { margin-top:12px; font-size:12px; line-height:1.85; color:#c3b596; font-style:italic; }
+.acp-card-src { margin-top:8px; font-size:11px; line-height:1.6; color:#9fd8c0; opacity:.9; }
+.acp-card-foot { margin-top:12px; padding-top:10px; border-top:1px solid rgba(217,180,106,.2);
+  font-size:11px; color:#7d8b96; letter-spacing:.5px; }
+
+/* 右侧静态详情面板：原著类别行 + 势力演变（父节点点击也能看到类别） */
+.acp-detail-cat { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0 6px;
+  padding:6px 9px; border-radius:6px; font-size:11.5px;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--ac,#e6b870) 14%,transparent),transparent);
+  border:1px solid color-mix(in srgb,var(--ac,#e6b870) 34%,transparent); }
+.acp-detail-cat span { color:#94a2ad; }
+.acp-detail-cat b { color:var(--ac,#e6b870); font-weight:600; letter-spacing:.5px; }
+.acp-detail-cat em { margin-left:auto; font-style:normal; font-size:10.5px; color:#8a97a1; }
+.acp-detail-evo { margin:6px 0 2px; padding:8px 10px; border-radius:6px; font-size:11px; line-height:1.65;
+  color:#f0d9a8; background:linear-gradient(120deg,rgba(230,170,80,.12),rgba(230,170,80,.03));
+  border:1px solid rgba(230,170,80,.28); }
+.acp-detail-evo b { display:block; font-size:10.5px; letter-spacing:1px; color:#e6b870; margin-bottom:3px; }
+
+/* 图例补一条原著地点说明 */
+.ad-legend::before { content:"⚑ 原著地点（叶子点看出处 · 有▸可下钻）"; color:#9fd8c0; margin-right:14px; font-size:11px; }

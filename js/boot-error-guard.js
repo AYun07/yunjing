@@ -40,6 +40,11 @@
             report('\u6837\u5F0F\u52A0\u8F7D\u5931\u8D25', String(e.target.href || '').split('/').pop());
             return;
         }
+        /* v5.2.2：装饰性图片（生图状态栏/地图底图）缺失是预期内的优雅回退，
+           不该弹红色错误条。IMG/IMAGE 元素加载失败、或无 message 的资源类 error（CSS 背景），一律静默。 */
+        var tl = String(t || '').toLowerCase();
+        if (tl === 'img' || tl === 'image' || tl === 'video' || tl === 'audio') return;
+        if (!e.message && e.target !== window && (!e.target || e.target.nodeType !== 1)) return;
         var m = String(e.message || '\u672A\u77E5\u9519\u8BEF');
         if (e.filename) m += ' @' + String(e.filename).split('/').pop() + ':' + (e.lineno || 0);
         report('\u811A\u672C\u8FD0\u884C\u9519\u8BEF', m);

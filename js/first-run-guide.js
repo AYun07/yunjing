@@ -31,6 +31,9 @@
   ];
 
   function show() {
+    // v7.0 幂等守卫：开场动画承担欢迎职责后会标记 done()；已排队延时回调到这里再拦一道，
+    // 避免动画播完/跳过后引导框突然盖住封面页，破坏无缝接入。正常新玩家 done()=false 不受影响。
+    if (done()) return;
     if (!document.body || document.getElementById('yjFirstGuide')) return;
     var step = 0;
     var wrap = document.createElement('div');
@@ -61,7 +64,7 @@
         if (step < STEPS.length - 1) { step++; render(); return; }
         close();
         // 走到最后一步：跳到创作室并打开接口设置
-        try { location.href = 'studio.html?v=4.42.0&fromGuide=1'; } catch (e) {}
+        try { location.href = 'studio.html?v=6.9.4&fromGuide=1'; } catch (e) {}
       };
     }
 

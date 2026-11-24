@@ -35,7 +35,51 @@
   const PLACE_SUFFIX = ["山", "谷", "坊", "渡", "镇", "泽", "岭", "集"];
   const IDEOLOGIES = ["以利聚义，童叟无欺", "强者为尊，胜者说话", "守一亩三分地，不问世事", "广结善缘，消息灵通", "替天行道，赏善罚恶", "只认钱，不认人", "传承旧统，规矩大过天"];
 
-  const CAPS = { chars: 24, factions: 8, places: 10 };
+  const CAPS = { chars: 8, factions: 5, places: 6 };   // v6.8.0：从 24 降到 8，NPC 不再泛滥
+
+  /* ===== v6.8.0 世界观适配：原创 NPC 的名字/职业按当前世界题材切换 =====
+     旧版写死仙侠名字库，导致科幻/都市/历史世界里冒出「李青芜·散修」这种完全不合世界观的 NPC。
+     现在按 genreKey / genreName 关键词判定题材，选对应的人名与身份池；实在判不出再用中性池。 */
+  function themeOf() {
+    try {
+      var cfg = window.storyFramework && window.storyFramework.config || {};
+      var k = String(cfg.genreKey || ""), n = String(cfg.genreName || "");
+      var text = k + " " + n;
+      if (/earth|dibao|ditan|liming|zhanhen|mystery|guzhenren|jingshen|wangyou|quanqiubingfeng|都市|地球|盗墓|诡秘|黎明|战痕|网游|精神/.test(text)) return "modern";
+      if (/scifi|swallowed|chaoshenxueyuan|wanxiangzhiwang|kehuan|科幻|星际|吞噬|学院/.test(text)) return "scifi";
+      if (/wuxia|jianghu|doupocangqiong|斗破|武侠|江湖/.test(text)) return "wuxia";
+      if (/history|lishi|sanguo|历史|三国|大明/.test(text)) return "history";
+      return "xianxia";   // 仙侠/玄幻为默认
+    } catch (e) { return "xianxia"; }
+  }
+  var POOLS = {
+    xianxia: {
+      sur: ["李","王","张","陈","林","苏","沈","顾","秦","萧","陆","叶","韩","慕","白","赵"],
+      giv: ["青芜","若尘","惊鸿","听雪","无涯","拂衣","望舒","疏影","凌霄","寒山","云深","暮雨","长歌","归鸿","临渊","既明"],
+      role: ["散修","游侠","药师","炼器师","账房先生","镖师","采药人","云游道人","坊市掌柜","宗门执事"]
+    },
+    wuxia: {
+      sur: ["李","沈","顾","秦","萧","陆","叶","白","赵","宋","唐","楚","燕","慕容"],
+      giv: ["无涯","惊鸿","长歌","照野","归鸿","临渊","藏锋","南絮","九思","青崖","孤鸿","听雪"],
+      role: ["江湖客","镖师","剑客","酒肆掌柜","游方郎中","捕快","书生","商队护卫","说书人"]
+    },
+    modern: {
+      sur: ["李","王","张","陈","林","苏","沈","顾","赵","刘","周","吴","徐","孙"],
+      giv: ["子墨","思远","雨桐","浩然","晓峰","静怡","宇航","梦琪","家豪","若曦","嘉诚","文博"],
+      role: ["公司职员","网约车司机","小店店主","外卖骑手","大学生","社区民警","护士","健身教练","自由撰稿人","外卖站长"]
+    },
+    scifi: {
+      sur: ["李","沈","林","顾","秦","陆","叶","白","韩","萧","唐","宋"],
+      giv: ["星阑","云深","临渊","既明","照野","九思","望舒","归鸿","长歌","惊鸿"],
+      role: ["星舰驾驶员","研究员","机械师","星际商人","古籍破译员","舱内管制员","外勤勘探员","AI 维护技师"]
+    },
+    history: {
+      sur: ["李","王","张","陈","刘","赵","周","吴","郑","孙","马","朱"],
+      giv: ["子墨","文博","思远","德海","守业","承宗","继祖","世安","彦之","景行"],
+      role: ["书生","里正","商贾","公差","农户","郎中","私塾先生","镖师","账房"]
+    }
+  };
+  function pool() { return POOLS[themeOf()] || POOLS.xianxia; }
 
   function vars() {
     const fw = window.storyFramework;
@@ -49,9 +93,10 @@
   function bump(v, kind) { const c = counters(v); c[kind] = spawnedCount(v, kind) + 1; }
 
   /* ---------- 原创人物 ---------- */
-  function _unusedName(rnd, taken) {
+  function _unusedName(rnd, taken, P) {
+    P = P || pool();
     for (let i = 0; i < 40; i++) {
-      const n = pick(SURNAMES, rnd) + pick(GIVEN, rnd);
+      const n = pick(P.sur, rnd) + pick(P.giv, rnd);
       if (!taken[n]) return n;
     }
     return null;
@@ -62,13 +107,14 @@
     if (!ES) return null;
     if (spawnedCount(v, "chars") >= CAPS.chars) return null;
     if (!v.characters || typeof v.characters !== "object") v.characters = {};
-    const name = _unusedName(rnd, v.characters);
+    const P = pool();
+    const name = _unusedName(rnd, v.characters, P);
     if (!name) return null;
     const places = Object.values((v.entities && v.entities.places) || {});
     const factions = Object.values((v.entities && v.entities.factions) || {});
     const c = {
       name,
-      role: pick(ROLES, rnd),
+      role: pick(P.role, rnd),
       age: 16 + Math.floor(rnd() * 50),
       appearance: pick(APPEARANCES, rnd),
       personality: pick(PERSONALITIES, rnd),
@@ -370,15 +416,15 @@
     const events = [];
     try { driftFactions(v, rnd, events); } catch (e) {}
     try {
-      if (rnd() < 0.5) {
+      if (rnd() < 0.22) {
         const r = spawnOne(v, rnd);
         if (r) events.push(`「${r.name}」初入众生谱：${r.c.role}，现居${r.c.location}${r.linked.length ? `，与「${r.linked[0]}」有些渊源` : ""}`);
       }
-      if (day % 3 === 0 && rnd() < 0.55) {
+      if (day % 3 === 0 && rnd() < 0.3) {
         const f = spawnFaction(v, rnd);
         if (f) events.push(`新势力「${f.name}」悄然立起（${f.ideology}）`);
       }
-      if (day % 2 === 0 && rnd() < 0.45) {
+      if (day % 2 === 0 && rnd() < 0.25) {
         const p = spawnPlace(v, rnd);
         if (p) events.push(`「${p.name}」出现在行旅的传闻里（${p.region}）`);
       }

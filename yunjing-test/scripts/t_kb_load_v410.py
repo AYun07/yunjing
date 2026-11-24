@@ -8,8 +8,13 @@ wangyou 嵌套数组展开的 34 条原创地点可检索、零 pageerror。
 import json, sys
 from playwright.sync_api import sync_playwright
 
+import os
+
+ROOT = os.environ.get("YJ_ROOT") or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
 BASE = "http://127.0.0.1:8899"
-IDX = json.load(open('/workspace/yunjing/js/kb/_index.json', encoding='utf-8'))
+IDX = json.load(open(os.path.join(ROOT, 'js/kb/_index.json'), encoding='utf-8'))
 GENRES = sorted(IDX['genres'].keys())
 
 results = []

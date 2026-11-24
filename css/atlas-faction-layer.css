@@ -1,0 +1,149 @@
+/* 云境 v5.4.0 · 动态势力上图样式
+ * 势力旗标：旗形纹章 + 绶带名牌 + 光晕，与地名圆形徽记明显区分。
+ * 详情卡：独立金属/羊皮纸质感，含影响力条与状态徽章。
+ * 可整体删除回滚。
+ */
+
+/* ===== 势力旗标（叠加在 .ad-marks 内） ===== */
+.af-flag {
+  position: absolute;
+  transform: translate(-50%, -55%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 7;
+  transition: transform .18s, filter .18s;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.8));
+}
+.af-flag:hover { transform: translate(-50%, -55%) scale(1.12); z-index: 12; filter: drop-shadow(0 0 10px rgba(217,180,106,.7)); }
+/* 规模分级：影响力越高旗越大（位置仍由权威锚点决定，不受此影响） */
+.af-big .af-banner { transform: scale(1.12); }
+.af-mid .af-banner { transform: scale(1); }
+.af-small .af-banner { transform: scale(.82); }
+.af-big .af-name { font-size: 13px; }
+
+/* 旗面：旗杆 + 飘扬旗形（加大以增强辨识度） */
+.af-banner {
+  position: relative;
+  width: 40px; height: 44px;
+  display: grid; place-items: center;
+  font-size: 21px; line-height: 1;
+  color: #fff2d0;
+  background:
+    linear-gradient(135deg, rgba(217,180,106,.95), rgba(150,105,44,.95));
+  border: 1.5px solid #f0d99a;
+  border-radius: 3px 10px 3px 3px;
+  box-shadow: inset 0 0 8px rgba(255,240,190,.35), 0 0 0 1px rgba(0,0,0,.5), 0 0 12px rgba(217,180,106,.35);
+  clip-path: polygon(0 0, 100% 0, 82% 50%, 100% 100%, 0 100%);
+  text-shadow: 0 1px 3px rgba(0,0,0,.7);
+}
+.af-banner::before { /* 旗杆 */
+  content: ""; position: absolute; left: -3px; top: -6px; bottom: -2px;
+  width: 2px; background: linear-gradient(180deg,#f5e2b0,#8a6a34);
+  border-radius: 2px;
+}
+.af-banner::after { /* 顶饰 */
+  content: ""; position: absolute; left: -5px; top: -7px; width: 6px; height: 6px;
+  background: radial-gradient(circle,#fff3cf,#c99a4a); border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255,230,160,.8);
+}
+
+/* 世界实体势力：冷色调刀剑纹章 */
+.af-kind-world .af-banner {
+  background: linear-gradient(135deg, rgba(120,170,200,.95), rgba(48,86,120,.95));
+  border-color: #bcdcea;
+  box-shadow: inset 0 0 8px rgba(200,235,255,.3), 0 0 0 1px rgba(0,0,0,.5), 0 0 12px rgba(120,180,220,.35);
+}
+
+/* 名牌：绶带造型 */
+.af-name {
+  margin-top: 4px;
+  padding: 3px 10px;
+  max-width: 128px;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-size: 13px; letter-spacing: .5px;
+  color: #f4e9cf;
+  background: linear-gradient(180deg, rgba(30,38,48,.96), rgba(16,22,30,.96));
+  border: 1px solid rgba(217,180,106,.5);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.6);
+}
+.af-kind-world .af-name { border-color: rgba(150,200,230,.5); }
+
+/* 状态小标 */
+.af-stat {
+  margin-top: 2px; font-size: 10px; letter-spacing: .5px;
+  padding: 1px 6px; border-radius: 8px;
+  background: rgba(0,0,0,.6);
+}
+
+/* 覆灭：灰化 + 废墟色 + 删除线 */
+.af-dead .af-banner { filter: grayscale(.85) brightness(.7); clip-path: polygon(0 0,100% 0,82% 50%,100% 100%,0 100%); }
+.af-dead .af-name { color: #9a8f82; border-color: rgba(120,110,100,.4); text-decoration: line-through; }
+.af-dead .af-stat { color: #c98b7a; }
+
+/* 复兴：绿色箭头光晕 */
+.af-revived .af-banner { box-shadow: inset 0 0 8px rgba(255,240,190,.35), 0 0 0 1px rgba(0,0,0,.5), 0 0 14px rgba(120,220,150,.6); }
+.af-revived .af-stat { color: #9fe0b0; }
+
+/* 脉冲光环（只给存续势力，提示可点） */
+.af-flag:not(.af-dead) .af-banner::marker { content: ""; }
+
+/* ===== 势力详情卡 ===== */
+.af-card {
+  position: fixed; z-index: 9500;
+  width: 260px;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  color: #e9dcc0;
+  background: linear-gradient(160deg, #18222e 0%, #0e1620 60%, #0a1017 100%);
+  border: 1px solid rgba(217,180,106,.5);
+  border-radius: 12px;
+  padding: 14px 16px 16px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.6), 0 18px 50px rgba(0,0,0,.75), inset 0 0 40px rgba(217,180,106,.05);
+  animation: afCardIn .2s ease-out;
+}
+@keyframes afCardIn { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+
+.af-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.af-card-kind { font-size: 11px; letter-spacing: 1px; color: var(--ad-primary, #d9b46a); }
+.af-card-x { border: 0; background: none; color: #8a97a1; cursor: pointer; font-size: 14px; padding: 2px 4px; }
+.af-card-x:hover { color: #fff; }
+.af-card-title { font-size: 19px; font-weight: 600; color: #fff2d6; letter-spacing: 1px; margin-bottom: 6px; }
+.af-card-status {
+  display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 10px; margin-bottom: 12px;
+  border: 1px solid;
+}
+.af-s-active { color: #9fd8c0; border-color: rgba(159,216,192,.4); background: rgba(159,216,192,.08); }
+.af-s-dead { color: #c98b7a; border-color: rgba(201,139,122,.4); background: rgba(201,139,122,.08); }
+.af-s-revived { color: #9fe0b0; border-color: rgba(159,224,176,.4); background: rgba(159,224,176,.08); }
+
+.af-card-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; padding: 5px 0; border-bottom: 1px dashed rgba(217,180,106,.14); }
+.af-card-row span { color: #94a2ad; }
+.af-card-row b { color: #e9dcc0; font-weight: 500; }
+.af-bar { height: 6px; border-radius: 4px; background: rgba(0,0,0,.5); margin: 8px 0 12px; overflow: hidden; border: 1px solid rgba(217,180,106,.2); }
+.af-bar i { display: block; height: 100%; background: linear-gradient(90deg,#8a6a34,#d9b46a,#ffe6a8); box-shadow: 0 0 8px rgba(217,180,106,.6); }
+.af-card-desc { margin-top: 12px; font-size: 12px; line-height: 1.8; color: #b9ab92; font-style: italic; }
+.af-card-src { margin-top: 8px; font-size: 11px; line-height: 1.6; color: #9fd8c0; opacity:.85; }
+.af-card-foot { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(217,180,106,.2); font-size: 11px; color: #7d8b96; letter-spacing: .5px; }
+
+/* 待定位旗标（玩家势力未设定驻地） */
+.af-pending .af-banner { background: repeating-linear-gradient(45deg, rgba(90,100,110,.9), rgba(90,100,110,.9) 5px, rgba(60,70,80,.9) 5px, rgba(60,70,80,.9) 10px); border-color: rgba(200,210,220,.5); box-shadow: 0 0 12px rgba(180,200,220,.3); animation: afPulse 1.8s ease-in-out infinite; }
+.af-pending .af-name { border-color: rgba(180,200,220,.45); }
+.af-pending .af-stat { color: #bcdcea; font-size: 9px; white-space: nowrap; }
+@keyframes afPulse { 0%,100% { opacity:.75; } 50% { opacity:1; } }
+
+/* 点选模式 */
+.ad-map.af-picking { cursor: crosshair; box-shadow: inset 0 0 0 2px rgba(159,216,192,.7), inset 0 0 40px rgba(0,0,0,.6); }
+#afPickTip { position: fixed; top: 92px; left: 50%; transform: translateX(-50%); z-index: 9600;
+  padding: 9px 18px; font: 13px "Noto Serif SC",serif; color: #e9dcc0;
+  background: rgba(14,22,30,.96); border: 1px solid rgba(159,216,192,.5); border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.6); letter-spacing: .5px; }
+#afPickTip button { border: 0; background: none; color: #9fd8c0; cursor: pointer; font: inherit; text-decoration: underline; }
+.af-seat-toast { position: fixed; bottom: 48px; left: 50%; transform: translateX(-50%); z-index: 9600;
+  padding: 9px 20px; font: 13px "Noto Serif SC",serif; color: #fff2d6;
+  background: rgba(20,32,26,.96); border: 1px solid rgba(159,216,192,.5); border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.6); animation: afCardIn .25s ease-out; }
+
+/* 图例补一条势力旗标说明（注入层不改原图例，用定位补角标） */
+.ad-legend::after { content: "⚑ 动态势力（点击查看详情）"; color: var(--ad-primary, #d9b46a); margin-left: 14px; font-size: 11px; }

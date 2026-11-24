@@ -130,10 +130,11 @@
 
   /* ============ 8 套渲染器 ============ */
 
-  /* 1. 仙逆 · 云海道册：太极 + 祥云 + 朱砂道印 + 水墨远山 + 金色灵光 */
+  /* 1. 仙道 · 云海道册：世界徽记玉牌 + 祥云 + 朱砂道印 + 水墨远山 + 金色灵光
+     v5.2.1：去掉太极图（用户明确嫌其难看），改为本界徽记字玉牌——每界不同，更贴世界特色 */
   function skinXianxia(groups, g) {
     return '<div class="ss1-sky" aria-hidden="true"><i class="ss1-mt"></i><i class="ss1-sun"></i><i class="ss1-crane">✦</i><i class="ss1-crane c2">✦</i></div>' +
-      '<div class="ss1-head"><div class="ss1-taiji">☯</div>' +
+      '<div class="ss1-head"><div class="ss1-taiji ss1-emblem">' + esc(WID.s) + '</div>' +
       '<div class="ss1-title"><b>' + esc(WID.t) + '</b><small>' + esc(zhName(g)) + ' · ' + esc(WID.sub) + '</small>' +
       '<span class="ss1-cloud">☁ ~~~~~ ☁ ~~~~~ ☁</span></div>' +
       '<div class="ss1-seal">' + esc(WID.s) + '</div></div>' +
@@ -296,7 +297,7 @@
   /* 氛围标签条：固定的世界氛围词（非数值、非原著专名）。
      每个题材三个标签：领域 / 基调 / 处境。 */
   var AMBIENCE = {
-    xianxia: ['☯ 修行界', '云海苍茫', '逆天改命'],
+    xianxia: ['✦ 修行界', '云海苍茫', '逆天改命'],
     youxi:   ['◈ 竞技场', '赛季进行中', '排位冲刺'],
     dushi:   ['▣ 都市', '身份档案', '实时更新'],
     keji:    ['[SYS] 星域', '链路稳定', '未知区域'],
@@ -310,6 +311,13 @@
     return '<div class="ss-amb ss-amb-' + skin + '">' +
       tags.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('<i>·</i>') +
       '</div>';
+  }
+  /* v5.2.1 生图美术层：每界一张无文字氛围底图，路径 assets/status-art/<genre>.webp。
+     图由 CSS 的 #yjStatusSection[data-world="..."] .ss-art{background-image} 加载；
+     本 div 只作容器。图片不存在时背景透明，现有 CSS 渐变皮肤照常显示（纯增强、零依赖）。
+     文字/数值全部仍由 HTML 动态叠加——生图绝不生成文字（尤其中文必错 + 版权口径）。 */
+  function artHTML(key) {
+    return '<div class="ss-art" aria-hidden="true"></div>';
   }
 
   function currentGenreKey(g) {
@@ -340,8 +348,10 @@
       document.body.style.setProperty('--wpri-glow', hexA(WID.c, 0.42));
     } catch (e) {}
     /* v4.28.0 减法：去掉状态栏里重复的「身份铭牌」——窄条里徽记/题词/名字重复三次太挤。
-       世界身份改由主内容区「入世封面」承载（空间大、更好看）；状态栏只留一处徽记印章。 */
-    try { return ambienceHTML(skin) + (RENDER[skin] || skinXianxia)(groups, g); }
+       世界身份改由主内容区「入世封面」承载（空间大、更好看）；状态栏只留一处徽记印章。
+       v5.2.1：新增 artHTML() 生图美术层（无文字，仅氛围底图），压在内容之下。图不存在时透明回退，
+       不影响现有 CSS 渐变皮肤——生图是纯增强，不是依赖。 */
+    try { return artHTML(key) + ambienceHTML(skin) + (RENDER[skin] || skinXianxia)(groups, g); }
     catch (e) { return '<div class="empty-hint">皮肤渲染异常，已回退。</div>'; }
   }
 
@@ -349,6 +359,13 @@
   var CSS = `
 /* 基础 */
 #yjStatusSection[data-status-skin]{padding:13px 13px 15px;position:relative;overflow:hidden;border-radius:9px;isolation:isolate}
+/* v5.2.1 生图美术层：无文字氛围底图，铺满状态栏、压在内容之下。
+   图片按 data-world 由下方每界规则加载；缺图时透明回退到 CSS 渐变（纯增强）。 */
+#yjStatusSection[data-status-skin] .ss-art{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-size:cover;background-position:center 62%;background-repeat:no-repeat;opacity:.72;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,#000 40%,rgba(0,0,0,.82) 100%);
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,#000 40%,rgba(0,0,0,.82) 100%)}
+#yjStatusSection[data-status-skin] .ss-amb{z-index:1}
 #yjStatusSection[data-status-skin] .section-title{color:inherit;opacity:.92}
 #yjStatusSection[data-status-skin] .yj-st-cog{border-color:currentColor;color:inherit;opacity:.55}
 #yjStatusSection[data-status-skin] .empty-hint{display:none}
@@ -380,9 +397,13 @@
 .ss1-crane.c2{top:30%;left:40%;font-size:10px;animation-duration:12s;animation-delay:-4s}
 @keyframes ss1fly{0%{transform:translate(0,0);opacity:0}20%{opacity:.5}80%{opacity:.5}100%{transform:translate(-160px,-30px);opacity:0}}
 .ss1-head{display:flex;align-items:center;gap:12px;position:relative;z-index:2;margin-bottom:12px}
-.ss1-taiji{width:46px;height:46px;display:grid;place-items:center;font-size:40px;line-height:1;color:#e8c877;
-  text-shadow:0 0 16px rgba(232,200,119,.5);animation:ss1spin 12s linear infinite}
-@keyframes ss1spin{to{transform:rotate(360deg)}}
+.ss1-taiji{width:46px;height:46px;display:grid;place-items:center;line-height:1;color:#f0d693;
+  font:700 26px "STKaiti","KaiTi",serif;
+  background:linear-gradient(145deg,rgba(232,200,119,.16),rgba(232,200,119,.03));
+  border:1px solid rgba(232,200,119,.5);border-radius:10px;
+  box-shadow:0 0 18px rgba(232,200,119,.22) inset,0 2px 10px rgba(0,0,0,.35);
+  text-shadow:0 0 12px rgba(232,200,119,.4)}
+/* v5.2.1：太极旋转动画随太极图一并去除；@keyframes 保留仅为旧缓存兼容，不再引用 */
 .ss1-title b{display:block;font:700 20px "STKaiti","KaiTi",serif;letter-spacing:.28em;color:#f4d98f;text-shadow:0 0 16px rgba(232,200,119,.35)}
 .ss1-title small{display:block;font-size:10px;color:#a9c4ae;letter-spacing:.16em;margin-top:4px}
 .ss1-cloud{display:block;font-size:9px;color:rgba(232,200,119,.42);letter-spacing:.1em;margin-top:3px}
@@ -722,7 +743,7 @@ body[data-skin] .gauge-bar::after{content:"";position:absolute;inset:0;pointer-e
   background:linear-gradient(90deg,transparent 24%,rgba(128,128,128,.3) 24% 24.5%,transparent 24.5%,transparent 49%,rgba(128,128,128,.3) 49% 49.5%,transparent 49.5%,transparent 74%,rgba(128,128,128,.3) 74% 74.5%,transparent 74.5%)}
 body[data-skin] .panel-section:has([id$="Area"]) .empty-hint{position:relative;padding-left:32px;min-height:26px;display:flex;align-items:center}
 body[data-skin] .panel-section:has([id$="Area"]) .empty-hint::before{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-size:20px;opacity:.42}
-body[data-skin="xianxia"] .empty-hint::before{content:"☯";color:#e8c877}
+body[data-skin="xianxia"] .empty-hint::before{content:"✧";color:#e8c877}
 body[data-skin="youxi"] .empty-hint::before{content:"◈";color:#39e0c8}
 body[data-skin="dushi"] .empty-hint::before{content:"▤";color:#3f6fd8}
 body[data-skin="keji"] .empty-hint::before{content:"›";color:#48d6ff}
@@ -817,10 +838,12 @@ body[data-skin] .gauge-fill{
 #yjStatusSection[data-status-skin="xianxia"] .ss1-head{padding:10px 8px 11px;margin-bottom:13px;border-radius:7px;
   background:linear-gradient(105deg,rgba(232,200,119,.12),rgba(120,170,150,.03) 70%,transparent);
   border:1px solid rgba(232,200,119,.2);border-left:3px solid var(--wpri);position:relative;overflow:hidden}
-#yjStatusSection[data-status-skin="xianxia"] .ss1-head::after{content:"☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷";position:absolute;right:6px;bottom:2px;
-  font:8px "STKaiti",serif;color:rgba(232,200,119,.3);letter-spacing:2px}
-#yjStatusSection[data-status-skin="xianxia"] .ss1-taiji{width:56px;height:56px;font-size:50px;position:relative;flex:0 0 auto}
-#yjStatusSection[data-status-skin="xianxia"] .ss1-taiji::before{content:"";position:absolute;inset:-7px;border:1px dotted rgba(232,200,119,.55);border-radius:50%;animation:ss1spin 26s linear infinite}
+/* v5.2.1：去掉八卦符号串（太极视觉语言，用户嫌难看） */
+#yjStatusSection[data-status-skin="xianxia"] .ss1-head::after{content:"✦ ✧ ✦";position:absolute;right:6px;bottom:2px;
+  font:9px "STKaiti",serif;color:rgba(232,200,119,.3);letter-spacing:2px}
+#yjStatusSection[data-status-skin="xianxia"] .ss1-taiji{width:56px;height:56px;font:700 32px "STKaiti","KaiTi",serif;position:relative;flex:0 0 auto;border-radius:12px}
+/* v5.2.1：旋转虚线圈去除，改为静态玉牌外框 */
+#yjStatusSection[data-status-skin="xianxia"] .ss1-taiji::before{content:"";position:absolute;inset:-4px;border:1px solid rgba(232,200,119,.4);border-radius:14px}
 #yjStatusSection[data-status-skin="xianxia"] .ss1-rows{grid-template-columns:1fr!important;gap:6px!important}
 #yjStatusSection[data-status-skin="xianxia"] .ss1-row{padding:6px 9px;border-radius:4px;border:1px solid rgba(232,200,119,.2);
   border-left:3px solid var(--wpri);background:linear-gradient(100deg,rgba(232,200,119,.1),rgba(120,170,150,.02) 62%,transparent);
@@ -964,7 +987,17 @@ body[data-skin] .gauge-fill{
 @media(max-width:560px){
   #yjStatusSection[data-status-skin] .ss1-rows,#yjStatusSection[data-status-skin] .ss3-rows,#yjStatusSection[data-status-skin] .ss4-rows,#yjStatusSection[data-status-skin] .ss5-rows,#yjStatusSection[data-status-skin] .ss6-rows,#yjStatusSection[data-status-skin] .ss7-rows,#yjStatusSection[data-status-skin] .ss8-rows{grid-template-columns:1fr}
   #yjStatusSection[data-status-skin] .ss2-slots{grid-template-columns:1fr}
-}`;
+}
+/* v5.2.1 生图美术层：每界挂 assets/status-art/<genre>.webp。
+   由下方 ART_CSS 动态拼接追加——图片存在即生效，缺失则透明回退到 CSS 渐变。 */
+` + (function () {
+    /* 每界背景图规则。图是纯氛围美术（无文字），艺术方向由各族题材+主色决定，见 scripts/gen-status-art.mjs */
+    var keys = Object.keys(WORLD_ID);
+    return keys.map(function (k) {
+      return '#yjStatusSection[data-world="' + k + '"] .ss-art{background-image:url("assets/status-art/' + k + '.webp")}';
+    }).join('\n');
+  })() + `
+`;
 
   function injectCSS() {
     var el = document.getElementById('ss-skins-css');

@@ -186,9 +186,9 @@
         var r = runTool('saves.ui');
         bot(r && r.ok ? r.msg : (window.SaveSlots ? '已帮你打开存档管理。' : (r && r.msg) || '存档系统未加载。'));
         if (r && !r.ok && window.SaveSlots) { try { SaveSlots.open(); } catch (e) {} }
-      } else if (/预设|酒馆|第三方/.test(t)) {
+      } else if (/预设|前端|第三方/.test(t)) {
         var p = runTool('preset.info'); var g = runTool('regex.info');
-        bot((p && p.msg || '') + '\n' + (g && g.msg || '') + '\n想换成你自己的酒馆预设？创作室 → 云起预设面板 → 导入预设，或直接把 JSON 发给我（接入 API 后我自己导）。');
+        bot((p && p.msg || '') + '\n' + (g && g.msg || '') + '\n想换成你自己的预设？创作室 → 云起预设面板 → 导入预设，或直接把 JSON 发给我（接入 API 后我自己导）。');
       } else if (/格式|排版乱|修复正文|AI腔/.test(t)) {
         var r2 = runTool('format.repair');
         if (r2 && r2.ok) {
@@ -216,17 +216,13 @@
   }
   function buildQuick() {
     quick.innerHTML = '';
+    /* v6.9.0 小云去重：这些功能在云境左栏/工具箱都有专门入口，小云不再重复摆一遍。
+       小云只保留「AI 能帮你想、能替你改」这类独有的即时能力——聊天、灵感、召回、正文急救。
+       世界书 / 行动判定 / 存档 / 预设 / 体检 / 造物工坊 / 进工坊 → 一律走左侧功能栏或顶栏。 */
     [['💡 剧情灵感', function () { bot(INSPIRE[Math.floor(Math.random() * INSPIRE.length)]); }],
-     ['📚 世界书', function () { var r = runTool('ui.worldbook'); bot(r && r.ok ? r.msg : ((r && r.msg) || '世界书未加载。')); }],
-     ['🎯 行动判定', function () { var r = runTool('ui.actioncheck'); bot(r && r.ok ? r.msg : ((r && r.msg) || '判定骰未加载。')); }],
      ['🔎 资料召回', function () { Promise.resolve(runTool('recall.brief', {})).then(function (r) { bot(r && r.msg || '召回暂无结果。'); }); }],
      ['🩹 正文急救', function () { var r = runTool('format.repair'); bot(r && r.ok ? r.msg : ((r && r.msg) || '没有可修复的正文。')); }],
-     ['💾 存档管理', function () { var r = runTool('saves.ui'); if (r && r.ok) bot(r.msg); else { bot(r && r.msg || '存档系统未加载。'); if (window.SaveSlots) { try { SaveSlots.open(); } catch (e) {} } } }],
-     ['🧩 预设/正则', function () { var p = runTool('preset.info'); var g = runTool('regex.info'); bot((p && p.msg || '') + '\n' + (g && g.msg || '')); }],
-     ['🏥 工坊体检', function () { var r = runTool('system.status'); bot(r ? r.msg : '工坊体检：排版 ✅ · 存档 ✅ · 灵感库 ✅ · 主笔通道 ✅'); }],
-     ['🛠 造物工坊', function () { window.XYDev && window.XYDev.open(); }],
-     ['💬 AI 管家', function () { if (window.MoAssistant) window.MoAssistant.openPanel(); }],
-     ['✍️ 进入工坊', function () { location.href = 'studio.html'; }]
+     ['💬 聊聊剧情', function () { input.focus(); bot('想聊哪段剧情？直接说，我陪你捋。'); }]
     ].forEach(function (q) {
       var b = el('button', 'xy-q', q[0]); b.onclick = function () { me(q[0].replace(/^\S+\s/, '')); q[1](); };
       quick.appendChild(b);
@@ -262,9 +258,12 @@
     if (!modules) return;
     modules.innerHTML = '';
     var list = [];
+    /* v6.9.0：创作室里这些模块（世界动态/上下文/资料库/大势/图鉴/灵宠/小队/身份/立场）
+       已经全部收进左侧功能栏，小云不再重复列一遍——避免功能重合，也避免这一大块浮层挡正文。
+       小云回归它真正的定位：AI 管家（聊天 / 灵感 / 卡文急救）。 */
     try {
-      if (/studio\.html/.test(location.pathname) && window.MoChibi && typeof window.MoChibi.moduleEntries === "function") {
-        list = window.MoChibi.moduleEntries() || [];
+      if (window.MoChibi && typeof window.MoChibi.moduleEntries === "function") {
+        if (!/studio\.html/.test(location.pathname)) list = window.MoChibi.moduleEntries() || [];
       }
     } catch (e) {}
     if (!list.length) { modules.style.display = "none"; return; }
@@ -377,6 +376,10 @@
        v4.17.7 手机修复：窄屏(<640px)创作室的输入框铺满整宽，气泡用 right:104px 向左横穿，
        实测正好盖住「主角小传」等输入框的 placeholder。窄屏一律不自动弹，玩家主动点小云
        仍照常出现（say() 独立路径），功能不丢，只是不再自动遮挡输入。 */
+    /* v5.2.1（全量视觉审阅 P0）：创作室也不再自动轮播招呼气泡。
+       气泡用 right:104px 向左横穿，实测在 1400px 宽创作室压住底部输入框与发送按钮（逐屏截图证实）。
+       大厅/窄屏本就不弹；现统一为「全站不自动弹」，玩家主动点小云仍照常 say() 出现，功能不丢。 */
+    return;
     if (document.body && document.body.classList.contains('page-index')) return;
     if (window.matchMedia && window.matchMedia('(max-width:640px)').matches) return;
     var f = face(); tip.textContent = f.tips[Math.floor(Math.random() * f.tips.length)];

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>云境 · 天地设置</title>
+<link rel="stylesheet" href="css/base-style.css?v=6.9.4">
+<link rel="stylesheet" href="css/font-switcher.css?v=6.9.4">
+<style>
+:root{--jade:#d9b46a;--ink:#e8e4d8;--mut:#a8a290;--line:rgba(232,228,216,.1);--bg:#101019;--card:#191b28}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60%);color:var(--ink);
+  font-family:var(--yj-font-body,'Noto Sans SC','PingFang SC',system-ui,sans-serif);min-height:100vh;
+  padding:0 0 60px}
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:14px 20px;
+  background:rgba(16,16,25,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top h1{font-size:17px;margin:0;letter-spacing:2px;color:var(--jade)}
+.top .back{margin-left:auto;background:rgba(217,180,106,.12);border:1px solid rgba(217,180,106,.35);
+  color:var(--jade);border-radius:9px;padding:8px 16px;cursor:pointer;font-size:13px}
+.wrap{max-width:760px;margin:22px auto;padding:0 16px}
+.sec{background:linear-gradient(160deg,rgba(30,32,50,.9),rgba(20,21,34,.95));border:1px solid var(--line);
+  border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.sec h2{font-size:15px;margin:0 0 4px;color:var(--jade);letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.sec .desc{font-size:11.5px;color:var(--mut);margin:0 0 14px;line-height:1.6}
+.row{display:flex;align-items:center;gap:10px;margin:11px 0;flex-wrap:wrap}
+.row label{font-size:12.5px;color:var(--ink);min-width:96px}
+.row input[type=text],.row input[type=password],.row select{flex:1;min-width:180px;background:rgba(255,255,255,.06);
+  border:1px solid var(--line);border-radius:9px;color:var(--ink);font-size:13px;padding:9px 12px;outline:none;font-family:inherit}
+.row input:focus,.row select:focus{border-color:rgba(217,180,106,.5)}
+.row .hint{width:100%;font-size:11px;color:var(--mut);padding-left:106px;line-height:1.5}
+.btn{background:linear-gradient(135deg,rgba(217,180,106,.28),rgba(217,180,106,.12));border:1px solid rgba(217,180,106,.42);
+  color:#f4d896;border-radius:9px;padding:9px 18px;cursor:pointer;font-size:13px;font-weight:600}
+.btn:hover{background:rgba(217,180,106,.24)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--mut)}
+.sw{position:relative;width:42px;height:23px;flex:0 0 auto}
+.sw input{opacity:0;width:0;height:0}
+.sw i{position:absolute;inset:0;background:rgba(255,255,255,.12);border-radius:99px;cursor:pointer;transition:.2s}
+.sw i::before{content:"";position:absolute;width:17px;height:17px;left:3px;top:3px;background:#c9c4b4;border-radius:50%;transition:.2s}
+.sw input:checked + i{background:rgba(217,180,106,.5)}
+.sw input:checked + i::before{transform:translateX(19px);background:#f4d896}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+.tile{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:11px;padding:12px;
+  cursor:pointer;text-align:center;font-size:12.5px;transition:.15s}
+.tile:hover{background:rgba(217,180,106,.12);border-color:rgba(217,180,106,.35)}
+.tile .ti{font-size:20px;display:block;margin-bottom:6px}
+.tile small{display:block;color:var(--mut);font-size:10.5px;margin-top:3px}
+.saved{color:#7fd8a0;font-size:12px;opacity:0;transition:.3s}
+.saved.on{opacity:1}
+@media(max-width:520px){.row label{min-width:80px}.row .hint{padding-left:0}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>◆ 天地设置</h1>
+  <button class="back" id="backBtn">← 返回封面</button>
+</div>
+<div class="wrap">
+  <p class="desc" style="text-align:center;color:var(--mut);font-size:12px;margin-bottom:20px">
+    这里是云境的全局设置，对全部世界、两种玩法统一生效。设置只保存在你自己的浏览器里，不会上传。</p>
+
+  <!-- 模型接口 -->
+  <section class="sec">
+    <h2>🔑 主笔模型</h2>
+    <p class="desc">正文由这个模型来写。支持任何 OpenAI 兼容端点（公益站 / 商业站 / 本地 Ollama 均可）。填完点保存，再回封面开写。</p>
+    <div class="row"><label>接口地址</label><input type="text" id="cfg_endpoint" placeholder="https://api.deepseek.com/v1"></div>
+    <div class="row"><label>API 密钥</label><input type="password" id="cfg_apiKey" placeholder="sk-…（本地 Ollama 可填 ollama）"></div>
+    <div class="row"><label>模型名</label><input type="text" id="cfg_model" placeholder="deepseek-chat"></div>
+    <div class="row"><label>上下文轮数</label><input type="text" id="cfg_ctx" placeholder="留空=自动"></div>
+    <div class="hint">公益站常见于 apihub / 中转站，地址一般带 /v1；若报 404，先确认路径末尾是否缺 /v1。</div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" id="saveModel">保存模型设置</button>
+      <span class="saved" id="modelSaved">✓ 已保存</span>
+    </div>
+  </section>
+
+  <!-- 阅读外观 -->
+  <section class="sec">
+    <h2>🔤 阅读外观</h2>
+    <p class="desc">字体与主题对整个云境生效，即时切换、自动记住。</p>
+    <div class="row"><button class="btn ghost" id="fontBtn">🔤 换字体（6 款）</button>
+      <button class="btn ghost" id="themeBtn">🎨 换主题</button></div>
+    <div class="row"><label>正文字号</label>
+      <button class="btn ghost" id="fontMinus">A−</button>
+      <button class="btn ghost" id="fontPlus">A＋</button>
+      <span class="hint" style="padding:0" id="fontScaleLabel"></span></div>
+  </section>
+
+  <!-- 全局开关：按钮式，直接调模块函数，避免用错存储 key -->
+  <section class="sec">
+    <h2>🌙 全局开关</h2>
+    <p class="desc">这些开关进入创作室后，在左侧功能栏「阅读与外观」组里可直接点开，设置全局生效。</p>
+    <div class="grid">
+      <div class="tile" id="tileNight"><span class="ti">🌙</span>深夜护眼<small>暖光低亮</small></div>
+      <div class="tile" id="tilePerf"><span class="ti">⚡</span>流畅模式<small>低配提速</small></div>
+      <div class="tile" id="tileCelebr"><span class="ti">🎊</span>庆典特效<small>成就礼花</small></div>
+      <div class="tile" id="tileTts"><span class="ti">🔊</span>朗读正文<small>最近一章</small></div>
+    </div>
+    <p class="desc" id="switchNote" style="margin-top:12px;color:var(--mut)"></p>
+  </section>
+
+  <!-- 存储 -->
+  <section class="sec">
+    <h2>🗂 存储与隐私</h2>
+    <p class="desc">全部数据只在本机浏览器。清理前请先导出存档，删除不可恢复。</p>
+    <div class="row"><button class="btn ghost" id="clearCacheBtn">清理运行缓存（不动存档）</button>
+      <span class="saved" id="cacheSaved">✓ 已清理，请刷新</span></div>
+  </section>
+</div>
+
+<script src="js/entry-guard.js?v=6.9.4"></script>
+<script src="js/font-switcher.js?v=6.9.4"></script>
+<script src="js/theme-studio.js?v=6.9.4"></script>
+<script>
+(function(){
+  var $ = function(id){return document.getElementById(id);};
+  function readCfg(){try{return JSON.parse(localStorage.getItem('storyApiConfig')||'{}')||{};}catch(e){return {};}}
+  function flash(el){el.classList.add('on');setTimeout(function(){el.classList.remove('on');},1600);}
+  // 载入模型配置
+  var c=readCfg();
+  $('cfg_endpoint').value=c.endpoint||'';
+  $('cfg_apiKey').value=c.apiKey||'';
+  $('cfg_model').value=c.model||'';
+  try{$('cfg_ctx').value=localStorage.getItem('storyContextWindow')||'';}catch(e){}
+  $('saveModel').onclick=function(){
+    var cfg=readCfg();
+    var ep=$('cfg_endpoint').value.trim(), key=$('cfg_apiKey').value.trim(), mo=$('cfg_model').value.trim();
+    if(ep) cfg.endpoint=ep; if(key) cfg.apiKey=key; if(mo) cfg.model=mo;
+    if(!cfg.provider) cfg.provider='custom';
+    try{localStorage.setItem('storyApiConfig',JSON.stringify(cfg));
+      var ctx=$('cfg_ctx').value.trim(); if(ctx) localStorage.setItem('storyContextWindow',ctx);
+      flash($('modelSaved'));}catch(e){alert('保存失败：'+e.message);}
+  };
+  // 全局开关：本页模块多为按需加载，能调到就调，调不到就提示去创作室左栏
+  function callOrTip(fn, name){
+    if(fn){try{fn();}catch(e){}}
+    else $('switchNote').textContent='「'+name+'」需在创作室里开启：进世界后看左侧功能栏「阅读与外观」组。';
+  }
+  ['tileNight','tilePerf','tileCelebr','tileTts'].forEach(function(id){
+    $(id).onclick=function(){
+      if(id==='tileNight') callOrTip(function(){return window.SystemGuard&&SystemGuard.toggleNight();},'深夜护眼');
+      if(id==='tilePerf') callOrTip(function(){return window.YJPerf&&YJPerf.toggle();},'流畅模式');
+      if(id==='tileCelebr') callOrTip(function(){return window.Celebration&&Celebration.toggle();},'庆典特效');
+      if(id==='tileTts') callOrTip(function(){return window.StoryInput&&StoryInput.readAloud&&StoryInput.readAloud();},'朗读正文');
+    };
+  });
+  // 字号
+  function scale(){return Number(localStorage.getItem('storyFontScale')||1);}
+  function paintScale(){$('fontScaleLabel').textContent='当前 '+scale().toFixed(2)+'×';}
+  paintScale();
+  $('fontMinus').onclick=function(){try{localStorage.setItem('storyFontScale',String(Math.max(.8,scale()-.05)));}catch(e){}paintScale();};
+  $('fontPlus').onclick=function(){try{localStorage.setItem('storyFontScale',String(Math.min(1.5,scale()+.05)));}catch(e){}paintScale();};
+  // 字体/主题面板（自注入模块）
+  $('fontBtn').onclick=function(){if(window.FontSwitcher)FontSwitcher.open();};
+  $('themeBtn').onclick=function(){if(window.ThemeStudio)ThemeStudio.open();};
+  // 缓存清理：只清 SW 缓存与运行时缓存，不碰 localStorage 存档
+  $('clearCacheBtn').onclick=function(){
+    try{if(window.caches&&caches.keys){caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));});}}catch(e){}
+    flash($('cacheSaved'));
+  };
+  // 返回封面
+  $('backBtn').onclick=function(){location.href='opening.html';};
+})();
+</script>
+</body>
+</html>

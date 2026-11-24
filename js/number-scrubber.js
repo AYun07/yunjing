@@ -198,20 +198,19 @@
     if (typeof body !== "string" || !body) return body;
     var legal = legalMoney(snap, turns);
     var pairs = legalPairs(snap);
-    var hasTruth = !!(snap && snap.nums && typeof snap.nums.gold === "number");
-
     var s = body.replace(PANEL_FRAG, "");
     s = s.replace(GAIN_FRAG, function (m, field) { return GAIN_WORD[field] || "略有所得"; });
 
-    /* 没有真值快照时不做数量改写，避免误伤合法数字（A/B 类仍照常剥离） */
-    if (hasTruth) {
-      s = s.replace(MONEY_PRE, function (m, num, q, unit) {
-        return legal[String(Number(fold(num)))] ? m : "些许" + unit;
-      });
-      s = s.replace(MONEY_POST, function (m, unit, num) {
-        return legal[String(Number(fold(num)))] ? m : unit + "些许";
-      });
-    }
+    /* 货币数额：有真值快照时按白名单放行；没有快照（自由人生 / 地球 / 新档未开局）时无从核对，
+       一律降级成「些许」——否则模型编的「木剑才卖 5 金币」会原样进正文。
+       v6.7.0 修复：旧版整段挂在 hasTruth 上，无快照世界等于完全没洗。
+       只用阿拉伯数字判定，中文数字（"三十金币"）一律不动，避免误伤正常行文。 */
+    s = s.replace(MONEY_PRE, function (m, num, q, unit) {
+      return legal[String(Number(fold(num)))] ? m : "些许" + unit;
+    });
+    s = s.replace(MONEY_POST, function (m, unit, num) {
+      return legal[String(Number(fold(num)))] ? m : unit + "些许";
+    });
     s = s.replace(PROG_FRAG, function (m, a, b, off, str) {
       /* 日期形态（2024/11、11/8 号）原样保留，不当 UI 进度对剥离 */
       var tail = str.slice(off + m.length, off + m.length + 2);
@@ -226,7 +225,7 @@
   }
 
   return {
-    version: "4.42.0",
+    version: "6.9.4",
     legalNumbers: legalNumbers,
     legalMoney: legalMoney,
     legalPairs: legalPairs,

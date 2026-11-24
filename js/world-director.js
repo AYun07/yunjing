@@ -21,7 +21,7 @@
       return out;
     };
     WorldExt.takeDirective.__directed = true;
-    console.log("[WorldDirector] GM 导演提示词就位");
+    console.debug("[WorldDirector] GM 导演提示词就位");
     return true;
   }
   function compose() {
