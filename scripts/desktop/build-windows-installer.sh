@@ -54,7 +54,11 @@ cd "$WORK"
 export NSISDIR="$NSIS_BIN"
 "$NSIS_BIN/linux/makensis" installer.nsi
 
-echo "=== 4b. 说明：容器若仅 8GB 内存，7z 主体用 -mx=3、makensis 用 zlib，避免 OOM ==="
+echo "=== 4b. 关键修复（DR-094）：7z 必须用 LZMA 非 solid，不能用 LZMA2+solid+BCJ ==="
+echo "  2019 版 nsis7z.dll 解压 LZMA2+solid 超大包会失败（真机报'程序文件解压失败'）。"
+echo "  若 electron-builder 产出的 nsis.7z 是 LZMA2/solid，须重打："
+echo "    cd dist/win-unpacked && 7z a -t7z -m0=LZMA -mx=5 -ms=off -mmt=2 ../yunjing-desktop-${VERSION}-x64.nsis.7z ."
+echo "  容器 8GB 内存限额下用 -mx=5 -ms=off -mmt=2，makensis 用 zlib，避免 OOM。"
 echo "=== 5. 交付与校验 ==="
 cp "云境-Windows-${VERSION}-x64.exe" "$OUT"
 file "$OUT"

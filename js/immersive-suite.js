@@ -1182,10 +1182,10 @@ const ImmersiveSuite = function() {
         <div class="imm-drawer" id="immDrawer" style="--ip:${th.primary};--ia:${th.accent};--id:${th.deep};--ipn:${th.panel};--itx:${th.text};--imt:${th.muted};">
             <div class="imm-head">
                 <div class="imm-title">🎭 沉浸万象 <span class="imm-sub">${esc(th.name)} · 沉浸万象</span></div>
-                <button class="imm-x" onclick="ImmersiveSuite.toggle(false)">✕</button>
+                <button class="imm-x" onclick="ImmersiveSuite.toggle(false)" title="关闭沉浸万象抽屉">✕</button>
             </div>
             <div class="imm-rail">
-                ${liveTabs().map((t) => `<button class="imm-tab ${state.tab === t.id ? "on" : ""}" onclick="ImmersiveSuite.openTab('${t.id}')">
+                ${liveTabs().map((t) => `<button class="imm-tab ${state.tab === t.id ? "on" : ""}" onclick="ImmersiveSuite.openTab('${t.id}')" title="沉浸万象 · ${t.name}">
                     ${t.icon}<span>${t.name}</span>${t.id === "letters" && badge ? `<i class="imm-dot">${badge}</i>` : ""}</button>`).join("")}
             </div>
             <div class="imm-strip" id="immStrip">${stripHTML()}</div>
@@ -1233,7 +1233,7 @@ const ImmersiveSuite = function() {
       console.warn("[Immersive] 抽屉挂载失败:", e.message);
       m.innerHTML = `<div class="imm-drawer" id="immDrawer">
                 <div class="imm-head"><div class="imm-title">🎭 沉浸万象</div>
-                <button class="imm-x" onclick="ImmersiveSuite.toggle(false)">✕</button></div>
+                <button class="imm-x" onclick="ImmersiveSuite.toggle(false)" title="关闭沉浸万象抽屉">✕</button></div>
                 <div class="imm-body"><div style="padding:24px;color:var(--imt,#c9b68a)">抽屉渲染故障，门仍可用</div></div></div>`;
     }
   }

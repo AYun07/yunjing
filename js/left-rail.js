@@ -220,19 +220,38 @@
       });
     });
     rail.querySelectorAll(".lr-group-head").forEach(function (b) {
-      b.addEventListener("click", function () {
+      b.addEventListener("click", function (e) {
         var id = b.getAttribute("data-group"), c = cfg();
+        var el = rail.querySelector('.lr-group[data-group="' + id + '"]');
+        var railNow = railEl();
+        var slim = !!(railNow && railNow.classList.contains("collapsed")) ||
+          !!(window.matchMedia && window.matchMedia("(max-width:900px)").matches);
+        if (slim && el) {
+          /* v7.0.0 组1-T03：折叠态/窄屏点图标弹临时浮层；再点收起，任意时刻只开一个。
+             旧逻辑切 closed 状态，但 items 被 !important 隐藏，点了没有任何可见反馈。 */
+          e.stopPropagation();
+          var willOpen = !el.classList.contains("peek");
+          rail.querySelectorAll(".lr-group.peek").forEach(function (g) { g.classList.remove("peek"); });
+          if (willOpen) el.classList.add("peek");
+          return;
+        }
         c.groups = c.groups || {}; c.groups[id] = !c.groups[id]; saveCfg(c); render();
       });
     });
     rail.querySelectorAll(".lr-item").forEach(function (b) {
-      b.addEventListener("click", function () {
+      b.addEventListener("click", function (e) {
         var name = b.getAttribute("data-name");
         var found = null;
         groupsForCurrentMode().some(function (g) { return g.items.some(function (it) { if (it.name === name) { found = it; return true; } }); });
         if (found && typeof found.run === "function") {
-          try { found.run(); } catch (e) { console.warn("[LeftRail] " + name + " 打开失败:", e && e.message); }
+          try { found.run(); } catch (err) { console.warn("[LeftRail] " + name + " 打开失败:", err && err.message); }
         }
+        /* v7.0.0 组1-T03：点过即高亮，并收起临时浮层 */
+        e.stopPropagation();
+        rail.querySelectorAll(".lr-item.active").forEach(function (x) { x.classList.remove("active"); });
+        b.classList.add("active");
+        var peeking = b.closest ? b.closest(".lr-group.peek") : null;
+        if (peeking) peeking.classList.remove("peek");
       });
     });
   }
@@ -264,6 +283,16 @@
       if (layout) layout.insertBefore(host, layout.firstChild);
     }
     render();
+    /* v7.0.0 组1-T03：点浮层外任意处收起临时浮层，避免浮层一直挂着吞点击 */
+    document.addEventListener("click", function (e) {
+      var railNow = railEl();
+      if (!railNow) return;
+      var peeks = railNow.querySelectorAll(".lr-group.peek");
+      if (!peeks.length) return;
+      var t = e.target;
+      if (t && t.closest && t.closest(".lr-group.peek")) return;
+      peeks.forEach(function (g) { g.classList.remove("peek"); });
+    });
     var target = document.getElementById("chatArea");
     if (target && window.MutationObserver) {
       var mo = new MutationObserver(function () { syncVisibility(); });

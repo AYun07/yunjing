@@ -202,9 +202,25 @@
       } else if (/召回|查资料|资料便签|回忆一下|整理资料|写前参考/.test(t)) {
         Promise.resolve(runTool('recall.brief', {})).then(function (r) { bot(r && r.msg || '召回暂无结果。'); });
       } else if (/灵感|没思路|写什么|点子/.test(t)) { bot(INSPIRE[Math.floor(Math.random() * INSPIRE.length)]); }
-      else if (/卡文|卡住|写不下/.test(t)) { bot('卡文急救三步：① 回到上一幕的「钩子」 ② 让配角说一句反常的话 ③ 给场景换天气。还不行？<a href="studio.html" style="color:#b9c0ff">去创作室让我深度帮你 →</a>'); }
+      else if (/卡文|卡住|写不下/.test(t)) { botHTML('卡文急救三步：① 回到上一幕的「钩子」 ② 让配角说一句反常的话 ③ 给场景换天气。还不行？<a href="studio.html" style="color:#b9c0ff">去创作室让我深度帮你 →</a>'); }
       else if (/体检|检查|问题/.test(t)) { var r4 = runTool('system.status'); bot(r4 ? r4.msg : '工坊体检：排版 ✅ · 存档 ✅ · 灵感库 ✅ · 主笔通道 ✅'); }
-      else if (/工坊|创作|studio|写/.test(t)) { bot('这就带你去创作室～ <a href="studio.html" style="color:#b9c0ff">进入工坊 →</a>'); }
+      else if (/直达|链接|入口链接|给我.*链接|怎么去|打开/.test(t)) {
+        /* v7.0.0 T12：对话生成本地直达链接。从自然语言里抠出目标，交给 link.deep 工具白名单校验。 */
+        var M = [
+          [/观星|设置/, 'settings'], [/知识包|资料库|dlc/, 'dlc'],
+          [/创作世界|原创工坊|forge/, 'forge'], [/造物|万象工坊|小云开发|开发界面|dev/, 'dev']
+        ];
+        var key = '';
+        for (var i = 0; i < M.length; i++) { if (M[i][0].test(t)) { key = M[i][1]; break; } }
+        if (!key) { bot('想要哪个入口的直达链接？说「观星 / 知识包 / 创作世界 / 小云开发」其中一个，我生成给你。'); }
+        else {
+          var dr = runTool('link.deep', { to: key });
+          var a = dr && dr.data ? dr.data.url : null;
+          /* v7.0.0 T12：a 来自工具白名单，非用户输入；用 botHTML 保留可点链接（bot() 会转义成字面文本） */
+          botHTML(esc(dr && dr.msg || '直达链接已生成。') + (a ? ' <a href="' + a + '" style="color:#b9c0ff">点此直达 →</a>' : ''));
+        }
+      }
+      else if (/工坊|创作|studio|写/.test(t)) { botHTML('这就带你去创作室～ <a href="studio.html" style="color:#b9c0ff">进入工坊 →</a>'); }
       else if (/界|世界|逛/.test(t)) { bot('廿八界任你挑：26 个原著小说世界 + 真实地球 + 自由世界。点击页面上方任一入口即可踏入。'); }
       else if (/你是谁|你好|hi|hello|嗨/.test(t)) { bot(face().n + '模式的小云，你的专属 AI 管家。聊天解闷、剧情灵感、卡文急救、世界书、存档、预设、格式急救、造物开发——云境有的我全都会，云境没有的我给你造。'); }
       else { bot(face().hi + ' （想深聊？<a href="studio.html" style="color:#b9c0ff">去创作室找我 →</a>）'); }
@@ -329,7 +345,10 @@
   xyRestorePos();
 
   (function enableXyDrag() {
-    if (orb.setPointerCapture === undefined && !('ontouchstart' in window) && !window.PointerEvent) return;
+    /* v7.0.0 组1-T02：移除旧能力探测守卫。原 && 判断会在「有 touch 但无 PointerEvent」
+       等混合环境里提前 return，导致整段拖拽监听不注册、小云拖不动。
+       setPointerCapture 调用下方已有 try/catch 兜底，无需因此放弃注册；
+       桌面鼠标与手机触摸统一由 PointerEvent 处理。 */
     var dragging = false, moved = false, sx = 0, sy = 0, ox = 0, oy = 0, pid = null;
     orb.style.touchAction = 'none';
     function down(e) {

@@ -16610,8 +16610,9 @@
     if (!svg) return;
     svg.style.transition = animate === false ? "none" : "";
     svg.style.transform = `translate(${zoom.tx}px, ${zoom.ty}px) scale(${zoom.k})`;
+    /* 1× 纵向手势让给面板滚动(pan-y)、横向拖拽可平移；放大后 none 交双指手势 */
     map.style.touchAction = zoom.k > 1.001 ? "none" : "pan-y";
-    map.classList.toggle("canpan", zoom.k > 1.001);
+    map.classList.add("canpan");
     /* v3.96.0：标签反向缩放，屏幕字号恒定 —— 放大后文字不糊、不跟着变大，
        节点在屏幕上散开，标签间距同步变大，永不新添重叠。 */
     const inv = 1 / zoom.k;
@@ -16682,8 +16683,9 @@
     const map = mapDom();
     if (!map) return;
     const r = map.getBoundingClientRect();
-    const mx = Math.max(0, r.width * (zoom.k - 1) / 2);
-    const my = Math.max(0, r.height * (zoom.k - 1) / 2);
+    /* 1× 也留一屏平移余量，让 k=1 可自由拖动；放大后余量随 k 连续增长 */
+    const mx = Math.max(r.width, r.width * (zoom.k - 1) / 2);
+    const my = Math.max(r.height, r.height * (zoom.k - 1) / 2);
     zoom.tx = Math.min(mx, Math.max(-mx, zoom.tx));
     zoom.ty = Math.min(my, Math.max(-my, zoom.ty));
   }
@@ -16759,7 +16761,8 @@
         const v = [...pts.values()];
         lastDist = Math.hypot(v[0].x - v[1].x, v[0].y - v[1].y);
         map.classList.add("dragging");
-      } else if (zoom.k > 1.001) {
+      } else {
+        /* 1× 单指也进入拖动态，允许直接平移 */
         map.classList.add("dragging");
       }
     });
@@ -16776,7 +16779,8 @@
           zoomBy(d / lastDist, (v[0].x + v[1].x) / 2, (v[0].y + v[1].y) / 2, false);
         }
         lastDist = d;
-      } else if (zoom.k > 1.001) {
+      } else {
+        /* 1× 也允许拖动平移，clampPan 会按当前 k 约束范围 */
         zoom.tx += dx;
         zoom.ty += dy;
         clampPan();
@@ -16878,7 +16882,7 @@
     st.textContent = `
         #atlasOverlay{position:fixed;inset:0;background:rgba(4,4,10,.62);backdrop-filter:blur(4px);z-index:9100;opacity:0;visibility:hidden;transition:.3s;}
         #atlasOverlay.on{opacity:1;visibility:visible;}
-        #atlasPanel{position:fixed;top:0;right:0;height:100%;width:min(620px,100vw);z-index:9101;
+        #atlasPanel{position:fixed;top:5vh;right:0;height:90vh;width:min(620px,94vw);z-index:9101;
             background:linear-gradient(168deg,var(--panel,#141a2a),color-mix(in srgb,var(--panel,#141a2a) 82%,#000));
             border-left:1px solid color-mix(in srgb,var(--primary,#c9a86a) 30%,transparent);
             transform:translateX(103%);transition:transform .38s cubic-bezier(.2,.9,.28,1);
@@ -17013,7 +17017,7 @@
         .atlas-storm .as-row b{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
         .atlas-storm .as-row i{font-style:normal;font-size:10px;border:1px solid rgba(200,170,110,.3);border-radius:99px;padding:0 6px;color:var(--accent,#8ab0c8);white-space:nowrap;}
         .atlas-storm .as-tr{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.65;font-size:10.5px;}
-        @media (max-width:560px){#atlasPanel{width:100vw;}.atlas-svg{max-height:54vh;min-height:280px;}.atlas-map{min-height:280px;}}
+        @media (max-width:560px){#atlasPanel{width:94vw;}.atlas-svg{max-height:54vh;min-height:280px;}.atlas-map{min-height:280px;}}
         /* ===== v4.05.0 舆图细节化：悬停速览 / 层统计 / 八类图例 / 道路分级 / 详情增补 ===== */
         .atlas-tip{position:fixed;z-index:9200;max-width:230px;pointer-events:none;opacity:0;visibility:hidden;
             transform:translateY(4px);transition:opacity .14s,transform .14s;

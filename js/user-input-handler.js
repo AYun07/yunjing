@@ -991,6 +991,24 @@ ${body.trim()}
         bar.appendChild(toggle);
         paint();
       } catch (e) {}
+      /* v7.0.0 组1-T09：桌面鼠标按住条形空白处横向拖动，补上触控之外的横滑方式。
+         点在按钮上仍走按钮自身的点击，不抢命中。 */
+      let qbDrag = null;
+      bar.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'mouse' || e.button !== 0) return;
+        if (e.target && e.target.closest && e.target.closest('button')) return;
+        qbDrag = { x: e.clientX, left: bar.scrollLeft };
+        bar.style.cursor = 'grabbing';
+      });
+      bar.addEventListener('pointermove', (e) => {
+        if (!qbDrag) return;
+        e.preventDefault();
+        bar.scrollLeft = qbDrag.left - (e.clientX - qbDrag.x);
+      });
+      const qbEndDrag = () => { qbDrag = null; bar.style.cursor = ''; };
+      bar.addEventListener('pointerup', qbEndDrag);
+      bar.addEventListener('pointercancel', qbEndDrag);
+      bar.addEventListener('pointerleave', qbEndDrag);
       let cmds;
       if (fw.config.mode === "roleplay") {
         cmds = fw.config.genreKey === "earth" ? this.earthQuickCommands : fw.config.genreKey === "quanqiubingfeng" ? this.quanqiubingfengQuickCommands : fw.config.genreKey === "chaoshenxueyuan" ? this.chaoshenxueyuanQuickCommands : fw.config.genreKey === "zhanhen" ? this.zhanhenQuickCommands : fw.config.genreKey === "jianlai" ? this.jianlaiQuickCommands : fw.config.genreKey === "guimi" ? this.guimiQuickCommands : fw.config.genreKey === "guzhenren" ? this.guzhenrenQuickCommands : fw.config.genreKey === "xuanjianxianzu" ? this.xuanjianxianzuQuickCommands : this.roleplayQuickCommands;

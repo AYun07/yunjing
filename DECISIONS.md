@@ -1585,3 +1585,78 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 上传凭证通道穷尽（四条全堵）：① 用户 token → 401 Bad credentials；② `gh auth status` → 未登录；③ git credential helper（Go 二进制）`get` / `fill` → 返回空（`git ls-remote` 成功只因仓库公开，读不需凭证，`git push --dry-run` 卡在等交互输入超时）；④ `~/.ssh` 无私钥、无 `~/.config/gh/hosts.yml`。结论：沙箱内没有任何可用的 GitHub 写凭证，上传非不做而是无凭证可用。
 - 发布脚本加固：`scripts/publish-v694.sh` 改为凭证自动适配——优先环境变量 GITHUB_TOKEN，其次 gh 登录态，再次 git 凭证管理器，取不到才报错退出；不再写死单一失效 token。bash -n 语法校验通过。待用户提供有效 token（或本机 gh 登录）后，`bash scripts/publish-v694.sh` 即可一键完成提交+打 tag+Release+上传 6 产物。
 - 失效条件：任何一条凭证通道恢复即可上传；产物清单与 README 链接必须与实际文件名逐字对应。
+
+## DR-092 · v6.9.4 GitHub Release 上传成功 + 网络/编码踩坑（2026-11-24）
+- 背景：用户提供有效 fine-grained token（`github_pat_`，身份 AYun07），要求完成上传。此前两个 `ghp_` token 均 401。
+- 成果（已核验）：Release `https://github.com/AYun07/yunjing/releases/tag/v6.9.4`（id=456794151）建成，6 个产物全部上传成功、共 2.79GB：
+  - YunJing-v6.9.4-agent-plugin.zip / source.zip(43.5M) / full.zip(664M) / Android.apk(593M) / Windows-setup-x64.exe(768M) / Linux-portable.zip(790M)
+  - 本地已提交 commit fc3dfaa（581 文件）；发布前先给远程 v6.9.1 留备份分支 `backup-v6.9.1-before-v6.9.4`（cdd5d85）可回滚。
+- 踩坑与解法（重要，供复现）：
+  ① **中文文件名被 GitHub 上传通道剥离**：沙箱→GitHub 的非 ASCII 字符在传输层被剥掉，`云境-xxx.zip` 上传后变 `-xxx.zip`；upload 的 `name` query、PATCH body 的中文、`\u4e91` 转义全部试过，均由服务端/代理层剥除，无法绕过。**解法：产物文件名一律用英文**（YunJing-v6.9.4-*），中文对照表写进 Release 正文（正文中文正常）。
+  ② **github.com 主域被沙箱选择性阻断**：`api.github.com`、`uploads.github.com` 正常（connect 0.1s），但 `github.com` 持续 HTTP=000（20s 超时），导致 `git push`（走 github.com:443）反复失败（TLS 中断/连接超时，试 4 次）。curl 实测确认是主域不可达，非 token 问题。
+  ③ 结果：Release + 6 产物（核心交付）已全部完成；**main 分支源码 push 未完成**（停在远程 v6.9.1），v6.9.4 tag 因走 API 自动基于默认分支建成、指向旧 commit cdd5d85（源码 zip 会是 v6.9.1 内容）。用户下载的 6 个产物是完整 v6.9.4，不受影响。
+- 待办（网络恢复后）：在能访问 github.com 的环境执行 `git push https://x-access-token:<token>@github.com/AYun07/yunjing.git HEAD:main --force`，再把 tag `refs/tags/v6.9.4` 重建指向 fc3dfaa（删旧 tag 后 `git tag v6.9.4 fc3dfaa && git push --force origin v6.9.4`），最后重传 source.zip。发布脚本 `scripts/publish-v694.sh` 已支持凭证自动适配。
+- 失效条件：6 个产物哈希/大小必须与本地一致；Release 正文对照表须与实际英文名逐字对应。
+
+## DR-093 · main 分支 / README / tag 全部补齐（2026-11-24）
+- 背景：DR-092 后用户反馈「main 里没看到、主页 README 没更新」——根因是 github.com 主域曾被沙箱阻断，git push 失败，Release 虽传好但源码分支没更新。
+- 结果（全部核验通过）：
+  ① 网络恢复后（github.com 从 HTTP=000 回到 200），经 6 次尝试后 git push 成功：`cdd5d85...fc3dfaa HEAD -> main (forced update)`，main 分支已到 v6.9.4 commit fc3dfaa。
+  ② 远程主页 README 确认更新：v6.9.4 出现 18 次、可安装 exe 口径在、旧 v6.6.0 残留 0 处。
+  ③ 修复 tag：删除误指向 cdd5d85(v6.9.1) 的 tag v6.9.4，重建指向 fc3dfaa，Release 的 Source code 现可下到正确源码。
+  ④ Release 6 个产物仍全部 uploaded，备份分支 backup-v6.9.1-before-v6.9.4(cdd5d85) 保留可回滚。
+- 经验：github.com 主域会间歇性不可达（HTTP=000），api.github.com 始终稳定；产物走 API 上传不受影响，git push 需等主域恢复窗口。force push 前必须先留备份分支。
+
+## DR-094 · 修复 Windows 安装器「程序文件解压失败」（2026-11-24）
+- 背景：用户真机安装 v6.9.4 exe 报「程序文件解压失败，安装中止」——这正是初版 installer.nsi 第 72 行 MessageBox，说明 `Nsis7z::Extract` 返回 error。先排除下载损坏：本地 exe SHA256 与 GitHub asset digest 完全一致（6e0bfc1f...），上传无损，问题在安装器本身。
+- 根因（两条叠加）：
+  ① 初版为绕开 8GB 内存 OOM，用 `7z a -mx=3 -mmt=4` 重打主体，产物是 `LZMA2:22 BCJ + Solid`（800MB solid 块 + 4MB 字典）。配套 nsis7z.dll 是 2019 年 electron-builder 自带版（基于老 7-Zip SDK），解压这种 LZMA2+solid 超大包失败。
+  ② 初版解压直接 `SetOutPath $INSTDIR` + `Nsis7z::Extract`，而 electron-builder 官方逻辑是先解压到 `$PLUGINSDIR\7z-out` 临时目录、再 `CopyFiles` 到目标（原子、可重试），并能规避文件占用。
+- 修复（两点，均已落地 scripts/desktop/）：
+  ① 7z 主体改用最保守格式：`7z a -t7z -m0=LZMA -mx=5 -ms=off -mmt=2`（LZMA、非 solid、无 LZMA2），773MB，系统 7z 完整解压验证通过（1273 文件）。
+  ② installer.nsi 严格复刻官方 extractUsing7za 宏：嵌入 7z 时 `SetCompress off`、解压到 7z-out 临时目录、`CopyFiles` 带 5 次重试、主程序存在性校验、错误信息带 $R0。
+- 验证（wine + Xvfb 真机走完整安装向导，非静态推断）：欢迎页→许可协议→目录→安装页，日志显示 app-64.7z 释放并解压到 7z-out，**最终到达安装完成页、无任何错误框**；落地目录 `...\Programs\云境` 共 1274 文件，YunJing.exe(180M)/opening.html/app.asar/uninst.exe 齐全，桌面与开始菜单快捷方式已创建。（中文在 wine 里显示方块是缺字体，真机 Windows 正常。）
+- 新产物：`/workspace/云境-Windows-6.9.4-x64.exe`（773MB），SHA256 `def54ae436fa27dd59df1fd96fead1f73a90db4b2a242caf373ca31235f89835`。旧失败版留底 `云境-Windows-6.9.4-x64.exe.bak-失败版`。已删除 Release 旧 asset(787309865) 并上传修复版（同名 YunJing-v6.9.4-Windows-setup-x64.exe）。
+- 失效条件：如再报解压失败，须拿安装页 DetailPrint 的 $R0 具体错误；wine 验证通过是充分证据（它真实执行了解压与复制），但真机仍是最终判据。
+
+## DR-095 · v7.0.0 实玩 18 项修复 + 版本单一来源（2026-11-24）
+- 背景：用户真机实测报 18 项问题（按钮按不动、小云不能拖、沉浸万象乱、配置存不下、手机分身无用、缺 tooltip、侧栏折叠失效、图鉴太大、点击滚动无效、主题切换状态栏卡死、创意工坊加载失败、对话无法生成直达链接、造物工坊指错页、观星不能下滑、客户端无更新、快捷指令看不全、信息遮挡等）。负责人三路只读诊断后拆 17 卡、四组并行派工。
+- 用户三点拍板（2026-11-24 回读确认）：①照 17 卡清单开工；②客户端更新「手动检查 + 全自动」两者都要；③版本号 v7.0.0。
+- 关键决定：
+  ① 按【文件所有权】分组派工——每个文件只有一个 owner，避免并行互相覆盖。跨文件衔接点（T12 对话意图在 xiaoyun-buddy.js、T15 手机分身文件本体/sw.js 预缓存）由负责人收口。
+  ② 滚动锁死根因是「按节点是否存在判定」而非「按浮层 open 状态判定」，浮层常驻 DOM 时永久锁死；改为判 .show/.on/.open 并监听 class 变化（mobile-fit.js）。
+  ③ 配置存不下根因是观星页(settings.html,cfg_apiKey)与主面板(config-modal.js,cfg_key)两套保存并存、字段 ID 不一致；观星页改为走 ConfigModal.readApiConfig/saveApiFields 统一落盘入口。
+  ④ 创意工坊加载失败根因是入口查 CreationHub 而模块注册为 StoryHub；统一为 CreationHub（保留 StoryHub 别名兼容）。
+  ⑤ 造物/万象工坊原指 goto=forge（创作世界）错误，新增 goto=dev→XYDev.open()（小云开发界面），forge 保留给创作世界。
+  ⑥ 客户端更新（零后端）：匿名读 GitHub Release latest → 版本比对 → 中文提示；全自动=下载 exe+sha256 校验→打开安装器→退出自身，不覆盖运行中程序；版本单一来源为 client/electron/package.json（main.js VERSION 改为读取它），sw.js SW_VER=yunjing-v7.0.0。
+  ⑦ 手机分身删除：清入口(studio.html 注入)/配置段(config-modal.js)/预缓存(sw.js)，6 个文件本体移入 _bak_v700_pre_fix/removed-phone-clone/（不物理删除，可回滚）；保留小云手机/通讯形态。
+- 验证证据：52/52 回归全绿、net-vitals 无新增裸 fetch、kb-vet 无新增可疑项、全量 JS node --check 通过、版本三处统一 7.0.0。
+- 失效条件：真机交互类（触摸拖动跟手、8 套主题连续切换、浏览器实测持久化、Electron 菜单点击）静态环境未实测，由质量组真浏览器验收；如回归跌破 52 项或有 404，回退用 _bak_v700_pre_fix/ 逐文件覆盖。
+
+## DR-096 · v7.0.0 游戏化客户端外壳 + 版本单一来源落地（2026-11-25）
+- 背景：用户实测反馈 18 项修完后追加需求——"云境需要有自己的客户端 UI 界面和边框，现在打开看起来还是像浏览器、太单调；云境是文字游戏要符合游戏审美"，并要求"优化完后你自己实际操作检测"。
+- 决定：
+  ① Electron 窗口改 `frame:false`，自绘 40px 品牌标题栏（云纹徽记+云境+副标题+最小化/最大化/关闭），preload 暴露 4 个窗口 IPC（win-minimize/maximize/close/is-maximized，ipcMain.handle 契约）。新建 js/desktop-shell.js + css/desktop-shell.css，仅 `isDesktop===true` 注入，PWA 零影响。
+  ② 四页（opening/index/studio/settings）head 均引用 shell 两件套；JS 给 html 加 `yj-shell-on` 标记。
+  ③ 顶部遮挡按质量组实测数据补偿：studio/settings body padding-top:40px；settings sticky .top top:40px；opening 四入口 top≥487 不受影响故不动。
+  ④ 直达链接二次修复：link.deep 原本生成 index.html?goto=xxx，但大厅只解析 entry 不解析 goto → 点击停在大厅。改为直接生成目标页 URL（settings.html / studio.html?goto=dev|dlc|forge），真落地。
+  ⑤ 版本单一来源：studio.html YJ_VER 用 `sync-version.mjs --set 7.0.0` 统一派生，全站 ?v= / SW_VER / 标题 / 文档 / changelog 全同源。此前 shell 单独写 7.0.0 造成回归 33/1（版本不同源测试短路），同步后回到 52/52。
+- 验证（负责人亲自真浏览器实测 10/10，非仅信成员汇报）：标题栏注入 h=40/z=9500、四入口 hit=true、studio #panelToggle 点击成功、settings 返回键命中自身且可滚(scrollH1260>clientH860)、小云直达链接 href=settings.html、PWA 零注入、三页 console 0 错误。截图存 shots-v700/。
+- 未验证/瑕疵：真实 Electron frame:false 拖拽/双击最大化/窗口控制按钮实效（沙箱无 GUI，仅静态核对 IPC 双向一致）；创作室顶栏左侧"预购合作"胶囊被标题栏挤压轻微重叠（截图可见，不影响功能）；窄窗<900px 布局仅 CSS 媒体查询静态核对。
+- 失效条件：若回归跌破 52 或版本 --check 报错，先跑 sync-version 再查；外壳遮挡若复发，核对 html.yj-shell-on 标记与 padding-top:40px 是否生效。回滚用 _bak_v700_pre_fix/ 逐文件覆盖 + 删两个 shell 新文件。
+
+## DR-097 · v7.0.0 内容热更新 + 自修复 + 壳 A/B 更新（2026-11-25）
+- 背景：用户要求「从这一版开始所有更新修复都不需要再下载安装云境，云境本身要支持自动更新自动修复」。现状 autoUpdate 本质是下载 773MB setup 重装——与诉求相反。用户拍板：①内容+壳都自动；②双通道自动回退（CDN 优先、GitHub raw 回退）。
+- 关键决定：
+  ① 内容与壳分离。站点代码/配置类 548 个小文件（约 30MB）外置到可写目录 userData/yj-content，HTTP 服务优先读它、缺失回源只读打包基线（永不白屏）。视频/字体/大图（约 680MB）留基线不进热更清单。用户报的所有 bug 修复都在这 548 个小文件内。
+  ② 内容清单 content-manifest.json（schema/version/files{path:{sha256,size}}/sources[2]）由 scripts/gen-content-manifest.mjs 从仓库根生成，确定性排序。启动静默流程：拉远端清单→版本比对→仅下载 sha 不符/缺失的文件→sha 校验→硬链接 staging→原子换目录（旧版留 .bak）→state 记录。全程静默不打扰。
+  ③ 自修复：每次启动全量校验本地 sha，损坏先联网重下、失败从只读基线兜底；保留上一版 .bak，连续 2 次启动崩溃标记未清则自动回滚并冻结坏版本，防再次升回。
+  ④ 双通道：jsDelivr CDN（@main，加 ?t= 绕缓存）失败回退 GitHub raw（@main），下载/校验失败自动试下一通道。
+  ⑤ 壳 A/B 更新：下载 Release 里的免安装目录包（win-unpacked/portable zip）→sha 校验→解压到 sibling yunjing-next→提示重启→重启拉起新版再退出、旧目录改名 yunjing-old（不删）。无合适 asset/非 Win/校验失败一律静默降级到原「打开 Release 页」路径。Electron 无法覆盖运行中自身，A/B 目录切换是稳妥解。
+  ⑥ 版本来源不变：壳版本读 client/electron/package.json（7.0.0）；内容版本首版 7.0.0，后续由清单 version 独立递增。
+  ⑦ 首次安装基线修正：打包镜像 build-resources/yunjing 原落后清单 9/9 关键文件（v6.9 旧镜像），用清单 548 文件覆盖同步镜像至 548/548 一致——首次安装即带最新内容，离线也不落后，避免"装完还要等首次热更"。
+  ⑧ 架构师自测中发现并修复一处真实缺陷：崩溃回滚原本记录目标版本而非坏版本，会导致再次升回坏内容，已改为记录坏版本并冻结。
+- 验证证据：client/electron/selfupdate-test.mjs 6 组断言（增量/sha 回退/损坏修复+基线兜底/双通道切换/关键文件回滚/崩溃回滚）×3 轮全过，负责人亲自复跑一致；5 个客户端 JS node --check 全过；基线镜像与清单 548/548 sha 一致。
+- 工作流（本次交付的核心价值）：以后改一个 js 文件，只需 `CONTENT_VER=x.y.z node scripts/gen-content-manifest.mjs` 重新生成清单并 push，客户端下次启动按 sha 只下载变化文件，用户无需重装。
+- 未验证/边界：沙箱无 Windows GUI，exe 自替换 / PowerShell Expand-Archive / 菜单点击链路未真机实测，仅静态核对与逻辑自测；jsDelivr @main 有 CDN 缓存，清单加 ?t= 缓解但极端情况可能延迟数分钟。壳级升级仍需重启云境一次（无法做到运行中覆盖 exe），但无需用户手动下载/点安装向导。
+- 失效条件：若清单 sha 与仓库文件不符，客户端会反复重下修复——每次 push 前必须重跑清单生成器；若热更把程序弄坏，删 yj-content 目录即回退到只读基线；回滚完整产物用 _bak_v700_selfupdate/。

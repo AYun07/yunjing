@@ -4,11 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>云境 · 天地设置</title>
-<link rel="stylesheet" href="css/base-style.css?v=6.9.4">
-<link rel="stylesheet" href="css/font-switcher.css?v=6.9.4">
+<!-- v7.0.0：补齐 icon，避免浏览器回退请求根目录 favicon.ico 产生 404 -->
+<link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
+<link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
+<link rel="stylesheet" href="css/base-style.css?v=7.0.0">
+<link rel="stylesheet" href="css/font-switcher.css?v=7.0.0">
 <style>
 :root{--jade:#d9b46a;--ink:#e8e4d8;--mut:#a8a290;--line:rgba(232,228,216,.1);--bg:#101019;--card:#191b28}
 *{box-sizing:border-box}
+/* 覆盖 base-style.css 的 body{overflow:hidden}，让观星设置页可滚到底 */
+html,body{height:auto;overflow:auto}
 body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60%);color:var(--ink);
   font-family:var(--yj-font-body,'Noto Sans SC','PingFang SC',system-ui,sans-serif);min-height:100vh;
   padding:0 0 60px}
@@ -48,6 +53,9 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 .saved.on{opacity:1}
 @media(max-width:520px){.row label{min-width:80px}.row .hint{padding-left:0}}
 </style>
+<!-- v7.0.0 游戏化客户端外壳：仅 Electron 生效，PWA 浏览器版零注入 -->
+<link rel="stylesheet" href="css/desktop-shell.css?v=7.0.0">
+<script src="js/desktop-shell.js?v=7.0.0"></script>
 </head>
 <body>
 <div class="top">
@@ -107,13 +115,15 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   </section>
 </div>
 
-<script src="js/entry-guard.js?v=6.9.4"></script>
-<script src="js/font-switcher.js?v=6.9.4"></script>
-<script src="js/theme-studio.js?v=6.9.4"></script>
+<script src="js/entry-guard.js?v=7.0.0"></script>
+<script src="js/font-switcher.js?v=7.0.0"></script>
+<script src="js/theme-studio.js?v=7.0.0"></script>
+<script src="js/config-modal.js?v=7.0.0"></script>
 <script>
 (function(){
   var $ = function(id){return document.getElementById(id);};
-  function readCfg(){try{return JSON.parse(localStorage.getItem('storyApiConfig')||'{}')||{};}catch(e){return {};}}
+  // 统一走 ConfigModal 的落盘路径，与主配置弹窗共用字段口径与存储键；模块缺失时兜底直读
+  function readCfg(){return (window.ConfigModal&&ConfigModal.readApiConfig)?ConfigModal.readApiConfig():(function(){try{return JSON.parse(localStorage.getItem('storyApiConfig')||'{}')||{};}catch(e){return {};}})();}
   function flash(el){el.classList.add('on');setTimeout(function(){el.classList.remove('on');},1600);}
   // 载入模型配置
   var c=readCfg();
@@ -122,13 +132,19 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   $('cfg_model').value=c.model||'';
   try{$('cfg_ctx').value=localStorage.getItem('storyContextWindow')||'';}catch(e){}
   $('saveModel').onclick=function(){
-    var cfg=readCfg();
+    // 字段与主配置弹窗对齐：cfg_apiKey 是观星页输入框 id，落盘字段统一为 apiKey；不再硬编码 provider
+    var fields={};
     var ep=$('cfg_endpoint').value.trim(), key=$('cfg_apiKey').value.trim(), mo=$('cfg_model').value.trim();
-    if(ep) cfg.endpoint=ep; if(key) cfg.apiKey=key; if(mo) cfg.model=mo;
-    if(!cfg.provider) cfg.provider='custom';
-    try{localStorage.setItem('storyApiConfig',JSON.stringify(cfg));
-      var ctx=$('cfg_ctx').value.trim(); if(ctx) localStorage.setItem('storyContextWindow',ctx);
-      flash($('modelSaved'));}catch(e){alert('保存失败：'+e.message);}
+    if(ep) fields.endpoint=ep; if(key) fields.apiKey=key; if(mo) fields.model=mo;
+    var ok;
+    if(window.ConfigModal&&ConfigModal.saveApiFields){
+      ok=ConfigModal.saveApiFields(fields);
+    }else{
+      try{var cfg=readCfg();Object.assign(cfg,fields);localStorage.setItem('storyApiConfig',JSON.stringify(cfg));ok=true;}catch(e){ok=false;}
+    }
+    if(!ok){alert('保存失败：本地存储不可用');return;}
+    try{var ctx=$('cfg_ctx').value.trim(); if(ctx) localStorage.setItem('storyContextWindow',ctx);}catch(e){}
+    flash($('modelSaved'));
   };
   // 全局开关：本页模块多为按需加载，能调到就调，调不到就提示去创作室左栏
   function callOrTip(fn, name){

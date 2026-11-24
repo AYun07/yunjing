@@ -4,7 +4,7 @@
 
 > 打开网页就能用的 AI 互动小说加开放世界扮演。纯前端静态站，不用构建，没有后端，也不用注册账号。AI 接口自己填，故事和 Key 只留在本机浏览器里。封面只有一张，叫「万象入云」，四个入口进的是同一个世界。
 
-[![当前版本](https://img.shields.io/badge/version-v6.9.4-orange)](https://github.com/AYun07/yunjing/releases/tag/v6.9.4) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
+[![当前版本](https://img.shields.io/badge/version-v7.0.0-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.0.0) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
 
 ---
 
@@ -92,6 +92,8 @@
 - 大视频在源码包里走外链，完整包才全含；单个自制文件建议压在 20MB 内，GitHub 单文件上限 100MB。
 - 密钥永远不进任何包：所有 AI 接口由玩家下载后自己配置。
 
+**装好一次以后不用再重装（v7.0.0 起·自动更新与自修复）**：桌面客户端把游戏内容（所有页面、脚本、样式、剧情、配置，548 个小文件约 30MB）和程序外壳分开存放。每次启动会静默做一次"对账"：从远端清单比对每个文件的校验值，只下载变化的那几个（通常几 KB），校验通过后原子替换，全程无感、不弹窗、不打断游戏；断网就用本机已有内容照常玩。文件若损坏或丢了，启动时会按校验值自动补回，补不回就用内置副本兜底，绝不会把程序弄坏；还有上一版备份，万一连续启动异常会自动回退。壳本身要升级时，会在后台把新版下载到旁边、提示你重启一次生效——**不需要你再手动下载安装包、更不用点安装向导**。想看当前更新状态，在「云境」菜单里可查。（此机制仅桌面客户端；浏览器 PWA 版靠 Service Worker 自动更新缓存。）维护者更新内容的流程见 [DECISIONS.md](DECISIONS.md) 的 DR-097：改完代码跑一次 `node scripts/gen-content-manifest.mjs` 生成清单并 push 即可，玩家端自动生效。
+
 再说一遍怎么启动，这几步容易踩坑。下载或克隆仓库之后，Windows 双击 `start-windows.bat`，Mac 双击 `start-mac.command`，然后浏览器开 `http://127.0.0.1:8080/`。也可以在任意平台跑 `python3 -m http.server 8899`，再开 `http://127.0.0.1:8899/opening.html`。直接双击 `index.html` 是打不开的，file 协议下 ES module 和 fetch 都会被 CORS 拦掉，必须走启动器用 HTTP 打开。细节在 [QUICKSTART.txt](QUICKSTART.txt)。
 
 开场有四个入口。踏云开新档，续梦读档，观星调接口设置，造物进小云创造中枢，也就是 `xiaoyun.html`。第一次用，先去「观星」或者游戏里「☰ 工具 → ⚙ 接口设置」把自己的模型填进去。分发方式为什么改成这样，看 [DECISIONS.md](DECISIONS.md) 的 DR-001，造物入口为什么叫这个名字，看 DR-002。
@@ -111,11 +113,11 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v6.9.4（2026-11-22 · 唯一当前版）
+## 🆕 当前版本：v7.0.0（2026-11-22 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v6.9.4** | 2026-11-22 | **当前** | 电影片头入场（云境大字→推镜头→动态封面）、横竖双动态封面、粒子全程常驻；桌面端升级为可安装 `.exe`；创意工坊单一文件夹 `community/works/`、CI 七闸全绿、跨层战力折算、任意楼层回档、二创增量补丁全部在线。 | [完整包 665MB](https://github.com/AYun07/yunjing/releases/download/v6.9.4/云境-v6.9.4-完整包.zip) · [源码包](https://github.com/AYun07/yunjing/releases/download/v6.9.4/云境-v6.9.4-源码包.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.9.4) |
+| **v7.0.0** | 2026-11-22 | **当前** | 电影片头入场（云境大字→推镜头→动态封面）、横竖双动态封面、粒子全程常驻；桌面端升级为可安装 `.exe`；创意工坊单一文件夹 `community/works/`、CI 七闸全绿、跨层战力折算、任意楼层回档、二创增量补丁全部在线。 | [完整包 665MB](https://github.com/AYun07/yunjing/releases/download/v6.9.4/云境-v6.9.4-完整包.zip) · [源码包](https://github.com/AYun07/yunjing/releases/download/v6.9.4/云境-v6.9.4-源码包.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.9.4) |
 
 > **完整包和源码包的区别**。「完整包」是 `云境-v6.9.4-完整包.zip`，665MB，含 38 界视频、考据地图、封面动画这些运行资产，下载解压就能离线跑。「源码包」是 `云境-v6.9.4-源码包.zip`，约 44MB，含代码与封面动画，大视频走外链或另下完整包。两个包的版本号都是 v6.9.4。
 

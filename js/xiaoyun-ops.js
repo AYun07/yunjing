@@ -332,6 +332,28 @@
         }
         return { ok: true, msg: '已召回 ' + hits + ' 条世界书' + (lines.length > hits ? ' + 长期记忆' : '') + (sent ? '，便签已送入输入框。' : '。') + '\n' + brief, data: { lines: lines, sent: sent } };
       }
+    },
+    /* —— 本地直达链接（零后端，非公网）—— */
+    "link.deep": {
+      desc: "生成云境本地直达入口链接（相对路径，仅本机/本地服务器可用，非公网链接）", args: "{to: settings|dlc|forge|dev 或中文别名}",
+      fn: function (a) {
+        a = a || {};
+        /* v7.0.0 复修：直接指向真正的目标页面，不再走 index.html?goto=xxx——
+           大厅只解析 entry 不解析 goto，旧链接点击后停在大厅，不是真直达。
+           目标页面各自支持 goto：studio.html 认 dlc/forge/dev；settings.html 本就是观星页。 */
+        var MAP = {
+          settings: { url: 'settings.html', label: '观星·天地设置' },
+          '观星': { url: 'settings.html', label: '观星·天地设置' }, '设置': { url: 'settings.html', label: '观星·天地设置' },
+          dlc: { url: 'studio.html?goto=dlc', label: '知识包管理' }, '知识包': { url: 'studio.html?goto=dlc', label: '知识包管理' }, '资料库': { url: 'studio.html?goto=dlc', label: '知识包管理' },
+          forge: { url: 'studio.html?goto=forge', label: '创作世界' }, '创作世界': { url: 'studio.html?goto=forge', label: '创作世界' }, '原创工坊': { url: 'studio.html?goto=forge', label: '创作世界' },
+          dev: { url: 'studio.html?goto=dev', label: '造物·小云开发' }, '造物': { url: 'studio.html?goto=dev', label: '造物·小云开发' }, '万象工坊': { url: 'studio.html?goto=dev', label: '造物·小云开发' }, '开发': { url: 'studio.html?goto=dev', label: '造物·小云开发' }, '小云开发': { url: 'studio.html?goto=dev', label: '造物·小云开发' }
+        };
+        var key = String(a.to || '').trim();
+        var hit = MAP[key];
+        if (!hit) return { ok: false, msg: "未知的入口：「" + (key || '空') + "」。可选：settings(观星)/dlc(知识包)/forge(创作世界)/dev(造物·小云开发)。" };
+        var url = hit.url;
+        return { ok: true, msg: "已生成「" + hit.label + "」的本地直达链接：" + url + "（相对路径，需从云境本地打开，非公网链接）。", data: { url: url, goto: key, to: key, local: true } };
+      }
     }
   };
 

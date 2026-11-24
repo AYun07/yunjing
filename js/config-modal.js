@@ -348,7 +348,7 @@ const ConfigModal = {
             </div>
             <div class="modal-body">
                 <div class="api-guide">
-                    <b>${this.isEarthGenre() ? "六接口分工" : "五接口分工"}</b>：① 主笔写正文 · ② 动态世界推演远方事件 · ③ 变量AI登记状态面板 · ④ 插图引擎生成正文插图 · ⑤ 提示词工程师润色插图提示词${this.isEarthGenre() ? " · ⑥ 手机分身运转微信消息与朋友圈" : ""}。各接口相互独立、可同厂商可混搭；未启用的接口无需填写。
+                    <b>五接口分工</b>：① 主笔写正文 · ② 动态世界推演远方事件 · ③ 变量AI登记状态面板 · ④ 插图引擎生成正文插图 · ⑤ 提示词工程师润色插图提示词。各接口相互独立、可同厂商可混搭；未启用的接口无需填写。
                 </div>
                 <!-- v4.18.0 新手/专家两档：新手只看主笔四项，避免一上来被 5 套 API 淹没 -->
                 <div class="cfg-view-switch" style="display:flex;align-items:center;gap:8px;margin:12px 0;padding:10px 12px;border:1px solid rgba(201,168,106,.3);border-radius:10px;background:rgba(201,168,106,.06);">
@@ -1002,98 +1002,6 @@ const ConfigModal = {
                     </div>
                 </div>
 
-                <!-- 📱 手机分身：第六接口（地球开放世界专属，微信消息与朋友圈引擎） -->
-                ${this.isEarthGenre() ? `
-                <div class="dw-config api-card">
-                    <div class="dw-config-head api-card-head" id="phSectionHead" onclick="ConfigModal.togglePhSection()">
-                        <span class="api-head-left">
-                            <span class="dw-config-title">📱 手机分身 · 第六接口</span>
-                            <span class="api-role-chip">⑥ 微信与朋友圈</span>
-                            <span class="api-state-chip" id="ph_stateChip"></span>
-                        </span>
-                        <span class="dw-caret" id="phCaret">▸</span>
-                    </div>
-                    <div class="dw-config-body" id="phSectionBody" style="display:none">
-                        <div class="form-tip dw-intro">
-                            <b>社交世界引擎</b>：地球开放世界专属——玩家手机里的微信消息、群聊与朋友圈动态由第六模型运转：联系人们各过各的日子（柴米油盐、转发、寒暄），不围着玩家转；玩家发消息有人按性子回，发朋友圈有人点赞评论。手机动静会回流正文（NPC 见面可提及，因果守恒）。<b>默认复用主笔接口（零配置）</b>，也可独立配置廉价模型。
-                        </div>
-                        <label class="check-row">
-                            <input type="checkbox" id="ph_enabled">
-                            <b>启用手机分身</b><i>每 N 轮正文后自动刷新来信与朋友圈；玩家发消息/发圈即时响应</i>
-                        </label>
-                        <label class="check-row">
-                            <input type="checkbox" id="ph_reuseMain">
-                            <b>复用主笔接口（推荐）</b><i>零额外配置直接用主笔 AI 运转社交世界；取消勾选则用下方独立配置</i>
-                        </label>
-                        <div class="va-quick-row">
-                            <span class="va-quick-tip">快捷复用：</span>
-                            <button type="button" class="btn-mini" onclick="ConfigModal.copyMainToPh()">⚡ 同主接口</button>
-                            <button type="button" class="btn-mini" onclick="ConfigModal.copyVarToPh()">⚡ 同变量AI</button>
-                            <button type="button" class="btn-mini" onclick="ConfigModal.copyExtraToPh()">⚡ 同额外API</button>
-                        </div>
-                        <div class="dw-subgroup">
-                            <div class="dw-sub-title">🔌 第六接口（手机分身 API）</div>
-                            <div class="form-row">
-                                <label>AI 厂商（可与主笔不同）</label>
-                                <select id="ph_provider" onchange="ConfigModal.onProviderChange('ph')">${providerOptions()}</select>
-                                <div class="form-tip provider-tip" id="ph_providerTip"></div>
-                            </div>
-                            <div class="form-row">
-                                <label>API 地址 (Endpoint)</label>
-                                <input id="ph_endpoint" type="text" placeholder="例如 https://api.deepseek.com/v1（可与主接口不同）">
-                            </div>
-                            <div class="form-row">
-                                <label>API Key</label>
-                                <input id="ph_key" type="password" placeholder="sk-...">
-                            </div>
-                            <div class="form-row">
-                                <label>模型名称 (Model)</label>
-                                <div class="model-fetch-row">
-                                    <input id="ph_model" type="text" placeholder="可手填，或点右侧「获取」拉取列表">
-                                    <button type="button" class="btn-ghost" id="ph_fetchBtn" onclick="ConfigModal.fetchPhModels()">获取</button>
-                                </div>
-                                ${chipRow("ph")}
-                                <select id="ph_modelSelect" class="model-select" style="display:none" onchange="ConfigModal.pickPhModel(this.value)"></select>
-                                <div class="form-tip" id="ph_modelHint" style="display:none"></div>
-                            </div>
-                            <div class="form-row three-col">
-                                <div>
-                                    <label>最大Tokens</label>
-                                    <input id="ph_maxTokens" type="number" value="4096">
-                                </div>
-                                <div>
-                                    <label>温度 (0-2)</label>
-                                    <input id="ph_temperature" type="number" step="0.1" min="0" max="2" value="0.9">
-                                </div>
-                                <div>
-                                    <label>超时（秒）</label>
-                                    <input id="ph_timeout" type="number" min="30" max="600" value="60">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="dw-subgroup">
-                            <div class="dw-sub-title">🎛 刷新行为</div>
-                            <div class="form-row">
-                                <label>自动刷新间隔（每 N 轮正文）</label>
-                                <input id="ph_interval" type="number" min="1" max="20" value="3">
-                                <div class="form-tip">手机动静刷新频率——每轮都刷太吵，建议 2-4 轮一次；玩家主动发消息/发圈不受此限。</div>
-                            </div>
-                            <label class="check-row">
-                                <input type="checkbox" id="ph_useKnowledge" checked>
-                                <b>读取知识库</b><i>来信、朋友圈与聊天回复贴合知识库里的世界观、人物与地点设定（常驻+按需检索注入）</i>
-                            </label>
-                            <label class="check-row">
-                                <input type="checkbox" id="ph_autoReact" checked>
-                                <b>发圈自动反应</b><i>玩家发朋友圈后，联系人们按性子点赞评论；关闭则只有玩家单方面的记录</i>
-                            </label>
-                            <div class="form-tip">
-                                时代即边界：1983 年前没有手机（悬浮球不出现）；1999-2010 为 QQ/QQ空间；2011 起为微信/朋友圈——用语与习惯按年代自动校准。手机数据（联系人/聊天/朋友圈）随存档保存。
-                            </div>
-                        </div>
-                        <div id="ph_testResult" class="test-result"></div>
-                        <button type="button" class="btn-ghost dw-test-btn" onclick="ConfigModal.testPhConnection()">测试第六接口连通</button>
-                    </div>
-                </div>` : ""}
 
                 <!-- 🎨 主题工坊（v3.53.0）：阅读外观，与 33 界皮肤叠加而不冲突 -->
                 <div class="dw-config api-card">
@@ -1544,7 +1452,7 @@ const ConfigModal = {
   },
   /** 刷新三张接口卡的就绪状态徽标（打开弹窗 / 预设 / 复用后调用） */
   refreshApiCardStates() {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d;
     const set = (id, text, cls) => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -1574,17 +1482,6 @@ const ConfigModal = {
       const vc = window.KBVector ? window.KBVector.load() : null;
       const vReady = !!(vc && vc.enabled && vc.apiKey && vc.embedModel);
       set("vec_stateChip", !vc || !vc.enabled ? "未启用" : vReady ? "✓ 已就绪" : "启用但未配全", !vc || !vc.enabled ? "off" : vReady ? "ok" : "warn");
-    }
-    if (document.getElementById("ph_stateChip")) {
-      const phEnabled = (_e = document.getElementById("ph_enabled")) == null ? void 0 : _e.checked;
-      const pa = document.getElementById("ph_endpoint") ? this.readPhForm().api : {};
-      const phReuse = pa.reuseMain !== false;
-      const phReady = phReuse ? !!(m.endpoint && m.apiKey && m.model) : !!(pa.endpoint && pa.apiKey && pa.model);
-      set(
-        "ph_stateChip",
-        !phEnabled ? "未启用" : phReady ? "✓ 已就绪" : phReuse ? "复用主笔(未配置)" : "启用但未配全",
-        !phEnabled ? "off" : phReady ? "ok" : "warn"
-      );
     }
     if (document.getElementById("cp_stateChip")) {
       const CP = window.ConnectionProfiles;
@@ -2555,26 +2452,6 @@ const ConfigModal = {
       result.textContent = `✕ ${err.message}`;
     }
   },
-  /* ==================== 📱 手机分身（第六接口，v3.19.6 地球开放世界专属） ==================== */
-  /** 是否地球开放世界（第六接口卡仅此界渲染） */
-  isEarthGenre() {
-    try {
-      const g = window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey || new URLSearchParams(location.search).get("genre");
-      return g === "earth";
-    } catch (e) {
-      return false;
-    }
-  },
-  /** 折叠 / 展开「手机分身」配置区 */
-  togglePhSection() {
-    const body = document.getElementById("phSectionBody");
-    const caret = document.getElementById("phCaret");
-    if (!body) return;
-    const open = body.style.display === "none";
-    body.style.display = open ? "block" : "none";
-    if (caret) caret.textContent = open ? "▾" : "▸";
-  },
-
   /* ==================== 🔞 内容尺度（v3.47.15） ==================== */
   /** 折叠 / 展开「内容尺度」配置区 */
   toggleCSSection() {
@@ -3188,181 +3065,6 @@ const ConfigModal = {
     if (el) el.remove();
   },
 
-  /** 手机分身：表单填充（接口 + 行为） */
-  fillPhForm() {
-    var _a;
-    if (!this.isEarthGenre()) return;
-    const PP = window.PhonePanel;
-    if (!PP) return;
-    const api = PP.getApi();
-    const set = PP.getSettings();
-    document.getElementById("ph_enabled").checked = !!set.enabled;
-    document.getElementById("ph_reuseMain").checked = api.reuseMain !== false;
-    document.getElementById("ph_provider").value = this.detectProvider(api);
-    document.getElementById("ph_endpoint").value = api.endpoint || "";
-    document.getElementById("ph_key").value = api.apiKey || "";
-    document.getElementById("ph_model").value = api.model || "";
-    document.getElementById("ph_maxTokens").value = api.maxTokens || 4096;
-    document.getElementById("ph_temperature").value = (_a = api.temperature) != null ? _a : 0.9;
-    document.getElementById("ph_timeout").value = api.timeout || 60;
-    document.getElementById("ph_interval").value = set.interval || 3;
-    document.getElementById("ph_useKnowledge").checked = set.useKnowledge !== false;
-    document.getElementById("ph_autoReact").checked = set.autoReact !== false;
-    this.updateProviderUI("ph");
-  },
-  /** 手机分身：读取表单（{ api, settings }） */
-  readPhForm() {
-    const clamp = (v, min, max, dft) => {
-      const n = parseInt(v);
-      return isNaN(n) ? dft : Math.min(max, Math.max(min, n));
-    };
-    return {
-      api: {
-        provider: document.getElementById("ph_provider").value,
-        type: this.currentType("ph"),
-        endpoint: document.getElementById("ph_endpoint").value.trim(),
-        apiKey: document.getElementById("ph_key").value.trim(),
-        model: document.getElementById("ph_model").value.trim(),
-        maxTokens: clamp(document.getElementById("ph_maxTokens").value, 256, 32768, 4096),
-        temperature: this.clampTemp(document.getElementById("ph_temperature").value, 0.9),
-        timeout: clamp(document.getElementById("ph_timeout").value, 30, 300, 60),
-        reuseMain: document.getElementById("ph_reuseMain").checked
-      },
-      settings: {
-        enabled: document.getElementById("ph_enabled").checked,
-        interval: clamp(document.getElementById("ph_interval").value, 1, 20, 3),
-        useKnowledge: document.getElementById("ph_useKnowledge").checked,
-        autoReact: document.getElementById("ph_autoReact").checked
-      }
-    };
-  },
-  /** 第六接口：拉取模型列表 */
-  async fetchPhModels() {
-    const PP = window.PhonePanel;
-    const endpoint = document.getElementById("ph_endpoint").value.trim();
-    const apiKey = document.getElementById("ph_key").value.trim();
-    const type = this.currentType("ph");
-    const hint = document.getElementById("ph_modelHint");
-    if (!endpoint || !apiKey) {
-      hint.style.display = "block";
-      hint.style.color = "var(--danger)";
-      hint.textContent = "✕ 请先填写 API 地址与 API Key，再获取模型列表";
-      return;
-    }
-    const btn = document.getElementById("ph_fetchBtn");
-    btn.disabled = true;
-    btn.textContent = "获取中…";
-    try {
-      const models = type === "gemini" ? await fetchGeminiModels(endpoint, apiKey) : await fetchOpenAIModels(endpoint, apiKey);
-      if (!models.length) throw new Error("接口未返回任何模型（可能不支持列表查询，请手填模型名）");
-      const select = document.getElementById("ph_modelSelect");
-      select.innerHTML = models.map((m) => `<option value="${this.esc(m)}">${this.esc(m)}</option>`).join("");
-      select.style.display = "block";
-      hint.style.display = "block";
-      hint.style.color = "";
-      hint.textContent = `✓ 已获取 ${models.length} 个模型，从下拉中选择即可（也可继续手填）`;
-    } catch (err) {
-      hint.style.display = "block";
-      hint.style.color = "var(--danger)";
-      hint.textContent = `✕ ${err.message}（可检查地址是否需含 /v1，或直接手填模型名）`;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "获取";
-    }
-  },
-  /** 第六接口：下拉选中 → 同步输入框 */
-  pickPhModel(v) {
-    document.getElementById("ph_model").value = v;
-  },
-  resetPhModelList() {
-    const select = document.getElementById("ph_modelSelect");
-    const hint = document.getElementById("ph_modelHint");
-    if (select) {
-      select.innerHTML = "";
-      select.style.display = "none";
-    }
-    if (hint) {
-      hint.style.display = "none";
-      hint.textContent = "";
-    }
-  },
-  /** 快捷复用：把主接口配置填入手机分身表单 */
-  copyMainToPh() {
-    var _a;
-    document.getElementById("ph_provider").value = document.getElementById("cfg_provider").value;
-    document.getElementById("ph_endpoint").value = document.getElementById("cfg_endpoint").value;
-    document.getElementById("ph_key").value = document.getElementById("cfg_key").value;
-    document.getElementById("ph_model").value = document.getElementById("cfg_model").value;
-    document.getElementById("ph_reuseMain").checked = false;
-    this.updateProviderUI("ph");
-    this.resetPhModelList();
-    (_a = window.showToast) == null ? void 0 : _a.call(window, "已把主接口配置填入手机分身（社交模拟是小活，换个便宜模型更划算）", "info");
-    this.refreshApiCardStates();
-  },
-  /** 快捷复用：把变量AI（第三接口）配置填入手机分身表单 */
-  copyVarToPh() {
-    var _a, _b, _c, _d;
-    const c = ((_b = (_a = window.VariableAI) == null ? void 0 : _a.get) == null ? void 0 : _b.call(_a)) || {};
-    if (!(c.endpoint && c.apiKey)) {
-      (_c = window.showToast) == null ? void 0 : _c.call(window, "变量AI尚未配置完整，无法复用", "error");
-      return;
-    }
-    document.getElementById("ph_provider").value = this.detectProvider(c);
-    document.getElementById("ph_endpoint").value = c.endpoint || "";
-    document.getElementById("ph_key").value = c.apiKey || "";
-    document.getElementById("ph_model").value = c.model || "";
-    document.getElementById("ph_reuseMain").checked = false;
-    this.updateProviderUI("ph");
-    this.resetPhModelList();
-    (_d = window.showToast) == null ? void 0 : _d.call(window, "已复用变量AI配置（社交模拟与状态登记共用廉价模型正好）", "info");
-    this.refreshApiCardStates();
-  },
-  /** 快捷复用：把额外API（动态世界）配置填入手机分身表单 */
-  copyExtraToPh() {
-    var _a, _b, _c, _d;
-    const c = ((_b = (_a = window.DynamicWorld) == null ? void 0 : _a.getExtraApi) == null ? void 0 : _b.call(_a)) || {};
-    if (!(c.endpoint && c.apiKey)) {
-      (_c = window.showToast) == null ? void 0 : _c.call(window, "动态世界额外API尚未配置完整，无法复用", "error");
-      return;
-    }
-    document.getElementById("ph_provider").value = this.detectProvider(c);
-    document.getElementById("ph_endpoint").value = c.endpoint || "";
-    document.getElementById("ph_key").value = c.apiKey || "";
-    document.getElementById("ph_model").value = c.model || "";
-    document.getElementById("ph_reuseMain").checked = false;
-    this.updateProviderUI("ph");
-    this.resetPhModelList();
-    (_d = window.showToast) == null ? void 0 : _d.call(window, "已复用额外API配置（远方事件与社交动静由同一模型分饰两角）", "info");
-    this.refreshApiCardStates();
-  },
-  /** 第六接口：连通测试（用表单当前值，无需先保存；复用主笔时实际测主笔） */
-  async testPhConnection() {
-    const PP = window.PhonePanel;
-    const result = document.getElementById("ph_testResult");
-    if (!PP || !result) return;
-    const { api } = this.readPhForm();
-    const testApi = api.reuseMain !== false ? (() => {
-      const m = this.readForm();
-      return { ...api, type: m.type, endpoint: m.endpoint, apiKey: m.apiKey, model: m.model };
-    })() : api;
-    if (!(testApi.endpoint && testApi.apiKey && testApi.model)) {
-      result.className = "test-result error";
-      result.textContent = "✕ 请先填写手机分身的地址 / Key / 模型名（或勾选「复用主笔接口」并配好主笔）";
-      return;
-    }
-    result.className = "test-result loading";
-    result.textContent = api.reuseMain !== false ? "⏳ 复用主笔模式：正在测试主笔接口…" : "⏳ 正在测试第六接口…";
-    try {
-      const reply = await PP.callPhoneAPI([
-        { role: "user", content: '你好，请只回复 JSON：{"ok":true}' }
-      ], testApi);
-      result.className = "test-result success";
-      result.textContent = `✓ ${api.reuseMain !== false ? "主笔接口（复用）" : "第六接口"}连接成功，模型回复：${String(reply).slice(0, 40)}`;
-    } catch (err) {
-      result.className = "test-result error";
-      result.textContent = `✕ ${err.message}`;
-    }
-  },
   /** 拉取模型列表（对应原框架 fetchModels） */
   async fetchModels() {
     const endpoint = document.getElementById("cfg_endpoint").value.trim();
@@ -3503,7 +3205,6 @@ const ConfigModal = {
     this.fillCPRoles();
     this.fillImgForm();
     this.fillPeForm();
-    this.fillPhForm();
     this.renderCSSection();
     this.renderMMSection();
     this.renderVecSection();
@@ -3553,7 +3254,6 @@ const ConfigModal = {
     };
   },
   save() {
-    var _a;
     const fw = window.storyFramework;
     fw.apiConfig = { ...fw.apiConfig, ...this.readForm() };
     fw.saveApiConfig();
@@ -3642,21 +3342,8 @@ const ConfigModal = {
         peMsg = "✍ 提示词工程师已启用：每章插图提示词先批量润色扩写，再送生图模型（同一提示词只调用一次）。";
       }
     }
-    let phMsg = "";
-    const PP = window.PhonePanel;
-    if (PP && document.getElementById("ph_enabled")) {
-      const { api, settings } = this.readPhForm();
-      PP.saveApi({ ...PP.getApi(), ...api });
-      PP.saveSettings({ ...PP.getSettings(), ...settings });
-      (_a = PP.updateDock) == null ? void 0 : _a.call(PP);
-      if (settings.enabled && !PP.isApiReady()) {
-        phMsg = "📱 手机分身已勾选启用，但接口尚未就绪：复用主笔需先配好主笔三件套，或取消复用填独立配置。";
-      } else if (settings.enabled) {
-        phMsg = `📱 手机分身已启用：每 ${settings.interval} 轮正文自动刷新来信与朋友圈（1983 年前的时代自动无手机）。`;
-      }
-    }
     this.close();
-    window.StoryResponseHandler.renderSystemMessage("✓ AI 接口配置已保存，可以开始创作了。" + (dwMsg ? "\n" + dwMsg : "") + (vaMsg ? "\n" + vaMsg : "") + (imgMsg ? "\n" + imgMsg : "") + (peMsg ? "\n" + peMsg : "") + (phMsg ? "\n" + phMsg : ""), "success");
+    window.StoryResponseHandler.renderSystemMessage("✓ AI 接口配置已保存，可以开始创作了。" + (dwMsg ? "\n" + dwMsg : "") + (vaMsg ? "\n" + vaMsg : "") + (imgMsg ? "\n" + imgMsg : "") + (peMsg ? "\n" + peMsg : ""), "success");
   },
   async testConnection() {
     const result = document.getElementById("cfg_testResult");
@@ -3725,6 +3412,23 @@ const ConfigModal = {
     if (!r) return;
     r.className = "test-result " + (kind === "error" ? "error" : kind === "ok" ? "success" : "loading");
     r.innerHTML = html;
+  },
+  /* 统一落盘入口：观星设置页(settings.html)与主配置弹窗共用同一份字段与存储键。
+     纯 localStorage 读写，不依赖 storyFramework 实例；实例存在时同步内存对象，
+     避免弹窗 fillForm 读到旧值。字段与主链路一致（apiKey/endpoint/model/provider）。 */
+  readApiConfig() {
+    try { return JSON.parse(localStorage.getItem("storyApiConfig") || "{}") || {}; }
+    catch (e) { return {}; }
+  },
+  saveApiFields(fields) {
+    const cfg = this.readApiConfig();
+    Object.assign(cfg, fields || {});
+    try {
+      localStorage.setItem("storyApiConfig", JSON.stringify(cfg));
+      const fw = window.storyFramework;
+      if (fw) fw.apiConfig = cfg;
+      return true;
+    } catch (e) { return false; }
   }
 };
 window.ConfigModal = ConfigModal;

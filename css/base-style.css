@@ -2089,7 +2089,7 @@ body.mobile .typing-stop { padding: 6px 12px; font-size: 12.5px; min-height: 32p
 .util-chip.square { padding: 5px 11px; }
 .util-sep { width: 1px; height: 16px; background: var(--line); margin: 0 2px; }
 
-/* 快捷指令：单行横向滚动 */
+/* 快捷指令：单行横向滚动（v7.0.0 组1-T09：去掉两端渐隐遮罩、暴露可见滚动条，首尾按钮完整可见） */
 #quickBar {
     display: flex;
     gap: 8px;
@@ -2097,11 +2097,14 @@ body.mobile .typing-stop { padding: 6px 12px; font-size: 12.5px; min-height: 32p
     overflow-x: auto;
     margin-bottom: 9px;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 22px), transparent 100%);
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 22px), transparent 100%);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(224, 168, 76, .55) transparent;
+    padding-bottom: 6px;
+    cursor: grab;
 }
-#quickBar::-webkit-scrollbar { display: none; }
+#quickBar::-webkit-scrollbar { height: 6px; display: block; }
+#quickBar::-webkit-scrollbar-thumb { background: rgba(224, 168, 76, .55); border-radius: 99px; }
+#quickBar::-webkit-scrollbar-track { background: transparent; }
 
 .quick-btn {
     background: var(--panel);
@@ -3800,7 +3803,7 @@ body.mobile .snap-info i { white-space: normal; }
 body.mobile .snap-btn { padding: 6px 10px; font-size: 11.5px; }
 /* 手机端溢出保险：任何长内容都不许撑破版心 */
 body.mobile .main-layout { overflow: hidden; }
-body.mobile #chatArea { overflow: hidden; }
+body.mobile #chatArea { overflow-x: hidden; overflow-y: auto; } /* v7.0.0 组1-T04：手机端正文不再锁死滚动 */
 body.mobile #chatMessages { overflow-x: hidden; }
 body.mobile .story-body { overflow-wrap: anywhere; }
 body.mobile .var-block { word-break: break-all; }
@@ -3860,7 +3863,7 @@ body.mobile.narrow .top-btn { padding: 7px 7px; }
         position: fixed;
         top: 0; right: 0; bottom: 0;
         width: min(86vw, 340px);
-        z-index: 90;
+        z-index: 50; /* v7.0.0 组1-T17：降到输入行(z60)之下，展开时不再吞掉输入框点击 */
         transform: translateX(105%);
         transition: transform 0.28s ease;
         box-shadow: -12px 0 40px rgba(0, 0, 0, 0.5);
@@ -3868,6 +3871,10 @@ body.mobile.narrow .top-btn { padding: 7px 7px; }
         padding-top: env(safe-area-inset-top, 0px);
     }
     #statusPanel.open { transform: translateX(0); }
+    /* v7.0.0 T17 复修：窄屏抽屉宽 86vw、全高，左侧仅剩 ~55px，padding-right 会把输入框挤成 26px 仍压在抽屉底下。
+       改为展开时输入区淡出且不可点（抽屉全高时本就无需同时输入），关闭后恢复——几何与交互都不再重叠。
+       :has() 为渐进增强；老内核不支持时由上面 z-index:50 兜底仍可点。 */
+    body:has(#statusPanel.open) .input-area { visibility: hidden; pointer-events: none; }
     #panelBackdrop.show { display: block; animation: fadeIn 0.25s ease; }
 
     /* 创作区收紧 */
@@ -3878,11 +3885,11 @@ body.mobile.narrow .top-btn { padding: 7px 7px; }
     .user-inner { max-width: 88%; }
     .input-area { padding: 9px 10px calc(10px + env(safe-area-inset-bottom, 0px)); }
     /* 快捷指令换行全显（不依赖 JS 挂类） */
-    #quickBar { flex-wrap: wrap; overflow-x: visible; gap: 6px; }
+    #quickBar { flex-wrap: wrap; overflow-x: visible; gap: 6px; padding-bottom: 0; }
     .quick-btn { padding: 7px 11px; font-size: 11.5px; }
     /* 溢出保险 */
     .main-layout { overflow: hidden; }
-    #chatArea { overflow: hidden; }
+    #chatArea { overflow-x: hidden; overflow-y: auto; } /* v7.0.0 组1-T04：允许滚轮/触控滚动 */
 
     /* iOS 聚焦放大防治：输入类控件 ≥16px */
     #userInput, .wiz-input, .wiz-select, .form-row input, .form-row select, .model-select {

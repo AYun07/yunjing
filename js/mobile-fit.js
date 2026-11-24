@@ -153,13 +153,30 @@
 
     /* ==================== 滚动锁（通讯/设置浮层开合） ==================== */
     function watchOverlays() {
+        /* v7.0.0 组1-T04：浮层节点在关闭后仍常驻 DOM 约 200ms 做过渡动画。
+           旧逻辑按「节点是否存在」判定，导致动画期/残留节点把滚动永久锁死。
+           改为按 open 状态(.show/.on/.open)判定，并监听 class 变化；
+           关闭态的残留遮罩禁用命中，保证立即不吞点击。 */
+        const OV_IDS = ['commOv', 'msOv'];
+        const isOpen = (el) => !!el && (
+            el.classList.contains('show') || el.classList.contains('on') || el.classList.contains('open')
+        );
         const apply = () => {
-            const lock = !!(document.getElementById('commOv') || document.getElementById('msOv'));
+            let lock = false;
+            OV_IDS.forEach(function (id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                try { el.style.pointerEvents = isOpen(el) ? '' : 'none'; } catch (e) {}
+                if (isOpen(el)) lock = true;
+            });
             try { document.body.classList.toggle('yunjing-lock', lock && isMobile()); } catch (e) { }
         };
         try {
-            new MutationObserver(apply).observe(document.documentElement, { childList: true, subtree: true });
+            new MutationObserver(apply).observe(document.documentElement, {
+                childList: true, subtree: true, attributes: true, attributeFilter: ['class']
+            });
         } catch (e) { /* 老内核降级：不锁滚动也不碍事 */ }
+        apply();
     }
 
     /* ==================== 开局向导期间隐藏遮挡表单的浮层 ==================== */

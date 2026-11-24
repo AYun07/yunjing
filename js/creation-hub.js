@@ -10,7 +10,9 @@
   'use strict';
 
   var host = null;
-  var CH = globalThis.StoryHub = {};
+  /* 全局名统一为 CreationHub（与 studio.html 调用一致）；StoryHub 保留为兼容别名。
+     在对象创建之初即注册，避免 IIFE 中途异常导致 CreationHub 缺失、入口走失败分支。 */
+  var CH = globalThis.CreationHub = globalThis.StoryHub = {};
 
   function toast(t, type) { try { window.showToast && window.showToast(t, type || 'info'); } catch (e) { console.debug('[CreationHub]', t); } }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }

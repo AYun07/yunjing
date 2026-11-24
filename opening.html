@@ -14,10 +14,10 @@
   <meta name="apple-mobile-web-app-title" content="云境">
   <link rel="icon" href="assets/yj-favicon.ico">
   <!-- v6.3.3 唯一启动界面：封面为唯一落地页，四入口语义对齐，读档/选择器带封面级底图 -->
-  <link rel="stylesheet" href="css/cover-portal.css?v=6.9.4">
-  <link rel="stylesheet" href="css/resume-portal.css?v=6.9.4">
+  <link rel="stylesheet" href="css/cover-portal.css?v=7.0.0">
+  <link rel="stylesheet" href="css/resume-portal.css?v=7.0.0">
   <!-- v7.0 封面开场动画：用封面本身做运镜，播完淡出无缝接入封面页，可跳过 -->
-  <link rel="stylesheet" href="css/cover-intro.css?v=6.9.4">
+  <link rel="stylesheet" href="css/cover-intro.css?v=7.0.0">
   <!-- v6.6.1 封面瘦身：atlas 地图 CSS 改为点「踏云」打开选择器时按需加载，见 cover-portal.js ensureAtlas() -->
 <style>
   :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; }
@@ -71,6 +71,9 @@
     font-size:12px; font-family:system-ui,sans-serif; pointer-events:none; }
   @media (max-width:520px){ .hint{ display:none; } }
 </style>
+  <!-- v7.0.0 桌面客户端视觉外壳：自绘标题栏 + 游戏化边框，仅 Electron 生效（PWA 零影响） -->
+  <link rel="stylesheet" href="css/desktop-shell.css?v=7.0.0">
+  <script src="js/desktop-shell.js?v=7.0.0"></script>
 </head>
 <body>
 <div class="stage" id="stage">
@@ -78,10 +81,10 @@
   <div class="veil"></div>
   <div class="brand"><h1>云 境</h1><p>万象入云 · 一念一世界</p></div>
   <nav class="menu" id="menu" aria-label="开场入口">
-    <button class="entry" data-active="1" data-go="new"><span class="bar"></span><span class="mark">◆</span><span class="name">踏云</span><span class="sub">开启新篇</span></button>
-    <button class="entry" data-go="continue"><span class="bar"></span><span class="mark">◆</span><span class="name">续梦</span><span class="sub">再续前尘</span></button>
-    <button class="entry" data-go="settings"><span class="bar"></span><span class="mark">◆</span><span class="name">观星</span><span class="sub">天地设置</span></button>
-    <button class="entry" data-go="forge"><span class="bar"></span><span class="mark">◆</span><span class="name">造物</span><span class="sub">万象工坊</span></button>
+    <button class="entry" data-active="1" data-go="new" title="踏云 · 开启新篇：选择一个世界，开始新的创作"><span class="bar"></span><span class="mark">◆</span><span class="name">踏云</span><span class="sub">开启新篇</span></button>
+    <button class="entry" data-go="continue" title="续梦 · 再续前尘：读取本机存档，继续上次的旅程"><span class="bar"></span><span class="mark">◆</span><span class="name">续梦</span><span class="sub">再续前尘</span></button>
+    <button class="entry" data-go="settings" title="观星 · 天地设置：配置模型接口、阅读外观与全局开关"><span class="bar"></span><span class="mark">◆</span><span class="name">观星</span><span class="sub">天地设置</span></button>
+    <button class="entry" data-go="forge" title="造物 · 万象工坊：打开小云开发界面，开发新模块"><span class="bar"></span><span class="mark">◆</span><span class="name">造物</span><span class="sub">万象工坊</span></button>
   </nav>
   <div class="hint">点选入口进入 · 横竖屏自适应</div>
   <div id="deniedTip" style="display:none;position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:20;
@@ -115,12 +118,12 @@
   window.addEventListener('resize', pickBg);
 
   // 四入口跳转（v6.3.3 语义对齐）：踏云=新档(被 cover-portal 接管)、续梦=读档(被 resume-portal 接管)、
-  // 观星=纯设置页、造物=工坊。new/continue 保留兜底 URL，正常情况被各自的捕获监听抢先拦截。
+  // 观星=纯设置页、造物=小云开发界面（XYDev）。new/continue 保留兜底 URL，正常情况被各自的捕获监听抢先拦截。
   var TARGET = {
     new:      'index.html?entry=new',
     continue: 'index.html?entry=continue',
     settings: 'settings.html?goto=settings',  // v6.9.0 观星=独立全局设置页（纯设置，不再混入创作界面；goto 参数放行入口守卫）
-    forge:    'studio.html?goto=forge'      // v6.3.3 造物=原创工坊面板（原 xiaoyun.html 仅为能力介绍页）
+    forge:    'studio.html?goto=dev'        // v7.0.0 造物/万象工坊=小云开发界面 XYDev（goto=forge 仍留给创作世界的原创设计工坊）
   };
   document.getElementById('menu').addEventListener('click', function(e){
     var btn = e.target.closest('.entry');
@@ -142,11 +145,11 @@
   });
 </script>
 <!-- v6.6.1 封面瘦身：首屏只加载封面自身所需脚本；atlas 舆图/资料库数据层改为点「踏云」时按需加载 -->
-<script src="js/world-catalog.js?v=6.9.4"></script>
-<script src="js/first-run-guide.js?v=6.9.4"></script>
-<script src="js/cover-intro.js?v=6.9.4"></script>
-<script src="js/pwa-register.js?v=6.9.4"></script>
-<script src="js/cover-portal.js?v=6.9.4"></script>
-<script src="js/resume-portal.js?v=6.9.4"></script>
+<script src="js/world-catalog.js?v=7.0.0"></script>
+<script src="js/first-run-guide.js?v=7.0.0"></script>
+<script src="js/cover-intro.js?v=7.0.0"></script>
+<script src="js/pwa-register.js?v=7.0.0"></script>
+<script src="js/cover-portal.js?v=7.0.0"></script>
+<script src="js/resume-portal.js?v=7.0.0"></script>
 </body>
 </html>

@@ -1,10 +1,11 @@
 ; 云境 v6.9.4 Windows 安装器 (NSIS Unicode)
-; 应用主体 app-64.7z 内嵌，安装时由 nsis7z 插件解压到安装目录
-; 独立构建，不依赖 electron-builder 运行时的复杂变量注入
+; 严格复刻 electron-builder 官方解压逻辑：
+;   嵌入 7z 时 SetCompress off（避免二次压缩），
+;   解压先用 nsis7z 到临时 7z-out 目录，再 CopyFiles 到安装目录（原子、可重试）。
+; 用 zlib 整体压缩，规避 8GB 内存限额下的 lzma solid OOM。
 
 Unicode true
 
-; ---------- 基本信息 ----------
 !define PRODUCT_NAME "云境"
 !define PRODUCT_VERSION "6.9.4"
 !define PRODUCT_PUBLISHER "云境工作室"
@@ -23,12 +24,10 @@ ShowInstDetails show
 ShowUnInstDetails show
 SetCompressor zlib
 
-; ---------- 插件 / 宏 ----------
 !addplugindir "plugins"
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
 
-; ---------- 界面配置 ----------
 !define MUI_ABORTWARNING
 !define MUI_ICON "icon.ico"
 !define MUI_UNICON "icon.ico"
@@ -37,45 +36,59 @@ SetCompressor zlib
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${APP_EXE}"
 !define MUI_FINISHPAGE_RUN_TEXT "立即启动云境"
 
-; ---------- 安装页面 ----------
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "license.txt"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
-; ---------- 卸载页面 ----------
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
-; ---------- 语言 ----------
 !insertmacro MUI_LANGUAGE "SimpChinese"
 
-; ============================================================
-; 安装节
-; ============================================================
 Section "云境主程序" SEC_MAIN
   SectionIn RO
-  SetOutPath "$INSTDIR"
 
-  ; 把内嵌的应用压缩包释放到临时目录再解压
+  ; ---- 嵌入 7z 时关闭 NSIS 压缩（复刻官方），避免二次压缩 ----
+  SetCompress off
   SetOutPath "$PLUGINSDIR"
   File /oname=app-64.7z "app-64.7z"
+  SetCompress auto
 
   DetailPrint "正在解压云境程序文件，请稍候..."
-  SetOutPath "$INSTDIR"
+
+  ; ---- 复刻官方 extractUsing7za：先解压到临时目录，再 CopyFiles ----
+  Push $OUTDIR
+  CreateDirectory "$PLUGINSDIR\7z-out"
   ClearErrors
+  SetOutPath "$PLUGINSDIR\7z-out"
   Nsis7z::Extract "$PLUGINSDIR\app-64.7z"
   Pop $R0
-  IfErrors 0 extractOk
-    DetailPrint "解压发生错误：$R0"
-    MessageBox MB_OK|MB_ICONEXCLAMATION "程序文件解压失败，安装中止。"
+  SetOutPath $R0
+
+  StrCpy $R1 0
+  LoopExtract:
+    IntOp $R1 $R1 + 1
+    SetOutPath "$INSTDIR"
+    CopyFiles /SILENT "$PLUGINSDIR\7z-out\*" "$INSTDIR"
+    IfErrors 0 DoneExtract
+    DetailPrint "文件复制重试 $R1 ..."
+    ${if} $R1 < 5
+      Goto LoopExtract
+    ${else}
+      MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "无法写入程序文件，请关闭正在运行的云境后重试。错误：$R0" /SD IDCANCEL IDCANCEL AbortExtract
+      Goto DoneExtract
+    ${endIf}
+  AbortExtract:
     Quit
-  extractOk:
+  DoneExtract:
+  Pop $OUTDIR
+  SetOutPath $OUTDIR
 
   ; 主程序存在性校验
   IfFileExists "$INSTDIR\${APP_EXE}" exeOk
-    MessageBox MB_OK|MB_ICONEXCLAMATION "未找到主程序 ${APP_EXE}，安装异常，请联系开发者。"
+    MessageBox MB_OK|MB_ICONEXCLAMATION "未找到主程序 ${APP_EXE}，安装异常（解压返回：$R0）。"
     Quit
   exeOk:
 
@@ -88,39 +101,25 @@ Section "云境主程序" SEC_MAIN
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\${APP_EXE}"
 
-  ; 生成卸载器
   WriteUninstaller "$INSTDIR\uninst.exe"
 
-  ; 开始菜单快捷方式
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\${APP_EXE}" 0
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\卸载${PRODUCT_NAME}.lnk" "$INSTDIR\uninst.exe"
-
-  ; 桌面快捷方式
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\${APP_EXE}" 0
 SectionEnd
 
-; ============================================================
-; 卸载节
-; ============================================================
 Section "Uninstall"
   Delete "$DESKTOP\${PRODUCT_NAME}.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}\卸载${PRODUCT_NAME}.lnk"
   RMDir "$SMPROGRAMS\${PRODUCT_NAME}"
-
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}"
-
-  ; 删除程序文件（保留用户数据存档，若有）
   RMDir /r "$INSTDIR"
 SectionEnd
 
-; ============================================================
-; 回调：安装启动时提示关闭正在运行的云境
-; ============================================================
 Function .onInit
-  ; 安装目录已存在时提示覆盖
   IfFileExists "$INSTDIR\${APP_EXE}" 0 noExisting
     MessageBox MB_YESNO "检测到已安装的云境，是否覆盖安装（保留存档）？" /SD IDYES IDYES noExisting IDNO abortInstall
     abortInstall:

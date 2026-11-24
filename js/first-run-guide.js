@@ -64,11 +64,22 @@
         if (step < STEPS.length - 1) { step++; render(); return; }
         close();
         // 走到最后一步：跳到创作室并打开接口设置
-        try { location.href = 'studio.html?v=6.9.4&fromGuide=1'; } catch (e) {}
+        try { location.href = 'studio.html?v=7.0.0&fromGuide=1'; } catch (e) {}
       };
     }
 
-    function close() { markDone(); wrap.remove(); }
+    function close() {
+      try { markDone(); } catch (e) {}
+      /* v7.0.0 组1-T04：引导层 z-index:10060，关闭瞬间先撤掉层级与命中再移除节点；
+         若节点残留会整页吞点击。老内核 remove 不可用时用 removeChild 兜底。 */
+      try { wrap.style.pointerEvents = 'none'; wrap.style.zIndex = '-1'; } catch (e) {}
+      try {
+        if (wrap.remove) wrap.remove();
+        else if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+      } catch (e) {
+        if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+      }
+    }
     render();
     document.body.appendChild(wrap);
   }

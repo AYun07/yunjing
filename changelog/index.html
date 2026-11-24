@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=6.9.4">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.0">
 </head>
 
 <body class="page-changelog">
@@ -316,11 +316,27 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+                        <article class="log-entry" data-tags="版本 发布 实玩修复18项 游戏化客户端外壳 无边框标题栏 直达链接 检查更新" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.0.0</span>
+                <span class="entry-date">2026-11-25</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">实玩 18 项全修 · 游戏化客户端外壳 · 版本单一来源</h3>
+            <p class="entry-lead">按玩家真机实测反馈，逐条修掉按钮按不动、小云拖不动、滚动卡死、配置存不下、创意工坊加载失败等问题；客户端不再是套着网页的浏览器，换成自有标题栏与边框的文字游戏界面。版本号收敛为单一来源，全站一致 v7.0.0。</p>
+            <div class="ver-diff">
+                <div><b>交互层修复</b>：收窄按钮透明命中层、恢复小云拖拽热区、侧栏折叠后可点开、滚动改为按浮层开关判定不再永久锁死、主题切换后状态栏可正常编辑、快捷指令可横滑看全、状态抽屉不再遮挡输入框。</div>
+                <div><b>布局与配置修复</b>：沉浸万象页签改单行横滑、行旅图鉴加尺寸上限且可平移、观星页可滚到底；大模型配置改为统一落盘路径，两处读取一致；创意工坊全局名对齐、造物/万象工坊改指小云开发界面、图标补齐悬停介绍。</div>
+                <div><b>小云直达链接</b>：可直接对小云说「给我观星的直达链接」，生成真正落地到目标页的本地链接（观星 / 知识包 / 创作世界 / 小云开发），点击即达，不是停在首页的空参数。</div>
+                <div><b>游戏化客户端外壳</b>：桌面端改为无边框窗口 + 自绘云境品牌标题栏（最小化 / 最大化 / 关闭）、金边云纹装饰与深空紫金氛围层，观感是文字游戏客户端而非浏览器网页；浏览器 PWA 版零影响。</div>
+                <div><b>客户端检查更新</b>：应用内新增「检查更新」，手动点击或启动自动检查 GitHub Release，有新版提示并支持自动下载安装，无需每次手动重新下载整包；删去无用的手机分身功能。</div>
+            </div>
+        </article>
+
                         <article class="log-entry" data-tags="版本 发布 封面 开场动画 五方式分发" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
                 <span class="entry-ver">v6.9.4</span>
                 <span class="entry-date">2026-11-24</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">电影片头入场 · 横竖屏双封面 · 五种下载安装方式齐全</h3>
             <p class="entry-lead">开场改成电影片头：启动先出「云境」两个大字，淡出后镜头推进到封面，动态粒子全程开启。横屏用横版动态封面，竖屏用专门的竖版动态封面，两者都是活的 AI 视频，不是静态贴图。本次发版把最初定的五种下载安装方式全部配齐。</p>
@@ -1112,7 +1128,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=6.9.4 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.0.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

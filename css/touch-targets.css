@@ -55,11 +55,18 @@
     min-width: 44px;
   }
 
-  /* 3) 行内小链接：撑出透明命中层（垂直扩展、水平不加宽，避免相邻链接互相抢点击） */
-  a:not([class*="card"]):not([class*="world"]):not([class*="ws-"]) {
+  /* 3) 行内小链接：v7.0.0 组1-T01 收窄为精确白名单。
+     原 a:not(...) 几乎命中全站所有 <a>，44px 垂直命中层彼此覆盖，
+     封面四入口 / 顶栏 / 相邻按钮的点击被透明层抢走。
+     现只给确有必要的页脚行内链接扩展命中区，并显式 z-index 归位，
+     不再压住相邻交互元素。 */
+  .footer-log > a,
+  #verBadge {
     position: relative;
+    z-index: 1;
   }
-  a:not([class*="card"]):not([class*="world"]):not([class*="ws-"])::after {
+  .footer-log > a::after,
+  #verBadge::after {
     content: "";
     position: absolute;
     left: 0;

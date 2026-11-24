@@ -25,8 +25,9 @@ body.has-left-rail #chatArea .input-row { position: relative; z-index: 60; }
 }
 #xyBuddy:hover .xy-orb,
 #xyBuddy .xy-orb:hover { opacity: 1; }
-/* 立绘只在自身区域接收点击；展开的面板仍可正常交互 */
-#xyBuddy { pointer-events: none; }
+/* v7.0.0 组1-T01/T02：容器恢复 auto，保证立绘拖拽与面板按钮事件委托可用。
+   容器自身不绘制任何背景，透明空白区不拦截正文点击（只有立绘/面板是命中区）。 */
+#xyBuddy { pointer-events: auto; }
 #xyBuddy .xy-orb,
 #xyBuddy .xy-panel { pointer-events: auto; }
 @media (min-width: 901px) {
@@ -34,9 +35,11 @@ body.has-left-rail #chatArea .input-row { position: relative; z-index: 60; }
     #xyBuddy { right: 10px; bottom: 46px; }
 }
 @media (max-width: 900px) {
-    /* 窄屏：立绘缩到更小、更靠边，避免盖住输入行 */
+    /* v7.0.0 组1-T02：窄屏立绘热区放大到 >=44x44 并提高可见度，保证触摸可稳定按住拖动。
+       面板在小屏另有 scale(.68) 缩放，故按反推加大到 72x92（缩放后仍 >=44）；
+       仍贴右缘、避开输入行中央。 */
     #xyBuddy { right: 6px; bottom: 44px; }
-    #xyBuddy .xy-orb { width: 58px; height: 74px; opacity: .55; }
+    #xyBuddy .xy-orb { width: 72px; height: 92px; opacity: .85; }
 }
 
 /* 3) 顶部"未配置模型"提示条：压低存在感，一行内且可单行省略，

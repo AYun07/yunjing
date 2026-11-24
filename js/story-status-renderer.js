@@ -775,9 +775,14 @@ const StoryStatusRenderer = {
     document.addEventListener("keydown", onKey, true);
     return new Promise((resolve) => {
       const close = () => {
-        document.body.style.overflow = prevOverflow;
-        document.removeEventListener("keydown", onKey, true);
-        root.remove();
+        /* v7.0.0 组1-T05：overflow 与事件解绑必须先生效，
+           即使 root.remove() 异常也不把 body 永久锁死。 */
+        try {
+          document.body.style.overflow = prevOverflow;
+          document.removeEventListener("keydown", onKey, true);
+        } finally {
+          root.remove();
+        }
       };
       finish = (saved) => {
         close();
@@ -838,8 +843,15 @@ const StoryStatusRenderer = {
         const act = (_d2 = t.closest("[data-act]")) == null ? void 0 : _d2.getAttribute("data-act");
         if (act === "cancel") return finish(false);
         if (act === "save") {
-          save();
-          return finish(true);
+          /* v7.0.0 组1-T05：save() 里 fw.saveStory()/renderCharacters() 任一抛错，
+             旧代码就走不到 finish(true)，body.overflow 永久 hidden、状态栏卡死。
+             catch 给人话提示，finally 保证关闭路径一定还原 overflow。 */
+          try { save(); }
+          catch (err) {
+            try { window.showToast && window.showToast("档案保存失败：" + ((err && err.message) || "未知错误"), "error"); } catch (e2) {}
+          }
+          finally { finish(true); }
+          return;
         }
       });
       root.addEventListener("input", (e) => {
@@ -980,3 +992,13 @@ const StoryStatusRenderer = {
   }
 };
 window.StoryStatusRenderer = StoryStatusRenderer;
+
+/* v7.0.0 组1-T05：主题切换后重渲染状态栏，
+   清掉旧主题残留的类名/内联色，避免卡片看起来卡住、不可点。 */
+document.addEventListener('yunjing:theme', function () {
+  try {
+    var fw = window.storyFramework;
+    if (!fw || !fw.storyState) return;
+    StoryStatusRenderer.refresh(fw.storyState.variables || {});
+  } catch (e) {}
+});

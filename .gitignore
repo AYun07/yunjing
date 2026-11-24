@@ -80,3 +80,16 @@ Brand-安卓启动屏预览.png
 /node_modules/
 # 验收截图（本地留证）
 PC客户端-运行验证.png
+
+# v7.0.0 自更新改造：本地回滚备份、构建产物、实拍截图、大安装包不入库
+_bak_*/
+_bak_*/
+shots-v700/
+shots/
+client/electron/dist/
+client/electron/build/
+*.7z
+*.apk
+云境-Windows-*.exe
+云境-Android-*.apk
+云境-*.zip
