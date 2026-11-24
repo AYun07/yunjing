@@ -72,15 +72,15 @@
 
 ## 三·五、怎么下载安装（五种方式）
 
-一开始定的五种方式，v6.9.4 全部配齐。每版的产物都在该版 [Release 页](https://github.com/AYun07/yunjing/releases/tag/v6.9.4) 的 Assets 里，或仓库 `releases/` 目录。
+一开始定的五种方式，v7.0.0 全部配齐。每版的产物都在该版 [Release 页](https://github.com/AYun07/yunjing/releases/tag/v7.0.0) 的 Assets 里，或仓库 `releases/` 目录。
 
 | 方式 | 适合谁 | 怎么用 | 产物 |
 |---|---|---|---|
-| ① 源码包 | 想改代码、本地部署的人 | 下载 tag 的 Source code (zip)，解压后双击启动器 | `云境-v6.9.4-源码包.zip`（约 44MB，含代码与封面动画，大视频走外链或另下完整包） |
-| ② 完整包 | 想一次下全、离线跑的人 | 下载后解压，双击启动器即可，含全部离线资产 | `云境-v6.9.4-完整包.zip`（约 665MB，含 38 界视频、地图、封面动画） |
-| ③ 桌面客户端 | 不想碰命令行、想要「成熟软件」体验的人 | Windows 双击 `.exe` 安装向导，一路下一步装好，桌面/开始菜单生成「云境」图标，点图标启动即播电影片头→封面→游玩；可随时在「设置→应用」卸载。Linux 跑 `.AppImage` | `云境-Windows-6.9.4-x64.exe`（可安装版，NSIS 向导）/ `云境-Linux-6.9.4-x64.AppImage` |
-| ④ 手机安装包 | 手机上玩的人 | 安卓装 `.apk`；iOS 用免费方案：Safari 打开站点→分享→添加到主屏幕，即全屏 App | `云境-Android-6.9.4.apk` + iOS 走 PWA |
-| ⑤ 智能体插件 | 在 agent 框架里玩的人 | 把 skill 装进 deepseekharness / Claude 等，让 AI 按云境规则创作 | `云境-v6.9.4-智能体插件.zip`（SKILL.md + 零依赖 CLI） |
+| ① 源码包 | 想改代码、本地部署的人 | 下载 tag 的 Source code (zip)，解压后双击启动器 | `云境-v7.0.0-源码包.zip`（约 44MB，含代码与封面动画，大视频走外链或另下完整包） |
+| ② 完整包 | 想一次下全、离线跑的人 | 下载后解压，双击启动器即可，含全部离线资产 | `云境-v7.0.0-完整包.zip`（约 665MB，含 38 界视频、地图、封面动画） |
+| ③ 桌面客户端 | 不想碰命令行、想要「成熟软件」体验的人 | Windows 双击 `.exe` 安装向导，一路下一步装好，桌面/开始菜单生成「云境」图标，点图标启动即播电影片头→封面→游玩；可随时在「设置→应用」卸载。Linux 跑 `.AppImage` | `云境-Windows-7.0.0-x64.exe`（可安装版，NSIS 向导）/ `云境-Linux-7.0.0-x64.AppImage` |
+| ④ 手机安装包 | 手机上玩的人 | 安卓装 `.apk`；iOS 用免费方案：Safari 打开站点→分享→添加到主屏幕，即全屏 App | `云境-Android-7.0.0.apk` + iOS 走 PWA |
+| ⑤ 智能体插件 | 在 agent 框架里玩的人 | 把 skill 装进 deepseekharness / Claude 等，让 AI 按云境规则创作 | `云境-v7.0.0-智能体插件.zip`（SKILL.md + 零依赖 CLI） |
 | ⑥ 拉取本地部署 | 程序员、Linux / 自建网关 | `git clone` 后跑启动器或 `python3 -m http.server 8899` | 仓库源码本身 |
 
 **说明**：
@@ -117,11 +117,11 @@
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v7.0.0** | 2026-11-22 | **当前** | 电影片头入场（云境大字→推镜头→动态封面）、横竖双动态封面、粒子全程常驻；桌面端升级为可安装 `.exe`；创意工坊单一文件夹 `community/works/`、CI 七闸全绿、跨层战力折算、任意楼层回档、二创增量补丁全部在线。 | [完整包 665MB](https://github.com/AYun07/yunjing/releases/download/v6.9.4/云境-v6.9.4-完整包.zip) · [源码包](https://github.com/AYun07/yunjing/releases/download/v6.9.4/云境-v6.9.4-源码包.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.9.4) |
+| **v7.0.0** | 2026-11-25 | **当前** | 玩家实测 18 项问题全修；游戏化客户端外壳（无边框标题栏 + 金边云纹）；**内容自动更新 + 损坏自修复，装一次以后不用再重装**；设置页新增「更新与公告」，玩家不用开 GitHub 就能看每版区别；版本全站单一来源。 | [桌面客户端 exe](https://github.com/AYun07/yunjing/releases/download/v7.0.0/YunJing-v7.0.0-Windows-setup-x64.exe) · [完整包 665MB](https://github.com/AYun07/yunjing/releases/download/v7.0.0/云境-v7.0.0-完整包.zip) · [源码包](https://github.com/AYun07/yunjing/releases/download/v7.0.0/云境-v7.0.0-源码包.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.0.0) |
 
-> **完整包和源码包的区别**。「完整包」是 `云境-v6.9.4-完整包.zip`，665MB，含 38 界视频、考据地图、封面动画这些运行资产，下载解压就能离线跑。「源码包」是 `云境-v6.9.4-源码包.zip`，约 44MB，含代码与封面动画，大视频走外链或另下完整包。两个包的版本号都是 v6.9.4。
+> **完整包和源码包的区别**。「完整包」是 `云境-v7.0.0-完整包.zip`，665MB，含 38 界视频、考据地图、封面动画这些运行资产，下载解压就能离线跑。「源码包」是 `云境-v7.0.0-源码包.zip`，约 44MB，含代码与封面动画，大视频走外链或另下完整包。两个包的版本号都是 v7.0.0。
 
-**看版本**，[版本页（最新版在最上面，每版都写了做了什么、跟上版有什么不同）](VERSIONS.md) · [产品内创作日志](changelog/index.html) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v6.9.4)
+**看版本**，[版本页（最新版在最上面，每版都写了做了什么、跟上版有什么不同）](VERSIONS.md) · [产品内创作日志](changelog/index.html) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.0.0)
 
 > 逐版的来龙去脉、历史功能说明和验收数据都放在 [VERSIONS.md](VERSIONS.md)，主页不展开。这一块由 `scripts/update-readme.mjs` 自动生成，加新版本请往 VERSIONS.md 最上面插。
 
