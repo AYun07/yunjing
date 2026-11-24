@@ -1660,3 +1660,13 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 工作流（本次交付的核心价值）：以后改一个 js 文件，只需 `CONTENT_VER=x.y.z node scripts/gen-content-manifest.mjs` 重新生成清单并 push，客户端下次启动按 sha 只下载变化文件，用户无需重装。
 - 未验证/边界：沙箱无 Windows GUI，exe 自替换 / PowerShell Expand-Archive / 菜单点击链路未真机实测，仅静态核对与逻辑自测；jsDelivr @main 有 CDN 缓存，清单加 ?t= 缓解但极端情况可能延迟数分钟。壳级升级仍需重启云境一次（无法做到运行中覆盖 exe），但无需用户手动下载/点安装向导。
 - 失效条件：若清单 sha 与仓库文件不符，客户端会反复重下修复——每次 push 前必须重跑清单生成器；若热更把程序弄坏，删 yj-content 目录即回退到只读基线；回滚完整产物用 _bak_v700_selfupdate/。
+
+## DR-098 · v7.0.0 发布交付 + 应用内更新公告（2026-11-25）
+- 背景：用户要求「更新位置放在设置那里」「做一个更新公告让玩家看出每版区别，不用去 GitHub」，并再次提供有效 token（已存本地 /root/.config/yunjing/github_token，权限600，不入库不进包），要求记牢不再索要。
+- 决定：
+  ① 设置页（settings.html「观星」）新增「🔄 更新与公告」section：当前版本/内容版本/上次同步、检查更新、立即同步内容、立即更新（有新版时才出现）、更新公告折叠列表。5 个按钮接 preload 已暴露的 getInfo/getSyncStatus/syncNow/checkUpdate/autoUpdate；PWA 版全部降级为中文提示，不抛错。
+  ② 应用内公告源 release-notes.json（每版 version/date/title/summary/changes[]，从新到旧），前端 fetch 渲染、文本经 esc() 转义四态齐全；文件纳入热更清单（549 个），以后发版只改这一个 JSON + 重生成清单 push，全端公告即更新，玩家不用开 GitHub。
+  ③ 打包基线修正：首次安装必须带自更新引擎，否则老壳无更新能力。重建 app.asar（注入新 main.js/preload.js/package.json）+ 同步 549 站点文件到 win-unpacked/resources/yunjing + 清理已删的 6 个 phone 文件 + 同步公告文件；用固化 LZMA 非 solid 参数重打 7z（DR-094 老插件兼容），makensis 编译英文产物名 YunJing-v7.0.0-Windows-setup-x64.exe（避免中文名被 GitHub 剥离）。
+- 验证证据：真浏览器设置页公告渲染通过（section 存在、PWA 降级显示"浏览器版(PWA)"、v7.0.0/v6.9.4/v6.9.0 三卡片齐全、含"不用再重装"文案、0 console 错误）；回归 52/52、版本同源、双通道实测（CDN 拉清单 549 文件含公告 / raw 拉公告 3 版）全过；安装包 SHA256 9c3a3859b89626724f0723061fa45ae203a35d95a0e208c98efab78eca55b709，上传带 digest 供壳更新校验；下载链接 HTTP200/810187327B；tag 源码含引擎 13 处关键字。
+- 发布状态：main 推送 c127322/ddf57c3；tag v7.0.0 强推到 7d8cfc9（含完整 README）；Release id 457139246 已发布，asset 为 Windows setup exe（下载页链接见 README）。github.com 期间多次 GnuTLS 波动，靠重试 + HTTP/1.1 + 长超时完成。
+- 未验证/边界：沙箱无 Windows GUI，安装器真机安装、exe 自替换、菜单点击未实测（沿用 DR-094 已验证的 LZMA 非 solid + 官方解压流程，本版仅换内容）；jsDelivr @main 缓存极端情况延迟数分钟。
