@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "version": "7.0.0",
-  "generatedAt": "2026-11-24T17:33:03.279Z",
-  "count": 548,
+  "generatedAt": "2026-11-24T17:50:35.383Z",
+  "count": 549,
   "sources": [
     "https://cdn.jsdelivr.net/gh/AYun07/yunjing@main/",
     "https://raw.githubusercontent.com/AYun07/yunjing/main/"
@@ -17,8 +17,8 @@
       "size": 918
     },
     "DECISIONS.md": {
-      "sha256": "b4c98f58456aa6f3c466a7247b0ff675e8f7512920d4c26b8daee490e94f9c1f",
-      "size": 248539
+      "sha256": "56b801a3dcb20b6b885da839db4aa2e2c2cb789c11cb8f97872eb1d4e1b84769",
+      "size": 252209
     },
     "HANDOFF.md": {
       "sha256": "e7f2c4669303832b04c01737df2734c1c0e93ce24e3de62eec17bd5ff5781062",
@@ -29,8 +29,8 @@
       "size": 19467
     },
     "README.md": {
-      "sha256": "78dcb26ab6f87587e64f0b914e0d261e51d8b3cb4c350c261058e071f000073f",
-      "size": 16373
+      "sha256": "fe7cb8ce362d2f44eee753113d295cb32b5e0dc6ac11b9dbc06d6a0443692e55",
+      "size": 17558
     },
     "VERSIONS.md": {
       "sha256": "5ff4cf72388fad224c4154097b85500ff0582bb464a80a2d37cb27542e175f13",
@@ -2047,6 +2047,10 @@
     "plugin/yunjing-skill/install.sh": {
       "sha256": "a02d9f2fc74abeef359b5dcf93330d879b8b49fa4eff15e47c01320729d0218c",
       "size": 470
+    },
+    "release-notes.json": {
+      "sha256": "6ef15fbd4ef00fedbbe22baffbfa5702111405e34d33a333525f28a5f999fecb",
+      "size": 3355
     },
     "releases/yunqi-latest.json": {
       "sha256": "a124c9cbbb3e12a9738f243e83e912f7378834dd29a79ccd5fe07fde362f234d",

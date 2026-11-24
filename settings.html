@@ -52,6 +52,19 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 .saved{color:#7fd8a0;font-size:12px;opacity:0;transition:.3s}
 .saved.on{opacity:1}
 @media(max-width:520px){.row label{min-width:80px}.row .hint{padding-left:0}}
+/* 更新公告卡片：沿用页面紫金变量，不引入新配色 */
+.ncard{background:rgba(255,255,255,.04);border:1px solid var(--line);border-left:3px solid var(--jade);
+  border-radius:11px;padding:13px 15px;margin:12px 0}
+.ncard .nh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ncard .nv{font-size:13px;color:var(--jade);font-weight:700;letter-spacing:.5px}
+.ncard .nd{font-size:11px;color:var(--mut)}
+.nbadge{background:rgba(217,180,106,.18);border:1px solid rgba(217,180,106,.45);color:#f4d896;
+  border-radius:99px;padding:1px 8px;font-size:10px}
+.ncard .nt{font-size:13px;font-weight:700;color:var(--ink);margin:8px 0 5px;line-height:1.5}
+.ncard .ns{font-size:12px;color:var(--mut);line-height:1.65;margin:0 0 8px}
+.ncard ul{margin:0;padding-left:18px}
+.ncard li{font-size:11.5px;color:var(--ink);line-height:1.7;margin:3px 0}
+.ncard li::marker{color:var(--jade)}
 </style>
 <!-- v7.0.0 游戏化客户端外壳：仅 Electron 生效，PWA 浏览器版零注入 -->
 <link rel="stylesheet" href="css/desktop-shell.css?v=7.0.0">
@@ -112,6 +125,28 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
     <p class="desc">全部数据只在本机浏览器。清理前请先导出存档，删除不可恢复。</p>
     <div class="row"><button class="btn ghost" id="clearCacheBtn">清理运行缓存（不动存档）</button>
       <span class="saved" id="cacheSaved">✓ 已清理，请刷新</span></div>
+  </section>
+
+  <!-- 更新与公告 -->
+  <section class="sec" id="updateSec">
+    <h2>🔄 更新与公告</h2>
+    <p class="desc">查看当前版本、检查客户端更新、同步内容，以及逐版了解云境改了什么，不用去 GitHub。</p>
+    <div class="row"><label>当前版本</label><span id="verCurrent">读取中…</span></div>
+    <div class="row"><label>内容版本</label><span id="verContent">读取中…</span></div>
+    <div class="row"><label>上次同步</label><span id="verLastSync">读取中…</span></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="checkUpdateBtn">检查更新</button>
+      <button class="btn ghost" id="syncNowBtn">立即同步内容</button>
+      <button class="btn ghost" id="toggleNotesBtn">查看完整更新公告 ▾</button>
+    </div>
+    <div class="row"><span class="hint" style="padding:0" id="updateMsg"></span></div>
+    <div class="row" id="autoUpdateRow" style="display:none">
+      <button class="btn" id="autoUpdateBtn">立即更新</button>
+      <span class="hint" style="padding:0" id="autoUpdateMsg"></span>
+    </div>
+    <div id="notesBox" style="display:none">
+      <div id="notesList" class="desc" style="margin:0">公告加载中…</div>
+    </div>
   </section>
 </div>
 
@@ -175,6 +210,137 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   };
   // 返回封面
   $('backBtn').onclick=function(){location.href='opening.html';};
+
+  // ===== 更新与公告 =====
+  var D = window.YunJingDesktop; // 桌面外壳注入；PWA 浏览器版为 undefined
+  var hasDesktop = !!D;
+  // 公告来自本地 JSON，但做简单转义，防未来 JSON 被篡改导致注入
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function say(msg){$('updateMsg').textContent=msg||'';}
+  function pad(n){return n<10?'0'+n:''+n;}
+  function fmtTime(v){
+    if(!v) return '未知时间';
+    var d=new Date(v);
+    if(isNaN(d.getTime())) return String(v);
+    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+  }
+  // 版本信息：桌面读真实值，PWA 给出说明；每条调用单独兜底
+  function loadVersions(){
+    if(!hasDesktop){
+      $('verCurrent').textContent='浏览器版（PWA）';
+      $('verContent').textContent='内容随浏览器缓存更新';
+      $('verLastSync').textContent='靠浏览器缓存自动更新，无需手动同步';
+      return;
+    }
+    if(D.getInfo){
+      try{
+        Promise.resolve(D.getInfo()).then(function(info){
+          $('verCurrent').textContent='当前版本 v'+((info&&info.version)?String(info.version):'?');
+        }).catch(function(){$('verCurrent').textContent='当前版本读取失败';});
+      }catch(e){$('verCurrent').textContent='当前版本读取失败';}
+    }else{$('verCurrent').textContent='当前版本不可用';}
+    if(D.getSyncStatus){
+      try{
+        Promise.resolve(D.getSyncStatus()).then(function(st){
+          $('verContent').textContent='内容版本 v'+((st&&st.version)?String(st.version):'?');
+          var state=(st&&st.state)?'（'+String(st.state)+'）':'';
+          $('verLastSync').textContent='上次同步 '+fmtTime(st&&st.lastSync)+state;
+        }).catch(function(){$('verContent').textContent='内容版本读取失败';$('verLastSync').textContent='同步状态读取失败';});
+      }catch(e){$('verContent').textContent='内容版本读取失败';$('verLastSync').textContent='同步状态读取失败';}
+    }else{$('verContent').textContent='内容版本不可用';$('verLastSync').textContent='同步状态不可用';}
+  }
+  loadVersions();
+
+  // 检查更新
+  $('checkUpdateBtn').onclick=function(){
+    if(!hasDesktop||!D.checkUpdate){say('浏览器版会自动更新，无需手动检查');return;}
+    say('正在检查更新…');
+    try{
+      Promise.resolve(D.checkUpdate()).then(function(r){
+        if(!r||!r.ok){say('检查失败，请稍后再试');return;}
+        if(r.hasUpdate){
+          say('发现新版本 v'+String(r.latestVersion||'?')+'，可在后台自动更新，重启生效');
+          $('autoUpdateRow').style.display='flex';
+        }else{
+          say('当前已是最新版本');
+          $('autoUpdateRow').style.display='none';
+        }
+      }).catch(function(){say('检查失败，请稍后再试');});
+    }catch(e){say('检查失败，请稍后再试');}
+  };
+
+  // 立即更新（发现新版后才显示）
+  $('autoUpdateBtn').onclick=function(){
+    if(!hasDesktop||!D.autoUpdate){say('自动更新仅桌面端可用');return;}
+    var btn=this;
+    btn.disabled=true;btn.textContent='更新中…';
+    function done(ok){
+      btn.disabled=false;btn.textContent='立即更新';
+      if(ok){say('已开始后台更新，重启客户端后生效');$('autoUpdateRow').style.display='none';}
+      else say('更新未成功，请稍后重试或重启客户端');
+    }
+    try{
+      Promise.resolve(D.autoUpdate()).then(function(r){done(!r||r.ok!==false);}).catch(function(){done(false);});
+    }catch(e){done(false);}
+  };
+
+  // 立即同步内容（同步期间禁用，杜绝连点）
+  $('syncNowBtn').onclick=function(){
+    if(!hasDesktop||!D.syncNow){say('此功能仅桌面端可用');return;}
+    var btn=this;
+    btn.disabled=true;btn.textContent='同步中…';
+    try{
+      Promise.resolve(D.syncNow()).then(function(r){
+        btn.disabled=false;btn.textContent='立即同步内容';
+        if(!r||!r.ok){say('同步失败，请检查网络后重试');return;}
+        var n=Number(r.downloaded||0);
+        say(n>0?('已同步 '+n+' 个文件'):'无更新');
+      }).catch(function(){btn.disabled=false;btn.textContent='立即同步内容';say('同步失败，请检查网络后重试');});
+    }catch(e){btn.disabled=false;btn.textContent='立即同步内容';say('同步失败，请检查网络后重试');}
+  };
+
+  // 更新公告：fetch + 四态 + 转义渲染
+  var notesLoaded=false;
+  function renderNotes(data){
+    var box=$('notesList');
+    var vs=(data&&data.versions)||[];
+    if(!vs.length){box.textContent='暂无更新公告';return;}
+    var html='';
+    vs.forEach(function(v){
+      var changes=(v.changes||[]).map(function(c){return '<li>'+esc(c)+'</li>';}).join('');
+      html+='<div class="ncard">'
+        +'<div class="nh"><span class="nv">'+esc(v.version)+'</span>'
+        +(v.current?'<span class="nbadge">当前</span>':'')
+        +'<span class="nd">'+esc(v.date)+'</span></div>'
+        +'<div class="nt">'+esc(v.title)+'</div>'
+        +'<p class="ns">'+esc(v.summary)+'</p>'
+        +'<ul>'+changes+'</ul>'
+        +'</div>';
+    });
+    box.innerHTML=html;
+  }
+  function loadNotes(){
+    if(notesLoaded) return;
+    notesLoaded=true;
+    $('notesList').textContent='公告加载中…';
+    if(!window.fetch){notesLoaded=false;$('notesList').textContent='公告暂时读不到，联网后再试';return;}
+    try{
+      fetch('release-notes.json',{cache:'no-cache'}).then(function(resp){
+        if(!resp||!resp.ok) throw new Error('bad status');
+        return resp.json();
+      }).then(function(data){renderNotes(data);}).catch(function(){
+        notesLoaded=false;
+        $('notesList').textContent='公告暂时读不到，联网后再试';
+      });
+    }catch(e){notesLoaded=false;$('notesList').textContent='公告暂时读不到，联网后再试';}
+  }
+  $('toggleNotesBtn').onclick=function(){
+    var box=$('notesBox');
+    var open=(box.style.display!=='none');
+    box.style.display=open?'none':'block';
+    this.textContent=open?'查看完整更新公告 ▾':'收起更新公告 ▴';
+    if(!open) loadNotes();
+  };
 })();
 </script>
 </body>
