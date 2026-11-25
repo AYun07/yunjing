@@ -41,6 +41,31 @@ if [ ! -f "$ELECTRON_DIR/dist/yunjing-desktop-${VERSION}-x64.nsis.7z" ]; then
 fi
 [ -f "$ELECTRON_DIR/dist/yunjing-desktop-${VERSION}-x64.nsis.7z" ] || { echo "缺少应用主体 nsis.7z"; exit 1; }
 
+echo "=== 2b. 重建 app.asar（DR-100：必须含 main.js 全部本地依赖）==="
+# main.js require('./content-sync.js') / shell-update.js / package.json，
+# 少一个都会在启动时报 "Cannot find module"。从此打包前强制全量重建，不手工挑文件。
+rm -rf "$ELECTRON_DIR/dist/win-unpacked/resources/app.asar"
+node - "$ELECTRON_DIR" <<'NODE'
+const asar = require(process.argv[2] + '/node_modules/@electron/asar');
+const fs = require('fs'), path = require('path'), os = require('os');
+const src = fs.mkdtempSync(path.join(os.tmpdir(), 'yj-asar-'));
+for (const f of ['main.js','preload.js','package.json','content-sync.js','shell-update.js']) {
+  fs.copyFileSync(path.join(process.argv[2], f), path.join(src, f));
+}
+asar.createPackage(src, process.argv[2] + '/dist/win-unpacked/resources/app.asar').then(
+  () => console.log('app.asar 重建完成（含 5 个文件）'),
+  (e) => { console.error(e); process.exit(1); }
+);
+NODE
+
+echo "=== 2c. 重打 7z（DR-099：必须进入 win-unpacked 内部打点，禁止带目录前缀）==="
+cd "$ELECTRON_DIR/dist/win-unpacked"
+7z a -t7z -m0=LZMA -mx=5 -ms=off -mmt=2 "../yunjing-desktop-${VERSION}-x64.nsis.7z" . >/dev/null
+cd "$ROOT"
+
+echo "=== 2d. 打包前强制校验（DR-100：不过不许发布）==="
+node "$ROOT/scripts/desktop/verify-package.cjs" "$ELECTRON_DIR" || { echo "打包校验失败，中止"; exit 1; }
+
 echo "=== 3. 准备编译素材 ==="
 mkdir -p "$WORK/plugins"
 cp "$ELECTRON_DIR/dist/yunjing-desktop-${VERSION}-x64.nsis.7z" "$WORK/app-64.7z"

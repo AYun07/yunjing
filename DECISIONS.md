@@ -1679,3 +1679,15 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 真机说明：wine 静默/GUI 自动化在沙箱内受 NSIS 向导交互与 wine 驱动限制未能走完（日志空、返回码2），按验证完整性如实披露；核心检查点（包内路径结构 + 解压复制后主程序落地）用等价命令验证通过，与用户报错点直接对应。
 - 发布动作：删除 Release 旧坏 asset(id 788289490) 后重传修复版同名 exe（带新 digest 供壳更新校验）。
 - 失效条件：日后重打包必须 `cd win-unpacked` 内部打点，禁止 `7z a ... ./win-unpacked/`；每次打包后必须核对 `7z l | grep YunJing.exe` 输出无目录前缀。
+
+## DR-100 · v7.0.0 app.asar 漏模块致启动崩溃修复 + 打包强制校验（2026-11-25）
+- 背景：用户安装修复版后启动报「Cannot find module './content-sync.js'，Require stack: app.asar\main.js」。
+- 根因：DR-099 重打包时手工重建 app.asar 只放了 main.js/preload.js/package.json 三个文件，但架构师改造后 main.js 新增 `require('./content-sync.js')` 与 `require('./shell-update.js')`，两个自更新引擎模块没打进 asar → 启动即崩。这是手工挑文件、无依赖校验的直接后果。
+- 修复：app.asar 按 main.js 全部本地依赖重建（5 文件：main/preload/package.json/content-sync/shell-update），语义校验 require 链；重打 7z（内部打点，主程序无前缀）、重编译 exe，SHA256 6bcd6a8a…。
+- 强证据（不同于前两次）：从最终 exe 内嵌 7z 里提取 app.asar 再验证——5 文件齐全、main.js 三个依赖全部可解析、主程序无目录前缀。验证的是交付产物本体，非中间文件。
+- 防复发（本次核心）：
+  ① 新建 scripts/desktop/verify-package.cjs —— 打包前强制校验四项：(1) app.asar 含 main.js 所有 require('./x') 目标；(2) 引擎模块实际可加载（mock electron）；(3) 7z 主程序无 win-unpacked 前缀；(4) 站点关键文件齐全。不过不许发布。
+  ② 固化脚本 build-windows-installer.sh 新增 2b（自动重建 app.asar，含全部依赖，不再手工挑）/2c（进入 win-unpacked 内部打 7z）/2d（跑 verify-package.cjs，失败即中止）。
+- 发布动作：删旧 asset(790052391)→上传同名修复版 exe（带新 digest）。
+- 未验证/边界：沙箱无 Windows GUI，未在真机双击启动确认无崩溃弹窗；但已从最终 exe 提取 asar 逐个验证 require 可解析，直接对应报错点。
+- 失效条件：日后若 main.js 新增本地 require，必须同步加进构建脚本 2b 的文件清单（或改为扫描式自动收集），否则校验脚本第1项会拦截。
