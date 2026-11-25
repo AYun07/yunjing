@@ -1670,3 +1670,12 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 验证证据：真浏览器设置页公告渲染通过（section 存在、PWA 降级显示"浏览器版(PWA)"、v7.0.0/v6.9.4/v6.9.0 三卡片齐全、含"不用再重装"文案、0 console 错误）；回归 52/52、版本同源、双通道实测（CDN 拉清单 549 文件含公告 / raw 拉公告 3 版）全过；安装包 SHA256 9c3a3859b89626724f0723061fa45ae203a35d95a0e208c98efab78eca55b709，上传带 digest 供壳更新校验；下载链接 HTTP200/810187327B；tag 源码含引擎 13 处关键字。
 - 发布状态：main 推送 c127322/ddf57c3；tag v7.0.0 强推到 7d8cfc9（含完整 README）；Release id 457139246 已发布，asset 为 Windows setup exe（下载页链接见 README）。github.com 期间多次 GnuTLS 波动，靠重试 + HTTP/1.1 + 长超时完成。
 - 未验证/边界：沙箱无 Windows GUI，安装器真机安装、exe 自替换、菜单点击未实测（沿用 DR-094 已验证的 LZMA 非 solid + 官方解压流程，本版仅换内容）；jsDelivr @main 缓存极端情况延迟数分钟。
+
+## DR-099 · v7.0.0 安装器「未找到主程序」修复（2026-11-25）
+- 背景：用户真机安装 v7.0.0 报错「未找到主程序 YunJing.exe，安装异常（解压返回 D:\Caches\Temp\nsk316B.tmp）」。
+- 根因：本次重打包 7z 时命令写成 `7z a ... ./win-unpacked/`（从 dist 目录打整个文件夹），导致包内所有路径多一层 `win-unpacked/` 前缀——主程序实际落在 `7z-out/win-unpacked/YunJing.exe`；而 installer.nsi 用 `CopyFiles "$PLUGINSDIR\7z-out\*" "$INSTDIR"` 后校验的是 `$INSTDIR\YunJing.exe`，层级对不上故判缺失。对照 6.9.4 正确包内 `YunJing.exe` 在根目录。
+- 修复：按固化脚本 build-windows-installer.sh:60 的正确写法，改为 `cd dist/win-unpacked && 7z a -t7z -m0=LZMA -mx=5 -ms=off -mmt=2 ../yunjing-desktop-7.0.0-x64.nsis.7z .`（进入目录内部打点）。新包内 `YunJing.exe` 恢复在根目录；重编译 exe，SHA256 由 9c3a3859… 变为 d842aa94…。
+- 验证：等价复现安装脚本完整链路（7z x 到 7z-out → cp 7z-out\* 到 INSTDIR → IfFileExists INSTDIR\YunJing.exe）：主程序落地 188636672 bytes、app.asar/index.html/opening.html/release-notes.json/desktop-shell.js 全在、共 1287 文件；新 exe 内嵌的 $PLUGINSDIR/app-64.7z 确为修复版。content-manifest.json 不在内置包属设计如此（清单生成器 EXCLUDE_FILES 排除自身，客户端启动时联网拉取建立），非缺陷。
+- 真机说明：wine 静默/GUI 自动化在沙箱内受 NSIS 向导交互与 wine 驱动限制未能走完（日志空、返回码2），按验证完整性如实披露；核心检查点（包内路径结构 + 解压复制后主程序落地）用等价命令验证通过，与用户报错点直接对应。
+- 发布动作：删除 Release 旧坏 asset(id 788289490) 后重传修复版同名 exe（带新 digest 供壳更新校验）。
+- 失效条件：日后重打包必须 `cd win-unpacked` 内部打点，禁止 `7z a ... ./win-unpacked/`；每次打包后必须核对 `7z l | grep YunJing.exe` 输出无目录前缀。
