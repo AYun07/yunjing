@@ -1735,3 +1735,18 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 生效验证（这次验到了用户端会读的远端本体）：raw 通道 sw.js = yunjing-v7.0.1、content-manifest.json version=7.0.1、settings.html 含 api-calling-functions.js?v=7.0.1；jsDelivr 通道 sw.js = yunjing-v7.0.1。双通道一致。
 - 结论：已安装客户端下次启动按清单比对增量下载修复文件（无需重装）；PWA 因 SW_VER 递增强制刷新缓存。本次为纯内容更新，未改壳，不触发壳升级。
 - 未验证/边界：无法真机启动 Windows exe 确认自动同步弹窗；验证停在「用户端读取的远端文件确为 v7.0.1」这一层。jsDelivr CDN 有缓存延迟（清单加时间戳绕开），用户端最迟一个 CDN 刷新周期内拿到。
+
+## DR-104 · v7.0.1 补发程序版本修复「检查更新一直说已是最新版」（2026-11-25）
+- 背景：用户反馈"我的 7.0 版本检测不到新版本，一直说已是最新版"。实测根因：云境有两套独立版本通道——程序壳版本（client/electron/package.json，读 GitHub Release tag）与内容版本（content-manifest.json，读 main 分支）。DR-102 的 16 项修复走内容通道升到 v7.0.1，但 Release 仍停在 v7.0.0 且无免安装 zip，导致 checkUpdate 的 compareVer('v7.0.0','7.0.0')=0 → 永远报"最新"；即便报新版，autoUpdate 找 setup exe、offerShellUpdate 找 zip 都会因 Release 缺 zip 而降级/失败。
+- 用户授权："你看着来，反正每次更新都是真实更新，并且我现在电脑上的云境就可以检测并完成更新" → 判定为：发一个真实、完整、带 zip 的 v7.0.1 程序版，让用户现有 v7.0.0 壳能检测并完成 A/B 自动更新，全程不用重装。
+- 关键事实：用户现有 v7.0.0 壳已内置 content-sync.js + shell-update.js 全套更新代码，因此只需发新版 Release，无需用户重装。
+- 动作与防假更新（每一步都验到最终产物）：
+  ① 壳 package.json 7.0.0→7.0.1；新增 scripts/desktop/sync-site-baseline.mjs 把仓库根 v7.0.1 站点（1211 文件/714MB，排除 node_modules/大包/快照）同步到 build-resources/yunjing 与 dist/win-unpacked/resources/yunjing，解决"版本号升了但内置基线还是 v7.0.0"的假更新隐患。
+  ② 重建 app.asar（main/preload/package.json/content-sync/shell-update 5 文件，package.json=7.0.1）；从 win-unpacked 内部重打 nsis.7z（LZMA -mx5 -ms=off -mmt=2，781MB，无目录前缀）；verify-package.cjs 去掉写死 7.0.0、改读 package.json 版本并保留回退。校验全绿（依赖齐全/模块真实可加载/7z无前缀/站点关键文件在）。
+  ③ NSIS 编译 setup exe（installer.nsi 版本 6.9.4→7.0.1，zlib，782MB）；打免安装 zip（7z -tzip -mx3，810MB，命名含 win-unpacked 供 pickUnpackedAsset 识别）。
+  ④ 从最终 zip 提取 asar 做产物级校验：版本 7.0.1、5 文件齐全、content-sync/shell-update 真实 _compile 通过；站点含 v7.0.1 的 sw.js/settings.html/content-manifest.json。
+  ⑤ 模拟用户端链路：compareVer('v7.0.1','7.0.0')=1 → hasUpdate=true；pickUnpackedAsset 选中 win-unpacked.zip → A/B 更新重启生效。全通。
+- SHA-256：setup.exe=a323bcd0298092bc84f3489fc1761bc7a3012b4a201b96fb2ecea13007bace9c；win-unpacked.zip=6ad2edaceed9cbd497ff44f31771c22c5cbb2b26baf2d817118744367a6cfd52。
+- 证据：verify-package.cjs 全绿；产物级解包校验通过；链路模拟 PASS；Release id 457761464。
+- 未验证项强制披露：沙箱无 Windows GUI，无法真机双击 exe / 真机走完 A/B 重启切换；验证停在"最终产物结构正确 + 用户端检查更新/选包逻辑模拟通过 + 远端 Release 资产齐全"这一层。用户端的实际下载与重启由已内置的 shell-update.js 完成，需用户真机确认弹窗流程。
+- 失效条件：若下一个程序版只升内容不改 client/electron/package.json 或不发 Release，问题2同型复发；若 Release 再次只放 exe 不放 zip，自动更新会降级到"打开下载页手动装"。

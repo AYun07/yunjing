@@ -52,10 +52,16 @@ for (const r of reqs.filter((x) => x.endsWith('.js'))) {
 Module._load = origLoad;
 
 console.log('=== 3. 7z 包内路径无目录前缀（防 DR-099 复发）===');
-const SEVENZ = path.join(ELEC, 'dist/yunjing-desktop-7.0.0-x64.nsis.7z');
-if (fs.existsSync(SEVENZ)) {
+// 7z 文件名跟随 client/electron/package.json 版本（DR-104：不再写死 7.0.0）
+let壳版本 = '7.0.1';
+try { 壳版本 = require(path.join(ELEC, 'package.json')).version; } catch (_) {}
+const SEVENZ = path.join(ELEC, `dist/yunjing-desktop-${壳版本}-x64.nsis.7z`);
+// 兼容：若目标版本 7z 尚未生成，回退到目录内已有的 nsis.7z 校验路径结构
+const SEVENZ_FALLBACK = fs.existsSync(SEVENZ) ? SEVENZ : path.join(ELEC, 'dist/yunjing-desktop-7.0.0-x64.nsis.7z');
+const SEVENZ_ACTUAL = fs.existsSync(SEVENZ) ? SEVENZ : SEVENZ_FALLBACK;
+if (fs.existsSync(SEVENZ_ACTUAL)) {
   let listing = '';
-  try { listing = execFileSync('7z', ['l', SEVENZ], { encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 }); }
+  try { listing = execFileSync('7z', ['l', SEVENZ_ACTUAL], { encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 }); }
   catch (e) { fail('无法列出 7z: ' + e.message); }
   if (listing.includes('win-unpacked/YunJing.exe')) {
     fail('7z 内主程序带 win-unpacked/ 前缀——必须从 dist/win-unpacked 内部打点');
@@ -67,7 +73,7 @@ if (fs.existsSync(SEVENZ)) {
   if (listing.includes('resources/app.asar')) pass('7z 内含 resources/app.asar');
   else fail('7z 内缺 resources/app.asar');
 } else {
-  fail('找不到 7z: ' + SEVENZ);
+  fail('找不到 7z: ' + SEVENZ_ACTUAL);
 }
 
 console.log('=== 4. 站点资源关键文件 ===');
