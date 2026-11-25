@@ -7,8 +7,8 @@
 <!-- v7.0.0：补齐 icon，避免浏览器回退请求根目录 favicon.ico 产生 404 -->
 <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
 <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
-<link rel="stylesheet" href="css/base-style.css?v=7.0.3">
-<link rel="stylesheet" href="css/font-switcher.css?v=7.0.3">
+<link rel="stylesheet" href="css/base-style.css?v=7.0.4">
+<link rel="stylesheet" href="css/font-switcher.css?v=7.0.4">
 <style>
 :root{--jade:#d9b46a;--ink:#e8e4d8;--mut:#a8a290;--line:rgba(232,228,216,.1);--bg:#101019;--card:#191b28}
 *{box-sizing:border-box}
@@ -67,8 +67,8 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 .ncard li::marker{color:var(--jade)}
 </style>
 <!-- v7.0.0 游戏化客户端外壳：仅 Electron 生效，PWA 浏览器版零注入 -->
-<link rel="stylesheet" href="css/desktop-shell.css?v=7.0.3">
-<script src="js/desktop-shell.js?v=7.0.3"></script>
+<link rel="stylesheet" href="css/desktop-shell.css?v=7.0.4">
+<script src="js/desktop-shell.js?v=7.0.4"></script>
 </head>
 <body>
 <div class="top">
@@ -148,6 +148,17 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
       <button class="btn ghost" id="toggleNotesBtn">查看完整更新公告 ▾</button>
     </div>
     <div class="row"><span class="hint" style="padding:0" id="updateMsg"></span></div>
+    <!-- DR-110 实时更新进度条 -->
+    <div id="updateProgress" style="display:none;margin:12px 0">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft,#c9b98f);margin-bottom:5px">
+        <span id="upPhase">准备中…</span><span id="upPercent">0%</span>
+      </div>
+      <div style="height:9px;border-radius:6px;background:rgba(255,255,255,.09);overflow:hidden;border:1px solid rgba(217,180,106,.25)">
+        <div id="upBar" style="height:100%;width:0%;background:linear-gradient(90deg,#d9b46a,#f0d9a0);transition:width .25s ease"></div>
+      </div>
+      <div id="upDetail" class="hint" style="padding:6px 0 0;font-size:12px;line-height:1.5;word-break:break-all"></div>
+      <div id="upErrors" style="display:none;margin-top:6px;padding:8px 10px;border-radius:6px;background:rgba(232,90,90,.12);border:1px solid rgba(232,90,90,.35);color:#ffb4b4;font-size:12px;line-height:1.6"></div>
+    </div>
     <div class="row" id="autoUpdateRow" style="display:none">
       <button class="btn" id="autoUpdateBtn">立即更新</button>
       <span class="hint" style="padding:0" id="autoUpdateMsg"></span>
@@ -158,16 +169,16 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   </section>
 </div>
 
-<script src="js/entry-guard.js?v=7.0.3"></script>
-<script src="js/font-switcher.js?v=7.0.3"></script>
-<script src="js/theme-studio.js?v=7.0.3"></script>
+<script src="js/entry-guard.js?v=7.0.4"></script>
+<script src="js/font-switcher.js?v=7.0.4"></script>
+<script src="js/theme-studio.js?v=7.0.4"></script>
 <!-- v7.0.1：全局开关与模型配置所需模块全部补齐；此前缺这些脚本导致开关点了没反应 -->
-<script src="js/api-calling-functions.js?v=7.0.3"></script>
-<script src="js/model-slots.js?v=7.0.3"></script>
-<script src="js/system-guard.js?v=7.0.3"></script>
-<script src="js/perf-mode.js?v=7.0.3"></script>
-<script src="js/celebration.js?v=7.0.3"></script>
-<script src="js/config-modal.js?v=7.0.3"></script>
+<script src="js/api-calling-functions.js?v=7.0.4"></script>
+<script src="js/model-slots.js?v=7.0.4"></script>
+<script src="js/system-guard.js?v=7.0.4"></script>
+<script src="js/perf-mode.js?v=7.0.4"></script>
+<script src="js/celebration.js?v=7.0.4"></script>
+<script src="js/config-modal.js?v=7.0.4"></script>
 <script>
 (function(){
   var $ = function(id){return document.getElementById(id);};
@@ -297,7 +308,27 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   $('tileNight').onclick=function(){callOrTip(function(){return (window.SystemGuard&&SystemGuard.toggleNight&&SystemGuard.toggleNight.bind(SystemGuard))||null;},'深夜护眼',function(n,r){paintTiles();return '深夜护眼已'+(r?'开启':'关闭');});};
   $('tilePerf').onclick=function(){callOrTip(function(){return (window.YJPerf&&YJPerf.toggle&&YJPerf.toggle.bind(YJPerf))||null;},'流畅模式',function(n,r){paintTiles();return '流畅模式已'+(r?'开启':'关闭');});};
   $('tileCelebr').onclick=function(){callOrTip(function(){return (window.Celebration&&Celebration.toggle&&Celebration.toggle.bind(Celebration))||null;},'庆典特效',function(n,r){paintTiles();return '庆典特效已'+(r?'开启':'关闭');});};
-  $('tileTts').onclick=function(){callOrTip(function(){return (window.StoryInput&&StoryInput.readAloud&&StoryInput.readAloud.bind(StoryInput))||null;},'朗读正文',function(){return '已开始朗读最近一章（再点一次停止）';});};
+  // 朗读正文：设置页自包含实现（不依赖创作室的 StoryInput 模块，避免"模块未就绪"）
+  var _ttsOn=false;
+  $('tileTts').onclick=function(){
+    var synth=window.speechSynthesis;
+    if(!synth){$('switchNote').textContent='当前浏览器不支持语音朗读';return;}
+    if(synth.speaking||_ttsOn){synth.cancel();_ttsOn=false;$('switchNote').textContent='已停止朗读';paintTiles();return;}
+    // 从本机存档里取最近一章 assistant 正文
+    var text='';
+    try{
+      var keys=Object.keys(localStorage).filter(function(k){return k.indexOf('storySave_')===0&&k.indexOf('.bak')<0;});
+      for(var i=0;i<keys.length&&!text;i++){
+        var s=JSON.parse(localStorage.getItem(keys[i])||'{}');
+        var hist=s.conversationHistory||s.storyState&&s.storyState.conversationHistory||[];
+        for(var j=hist.length-1;j>=0;j--){if(hist[j]&&hist[j].role==='assistant'&&hist[j].content){text=String(hist[j].content).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();break;}}
+      }
+    }catch(e){}
+    if(!text){$('switchNote').textContent='还没找到可朗读的正文——请先到创作室开始一章';return;}
+    var u=new SpeechSynthesisUtterance(text.slice(0,4000));u.lang='zh-CN';u.rate=1;
+    u.onend=function(){_ttsOn=false;paintTiles();};u.onerror=function(){_ttsOn=false;paintTiles();};
+    _ttsOn=true;synth.speak(u);$('switchNote').textContent='正在朗读最近一章（再点一次停止）';
+  };
   // 字号
   function scale(){return Number(localStorage.getItem('storyFontScale')||1);}
   function paintScale(){$('fontScaleLabel').textContent='当前 '+scale().toFixed(2)+'×';}
@@ -321,6 +352,28 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   // 公告来自本地 JSON，但做简单转义，防未来 JSON 被篡改导致注入
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function say(msg){$('updateMsg').textContent=msg||'';}
+  // DR-110 实时进度条：订阅桌面壳推送的 update-progress 事件
+  var PHASE_LABEL={prepare:'准备',manifest:'拉取清单',files:'下载文件','file-error':'文件出错',verify:'校验切换',done:'完成','shell-download':'下载安装包','shell-verify':'校验安装包',error:'出错'};
+  function showProgress(p){
+    var box=$('updateProgress');if(!box)return;
+    if(!p){box.style.display='none';return;}
+    box.style.display='block';
+    var pct=Math.max(0,Math.min(100,Number(p.percent)||0));
+    $('upPercent').textContent=pct+'%';
+    $('upBar').style.width=pct+'%';
+    $('upPhase').textContent=(PHASE_LABEL[p.phase]||p.phase||'更新中')+(p.error?' ⚠':'');
+    $('upDetail').textContent=p.detail||'';
+    $('upDetail').style.color=p.error?'#ffb4b4':'';
+    var eb=$('upErrors');
+    if(Array.isArray(p.errors)&&p.errors.length){eb.style.display='block';eb.innerHTML='<b>问题详情：</b><br>'+p.errors.map(function(e){return esc(e);}).join('<br>');}
+    else eb.style.display='none';
+    if(p.phase==='done'&&!p.error)$('upBar').style.background='linear-gradient(90deg,#3fb950,#7ee0a0)';
+    else if(p.error)$('upBar').style.background='linear-gradient(90deg,#e85a5a,#ff9a9a)';
+    if(p.phase==='done')say(p.detail||'更新完成');
+  }
+  if(hasDesktop&&typeof D.onUpdateProgress==='function'){
+    D.onUpdateProgress(function(p){showProgress(p);});
+  }
   function pad(n){return n<10?'0'+n:''+n;}
   function fmtTime(v){
     if(!v) return '未知时间';
@@ -377,11 +430,12 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   $('autoUpdateBtn').onclick=function(){
     if(!hasDesktop||!D.autoUpdate){say('自动更新仅桌面端可用');return;}
     var btn=this;
+    showProgress({phase:'prepare',percent:0,detail:'准备更新…'});
     btn.disabled=true;btn.textContent='更新中…';
     function done(ok){
       btn.disabled=false;btn.textContent='立即更新';
-      if(ok){say('已开始后台更新，重启客户端后生效');$('autoUpdateRow').style.display='none';}
-      else say('更新未成功，请稍后重试或重启客户端');
+      if(ok){showProgress({phase:'done',percent:100,detail:'新版安装包已就绪，重启客户端后生效'});say('已开始后台更新，重启客户端后生效');$('autoUpdateRow').style.display='none';}
+      else{showProgress({phase:'error',percent:100,detail:'更新未成功，请稍后重试或重启客户端',error:true});say('更新未成功，请稍后重试或重启客户端');}
     }
     try{
       Promise.resolve(D.autoUpdate()).then(function(r){done(!r||r.ok!==false);}).catch(function(){done(false);});
@@ -392,6 +446,7 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   $('syncNowBtn').onclick=function(){
     if(!hasDesktop||!D.syncNow){say('此功能仅桌面端可用');return;}
     var btn=this;
+    showProgress({phase:'prepare',percent:0,detail:'准备同步…'});
     btn.disabled=true;btn.textContent='同步中…';
     try{
       Promise.resolve(D.syncNow()).then(function(r){

@@ -19,6 +19,15 @@ contextBridge.exposeInMainWorld('YunJingDesktop', {
   getSyncStatus: () => ipcRenderer.invoke('content-sync-status'),
   syncNow: () => ipcRenderer.invoke('content-sync-now'),
 
+  // DR-110 更新进度：onUpdateProgress(cb) 返回取消订阅函数。
+  // 回调收到 { phase, percent, detail, error?, errors? }，用于设置页实时进度条与错误详情。
+  onUpdateProgress: (cb) => {
+    if (typeof cb !== 'function') return () => {};
+    const handler = (_e, payload) => { try { cb(payload); } catch (_) {} };
+    ipcRenderer.on('update-progress', handler);
+    return () => { try { ipcRenderer.removeListener('update-progress', handler); } catch (_) {} };
+  },
+
   // 无边框窗口控制：与 main.js 的 win-* 通道一一对应，均返回 Promise
   minimizeWindow: () => ipcRenderer.invoke('win-minimize'),
   maximizeWindow: () => ipcRenderer.invoke('win-maximize'),   // Promise<{maximized}>

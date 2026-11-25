@@ -1791,3 +1791,22 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 证据：test/verify-cn-update-v703.mjs 11 PASS/0 FAIL（三源可达、多源取最高、SHA格式、国内镜像地址、清单取最高、sources顺序）；scan-secrets 3257 文件无真实密钥；verify-package.cjs 全通过；Release v7.0.3 已建并上传 exe+zip 两资产。
 - 未验证项强制披露：① 沙箱无 Windows GUI，未真机双击 exe 验证安装与跨重启存档；② v7.0.2 旧壳仍用失效的 cdn/fastly 通道，无法自动检查到 v7.0.3，本次仍需一次性手动安装；③ ghproxy.net 为第三方公共代理，长期可用性取决于该服务，raw 与 gcore 为兜底。
 - 失效条件：若 ghproxy/raw/gcore 三源同时不可达，检查更新回落 api.github.com（国内不可达）将失败；若未来再生成超大文件推高仓库体积，gcore 也可能开始报 50MB 限制。
+
+## DR-109 · 本地内容目录旧版残留根治（2026-11-25，v7.0.4）
+- 背景：用户装了 v7.0.3 后看到的仍是旧界面（造物背后自由创作、设置只3分区、两个角色塑造）。真实浏览器从封面点击验证源码跳转/渲染都是对的，矛盾指向本地内容而非源码。
+- 根因：server.js 静态服务 roots=[contentDir(yj-content), baseline]。ensureContentDir 原逻辑"只要 yj-content/index.html 存在就永不重建"，导致装新版壳后旧 yj-content 目录优先级高于新基线，永远读到旧站点文件。syncContent 又因本地清单版本=远端版本=7.0.3 判 up-to-date，不拉新文件——"版本对了但内容是旧的"。
+- 决策：ensureContentDir 增加版本比对——当 readLocalManifest(基线).version > readLocalManifest(yj-content).version 时，用基线原子重建 yj-content（先备份 .bak-baseline，失败回滚）。存档在 localStorage 按 origin 隔离，不随站点文件重建而丢失。
+- 证据：/tmp/test-baseline-rebuild.cjs 模拟旧6.9.4内容+新7.0.4基线，重建后版本=7.0.4、opening为新内容，PASS。
+- 失效条件：若基线清单版本写错或落后于 yj-content，重建不触发；需保证发版时基线清单版本=壳版本。
+
+## DR-110 · 更新进度条与错误详情（2026-11-25，v7.0.4）
+- 背景：用户要求"为确保切实在更新，加进度条实时看到进度；出问题要看到具体哪里出了问题"。
+- 决策：① content-sync.js syncContent 增加 opts.onProgress 回调，在准备/拉清单/逐文件下载(百分比)/校验/切换/完成/失败各阶段打点，错误带具体文件路径与中文原因；② main.js sendUpdateProgress 经 webContents.send('update-progress') 转发，autoUpdate 的下载/校验/失败也打点；③ preload.js 暴露 onUpdateProgress(cb) 返回取消订阅函数；④ settings.html 更新区加进度条(百分比+阶段+详情+错误框)，订阅事件实时渲染，失败列出每个出错文件。
+- 证据：test/verify-v704-fixes.mjs 19 PASS/0 FAIL，含进度条显示/宽度45%/详情/错误详情展示。
+- 失效条件：窗口未就绪时进度事件静默丢弃（用户此时看不到进度条，但不会崩溃）。
+
+## DR-111 · v7.0.4 三项界面/功能修复（2026-11-25）
+- 角色塑造重复入口：story-setup-wizard.js 模板内硬编码三处旧 csWrap（用 id=csWrap），与 character-studio.js 动态 mount 的新 UI 冲突——mount() 里 `if($("csWrap")) return` 因旧 id 存在而自我短路，新 UI 从未挂载。用户看到两处角色塑造的真因。删除 wizard 三处旧 csWrap，新 UI 成唯一入口。
+- 原著设定联动：原 setStance/setSideChar 只改提示文字，不填字段。新增 CharacterStudio.applyCanon(stance)：主角态填姓名=canonHeroName(如韩立)+原著身份小传；配角态用 StoryStance.getSideCharInfo() 的 name/role/realm/disposition/fate/rel/hook 填姓名/样貌/性格/小传；切换立场先 clearCanonBioLines() 清旧【原著…】行，避免混角。wizard 的 setStance/setSideChar 调用 applyCanonFields。
+- 全局开关：实测深夜护眼/流畅模式/庆典特效点击有效(localStorage变化)，只有"朗读正文"因设置页未加载 StoryInput 模块显示"模块未就绪"。改为设置页自包含 SpeechSynthesis 实现，从本机 storySave_* 存档取最近一章正文朗读。
+- 证据：test/verify-v704-fixes.mjs 19/19；角色 csWrap 数=1、主角填韩立、配角填墨彩环+聪慧倔强且不混角、设置5分区、4开关有效、进度条全过。

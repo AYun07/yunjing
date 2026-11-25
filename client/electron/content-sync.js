@@ -223,7 +223,16 @@ function getStatus(stateFile, contentDir) {
 
 /* ---------- 首次落地：把打包基线硬链接到可写内容目录 ---------- */
 async function ensureContentDir({ contentDir, baselineDir }) {
-  if (fs.existsSync(path.join(contentDir, 'index.html'))) return { prepared: false };
+  // DR-109：装了新壳后，若 yj-content 仍是旧版内容（版本落后于打包基线），必须用基线重建。
+  // 历史 bug：只要 yj-content/index.html 存在就永不重建，导致更新到新版壳后仍读旧站点文件
+  // （造物/设置/角色塑造等界面停在旧版）。服务器优先读 yj-content，故此处必须纠正。
+  // 存档在 localStorage（按 origin 隔离），不随站点文件重建而丢失。
+  const localVer = readLocalManifest(contentDir).version;
+  const baseVer = readLocalManifest(baselineDir).version;
+  const needRebuild = !fs.existsSync(path.join(contentDir, 'index.html'))
+    || compareVer(baseVer, localVer) > 0;
+  if (!needRebuild) return { prepared: false };
+
   const tmp = contentDir + '.init';
   rmrf(tmp);
   fs.mkdirSync(tmp, { recursive: true });
@@ -234,8 +243,19 @@ async function ensureContentDir({ contentDir, baselineDir }) {
       throw new Error('打包基线缺少关键文件：' + f);
     }
   }
-  fs.renameSync(tmp, contentDir);
-  return { prepared: true };
+  // 原子替换：先备份旧目录再切换，失败可回滚
+  const bak = contentDir + '.bak-baseline';
+  rmrf(bak);
+  if (fs.existsSync(contentDir)) {
+    try { fs.renameSync(contentDir, bak); } catch (_) {}
+  }
+  try {
+    fs.renameSync(tmp, contentDir);
+  } catch (e) {
+    if (fs.existsSync(bak)) { rmrf(contentDir); fs.renameSync(bak, contentDir); }
+    throw e;
+  }
+  return { prepared: true, fromVersion: localVer, toVersion: baseVer };
 }
 
 // 原子切换：live → bak，staging → live。Windows 文件占用时重试；失败则把 live 复原
@@ -261,7 +281,9 @@ async function atomicSwap(live, staging, bak, retries = 3) {
 async function syncContent(opts) {
   const { contentDir, baselineDir, stateFile, sources } = opts;
   const netOpts = { timeoutMs: opts.timeoutMs, maxBytes: opts.maxBytes };
+  const progress = typeof opts.onProgress === 'function' ? opts.onProgress : function () {};
   const result = { action: 'none', version: '0.0.0', ok: false, downloaded: 0, reused: 0, skipped: [], errors: [] };
+  progress({ phase: 'prepare', percent: 2, detail: '准备本地内容目录…' });
   const finish = () => writeState(stateFile, {
     version: result.version, lastSync: new Date().toISOString(), lastResult: result, errors: result.errors
   });
@@ -273,6 +295,7 @@ async function syncContent(opts) {
     // DR-106：不再"第一个源成功就用"。各 CDN 缓存进度不同（实测 fastly 曾停在 7.0.1、
     // jsDelivr 已到 7.0.2），若先命中的是旧缓存会误判"已是最新"，导致界面/公告永远停在旧版。
     // 改为遍历全部源，取版本号最高的那份清单；单个源失败不影响其它源。
+    progress({ phase: 'manifest', percent: 8, detail: '正在从国内镜像拉取版本清单…' });
     let remote = null;
     const errs = [];
     const stamp = Date.now();
@@ -293,23 +316,29 @@ async function syncContent(opts) {
     }
     if (compareVer(remote.version, local.version) <= 0) {
       result.action = 'up-to-date'; result.ok = true; result.version = local.version;
+      progress({ phase: 'done', percent: 100, detail: '已是最新版本 v' + local.version, result: 'up-to-date' });
       finish(); return result;
     }
 
+    progress({ phase: 'files', percent: 12, detail: '发现新版本 v' + remote.version + '，开始下载文件…' });
     const staging = contentDir + '.staging';
     rmrf(staging);
     linkTree(contentDir, staging);
 
     let criticalFailure = false;
-    for (const [rel, meta] of Object.entries(remote.files)) {
+    const fileEntries = Object.entries(remote.files);
+    const totalFiles = fileEntries.length || 1;
+    let doneCount = 0;
+    for (const [rel, meta] of fileEntries) {
       // 本地已有且 sha 相同 → 直接复用 staging 中硬链接过来的文件，省一次下载
       let reuse = false;
       try {
         const localFile = relToAbs(contentDir, rel);
         if (fs.existsSync(localFile) && (await sha256File(localFile)) === String(meta.sha256).toLowerCase()) reuse = true;
       } catch (_) {}
-      if (reuse) { result.reused++; continue; }
+      if (reuse) { result.reused++; doneCount++; continue; }
 
+      progress({ phase: 'files', percent: 12 + Math.round(72 * doneCount / totalFiles), detail: '下载 ' + rel });
       try {
         await downloadFile(sources, rel, relToAbs(staging, rel), meta.sha256, netOpts);
         result.downloaded++;
@@ -317,27 +346,38 @@ async function syncContent(opts) {
         const reason = toChineseError(e);
         result.skipped.push(rel);
         result.errors.push(rel + '：' + reason);
+        progress({ phase: 'file-error', percent: 12 + Math.round(72 * doneCount / totalFiles), detail: rel + '：' + reason, error: true });
         if (CRITICAL_FILES.indexOf(rel) >= 0) criticalFailure = true;
       }
+      doneCount++;
     }
 
     // 关键文件失败 → 整批回滚，绝不切换出白屏版本
     if (criticalFailure) {
       rmrf(staging);
       result.action = 'critical-failed';
+      progress({ phase: 'error', percent: 100, detail: '关键文件下载失败，已回滚保护现有版本', error: true, errors: result.errors.slice() });
       finish(); return result;
     }
 
+    progress({ phase: 'verify', percent: 90, detail: '校验完成，正在切换到新版本…' });
     fs.writeFileSync(path.join(staging, MANIFEST_NAME), JSON.stringify(remote, null, 2));
     if (!await atomicSwap(contentDir, staging, contentDir + '.bak')) {
       rmrf(staging);
       result.action = 'swap-failed';
       result.errors.push('目录切换失败（文件可能被占用），下次启动重试');
+      progress({ phase: 'error', percent: 100, detail: '目录切换失败（文件可能被占用），下次启动重试', error: true, errors: result.errors.slice() });
       finish(); return result;
     }
     result.action = 'updated';
     result.ok = true;
     result.version = remote.version;
+    progress({
+      phase: 'done', percent: 100,
+      detail: '更新完成 v' + remote.version + '：新下载 ' + result.downloaded + ' 个，复用 ' + result.reused + ' 个' +
+        (result.errors.length ? '，' + result.errors.length + ' 个文件跳过（不影响关键功能）' : ''),
+      result: 'updated', errors: result.errors.slice()
+    });
     finish();
     return result;
   } catch (e) {

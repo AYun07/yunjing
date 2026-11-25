@@ -161,6 +161,14 @@
     if (cnt) cnt.textContent = "已选 " + selected.length + " 项（不限个数）";
   }
 
+  /* 切换原著立场时，先清掉上一次写入的【原著…】行，避免主角/配角设定混在一处 */
+  function clearCanonBioLines() {
+    var bio = $("wiz_heroBio");
+    if (!bio) return;
+    var kept = bio.value.split(/\r?\n/).filter(function (l) { return !/^【原著[^】]*】/.test(l.trim()); });
+    bio.value = kept.join("\n").replace(/^\n+/, "");
+  }
+
   function mergeBio(line) {
     var bio = $("wiz_heroBio");
     if (!bio) {
@@ -270,6 +278,57 @@
     setStatus._t = setTimeout(function () { s.textContent = ""; }, 4200);
   }
 
+  /* ---------- 原著角色设定联动：选原著主角/配角后，其余设定跟着走 ---------- */
+  function applyCanon(forceStance) {
+    var SS = window.StoryStance;
+    if (!SS) return false;
+    var stance = forceStance || SS.get();
+    var heroName = (typeof SS.canonHeroName === "function" ? SS.canonHeroName() : "") || "原著主角";
+    var world = genreName();
+    var bioLines = [];
+    var look = "", persona = "", traits = [];
+    clearCanonBioLines(); // 先清掉上一次立场写入的原著行
+
+    if (stance === "hero") {
+      // 原著主角：姓名=原著主角名；身份/来历按原著写，不臆造具体样貌
+      var nm = $("wiz_playerName") || $("wiz_heroName");
+      if (nm) nm.value = heroName;
+      look = (world ? "《" + world + "》原著主角，" : "") + heroName + "，原著既定身份与际遇，样貌随原著设定。";
+      persona = "原著主角本色，性格与行事严格遵循原著人设";
+      bioLines.push("【原著身份】你就是" + heroName + "本人，亲历原著主线；大势不可改、小势可调。");
+      bioLines.push("【原著设定】身份、来历、资质、羁绊与命运走向均以原著为准，AI 主笔按原著逻辑推演。");
+    } else if (stance === "side") {
+      // 原著配角：用完整配角数据填姓名/身份/性格/命运
+      var info = (typeof SS.getSideCharInfo === "function" ? SS.getSideCharInfo() : null);
+      if (!info) return false;
+      var nm2 = $("wiz_playerName") || $("wiz_heroName");
+      if (nm2) nm2.value = info.name || nm2.value;
+      look = (info.role || "") + (info.realm ? "，" + info.realm : "") + "，原著既定身份与实力位阶。";
+      persona = info.disposition || "";
+      if (info.disposition) traits = info.disposition.split(/[、,，;；]/).map(function (s) { return s.trim(); }).filter(Boolean);
+      bioLines.push("【原著身份】" + info.name + " · " + (info.role || "") + (info.realm ? "（" + info.realm + "）" : ""));
+      if (info.fate) bioLines.push("【原著命运】" + info.fate);
+      if (info.rel) bioLines.push("【关系底子】" + info.rel);
+      if (info.hook) bioLines.push("【人生钩子】" + info.hook);
+    } else {
+      return false; // 完全原创：不填，交给玩家
+    }
+
+    // 写入样貌/性格输入与本地存储
+    var lookInput = $("csLookInput");
+    if (lookInput) lookInput.value = look;
+    write(LOOK_KEY, look);
+    var personaInput = $("csPersonaInput");
+    if (personaInput) personaInput.value = persona;
+    write(PERSONA_KEY, persona);
+    if (traits.length) setTraits(traits);
+    // 写入小传（去重追加）
+    bioLines.forEach(function (l) { mergeBio(l); });
+    renderTraits(); renderPreview();
+    setStatus("✓ 已按原著" + (stance === "hero" ? "主角" : "配角") + "设定填充其余字段，可继续手改");
+    return true;
+  }
+
   /* ---------- 挂载：覆盖小说模式与扮演模式 ---------- */
   function findHost() {
     return $("wiz_heroSection")            // 小说模式主角设定区
@@ -326,6 +385,7 @@
   G.CharacterStudio = {
     version: "7.0.3", boot: boot, mount: mount, refresh: renderPreview,
     genLook: genLook, genPersona: genPersona, genIcon: genIcon,
+    applyCanon: applyCanon,
     toggleTrait: toggleTrait, buildPortraitPrompt: buildPortraitPrompt,
     icon: function () { return read(ICON_KEY); },
     look: function () { return read(LOOK_KEY); },

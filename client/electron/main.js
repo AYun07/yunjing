@@ -321,7 +321,9 @@ async function autoUpdate(info) {
     const setupUrls = (Array.isArray(asset.downloadUrls) && asset.downloadUrls.length)
       ? asset.downloadUrls.slice() : [asset.browser_download_url];
     const expect = expectedSha(asset);
+    sendUpdateProgress({ phase: 'shell-download', percent: 20, detail: '正在从国内镜像下载新版安装包 ' + asset.name + '…' });
     await downloadToMulti(setupUrls, dest, expect);
+    sendUpdateProgress({ phase: 'shell-verify', percent: 85, detail: '安装包已下载，正在校验 SHA-256…' });
     // 外层再校验一次（双保险）：确认落盘文件与 Release 声明的 sha256 一致
     if (expect) {
       const actual = await sha256File(dest);
@@ -363,6 +365,7 @@ async function autoUpdate(info) {
         ? '安装包校验失败，已删除该文件，请重试或前往 Release 页手动下载。'
         : updateErrorText(err);
     if (err && err.message === 'NO_ASSET') shell.openExternal((target && target.releasePage) || RELEASE_PAGE);
+    sendUpdateProgress({ phase: 'error', percent: 100, detail: '更新失败：' + text, error: true, errors: [text] });
     dialog.showMessageBoxSync({ type: 'warning', title: '自动更新', message: '自动更新未完成', detail: text, buttons: ['知道了'] });
     return { ok: false, error: text };
   }
@@ -393,19 +396,34 @@ function readSources() {
   return valid.length ? valid : DEFAULT_SOURCES;
 }
 
+// DR-110：把更新进度实时推给渲染层（设置页进度条）。窗口未就绪时静默忽略。
+function sendUpdateProgress(payload) {
+  try {
+    if (mainWindow && !mainWindow.isDestroyed() && mainWindow.webContents) {
+      mainWindow.webContents.send('update-progress', payload);
+    }
+  } catch (_) {}
+}
+
 // 启动同步与手动同步共用；并发复用同一 Promise，避免两个流程同时切换目录
 let syncInFlight = null;
 function runContentSync({ startup = false } = {}) {
   if (syncInFlight) return syncInFlight;
   const opts = {
     contentDir: contentDirPath(), baselineDir: BASELINE_ROOT,
-    stateFile: stateFilePath(), sources: readSources()
+    stateFile: stateFilePath(), sources: readSources(),
+    onProgress: sendUpdateProgress
   };
   syncInFlight = (startup
     ? contentSync.runStartup(opts)
     : contentSync.repairContent(opts).then(() => contentSync.syncContent(opts)))
     .then(r => { syncInFlight = null; return r; })
-    .catch(e => { syncInFlight = null; return { action: 'error', ok: false, errors: [contentSync.toChineseError(e)] }; });
+    .catch(e => {
+      syncInFlight = null;
+      const msg = contentSync.toChineseError(e);
+      sendUpdateProgress({ phase: 'error', percent: 100, detail: '同步失败：' + msg, error: true, errors: [msg] });
+      return { action: 'error', ok: false, errors: [msg] };
+    });
   return syncInFlight;
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "yunjing-desktop",
-  "version": "7.0.3",
+  "version": "7.0.4",
   "description": "云境 · AI创作与开放世界扮演 桌面客户端",
   "main": "main.js",
   "author": "云境",
@@ -26,13 +26,25 @@
       {
         "from": "build-resources/yunjing",
         "to": "yunjing",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "win": {
       "target": [
-        { "target": "nsis", "arch": ["x64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "icon": "build-res/yj-icon-512.png",
       "artifactName": "云境-Windows-${version}-${arch}.${ext}"
@@ -40,7 +52,10 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerLanguages": ["zh_CN", "en_US"],
+      "installerLanguages": [
+        "zh_CN",
+        "en_US"
+      ],
       "language": "2052",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
@@ -50,12 +65,27 @@
       "artifactName": "云境-Windows-${version}-便携版.exe"
     },
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "icon": "build-res/yj-icon-512.png",
       "artifactName": "云境-macOS-${version}-${arch}.${ext}"
     },
     "linux": {
-      "target": [{ "target": "AppImage", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "build-res/yj-icon-512.png",
       "artifactName": "云境-Linux-${version}-${arch}.${ext}",
       "category": "Education"
