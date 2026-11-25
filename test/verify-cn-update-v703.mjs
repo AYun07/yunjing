@@ -65,7 +65,7 @@ let manBest = '0';
 for (const v of manVersions) if (cmp(v, manBest) > 0) manBest = v;
 ok('清单取最高 7.0.3', cmp(manBest, '7.0.3') === 0, '各源=' + manVersions.join(',') + ' → 取 ' + manBest);
 ok('清单sources已用国内源', true, '');
-const manRaw = JSON.parse(await get(MANIFEST_SOURCES[2]));
+const manRaw = JSON.parse(await get(MANIFEST_SOURCES[0]));
 ok('清单首源为ghproxy', (manRaw.sources || [])[0] === 'https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/', manRaw.sources && manRaw.sources[0]);
 
 console.log('\n结果: ' + pass + ' PASS / ' + fail + ' FAIL');
