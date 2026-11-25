@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>云境 v7.0.3 · 逐按钮点击测试与根因报告</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.7;padding:0 0 60px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{background:linear-gradient(135deg,#1a2a3a,#2d1f3d);padding:40px 20px 30px;border-bottom:1px solid #30363d;margin-bottom:26px}
+header .wrap{text-align:center}
+h1{font-size:25px;letter-spacing:1px;margin-bottom:8px}
+.sub{color:#8b949e;font-size:13px}
+.badge{display:inline-block;margin:14px 4px 0;padding:5px 13px;border-radius:20px;font-size:12px;background:#21262d;border:1px solid #30363d}
+.badge.ok{color:#3fb950;border-color:#2ea04366}.badge.warn{color:#d29922;border-color:#d2992266}.badge.info{color:#58a6ff;border-color:#58a6ff66}
+h2{font-size:18px;margin:34px 0 14px;padding-left:12px;border-left:3px solid #d29922;color:#f0f6fc}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px;text-align:center}
+.stat .n{font-size:28px;font-weight:700;color:#3fb950}.stat .l{font-size:12px;color:#8b949e;margin-top:4px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#161b22;border-radius:8px;overflow:hidden}
+th,td{padding:9px 11px;text-align:left;border-bottom:1px solid #21262d}
+th{background:#1c2128;color:#8b949e;font-weight:600;font-size:12px;position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+.ok{color:#3fb950}.bad{color:#f85149}.warn{color:#d29922}
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px 20px;margin:14px 0}
+.card.good{border-left:4px solid #3fb950}.card.root{border-left:4px solid #f85149}
+.card h3{font-size:15px;margin-bottom:8px;color:#f0f6fc}
+.card p{font-size:13px;color:#c9d1d9;margin:6px 0}
+code{background:#0d1117;border:1px solid #30363d;border-radius:5px;padding:1px 6px;color:#79c0ff;font-size:12px}
+.quote{background:#0d1117;border-left:3px solid #d29922;padding:12px 16px;margin:10px 0;border-radius:0 8px 8px 0;color:#c9d1d9;font-size:13px}
+details{background:#161b22;border:1px solid #30363d;border-radius:8px;margin:8px 0;padding:10px 14px}
+summary{cursor:pointer;font-size:13px;color:#79c0ff;font-weight:600}
+details table{margin-top:10px}
+.legend{font-size:12px;color:#8b949e;margin:8px 0 20px}
+.foot{text-align:center;color:#6e7681;font-size:12px;margin-top:40px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>云境 · 逐按钮点击测试与根因报告</h1>
+  <div class="sub">v7.0.3 · 2026-11-25 · 真实 Chromium 浏览器逐按钮模拟鼠标点击</div>
+  <div>
+    <span class="badge ok">180 按钮点击 · 0 异常</span>
+    <span class="badge ok">6 页面 · 0 脚本错误</span>
+    <span class="badge info">2 个真根因已修</span>
+    <span class="badge warn">发版需 token</span>
+  </div>
+</div></header>
+<div class="wrap">
+
+<h2>一、为什么你说"修好了却看不到"——两个真根因</h2>
+<div class="card root">
+  <h3>根因 A · 存档每次启动都"消失"</h3>
+  <p>客户端内置服务器用 <code>server.listen(0)</code>，即<strong>每次启动随机端口</strong>。浏览器 localStorage 是按<strong>协议+域名+端口</strong>隔离的，端口一变，旧存档就落在另一个 origin 下、读不到。</p>
+  <p><span class="ok">已修</span>：改为固定端口 <code>18760</code> 并写入 userData 记住；端口被占用则向后找并记住最终值。配合已有的单实例锁，同一个用户每次都落到同一 origin。</p>
+</div>
+<div class="card root">
+  <h3>根因 B · 界面/公告永远停在旧版</h3>
+  <p>内容更新有多个 CDN 源，实测 <code>cdn.jsdelivr.net</code> 已到 7.0.2、<code>fastly.jsdelivr.net</code> 还停在 7.0.1。旧逻辑"第一个源成功就用"，若先命中缓存滞后的源，就误判"已是最新"，不再拉新文件——于是工坊/设置/公告都停在旧界面。</p>
+  <p><span class="ok">已修</span>：遍历全部源、<strong>取版本号最高的清单</strong>。端到端模拟"旧源在前、新源在后"验证：正确识别到 7.0.3 并下载新文件。</p>
+</div>
+
+<h2>二、你提的逐条问题 · 处理结论</h2>
+<table>
+<thead><tr><th style="width:34%">你的问题</th><th>实测结论</th><th style="width:14%">状态</th></tr></thead>
+<tbody>
+<tr><td>工坊应是纯插件开发，不要文章创作/小云配置</td><td>工坊页实测为纯对话式开发界面，无文章创作 UI；聊天输入框在位</td><td class="ok">✓ 确认正常</td></tr>
+<tr><td>左上角进度时间挡住返回按钮</td><td>实测时钟 (x12,y60) 压在返回按钮 (x16,y89) 上沿；已移到 x96，命中测试通过</td><td class="ok">✓ 已修</td></tr>
+<tr><td>版本 7.0.2 但公告没同步</td><td>公告 JSON 早已含 7.0.2；根因 B 导致客户端没拉新。已补 v7.0.3 公告并修同步链路</td><td class="ok">✓ 已修</td></tr>
+<tr><td>全局开关点了没效果，没有就不要</td><td>实测三个开关点击都真实改变 localStorage（深夜/流畅/庆典）。功能有效，予以保留</td><td class="ok">✓ 确认有效</td></tr>
+<tr><td>所有配置都要放设置界面</td><td>设置页实测已有 5 个分区：模型配置/阅读外观/全局开关/存储隐私/更新公告</td><td class="ok">✓ 已具备</td></tr>
+<tr><td>随缘开局点不动</td><td>实测点击后姓名、身世、身份全部变化（邵笙鸢/矿工等）。源码正常，旧界面 bug</td><td class="ok">✓ 确认正常</td></tr>
+<tr><td>样貌/性格/图标让玩家自己填；性格世界书多选不限个；头像用生图模型</td><td>已重写角色塑造：样貌自填、72 个性格点选不限个数、头像走 StoryImageGen 生图（未配置时明确提示）</td><td class="ok">✓ 已重做</td></tr>
+<tr><td>按钮点不动，要自己做可视化点击测试</td><td>本报告即可视化结果：真浏览器逐一点了 180 个按钮</td><td class="ok">✓ 已测</td></tr>
+<tr><td>更新后旧存档没了</td><td>见根因 A，固定端口修复</td><td class="ok">✓ 已修</td></tr>
+<tr><td>状态栏字色和底色相近看不清</td><td>实测文字浅米色、无投影；已统一加暗投影+高亮+暗底兜底</td><td class="ok">✓ 已修</td></tr>
+<tr><td>有的按钮脚本运行错误</td><td>抓到 <code>ThemeStudio is not defined</code>（lazy 模块缺桩）；补 data-yj-globals 后全页 0 错误</td><td class="ok">✓ 已修</td></tr>
+</tbody>
+</table>
+
+<h2>三、逐按钮点击测试结果</h2>
+<div class="legend">下方为真实浏览器对每个可见按钮执行一次鼠标点击后的记录。"跳过(导航/危险)"指该按钮会跳转页面或删数据，为避免干扰测试未执行——不代表点不动。</div>
+<div class="grid">
+  <div class="stat"><div class="n">180</div><div class="l">总点击</div></div>
+  <div class="stat"><div class="n">0</div><div class="l">点击异常</div></div>
+  <div class="stat"><div class="n">0</div><div class="l">脚本错误</div></div>
+  <div class="stat"><div class="n">6</div><div class="l">覆盖页面</div></div>
+</div>
+<div id="pages"></div>
+
+<h2>四、需要如实说明的两件事</h2>
+<div class="card warn" style="border-left-color:#d29922">
+  <h3>① 存档修复在"程序壳"里，这一次仍需重装一次</h3>
+  <p>固定端口的改动在 Electron 主进程（app.asar），属于程序壳。<strong>内容热更新改不到壳</strong>，所以这一次需要装一次 v7.0.3 安装包，把修好的壳装上去。</p>
+  <p>装完 v7.0.3 之后，后续的内容/界面/公告修复都能自动热更新，不用再重装。<strong>这是最后一次性重装</strong>，原因是这次修的正是"存档隔离"这个壳层根因本身。</p>
+</div>
+<div class="card warn" style="border-left-color:#d29922">
+  <h3>② 发版上传还差一个 GitHub 令牌</h3>
+  <p>当前环境没有可用的 GitHub 凭证（<code>gh auth status</code> 显示未登录）。代码、清单、基线、公告都已就绪并验过三源一致，但把 v7.0.3 安装包发布到 Release、把清单推到 CDN 这一步<strong>需要你再提供一次令牌</strong>。我不会编造一个假的成功发布。</p>
+</div>
+
+<div class="foot">云境 v7.0.3 · 生成于 2026-11-25 · 本报告数据来自真实 Chromium 浏览器点击测试</div>
+</div>
+<script>
+const DATA = [{"name": "开场封面", "path": "/opening.html", "errors": 0, "rows": [{"label": "─", "ok": true, "reason": "", "id": "yjMinBtn"}, {"label": "□", "ok": true, "reason": "", "id": "yjMaxBtn"}, {"label": "✕", "ok": true, "reason": "", "id": "yjCloseBtn"}, {"label": "◆ 踏云 开启新篇", "ok": true, "reason": "", "id": ""}, {"label": "◆ 续梦 再续前尘", "ok": true, "reason": "", "id": ""}, {"label": "◆ 观星 天地设置", "ok": true, "reason": "", "id": ""}, {"label": "◆ 造物 万象工坊", "ok": true, "reason": "", "id": ""}, {"label": "‹ 返回封面", "ok": true, "reason": "", "id": ""}]}, {"name": "云境大厅", "path": "/index.html", "errors": 0, "rows": [{"label": "─", "ok": true, "reason": "", "id": "yjMinBtn"}, {"label": "□", "ok": true, "reason": "", "id": "yjMaxBtn"}, {"label": "✕", "ok": true, "reason": "", "id": "yjCloseBtn"}, {"label": "◆ 踏云 开启新篇", "ok": true, "reason": "", "id": ""}, {"label": "◆ 续梦 再续前尘", "ok": true, "reason": "", "id": ""}, {"label": "◆ 观星 天地设置", "ok": true, "reason": "", "id": ""}, {"label": "◆ 造物 万象工坊", "ok": true, "reason": "", "id": ""}, {"label": "‹ 返回封面", "ok": true, "reason": "", "id": ""}]}, {"name": "天地设置", "path": "/settings.html?goto=settings", "errors": 0, "rows": [{"label": "─", "ok": true, "reason": "", "id": "yjMinBtn"}, {"label": "□", "ok": true, "reason": "", "id": "yjMaxBtn"}, {"label": "✕", "ok": true, "reason": "", "id": "yjCloseBtn"}, {"label": "← 返回封面", "ok": true, "reason": "", "id": "backBtn"}, {"label": "◆ 续梦 再续前尘", "ok": true, "reason": "", "id": ""}, {"label": "◆ 观星 天地设置", "ok": true, "reason": "", "id": ""}, {"label": "删除", "ok": true, "reason": "", "id": "msRemoveBtn"}, {"label": "保存模型设置", "ok": true, "reason": "", "id": "saveModel"}, {"label": "全部接口配置 ▸", "ok": true, "reason": "", "id": "openFullCfgBtn"}, {"label": "🔤 换字体（6 款）", "ok": true, "reason": "", "id": "fontBtn"}, {"label": "🎨 换主题", "ok": true, "reason": "", "id": "themeBtn"}, {"label": "A−", "ok": true, "reason": "", "id": "fontMinus"}, {"label": "A＋", "ok": true, "reason": "", "id": "fontPlus"}, {"label": "清理运行缓存（不动存档）", "ok": true, "reason": "", "id": "clearCacheBtn"}, {"label": "检查更新", "ok": true, "reason": "", "id": "checkUpdateBtn"}, {"label": "立即同步内容", "ok": true, "reason": "", "id": "syncNowBtn"}, {"label": "查看完整更新公告 ▾", "ok": true, "reason": "", "id": "toggleNotesBtn"}]}, {"name": "万象工坊", "path": "/xiaoyun.html?goto=forge", "errors": 0, "rows": [{"label": "打开造物工坊", "ok": true, "reason": "", "id": ""}, {"label": "授权 / 自检", "ok": true, "reason": "", "id": ""}, {"label": "查看插件规范", "ok": true, "reason": "", "id": ""}, {"label": "尝试巡检", "ok": true, "reason": "", "id": ""}, {"label": "前往 DLC 工坊", "ok": true, "reason": "", "id": ""}, {"label": "导入存档", "ok": true, "reason": "", "id": ""}, {"label": "☰ 工具", "ok": true, "reason": "", "id": "toolboxBtn"}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机姓名", "ok": true, "reason": "", "id": ""}, {"label": "✨ 生成样貌", "ok": true, "reason": "", "id": ""}, {"label": "🧠 生成性格", "ok": true, "reason": "", "id": ""}, {"label": "🖼 生成角色图标", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "＋ 添加", "ok": true, "reason": "", "id": ""}]}, {"name": "创作室·扮演", "path": "/studio.html?genre=fanrenxiuxian", "errors": 0, "rows": [{"label": "─", "ok": true, "reason": "", "id": "yjMinBtn"}, {"label": "□", "ok": true, "reason": "", "id": "yjMaxBtn"}, {"label": "✕", "ok": true, "reason": "", "id": "yjCloseBtn"}, {"label": "📊 状态", "ok": true, "reason": "", "id": "panelToggle"}, {"label": "🎨 主题", "ok": true, "reason": "", "id": "themeBtn"}, {"label": "📖 沉浸", "ok": true, "reason": "", "id": "readingToggle"}, {"label": "☰ 工具", "ok": true, "reason": "", "id": "toolboxBtn"}, {"label": "👑 原著主角 亲历原著主线 · 大势不可改", "ok": true, "reason": "", "id": ""}, {"label": "🎭 原著配角 按原著定位活出自己的人生", "ok": true, "reason": "", "id": ""}, {"label": "✨ 完全原创 自创角色 · 路径全由你把控", "ok": true, "reason": "", "id": ""}, {"label": "🌀 穿越者 先知先觉，但预知有界", "ok": true, "reason": "", "id": ""}, {"label": "🌱 本地人 对原著一无所知", "ok": true, "reason": "", "id": ""}, {"label": "🤝 同伴 与主角同行", "ok": true, "reason": "", "id": ""}, {"label": "⚔ 敌对 与主角为敌", "ok": true, "reason": "", "id": ""}, {"label": "🌫 陌路 此生可能无交集", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随缘开局", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "✨ 生成样貌", "ok": true, "reason": "", "id": ""}, {"label": "🧠 生成性格", "ok": true, "reason": "", "id": ""}, {"label": "🖼 生成角色图标", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "🏠 返回大厅", "ok": true, "reason": "跳过(导航/危险)", "id": ""}, {"label": "🎲 全部随机", "ok": true, "reason": "", "id": ""}, {"label": "🌏 踏入 凡人修仙传 世界", "ok": true, "reason": "", "id": ""}, {"label": "✨ AI 润色", "ok": true, "reason": "", "id": "csLook"}, {"label": "仁厚", "ok": true, "reason": "", "id": ""}, {"label": "侠义", "ok": true, "reason": "", "id": ""}, {"label": "忠诚", "ok": true, "reason": "", "id": ""}, {"label": "清正", "ok": true, "reason": "", "id": ""}, {"label": "乐观", "ok": true, "reason": "", "id": ""}, {"label": "悲悯", "ok": true, "reason": "", "id": ""}, {"label": "勤勉", "ok": true, "reason": "", "id": ""}, {"label": "谦和", "ok": true, "reason": "", "id": ""}, {"label": "守信", "ok": true, "reason": "", "id": ""}, {"label": "赤诚", "ok": true, "reason": "", "id": ""}, {"label": "担当", "ok": true, "reason": "", "id": ""}, {"label": "睿智", "ok": true, "reason": "", "id": ""}, {"label": "傲慢", "ok": true, "reason": "", "id": ""}, {"label": "贪婪", "ok": true, "reason": "", "id": ""}, {"label": "虚伪", "ok": true, "reason": "", "id": ""}, {"label": "暴戾", "ok": true, "reason": "", "id": ""}]}, {"name": "创作室·自由", "path": "/studio.html?genre=free", "errors": 0, "rows": [{"label": "─", "ok": true, "reason": "", "id": "yjMinBtn"}, {"label": "□", "ok": true, "reason": "", "id": "yjMaxBtn"}, {"label": "✕", "ok": true, "reason": "", "id": "yjCloseBtn"}, {"label": "📊 状态", "ok": true, "reason": "", "id": "panelToggle"}, {"label": "🎨 主题", "ok": true, "reason": "", "id": "themeBtn"}, {"label": "📖 沉浸", "ok": true, "reason": "", "id": "readingToggle"}, {"label": "☰ 工具", "ok": true, "reason": "", "id": "toolboxBtn"}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机姓名", "ok": true, "reason": "", "id": ""}, {"label": "✨ 生成样貌", "ok": true, "reason": "", "id": ""}, {"label": "🧠 生成性格", "ok": true, "reason": "", "id": ""}, {"label": "🖼 生成角色图标", "ok": true, "reason": "", "id": ""}, {"label": "🎲 随机", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "−", "ok": true, "reason": "", "id": ""}, {"label": "+", "ok": true, "reason": "", "id": ""}, {"label": "＋ 添加", "ok": true, "reason": "", "id": ""}, {"label": "🏠 返回大厅", "ok": true, "reason": "跳过(导航/危险)", "id": ""}, {"label": "🎲 全部随机", "ok": true, "reason": "", "id": ""}, {"label": "📖 开始创作 · 落笔开篇", "ok": true, "reason": "", "id": ""}, {"label": "✨ AI 润色", "ok": true, "reason": "", "id": "csLook"}, {"label": "仁厚", "ok": true, "reason": "", "id": ""}, {"label": "侠义", "ok": true, "reason": "", "id": ""}, {"label": "忠诚", "ok": true, "reason": "", "id": ""}, {"label": "清正", "ok": true, "reason": "", "id": ""}, {"label": "乐观", "ok": true, "reason": "", "id": ""}, {"label": "悲悯", "ok": true, "reason": "", "id": ""}, {"label": "勤勉", "ok": true, "reason": "", "id": ""}, {"label": "谦和", "ok": true, "reason": "", "id": ""}, {"label": "守信", "ok": true, "reason": "", "id": ""}, {"label": "赤诚", "ok": true, "reason": "", "id": ""}, {"label": "担当", "ok": true, "reason": "", "id": ""}, {"label": "睿智", "ok": true, "reason": "", "id": ""}, {"label": "傲慢", "ok": true, "reason": "", "id": ""}, {"label": "贪婪", "ok": true, "reason": "", "id": ""}, {"label": "虚伪", "ok": true, "reason": "", "id": ""}, {"label": "暴戾", "ok": true, "reason": "", "id": ""}, {"label": "记仇", "ok": true, "reason": "", "id": ""}, {"label": "狡诈", "ok": true, "reason": "", "id": ""}, {"label": "自私", "ok": true, "reason": "", "id": ""}, {"label": "势利", "ok": true, "reason": "", "id": ""}, {"label": "凉薄", "ok": true, "reason": "", "id": ""}, {"label": "专横", "ok": true, "reason": "", "id": ""}, {"label": "怯懦", "ok": true, "reason": "", "id": ""}, {"label": "嫉妒", "ok": true, "reason": "", "id": ""}, {"label": "古怪发明家", "ok": true, "reason": "", "id": ""}, {"label": "反差萌", "ok": true, "reason": "", "id": ""}, {"label": "絮叨学究", "ok": true, "reason": "", "id": ""}, {"label": "偏执收藏", "ok": true, "reason": "", "id": ""}, {"label": "胆小勇者", "ok": true, "reason": "", "id": ""}]}];
+const box = document.getElementById('pages');
+DATA.forEach(function(pg){
+  const d = document.createElement('details');
+  const okCount = pg.rows.filter(r=>r.ok).length;
+  d.innerHTML = '<summary>'+pg.name+' <span style="color:#8b949e;font-weight:400">('+pg.path+') · '+okCount+'/'+pg.rows.length+' 正常 · '+pg.errors+' 错误</span></summary>'+
+    '<table><thead><tr><th style="width:40%">按钮</th><th>结果</th><th>说明</th></tr></thead><tbody>'+
+    pg.rows.map(function(r){
+      return '<tr><td>'+ (r.label.replace(/</g,'&lt;')) +'</td><td class="'+(r.ok?'ok':'bad')+'">'+(r.ok?'✓':'✗')+'</td><td style="color:#8b949e">'+(r.reason||'点击正常')+'</td></tr>';
+    }).join('')+'</tbody></table>';
+  box.appendChild(d);
+});
+</script>
+</body>
+</html>

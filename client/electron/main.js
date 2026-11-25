@@ -418,6 +418,24 @@ let server = null;
 let serverPort = 0;
 let mainWindow = null;
 
+// DR-106：存档丢失根因修复。浏览器 localStorage 按 origin（协议+域名+端口）隔离，
+// 原先 listen(0) 每次启动随机端口 → 每次都是新 origin → 旧存档读不到。
+// 改为固定端口；单实例锁（本文件下方 requestSingleInstanceLock）保证同一时刻只有一个实例占用它。
+// 固定端口坏处仅是"该端口被别的程序占用"，此时按序向后找少数几个连续端口并写入 userData 固定下来，
+// 保证同一个用户每次启动都落到同一 origin。
+const FIXED_PORT = 18760;
+const PORT_FILE = 'server-port.json';
+function readFixedPort() {
+  try { return JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), PORT_FILE), 'utf8')).port || FIXED_PORT; }
+  catch (_) { return FIXED_PORT; }
+}
+function saveFixedPort(p) {
+  try {
+    fs.mkdirSync(app.getPath('userData'), { recursive: true });
+    fs.writeFileSync(path.join(app.getPath('userData'), PORT_FILE), JSON.stringify({ port: p }));
+  } catch (_) {}
+}
+
 function startServer() {
   return new Promise((resolve, reject) => {
     server = http.createServer((req, res) => {
@@ -444,10 +462,24 @@ function startServer() {
       } catch (e) { res.writeHead(500); res.end('Server Error'); }
     });
     server.on('error', reject);
-    server.listen(0, '127.0.0.1', () => {
-      serverPort = server.address().port;
-      resolve(serverPort);
-    });
+    // 先尝试上次记住的端口（或默认端口），被占用则向后找最多 20 个，记住最终端口供下次复用。
+    const base = Number(readFixedPort()) || FIXED_PORT;
+    const tryListen = (p, left) => {
+      const onError = (e) => {
+        if (e && e.code === 'EADDRINUSE' && left > 0) {
+          server.removeListener('error', onError);
+          tryListen(p + 1, left - 1);
+        } else reject(e);
+      };
+      server.once('error', onError);
+      server.listen(p, '127.0.0.1', () => {
+        server.removeListener('error', onError);
+        serverPort = server.address().port;
+        saveFixedPort(serverPort);
+        resolve(serverPort);
+      });
+    };
+    tryListen(base, 20);
   });
 }
 

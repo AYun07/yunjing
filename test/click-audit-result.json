@@ -1,0 +1,1136 @@
+[
+  {
+    "name": "开场封面",
+    "path": "/opening.html",
+    "total": 8,
+    "tested": 8,
+    "errors": 0,
+    "rows": [
+      {
+        "label": "─",
+        "ok": true,
+        "reason": "",
+        "id": "yjMinBtn"
+      },
+      {
+        "label": "□",
+        "ok": true,
+        "reason": "",
+        "id": "yjMaxBtn"
+      },
+      {
+        "label": "✕",
+        "ok": true,
+        "reason": "",
+        "id": "yjCloseBtn"
+      },
+      {
+        "label": "◆ 踏云 开启新篇",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "◆ 续梦 再续前尘",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "◆ 观星 天地设置",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "◆ 造物 万象工坊",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "‹ 返回封面",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      }
+    ]
+  },
+  {
+    "name": "云境大厅",
+    "path": "/index.html",
+    "total": 8,
+    "tested": 8,
+    "errors": 0,
+    "rows": [
+      {
+        "label": "─",
+        "ok": true,
+        "reason": "",
+        "id": "yjMinBtn"
+      },
+      {
+        "label": "□",
+        "ok": true,
+        "reason": "",
+        "id": "yjMaxBtn"
+      },
+      {
+        "label": "✕",
+        "ok": true,
+        "reason": "",
+        "id": "yjCloseBtn"
+      },
+      {
+        "label": "◆ 踏云 开启新篇",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "◆ 续梦 再续前尘",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "◆ 观星 天地设置",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "◆ 造物 万象工坊",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "‹ 返回封面",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      }
+    ]
+  },
+  {
+    "name": "天地设置",
+    "path": "/settings.html?goto=settings",
+    "total": 17,
+    "tested": 17,
+    "errors": 0,
+    "rows": [
+      {
+        "label": "─",
+        "ok": true,
+        "reason": "",
+        "id": "yjMinBtn"
+      },
+      {
+        "label": "□",
+        "ok": true,
+        "reason": "",
+        "id": "yjMaxBtn"
+      },
+      {
+        "label": "✕",
+        "ok": true,
+        "reason": "",
+        "id": "yjCloseBtn"
+      },
+      {
+        "label": "← 返回封面",
+        "ok": true,
+        "reason": "",
+        "id": "backBtn"
+      },
+      {
+        "label": "◆ 续梦 再续前尘",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "◆ 观星 天地设置",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "删除",
+        "ok": true,
+        "reason": "",
+        "id": "msRemoveBtn"
+      },
+      {
+        "label": "保存模型设置",
+        "ok": true,
+        "reason": "",
+        "id": "saveModel"
+      },
+      {
+        "label": "全部接口配置 ▸",
+        "ok": true,
+        "reason": "",
+        "id": "openFullCfgBtn"
+      },
+      {
+        "label": "🔤 换字体（6 款）",
+        "ok": true,
+        "reason": "",
+        "id": "fontBtn"
+      },
+      {
+        "label": "🎨 换主题",
+        "ok": true,
+        "reason": "",
+        "id": "themeBtn"
+      },
+      {
+        "label": "A−",
+        "ok": true,
+        "reason": "",
+        "id": "fontMinus"
+      },
+      {
+        "label": "A＋",
+        "ok": true,
+        "reason": "",
+        "id": "fontPlus"
+      },
+      {
+        "label": "清理运行缓存（不动存档）",
+        "ok": true,
+        "reason": "",
+        "id": "clearCacheBtn"
+      },
+      {
+        "label": "检查更新",
+        "ok": true,
+        "reason": "",
+        "id": "checkUpdateBtn"
+      },
+      {
+        "label": "立即同步内容",
+        "ok": true,
+        "reason": "",
+        "id": "syncNowBtn"
+      },
+      {
+        "label": "查看完整更新公告 ▾",
+        "ok": true,
+        "reason": "",
+        "id": "toggleNotesBtn"
+      }
+    ]
+  },
+  {
+    "name": "万象工坊",
+    "path": "/xiaoyun.html?goto=forge",
+    "total": 27,
+    "tested": 27,
+    "errors": 0,
+    "rows": [
+      {
+        "label": "打开造物工坊",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "授权 / 自检",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "查看插件规范",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "尝试巡检",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "前往 DLC 工坊",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "导入存档",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "☰ 工具",
+        "ok": true,
+        "reason": "",
+        "id": "toolboxBtn"
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机姓名",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "✨ 生成样貌",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🧠 生成性格",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🖼 生成角色图标",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "＋ 添加",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      }
+    ]
+  },
+  {
+    "name": "创作室·扮演",
+    "path": "/studio.html?genre=fanrenxiuxian",
+    "total": 141,
+    "tested": 60,
+    "errors": 0,
+    "rows": [
+      {
+        "label": "─",
+        "ok": true,
+        "reason": "",
+        "id": "yjMinBtn"
+      },
+      {
+        "label": "□",
+        "ok": true,
+        "reason": "",
+        "id": "yjMaxBtn"
+      },
+      {
+        "label": "✕",
+        "ok": true,
+        "reason": "",
+        "id": "yjCloseBtn"
+      },
+      {
+        "label": "📊 状态",
+        "ok": true,
+        "reason": "",
+        "id": "panelToggle"
+      },
+      {
+        "label": "🎨 主题",
+        "ok": true,
+        "reason": "",
+        "id": "themeBtn"
+      },
+      {
+        "label": "📖 沉浸",
+        "ok": true,
+        "reason": "",
+        "id": "readingToggle"
+      },
+      {
+        "label": "☰ 工具",
+        "ok": true,
+        "reason": "",
+        "id": "toolboxBtn"
+      },
+      {
+        "label": "👑 原著主角 亲历原著主线 · 大势不可改",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎭 原著配角 按原著定位活出自己的人生",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "✨ 完全原创 自创角色 · 路径全由你把控",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🌀 穿越者 先知先觉，但预知有界",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🌱 本地人 对原著一无所知",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🤝 同伴 与主角同行",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "⚔ 敌对 与主角为敌",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🌫 陌路 此生可能无交集",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随缘开局",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "✨ 生成样貌",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🧠 生成性格",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🖼 生成角色图标",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🏠 返回大厅",
+        "ok": true,
+        "reason": "跳过(导航/危险)",
+        "id": ""
+      },
+      {
+        "label": "🎲 全部随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🌏 踏入 凡人修仙传 世界",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "✨ AI 润色",
+        "ok": true,
+        "reason": "",
+        "id": "csLook"
+      },
+      {
+        "label": "仁厚",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "侠义",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "忠诚",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "清正",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "乐观",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "悲悯",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "勤勉",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "谦和",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "守信",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "赤诚",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "担当",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "睿智",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "傲慢",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "贪婪",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "虚伪",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "暴戾",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      }
+    ]
+  },
+  {
+    "name": "创作室·自由",
+    "path": "/studio.html?genre=free",
+    "total": 128,
+    "tested": 60,
+    "errors": 0,
+    "rows": [
+      {
+        "label": "─",
+        "ok": true,
+        "reason": "",
+        "id": "yjMinBtn"
+      },
+      {
+        "label": "□",
+        "ok": true,
+        "reason": "",
+        "id": "yjMaxBtn"
+      },
+      {
+        "label": "✕",
+        "ok": true,
+        "reason": "",
+        "id": "yjCloseBtn"
+      },
+      {
+        "label": "📊 状态",
+        "ok": true,
+        "reason": "",
+        "id": "panelToggle"
+      },
+      {
+        "label": "🎨 主题",
+        "ok": true,
+        "reason": "",
+        "id": "themeBtn"
+      },
+      {
+        "label": "📖 沉浸",
+        "ok": true,
+        "reason": "",
+        "id": "readingToggle"
+      },
+      {
+        "label": "☰ 工具",
+        "ok": true,
+        "reason": "",
+        "id": "toolboxBtn"
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机姓名",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "✨ 生成样貌",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🧠 生成性格",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🖼 生成角色图标",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🎲 随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "−",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "+",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "＋ 添加",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "🏠 返回大厅",
+        "ok": true,
+        "reason": "跳过(导航/危险)",
+        "id": ""
+      },
+      {
+        "label": "🎲 全部随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "📖 开始创作 · 落笔开篇",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "✨ AI 润色",
+        "ok": true,
+        "reason": "",
+        "id": "csLook"
+      },
+      {
+        "label": "仁厚",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "侠义",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "忠诚",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "清正",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "乐观",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "悲悯",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "勤勉",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "谦和",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "守信",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "赤诚",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "担当",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "睿智",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "傲慢",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "贪婪",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "虚伪",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "暴戾",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "记仇",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "狡诈",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "自私",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "势利",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "凉薄",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "专横",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "怯懦",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "嫉妒",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "古怪发明家",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "反差萌",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "絮叨学究",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "偏执收藏",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "胆小勇者",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      }
+    ]
+  }
+]

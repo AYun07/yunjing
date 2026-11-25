@@ -270,16 +270,20 @@ async function syncContent(opts) {
     const local = readLocalManifest(contentDir);
     result.version = local.version;
 
-    let remote;
-    try {
-      // 清单加时间戳绕开 jsDelivr 的 @main CDN 缓存；内容文件靠 sha 校验兜底
-      const text = await downloadText(sources, MANIFEST_NAME + '?t=' + Date.now(), netOpts);
-      let parsed;
-      try { parsed = JSON.parse(text); } catch (e) { throw new Error('清单解析失败'); }
-      remote = validateManifest(parsed);
-    } catch (e) {
-      throw new Error('远端清单拉取失败：' + toChineseError(e));
+    // DR-106：不再"第一个源成功就用"。各 CDN 缓存进度不同（实测 fastly 曾停在 7.0.1、
+    // jsDelivr 已到 7.0.2），若先命中的是旧缓存会误判"已是最新"，导致界面/公告永远停在旧版。
+    // 改为遍历全部源，取版本号最高的那份清单；单个源失败不影响其它源。
+    let remote = null;
+    const errs = [];
+    const stamp = Date.now();
+    for (const src of (Array.isArray(sources) ? sources : [])) {
+      try {
+        const text = await downloadText([src], MANIFEST_NAME + '?t=' + stamp, netOpts);
+        const parsed = validateManifest(JSON.parse(text));
+        if (!remote || compareVer(parsed.version, remote.version) > 0) remote = parsed;
+      } catch (e) { errs.push(String((e && e.message) || e)); }
     }
+    if (!remote) throw new Error('远端清单拉取失败：' + toChineseError(new Error(errs.join(' | ') || 'NO_SOURCE')));
 
     // 回滚后的版本冻结：避免下次启动又把同一批坏内容升回去，等下一版再更新
     const st = readState(stateFile);

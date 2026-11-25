@@ -1,20 +1,26 @@
 /* ============================================================
-   云境 · 角色塑造助手（CharacterStudio） v6.9.0
+   云境 · 角色塑造助手（CharacterStudio） v7.0.3
    ------------------------------------------------------------
-   玩家原话：「创作角色时添加角色样貌、性格生成入口，然后玩家还要可以生成角色图标」
-   设计：
-   · 在身份设定台「主角设定」区挂一行：样貌生成 / 性格生成 / 生成角色图标。
-   · 样貌、性格：优先调主笔模型（读 storyApiConfig，OpenAI 兼容 /chat/completions）；
-     没配模型或失败时用本地模板库兜底，保证永远能出结果、离线可用。
-   · 角色图标：纯前端 canvas 程序化生成（按姓名 + 性别 + 样貌关键词配色/剪影），
-     dataURL 存 localStorage，随存档走，零网络零后端。
-   · 生成结果写回 wiz_heroBio / 独立样貌字段，玩家仍可手动改。
+   玩家原话（v7.0.3）：
+     「下方的生成样貌、性格和角色图标，我说过要让玩家自己填；
+       咱之前不是有性格世界书吗，再填性格那里让玩家自己选，不限个数；
+       角色图标也就是头像，是要通过生图模型根据玩家设定生成的。」
+   落地：
+   · 挂载：小说模式(wiz_heroSection)与扮演模式(身份设定台)都挂，不再只找 heroSection。
+   · 样貌：文本输入框，玩家自己填；「AI 润色」仅辅助，可不用。
+   · 性格：从性格世界书 PersonalityCodex.TRAIT_CODEX 点选，不限个数；
+     选中项以 chip 展示并可删除；也可手填补充。生成结果写入小传。
+   · 角色图标(头像)：按玩家设定(姓名+样貌+性格+世界)拼 prompt，调生图模块
+     StoryImageGen.generate() 真正生图；未配置绘图接口时明确提示去设置，
+     canvas 程序化仅作离线兜底并在状态里说明，不再冒充"生图模型"。
+   兼容：保留 v6.9 的 genLook/genPersona/genIcon/icon/look/persona 导出。
    ============================================================ */
 (function (G) {
   "use strict";
   var ICON_KEY = "yunjingHeroIcon";
   var LOOK_KEY = "yunjingHeroLook";
   var PERSONA_KEY = "yunjingHeroPersona";
+  var TRAITS_KEY = "yunjingHeroTraits"; // JSON array of trait names
 
   var LOOKS_F = [
     "眉如远山，眸色清浅，肤色白皙，长发以一根素簪挽起，着一身月白长裙，气质清冷而疏离。",
@@ -26,16 +32,15 @@
     "相貌清俊，肤如玉，眉眼间带几分温润笑意，常着青衫，袖口绣暗纹，气质出尘而不失亲和。",
     "轮廓深邃，目光沉静，短发利落，着一身灰布长袍，腰间悬一枚旧玉佩，举手投足沉稳有力。"
   ];
-  var PERSONAS = [
-    "外冷内热，嘴上不饶人却总在关键时刻出手；重诺守信，恩怨分明；遇事冷静果决，唯独对在意的人毫无原则。",
-    "性子跳脱，好奇心重，爱冒险也爱凑热闹；看似玩世不恭，实则心思缜密、重情重义；最见不得不平事。",
-    "温和克制，善于倾听，凡事三思而后行；有轻微的完美主义，对自己要求极高；心里藏着一段不愿提起的往事。"
-  ];
 
   function $(id) { return document.getElementById(id); }
   function read(key) { try { return localStorage.getItem(key) || ""; } catch (e) { return ""; } }
   function write(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
-
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+    });
+  }
   function name() {
     var n = $("wiz_heroName") || $("wiz_playerName");
     return (n && n.value.trim()) || "无名";
@@ -48,8 +53,13 @@
     try { var c = window.storyFramework && window.storyFramework.config; return (c && c.genreName) || ""; }
     catch (e) { return ""; }
   }
+  function getTraits() {
+    try { var a = JSON.parse(read(TRAITS_KEY) || "[]"); return Array.isArray(a) ? a : []; }
+    catch (e) { return []; }
+  }
+  function setTraits(a) { write(TRAITS_KEY, JSON.stringify(a)); }
 
-  /* 调主笔模型生成一段文字；失败返回 null */
+  /* ---------- 文本 AI 辅助（主笔模型），失败返回 null ---------- */
   function aiText(prompt) {
     var cfg;
     try { cfg = JSON.parse(read("storyApiConfig") || "{}"); } catch (e) { cfg = {}; }
@@ -76,16 +86,20 @@
       })
       .catch(function () { if (timer) clearTimeout(timer); return null; });
   }
-
   function pickLocal(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+  /* ---------- 样貌：优先用玩家输入框的值；AI 润色仅辅助 ---------- */
   function genLook() {
+    var input = $("csLookInput");
+    var typed = input && input.value.trim();
     var n = name(), g = gender(), world = genreName();
+    if (typed) { write(LOOK_KEY, typed); mergeBio("【样貌】" + typed); renderPreview(); return Promise.resolve(typed); }
     var pool = g === "女" ? LOOKS_F : LOOKS_M;
     var prompt = "为" + (world ? "《" + world + "》世界里的" : "") + "角色「" + n + "」（" + g +
-      "）写一段外貌描写：包含眉眼、肤色、发型、衣着与整体气质，60 字以内，中文，符合该世界题材风格。";
+      "）写一段外貌描写：眉眼、肤色、发型、衣着与气质，60 字以内，中文。";
     return aiText(prompt).then(function (t) {
       var look = t || pickLocal(pool);
+      if (input) input.value = look;
       write(LOOK_KEY, look);
       mergeBio("【样貌】" + look);
       renderPreview();
@@ -93,32 +107,71 @@
     });
   }
 
+  /* ---------- 性格：玩家从世界书多选（不限个数）+ 手填补充 ---------- */
   function genPersona() {
-    var n = name(), g = gender(), world = genreName();
-    var prompt = "为" + (world ? "《" + world + "》世界里的" : "") + "角色「" + n + "」（" + g +
-      "）写一段性格设定：包含外在表现、内在动机、待人处事方式与一个隐藏弱点，60 字以内，中文。";
-    return aiText(prompt).then(function (t) {
-      var persona = t || pickLocal(PERSONAS);
-      write(PERSONA_KEY, persona);
-      mergeBio("【性格】" + persona);
-      renderPreview();
-      return persona;
+    var traits = getTraits();
+    var extra = ($("csPersonaInput") && $("csPersonaInput").value.trim()) || "";
+    var parts = [];
+    var codex = (window.PersonalityCodex && window.PersonalityCodex.TRAIT_CODEX) || [];
+    traits.forEach(function (tname) {
+      var t = null;
+      for (var i = 0; i < codex.length; i++) if (codex[i].name === tname) { t = codex[i]; break; }
+      parts.push(t ? (tname + "（" + t.feature + "）") : tname);
     });
+    if (extra) parts.push(extra);
+    var persona = parts.join("；") || "性格由玩家自行设定（尚未选择性格特质）";
+    write(PERSONA_KEY, persona);
+    mergeBio("【性格】" + persona);
+    renderPreview();
+    return Promise.resolve(persona);
+  }
+
+  /* 让玩家从性格世界书点选/取消，不限个数 */
+  function toggleTrait(tname) {
+    var a = getTraits();
+    var idx = a.indexOf(tname);
+    if (idx >= 0) a.splice(idx, 1); else a.push(tname);
+    setTraits(a);
+    renderTraits();
+    genPersona(); // 同步刷新性格文本与小传
+  }
+  function renderTraits() {
+    var box = $("csTraitList");
+    if (!box) return;
+    var codex = (window.PersonalityCodex && window.PersonalityCodex.TRAIT_CODEX) || [];
+    var selected = getTraits();
+    var cats = { positive: "正向", negative: "负向", neutral: "中性", complex: "复杂" };
+    var html = "";
+    var groups = {};
+    codex.forEach(function (t) { (groups[t.cat] = groups[t.cat] || []).push(t); });
+    Object.keys(groups).forEach(function (cat) {
+      html += '<div class="cs-trait-cat">' + esc(cats[cat] || cat) + '</div><div class="cs-trait-row">';
+      groups[cat].forEach(function (t) {
+        var on = selected.indexOf(t.name) >= 0;
+        html += '<button type="button" class="cs-trait' + (on ? ' on' : '') + '" data-trait="' + esc(t.name) +
+          '" title="' + esc(t.feature) + '">' + esc(t.name) + '</button>';
+      });
+      html += '</div>';
+    });
+    if (box.innerHTML !== html) box.innerHTML = html;
+    Array.prototype.forEach.call(box.querySelectorAll('.cs-trait'), function (b) {
+      b.onclick = function () { toggleTrait(b.getAttribute('data-trait')); };
+    });
+    var cnt = $("csTraitCount");
+    if (cnt) cnt.textContent = "已选 " + selected.length + " 项（不限个数）";
   }
 
   function mergeBio(line) {
     var bio = $("wiz_heroBio");
     if (!bio) {
-      /* roleplay / freeworld 模板没有小传框：在助手里动态建一个，
-         用同名 id，让 StorySetupWizard.start() 里的 wiz_heroBio 读取自动生效 */
       var wrap = $("csWrap");
       if (!wrap) return;
       bio = document.createElement("textarea");
       bio.id = "wiz_heroBio"; bio.className = "wiz-input"; bio.rows = 3;
-      bio.placeholder = "角色小传（AI 生成 / 可手改）：样貌、性格、来历…写多细，AI 执行多细";
+      bio.placeholder = "角色小传（可手改）：样貌、性格、来历…写多细，AI 执行多细";
       bio.style.cssText = "width:100%;margin-top:10px;font-size:12px;line-height:1.6";
       var label = document.createElement("div");
-      label.className = "cs-biolabel"; label.textContent = "📖 角色小传（生成内容会写到这里，开局时注入主笔）";
+      label.className = "cs-biolabel"; label.textContent = "📖 角色小传（生成内容写到这里，开局注入主笔）";
       wrap.insertBefore(label, $("csStatus"));
       wrap.insertBefore(bio, $("csStatus"));
     }
@@ -127,8 +180,43 @@
     bio.value = (old ? old + "\n" : "") + line;
   }
 
-  /* 程序化生成角色图标：名字 hash 决定配色与发型/服饰剪影，纯 canvas，无网络 */
+  /* ---------- 角色图标(头像)：生图模型按玩家设定生成 ---------- */
+  function buildPortraitPrompt() {
+    var n = name(), g = gender(), world = genreName();
+    var look = ($("csLookInput") && $("csLookInput").value.trim()) || read(LOOK_KEY) || "";
+    var traits = getTraits();
+    var extra = ($("csPersonaInput") && $("csPersonaInput").value.trim()) || "";
+    var personaText = traits.join("、") + (extra ? "，" + extra : "");
+    return "角色肖像特写，正面半身，" + (world ? "《" + world + "》题材风格，" : "") +
+      "角色名「" + n + "」，" + g + "性。" +
+      (look ? "外貌：" + look + "。" : "") +
+      (personaText ? "气质性格：" + personaText + "。" : "") +
+      "精致五官，自然光影，居中构图，干净背景，头像肖像画。";
+  }
   function genIcon() {
+    var prompt = buildPortraitPrompt();
+    var SG = window.StoryImageGen;
+    setStatus("正在调用生图模型生成头像…");
+    if (SG && typeof SG.generate === "function" && SG.isConfigured && SG.isConfigured()) {
+      return Promise.resolve(SG.generate(prompt, { finalPrompt: prompt })).then(function (entry) {
+        var url = entry && (entry.url || entry.dataURL || entry.image);
+        if (!url) throw new Error("生图接口未返回图片");
+        write(ICON_KEY, url);
+        renderPreview();
+        setStatus("✓ 已按设定生成头像（生图模型）");
+        return url;
+      }).catch(function (e) {
+        setStatus("生图失败：" + ((e && e.message) || "未知错误") + "，已用离线头像兜底");
+        var url = genIconFallback();
+        return url;
+      });
+    }
+    // 未配置生图接口：明确提示，仍给离线兜底头像，绝不谎称"生图模型生成"
+    setStatus("未配置生图接口（设置→绘图引擎），当前用离线草稿头像；配置后可重新生成");
+    return Promise.resolve(genIconFallback());
+  }
+  /* 离线兜底：程序化头像（仅在没有生图配置或生图失败时用） */
+  function genIconFallback() {
     var n = name(), g = gender();
     var seed = 0; for (var i = 0; i < n.length; i++) seed = (seed * 31 + n.charCodeAt(i)) >>> 0;
     var rnd = (function (s) { return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; })(seed);
@@ -137,24 +225,17 @@
     var pal = palettes[seed % palettes.length];
     var cv = document.createElement("canvas"); cv.width = cv.height = 128;
     var x = cv.getContext("2d");
-    // 背景圆
     x.fillStyle = pal[0]; x.beginPath(); x.arc(64, 64, 64, 0, 6.2832); x.fill();
-    // 光晕
     var grd = x.createRadialGradient(64, 50, 8, 64, 64, 64);
     grd.addColorStop(0, pal[1] + "55"); grd.addColorStop(1, "#00000000");
     x.fillStyle = grd; x.fillRect(0, 0, 128, 128);
-    // 肩身
     x.fillStyle = pal[1]; x.beginPath();
     x.moveTo(24, 128); x.quadraticCurveTo(30, 88, 64, 86); x.quadraticCurveTo(98, 88, 104, 128); x.closePath(); x.fill();
-    // 脸
     x.fillStyle = "#f0d9c0"; x.beginPath(); x.ellipse(64, 60, 22, 27, 0, 0, 6.2832); x.fill();
-    // 头发（按性别：女长发 / 男短发）
     x.fillStyle = pal[0]; x.beginPath();
     if (g === "女") { x.ellipse(64, 46, 26, 22, 0, 0, 6.2832); x.fill(); x.fillRect(38, 46, 12, 52); x.fillRect(78, 46, 12, 52); }
     else { x.ellipse(64, 45, 24, 18, 0, 0, 6.2832); x.fill(); }
-    // 发簪 / 冠（随机）
     if (rnd() > .4) { x.fillStyle = pal[1]; x.fillRect(60, 30, 8, 6); }
-    // 五官
     x.fillStyle = "#3a2b22";
     x.fillRect(54, 60, 5, 3); x.fillRect(70, 60, 5, 3);
     x.strokeStyle = "#b07a68"; x.lineWidth = 2; x.beginPath(); x.arc(64, 70, 6, 0.2, Math.PI - 0.2); x.stroke();
@@ -169,70 +250,87 @@
     if (!box) return;
     var icon = read(ICON_KEY);
     var look = read(LOOK_KEY), persona = read(PERSONA_KEY);
+    var traits = getTraits();
     var html = (icon ? '<img class="cs-avatar" src="' + icon + '" alt="角色图标">' : '<div class="cs-avatar cs-ph">🖼</div>') +
       '<div class="cs-info">' +
         (look ? '<div class="cs-line"><b>样貌</b>' + esc(look.slice(0, 46)) + '</div>' : "") +
-        (persona ? '<div class="cs-line"><b>性格</b>' + esc(persona.slice(0, 46)) + '</div>' : "") +
-        (!look && !persona ? '<div class="cs-empty">点上方按钮生成样貌 / 性格 / 图标</div>' : "") +
+        (traits.length ? '<div class="cs-line"><b>性格</b>' + esc(traits.join("、")) + '</div>' : "") +
+        (persona && !traits.length ? '<div class="cs-line"><b>性格</b>' + esc(persona.slice(0, 46)) + '</div>' : "") +
+        (!look && !traits.length ? '<div class="cs-empty">填样貌 / 选性格 / 生成头像，设定会写进小传</div>' : "") +
       '</div>';
-    /* v6.9.1：setupWrap 上的 MutationObserver 观察到本函数写 innerHTML 会再次触发 mount，
-       若每次都重写 DOM 就形成反馈死循环，永久占死主线程（舆图/设置等所有浏览器用例集体超时）。
-       内容未变则不写，从源头断掉反馈环。 */
     if (box.innerHTML === html) return;
     box.innerHTML = html;
   }
 
-  function esc(s) {
-    return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
-    });
+  function setStatus(t) {
+    var s = $("csStatus");
+    if (!s) return;
+    s.textContent = t;
+    clearTimeout(setStatus._t);
+    setStatus._t = setTimeout(function () { s.textContent = ""; }, 4200);
   }
 
-  /* 在主角设定区注入 UI（幂等） */
+  /* ---------- 挂载：覆盖小说模式与扮演模式 ---------- */
+  function findHost() {
+    return $("wiz_heroSection")            // 小说模式主角设定区
+      || ($("wiz_playerName") && $("wiz_playerName").closest(".wiz-section")) // 扮演模式身份区
+      || ($("setupWrap"));                  // 兜底：整个设定台
+  }
   function mount() {
     if ($("csWrap")) return;
-    var hero = $("wiz_heroSection");
-    if (!hero) return;
+    var host = findHost();
+    if (!host) return;
     var wrap = document.createElement("div");
     wrap.id = "csWrap";
     wrap.className = "cs-wrap";
     wrap.innerHTML =
-      '<div class="cs-title">🎨 角色塑造助手 <span>AI 生成样貌 / 性格 / 图标，也可手动改下方小传</span></div>' +
-      '<div class="cs-btns">' +
-        '<button type="button" id="csLook">✨ 生成样貌</button>' +
-        '<button type="button" id="csPersona">🧠 生成性格</button>' +
-        '<button type="button" id="csIcon">🖼 生成角色图标</button>' +
-      '</div>' +
+      '<div class="cs-title">🎨 角色塑造 <span>自己填样貌 / 从性格世界书选性格（不限个）/ 生图模型生成头像</span></div>' +
+      '<div class="cs-field"><label>样貌（自己填）</label>' +
+        '<input type="text" id="csLookInput" placeholder="例：剑眉星目，玄色劲装，气质桀骜…" value="' + esc(read(LOOK_KEY)) + '">' +
+        '<button type="button" id="csLook">✨ AI 润色</button></div>' +
+      '<div class="cs-field"><label>性格（世界书点选，不限个数）</label>' +
+        '<div class="cs-trait-count" id="csTraitCount"></div>' +
+        '<div class="cs-trait-list" id="csTraitList"></div>' +
+        '<input type="text" id="csPersonaInput" placeholder="补充性格（自己填，选填）" value=""></div>' +
+      '<div class="cs-field"><label>角色头像（按上面设定生图）</label>' +
+        '<button type="button" id="csIcon">🖼 用生图模型生成头像</button>' +
+        '<button type="button" id="csIconAgain" class="cs-mini">↻ 重生成</button></div>' +
       '<div class="cs-preview" id="csPreview"></div>' +
-      '<div class="cs-status" id="csStatus"></div>';
-    hero.appendChild(wrap);
+      '<div class="cs-status" id="csStatus"></div>' +
+      '<button type="button" id="csApply" class="cs-apply">✓ 写进角色小传并应用性格</button>';
+    host.appendChild(wrap);
     $("csLook").onclick = function () {
-      setStatus("生成中…"); genLook().then(function () { setStatus("✓ 样貌已写入小传"); });
+      setStatus("生成中…"); genLook().then(function () { setStatus("✓ 样貌已就绪"); });
     };
-    $("csPersona").onclick = function () {
-      setStatus("生成中…"); genPersona().then(function () { setStatus("✓ 性格已写入小传"); });
+    $("csIcon").onclick = function () { genIcon(); };
+    $("csIconAgain").onclick = function () { genIcon(); };
+    $("csApply").onclick = function () {
+      genPersona();
+      setStatus("✓ 已写入角色小传，性格已应用");
     };
-    $("csIcon").onclick = function () { genIcon(); setStatus("✓ 角色图标已生成"); };
+    renderTraits();
     renderPreview();
   }
-  function setStatus(t) { var s = $("csStatus"); if (s) { s.textContent = t; clearTimeout(setStatus._t); setStatus._t = setTimeout(function () { s.textContent = ""; }, 2600); } }
-
   function boot() {
     mount();
-    // 设定台是动态渲染的：观察 DOM 变化，heroSection 出现就挂
     if (window.MutationObserver && $("setupWrap")) {
-      var mo = new MutationObserver(function () { if ($("wiz_heroSection")) mount(); });
+      var mo = new MutationObserver(function () { if (findHost()) mount(); });
       mo.observe($("setupWrap"), { childList: true, subtree: true });
     }
-    [500, 1500, 3000].forEach(function (ms) { setTimeout(mount, ms); });
+    // codex/image-gen 是 lazy 批量加载，晚于本脚本；延后重绘性格列表，确保点选可用
+    [400, 1200, 2600].forEach(function (ms) {
+      setTimeout(function () { mount(); renderTraits(); renderPreview(); }, ms);
+    });
   }
 
   G.CharacterStudio = {
-    version: "6.9.0", boot: boot, mount: mount, refresh: renderPreview,
+    version: "7.0.3", boot: boot, mount: mount, refresh: renderPreview,
     genLook: genLook, genPersona: genPersona, genIcon: genIcon,
+    toggleTrait: toggleTrait, buildPortraitPrompt: buildPortraitPrompt,
     icon: function () { return read(ICON_KEY); },
     look: function () { return read(LOOK_KEY); },
-    persona: function () { return read(PERSONA_KEY); }
+    persona: function () { return read(PERSONA_KEY); },
+    traits: getTraits
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();

@@ -7,7 +7,7 @@
 Unicode true
 
 !define PRODUCT_NAME "云境"
-!define PRODUCT_VERSION "7.0.2"
+!define PRODUCT_VERSION "7.0.3"
 !define PRODUCT_PUBLISHER "云境工作室"
 !define PRODUCT_WEB_SITE "https://github.com/AYun07/yunjing"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\YunJing.exe"
@@ -16,7 +16,7 @@ Unicode true
 !define APP_EXE "YunJing.exe"
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "云境-Windows-7.0.2-x64.exe"
+OutFile "云境-Windows-7.0.3-x64.exe"
 InstallDir "$LOCALAPPDATA\Programs\云境"
 InstallDirRegKey HKCU "${PRODUCT_DIR_REGKEY}" ""
 RequestExecutionLevel user

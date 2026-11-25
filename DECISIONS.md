@@ -1762,3 +1762,20 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 自举限制（必须披露）：已装 v7.0.0/v7.0.1 的旧壳检查代码连的是 GitHub，无法靠自动更新拿到本次改造，需一次性下载 v7.0.2 安装包；升级后所有后续更新都走国内直连。用户本机下载 v7.0.2 安装包可走 ghproxy.net 国内直链（不用代理）。
 - 第三方镜像风险：ghproxy.net / ghfast.top 是公共服务不受控、稳定性不保证；代码已做多通道自动切换+sha256强校验，且保留 GitHub 原始直链兜底。若镜像全挂，用户仍可用安装包手动更新。
 - 未验证：沙箱无 Windows GUI，未真机走完"检查更新→下载→A/B切换重启"全流程；验证停在逻辑模拟+产物结构+远端连通性。
+
+## DR-106 · v7.0.3 存档丢失与更新停旧版双根因修复（2026-11-25）
+- 背景：用户再次反馈 11 项问题（工坊界面、返回按钮遮挡、公告不同步、全局开关、配置集中、随缘开局、角色三生成、按钮点不动、存档丢失、状态栏可读性、脚本错误）。逐条实测后发现大多功能源码本就正常，真正卡住用户的是两个底层根因。
+- 根因 A（存档丢失）：client/electron/main.js 用 `server.listen(0)` 每次启动随机端口；localStorage 按 origin(协议+域名+端口)隔离，端口变则旧存档读不到。非更新导致，是每次启动都可能发生。
+- 根因 B（界面/公告停旧版）：content-sync.js 的 trySources "第一个源成功即用"；实测 cdn.jsdelivr.net 清单=7.0.2、fastly.jsdelivr.net=7.0.1，先命中旧缓存会误判 up-to-date，永不拉新文件。
+- 决策与改造：
+  ① main.js：固定端口 18760 + userData/server-port.json 记忆，被占用则向后找并记住；配合已有单实例锁保证 origin 稳定。存档不再随启动漂移。
+  ② content-sync.js：syncContent 拉清单改为遍历全部源取版本号最高者，单源失败不影响其它；杜绝缓存滞后源骗成"已是最新"。
+  ③ 遮挡：world-clock.js 胶囊 fixed left12/top60 压住下移后的返回按钮(x16,y89)；occlusion-fix.css 一律移到 left96（有左栏192），命中测试通过。
+  ④ 状态栏：未套专属皮肤时文字浅米色无投影；occlusion-fix.css 统一加暗投影+数值高亮+暗底兜底，38 世界一致可读。
+  ⑤ 角色塑造重写(character-studio.js v7.0.3)：挂载覆盖小说/扮演两种模式；样貌玩家自填(AI润色可选)；性格从 PersonalityCodex.TRAIT_CODEX 点选不限个数(实测72项)+手填补充；头像按设定拼 prompt 调 StoryImageGen.generate() 真生图，未配置绘图接口明确提示，canvas 仅离线兜底不再冒充生图。
+  ⑥ 脚本错误：点击审计抓到 `ThemeStudio is not defined`——studio.html 的 theme-studio.js/immersive-plus.js/scene-state.js 是 yj-lazy batch 组但缺 data-yj-globals，lazy-boot 不生成桩，早点击即 ReferenceError。补 data-yj-globals 后 6 页 180 按钮 0 错误。
+- 证据：test/diag-click.mjs/diag-studio.mjs/diag-verify.mjs 定位；test/click-audit-visual.mjs 真浏览器逐一点 180 按钮异常 0；端到端模拟"旧源在前新源在后"内容同步正确升到 7.0.3 并落地新文件；清单/源码/基线关键文件哈希三源一致 PASS；全站 JS 语法通过；可视化报告 云境-v7.0.3-逐按钮点击测试与根因报告.html。
+- 确认正常（源码本就对、旧界面 bug）：工坊为纯插件开发对话界面无文章创作；随缘开局点击后身份全套变化；三个全局开关点击真实生效；设置页已有 5 个分区。
+- 版本：站点/清单/SW/壳/公告全部 v7.0.3；release-notes.json 增 v7.0.3 条目。
+- 未验证项强制披露：① 存档固定端口修复在 Electron 壳(app.asar)内，内容热更新改不到壳，本次仍需一次性重装 v7.0.3，之后才免重装；② 当前环境无 GitHub 令牌(gh auth status 未登录)，v7.0.3 安装包未发布 Release、清单未推 CDN，这一步待用户提供令牌；③ 沙箱无 Windows GUI，未真机双击 exe 验证固定端口跨重启存档保留，验证停在逻辑+产物层。
+- 失效条件：若后续程序版改壳却不同步 client/electron/package.json 或不发 Release，检查更新停旧版同型复发；若 CDN 全部缓存同一旧版本，取最高版本策略也无力，需强制刷新 CDN。
