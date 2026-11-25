@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.1">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.2">
 </head>
 
 <body class="page-changelog">
@@ -316,11 +316,26 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+                        <article class="log-entry" data-tags="版本 发布 国内直连 加速下载 检查更新 稳定" style="--entry-hue:#4a8a6a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.0.2</span>
+                <span class="entry-date">2026-11-25</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">国内网络直连更新 · 不用挂代理 · 检查更新不再卡 GitHub</h3>
+            <p class="entry-lead">针对「检查更新一直说已是最新版、国内连不上 GitHub」的问题，把更新的检查与下载两条链路都改成国内可直连：版本信息改从国内 CDN 读取，安装包走国内加速镜像下载，全程强制 SHA-256 校验保证安全。</p>
+            <div class="ver-diff">
+                <div><b>检查更新去 GitHub 接口</b>：版本信息不再读 api.github.com（国内常连不上），改从 jsDelivr / fastly 国内可直连的静态元数据读取，国内网络即可检查到新版本。</div>
+                <div><b>国内镜像下载</b>：安装包下载优先走 ghproxy.net / ghfast.top 国内可直连加速镜像，逐个尝试、任一成功即用，最后回退 GitHub 原始直链。</div>
+                <div><b>强制校验防篡改</b>：每个镜像下载的文件都按 Release 声明的 SHA-256 校验，内容不符自动换下一个镜像，杜绝第三方镜像投毒或损坏。</div>
+                <div><b>注意</b>：本机已是 v7.0.0/v7.0.1 的用户，因旧版程序的检查代码连的是 GitHub，需一次性下载本版安装包完成升级；升级后所有后续更新都走国内直连，不用再手动重装。</div>
+            </div>
+        </article>
+
                         <article class="log-entry" data-tags="版本 发布 实玩修复16项 设置页 模型配置 万象工坊 遮挡 脚本错误" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
                 <span class="entry-ver">v7.0.1</span>
                 <span class="entry-date">2026-11-25</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">实玩 16 项再修 · 设置页成配置中枢 · 万象工坊纯工坊化</h3>
             <p class="entry-lead">接着上一版 18 项修复，玩家又实测出 16 处问题，这一版逐条修：万象工坊进的是纯工坊页不再套创作世界；观星设置页的开关真能点了、模型配置统一收进来、端点能拉取模型、同接口可存多个模型档位；补掉几处会弹「脚本运行错误」的空引用；状态栏、图鉴、输入框、顶栏与边缘遮挡一并处理。</p>
@@ -1143,7 +1158,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.0.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.0.2 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

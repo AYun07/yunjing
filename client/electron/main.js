@@ -22,6 +22,12 @@ const VERSION = require('./package.json').version;
 const HOME_URL = 'https://github.com/AYun07/yunjing';
 const RELEASE_API = 'https://api.github.com/repos/AYun07/yunjing/releases/latest';
 const RELEASE_PAGE = HOME_URL + '/releases/latest';
+// DR-105 国内直连：版本元数据走 jsDelivr/fastly 静态文件（国内可直连），不再依赖 api.github.com。
+// 带时间戳绕 CDN 缓存；fastly 为 jsDelivr 官方备用节点。
+const UPDATE_META_SOURCES = [
+  'https://cdn.jsdelivr.net/gh/AYun07/yunjing@main/update-latest.json',
+  'https://fastly.jsdelivr.net/gh/AYun07/yunjing@main/update-latest.json'
+];
 const UA = 'yunjing-desktop/' + VERSION;
 // 首次落地用默认通道；之后以本地清单里的 sources 为准
 const DEFAULT_SOURCES = [
@@ -88,8 +94,39 @@ function updateSettings() {
   catch (_) { return {}; }
 }
 
+// 把静态元数据文件（update-latest.json）转成既有 fetchRelease 契约结构
+function fromCnMeta(data) {
+  if (!data || typeof data !== 'object' || !data.version) return null;
+  const latest = String(data.releaseTag || data.version).trim();
+  const assets = (Array.isArray(data.assets) ? data.assets : []).map(a => ({
+    name: a.name,
+    digest: a.digest,
+    browser_download_url: a.browser_download_url,
+    // 国内可直连镜像候选（ghproxy → ghfast → 原始直链）；下载层按序尝试并强校验 sha256
+    downloadUrls: Array.isArray(a.downloadUrls) && a.downloadUrls.length
+      ? a.downloadUrls.slice()
+      : [a.browser_download_url]
+  }));
+  return {
+    latestVersion: latest,
+    hasUpdate: compareVer(String(data.version), VERSION) > 0,
+    releasePage: (typeof data.releasePage === 'string' && data.releasePage) || RELEASE_PAGE,
+    assets,
+    source: 'cn-meta'
+  };
+}
+
 // 拉取最新版本信息（tag_name / assets / release 页）
+// 优先国内可直连的 jsDelivr 静态元数据，失败再回退 api.github.com（有代理/国外环境兼容）
 async function fetchRelease() {
+  for (const src of UPDATE_META_SOURCES) {
+    try {
+      const data = await requestJson(src + '?t=' + Date.now(), { timeoutMs: 8000 });
+      const info = fromCnMeta(data);
+      if (info) return info;
+    } catch (_) { /* 该通道不可用，试下一个 */ }
+  }
+  // 回退：GitHub Release API（需要能连 api.github.com）
   const data = await requestJson(RELEASE_API);
   if (!data || typeof data !== 'object' || !data.tag_name) throw new Error('BAD_JSON');
   const latest = String(data.tag_name).trim();
@@ -97,7 +134,8 @@ async function fetchRelease() {
     latestVersion: latest,
     hasUpdate: compareVer(latest, VERSION) > 0,
     releasePage: (typeof data.html_url === 'string' && data.html_url) || RELEASE_PAGE,
-    assets: Array.isArray(data.assets) ? data.assets : []
+    assets: Array.isArray(data.assets) ? data.assets : [],
+    source: 'github-api'
   };
 }
 
@@ -189,6 +227,31 @@ function downloadTo(url, dest, { timeoutMs = 180000, redirects = 0 } = {}) {
   });
 }
 
+// 多通道下载 setup（DR-105 国内直连）：按序尝试候选 URL，每个下载后校验 sha256，
+// 不符则删掉残片试下一个，避免第三方镜像投毒或损坏。
+async function downloadToMulti(urls, dest, expectedShaHex) {
+  const list = (Array.isArray(urls) ? urls : []).filter(u => typeof u === 'string' && /^https:\/\//i.test(u));
+  if (!list.length) throw new Error('BAD_URL');
+  const errs = [];
+  for (const url of list) {
+    try {
+      await downloadTo(url, dest, { timeoutMs: 180000 });
+      if (expectedShaHex) {
+        const actual = await sha256File(dest);
+        if (actual !== expectedShaHex) {
+          try { fs.unlinkSync(dest); } catch (_) {}
+          throw new Error('SHA_MISMATCH');
+        }
+      }
+      return { path: dest };
+    } catch (e) {
+      errs.push((e && e.message) || String(e));
+      try { fs.unlinkSync(dest); } catch (_) {}
+    }
+  }
+  throw new Error('ALL_SOURCES_FAILED: ' + errs.join(' | '));
+}
+
 function sha256File(file) {
   return new Promise((resolve, reject) => {
     const h = crypto.createHash('sha256');
@@ -248,8 +311,12 @@ async function autoUpdate(info) {
     if (!asset || !asset.browser_download_url) throw new Error('NO_ASSET');
     const safeTag = String(target.latestVersion).replace(/[^0-9A-Za-z.\-]/g, '_');
     const dest = path.join(app.getPath('temp'), 'yunjing-setup-' + safeTag + '.exe');
-    await downloadTo(asset.browser_download_url, dest);
+    // DR-105 国内直连：setup 降级路径同样走镜像候选列表，逐个尝试；downloadToMulti 内部按 sha 切换镜像
+    const setupUrls = (Array.isArray(asset.downloadUrls) && asset.downloadUrls.length)
+      ? asset.downloadUrls.slice() : [asset.browser_download_url];
     const expect = expectedSha(asset);
+    await downloadToMulti(setupUrls, dest, expect);
+    // 外层再校验一次（双保险）：确认落盘文件与 Release 声明的 sha256 一致
     if (expect) {
       const actual = await sha256File(dest);
       if (actual !== expect) {

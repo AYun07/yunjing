@@ -1750,3 +1750,15 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 证据：verify-package.cjs 全绿；产物级解包校验通过；链路模拟 PASS；Release id 457761464。
 - 未验证项强制披露：沙箱无 Windows GUI，无法真机双击 exe / 真机走完 A/B 重启切换；验证停在"最终产物结构正确 + 用户端检查更新/选包逻辑模拟通过 + 远端 Release 资产齐全"这一层。用户端的实际下载与重启由已内置的 shell-update.js 完成，需用户真机确认弹窗流程。
 - 失效条件：若下一个程序版只升内容不改 client/electron/package.json 或不发 Release，问题2同型复发；若 Release 再次只放 exe 不放 zip，自动更新会降级到"打开下载页手动装"。
+
+## DR-105 · v7.0.2 国内网络直连更新（免代理）（2026-11-25）
+- 背景：用户要求"不需要网络代理，国内网络就可以直连并下载更新"。用户点检查更新一直说"已是最新版"的两层根因：① 内容修复只走内容通道没发程序版（DR-104已补发v7.0.1）；② 检查更新读 api.github.com、下载读 github.com/releases/download，这两个域名在国内直连实测不可达（沙箱实测 403/000），而 cdn.jsdelivr.net / fastly.jsdelivr.net 返回200、ghproxy.net 直连下载 Release 大包返回206且是有效ZIP头。
+- 用户决策：双保险——Gitee 优先 + GitHub 加速镜像回退；检查更新走 jsDelivr。Gitee 需令牌（用户暂未提供），本次先落地不依赖令牌的 jsDelivr + GitHub 加速镜像通道，Gitee 通道预留（update-latest.json 的 mirrors/downloadUrls 可扩展）。
+- 改造（逐项已验证）：
+  ① 新增 update-latest.json（静态版本元数据：version/releaseTag/assets[name,sha256,size,browser_download_url,downloadUrls]）+ scripts/gen-update-meta.mjs 生成器。客户端从 jsDelivr/fastly 双通道带时间戳读取替代 api.github.com，失败回退 API。
+  ② main.js fetchRelease 改 fromCnMeta 契约转换；新增 downloadToMulti（setup 降级路径多镜像切换+sha校验）；autoUpdate 传 expect 给下载层。
+  ③ shell-update.js 新增 downloadZipMulti（zip 多镜像候选逐个尝试、每个强制 sha256 校验、不符则换下一个防投毒）；prepareShellUpdate 用 asset.downloadUrls。
+- 证据：test/verify-cn-update.mjs 18/18 PASS（元数据契约、镜像映射、资产选择、jsDelivr真实可达、ghproxy真实下载到有效ZIP头）；全站语法通过；版本同源7.0.2。
+- 自举限制（必须披露）：已装 v7.0.0/v7.0.1 的旧壳检查代码连的是 GitHub，无法靠自动更新拿到本次改造，需一次性下载 v7.0.2 安装包；升级后所有后续更新都走国内直连。用户本机下载 v7.0.2 安装包可走 ghproxy.net 国内直链（不用代理）。
+- 第三方镜像风险：ghproxy.net / ghfast.top 是公共服务不受控、稳定性不保证；代码已做多通道自动切换+sha256强校验，且保留 GitHub 原始直链兜底。若镜像全挂，用户仍可用安装包手动更新。
+- 未验证：沙箱无 Windows GUI，未真机走完"检查更新→下载→A/B切换重启"全流程；验证停在逻辑模拟+产物结构+远端连通性。

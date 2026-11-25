@@ -80,6 +80,24 @@ function downloadZip(url, dest, expectedShaHex, redirects = 0) {
   });
 }
 
+// 多通道下载（DR-105 国内直连）：按序尝试候选 URL，任一成功且 sha256 匹配即返回。
+// 第三方镜像即使返回内容，sha 不符也会被拒绝并尝试下一个，杜绝镜像投毒。
+async function downloadZipMulti(urls, dest, expectedShaHex) {
+  const list = (Array.isArray(urls) ? urls : []).filter(u => typeof u === 'string' && /^https?:\/\//i.test(u));
+  if (!list.length) throw new Error('NO_DOWNLOAD_URL');
+  const errs = [];
+  for (const url of list) {
+    try {
+      const r = await downloadZip(url, dest, expectedShaHex);
+      return r;
+    } catch (e) {
+      errs.push((e && e.message) || String(e));
+      // SHA_MISMATCH 说明镜像内容不对，明确记录后继续试下一个
+    }
+  }
+  throw new Error('ALL_SOURCES_FAILED: ' + errs.join(' | '));
+}
+
 function unzip(zip, dest) {
   return new Promise((resolve, reject) => {
     execFile('powershell', [
@@ -121,7 +139,12 @@ async function prepareShellUpdate({ assets, latestVersion, exeDir, userData, tem
   const zip = path.join(tempDir || require('os').tmpdir(), 'yunjing-shell-' + String(latestVersion).replace(/[^0-9A-Za-z.\-]/g, '_') + '.zip');
   rmrf(nextDir);
   try {
-    await downloadZip(asset.browser_download_url, zip, expect);
+    // DR-105 国内直连：优先用元数据里的镜像候选列表（ghproxy → ghfast → 原始直链），
+    // 逐个尝试、每个都强校验 sha256；没有候选列表时回退原始直链（兼容旧版 Release）。
+    const urls = (Array.isArray(asset.downloadUrls) && asset.downloadUrls.length)
+      ? asset.downloadUrls.slice()
+      : [asset.browser_download_url];
+    await downloadZipMulti(urls, zip, expect);
     fs.mkdirSync(nextDir, { recursive: true });
     await unzip(zip, nextDir);
     const exe = findExe(nextDir);
@@ -184,6 +207,6 @@ function restartToNext({ userData }) {
 
 module.exports = {
   SWITCH_FILE, NEXT_DIR, OLD_DIR,
-  pickUnpackedAsset, expectedSha, downloadZip, findExe,
+  pickUnpackedAsset, expectedSha, downloadZip, downloadZipMulti, findExe,
   prepareShellUpdate, finalizeSwitch, restartToNext
 };

@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "version": "7.0.2",
+  "releaseTag": "v7.0.2",
+  "releasePage": "https://github.com/AYun07/yunjing/releases/latest",
+  "publishedAt": "2026-11-25T07:45:48.605Z",
+  "note": "国内直连更新元数据。downloadUrls 为国内可直连镜像候选，按序尝试并强制 SHA-256 校验。",
+  "mirrors": [
+    "https://ghproxy.net/",
+    "https://ghfast.top/"
+  ],
+  "assets": [
+    {
+      "name": "YunJing-v7.0.2-win-unpacked-x64.zip",
+      "kind": "unpacked",
+      "size": 849080074,
+      "digest": "sha256:08b702fe3134efcddc599f222896282d92e630f8217b743812041db4f4ceac89",
+      "browser_download_url": "https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-win-unpacked-x64.zip",
+      "downloadUrls": [
+        "https://ghproxy.net/https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-win-unpacked-x64.zip",
+        "https://ghfast.top/https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-win-unpacked-x64.zip",
+        "https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-win-unpacked-x64.zip"
+      ]
+    },
+    {
+      "name": "YunJing-v7.0.2-Windows-setup-x64.exe",
+      "kind": "setup",
+      "size": 818983339,
+      "digest": "sha256:016c7ce4499ec2fbbf357784ad63634ca17190f2f092c09a0b5fc7118113e308",
+      "browser_download_url": "https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-Windows-setup-x64.exe",
+      "downloadUrls": [
+        "https://ghproxy.net/https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-Windows-setup-x64.exe",
+        "https://ghfast.top/https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-Windows-setup-x64.exe",
+        "https://github.com/AYun07/yunjing/releases/download/v7.0.2/YunJing-v7.0.2-Windows-setup-x64.exe"
+      ]
+    }
+  ]
+}
