@@ -292,24 +292,6 @@
         "id": ""
       },
       {
-        "label": "✨ 生成样貌",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "🧠 生成性格",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "🖼 生成角色图标",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
         "label": "🎲 随机",
         "ok": true,
         "reason": "",
@@ -392,13 +374,31 @@
         "ok": true,
         "reason": "",
         "id": ""
+      },
+      {
+        "label": "🏠 返回大厅",
+        "ok": true,
+        "reason": "跳过(导航/危险)",
+        "id": ""
+      },
+      {
+        "label": "🎲 全部随机",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "📖 开始创作 · 落笔开篇",
+        "ok": true,
+        "reason": "",
+        "id": ""
       }
     ]
   },
   {
     "name": "创作室·扮演",
     "path": "/studio.html?genre=fanrenxiuxian",
-    "total": 141,
+    "total": 138,
     "tested": 60,
     "errors": 0,
     "rows": [
@@ -500,24 +500,6 @@
       },
       {
         "label": "🎲 随机",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "✨ 生成样貌",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "🧠 生成性格",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "🖼 生成角色图标",
         "ok": true,
         "reason": "",
         "id": ""
@@ -761,13 +743,31 @@
         "ok": true,
         "reason": "",
         "id": ""
+      },
+      {
+        "label": "记仇",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "狡诈",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "自私",
+        "ok": true,
+        "reason": "",
+        "id": ""
       }
     ]
   },
   {
     "name": "创作室·自由",
     "path": "/studio.html?genre=free",
-    "total": 128,
+    "total": 125,
     "tested": 60,
     "errors": 0,
     "rows": [
@@ -827,24 +827,6 @@
       },
       {
         "label": "🎲 随机姓名",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "✨ 生成样貌",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "🧠 生成性格",
-        "ok": true,
-        "reason": "",
-        "id": ""
-      },
-      {
-        "label": "🖼 生成角色图标",
         "ok": true,
         "reason": "",
         "id": ""
@@ -1127,6 +1109,24 @@
       },
       {
         "label": "胆小勇者",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "自恋美人",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "毒舌",
+        "ok": true,
+        "reason": "",
+        "id": ""
+      },
+      {
+        "label": "天然呆",
         "ok": true,
         "reason": "",
         "id": ""

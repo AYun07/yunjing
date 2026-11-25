@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "version": "7.0.4",
-  "generatedAt": "2026-11-25T11:25:58.608Z",
-  "count": 551,
+  "generatedAt": "2026-11-25T11:30:33.731Z",
+  "count": 552,
   "sources": [
     "https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/",
     "https://raw.githubusercontent.com/AYun07/yunjing/main/",
@@ -18,8 +18,8 @@
       "size": 918
     },
     "DECISIONS.md": {
-      "sha256": "e5e692aa4b29f9615c37d3c9c0e145e86e12de29e836e3d19569be6ba9319df4",
-      "size": 278479
+      "sha256": "6f3b074a5fe51bd443466b0495fef2b8f73bf0fe20766c415653819bbc7ce6b2",
+      "size": 282078
     },
     "HANDOFF.md": {
       "sha256": "e7f2c4669303832b04c01737df2734c1c0e93ce24e3de62eec17bd5ff5781062",
@@ -2102,7 +2102,7 @@
       "size": 30464
     },
     "update-latest.json": {
-      "sha256": "464ce9a288f0108bab50d0b4ca3398cf1142f80674bc532468eaf5d0d1e10369",
+      "sha256": "03ce2a3fa9fb159e553221f189581d63f5c7f5d01de3b17847166a72050481bd",
       "size": 1852
     },
     "xiaoyun.html": {
@@ -2148,6 +2148,10 @@
     "云境-v7.0.3-逐按钮点击测试与根因报告.html": {
       "sha256": "8ad3cf71d56cd885a015184c5c6f565854e2a56b8a154166e03f4f2da06f7e9c",
       "size": 22196
+    },
+    "云境-v7.0.4-修复验证报告.html": {
+      "sha256": "0d41ed803d4620e619c8aaef50bfa33b6ccbdf69633618d5c21c5aa9fb47bec8",
+      "size": 20766
     },
     "云境-功能可用性对照表.md": {
       "sha256": "5579135b56a97ab2376de173e9c7c114cbba50cd7bbe68a425cb96df618d3b90",
