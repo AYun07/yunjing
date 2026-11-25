@@ -94,7 +94,8 @@ const manifest = {
   // 内容分发双通道：优先 jsDelivr CDN（国内可达），失败回退 GitHub raw。
   // 客户端把 {base}{相对路径} 拼成下载 URL；base 带 @main 保证取仓库最新内容。
   sources: [
-    'https://cdn.jsdelivr.net/gh/AYun07/yunjing@main/',
+    'https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/',
+    'https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/',
     'https://raw.githubusercontent.com/AYun07/yunjing/main/'
   ],
   files

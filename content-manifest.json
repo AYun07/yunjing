@@ -1,10 +1,11 @@
 {
   "schema": 1,
   "version": "7.0.3",
-  "generatedAt": "2026-11-25T08:37:22.770Z",
+  "generatedAt": "2026-11-25T08:53:48.982Z",
   "count": 551,
   "sources": [
-    "https://cdn.jsdelivr.net/gh/AYun07/yunjing@main/",
+    "https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/",
+    "https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/",
     "https://raw.githubusercontent.com/AYun07/yunjing/main/"
   ],
   "files": {
@@ -17,8 +18,8 @@
       "size": 918
     },
     "DECISIONS.md": {
-      "sha256": "a01da2b731618076832c278089e4354eab3a6faa3e8d9cadc5f23d8ac806a913",
-      "size": 272624
+      "sha256": "f4b8ceaa366db006351fa16f3e239668c3e1accacbe41f82948be896d03b0ede",
+      "size": 276267
     },
     "HANDOFF.md": {
       "sha256": "e7f2c4669303832b04c01737df2734c1c0e93ce24e3de62eec17bd5ff5781062",
@@ -2101,7 +2102,7 @@
       "size": 30464
     },
     "update-latest.json": {
-      "sha256": "cd4dc89ba43a14d8c962f9e6ddce6c5e14364e9cfa52ecf4dbe09578bd873c63",
+      "sha256": "1a5f28874c48b1c3e63f68b964368eb73fb1ffc017e8a5d3cfac6955c4d28da2",
       "size": 1852
     },
     "xiaoyun.html": {

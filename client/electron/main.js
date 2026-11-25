@@ -22,16 +22,20 @@ const VERSION = require('./package.json').version;
 const HOME_URL = 'https://github.com/AYun07/yunjing';
 const RELEASE_API = 'https://api.github.com/repos/AYun07/yunjing/releases/latest';
 const RELEASE_PAGE = HOME_URL + '/releases/latest';
-// DR-105 国内直连：版本元数据走 jsDelivr/fastly 静态文件（国内可直连），不再依赖 api.github.com。
-// 带时间戳绕 CDN 缓存；fastly 为 jsDelivr 官方备用节点。
+// DR-105/DR-107 国内直连：版本元数据走静态文件（国内可直连），不再依赖 api.github.com。
+// DR-107：仓库 .git 达 755MB，cdn.jsdelivr.net 主节点对整个仓库报「超过 50MB」而拒绝所有文件，
+//         改用 gcore.jsdelivr.net（jsDelivr 未受限节点）+ ghproxy.net（国内代理）+ raw 兜底。
+// 带时间戳绕 CDN 缓存；多源逐个尝试，单源失败自动切换。
 const UPDATE_META_SOURCES = [
-  'https://cdn.jsdelivr.net/gh/AYun07/yunjing@main/update-latest.json',
-  'https://fastly.jsdelivr.net/gh/AYun07/yunjing@main/update-latest.json'
+  'https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/update-latest.json',
+  'https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/update-latest.json',
+  'https://raw.githubusercontent.com/AYun07/yunjing/main/update-latest.json'
 ];
 const UA = 'yunjing-desktop/' + VERSION;
 // 首次落地用默认通道；之后以本地清单里的 sources 为准
 const DEFAULT_SOURCES = [
-  'https://cdn.jsdelivr.net/gh/AYun07/yunjing@main/',
+  'https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/',
+  'https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/',
   'https://raw.githubusercontent.com/AYun07/yunjing/main/'
 ];
 
