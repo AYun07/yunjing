@@ -44,7 +44,7 @@ details table{margin-top:10px}
     <span class="badge ok">180 按钮点击 · 0 异常</span>
     <span class="badge ok">6 页面 · 0 脚本错误</span>
     <span class="badge info">2 个真根因已修</span>
-    <span class="badge warn">发版需 token</span>
+    <span class="badge ok">已发版 v7.0.3 · 国内直连可用</span>
   </div>
 </div></header>
 <div class="wrap">
@@ -95,9 +95,15 @@ details table{margin-top:10px}
   <p>固定端口的改动在 Electron 主进程（app.asar），属于程序壳。<strong>内容热更新改不到壳</strong>，所以这一次需要装一次 v7.0.3 安装包，把修好的壳装上去。</p>
   <p>装完 v7.0.3 之后，后续的内容/界面/公告修复都能自动热更新，不用再重装。<strong>这是最后一次性重装</strong>，原因是这次修的正是"存档隔离"这个壳层根因本身。</p>
 </div>
-<div class="card warn" style="border-left-color:#d29922">
-  <h3>② 发版上传还差一个 GitHub 令牌</h3>
-  <p>当前环境没有可用的 GitHub 凭证（<code>gh auth status</code> 显示未登录）。代码、清单、基线、公告都已就绪并验过三源一致，但把 v7.0.3 安装包发布到 Release、把清单推到 CDN 这一步<strong>需要你再提供一次令牌</strong>。我不会编造一个假的成功发布。</p>
+<div class="card good" style="border-left-color:#2ea043">
+  <h3>② 已发版完成 · 国内网络直连可下载（无需代理）</h3>
+  <p>你提供令牌后，v7.0.3 已发布到 GitHub Release，两个安装包均已上传并完成 SHA-256 校验。清单、公告、元数据已推送到主分支，国内直连链路实测通过。</p>
+  <p><strong>国内直连下载地址</strong>（复制到浏览器即可下载，无需代理）：</p>
+  <ul>
+    <li>安装版：<code>https://ghproxy.net/https://github.com/AYun07/yunjing/releases/download/v7.0.3/YunJing-v7.0.3-Windows-setup-x64.exe</code></li>
+    <li>备用镜像：把 <code>ghproxy.net</code> 换成 <code>ghfast.top</code> 即可</li>
+  </ul>
+  <p><strong>顺带修掉的隐藏问题</strong>：仓库体积 755MB 导致 jsDelivr 主节点报「超 50MB」拒绝所有文件，旧的检查更新链路整体失效。已把下载源改为 ghproxy → raw → gcore 顺序（ghproxy 实测 5/5 稳定），并发现 gcore 元数据缓存卡旧 SHA 的问题，降为末位兜底。国内直连验证脚本 <code>test/verify-cn-update-v703.mjs</code> 11/11 全过。</p>
 </div>
 
 <div class="foot">云境 v7.0.3 · 生成于 2026-11-25 · 本报告数据来自真实 Chromium 浏览器点击测试</div>
