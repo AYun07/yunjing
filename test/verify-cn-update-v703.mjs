@@ -1,10 +1,10 @@
-// v7.0.3 国内直连更新链路验证
+// v7.0.4 国内直连更新链路验证
 // 覆盖：① 多源元数据读取取最高版本 ② 三源均国内可达 ③ SHA 校验 ④ 清单多源取最高
 import https from 'https';
 
 function get(url, timeoutMs = 20000) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { 'User-Agent': 'yunjing-verify/7.0.3' }, timeout: timeoutMs }, res => {
+    https.get(url, { headers: { 'User-Agent': 'yunjing-verify/7.0.4' }, timeout: timeoutMs }, res => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume(); return resolve(get(res.headers.location, timeoutMs));
       }
@@ -46,7 +46,7 @@ for (const u of META_SOURCES) {
 console.log('=== ② 多源取最高版本 ===');
 let best = null;
 for (const m of metaOk) if (!best || cmp(m.version, best.version) > 0) best = m;
-ok('取到最高版本 7.0.3', best && cmp(best.version, '7.0.3') === 0, best && 'v' + best.version);
+ok('取到最高版本 7.0.4', best && cmp(best.version, '7.0.4') === 0, best && 'v' + best.version);
 
 console.log('=== ③ 元数据资产SHA格式与镜像地址 ===');
 const meta = JSON.parse(await get(META_SOURCES[0]));
@@ -63,7 +63,7 @@ for (const u of MANIFEST_SOURCES) {
 }
 let manBest = '0';
 for (const v of manVersions) if (cmp(v, manBest) > 0) manBest = v;
-ok('清单取最高 7.0.3', cmp(manBest, '7.0.3') === 0, '各源=' + manVersions.join(',') + ' → 取 ' + manBest);
+ok('清单取最高 7.0.4', cmp(manBest, '7.0.4') === 0, '各源=' + manVersions.join(',') + ' → 取 ' + manBest);
 ok('清单sources已用国内源', true, '');
 const manRaw = JSON.parse(await get(MANIFEST_SOURCES[0]));
 ok('清单首源为ghproxy', (manRaw.sources || [])[0] === 'https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/', manRaw.sources && manRaw.sources[0]);
