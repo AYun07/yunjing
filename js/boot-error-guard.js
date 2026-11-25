@@ -11,9 +11,13 @@
 (function () {
     'use strict';
     var seen = 0;
+    var seenMsgs = {}; // v7.0.1：同一错误只弹一次，避免交互中反复触发同一处把屏幕糊满
     function report(tag, msg) {
         try {
             console.error('[云境·异常哨兵]', tag, msg);
+            var key = tag + '|' + String(msg).slice(0, 160);
+            if (seenMsgs[key]) return;   // 去重：相同错误不再重复弹条
+            seenMsgs[key] = 1;
             if (++seen > 3) return;   /* 限流：最多弹 3 条，避免错误风暴糊屏 */
             var host = document.body || document.documentElement;
             if (!host) { document.addEventListener('DOMContentLoaded', function () { report(tag, msg); }); return; }

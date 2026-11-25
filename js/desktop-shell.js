@@ -66,9 +66,13 @@
       } catch (e) { /* 状态查询失败时保留当前图标 */ }
     }
 
-    document.getElementById('yjMinBtn').addEventListener('click', function () { call('minimizeWindow'); });
-    maxBtn.addEventListener('click', function () { call('maximizeWindow'); });
-    document.getElementById('yjCloseBtn').addEventListener('click', function () { call('closeWindow'); });
+    // v7.0.1：标题栏节点可能被页面脚本重建/移除，裸 .addEventListener 会抛
+    // "Cannot read properties of null"，全局哨兵就弹红色「脚本运行错误」。统一判空。
+    var minBtn = document.getElementById('yjMinBtn');
+    var closeBtn = document.getElementById('yjCloseBtn');
+    if (minBtn) minBtn.addEventListener('click', function () { call('minimizeWindow'); });
+    if (maxBtn) maxBtn.addEventListener('click', function () { call('maximizeWindow'); });
+    if (closeBtn) closeBtn.addEventListener('click', function () { call('closeWindow'); });
 
     bar.addEventListener('dblclick', function (e) {
       if (e.target.closest && e.target.closest('.yj-win-btn')) return;

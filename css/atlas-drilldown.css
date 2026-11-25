@@ -10,7 +10,10 @@
 
 .ad-body { width:min(1180px,96vw); height:min(880px,96vh); display:flex; flex-direction:column;
   background:linear-gradient(160deg,#141d27 0%,#0d141c 55%,#0a1017 100%);
-  border:1px solid rgba(217,180,106,.38); border-radius:14px; overflow:hidden;
+  border:1px solid rgba(217,180,106,.38); border-radius:14px;
+  /* v7.0.1（问题11）：下钻详情内容超出时原本 overflow:hidden 直接截断看不全；
+     改为纵向可滚动，同时保留圆角裁切（横向仍 hidden）。 */
+  overflow-x:hidden; overflow-y:auto; scrollbar-width:thin;
   box-shadow:0 0 0 1px rgba(0,0,0,.6),0 24px 80px rgba(0,0,0,.7),inset 0 0 60px rgba(217,180,106,.05); }
 
 .ad-topbar { display:flex; align-items:center; justify-content:space-between; gap:12px;

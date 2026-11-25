@@ -305,7 +305,8 @@
     document.body.appendChild(tip);
     var map = document.querySelector("#atlasDrillOverlay .ad-map");
     if (map) map.classList.add("af-picking");
-    document.getElementById("afPickCancel").addEventListener("click", function (e) { e.stopPropagation(); cancelPickSeat(); });
+    var _pickCancel = document.getElementById("afPickCancel"); // v7.0.1：判空，避免浮层已关闭时抛 null
+    if (_pickCancel) _pickCancel.addEventListener("click", function (e) { e.stopPropagation(); cancelPickSeat(); });
     // 地图点击 → 存坐标
     if (map) map.addEventListener("click", onPickClick, { once: true, capture: true });
   }

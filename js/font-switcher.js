@@ -78,8 +78,10 @@
     wrap.id = "fsWrap";
     wrap.innerHTML = panelHTML();
     document.body.appendChild(wrap);
-    document.getElementById("fsMask").addEventListener("click", close);
-    document.getElementById("fsClose").addEventListener("click", close);
+    // v7.0.1：面板节点可能在其它逻辑里被重建，裸绑定抛 null → 全局哨兵弹「脚本运行错误」
+    var _mask = document.getElementById("fsMask"), _close = document.getElementById("fsClose");
+    if (_mask) _mask.addEventListener("click", close);
+    if (_close) _close.addEventListener("click", close);
     wrap.querySelectorAll(".fs-opt").forEach(function (b) {
       b.addEventListener("click", function () {
         var id = b.getAttribute("data-font");

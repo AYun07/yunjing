@@ -59,3 +59,29 @@ body.has-left-rail #chatArea .input-row { position: relative; z-index: 60; }
 body.has-left-rail #worldClockPill { left: 192px !important; }
 .left-rail { position: relative; z-index: 55; }
 #leftRail .lr-head { position: relative; z-index: 5; }
+
+/* ============================================================
+   v7.0.1 输入可达性加固（问题8/9/13/16）
+   用户反馈「小云对话框无法输入 / 主对话框无法输入 / 部分选项无法点击 /
+   边缘区域被遮挡」。实测输入事件绑定完好，元凶是遮挡层残留：
+   ① 小云面板需盖过自绘标题栏/氛围层，否则输入框被吞点击；
+   ② 输入行必须处在所有 fixed 装饰之上，保证 elementFromPoint 命中输入框本身；
+   ③ 状态抽屉 .open 残留会让 .input-area 永久 visibility:hidden，加兜底恢复。
+   ============================================================ */
+/* ① 小云面板 / 立绘层级抬到标题栏(9500)与氛围层(9400)之上，输入框可点可输入 */
+#xyBuddy { z-index: 9600 !important; }
+#xyBuddy .xy-panel { pointer-events: auto; }
+#xyBuddy .xy-panel.on, #xyBuddy:hover .xy-panel { pointer-events: auto; }
+/* 立绘透明空白区穿透，只有立绘本身接收点击，不吞正文 */
+#xyBuddy .xy-orb { pointer-events: auto; }
+
+/* ② 输入行提到所有 fixed 装饰之上，保证命中输入框本体 */
+#chatArea .input-area, .input-area { position: relative; z-index: 70; }
+#userInput, #sendBtn { position: relative; z-index: 71; }
+
+/* ③ 抽屉未打开时，强制恢复输入区可见（防 :has 规则因残留 .open 永久隐藏） */
+body:not(:has(#statusPanel.open)) .input-area { visibility: visible !important; pointer-events: auto !important; }
+
+/* ④ 边缘：四边统一安全区，fixed 元素不再贴死边缘遮住内容 */
+.wr-hud { bottom: calc(8px + env(safe-area-inset-bottom, 0px)); right: calc(8px + env(safe-area-inset-right, 0px)); left: calc(8px + env(safe-area-inset-left, 0px)); }
+#worldClockPill { top: calc(60px + env(safe-area-inset-top, 0px)); }

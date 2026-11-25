@@ -67,10 +67,10 @@
   /* 太虚阁 12 模块 → 并入玩卡·沉浸 */
   var IMMERSIVE = [
     entry("🎭", "众生相", "登场人物志", function () { immTab("gallery"); }, function () { return !!window.ImmersiveSuite; }),
-    entry("🌌", "羁绊图", "人物关系网", function () { immTab("bonds"); }, function () { return !!window.ImmersiveSuite; }),
+    entry("🌌", "羁绊速览", "沉浸式关系一览（跟剧情走）", function () { immTab("bonds"); }, function () { return !!window.ImmersiveSuite; }),
     entry("⛩", "境界梯", "境界 / 等级天梯", function () { immTab("realms"); }, function () { return !!window.ImmersiveSuite; }),
     entry("💎", "藏宝阁", "物品 / 法宝 / 战利品", function () { immTab("treasury"); }, function () { return !!window.ImmersiveSuite; }),
-    entry("📜", "编年史", "按回目记大事", function () { immTab("chronicle"); }, function () { return !!window.ImmersiveSuite; }),
+    entry("📜", "章节大事记", "按回目串起剧情大事", function () { immTab("chronicle"); }, function () { return !!window.ImmersiveSuite; }),
     entry("✉", "传书", "书信 / 传讯", function () { immTab("letters"); }, function () { return !!window.ImmersiveSuite; }),
     entry("⏳", "倒计时", "事件倒计时", function () { immTab("events"); }, function () { return !!window.ImmersiveSuite; }),
     entry("⭐", "名场面", "高光时刻收藏", function () { immTab("highlights"); }, function () { return !!window.ImmersiveSuite; }),
@@ -88,7 +88,7 @@
       id: "cardrole", icon: "🎴", name: "角色与卡", items: [
         entry("🃏", "角色卡", "导出 / 导入 NPC 卡", call0("CardHub", "open"), has("CardHub", "open")),
         entry("🖼", "立绘本", "NPC 登场画像", call0("NpcPortrait", "open"), has("NpcPortrait", "open")),
-        entry("🔗", "关系网", "可拖拽人物关系图", call0("RelationGraph", "open"), has("RelationGraph", "open")),
+        entry("🔗", "关系网·可拖拽", "完整人物关系图（可拖拽编辑）", call0("RelationGraph", "open"), has("RelationGraph", "open")),
         entry("🐾", "灵宠伙伴", "契约 / 养成", call0("BeastSystem", "openUI"), has("BeastSystem", "openUI")),
         entry("🛡", "小队编成", "同伴 / 灵宠入队", call0("SquadSystem", "openUI"), has("SquadSystem", "openUI"))
       ]
@@ -96,7 +96,7 @@
     {
       id: "cardrole2", icon: "📇", name: "角色档案", items: [
         entry("🧬", "性格世界书", "全界人物性格设定", function () { try { if (window.PersonalityCodexUI) PersonalityCodexUI.open(); } catch (e) {} }, function () { return !!window.PersonalityCodexUI; }),
-        entry("📅", "角色编年史", "生平 / 态度 / 离场", function () { try { if (window.NPCChronicleUI) NPCChronicleUI.open(); } catch (e) {} }, function () { return !!window.NPCChronicleUI; }),
+        entry("📅", "角色生平志", "单个 NPC 生平 / 态度 / 离场", function () { try { if (window.NPCChronicleUI) NPCChronicleUI.open(); } catch (e) {} }, function () { return !!window.NPCChronicleUI; }),
         entry("💞", "动态关系 R18", "五维关系 / 表达尺度", function () { try { if (window.IntimacyUI) IntimacyUI.open(); } catch (e) {} }, function () { return !!window.IntimacyUI; }),
         entry("🎯", "行动判定骰", "骰点 + 属性判成败", function () { try { if (window.ActionCheck) ActionCheck.open(); } catch (e) {} }, function () { return !!window.ActionCheck; }),
         entry("📈", "成长账本", "六维增减留痕", function () { try { if (window.GrowthLedger) GrowthLedger.open(); } catch (e) {} }, function () { return !!window.GrowthLedger; })

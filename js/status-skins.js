@@ -362,12 +362,23 @@
 /* v5.2.1 生图美术层：无文字氛围底图，铺满状态栏、压在内容之下。
    图片按 data-world 由下方每界规则加载；缺图时透明回退到 CSS 渐变（纯增强）。 */
 #yjStatusSection[data-status-skin] .ss-art{position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-size:cover;background-position:center 62%;background-repeat:no-repeat;opacity:.72;
+  background-size:cover;background-position:center 62%;background-repeat:no-repeat;
+  /* v7.0.1（问题4）：底图从 .72 降到 .26，不再淹没文字；叠一层暗罩进一步压底纹 */
+  opacity:.26;
   -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,#000 40%,rgba(0,0,0,.82) 100%);
   mask-image:linear-gradient(180deg,rgba(0,0,0,.9) 0%,#000 40%,rgba(0,0,0,.82) 100%)}
+/* v7.0.1（问题4）：文字加暗投影，保证压在任何底图上都清晰可读 */
+#yjStatusSection[data-status-skin] .yj-st-k,
+#yjStatusSection[data-status-skin] .yj-st-v,
+#yjStatusSection[data-status-skin] .yj-st-gname,
+#yjStatusSection[data-status-skin] .section-title{
+  text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);
+  opacity:1 !important;
+}
+#yjStatusSection[data-status-skin] .yj-st-v.empty{opacity:.8 !important}
 #yjStatusSection[data-status-skin] .ss-amb{z-index:1}
-#yjStatusSection[data-status-skin] .section-title{color:inherit;opacity:.92}
-#yjStatusSection[data-status-skin] .yj-st-cog{border-color:currentColor;color:inherit;opacity:.55}
+#yjStatusSection[data-status-skin] .section-title{color:inherit}
+#yjStatusSection[data-status-skin] .yj-st-cog{border-color:currentColor;color:inherit;opacity:.85}
 #yjStatusSection[data-status-skin] .empty-hint{display:none}
 #yjStatusSection[data-status-skin] > *{position:relative;z-index:2}
 

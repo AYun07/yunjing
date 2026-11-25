@@ -17066,6 +17066,13 @@
         .atlas-flavor::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:2px;border-radius:2px;
             background:linear-gradient(180deg,var(--primary,#c9a86a),transparent);opacity:.7;}
         @media (max-width:560px){.atlas-svg{max-height:60vh!important;min-height:320px!important;}}
+        /* v7.0.1（问题11 行旅图鉴看不全）：面板固定 90vh + overflow:hidden，地图 min-height 320/340
+           把下方地点词条/详情挤出可视区且无法滚动。改为：面板可整体滚动 + 地图限高不撑破 + 去掉内部双重 min-height 冲突。 */
+        #atlasPanel{overflow-y:auto!important;overflow-x:hidden;height:min(94vh,900px)!important;top:3vh!important;}
+        .atlas-inner{overflow:visible!important;}
+        .atlas-map{flex:0 0 auto!important;min-height:240px!important;height:min(42vh,360px)!important;overflow:hidden;}
+        .atlas-svg{min-height:0!important;max-height:100%!important;height:100%!important;}
+        @media (max-width:560px){.atlas-svg{max-height:100%!important;min-height:0!important;}}
         `;
     document.head.appendChild(st);
   }

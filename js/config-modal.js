@@ -37,7 +37,18 @@ const ConfigModal = {
   },
   msSave() {
     if (!window.ModelSlots) return;
-    var name = (this.readForm().model || "").trim();
+    var form = this.readForm();
+    var name = (form.model || "").trim();
+    // v7.0.1：存档前先把当前表单落盘到 storyApiConfig。此前玩家填好地址/Key/模型
+    // 直接点「存档」，ModelSlots.saveCurrent 读的是 localStorage 里的旧值，导致存进去的是旧配置、
+    // 同一接口下的多个模型永远存不上。saveApiFields 纯 localStorage 写入，不依赖 storyFramework 实例。
+    if (this.saveApiFields) {
+      var core = {};
+      ['endpoint', 'apiKey', 'model', 'provider', 'temperature', 'maxTokens', 'baseModelMode', 'reasoningEffort'].forEach(function (k) {
+        if (form[k] !== undefined && form[k] !== null && form[k] !== '') core[k] = form[k];
+      });
+      this.saveApiFields(core);
+    }
     // 用 prompt 让玩家给档位命名（默认取模型名）；纯前端交互，不上传
     var nm = window.prompt("给这个模型档位起个名字（方便以后识别）：", name) || "";
     if (!name && !nm.trim()) { window.showToast?.('请先在下方填好模型名称再存档', 'error'); return; }
@@ -1428,7 +1439,9 @@ const ConfigModal = {
   /** 渲染向量检索面板（每次打开设置都按最新配置重建） */
   renderVecSection() {
     const host = document.getElementById("vecPanelHost");
-    const chip = document.getElementById("vc_stateChip");
+    // v7.0.1：原误取 vc_stateChip（HTML 里并不存在），导致向量面板占位期徽标拿不到节点、
+    // 载入完成后也不刷新，玩家看到「未启动」。改为与 HTML 一致的 vec_stateChip。
+    const chip = document.getElementById("vec_stateChip");
     if (!this._lazyOk("KBVector")) {
       this._lazyPlaceholder(host, chip, "KBVector", "正在载入向量检索面板…", () => this.renderVecSection());
       return;

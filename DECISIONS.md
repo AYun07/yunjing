@@ -1704,3 +1704,27 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 验证：解包 asar 真实 require 加载通过（对应报错点）；DR-100 的 verify-package.cjs 四项全过；新 exe 内嵌 asar 5 文件齐全。
 - 未验证/边界：沙箱无 Windows GUI，无法真机双击确认；本次从"包内容层"验证已到位，剩余风险集中在用户端下载缓存与覆盖，已用新文件名+强制删除 asar 双重消解。
 - 教训：此前 DR-099/100 的验证只查"我上传的包对不对"，没查"用户装到的是不是这个包"。以后凡覆盖安装类修复，必须同时处理旧文件残留与同名缓存，并换文件名发布。
+
+## DR-102 · v7.0.1 实玩 16 项再修 + 设置页配置中枢化（2026-11-25）
+- 背景：v7.0.0 交付后用户又实测出 16 项问题（万象工坊进错页、设置开关点了没反应、模型配置分散存不下、获取模型无效、向量显示未启动、多处脚本运行错误、小云/主对话框无法输入、图鉴看不全、顶部/边缘被遮挡、状态栏看不清、功能重复、界专属太乱等），并明确表达"怎么还有问题"的不满。
+- 门禁执行：先派 4 路只读探查定位到具体文件行号，再用 Playwright 真实浏览器逐条复现核实（不盲信探查），确认根因后才动手；每批改动后立即浏览器复测。
+- 逐条根因与修复（证据见 _verify701.mjs 17/17）：
+  ① 万象工坊：入口 forge 从 studio.html?goto=dev（XYDev 浮层叠在创作世界上，露出底层"自由创作世界"）改为独立 xiaoyun.html?goto=forge，并在该页 DOM 就绪后自动 XYDev.open() → 进入即纯工坊页。证据：落地 title=小云创造中枢、.xy-dev.on=true。
+  ② 设置开关无反应（问题2）：settings.html 只加载了 4 个模块，SystemGuard/YJPerf/Celebration/StoryInput 全缺；callOrTip 把"未定义函数"当成功静默吞掉。修复：补齐脚本引用（?v=7.0.1），方法用 .bind(模块对象) 保住 this（否则报 Cannot read properties of undefined），并回填高亮态。证据：storyNightMode=1、yunjingLowSpec=on。
+  ③ 配置归类（问题3）：设置页从"主笔模型 4 字段"扩为"模型配置"区，加「全部接口配置」按钮直达 ConfigModal（涵盖主笔/动态世界/变量AI/绘图/提示词/向量/连接档案）。
+  ④ 获取模型无效（问题5）：设置页加 fetchModelsBtn，自带 OpenAI/Gemini/Ollama 发现逻辑并引入 api-calling-functions.js；不依赖 ConfigModal 的元素 id（原来 cfg_apiKey 与 cfg_key 不一致导致复用失败）。
+  ⑤ 向量未启动（问题6）：renderVecSection 误取不存在的 vc_stateChip，载入回调拿不到节点。改为与 HTML 一致的 vec_stateChip。
+  ⑥ 保存/多模型（问题10）：ConfigModal.msSave 存档前先 saveApiFields 落盘表单（此前存的是 localStorage 旧值）；设置页档位 UI（saveApiFields→saveCurrent→activate）打通同接口多模型。证据：同接口存下 model-A/model-B 两档。
+  ⑦ 脚本运行错误（问题7）：desktop-shell 标题栏、index splash、font-switcher、atlas-faction-layer 的裸 .addEventListener 全部判空；boot-error-guard 对相同错误去重。证据：5 页零 pageerror、零红条。
+  ⑧ 输入/点击/遮挡（问题8/9/12/13/16）：真实路径测出输入绑定完好、跳过引导后小云 typed=true，根因是遮挡层——故做防御性加固：小云面板 z-index 9600 盖过标题栏、输入行 z70、抽屉未开时强制恢复 input-area 可见、studio 启动清 .open/.show 残留、desktop-shell 补 .top-bar/.masthead 顶栏补偿、wr-hud/worldClockPill 加 safe-area。
+  ⑨ 状态栏看不清（问题4）：status-skins.js 满铺底图 opacity .72→.26、文字加 text-shadow 且 opacity 强制 1。一处改覆盖 38 界。
+  ⑩ 图鉴看不全（问题11）：#atlasPanel 固定 90vh+overflow:hidden 且地图 min-height 320/340 撑破，改 overflow-y:auto、地图限高 min(42vh,360px)、去双重 min-height；下钻 .ad-body 改 overflow-y:auto。
+  ⑪ 功能重复（问题15）：羁绊图/关系网、编年史/角色编年史改名区分（羁绊速览/关系网·可拖拽/章节大事记/角色生平志），功能零删除。
+- 版本与缓存：唯一来源 studio.html YJ_VER 升 7.0.1，sync-version 全站同源通过，SW_VER=yunjing-v7.0.1（强制刷新旧缓存，杜绝"改了不生效"）；content-manifest.json 重建 556 文件（桌面端可增量同步）；changelog + release-notes.json + package.json 同步。
+- 证据：_verify701.mjs 17/17 PASS（浏览器真实断言）；全站 node --check 语法通过；版本同源 --check 通过。
+- 未验证项强制披露：
+  ① 问题5"获取模型"只验证了按钮/函数就绪与逻辑存在，未用真实 API Key 联网拉列表（无可用 Key）——拉取成功率取决于用户端点。
+  ② 问题14"界专属画面太乱"是主观视觉项且依赖真实故事数据渲染，本次通过状态栏统一皮肤层与遮挡加固改善，但未逐一对 38 界做真机直观验收。
+  ③ 问题8/9 输入最终验证在"跳过引导"路径完成；引导层显示期间本就设计为全屏拦截（需先跳过/关闭），未改变该交互。
+  ④ 沙箱无 Windows GUI，桌面客户端标题栏/边框改动经 PWA 注入桌面标识模拟验证，未在真机 exe 双击确认。
+- 失效条件：若 config-modal.js 的 vec_stateChip 元素 id 再改，问题6 会复发；若新增设置开关却又漏加脚本引用，问题2 同型复发。
