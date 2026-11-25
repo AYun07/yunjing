@@ -67,6 +67,12 @@ Section "云境主程序" SEC_MAIN
   Pop $R0
   SetOutPath $R0
 
+  ; ---- DR-101：覆盖安装时强制删除旧 app.asar ----
+  ; 旧版 asar 若因时间戳/占用未覆盖，会残留缺 content-sync.js 的坏包，
+  ; 导致启动报 "Cannot find module './content-sync.js'"。先删再复制，杜绝残留。
+  Delete "$INSTDIR\resources\app.asar"
+  Delete "$INSTDIR\app.asar"
+
   StrCpy $R1 0
   LoopExtract:
     IntOp $R1 $R1 + 1

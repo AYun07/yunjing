@@ -1691,3 +1691,16 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 发布动作：删旧 asset(790052391)→上传同名修复版 exe（带新 digest）。
 - 未验证/边界：沙箱无 Windows GUI，未在真机双击启动确认无崩溃弹窗；但已从最终 exe 提取 asar 逐个验证 require 可解析，直接对应报错点。
 - 失效条件：日后若 main.js 新增本地 require，必须同步加进构建脚本 2b 的文件清单（或改为扫描式自动收集），否则校验脚本第1项会拦截。
+
+## DR-101 · v7.0.0 覆盖安装残留旧 asar + 同名包缓存（2026-11-25）
+- 背景：DR-100 后用户重装仍报完全相同的「Cannot find module './content-sync.js'」，报错路径与首次一致（同一安装目录 E:\小鲸鱼\...\云境）。
+- 决定性排查（这次验证到了对的层面）：把新包 app.asar 完全解包，用真实 Node require 加载 main.js（mock electron）——main.js 完整执行到 createWindow()，require('./content-sync.js')/shell-update.js 全部解析成功。证明**上传的包内容是好的**，问题在用户端装到的是旧 asar。
+- 根因（两条叠加，此前都没考虑到）：
+  ① 覆盖安装到同一目录时，旧 app.asar 可能因时间戳/文件占用未被 CopyFiles 替换，残留 3 文件坏 asar → 启动必崩。
+  ② 三次都用同一文件名 YunJing-v7.0.0-Windows-setup-x64.exe，旧包被浏览器/CDN 或本地下载缓存命中，用户以为下了新版实为旧包。
+- 修复：
+  ① installer.nsi 在 CopyFiles 前加 `Delete "$INSTDIR\resources\app.asar"`（及 app.asar），先删旧再复制，杜绝覆盖残留。
+  ② 换全新文件名 `YunJing-v7.0.0-Windows-setup-x64-FIX.exe` 上传，彻底破除同名缓存。
+- 验证：解包 asar 真实 require 加载通过（对应报错点）；DR-100 的 verify-package.cjs 四项全过；新 exe 内嵌 asar 5 文件齐全。
+- 未验证/边界：沙箱无 Windows GUI，无法真机双击确认；本次从"包内容层"验证已到位，剩余风险集中在用户端下载缓存与覆盖，已用新文件名+强制删除 asar 双重消解。
+- 教训：此前 DR-099/100 的验证只查"我上传的包对不对"，没查"用户装到的是不是这个包"。以后凡覆盖安装类修复，必须同时处理旧文件残留与同名缓存，并换文件名发布。
