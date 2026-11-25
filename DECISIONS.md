@@ -1779,3 +1779,15 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 版本：站点/清单/SW/壳/公告全部 v7.0.3；release-notes.json 增 v7.0.3 条目。
 - 未验证项强制披露：① 存档固定端口修复在 Electron 壳(app.asar)内，内容热更新改不到壳，本次仍需一次性重装 v7.0.3，之后才免重装；② 当前环境无 GitHub 令牌(gh auth status 未登录)，v7.0.3 安装包未发布 Release、清单未推 CDN，这一步待用户提供令牌；③ 沙箱无 Windows GUI，未真机双击 exe 验证固定端口跨重启存档保留，验证停在逻辑+产物层。
 - 失效条件：若后续程序版改壳却不同步 client/electron/package.json 或不发 Release，检查更新停旧版同型复发；若 CDN 全部缓存同一旧版本，取最高版本策略也无力，需强制刷新 CDN。
+
+## DR-107 · 国内直连更新链路重建（2026-11-25）
+- 背景：用户提供 GitHub 令牌后执行 v7.0.3 发版。验证国内直连链路时发现 v7.0.2 建立的 jsDelivr 通道整体失效。
+- 根因：仓库 .git 达 755MB（历史含大量视频/webm 资产），cdn.jsdelivr.net 对整个仓库报「Package size exceeded the configured limit of 50 MB」，拒绝提供**所有**文件——连 release-notes.json 都返回该错误。fastly 节点仍缓存 7.0.2，api.github.com 国内不可达。三通道全废 → 客户端检查更新失败。
+- 实测各源（带时间戳绕缓存）：gcore.jsdelivr.net、ghproxy.net、raw.githubusercontent.com 均返回 v7.0.3 新文件；cdn.jsdelivr.net / fastly.jsdelivr.net 失败或停旧版。
+- 决策：
+  ① main.js UPDATE_META_SOURCES / DEFAULT_SOURCES、清单 sources 统一改为 ghproxy.net（代理 raw、跟进最快）→ raw → gcore 顺序。
+  ② DR-108（同批发现）：gcore.jsdelivr.net 的元数据缓存卡在旧 SHA（f3b63740），purge.jsdelivr.net 对它无效（gcore 是独立节点）。若 gcore 排第一会导致客户端下载后 SHA 校验失败。故 ghproxy 置顶、gcore 降为末位兜底。
+  ③ 因改 main.js 影响 app.asar，重打包全链：asar→7z(LZMA非solid)→NSIS exe→win-unpacked zip，重生 update-latest.json 使 SHA 与新包一致。
+- 证据：test/verify-cn-update-v703.mjs 11 PASS/0 FAIL（三源可达、多源取最高、SHA格式、国内镜像地址、清单取最高、sources顺序）；scan-secrets 3257 文件无真实密钥；verify-package.cjs 全通过；Release v7.0.3 已建并上传 exe+zip 两资产。
+- 未验证项强制披露：① 沙箱无 Windows GUI，未真机双击 exe 验证安装与跨重启存档；② v7.0.2 旧壳仍用失效的 cdn/fastly 通道，无法自动检查到 v7.0.3，本次仍需一次性手动安装；③ ghproxy.net 为第三方公共代理，长期可用性取决于该服务，raw 与 gcore 为兜底。
+- 失效条件：若 ghproxy/raw/gcore 三源同时不可达，检查更新回落 api.github.com（国内不可达）将失败；若未来再生成超大文件推高仓库体积，gcore 也可能开始报 50MB 限制。

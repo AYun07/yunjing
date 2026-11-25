@@ -3,7 +3,7 @@
   "version": "7.0.3",
   "releaseTag": "v7.0.3",
   "releasePage": "https://github.com/AYun07/yunjing/releases/latest",
-  "publishedAt": "2026-11-25T08:56:41.259Z",
+  "publishedAt": "2026-11-25T09:04:19.734Z",
   "note": "国内直连更新元数据。downloadUrls 为国内可直连镜像候选，按序尝试并强制 SHA-256 校验。",
   "mirrors": [
     "https://ghproxy.net/",
@@ -13,8 +13,8 @@
     {
       "name": "YunJing-v7.0.3-win-unpacked-x64.zip",
       "kind": "unpacked",
-      "size": 842401652,
-      "digest": "sha256:d7320ab5d7acb568f44f67dc46cc7c4ba0c60a6353a2e6e6b17234680d946333",
+      "size": 842401747,
+      "digest": "sha256:b968de67929f11794ddff9637fcd55c05c82b2f9ab97328191b9dc42636fd57c",
       "browser_download_url": "https://github.com/AYun07/yunjing/releases/download/v7.0.3/YunJing-v7.0.3-win-unpacked-x64.zip",
       "downloadUrls": [
         "https://ghproxy.net/https://github.com/AYun07/yunjing/releases/download/v7.0.3/YunJing-v7.0.3-win-unpacked-x64.zip",
@@ -25,8 +25,8 @@
     {
       "name": "YunJing-v7.0.3-Windows-setup-x64.exe",
       "kind": "setup",
-      "size": 818995259,
-      "digest": "sha256:4e685331152e28c857241db233dd48e4bc1aad6164f4fa1f56c6f8bd0ff21b48",
+      "size": 818995354,
+      "digest": "sha256:1286b74e07ece9daa50025aaecb94fa3b47a1838d8b8f0bbb19588623b26b415",
       "browser_download_url": "https://github.com/AYun07/yunjing/releases/download/v7.0.3/YunJing-v7.0.3-Windows-setup-x64.exe",
       "downloadUrls": [
         "https://ghproxy.net/https://github.com/AYun07/yunjing/releases/download/v7.0.3/YunJing-v7.0.3-Windows-setup-x64.exe",

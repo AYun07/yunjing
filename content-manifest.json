@@ -1,12 +1,12 @@
 {
   "schema": 1,
   "version": "7.0.3",
-  "generatedAt": "2026-11-25T08:53:48.982Z",
+  "generatedAt": "2026-11-25T09:01:21.870Z",
   "count": 551,
   "sources": [
-    "https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/",
     "https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/",
-    "https://raw.githubusercontent.com/AYun07/yunjing/main/"
+    "https://raw.githubusercontent.com/AYun07/yunjing/main/",
+    "https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/"
   ],
   "files": {
     "CODE-MAP.md": {
@@ -2102,7 +2102,7 @@
       "size": 30464
     },
     "update-latest.json": {
-      "sha256": "1a5f28874c48b1c3e63f68b964368eb73fb1ffc017e8a5d3cfac6955c4d28da2",
+      "sha256": "65f3fb354dff2932772cc07fb6cce58db901ee20ee2cabc6713beedc8f0e2277",
       "size": 1852
     },
     "xiaoyun.html": {

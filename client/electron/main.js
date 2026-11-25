@@ -26,17 +26,19 @@ const RELEASE_PAGE = HOME_URL + '/releases/latest';
 // DR-107：仓库 .git 达 755MB，cdn.jsdelivr.net 主节点对整个仓库报「超过 50MB」而拒绝所有文件，
 //         改用 gcore.jsdelivr.net（jsDelivr 未受限节点）+ ghproxy.net（国内代理）+ raw 兜底。
 // 带时间戳绕 CDN 缓存；多源逐个尝试，单源失败自动切换。
+// DR-108：gcore.jsdelivr.net 的 purge 不生效、元数据会长期卡旧 SHA（下载后校验失败），
+//         故 ghproxy（代理 raw、跟进最快）置顶，gcore 仅作兜底。
 const UPDATE_META_SOURCES = [
-  'https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/update-latest.json',
   'https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/update-latest.json',
-  'https://raw.githubusercontent.com/AYun07/yunjing/main/update-latest.json'
+  'https://raw.githubusercontent.com/AYun07/yunjing/main/update-latest.json',
+  'https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/update-latest.json'
 ];
 const UA = 'yunjing-desktop/' + VERSION;
 // 首次落地用默认通道；之后以本地清单里的 sources 为准
 const DEFAULT_SOURCES = [
-  'https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/',
   'https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/',
-  'https://raw.githubusercontent.com/AYun07/yunjing/main/'
+  'https://raw.githubusercontent.com/AYun07/yunjing/main/',
+  'https://gcore.jsdelivr.net/gh/AYun07/yunjing@main/'
 ];
 
 /* ---------- 更新通道：零后端 / 可离线 / 匿名 GitHub Release ---------- */
