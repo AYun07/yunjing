@@ -1823,3 +1823,10 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 决策：① 重生成清单，656 文件 sha256 与源码逐字节一致（修复 32 处失配）；② CRITICAL_FILES 补入 xiaoyun.html（造物工坊，四入口之一）与 changelog/index.html，使这两页下载失败时触发整批回滚而非切出残缺版本；③ 升版工作流固定顺序为「先 bump-code 升版本标识 → 再 gen-content-manifest 重生成清单」，杜绝再次失配；④ 顺带修 settings 4 个 label for 关联、多处输入 aria-label。
 - 证据：node 校验脚本 656 文件 0 哈希不符；5 入口页均在清单且 xiaoyun/changelog 纳入 CRITICAL_FILES；a11y 审计 settings 无标签输入 4→0。
 - 失效条件：若未来改源码后忘记重生成清单，失配会复现——已在决策中固定升版顺序，但仍需每次升版后校验。
+
+
+## DR-114 · 全站表单标签点选关联（2026-11-26，v7.1.9）
+- 背景：用户反馈"无法选中、不方便"。审计发现全站大量 `<label>文本</label><input>` 相邻但缺 `for` 关联，点击文字标签不会聚焦输入框。
+- 决策：用正则批量在同一行内把 `<label>文本</label><input id="xxx"` 补成 `<label for="xxx">文本</label><input id="xxx"`，覆盖 atlas-library(9)/compare-panel(4)/config-modal(39)/theme-studio(2) 共 54 处；只匹配紧邻 input，不碰 label+select 等其它结构，避免误改。
+- 证据：残留扫描 0；54 个 for 指向的 id 全部真实存在（0 缺失）；4 个修改文件 node --check 全过。
+- 失效条件：若未来新增表单仍用裸 label 不写 for，问题会局部复现；本轮只做存量清理，未加 lint 门禁。

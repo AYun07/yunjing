@@ -2,9 +2,9 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **120** 个版本，从 `v3.55.7` 到 `v7.1.8`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **121** 个版本，从 `v3.55.7` 到 `v7.1.9`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.1.8 为当前版本**；其余 **119 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.1.9 为当前版本**；其余 **120 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -16,6 +16,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.1.9** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.9) |
 | **v7.1.8** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.8) |
 | **v7.1.7** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.7) |
 | **v7.1.6** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.6) |
@@ -140,6 +141,20 @@
 | **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
 | **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
+## v7.1.9 · 2026-11-26
+
+**表单标签点选修复**。批量补齐全站 label 与输入框关联
+
+- 批量修复 atlas-library.js 9 处地点/世界编辑表单 label 关联，点击标签可聚焦输入框
+- 修复 compare-panel.js 4 处境界对比表单 label 关联
+- 修复 config-modal.js 39 处接口/模型配置表单 label 关联
+- 修复 theme-studio.js 2 处配色输入 label 关联
+- 全站 label 无 for 关联残留归零，label 指向 id 全部真实存在
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.1.9)  [🔍 与 v7.1.8 差异](https://github.com/AYun07/yunjing/compare/v7.1.8...v7.1.9)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.9.zip)
 
 ---
 

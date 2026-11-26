@@ -138,14 +138,14 @@
     var lvs = LVN.map(function (n, i) { return '<option value="' + i + '"' + (Number(p.lv) === i ? " selected" : "") + '>' + n + '</option>'; }).join("");
     var modal = document.getElementById("alEditModal");
     modal.innerHTML = '<div class="al-modal"><h3>' + (isEdit ? "优化地点" : "补充地点") + '</h3>' +
-      '<label>地点名称 *</label><input id="alF_n" value="' + esc(p.n) + '" placeholder="如：史莱克学院">' +
+      '<label for="alF_n">地点名称 *</label><input id="alF_n" value="' + esc(p.n) + '" placeholder="如：史莱克学院">' +
       '<div class="al-row"><div><label>类别</label><select id="alF_cat">' + cats + '</select></div>' +
       '<div><label>层级</label><select id="alF_lv">' + lvs + '</select></div></div>' +
-      '<label>所属区域（可选）</label><input id="alF_rg" value="' + esc(p.rg || "") + '" placeholder="如：天斗帝国">' +
-      '<div class="al-row"><div><label>坐标 X（0-100，左西右东）</label><input id="alF_x" type="number" min="0" max="100" value="' + esc(p.x) + '"></div>' +
-      '<div><label>坐标 Y（0-100，上北下南）</label><input id="alF_y" type="number" min="0" max="100" value="' + esc(p.y) + '"></div></div>' +
+      '<label for="alF_rg">所属区域（可选）</label><input id="alF_rg" value="' + esc(p.rg || "") + '" placeholder="如：天斗帝国">' +
+      '<div class="al-row"><div><label for="alF_x">坐标 X（0-100，左西右东）</label><input id="alF_x" type="number" min="0" max="100" value="' + esc(p.x) + '"></div>' +
+      '<div><label for="alF_y">坐标 Y（0-100，上北下南）</label><input id="alF_y" type="number" min="0" max="100" value="' + esc(p.y) + '"></div></div>' +
       '<label>原著方位描述</label><textarea id="alF_where" placeholder="原著里这个地点在哪、与谁相邻…">' + esc(p.where || "") + '</textarea>' +
-      '<label>出处</label><input id="alF_c" value="' + esc(p.c || "") + '" placeholder="如：《斗罗大陆》第一部·第X章">' +
+      '<label for="alF_c">出处</label><input id="alF_c" value="' + esc(p.c || "") + '" placeholder="如：《斗罗大陆》第一部·第X章">' +
       '<div class="al-hint">坐标决定地图落点，层级决定它出现在哪级地图；类别影响地标颜色。带 * 为必填。</div>' +
       '<div class="al-mfoot"><button class="al-btn" onclick="AtlasLibrary.closeModal()">取消</button>' +
       '<button class="al-btn primary" onclick="AtlasLibrary.savePlace(\'' + esc(g) + '\',\'' + esc(eraId) + '\',' + (isEdit ? pi : -1) + ',' + (isEdit ? 'true' : 'false') + ')">保存</button></div>' +
@@ -202,11 +202,11 @@
   function newWorld() {
     var modal = document.getElementById("alEditModal");
     modal.innerHTML = '<div class="al-modal"><h3>新建大世界（DLC）</h3>' +
-      '<label>世界名称 *</label><input id="alW_name" placeholder="如：我的玄幻大陆">' +
-      '<label>世界 id（英文/数字，留空自动生成）</label><input id="alW_genre" placeholder="如：myworld">' +
-      '<label>资料来源</label><input id="alW_source" value="玩家自建 DLC">' +
+      '<label for="alW_name">世界名称 *</label><input id="alW_name" placeholder="如：我的玄幻大陆">' +
+      '<label for="alW_genre">世界 id（英文/数字，留空自动生成）</label><input id="alW_genre" placeholder="如：myworld">' +
+      '<label for="alW_source">资料来源</label><input id="alW_source" value="玩家自建 DLC">' +
       '<label>世界观简介</label><textarea id="alW_note" placeholder="这个世界的地理与势力格局…"></textarea>' +
-      '<label>首个时代名称</label><input id="alW_era" value="创世纪元">' +
+      '<label for="alW_era">首个时代名称</label><input id="alW_era" value="创世纪元">' +
       '<div class="al-hint">先建好世界框架与第一个时代，进入后即可逐条补充地点。新世界会出现在世界一览里，可直接进深度舆图。</div>' +
       '<div class="al-mfoot"><button class="al-btn" onclick="AtlasLibrary.closeModal()">取消</button>' +
       '<button class="al-btn primary" onclick="AtlasLibrary.saveWorld()">创建世界</button></div></div>';

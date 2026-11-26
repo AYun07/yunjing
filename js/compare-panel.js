@@ -134,14 +134,14 @@
       '<div class="cp-grade-row"><label>血脉</label><select id="cx-bl">' + opts() + '</select></div>' +
       '<div class="cp-grade-row"><label>体质</label><select id="cx-ph">' + opts() + '</select></div>' +
       '<div class="cp-grade-row"><label>极境</label><select id="cx-pk"><option value="false">否</option><option value="true">处于原著明示极境</option></select></div>' +
-      '<div class="cp-grade-row"><label>越境缘由</label><input id="cx-nar" placeholder="如：双生武魂+燃烧魂骨强行越级"></div>' +
+      '<div class="cp-grade-row"><label for="cx-nar">越境缘由</label><input id="cx-nar" placeholder="如：双生武魂+燃烧魂骨强行越级"></div>' +
       '<button class="cp-btn" id="cx-go">开始比对</button>' +
       '<div class="cp-rep" id="cx-out" style="display:none"></div>' +
       '</div>' +
 
       '<div class="cp-cmp-sec" data-sec="custom">' +
       '<div class="cp-note">玩家自创的境界体系按序号线性映射到本世界原著能级，生成「对标XX境」对照表；若你的设定有特殊节奏（前慢后快等），以你的设定为准并在正文标注偏差。</div>' +
-      '<div class="cp-grade-row"><label>自创境界名</label><input id="cu-names" placeholder="用逗号分隔，低→高，如：初觉,凝魂,御魂,魂君主,魂天极" style="width:100%;max-width:none"></div>' +
+      '<div class="cp-grade-row"><label for="cu-names">自创境界名</label><input id="cu-names" placeholder="用逗号分隔，低→高，如：初觉,凝魂,御魂,魂君主,魂天极" style="width:100%;max-width:none"></div>' +
       '<button class="cp-btn" id="cu-go">生成对标表</button>' +
       '<div class="cp-rep" id="cu-out" style="display:none"></div>' +
       '</div>' +
@@ -157,8 +157,8 @@
       '<div class="cp-grade-row"><label>血脉</label><select id="ly-bl">' + opts() + '</select></div>' +
       '<div class="cp-grade-row"><label>体质</label><select id="ly-ph">' + opts() + '</select></div>' +
       '<div class="cp-grade-row"><label>极境</label><select id="ly-pk"><option value="false">否</option><option value="true">处于原著明示极境</option></select></div>' +
-      '<div class="cp-grade-row"><label>额外加成</label><input id="ly-cb" type="number" value="0" placeholder="玩家特殊设计等效档数"></div>' +
-      '<div class="cp-grade-row"><label>跨层缘由</label><input id="ly-nar" style="width:100%;max-width:none" placeholder="如：虚空引擎跨界 / 坐忘道修假 / 宇宙海法则压制"></div>' +
+      '<div class="cp-grade-row"><label for="ly-cb">额外加成</label><input id="ly-cb" type="number" value="0" placeholder="玩家特殊设计等效档数"></div>' +
+      '<div class="cp-grade-row"><label for="ly-nar">跨层缘由</label><input id="ly-nar" style="width:100%;max-width:none" placeholder="如：虚空引擎跨界 / 坐忘道修假 / 宇宙海法则压制"></div>' +
       '<button class="cp-btn" id="ly-go">开始折算</button>' +
       '<div class="cp-rep" id="ly-out" style="display:none"></div>' +
       '</div>' : '') +

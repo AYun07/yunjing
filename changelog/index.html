@@ -320,18 +320,18 @@
 
                         <article class="log-entry" data-tags="版本 发布 视觉 修复 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
-                <span class="entry-ver">v7.1.8</span>
+                <span class="entry-ver">v7.1.9</span>
                 <span class="entry-date">2026-11-26</span>
                 <span class="entry-badge new">当前版本</span>
             </div>
-            <h3 class="entry-title">内容同步校验修复与输入无障碍补全</h3>
-            <p class="entry-lead">深挖客户端内容同步链路，修掉升版后遗留的清单哈希失配与关键入口保护缺口，并补齐多处输入标签关联；清单 656 文件校验全部恢复一致。</p>
+            <h3 class="entry-title">全站表单标签点选修复</h3>
+            <p class="entry-lead">系统清点全站 label 与输入框关联，批量补齐 54 处，点击文字标签即可聚焦对应输入框；语法与指向校验全部通过。</p>
             <div class="ver-diff">
-                <div><b>清单哈希失配（核心）</b>：上一版改完源码未重生成 content-manifest.json，32 个文件的 sha256 与实际内容不符——客户端自修复会把正确文件误判为损坏、增量同步校验失败，导致修复永远下发不到玩家。本版重生成清单，656 文件 SHA 全部与源码一致（0 失配）。</div>
-                <div><b>关键入口保护缺口</b>：content-sync.js 的 CRITICAL_FILES 只列了 4 个页面，漏掉造物工坊（xiaoyun.html，四入口之一）与更新公告。这些页下载失败时不会触发整批回滚，可能切出缺工坊的版本。已补齐。</div>
-                <div><b>设置项无法点选</b>：模型配置里接口地址 / API 密钥 / 模型名 / 上下文轮数四个输入框的 label 未与 input 关联，点击文字标签不会聚焦输入框。已补 for 关联。</div>
-                <div><b>输入无障碍</b>：角色塑造的外貌/性格搜索/补充性格、小云对话、向导姓名与年龄等输入补 aria-label，读屏与自动测试可正确识别。</div>
-                <div><b>实测结论</b>：清单 656 文件 0 哈希失配、5 个入口页全部纳入关键保护、settings 4 个 label 关联可聚焦、0 脚本错误。</div>
+                <div><b>地点编辑表单（9 处）</b>：万象舆图玩家资料库里「地点名称 / 所属区域 / 坐标 X / 坐标 Y / 出处 / 世界名称 / 世界 id / 资料来源 / 首个时代名称」的 label 未与 input 关联，点标签无法聚焦。全部补 for。</div>
+                <div><b>境界对比表单（4 处）</b>：越境缘由 / 自创境界名 / 额外加成 / 跨层缘由补 label 关联。</div>
+                <div><b>配置弹窗（39 处）</b>：接口地址 / API Key / 模型名 / 各路接口的最大 Tokens、温度、超时等表单项批量补 for，配置模型时点标签即可定位输入框。</div>
+                <div><b>主题工坊（2 处）</b>：主色 / 底色取色器补 label 关联。</div>
+                <div><b>实测结论</b>：全站 label 无 for 关联残留 0；54 个 label 的 for 全部指向真实存在的 id；4 个修改文件语法检查全过。</div>
             </div>
         </article>
 

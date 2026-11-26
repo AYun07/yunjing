@@ -412,11 +412,11 @@ const ConfigModal = {
                                 <div class="form-tip provider-tip" id="cfg_providerTip"></div>
                             </div>
                             <div class="form-row">
-                                <label>API 地址 (Endpoint)</label>
+                                <label for="cfg_endpoint">API 地址 (Endpoint)</label>
                                 <input id="cfg_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1 或自定义中转完整地址">
                             </div>
                             <div class="form-row">
-                                <label>API Key</label>
+                                <label for="cfg_key">API Key</label>
                                 <input id="cfg_key" type="password" placeholder="sk-...">
                             </div>
                             <div class="form-row">
@@ -449,15 +449,15 @@ const ConfigModal = {
                             <div class="dw-sub-title">🎛 高级参数</div>
                             <div class="form-row three-col">
                                 <div>
-                                    <label>最大Tokens</label>
+                                    <label for="cfg_maxTokens">最大Tokens</label>
                                     <input id="cfg_maxTokens" type="number" value="16384">
                                 </div>
                                 <div>
-                                    <label>温度 (0-2)</label>
+                                    <label for="cfg_temperature">温度 (0-2)</label>
                                     <input id="cfg_temperature" type="number" step="0.1" min="0" max="2" value="0.9">
                                 </div>
                                 <div>
-                                    <label>超时（秒）</label>
+                                    <label for="cfg_timeout">超时（秒）</label>
                                     <input id="cfg_timeout" type="number" min="60" max="1800" value="300" title="流式模式下为「无数据超时」：只要正文还在持续生成就不计时；默认 300 秒">
                                 </div>
                             </div>
@@ -502,7 +502,7 @@ const ConfigModal = {
                             回到电脑上再考虑用本地代理。
                         </div>
                         <div class="form-row" style="margin-top:8px;">
-                            <label>代理地址</label>
+                            <label for="cfg_proxyBase">代理地址</label>
                             <input id="cfg_proxyBase" type="text" value="http://127.0.0.1:8799" placeholder="http://127.0.0.1:8799">
                             <i>代理只监听本机 127.0.0.1，不对外网暴露；关掉那个黑窗口即停止。</i>
                         </div>
@@ -544,11 +544,11 @@ const ConfigModal = {
                                 <div class="form-tip provider-tip" id="dw_providerTip"></div>
                             </div>
                             <div class="form-row">
-                                <label>API 地址 (Endpoint)</label>
+                                <label for="dw_endpoint">API 地址 (Endpoint)</label>
                                 <input id="dw_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1（可与主接口不同）">
                             </div>
                             <div class="form-row">
-                                <label>API Key</label>
+                                <label for="dw_key">API Key</label>
                                 <input id="dw_key" type="password" placeholder="sk-...">
                             </div>
                             <div class="form-row">
@@ -563,15 +563,15 @@ const ConfigModal = {
                             </div>
                             <div class="form-row three-col">
                                 <div>
-                                    <label>最大Tokens</label>
+                                    <label for="dw_maxTokens">最大Tokens</label>
                                     <input id="dw_maxTokens" type="number" value="8192">
                                 </div>
                                 <div>
-                                    <label>温度 (0-2)</label>
+                                    <label for="dw_temperature">温度 (0-2)</label>
                                     <input id="dw_temperature" type="number" step="0.1" min="0" max="2" value="0.95">
                                 </div>
                                 <div>
-                                    <label>超时（秒）</label>
+                                    <label for="dw_timeout">超时（秒）</label>
                                     <input id="dw_timeout" type="number" min="30" max="600" value="90" title="默认 90 秒；推演挂起时自动放弃本轮，不锁后续推演">
                                 </div>
                             </div>
@@ -648,11 +648,11 @@ const ConfigModal = {
                             </div>
                             <div class="form-row three-col">
                                 <div>
-                                    <label>提示词节点 id（可选）</label>
+                                    <label for="img_comfyPromptNode">提示词节点 id（可选）</label>
                                     <input id="img_comfyPromptNode" type="text" placeholder="留空自动找 CLIPTextEncode">
                                 </div>
                                 <div>
-                                    <label>检查点（默认工作流用）</label>
+                                    <label for="img_comfyCheckpoint">检查点（默认工作流用）</label>
                                     <input id="img_comfyCheckpoint" type="text" placeholder="v1-5-pruned-emaonly.safetensors">
                                 </div>
                                 <div>
@@ -666,16 +666,16 @@ const ConfigModal = {
                             <div class="dw-sub-title">🎛 生成行为</div>
                             <div class="form-row two-col">
                                 <div>
-                                    <label>触发间隔（每 N 轮正文）</label>
+                                    <label for="dw_interval">触发间隔（每 N 轮正文）</label>
                                     <input id="dw_interval" type="number" min="1" max="20" value="5">
                                 </div>
                                 <div>
-                                    <label>单层最少字数</label>
+                                    <label for="dw_minWords">单层最少字数</label>
                                     <input id="dw_minWords" type="number" min="50" max="2000" value="200">
                                 </div>
                             </div>
                             <div class="form-row">
-                                <label>上下文层数（携带最近 N 层世界动态，防自相矛盾）</label>
+                                <label for="dw_historyDepth">上下文层数（携带最近 N 层世界动态，防自相矛盾）</label>
                                 <input id="dw_historyDepth" type="number" min="0" max="20" value="5">
                             </div>
                             <label class="check-row">
@@ -729,11 +729,11 @@ const ConfigModal = {
                                 <div class="form-tip provider-tip" id="va_providerTip"></div>
                             </div>
                             <div class="form-row">
-                                <label>API 地址 (Endpoint)</label>
+                                <label for="va_endpoint">API 地址 (Endpoint)</label>
                                 <input id="va_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1（可与主接口不同）">
                             </div>
                             <div class="form-row">
-                                <label>API Key</label>
+                                <label for="va_key">API Key</label>
                                 <input id="va_key" type="password" placeholder="sk-...">
                             </div>
                             <div class="form-row">
@@ -748,15 +748,15 @@ const ConfigModal = {
                             </div>
                             <div class="form-row three-col">
                                 <div>
-                                    <label>最大Tokens</label>
+                                    <label for="va_maxTokens">最大Tokens</label>
                                     <input id="va_maxTokens" type="number" value="4096">
                                 </div>
                                 <div>
-                                    <label>温度 (0-2)</label>
+                                    <label for="va_temperature">温度 (0-2)</label>
                                     <input id="va_temperature" type="number" step="0.1" min="0" max="2" value="0.2">
                                 </div>
                                 <div>
-                                    <label>超时（秒）</label>
+                                    <label for="va_timeout">超时（秒）</label>
                                     <input id="va_timeout" type="number" min="30" max="600" value="90" title="默认 90 秒；提取挂起时自动放弃并出「重试登记」卡">
                                 </div>
                             </div>
@@ -799,7 +799,7 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">➕ 新增 / 编辑连接</div>
                             <div class="form-row">
-                                <label>连接名称</label>
+                                <label for="cp_name">连接名称</label>
                                 <input id="cp_name" type="text" placeholder="如：GLM-闪光-登记 / 硅基流动-摘要">
                             </div>
                             <div class="form-row">
@@ -808,21 +808,21 @@ const ConfigModal = {
                                 <div class="form-tip provider-tip" id="cp_providerTip"></div>
                             </div>
                             <div class="form-row">
-                                <label>API 地址 (Endpoint)</label>
+                                <label for="cp_endpoint">API 地址 (Endpoint)</label>
                                 <input id="cp_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1 或自定义中转完整地址">
                             </div>
                             <div class="form-row">
-                                <label>API Key</label>
+                                <label for="cp_key">API Key</label>
                                 <input id="cp_key" type="password" placeholder="sk-...">
                             </div>
                             <div class="form-row">
-                                <label>模型名称 (Model)</label>
+                                <label for="cp_model">模型名称 (Model)</label>
                                 <input id="cp_model" type="text" placeholder="可手填，或点其他接口的「获取」拉取列表">
                             </div>
                             <div class="form-row three-col">
-                                <div><label>最大Tokens</label><input id="cp_maxTokens" type="number" value="4096"></div>
-                                <div><label>温度 (0-2)</label><input id="cp_temperature" type="number" step="0.1" min="0" max="2" value="0.2"></div>
-                                <div><label>超时（秒）</label><input id="cp_timeout" type="number" min="30" max="600" value="90"></div>
+                                <div><label for="cp_maxTokens">最大Tokens</label><input id="cp_maxTokens" type="number" value="4096"></div>
+                                <div><label for="cp_temperature">温度 (0-2)</label><input id="cp_temperature" type="number" step="0.1" min="0" max="2" value="0.2"></div>
+                                <div><label for="cp_timeout">超时（秒）</label><input id="cp_timeout" type="number" min="30" max="600" value="90"></div>
                             </div>
                             <div class="cp-edit-actions">
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.saveProfile()">保存连接</button>
@@ -888,11 +888,11 @@ const ConfigModal = {
                                 <div class="form-tip" id="img_modeTip">不确定就选「标准生图接口」；对话式生图模型（如 OpenRouter 上的生图模型）才需要 chat 模式。</div>
                             </div>
                             <div class="form-row">
-                                <label>API 地址 (Endpoint)</label>
+                                <label for="img_endpoint">API 地址 (Endpoint)</label>
                                 <input id="img_endpoint" type="text" placeholder="例如 https://api.siliconflow.cn/v1（一般以 /v1 结尾）">
                             </div>
                             <div class="form-row">
-                                <label>API Key</label>
+                                <label for="img_key">API Key</label>
                                 <input id="img_key" type="password" placeholder="sk-...">
                             </div>
                             <div class="form-row">
@@ -907,18 +907,18 @@ const ConfigModal = {
                             </div>
                             <div class="form-row three-col">
                                 <div>
-                                    <label>图片尺寸</label>
+                                    <label for="img_size">图片尺寸</label>
                                     <input id="img_size" type="text" value="1024x1024" placeholder="1024x1024">
                                     <div class="model-chip-row">
                                         ${this.IMG_SIZES.map((s) => `<button type="button" class="model-chip" onclick="ConfigModal.pickImgSize('${s}')" title="点击填入尺寸">${s}</button>`).join("")}
                                     </div>
                                 </div>
                                 <div>
-                                    <label>每章插图上限</label>
+                                    <label for="img_maxPerChapter">每章插图上限</label>
                                     <input id="img_maxPerChapter" type="number" min="1" max="3" value="1" title="主笔每章最多输出的插图标记数（协议注入与自动生成双重约束）">
                                 </div>
                                 <div>
-                                    <label>超时（秒）</label>
+                                    <label for="img_timeout">超时（秒）</label>
                                     <input id="img_timeout" type="number" min="30" max="600" value="180" title="生图较慢，默认 180 秒">
                                 </div>
                             </div>
@@ -934,7 +934,7 @@ const ConfigModal = {
                                     </select>
                                 </div>
                                 <div>
-                                    <label>画风补充（附加到每条提示词末尾，可留空）</label>
+                                    <label for="img_styleSuffix">画风补充（附加到每条提示词末尾，可留空）</label>
                                     <input id="img_styleSuffix" type="text" placeholder="例如：电影感光效，高细节，8k 画质">
                                 </div>
                             </div>
@@ -983,11 +983,11 @@ const ConfigModal = {
                                 <div class="form-tip provider-tip" id="pe_providerTip"></div>
                             </div>
                             <div class="form-row">
-                                <label>API 地址 (Endpoint)</label>
+                                <label for="pe_endpoint">API 地址 (Endpoint)</label>
                                 <input id="pe_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1（可与主接口不同）">
                             </div>
                             <div class="form-row">
-                                <label>API Key</label>
+                                <label for="pe_key">API Key</label>
                                 <input id="pe_key" type="password" placeholder="sk-...">
                             </div>
                             <div class="form-row">
@@ -1002,15 +1002,15 @@ const ConfigModal = {
                             </div>
                             <div class="form-row three-col">
                                 <div>
-                                    <label>最大Tokens</label>
+                                    <label for="pe_maxTokens">最大Tokens</label>
                                     <input id="pe_maxTokens" type="number" value="2048">
                                 </div>
                                 <div>
-                                    <label>温度 (0-2)</label>
+                                    <label for="pe_temperature">温度 (0-2)</label>
                                     <input id="pe_temperature" type="number" step="0.1" min="0" max="2" value="0.7">
                                 </div>
                                 <div>
-                                    <label>超时（秒）</label>
+                                    <label for="pe_timeout">超时（秒）</label>
                                     <input id="pe_timeout" type="number" min="30" max="600" value="120" title="默认 120 秒；一次批量改写整章提示词，比单轮对话略长">
                                 </div>
                             </div>
