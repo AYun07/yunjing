@@ -283,7 +283,7 @@ window.ATLAS_VERIFIED["scifi"] = {
       id: "scifi_era5", name: "巨型工程与戴森球", era: "恒星尺度人造巨构（戴森球族、环形世界、恒星引擎与文明等级）",
       places: [
         {
-          n: "戴森球", cat: "place", rg: "恒星系巨构", x: 50, y: 50, lv: 0, d: 5,
+          n: "戴森球", cat: "place", rg: "恒星系巨构", x: 50, y: 50, lv: 2, d: 5,
           where: "包裹母恒星以收集其全部能量输出的假想巨型结构，1959/1960年戴森《科学》论文提出，灵感源自1937年斯塔普莱顿《造星者》；按设定环绕恒星",
           c: "弗里曼·戴森《Search for Artificial Stellar Sources of Infrared Radiation》(Science, 1960)；奥拉夫·斯塔普莱顿《造星者》(1937)"
         },
