@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>云境 v7.0.6 · 视觉实测闭环验收报告</title>
+<style>
+:root{--gold:#d9b46a;--paper:#e9dcc0;--mint:#9fd8c0;--dim:#9a9385;--bg:#0b1017;--panel:#121a23}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--paper);font-family:"Noto Serif SC","Songti SC",serif;line-height:1.75}
+.wrap{max-width:1000px;margin:0 auto;padding:34px 22px 80px}
+h1{font-size:28px;color:var(--gold);letter-spacing:2px;margin:0 0 4px}
+.sub{color:var(--dim);font-size:13px;margin-bottom:26px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0}
+.card{background:linear-gradient(160deg,#16202b,#0e151d);border:1px solid rgba(217,180,106,.3);border-radius:10px;padding:16px}
+.card .n{font-size:26px;font-weight:700;color:var(--gold)}.card .l{font-size:12px;color:var(--dim);margin-top:4px}
+.ok{color:var(--mint)!important}
+h2{font-size:19px;color:var(--gold);margin:32px 0 12px;border-bottom:1px solid rgba(217,180,106,.25);padding-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+th,td{border:1px solid rgba(217,180,106,.18);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:rgba(217,180,106,.08);color:var(--gold);font-weight:600}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;color:var(--mint);font-size:12px}
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;margin-right:6px}
+.t-fix{background:rgba(159,216,192,.15);color:var(--mint);border:1px solid rgba(159,216,192,.35)}
+.t-pass{background:rgba(159,216,192,.15);color:var(--mint);border:1px solid rgba(159,216,192,.35)}
+.t-info{background:rgba(217,180,106,.12);color:var(--gold);border:1px solid rgba(217,180,106,.35)}
+.note{background:rgba(217,180,106,.07);border-left:3px solid var(--gold);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13px;color:#d3c7ad}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0;font-size:13px}
+.flow span{padding:6px 12px;background:rgba(159,216,192,.1);border:1px solid rgba(159,216,192,.3);border-radius:6px}
+.flow i{color:var(--gold);font-style:normal}
+.small{font-size:12px;color:var(--dim)}
+</style></head><body><div class="wrap">
+<h1>云境 v7.0.6 · 视觉实测闭环验收报告</h1>
+<div class="sub">交付纪律：不征询 · 新版本直接打包提交 · 清理旧版本文件 · 拉取最新版逐按钮视觉实测 · 有问题继续修复提交拉取复测直到全绿</div>
+
+<div class="cards">
+<div class="card"><div class="n ok">0</div><div class="l">脚本错误</div></div>
+<div class="card"><div class="n ok">0</div><div class="l">404 资源</div></div>
+<div class="card"><div class="n ok">0</div><div class="l">视口溢出</div></div>
+<div class="card"><div class="n">357</div><div class="l">实测按钮</div></div>
+<div class="card"><div class="n">10</div><div class="l">实测页面</div></div>
+<div class="card"><div class="n ok">2</div><div class="l">发现并修复的问题</div></div>
+</div>
+
+<h2>一、闭环迭代过程</h2>
+<div class="flow">
+<span>v7.0.5 发布</span><i>→</i><span>全按钮视觉实测</span><i>→</i><span>发现 2 个问题</span><i>→</i>
+<span>修复</span><i>→</i><span>升版 7.0.6</span><i>→</i><span>重打包</span><i>→</i>
+<span>重传 Release</span><i>→</i><span>线上拉取核验</span><i>→</i><span class="t-pass">全绿</span>
+</div>
+
+<h2>二、发现的问题与修复</h2>
+<table>
+<tr><th>问题</th><th>根因</th><th>修复</th><th>验证</th></tr>
+<tr>
+<td><span class="tag t-fix">已修</span>世界地图对照页浏览器控制台 404</td>
+<td>该页无 favicon 声明，浏览器自动请求 <code>/favicon.ico</code> 落空</td>
+<td>head 加 <code>&lt;link rel="icon" href="assets/yj-favicon.ico"&gt;</code></td>
+<td><span class="tag t-pass">PASS</span>最终审计 0 个 404</td>
+</tr>
+<tr>
+<td><span class="tag t-fix">已修</span>凡人修仙状态板深色大字压住功能文字</td>
+<td><code>.ss1-sky::after</code> 的 190px 装饰字「道」继承了 v7.0.1 给正文加的黑色 <code>text-shadow</code>，在深色底上渲染成明显黑字，盖住「战力/装备」等</td>
+<td>该伪元素显式加 <code>text-shadow:none</code>；扫描其余 7 套皮肤无同类问题</td>
+<td><span class="tag t-pass">PASS</span>放大截图确认文字清晰、装饰淡字不再干扰</td>
+</tr>
+</table>
+<div class="note">说明：测试初期还出现"入口点不动"的疑点，排查确认是<b>片头视频播放期间遮罩拦截点击</b>的正常设计——片头结束后（约 5.5 秒）四入口全部可点，非缺陷。全局开关是自定义 <code>.tile</code> 按钮（非 checkbox），实测点击均有视觉变化与文字提示。</div>
+
+<h2>三、最终全功能全按钮视觉测试（10 页 / 357 按钮）</h2>
+<table>
+<tr><th>页面</th><th>按钮</th><th>脚本错误</th><th>404</th><th>视口溢出</th></tr>
+<tr><td>开场封面</td><td>8</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>云境大厅</td><td>8</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>天地设置</td><td>18</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>万象工坊·造物</td><td>27</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>小云工坊</td><td>8</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>创作室·凡人修仙</td><td>140</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>创作室·自由</td><td>127</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>更新公告</td><td>12</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>运行自检</td><td>1</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+<tr><td>世界地图对照</td><td>8</td><td class="ok">0</td><td class="ok">0</td><td class="ok">0</td></tr>
+</table>
+<div class="note">创作室两页按钮数多（140/127），审计逐个点击前 60 个；<code>click-audit</code> 另做全量点击无脚本错误。<code>overflow</code> 检测只统计"落在当前视口内却被左右裁切"的元素，长页文档流下方内容不算遮挡（避免误报）。</div>
+
+<h2>四、补充实测</h2>
+<table>
+<tr><th>项目</th><th>结果</th></tr>
+<tr><td>竖屏 420×900 封面</td><td><span class="tag t-pass">PASS</span>竖版封面生效，四入口无横向裁切、无重叠</td></tr>
+<tr><td>封面四入口跳转</td><td><span class="tag t-pass">PASS</span>踏云=世界选择弹层 / 续梦=存档弹层 / 造物=xiaoyun工坊 / 观星=设置页</td></tr>
+<tr><td>设置页三个全局开关</td><td><span class="tag t-pass">PASS</span>深夜护眼/流畅模式/庆典特效点击均有视觉变化 + 文字提示，0 脚本错误</td></tr>
+<tr><td>6 个不同世界状态板</td><td><span class="tag t-pass">PASS</span>遮天/斗罗/科幻/武动/仙逆等均无深色大字压字</td></tr>
+<tr><td>回归测试</td><td><span class="tag t-pass">PASS</span>core 50/50 · bridge 16/16 · npc 20/20 · floor 503/503</td></tr>
+<tr><td>版本同源</td><td><span class="tag t-pass">PASS</span>19/19（全站 369 处缓存参数 + 所有锚点同号 7.0.6）</td></tr>
+<tr><td>内容清单完整性</td><td><span class="tag t-pass">PASS</span>655 文件存在性 + SHA 全部匹配，0 缺失</td></tr>
+</table>
+
+<h2>五、发布与更新链路</h2>
+<table>
+<tr><th>项</th><th>状态</th></tr>
+<tr><td>GitHub 源码 main</td><td><code>e6afd16</code> 已推送，远端验证一致</td></tr>
+<tr><td>Release v7.0.6 两件套</td><td>setup-x64.exe (825547185 B) + win-unpacked.zip (852874205 B)，已上传</td></tr>
+<tr><td>更新元数据一致性</td><td><span class="tag t-pass">PASS</span>update-latest.json 的 version/releaseTag/资产大小/SHA 与线上 Release <b>完全一致</b>（修复了 v7.0.5 时"说新版下旧包"的半成品状态）</td></tr>
+<tr><td>线上文件内容核验</td><td><span class="tag t-pass">PASS</span>从 GitHub raw 拉取确认线上 status-skins.js 含 <code>text-shadow:none</code>、地图页含 favicon、sw.js 为 v7.0.6</td></tr>
+</table>
+
+<h2>六、旧版本清理</h2>
+<table>
+<tr><th>清理项</th><th>结果</th></tr>
+<tr><td>dist 内 v6.9.4~v7.0.5 旧 7z/zip + 2 个 .bak/legacy</td><td>已删除（约 6.4G）</td></tr>
+<tr><td>/tmp 内 6 个旧编译目录 → 保留 nsiswork706</td><td>已清理 5 个（约 8G）</td></tr>
+<tr><td>待发布 v7.0.5 两件套、失败下载、中间拉取目录</td><td>已清理（约 3.2G）</td></tr>
+<tr><td>临时诊断脚本（20 个 _*.mjs）</td><td>已清理，保留正式审计脚本 <code>test/full-visual-audit.mjs</code></td></tr>
+</table>
+<div class="note">仅保留 v7.0.6 交付物：<code>待发布v706/</code> 两件套 + dist 内 7.0.6 的 7z + nsiswork706 编译目录。历史正式版本包仍按版本归类保留在 <code>/workspace/发布归档/</code> 与 GitHub Release，未清理（按先前约定）。</div>
+
+<div class="small" style="margin-top:30px;text-align:center">云境 · 万象入云，一念一世界 · 报告生成于 2026-11-26</div>
+</div></body></html>
