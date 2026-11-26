@@ -2,9 +2,9 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **108** 个版本，从 `v3.55.7` 到 `v7.0.6`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **109** 个版本，从 `v3.55.7` 到 `v7.0.7`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.0.6 为当前版本**；其余 **107 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.0.7 为当前版本**；其余 **108 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -16,6 +16,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.0.7** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.7) |
 | **v7.0.6** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.6) |
 | **v7.0.5** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.5) |
 | **v7.0.4** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.4) |
@@ -128,6 +129,18 @@
 | **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
 | **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
+## v7.0.7 · 2026-11-26
+
+**地图名牌重叠与层级类别错配修复**。22处地图名牌坐标重叠错开、6处国家/地点层级类别修正后全站实测0脚本错误。
+
+- 斗气大陆米特尔家族/加玛皇室/炼药师公会三势力原完全重合于(18,37)，扇形错开为三个独立坐标，名牌不再叠压。
+- 凡人修仙付家堡与紫道山、诡秘摩斯苦修会与智慧之眼等重叠名牌已错开。
+- 剑来南苑国、圣墟黑剑皇朝、遮天赤阳国、吞噬黑龙山/银蓝/卡罗帝国等country类误填lv3/lv4，统一修正为lv2层级。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.0.7)  [🔍 与 v7.0.6 差异](https://github.com/AYun07/yunjing/compare/v7.0.6...v7.0.7)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.7.zip)
 
 ---
 
