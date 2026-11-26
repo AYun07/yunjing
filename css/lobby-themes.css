@@ -531,3 +531,6 @@ html[data-theme="editorial"] .splash-line,html[data-theme="y2k"] .splash-line,ht
   html[data-theme] #xyBuddy{transform:scale(.68)}
   html[data-theme] .ver-badge{font-size:11px}
 }
+
+/* v7.1.7 修顶部遮挡：客户端标题栏占 40px，主题切换器下移让位 */
+html.yj-shell-on .theme-switcher{ top:calc(14px + var(--yj-bar-h,40px)); }

@@ -279,6 +279,8 @@
         }
     </style>
     <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.6">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.1.7">
+  <script src="../js/desktop-shell.js?v=7.1.7"></script>
 </head>
 
 <body class="page-changelog">
@@ -318,16 +320,18 @@
 
                         <article class="log-entry" data-tags="版本 发布 视觉 修复 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
-                <span class="entry-ver">v7.1.6</span>
+                <span class="entry-ver">v7.1.7</span>
                 <span class="entry-date">2026-11-26</span>
                 <span class="entry-badge new">当前版本</span>
             </div>
-            <h3 class="entry-title">视觉全功能全按钮实测后的收尾修复</h3>
-            <p class="entry-lead">用真实浏览器逐页逐按钮、按桌面与竖屏两种视口实测，修掉两个影响观感的小问题，其余全部通过。</p>
+            <h3 class="entry-title">客户端外壳一致性：顶部遮挡与窗口控制修复</h3>
+            <p class="entry-lead">按真实截图与多视口实测，系统修掉客户端自绘标题栏与各页浮动元素的遮挡、五个页面缺失窗口控制、以及若干过小/截断元素；修复后 7 页遮挡归零、窗口键全部可点。</p>
             <div class="ver-diff">
-                <div><b>世界地图对照页</b>：补齐 favicon 声明，消除浏览器自动请求的 404。</div>
-                <div><b>凡人修仙状态板</b>：装饰大字「道」误继承正文黑阴影、压住功能文字；已清除阴影，其余 7 套皮肤无同类问题。</div>
-                <div><b>实测结论</b>：10 页逐按钮 0 脚本错误 / 0 个 404 / 0 视口溢出；竖屏四入口无裁切；六个世界状态板正常；三个全局开关有反馈、四入口跳转全部正确。</div>
+                <div><b>顶部遮挡（你截图指出的问题）</b>：开场「跳过 ›」胶囊按钮原本定位 top:18px，被 40px 自绘标题栏吞掉上半截、只剩底部半圆露出；大厅主题切换器、更新公告返回链接同类问题一并修复，全部下移到标题栏之下。三种视口复测遮挡 15 处 → 0。</div>
+                <div><b>窗口控制缺失</b>：Electron 是无边框窗口，但造物工坊、更新公告、原著校对舆图、舆图预览、一致性自检五页未引入桌面壳，无法拖动/最小化/关闭；现已全部补齐，七页窗口键均可点。</div>
+                <div><b>窗口键被盖住</b>：造物工坊的全屏浮层（z-index:9995）压在标题栏（原 9500）之上，关闭键点不动；标题栏层级提升至 2147483640，压住所有应用内浮层，窗口控制永远可用。</div>
+                <div><b>点击目标与截断</b>：页脚创作日志/版本徽标链接命中区放大；工坊底部三个引导按钮不再被视口截断；超长身份铭牌改省略号；模型槽位下拉补无障碍标签。</div>
+                <div><b>实测结论</b>：7 页标题栏完整、关闭键全可点、0 遮挡、0 脚本错误；修复前遮挡 15 处，修复后 0。</div>
             </div>
         </article>
 

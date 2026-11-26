@@ -474,3 +474,6 @@ html[data-theme="term"] .ws-group .workshops .workshop .ws-desc{display:none}
   html[data-theme] #xyBuddy{right:10px;bottom:10px;transform:scale(.68);transform-origin:bottom right}
   html[data-theme] .ver-badge{left:10px;bottom:10px;font-size:11px}
 }
+
+/* v7.1.7 身份铭牌超长文本省略，杜绝撑破容器 */
+.wp-eyebrow{ max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

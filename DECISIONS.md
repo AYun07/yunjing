@@ -1810,3 +1810,9 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 原著设定联动：原 setStance/setSideChar 只改提示文字，不填字段。新增 CharacterStudio.applyCanon(stance)：主角态填姓名=canonHeroName(如韩立)+原著身份小传；配角态用 StoryStance.getSideCharInfo() 的 name/role/realm/disposition/fate/rel/hook 填姓名/样貌/性格/小传；切换立场先 clearCanonBioLines() 清旧【原著…】行，避免混角。wizard 的 setStance/setSideChar 调用 applyCanonFields。
 - 全局开关：实测深夜护眼/流畅模式/庆典特效点击有效(localStorage变化)，只有"朗读正文"因设置页未加载 StoryInput 模块显示"模块未就绪"。改为设置页自包含 SpeechSynthesis 实现，从本机 storySave_* 存档取最近一章正文朗读。
 - 证据：test/verify-v704-fixes.mjs 19/19；角色 csWrap 数=1、主角填韩立、配角填墨彩环+聪慧倔强且不混角、设置5分区、4开关有效、进度条全过。
+
+## DR-112 · 客户端标题栏遮挡与窗口控制根治（2026-11-26，v7.1.7）
+- 背景：用户截图指出开场/大厅画面右上角有半圆被标题栏切掉。实测确认是 .ci-skip「跳过」胶囊按钮（top:18px）被 40px 自绘标题栏吞掉上半截；同类还有大厅 .theme-switcher（top:14）、公告 .back-link（top:34）。更深一层：Electron frame:false 无边框窗口里，五页（工坊/公告/舆图验证/舆图预览/自检）根本没引入 desktop-shell，窗口无法拖动/最小化/关闭；工坊页即使补壳，其全屏浮层 .xy-dev(z=9995) 仍压住标题栏(z=9500)，关闭键点不动。
+- 决策：① 各浮动元素在 html.yj-shell-on 下用 calc(原top + var(--yj-bar-h)) 下移让位，PWA 零影响；② 五个缺壳页补齐 desktop-shell.css/js；③ 标题栏 z-index 由 9500 提到 2147483640，压住应用内所有浮层（含工坊 9995、UI 弹层 99999、小云浮层 2147483000），仅低于崩溃哨兵 boot-error-guard(2147483647)；④ 顺带修页脚链接命中区、工坊底部截断、身份铭牌溢出、下拉无障碍标签。
+- 证据：verify-shell.mjs 七页 bar/fx/shell/关闭键可点 全✓、遮挡0、错误0；audit-deep2 遮挡 15→0。
+- 失效条件：若未来出现 z-index 高于 2147483640 的常规浮层且与标题栏右上角重叠，窗口键会再次被盖；boot-error-guard 触发时（脚本崩溃）会盖过标题栏，属预期。

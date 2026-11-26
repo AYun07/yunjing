@@ -9,7 +9,10 @@
 /* 标题栏本体是拖拽区；整条 fixed 在顶部，只占 40px，不压住封面底部四入口 */
 #yjTitleBar{
   position:fixed; top:0; left:0; right:0; height:var(--yj-bar-h);
-  z-index:9500; box-sizing:border-box;
+  /* v7.1.7：窗口控制必须永远可点。原 9500 被工坊 .xy-dev(9995)、UI 弹层(99999)、
+     小云浮层(2147483000)覆盖，导致造物页关闭/最小化键点不动。提到仅次最高，压住所有应用内浮层；
+     boot-error-guard(2147483647) 是出错哨兵，仅在脚本崩溃时出现，允许它盖过标题栏。 */
+  z-index:2147483640; box-sizing:border-box;
   display:flex; align-items:center; justify-content:space-between;
   padding:0 10px 0 14px;
   color:var(--yj-gold);

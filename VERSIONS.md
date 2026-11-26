@@ -2,9 +2,9 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **118** 个版本，从 `v3.55.7` 到 `v7.1.6`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **119** 个版本，从 `v3.55.7` 到 `v7.1.7`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.1.6 为当前版本**；其余 **117 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.1.7 为当前版本**；其余 **118 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -16,6 +16,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.1.7** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.7) |
 | **v7.1.6** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.6) |
 | **v7.1.5** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.5) |
 | **v7.1.4** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.4) |
@@ -138,6 +139,28 @@
 | **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
 | **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
+## v7.1.7 · 2026-11-26
+
+**客户端外壳一致性修复**。消除顶部遮挡、补齐无标题栏页面、窗口控制层级修复
+
+- 修复开场跳过按钮被标题栏吞成半圆的顶部遮挡问题
+- 修复大厅主题切换器被标题栏遮挡
+- 修复更新公告返回链接被标题栏遮挡
+- 给造物工坊补齐桌面壳，恢复窗口拖拽/最小化/关闭
+- 给更新公告补齐桌面壳
+- 给原著校对舆图补齐桌面壳
+- 给舆图预览补齐桌面壳
+- 给一致性自检页补齐桌面壳
+- 标题栏 z-index 提升到 2147483640，修复造物工坊关闭键被浮层盖住点不动
+- 放大页脚创作日志/版本徽标链接点击命中区
+- 工坊底部留白，修复三个引导按钮被视口截断
+- 身份铭牌超长文本改省略号，杜绝撑破容器
+- 设置页模型槽位下拉补 aria-label
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.1.7)  [🔍 与 v7.1.6 差异](https://github.com/AYun07/yunjing/compare/v7.1.6...v7.1.7)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.7.zip)
 
 ---
 

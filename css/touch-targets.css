@@ -145,3 +145,6 @@
     font-size: 12px;
   }
 }
+
+/* v7.1.7 放大页脚行内链接命中区（创作日志/版本徽标原本仅 15px 高） */
+.footer-log a{ display:inline-block; padding:6px 4px; min-height:28px; line-height:16px; }

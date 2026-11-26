@@ -94,6 +94,9 @@
   opacity:.9; transition:opacity .3s,background .2s; }
 .ci-skip:hover{ opacity:1; background:rgba(14,11,30,.82); }
 @media (max-width:520px){ .ci-skip{ right:12px; top:12px; padding:8px 14px; font-size:13px; } }
+/* v7.1.7 修顶部遮挡：客户端自绘标题栏占顶部 40px，跳过按钮下移让位，杜绝被吞成半圆 */
+html.yj-shell-on #coverIntro .ci-skip{ top:calc(18px + var(--yj-bar-h,40px)); }
+@media (max-width:520px){ html.yj-shell-on #coverIntro .ci-skip{ top:calc(12px + var(--yj-bar-h,40px)); } }
 
 /* 片头阶段：隐藏原生封面元素，确保开场是纯黑 + 云境二字 */
 body.yjCoverIntro .brand,body.yjCoverIntro .menu,
