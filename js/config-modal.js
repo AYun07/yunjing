@@ -407,7 +407,7 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔌 连接配置</div>
                             <div class="form-row">
-                                <label>AI 厂商（选定自动填地址与协议）</label>
+                                <label for="cfg_provider">AI 厂商（选定自动填地址与协议）</label>
                                 <select id="cfg_provider">${providerOptions()}</select>
                                 <div class="form-tip provider-tip" id="cfg_providerTip"></div>
                             </div>
@@ -434,7 +434,7 @@ const ConfigModal = {
                                  思考长度可达正文的 3～19 倍——太长会挤掉正文、变慢、更贵，
                                  太短又会在复杂剧情上变笨。这个取舍交给玩家，因为同档位不同模型差 3 倍以上。 -->
                             <div class="form-row">
-                                <label>推理强度 (Reasoning)</label>
+                                <label for="cfg_reasoningEffort">推理强度 (Reasoning)</label>
                                 <select id="cfg_reasoningEffort" class="model-select" onchange="ConfigModal.onReasoningChange()">
                                     <option value="off">关闭思考</option>
                                     <option value="low">弱思考</option>
@@ -472,7 +472,7 @@ const ConfigModal = {
                             </label>
                             <!-- v3.55.11 模型能力自适应（三档） -->
                             <div class="form-row">
-                                <label>模型能力档位</label>
+                                <label for="cfg_baseMode">模型能力档位</label>
                                 <select id="cfg_baseMode">
                                     <option value="auto">🤖 自动适配（推荐·零配置）</option>
                                     <option value="lite">🪶 低端/基础/免费大模型（求稳）</option>
@@ -539,7 +539,7 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔌 第二接口（额外 API）</div>
                             <div class="form-row">
-                                <label>AI 厂商（可与主笔不同）</label>
+                                <label for="dw_provider">AI 厂商（可与主笔不同）</label>
                                 <select id="dw_provider">${providerOptions()}</select>
                                 <div class="form-tip provider-tip" id="dw_providerTip"></div>
                             </div>
@@ -616,7 +616,7 @@ const ConfigModal = {
                             </label>
                             <div class="form-row two-col">
                                 <div>
-                                    <label>文墨画风（注入画师的 SVG 技法导向）</label>
+                                    <label for="img_inkStyle">文墨画风（注入画师的 SVG 技法导向）</label>
                                     <select id="img_inkStyle">
                                         <option value="flat">扁平插画 · 几何色块，明快现代</option>
                                         <option value="ink">水墨国风 · 浓淡留白，朱砂点缀</option>
@@ -627,7 +627,7 @@ const ConfigModal = {
                                     </select>
                                 </div>
                                 <div>
-                                    <label>协议（取消复用主笔时生效）</label>
+                                    <label for="img_inkType">协议（取消复用主笔时生效）</label>
                                     <select id="img_inkType">
                                         <option value="openai">OpenAI 兼容（绝大多数中转与厂商）</option>
                                         <option value="gemini">Gemini 原生（generativelanguage.googleapis.com）</option>
@@ -724,7 +724,7 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔌 第三接口（变量AI API）</div>
                             <div class="form-row">
-                                <label>AI 厂商（可与主笔不同）</label>
+                                <label for="va_provider">AI 厂商（可与主笔不同）</label>
                                 <select id="va_provider">${providerOptions()}</select>
                                 <div class="form-tip provider-tip" id="va_providerTip"></div>
                             </div>
@@ -803,7 +803,7 @@ const ConfigModal = {
                                 <input id="cp_name" type="text" placeholder="如：GLM-闪光-登记 / 硅基流动-摘要">
                             </div>
                             <div class="form-row">
-                                <label>AI 厂商（选定自动填地址与协议）</label>
+                                <label for="cp_provider">AI 厂商（选定自动填地址与协议）</label>
                                 <select id="cp_provider">${providerOptions()}</select>
                                 <div class="form-tip provider-tip" id="cp_providerTip"></div>
                             </div>
@@ -832,11 +832,11 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🎯 角色指派</div>
                             <div class="form-row">
-                                <label>副AI变量 · 状态登记官</label>
+                                <label for="cp_role_varAI">副AI变量 · 状态登记官</label>
                                 <select id="cp_role_varAI"></select>
                             </div>
                             <div class="form-row">
-                                <label>副AI摘要 · 前情提要官</label>
+                                <label for="cp_role_summary">副AI摘要 · 前情提要官</label>
                                 <select id="cp_role_summary"></select>
                             </div>
                             <div class="form-tip">未指派时：登记官沿用上方「变量AI」单配置，前情提要官复用主笔接口；指派后该角色只用指定连接。编辑/删除连接后再回来重选即可。</div>
@@ -872,12 +872,12 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔌 第四接口（生图 API）</div>
                             <div class="form-row">
-                                <label>生图厂商（选定自动填地址与模式）</label>
+                                <label for="img_provider">生图厂商（选定自动填地址与模式）</label>
                                 <select id="img_provider">${imgProviderOptions()}</select>
                                 <div class="form-tip provider-tip" id="img_providerTip"></div>
                             </div>
                             <div class="form-row">
-                                <label>接口模式（按服务商/模型选择）</label>
+                                <label for="img_mode">接口模式（按服务商/模型选择）</label>
                                 <select id="img_mode" onchange="ConfigModal.onImgModeChange()">
                                     <option value="images">标准生图接口（POST /images/generations）——绝大多数服务商</option>
                                     <option value="chat">对话式生图（chat/completions 回复带图片链接）——OpenRouter 等</option>
@@ -927,7 +927,7 @@ const ConfigModal = {
                             <div class="dw-sub-title">🎛 生成行为</div>
                             <div class="form-row two-col">
                                 <div>
-                                    <label>提示词语言</label>
+                                    <label for="img_promptLang">提示词语言</label>
                                     <select id="img_promptLang">
                                         <option value="zh">中文（国产模型推荐）</option>
                                         <option value="en">英文（海外模型推荐）</option>
@@ -978,7 +978,7 @@ const ConfigModal = {
                         <div class="dw-subgroup">
                             <div class="dw-sub-title">🔌 第五接口（文字模型 API）</div>
                             <div class="form-row">
-                                <label>AI 厂商（可与主笔不同）</label>
+                                <label for="pe_provider">AI 厂商（可与主笔不同）</label>
                                 <select id="pe_provider" onchange="ConfigModal.onProviderChange('pe')">${providerOptions()}</select>
                                 <div class="form-tip provider-tip" id="pe_providerTip"></div>
                             </div>

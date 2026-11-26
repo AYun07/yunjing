@@ -320,18 +320,18 @@
 
                         <article class="log-entry" data-tags="版本 发布 视觉 修复 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
-                <span class="entry-ver">v7.1.9</span>
+                <span class="entry-ver">v7.2.0</span>
                 <span class="entry-date">2026-11-26</span>
                 <span class="entry-badge new">当前版本</span>
             </div>
-            <h3 class="entry-title">全站表单标签点选修复</h3>
-            <p class="entry-lead">系统清点全站 label 与输入框关联，批量补齐 54 处，点击文字标签即可聚焦对应输入框；语法与指向校验全部通过。</p>
+            <h3 class="entry-title">下拉选择标签点选修复</h3>
+            <p class="entry-lead">承接上一版，继续补齐 label 与下拉框的关联 34 处；累计两轮清理 88 处表单标签，全站点标签即可聚焦控件。</p>
             <div class="ver-diff">
-                <div><b>地点编辑表单（9 处）</b>：万象舆图玩家资料库里「地点名称 / 所属区域 / 坐标 X / 坐标 Y / 出处 / 世界名称 / 世界 id / 资料来源 / 首个时代名称」的 label 未与 input 关联，点标签无法聚焦。全部补 for。</div>
-                <div><b>境界对比表单（4 处）</b>：越境缘由 / 自创境界名 / 额外加成 / 跨层缘由补 label 关联。</div>
-                <div><b>配置弹窗（39 处）</b>：接口地址 / API Key / 模型名 / 各路接口的最大 Tokens、温度、超时等表单项批量补 for，配置模型时点标签即可定位输入框。</div>
-                <div><b>主题工坊（2 处）</b>：主色 / 底色取色器补 label 关联。</div>
-                <div><b>实测结论</b>：全站 label 无 for 关联残留 0；54 个 label 的 for 全部指向真实存在的 id；4 个修改文件语法检查全过。</div>
+                <div><b>境界对比下拉（18 处）</b>：挑战方/对手的体系与境界、天骄资质、武魂功法、血脉、体质、极境等下拉的 label 未关联 select，点标签打不开选择。全部补 for。</div>
+                <div><b>配置下拉（14 处）</b>：接口厂商、模型选择等配置下拉补 label 关联。</div>
+                <div><b>舆图编辑下拉（2 处）</b>：地点类别、层级下拉补 label 关联。</div>
+                <div><b>累计成果</b>：上一版 54 处 input + 本版 34 处 select = 88 处表单标签关联全部补齐，残留 0。</div>
+                <div><b>实测结论</b>：全站 label 无 for 关联（含 select）残留 0；for 指向的 id 全部真实存在；修改文件语法检查全过。</div>
             </div>
         </article>
 

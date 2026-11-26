@@ -139,8 +139,8 @@
     var modal = document.getElementById("alEditModal");
     modal.innerHTML = '<div class="al-modal"><h3>' + (isEdit ? "优化地点" : "补充地点") + '</h3>' +
       '<label for="alF_n">地点名称 *</label><input id="alF_n" value="' + esc(p.n) + '" placeholder="如：史莱克学院">' +
-      '<div class="al-row"><div><label>类别</label><select id="alF_cat">' + cats + '</select></div>' +
-      '<div><label>层级</label><select id="alF_lv">' + lvs + '</select></div></div>' +
+      '<div class="al-row"><div><label for="alF_cat">类别</label><select id="alF_cat">' + cats + '</select></div>' +
+      '<div><label for="alF_lv">层级</label><select id="alF_lv">' + lvs + '</select></div></div>' +
       '<label for="alF_rg">所属区域（可选）</label><input id="alF_rg" value="' + esc(p.rg || "") + '" placeholder="如：天斗帝国">' +
       '<div class="al-row"><div><label for="alF_x">坐标 X（0-100，左西右东）</label><input id="alF_x" type="number" min="0" max="100" value="' + esc(p.x) + '"></div>' +
       '<div><label for="alF_y">坐标 Y（0-100，上北下南）</label><input id="alF_y" type="number" min="0" max="100" value="' + esc(p.y) + '"></div></div>' +

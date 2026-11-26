@@ -1830,3 +1830,10 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 决策：用正则批量在同一行内把 `<label>文本</label><input id="xxx"` 补成 `<label for="xxx">文本</label><input id="xxx"`，覆盖 atlas-library(9)/compare-panel(4)/config-modal(39)/theme-studio(2) 共 54 处；只匹配紧邻 input，不碰 label+select 等其它结构，避免误改。
 - 证据：残留扫描 0；54 个 for 指向的 id 全部真实存在（0 缺失）；4 个修改文件 node --check 全过。
 - 失效条件：若未来新增表单仍用裸 label 不写 for，问题会局部复现；本轮只做存量清理，未加 lint 门禁。
+
+
+## DR-115 · 下拉选择标签点选关联（2026-11-26，v7.2.0）
+- 背景：承接 DR-114，上一版只修了 label→input，label→select 仍未关联，点标签文字打不开下拉。
+- 决策：把 DR-114 的正则扩展到 `<select id="xxx"`，覆盖 atlas-library(2)/compare-panel(18)/config-modal(14) 共 34 处。两轮累计清理 88 处表单标签关联。
+- 证据：label→select 残留扫描 0；for 指向 id 全部存在；语法检查全过。
+- 失效条件：新增表单若仍用裸 label 不写 for 会局部复现；本轮仍未加 lint 门禁。

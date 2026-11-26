@@ -125,15 +125,15 @@
 
       '<div class="cp-cmp-sec" data-sec="cross">' +
       '<div class="cp-note">顶级天骄可跨境界对敌——按「能级差 + 天骄系数 + 武魂/血脉/体质 + 极境」算出可越几阶与代价，正文须交代缘由。原著无依据不自拟。</div>' +
-      '<div class="cp-grade-row"><label>挑战方体系</label><select id="cx-sys-from">' + sysOpts(rule) + '</select></div>' +
-      '<div class="cp-grade-row"><label>挑战方境界</label><select id="cx-from">' + tierOpts(rule, 'main') + '</select></div>' +
-      '<div class="cp-grade-row"><label>对手体系</label><select id="cx-sys-to">' + sysOpts(rule) + '</select></div>' +
-      '<div class="cp-grade-row"><label>对手境界</label><select id="cx-to">' + tierOpts(rule, 'main') + '</select></div>' +
-      '<div class="cp-grade-row"><label>天骄资质</label><select id="cx-tj">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>武魂/功法</label><select id="cx-ms">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>血脉</label><select id="cx-bl">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>体质</label><select id="cx-ph">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>极境</label><select id="cx-pk"><option value="false">否</option><option value="true">处于原著明示极境</option></select></div>' +
+      '<div class="cp-grade-row"><label for="cx-sys-from">挑战方体系</label><select id="cx-sys-from">' + sysOpts(rule) + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-from">挑战方境界</label><select id="cx-from">' + tierOpts(rule, 'main') + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-sys-to">对手体系</label><select id="cx-sys-to">' + sysOpts(rule) + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-to">对手境界</label><select id="cx-to">' + tierOpts(rule, 'main') + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-tj">天骄资质</label><select id="cx-tj">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-ms">武魂/功法</label><select id="cx-ms">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-bl">血脉</label><select id="cx-bl">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-ph">体质</label><select id="cx-ph">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="cx-pk">极境</label><select id="cx-pk"><option value="false">否</option><option value="true">处于原著明示极境</option></select></div>' +
       '<div class="cp-grade-row"><label for="cx-nar">越境缘由</label><input id="cx-nar" placeholder="如：双生武魂+燃烧魂骨强行越级"></div>' +
       '<button class="cp-btn" id="cx-go">开始比对</button>' +
       '<div class="cp-rep" id="cx-out" style="display:none"></div>' +
@@ -148,15 +148,15 @@
 
       (hasLayer ? '<div class="cp-cmp-sec" data-sec="layer">' +
       '<div class="cp-note">嵌套世界各层共用一条主阶梯，层的差别是同一境界的战力倍率。跨层对敌须走折算：层位比=对手倍率÷我方倍率，层位差=round((层位比-1)×2) 档，叠加主阶梯档差为总需跨档；加成折算可跨档，代价按越档结算，正文必须交代跨层缘由。标注「估算」的倍率非原著明示，仅供校准。</div>' +
-      '<div class="cp-grade-row"><label>我方层</label><select id="ly-from">' + layerOptsHtml + '</select></div>' +
-      '<div class="cp-grade-row"><label>我方境界</label><select id="ly-from-tier">' + layerFirstTiers + '</select></div>' +
-      '<div class="cp-grade-row"><label>对手层</label><select id="ly-to">' + layerOptsHtml + '</select></div>' +
-      '<div class="cp-grade-row"><label>对手境界</label><select id="ly-to-tier">' + layerLastTiers + '</select></div>' +
-      '<div class="cp-grade-row"><label>天骄资质</label><select id="ly-tj">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>武魂/功法</label><select id="ly-ms">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>血脉</label><select id="ly-bl">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>体质</label><select id="ly-ph">' + opts() + '</select></div>' +
-      '<div class="cp-grade-row"><label>极境</label><select id="ly-pk"><option value="false">否</option><option value="true">处于原著明示极境</option></select></div>' +
+      '<div class="cp-grade-row"><label for="ly-from">我方层</label><select id="ly-from">' + layerOptsHtml + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-from-tier">我方境界</label><select id="ly-from-tier">' + layerFirstTiers + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-to">对手层</label><select id="ly-to">' + layerOptsHtml + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-to-tier">对手境界</label><select id="ly-to-tier">' + layerLastTiers + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-tj">天骄资质</label><select id="ly-tj">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-ms">武魂/功法</label><select id="ly-ms">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-bl">血脉</label><select id="ly-bl">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-ph">体质</label><select id="ly-ph">' + opts() + '</select></div>' +
+      '<div class="cp-grade-row"><label for="ly-pk">极境</label><select id="ly-pk"><option value="false">否</option><option value="true">处于原著明示极境</option></select></div>' +
       '<div class="cp-grade-row"><label for="ly-cb">额外加成</label><input id="ly-cb" type="number" value="0" placeholder="玩家特殊设计等效档数"></div>' +
       '<div class="cp-grade-row"><label for="ly-nar">跨层缘由</label><input id="ly-nar" style="width:100%;max-width:none" placeholder="如：虚空引擎跨界 / 坐忘道修假 / 宇宙海法则压制"></div>' +
       '<button class="cp-btn" id="ly-go">开始折算</button>' +
