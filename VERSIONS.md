@@ -2,9 +2,9 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **109** 个版本，从 `v3.55.7` 到 `v7.0.7`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **110** 个版本，从 `v3.55.7` 到 `v7.0.8`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.0.7 为当前版本**；其余 **108 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.0.8 为当前版本**；其余 **109 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -16,6 +16,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.0.8** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.8) |
 | **v7.0.7** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.7) |
 | **v7.0.6** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.6) |
 | **v7.0.5** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.5) |
@@ -129,6 +130,17 @@
 | **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
 | **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
+## v7.0.8 · 2026-11-26
+
+**第二批名牌错开与资料库串书修正**。16处地图名牌坐标错开、5处串书专名清除，实测0错误。
+
+- 斗破迦南学院内院/藏书阁/磐门、龙族北京地铁/王恭厂、全职法师魔都组、神秘复苏鬼镜/鬼橱/金门、武动多处重叠名牌错开。
+- 开局地摊卖大力资料库误用《仙逆》主角王林为例的3处条目改为泛指，tags同步清理。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.0.8)  [🔍 与 v7.0.7 差异](https://github.com/AYun07/yunjing/compare/v7.0.7...v7.0.8)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.8.zip)
 
 ---
 
