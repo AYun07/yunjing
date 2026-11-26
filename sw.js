@@ -8,7 +8,7 @@
         player-kit / world-runtime 全系等 60+ 文件），此前离线模式功能残缺
      3. 版本号体系与主版本 v3.46.0 对齐
 */
-const SW_VER = 'yunjing-v7.1.2';
+const SW_VER = 'yunjing-v7.1.3';
   /* v6.5.1 二创增量补丁：patch-engine（纯函数内核：FNV哈希/diff/三方plan/merge3/备份回滚/版本检查/分卷/密钥剔除）+ content-adapters（12类内容采集器）+ zip-writer 增解包 + github-client 增 Gist下载/私密Gist/分卷解析 + creation-hub 发布走"只打改动"、下载走"差异预览→同步/覆盖/合并/冲突→备份→安装→回滚"。文档：增量同步-需求回读确认单/设计契约 v6.5.1；决策 DR-049。v6.5.1 增四段式正文(简介/特点/二创内容/打包源码)+唯一区域(标签二创投稿/目录 community/packages)，决策 DR-050/051。v6.6.0：二创收敛为唯一总文件夹 community/works/（每件作品一个 <时间戳>-<slug>/ 子文件夹，README.md+meta.json+package.zip 同处，catalog.json 按时间倒序），云境内 listWorks/readWorkFile/publishWork 一站式浏览下载发布；修复 CI（版本同步器全站同步）；决策 DR-052/053。 */
   /* v6.3.13 跨层战力折算：嵌套世界各层加层位倍率factor与依据basis（基准层=1，全部标注估算/原著依据），compare-engine 新增 crossLayer()——层位比=对手÷我方倍率、层位差=round((比-1)×2)档叠加主阶梯档差，加成折可跨档、代价按档结算、必须写缘由、估算倍率显式标注；关联副体系层（地摊仙宫星空）从对应tier轴取境界；契约注入折算口径，面板加「④跨层对敌」tab。realm-rules/compare-engine/compare-panel ?v 升 6.3.13。 */
   /* v6.3.14 全量楼层快照与回档：新 js/floor-state.js——固定IDB键floorState/<档>覆盖写(绝不无限追加)、对话正文不进快照(只存histLen，正文走transcript)、差量+每20层锚点；rewindTo 优先走全量快照，回档到任意层时所有随剧情演化数据(storyState全字段+SlotRegistry全部旁路键)一起还原，全局持久项(传承/图鉴)排除；回档可撤销(上限5恢复点)，时光轴加撤销入口；老档无floorState自动降级turnArc。story-framework/time-axis/floor-state ?v 升 6.3.14。 */

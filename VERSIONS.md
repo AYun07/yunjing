@@ -2,9 +2,9 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **114** 个版本，从 `v3.55.7` 到 `v7.1.2`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **115** 个版本，从 `v3.55.7` 到 `v7.1.3`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.1.2 为当前版本**；其余 **113 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.1.3 为当前版本**；其余 **114 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -16,6 +16,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.1.3** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.3) |
 | **v7.1.2** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.2) |
 | **v7.1.1** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.1) |
 | **v7.1.0** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.0) |
@@ -134,6 +135,17 @@
 | **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
 | **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
+## v7.1.3 · 2026-11-26
+
+**资料库冗余副本清理（第二批）与名牌错开**。再清理14条冗余副本，龙族北京地下尼伯龙根/酒德麻衣团体名牌错开。
+
+- 地摊大力/斗罗/斗破/地球/凡人/龙族等14条重复条目删除，正本保留。
+- 龙族Ⅱ北京篇大地与山之王、酒德麻衣团体名牌从重叠的(82,28)错开。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.1.3)  [🔍 与 v7.1.2 差异](https://github.com/AYun07/yunjing/compare/v7.1.2...v7.1.3)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.3.zip)
 
 ---
 

@@ -254,7 +254,7 @@
     "css/atlas-drilldown.css", "css/atlas-faction-layer.css",
     "css/atlas-canon-layer.css", "css/atlas-library.css"
   ];
-  var V = "?v=7.1.2";
+  var V = "?v=7.1.3";
   var atlasPromise = null;
   function ensureAtlas() {
     if (atlasPromise) return atlasPromise;
