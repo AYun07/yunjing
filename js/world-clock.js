@@ -432,7 +432,13 @@
        mo-chibi.js 是懒加载，本模块先于它执行，故轮询等它就绪再绑定。 */
     (function bindDrag() {
       if (window.MoChibi && typeof window.MoChibi.makeDraggable === "function") {
-        window.MoChibi.makeDraggable(pill, { storageKey: "storyWorldClockPos" });
+        // v7.3.1：occlusion-fix.css 用 left:...!important 做初始避让，会把拖拽写入的
+        // inline left 覆盖，导致「只能上下移、不能左右移」。forceImportant 让拖拽/
+        // 恢复位置都写成 inline !important，优先级高于样式表，全屏拖动恢复。
+        window.MoChibi.makeDraggable(pill, {
+          storageKey: "storyWorldClockPos",
+          forceImportant: true
+        });
       } else {
         setTimeout(bindDrag, 300);
       }

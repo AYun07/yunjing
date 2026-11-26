@@ -10,8 +10,20 @@
       return `storyActiveSlot_${genre || ((_a = window.storyFramework) == null ? void 0 : _a.genre)}`;
     },
     genre() {
-      var _a;
-      return ((_a = window.storyFramework) == null ? void 0 : _a.genre) || "free";
+      var fw = window.storyFramework;
+      var g = (fw && fw.genre)
+        || (fw && fw.config && (fw.config.genreKey || fw.config.genre))
+        || (window.SlotRegistry && SlotRegistry.genre && SlotRegistry.genre())
+        || "free";
+      return g;
+    },
+    /** v7.3.1：书架搬到设置页后没有 storyFramework 实例，凡是要读当前界的
+     *  地方统一走这里兜底，避免 `fw.genre` 抛 Cannot read properties of undefined。 */
+    _fwGenre() {
+      var fw = window.storyFramework;
+      if (fw && fw.genre) return fw.genre;
+      try { if (window.SlotRegistry && SlotRegistry.genre) return SlotRegistry.genre() || "free"; } catch (e) {}
+      return this.genre();
     },
     /** 读注册表（恒含 main 槽——首次访问时惰性补建） */
     list() {
@@ -60,13 +72,13 @@
     hasSave(slotId) {
       const fw = window.storyFramework;
       const suffix = slotId && slotId !== "main" ? `~${slotId}` : "";
-      const key = `storySave_${fw.genre}${suffix}`;
+      const key = `storySave_${this._fwGenre()}${suffix}`;
       return !!(localStorage.getItem(key) || localStorage.getItem(key + ".bak") || localStorage.getItem(key + ".idb"));
     },
     /** 每次存档后同步元数据（由 fw.saveStory 调用） */
     syncMeta(fw) {
       var _a;
-      const g = fw.genre;
+      const g = this._fwGenre();
       let rows = [];
       try {
         rows = JSON.parse(localStorage.getItem(this.regKey(g)) || "[]");
@@ -158,7 +170,9 @@
     switchTo(slotId) {
       var _a;
       const fw = window.storyFramework;
-      if (fw.storyState.isStoryStarted) fw.saveStory();
+      /* v7.3.1：从设置页书架也能进入档位，那里没有 storyFramework。
+         无 fw 时跳过存档冲刷，只记激活槽并重载即可（设置页本身无正文档可冲刷）。 */
+      if (fw && fw.storyState && fw.storyState.isStoryStarted) fw.saveStory();
       /* v4.08.0 修复（切档丢进度）：此前只调 fw.saveStory()，
          而界扩展模块（worldExt_*）的内存态只在 act()/onVars() 时才落盘，
          玩家在面板上改完没点任何按钮就切档 → 那部分进度直接消失。
@@ -180,7 +194,7 @@
       try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) {}
       const fw = window.storyFramework;
       const suffix = slotId !== "main" ? `~${slotId}` : "";
-      const key = `storySave_${fw.genre}${suffix}`;
+      const key = `storySave_${this._fwGenre()}${suffix}`;
       const raw = localStorage.getItem(key) || localStorage.getItem(key + ".bak");
       if (!raw) {
         (_a = window.showToast) == null ? void 0 : _a.call(window, "该档位没有存档可导出", "error");
@@ -195,7 +209,7 @@
       }
       const meta = this.list().find((x) => x.id === slotId) || {};
       /* v3.51.0：app 字段改用 yunjing。旧档（app:"moshu"）在导入端仍被接受并就地升级。 */
-      const pkg = { app: (window.YunjingID && window.YunjingID.APP) || "yunjing", ver: "3.51.0", genre: fw.genre, slotId, meta, save };
+      const pkg = { app: (window.YunjingID && window.YunjingID.APP) || "yunjing", ver: "3.51.0", genre: this._fwGenre(), slotId, meta, save };
       /* v3.68.0 存档迁移修复：灵宠/小队随存档导出（跨设备不再丢失） */
       try {
         pkg.extras = {
@@ -227,7 +241,7 @@
         const includeKey = !!(window.__yjExportIncludeKey);
         if (window.SaveCodec) pkg.config = window.SaveCodec.collectConfig(includeKey);
       } catch (e) {}
-      await this._downloadSmart(pkg, `云境存档_${fw.genre}_${(meta.title || meta.name || slotId).slice(0, 12)}_${slotId}`);
+      await this._downloadSmart(pkg, `云境存档_${this._fwGenre()}_${(meta.title || meta.name || slotId).slice(0, 12)}_${slotId}`);
     },
     /** 导入槽位 JSON/gzip（收进新槽位，绝不覆盖现有档） */
     importSlot(file) {
@@ -255,11 +269,11 @@
           const okApp = window.YunjingID && window.YunjingID.acceptApp ? window.YunjingID.acceptApp(pkg.app) : (pkg.app === "yunjing" || pkg.app === "moshu");
           if (!okApp || !pkg.save) throw new Error("不是云境存档文件");
           const fw = window.storyFramework;
-          if (pkg.genre && pkg.genre !== fw.genre) throw new Error(`该存档属于「${pkg.genre}」工坊，请去对应工坊导入`);
+          if (pkg.genre && pkg.genre !== this._fwGenre()) throw new Error(`该存档属于「${pkg.genre}」工坊，请去对应工坊导入`);
           const id = this.create((((_a = pkg.meta) == null ? void 0 : _a.name) || "导入档").slice(0, 24));
           if (!id) throw new Error("存储空间不足，无法新建档位");
           const suffix = `~${id}`;
-          localStorage.setItem(`storySave_${fw.genre}${suffix}`, JSON.stringify(pkg.save));
+          localStorage.setItem(`storySave_${this._fwGenre()}${suffix}`, JSON.stringify(pkg.save));
           /* v3.68.0 存档迁移修复：灵宠/小队随档恢复到新槽位 */
           try {
             if (pkg.extras) {
@@ -272,7 +286,7 @@
           try {
             if (pkg.scoped) {
               const srcSid = pkg.slotId || 'main';
-              const g = pkg.genre || fw.genre;
+              const g = pkg.genre || this._fwGenre();
               /* 注册表键（storySlots_* / storyActiveSlot_*）不属于槽位数据，
                  绝不能恢复——否则会把当前整个书架注册表覆盖成源档的。 */
               const regKeys = [this.regKey(g), this.activeKey(g)];
@@ -351,14 +365,14 @@
         for (var i = 0; i < rows.length; i++) {
           var sid = rows[i].id;
           var suffix = sid !== 'main' ? '~' + sid : '';
-          var raw = localStorage.getItem('storySave_' + fw.genre + suffix)
-            || localStorage.getItem('storySave_' + fw.genre + suffix + '.bak');
+          var raw = localStorage.getItem('storySave_' + this._fwGenre() + suffix)
+            || localStorage.getItem('storySave_' + this._fwGenre() + suffix + '.bak');
           if (!raw) continue;
           var save;
           try { save = JSON.parse(raw); } catch (e) { continue; }
           var pkg = {
             app: (window.YunjingID && window.YunjingID.APP) || 'yunjing', ver: '4.36.0',
-            genre: fw.genre, slotId: sid, meta: rows[i], save: save,
+            genre: this._fwGenre(), slotId: sid, meta: rows[i], save: save,
             scoped: this.collectLS('slot', sid)
           };
           try { pkg.config = window.SaveCodec.collectConfig(!!window.__yjExportIncludeKey); } catch (e) {}
@@ -367,7 +381,7 @@
         if (!branches.length) { this._toast('没有可导出的存档正文', 'error'); return; }
         var pack = window.SaveCodec.makeBranchPack(branches);
         var stamp = Date.now();
-        await this._downloadSmart(pack, '云境差分包_' + fw.genre + '_' + branches.length + '支_' + stamp);
+        await this._downloadSmart(pack, '云境差分包_' + this._fwGenre() + '_' + branches.length + '支_' + stamp);
         var ratio = (JSON.stringify(pack).length / JSON.stringify(branches).length * 100).toFixed(0);
         this._toast('✅ 已导出差分包（' + branches.length + ' 支，体积约为逐档全量的 ' + ratio + '%）', 'success');
       } catch (e) {
@@ -416,7 +430,7 @@
           }
         } else {
           const fw = window.storyFramework || {};
-          const g = fw.genre || this.genre();
+          const g = this._fwGenre() || this.genre();
           const sid = slotId || this.activeId();
           const keys = new Set();
           if (window.SlotRegistry) {

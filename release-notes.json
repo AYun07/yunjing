@@ -4,9 +4,24 @@
   "note": "每版改了什么，这里一看就知道，不用去 GitHub。列表按时间从新到旧。",
   "versions": [
     {
+      "version": "v7.3.1",
+      "date": "2026-11-27",
+      "current": true,
+      "title": "客户端真机返修：配置全显 + 书架/时钟/小云遮挡六项",
+      "summary": "按用户客户端截图逐条真机复现并修复 5 项可见缺陷",
+      "changes": [
+        "配置默认全显示：设置页强制完整视图，预设正则/向量/存档/多连接等 11 个接口卡全部可见，不再默认折叠隐藏",
+        "存档书架打开失败真修：书架搬到设置页后无 storyFramework 读 fw.genre 抛错，统一加安全界标识兜底，切档不再崩",
+        "顶部空白真修：.top-bar 被 relative top:40px 叠加 body padding-top:40px 多出一整条空白，去掉重复下移",
+        "世界时钟只能上下移真修：occlusion-fix.css 的 left:...!important 锁死横向，改 inline !important 覆盖，可全屏拖动并刷新保留",
+        "小云巨大隐形边框吞点击真修：面板默认 opacity:0 却无条件 pointer-events:auto，形成 330×349 点击黑洞，改为仅 .on 展开时接收点击",
+        "全站 10 页真机零脚本错误、零点击错误；4 个改动文件语法全过"
+      ]
+    },
+    {
       "version": "v7.3.0",
       "date": "2026-11-26",
-      "current": true,
+      "current": false,
       "title": "配置全量搬进天地设置 + 随缘开局与存档切换真修",
       "summary": "按用户澄清重做四项，真机确证并修复 5 项真实问题",
       "changes": [

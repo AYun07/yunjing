@@ -28,6 +28,9 @@ const ConfigModal = {
     host.querySelectorAll(".modal-footer .btn-ghost").forEach(function (b) {
       if (/取消/.test(b.textContent)) b.style.display = "none";
     });
+    // v7.3.1：设置页是唯一完整配置入口，强制展示全部接口，隐藏简洁/完整切换以免误切回隐藏卡片
+    var viewSwitch = host.querySelector(".cfg-view-switch");
+    if (viewSwitch) viewSwitch.style.display = "none";
     this.bindEvents(host);
     this.fillForm();
     this.applyView();
@@ -111,6 +114,11 @@ const ConfigModal = {
   applyView() {
     var modal = this._root();
     if (!modal) return;
+    /* v7.3.1：设置页是「全站唯一完整配置入口」，必须默认展示全部 11 个接口卡
+       （预设正则/向量/存档/多连接等）。v7.3.0 沿用弹窗的 simple 默认，把 10 个
+       卡片 display:none，玩家反馈「预设正则不显示/向量不显示/存档界面不显示」。
+       内联模式一律按完整视图渲染；只有非内联的旧弹窗才尊重 simple/full 切换。 */
+    if (modal.id === 'cfgInlineHost') this._view = 'full';
     var simple = this._view !== 'full';
     // 标记副接口卡（第一个 .api-card 是主笔）
     var cards = modal.querySelectorAll('.api-card');

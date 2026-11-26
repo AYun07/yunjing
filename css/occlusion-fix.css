@@ -26,10 +26,12 @@ body.has-left-rail #chatArea .input-row { position: relative; z-index: 60; }
 #xyBuddy:hover .xy-orb,
 #xyBuddy .xy-orb:hover { opacity: 1; }
 /* v7.0.0 组1-T01/T02：容器恢复 auto，保证立绘拖拽与面板按钮事件委托可用。
-   容器自身不绘制任何背景，透明空白区不拦截正文点击（只有立绘/面板是命中区）。 */
+   容器自身不绘制任何背景，透明空白区不拦截正文点击（只有立绘是常驻命中区）。
+   v7.3.1：面板 .xy-panel 不再无条件 auto——它默认 opacity:0，无条件 auto 会
+   变成 330×349 的隐形点击黑洞（玩家反馈「小云身上巨大看不到边框挡按钮」）。
+   面板仅在 .on 真正展开时接收点击（见下方规则与 xiaoyun-buddy.css）。 */
 #xyBuddy { pointer-events: auto; }
-#xyBuddy .xy-orb,
-#xyBuddy .xy-panel { pointer-events: auto; }
+#xyBuddy .xy-orb { pointer-events: auto; }
 @media (min-width: 901px) {
     /* 宽屏：立绘右移贴边，进一步远离正文中间 */
     #xyBuddy { right: 10px; bottom: 46px; }
@@ -58,6 +60,8 @@ body.has-left-rail #chatArea .input-row { position: relative; z-index: 60; }
    v7.0.3 实测（1366×900，桌面端自绘标题栏把顶栏下移到 y≈89）：时钟落在 (12,60)，
    正好压在顶栏左侧「返回」按钮上边缘，导致返回点不到。
    修法：一律把时钟向右移，离开左上角返回按钮区；有左栏时移到左栏右缘之外。 */
+/* v7.3.1：初始避让定位。拖拽时 world-clock 会用 inline !important 覆盖本规则
+   （见 makeDraggable 的 opt.forceImportant），从而支持左右移动。 */
 #worldClockPill { left: 96px !important; }
 body.has-left-rail #worldClockPill { left: 192px !important; }
 .left-rail { position: relative; z-index: 55; }
@@ -71,10 +75,13 @@ body.has-left-rail #worldClockPill { left: 192px !important; }
    ② 输入行必须处在所有 fixed 装饰之上，保证 elementFromPoint 命中输入框本身；
    ③ 状态抽屉 .open 残留会让 .input-area 永久 visibility:hidden，加兜底恢复。
    ============================================================ */
-/* ① 小云面板 / 立绘层级抬到标题栏(9500)与氛围层(9400)之上，输入框可点可输入 */
+/* ① 小云层级抬到标题栏(9500)与氛围层(9400)之上，输入框可点可输入。
+   v7.3.1 修复「小云身上巨大隐形边框遮挡按钮」：旧版无条件给 .xy-panel 设
+   pointer-events:auto，而面板默认 opacity:0 visibility:visible（330×349），
+   形成一块看不见却吞点击的透明板，盖住其下按钮。改为仅 .on（真正展开）时接收点击；
+   去掉 :hover 规则（hover 不改 opacity，只会让透明面板继续吞点击）。 */
 #xyBuddy { z-index: 9600 !important; }
-#xyBuddy .xy-panel { pointer-events: auto; }
-#xyBuddy .xy-panel.on, #xyBuddy:hover .xy-panel { pointer-events: auto; }
+#xyBuddy .xy-panel.on { pointer-events: auto; }
 /* 立绘透明空白区穿透，只有立绘本身接收点击，不吞正文 */
 #xyBuddy .xy-orb { pointer-events: auto; }
 
