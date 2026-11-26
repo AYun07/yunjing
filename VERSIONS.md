@@ -2,20 +2,21 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **107** 个版本，从 `v3.55.7` 到 `v7.0.5`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **108** 个版本，从 `v3.55.7` 到 `v7.0.6`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.0.5 为当前版本**；其余 **106 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.0.6 为当前版本**；其余 **107 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；107 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；108 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
 
 ## 版本速查（新→旧 · 首行为当前版本，其余 105 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.0.6** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.6) |
 | **v7.0.5** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.5) |
 | **v7.0.4** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.4) |
 | **v7.0.3** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.3) |
@@ -129,6 +130,16 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v7.0.6 · 2026-11-26
+
+视觉全功能全按钮实测后的收尾修复。本版为当前版本。
+
+- **世界地图对照页**：补齐 favicon 声明，消除浏览器自动请求 `/favicon.ico` 的 404。
+- **凡人修仙状态板**：`.ss1-sky::after` 的装饰大字「道」继承了状态板正文的黑色 text-shadow，渲染成深色大字压住「战力/装备」等文字；显式清除阴影后装饰淡字不再干扰阅读。其余 7 套皮肤经扫描无同类问题。
+- **验证**：10 页逐按钮点击 0 脚本错误 / 0 个 404 / 0 视口溢出；竖屏 420×900 四入口无裁切；6 个不同世界状态板无深色大字；三个全局开关点击有视觉反馈与文字提示；四入口跳转（世界选择/存档弹层/工坊/设置）全部正常；core 50/50、版本同源 19/19。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.0.6)  [🔍 与 v7.0.5 差异](https://github.com/AYun07/yunjing/compare/v7.0.5...v7.0.6)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.6.zip)
 
 ## v7.0.5 · 2026-11-25
 

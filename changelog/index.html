@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.5">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.6">
 </head>
 
 <body class="page-changelog">
@@ -316,11 +316,25 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+                        <article class="log-entry" data-tags="版本 发布 视觉 修复 稳定" style="--entry-hue:#4a8a6a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.0.6</span>
+                <span class="entry-date">2026-11-26</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">视觉全功能全按钮实测后的收尾修复</h3>
+            <p class="entry-lead">用真实浏览器逐页逐按钮、按桌面与竖屏两种视口实测，修掉两个影响观感的小问题，其余全部通过。</p>
+            <div class="ver-diff">
+                <div><b>世界地图对照页</b>：补齐 favicon 声明，消除浏览器自动请求的 404。</div>
+                <div><b>凡人修仙状态板</b>：装饰大字「道」误继承正文黑阴影、压住功能文字；已清除阴影，其余 7 套皮肤无同类问题。</div>
+                <div><b>实测结论</b>：10 页逐按钮 0 脚本错误 / 0 个 404 / 0 视口溢出；竖屏四入口无裁切；六个世界状态板正常；三个全局开关有反馈、四入口跳转全部正确。</div>
+            </div>
+        </article>
+
                         <article class="log-entry" data-tags="版本 发布 缺陷修复 热更新 同源 体验 稳健 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
                 <span class="entry-ver">v7.0.5</span>
                 <span class="entry-date">2026-11-25</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">v7.0.4 缺陷与体验问题逐条核实修复</h3>
             <p class="entry-lead">按开发者收到的缺陷总清单逐条核实：先修会让客户端同步 404 的知识库文件缺失根因，再补齐版本同源、统一配置占位、加懒加载守卫、让存档错误可见，最后处理一批玩家体验细节。</p>

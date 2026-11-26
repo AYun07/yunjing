@@ -396,7 +396,7 @@
     radial-gradient(ellipse 48% 15% at 78% 86%,rgba(190,225,210,.09),transparent 70%),
     radial-gradient(ellipse 60% 14% at 45% 96%,rgba(200,232,218,.08),transparent 70%),
     repeating-linear-gradient(0deg,transparent 0 6px,rgba(232,200,119,.014) 6px 7px)}
-.ss1-sky::after{content:"道";position:absolute;right:-10px;top:26%;font:700 190px "STKaiti","KaiTi",serif;color:rgba(232,200,119,.045);line-height:1}
+.ss1-sky::after{content:"道";position:absolute;right:-10px;top:26%;font:700 190px "STKaiti","KaiTi",serif;color:rgba(232,200,119,.045);line-height:1;text-shadow:none}
 .ss1-mt{position:absolute;left:-4%;bottom:-2%;width:70%;height:32%;
   background:linear-gradient(180deg,rgba(120,170,150,.16),transparent);
   clip-path:polygon(0 100%,8% 62%,18% 80%,30% 34%,42% 72%,55% 46%,68% 78%,82% 40%,100% 82%,100% 100%)}
