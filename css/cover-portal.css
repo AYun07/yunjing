@@ -109,3 +109,7 @@
   .cp-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
   .cp-sub{display:none;}
 }
+/* v7.2.1 真机修复：世界选择器是 position:fixed 浮层，body 的 padding-top 推不动它，
+   导致 .cp-top（返回封面/择一方世界/30界）被自绘标题栏压住上半截。
+   与 .ci-skip / .theme-switcher 同样的 shell-on 补丁口径，把整个浮层内容下移标题栏高度。 */
+html.yj-shell-on .cp-overlay{padding-top:var(--yj-bar-h,40px);}

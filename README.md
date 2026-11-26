@@ -4,7 +4,7 @@
 
 > 打开网页就能用的 AI 互动小说加开放世界扮演。纯前端静态站，不用构建，没有后端，也不用注册账号。AI 接口自己填，故事和 Key 只留在本机浏览器里。封面只有一张，叫「万象入云」，四个入口进的是同一个世界。
 
-[![当前版本](https://img.shields.io/badge/version-7.2.0-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.2.0) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
+[![当前版本](https://img.shields.io/badge/version-7.2.1-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.2.1) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
 
 ---
 
@@ -128,10 +128,10 @@
 | **v7.1.4** | 2026-11-26 | 历史 | 资料库冗余副本清理（第三批）与名牌错开：再清理14条冗余副本，龙族外五家名牌错开。 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.1.4) |
 | **v7.1.5** | 2026-11-26 | 历史 | 资料库冗余副本清理（第四批）与名牌错开：再清理14条冗余副本，全职法师魔都家族名牌错开。 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.1.5) |
 | **v7.1.6** | 2026-11-26 | 历史 | 资料库冗余副本清理（第五批）与名牌错开：末批清理14条冗余副本，龙族/武炼巅峰名牌错开，五版去重全部完成。 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.1.6) |
-| **v7.1.7** | 2026-11-26 | 历史 | 客户端外壳一致性修复：消除顶部遮挡、补齐无标题栏页面、窗口控制层级修复 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.0) |
-| **v7.1.8** | 2026-11-26 | 历史 | 内容同步校验修复与无障碍补全：修复内容清单SHA失配，补齐关键入口保护与输入标签 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.0) |
-| **v7.1.9** | 2026-11-26 | 历史 | 表单标签点选修复：批量补齐全站 label 与输入框关联 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.0) |
-| **v7.2.0** | 2026-11-26 | **当前** | 下拉选择标签点选修复：补齐全站 label 与下拉框关联 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.0) |
+| **v7.1.7** | 2026-11-26 | 历史 | 客户端外壳一致性修复：消除顶部遮挡、补齐无标题栏页面、窗口控制层级修复 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.1) |
+| **v7.1.8** | 2026-11-26 | 历史 | 内容同步校验修复与无障碍补全：修复内容清单SHA失配，补齐关键入口保护与输入标签 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.1) |
+| **v7.1.9** | 2026-11-26 | 历史 | 表单标签点选修复：批量补齐全站 label 与输入框关联 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.1) |
+| **v7.2.0** | 2026-11-26 | **当前** | 下拉选择标签点选修复：补齐全站 label 与下拉框关联 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.2.1) |
 | **v7.0.5** | 2026-11-25 | **当前** | v7.0.4 缺陷与体验问题逐条核实修复：知识库文件进仓库根治热更新 404、版本文档同源 19/19、主力 Agnes 预设与占位统一、顶栏懒加载竞态守卫、存档落盘错误可见、性格点搜索筛选、世界门面显示身份、存档书架直达入口、自检误报修正、小云工坊玩家化措辞。 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.0.5) |
 | **v7.0.4** | 2026-11-25 | **当前** | 玩家实测 18 项问题全修；游戏化客户端外壳（无边框标题栏 + 金边云纹）；**内容自动更新 + 损坏自修复，装一次以后不用再重装**；设置页新增「更新与公告」，玩家不用开 GitHub 就能看每版区别；版本全站单一来源。 | [桌面客户端 exe](https://github.com/AYun07/yunjing/releases/download/v7.0.0/YunJing-v7.0.0-Windows-setup-x64.exe) · [完整包 665MB](https://github.com/AYun07/yunjing/releases/download/v7.0.0/云境-v7.0.0-完整包.zip) · [源码包](https://github.com/AYun07/yunjing/releases/download/v7.0.0/云境-v7.0.0-源码包.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.0.0) |
 

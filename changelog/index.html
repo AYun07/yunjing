@@ -317,12 +317,28 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 缺陷修复 真机 视觉 显示 稳定" style="--entry-hue:#4a8a6a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.2.1</span>
+                <span class="entry-date">2026-11-26</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">客户端真机实测：大厅顶栏遮挡与同步状态显示修复</h3>
+            <p class="entry-lead">在虚拟显示器里真实启动 Electron 客户端，用真实鼠标点击、键盘输入遍历四入口、角色创建、设置、存档、地图与创作室。确认并修复两处真机可见缺陷。</p>
+            <div class="ver-diff">
+                <div><b>世界大厅顶栏遮挡（真机截图确认）</b>：世界选择器是 position:fixed 浮层，body 的 padding-top 推不动它，「返回封面 / 择一方世界 / 30 界」被自绘标题栏压住上半截。按 .ci-skip 同样的 shell-on 口径给 .cp-overlay 补 padding-top，实测顶栏完整落到标题栏下方。</div>
+                <div><b>同步状态显示 [object Object]（真机截图确认）</b>：设置页「上次同步」把完整 state 对象 String() 后拼进界面，暴露出 [object Object]。改为只取可读的 lastResult 文案，无文案则不显示括号。</div>
+                <div><b>实测覆盖</b>：四入口真实点击、角色创建到身份设定、键盘正文输入、API Key 保存与刷新回读、三个全局开关状态翻转、窗口三键可点、三页滚到底、地图名牌重叠、自检 71 项、脚本 console 错误——均通过。</div>
+                <div><b>如实披露</b>：本轮真机确认为缺陷的是 2 项，未以误报凑数（过场层遮挡、折叠菜单内按钮、开发者文档页无标题栏等均判定为非缺陷）。</div>
+            </div>
+        </article>
+
 
                         <article class="log-entry" data-tags="版本 发布 视觉 修复 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
                 <span class="entry-ver">v7.2.0</span>
                 <span class="entry-date">2026-11-26</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">下拉选择标签点选修复</h3>
             <p class="entry-lead">承接上一版，继续补齐 label 与下拉框的关联 34 处；累计两轮清理 88 处表单标签，全站点标签即可聚焦控件。</p>

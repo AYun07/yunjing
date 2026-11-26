@@ -1837,3 +1837,12 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 决策：把 DR-114 的正则扩展到 `<select id="xxx"`，覆盖 atlas-library(2)/compare-panel(18)/config-modal(14) 共 34 处。两轮累计清理 88 处表单标签关联。
 - 证据：label→select 残留扫描 0；for 指向 id 全部存在；语法检查全过。
 - 失效条件：新增表单若仍用裸 label 不写 for 会局部复现；本轮仍未加 lint 门禁。
+
+
+## DR-116 · 客户端真机实测闭环（2026-11-26，v7.2.1）
+- 背景：用户指出此前多轮修复偏代码审查层面，客户端真机仍有大量问题，要求实际运行客户端、模拟鼠标点击与键盘输入。
+- 方法：Xvfb 虚拟显示器启动真实 Electron 33.2.0 客户端（frame:false 自绘标题栏），CDP 连接真实窗口，Playwright 发真实鼠标/键盘事件，截真实屏幕取证。
+- 决策1：世界大厅遮挡按「fixed 浮层不吃 body padding」的根因处理，比照 .ci-skip/.theme-switcher 的 html.yj-shell-on 补丁口径给 .cp-overlay 补 padding-top，保持与既有标题栏让步策略一致。
+- 决策2：st.state 语义是完整 state 对象而非状态文案，禁止 String() 直拼 UI；只取 lastResult 字符串，null 时不渲染括号。
+- 失效条件：若客户端改为非 fixed 外壳或标题栏高度变化，需复核 shell-on 补丁；若 getStatus 契约调整，需同步设置页取值。
+- 证据：两处均有真机截图前后对比；其余 10+ 类实测通过项与误报判定见验收报告。如实披露确认真缺陷 2 项，未凑数。
