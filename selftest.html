@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<script src="js/entry-guard.js?v=7.0.4"></script>
+<script src="js/entry-guard.js?v=7.0.5"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>云境 · 一致性自检</title>
@@ -22,7 +22,7 @@ button{padding:10px 22px;background:#e0a84c;color:#16181f;border:none;border-rad
 <button onclick="runAll()">▶ 运行全部检查</button>
 <div id="sum"></div><div id="out"></div>
 <script>
-const ENGINE_VER = '7.0.4';
+const ENGINE_VER = '7.0.5';
 const ENGINES = ['js/world-runtime.js','js/world-bus.js','js/module-forge.js','js/combat-core.js','js/rpg-quests.js','js/rpg-core.js','js/quest-chain.js','js/world-stage.js','js/story-hooks.js','js/world-director.js','js/world-legacy.js','js/world-ext/world-ext-core.js','js/player-kit.js','js/knowledge-manager.js','js/kb-vector.js','js/st-import.js','js/store-guard.js','js/mobile-fit.js','js/id-migrate.js','js/preset-io.js','js/regex-io.js','js/ai-message-builder.js','js/ai-response-handler.js','js/opportunity-system.js','js/world-alive.js'];
 const GENRES = ["mystery","scifi","wuxia","cthulhu","free","swallowedstar","shrouding","quanzhigaoshou","doupocangqiong","wanmeishijie","douluodalu","daoguiyixian","zhongshengdushi","dibao","longzu","quanzhifashi","limingzhijian","lunhuileyuan","wulianfengdian","shengxu","shenmifusu","ditandali","fanrenxiuxian","xianni","earth","freeworld","quanqiubingfeng","chaoshenxueyuan","zhanhen","jianlai","guimi","guzhenren","xuanjianxianzu","dazhuzai","wudongqiankun","yuanzun","wanxiangzhiwang","wangyou"];
 function item(cls, name, detail){ const d=document.getElementById('out'); d.insertAdjacentHTML('beforeend', `<div class="item ${cls}">${cls==='ok'?'✅':cls==='fail'?'❌':'⚠️'} <b>${name}</b> — ${detail}</div>`); return cls==='ok'?1:cls==='fail'?0:1; }
@@ -78,9 +78,13 @@ async function runAll(){
     total++; pass+=(onlyCard.length||onlyVg.length)?item('fail','大厅卡 vs validGenres',`卡多:${onlyCard} 表多:${onlyVg}`):item('ok','大厅卡 vs validGenres',`${cardIds.length}=${vg.length} 完全一致`);
     const headM=idx.text.match(/全站\s*([0-9]+)\s*界/)||idx.text.match(/开放世界扮演\s*·\s*([0-9]+)\s*界/);
     total++; pass+=headM&&parseInt(headM[1])===GENRES.length?item('ok','大厅计数文案',`标题 ${headM[1]} 界 = 实际 ${GENRES.length}`):item('fail','大厅计数文案',`标题「${headM?headM[1]:'未找到'}」≠ 实际 ${GENRES.length} 界`);
-    const needInStu=['store-guard.js','st-import.js','ui-polish.css','sw.js'];
+    // v7.0.5 修误报：sw.js 由 js/pwa-register.js 动态注册，studio.html 不直接写 "sw.js" 字样，
+    // 故改为接受 sw.js 或 pwa-register.js 任一出现，避免冤枉动态挂载的离线能力。
+    const needInStu=['store-guard.js','st-import.js','ui-polish.css'];
     const missW=needInStu.filter(n=>!stu.text.includes(n));
-    total++; pass+=missW.length?item('fail','studio 挂载',`未引用 ${missW}`):item('ok','studio 挂载','防线/导入/优化/离线均已接线');
+    const swOK=stu.text.includes('sw.js')||stu.text.includes('pwa-register.js')||/pwa-register\.js/.test(idx.text);
+    const allOK=!missW.length&&swOK;
+    total++; pass+=allOK?item('ok','studio 挂载','防线/导入/优化/离线均已接线'):item('fail','studio 挂载',`未引用 ${missW.concat(swOK?[]:['sw.js/pwa-register.js'])}`);
   } else {
     total+=2; pass+=item('fail','大厅对比','index/studio 获取失败：'+((!idx.ok)?idx.err:'')+((!stu.ok)?stu.err:''));
   }

@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "version": "7.0.4",
-  "generatedAt": "2026-11-25T11:30:33.731Z",
-  "count": 552,
+  "version": "7.0.5",
+  "generatedAt": "2026-11-26T05:27:39.107Z",
+  "count": 654,
   "sources": [
     "https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/",
     "https://raw.githubusercontent.com/AYun07/yunjing/main/",
@@ -26,16 +26,16 @@
       "size": 69686
     },
     "QUICKSTART.txt": {
-      "sha256": "b123d422e42ffe3ce52fa7225b60d150a92dd2966435144e81bc58db86a94f53",
+      "sha256": "5f5c5cd4db6c2e44deb3686ff82a48d137dbc5949a694b4be735db06e1271698",
       "size": 19467
     },
     "README.md": {
-      "sha256": "952a6f8e2e0911f42f67f5226a46fa5a20f68b362b9740df720f3255f2466389",
-      "size": 17679
+      "sha256": "05bdd0bf226eda6b61dbc5b6a80a70109133001b83438596ca34020c33f49ba8",
+      "size": 18137
     },
     "VERSIONS.md": {
-      "sha256": "2868bde72fe25eadcca0f35df6ac6cdb19fba3f0571d9b772b3d436e2987ffa7",
-      "size": 308074
+      "sha256": "d135fcfea720e81e0e20395257480306d2b258f37bf1093f9b481bd6d9ddd18e",
+      "size": 314083
     },
     "assets/chibi/jump.json": {
       "sha256": "9d6b7c89ebe333423d7d5d3e632fa341f97fe271fd67796e31e48c896ccd5814",
@@ -54,8 +54,8 @@
       "size": 136060
     },
     "changelog/index.html": {
-      "sha256": "6f88bfe5c500c938f1158359a31442758ff443215998fcec4fada1f2cc3cec71",
-      "size": 682649
+      "sha256": "5853b8eb07b0f090108f9d94bd30091d094e69f4e57ef0b0f6e2ff08b68548c0",
+      "size": 687991
     },
     "changelog/research/multi-api-survey.md": {
       "sha256": "366311b2ac9c2731ff5016a2322c5b3b7a9fd1962574cc33ba140a5a293f3c73",
@@ -246,8 +246,8 @@
       "size": 8380
     },
     "css/character-studio.css": {
-      "sha256": "1cfd56bf4fbab42ca212f9cb859f3970f4d38b401a45f2a0cc4191e5e055f00a",
-      "size": 3471
+      "sha256": "accefe77267514ee1e277f67128d31fa811c52576bb15ef43453adb1187bec79",
+      "size": 4002
     },
     "css/cover-intro.css": {
       "sha256": "6546a542a6cfcba86a799809d870f5b1f3da674dbfc49e440d0c94a7da944368",
@@ -554,7 +554,7 @@
       "size": 10475
     },
     "index.html": {
-      "sha256": "7c02fd324168336e43d413a09bb4c3f2a985b97206a64f4601bf433dd63f3734",
+      "sha256": "ed5d8bbb70dfbe10c7f1394ab2546f0f31a7fdc56ab37bc050953dd5064a4ed3",
       "size": 47639
     },
     "js/action-check.js": {
@@ -874,8 +874,8 @@
       "size": 16967
     },
     "js/character-studio.js": {
-      "sha256": "dec21386f1cab1a440aa9ec831a0f31b4124c338af16a9553b3a77e0fc7cc906",
-      "size": 20692
+      "sha256": "c6a6a13ab0acafedbf5caf9a0edcbae39d63daf66f1a6402487040ace32112fd",
+      "size": 23211
     },
     "js/chat-virtualizer.js": {
       "sha256": "10d3ea94f755e4070b9b1fccd6cff210c0ff897e5dcb5fb0cdc4a752e8069bf1",
@@ -902,8 +902,8 @@
       "size": 20190
     },
     "js/config-modal.js": {
-      "sha256": "be42a72a87575e620fa288a6dee2329725dea4a5f40beda9e3d147e5b7a7e6bf",
-      "size": 196328
+      "sha256": "82b4b3de1a1093d9c61e29584adee01636a15c798b0f51eba367b07a6c238473",
+      "size": 196870
     },
     "js/connection-profiles.js": {
       "sha256": "f2889f52175fee4cf7a0c345957c01ba136987814037f5a830f5ab86fe22d596",
@@ -930,7 +930,7 @@
       "size": 13368
     },
     "js/cover-portal.js": {
-      "sha256": "b6a10fbf9ea0779b07f15582bfca49250f8a637799d62123b7718bee58c0624f",
+      "sha256": "801fc1f40203d1c2d1ddcb3d6281a41d557db577747d76f4e09370aa5877cec8",
       "size": 14346
     },
     "js/craft-meter.js": {
@@ -990,7 +990,7 @@
       "size": 10965
     },
     "js/first-run-guide.js": {
-      "sha256": "8dab9738b6f63f5dc6a656a50972617d75101d9263cbb790879b3aa8c85841da",
+      "sha256": "306dad235bb490756748c46577a023fc549201a79865daee1721fb24c0535530",
       "size": 5747
     },
     "js/floor-state.js": {
@@ -1034,7 +1034,7 @@
       "size": 135131
     },
     "js/inspiration-dice.js": {
-      "sha256": "705c76f84934d9e99f87f58d1d7e64f994a88376ee4ca6f7f37c696ca8e063b4",
+      "sha256": "cad6e1c994f115a650740a4a5c9ad099618cda271a46c07846df379f02247a84",
       "size": 14334
     },
     "js/inspiration-engine.js": {
@@ -1378,7 +1378,7 @@
       "size": 86850
     },
     "js/lazy-boot.js": {
-      "sha256": "61cae3c9b05c5db87cc8de725d1af854481fa8d17775b38ca90f6f5464fe10bb",
+      "sha256": "2271977c604bbc2a64b325c1503cc782149d60ae93cad01214fd12bcfa269ed4",
       "size": 12547
     },
     "js/left-rail.js": {
@@ -1398,7 +1398,7 @@
       "size": 4130
     },
     "js/lunar-stamp.js": {
-      "sha256": "b1514451981365a97e2b2a07e2f122833fc9ace7f5bceda1047bd79cad04ed5e",
+      "sha256": "10b1e7649059247b1a379f766c7124f7901474eefc9011c74a02395d615d5a42",
       "size": 16094
     },
     "js/memory-layers.js": {
@@ -1406,11 +1406,11 @@
       "size": 18025
     },
     "js/mo-assistant.js": {
-      "sha256": "61006ee93caed80a97aa1d74cfe9bce6f0212cf5983f244bac9eb716e1db26d9",
+      "sha256": "0626262c493182ddade652b7822e3b315f579d86949c584c8b53aa89468527e6",
       "size": 50588
     },
     "js/mo-chibi.js": {
-      "sha256": "8aae75006ae00dcd58af84c3363eff836399e32037ae773c866c7d6ce167f85c",
+      "sha256": "3df79ef71943ab30a4ed008c65f137901a6f7807c73920d5f896216e0427e706",
       "size": 46680
     },
     "js/mo-devtools.js": {
@@ -1434,8 +1434,8 @@
       "size": 12795
     },
     "js/model-slots.js": {
-      "sha256": "c8dcf777822413cf1f06b159604ecefbb76628eebccb7051e6922349306c27dd",
-      "size": 4051
+      "sha256": "0b6246982736d285b2c4c14d085cc31e6a65d68c93eb275cf6b15226f9e3f3e4",
+      "size": 4458
     },
     "js/module-forge.js": {
       "sha256": "adf961e360ae0203e6fce056be7a31a6b288e98e69d3b9968ae62ed3d353d3de",
@@ -1470,7 +1470,7 @@
       "size": 31621
     },
     "js/number-scrubber.js": {
-      "sha256": "899664961d505cb7617c3cf5e2d95003ab42e01a284a5b7fc64e22d926bc968e",
+      "sha256": "224ad02fbf7e0f53f2d25654a878857c2f2eddb621ace34c86edd7d5808c4a96",
       "size": 11878
     },
     "js/opening-entry.js": {
@@ -1574,7 +1574,7 @@
       "size": 8996
     },
     "js/relationship-graph.js": {
-      "sha256": "b02ab12c4d8cca93340cf82efc695b4763d1603d9d8afb3794a83bc7db9b0f2d",
+      "sha256": "af7aa16283520a86f86be7b21f2e037aa2be6e734eb6ae43d614559049424ac4",
       "size": 12771
     },
     "js/resume-portal.js": {
@@ -1582,7 +1582,7 @@
       "size": 7382
     },
     "js/rpg-core.js": {
-      "sha256": "125eb1d311895d58902ff0fc16257fa2076d160824330b64e4154b707bd7083a",
+      "sha256": "d7b61e47adf0b4a0a3569d2a0e028467fbbca113b7daef6556a4d16f937594d6",
       "size": 159151
     },
     "js/rpg-quests.js": {
@@ -1742,8 +1742,8 @@
       "size": 12997
     },
     "js/world-bus.js": {
-      "sha256": "ee221c119223e67085479c7a4218dffc4ec3511c9b9ac49309f17873b1686506",
-      "size": 8531
+      "sha256": "45069a782bf1c35daefde65b201f7ef353f2f4a350a708f32349c1987435339e",
+      "size": 8728
     },
     "js/world-catalog.js": {
       "sha256": "7f2245191c277adaf210421b8883ded8f139158a99b5718a7a67c21605257547",
@@ -1922,8 +1922,8 @@
       "size": 88967
     },
     "js/world-portal.js": {
-      "sha256": "a23425d42d10a16bf776211795956f9747a593440ae87174c31799376ac8af45",
-      "size": 21832
+      "sha256": "f32847b913fdecee93c16c851872c0af6149248516b4abd7cf596ad40ced648e",
+      "size": 22961
     },
     "js/world-rules.js": {
       "sha256": "a1e288c230fead17d6c439f6aef4753c1a8bf225915d113358d0d58ed6e1fe96",
@@ -1950,12 +1950,12 @@
       "size": 102022
     },
     "js/xiaoyun-buddy.js": {
-      "sha256": "0ffe2cd8e850ef51057b4181121fec852db7db9d233a692329235604a4620cc7",
-      "size": 42659
+      "sha256": "f6941d48b26622000bd252e857829ae170cc700d03b69aa501848eeecb7f9c5f",
+      "size": 43813
     },
     "js/xiaoyun-emotion.js": {
-      "sha256": "4b3b9c1e83e772925900035a462ee65f8f472c521be248d7ffdfddd22fe384ac",
-      "size": 9862
+      "sha256": "82ec3b1c153a30abcd2404b118f2082be0954e2ccbba06a48286253c73679e08",
+      "size": 10052
     },
     "js/xiaoyun-ops.js": {
       "sha256": "46bdb13570a4c64b83a54409f331c34df1781027d922b5d23d69e6b865822689",
@@ -2018,11 +2018,11 @@
       "size": 1016
     },
     "map-preview.html": {
-      "sha256": "3a826ef42bf029f7ac4f03e01a1051f870cf11445153f6b6d45770a5bebe011a",
+      "sha256": "86b8ba69ac935fce5809c981496c1e545a3d1c0dc880cbedc555a902bfcfcad9",
       "size": 3375
     },
     "map-verified.html": {
-      "sha256": "9a66950899a0bff204bbc3875732eb113e4404735531b266f147a08e15a5482f",
+      "sha256": "4c5b84dbdb7e1e1ac794b3a53fd13b9cf49cc442668432fbc055659cca806c6d",
       "size": 2059
     },
     "mobile-server.ps1": {
@@ -2030,11 +2030,11 @@
       "size": 3469
     },
     "opening.html": {
-      "sha256": "6e6b36b9a4c9cd42e811ce96426837ff95ab5217a8ccf9b2bb3aae923984f615",
+      "sha256": "2379845a68766c9bb08e1c03afade097653b523b5e48a7e9eb6ffcc36bfbe78d",
       "size": 10124
     },
     "package.json": {
-      "sha256": "491fce241b932649a1638bcf8dcbe7079a54387d674865a769b3c3cd175e2b72",
+      "sha256": "126d474167442a29d3cf619005aa405ebba1471f47c9ec66ff3a181e21a8d7f5",
       "size": 1274
     },
     "plugin/yunjing-skill/README.md": {
@@ -2050,8 +2050,8 @@
       "size": 470
     },
     "release-notes.json": {
-      "sha256": "8b0eb1a35db0bf13a7d57a6495f95e449689656d112ae9a28f94c39d3137fdaf",
-      "size": 8791
+      "sha256": "09a51890fc67bdd374369394e4b6785cf140499aa49664d3f45ead02e5b9b7fa",
+      "size": 10272
     },
     "releases/yunqi-latest.json": {
       "sha256": "a124c9cbbb3e12a9738f243e83e912f7378834dd29a79ccd5fe07fde362f234d",
@@ -2066,12 +2066,12 @@
       "size": 1214
     },
     "selftest.html": {
-      "sha256": "c4839da75cea108025ffa11b2570a398ef854088c0f52465aa9d90b1a5a48246",
-      "size": 7566
+      "sha256": "6e9a17c8db9aca20c5b3b0a24096f023a7d06d80b13a6855e5566deafe98a79b",
+      "size": 7966
     },
     "settings.html": {
-      "sha256": "29f74e88643e812d23970fe8a140cb5ed066b275a4d76017eb98590b76b375cf",
-      "size": 31665
+      "sha256": "a6fbe40b5a4bc0c1955104830157c0fbeaf92c2835eb31d2ee9ae641f901ede0",
+      "size": 34559
     },
     "start-mac.command": {
       "sha256": "3bf2b2439b724caf4a968dcfe864d6606d8f6f01fa4cecec84c776c62964d917",
@@ -2094,19 +2094,487 @@
       "size": 59702
     },
     "studio.html": {
-      "sha256": "e8c5e29b5c954035af5e195035014b1aecda0055583b04c3828e663c00c86877",
-      "size": 76879
+      "sha256": "dbbdca23435743d49e741d37da3f9a3b39764f59f071ecaa167be1c0c86da925",
+      "size": 77189
     },
     "sw.js": {
-      "sha256": "ecf11e052369266ba9da8c977c3251e88951c9234d8e959f2650ef039eae057b",
+      "sha256": "8c4d22d21c4a155e65dc6d0cc3afa09348aa20fc9f86a85c4b0b001a65d69242",
       "size": 30464
     },
     "update-latest.json": {
-      "sha256": "03ce2a3fa9fb159e553221f189581d63f5c7f5d01de3b17847166a72050481bd",
+      "sha256": "7a5c978f670271dc639e8b18269f408c10c1b264188dd0148550d6e24d9c6185",
       "size": 1852
     },
+    "versions/README.md": {
+      "sha256": "23482ef50f6a010d9e8af3bb1bf5ac2357e88c3bcda6aed0e9b85837b35a14ec",
+      "size": 1024
+    },
+    "versions/_reports/云境-功能可用性对照表.md": {
+      "sha256": "5579135b56a97ab2376de173e9c7c114cbba50cd7bbe68a425cb96df618d3b90",
+      "size": 6742
+    },
+    "versions/_reports/云境全量真浏览器测试报告.html": {
+      "sha256": "3289216802ce8d5aecc4a06ba3b68215911d93d858627a8b6162c80a10e84a58",
+      "size": 11520
+    },
+    "versions/_reports/小云AI视频-进度预览.html": {
+      "sha256": "4a1568fa9bde355f4f5df0e43901b8f35ecac456a4400ce777de307625562148",
+      "size": 6393
+    },
+    "versions/_reports/小云全形态精细情绪-预览.html": {
+      "sha256": "c0d11b763f128f7091732c00b9838b04d9a9c378cd06746fe69ce2497f5f6166",
+      "size": 4569
+    },
+    "versions/_reports/小云全预设-零API预览.html": {
+      "sha256": "2388c671cb16e6a8ec51d6162032803f5d7f5a9e0400f4c1c1c0bfaeb7100dba",
+      "size": 4798
+    },
+    "versions/_reports/小云情绪动作-垂直切片预览.html": {
+      "sha256": "fdf6547e69df302c97c2ae0599ac7e5123235d69a91f58ae66a3d9ebd70d866d",
+      "size": 5085
+    },
+    "versions/v4.45.0/docs/需求回读确认单-v4.45.0.md": {
+      "sha256": "e8c27b46cc112193dcf02413797340f3054a8bf42cd08394fbe3cc7c3697e821",
+      "size": 4038
+    },
+    "versions/v4.46.0/docs/需求回读确认单-v4.46.0.md": {
+      "sha256": "4035b0b5c0354cd363b6f19557cf954705857d31dad5282273c021a7e35b2ccc",
+      "size": 2823
+    },
+    "versions/v4.47.0/docs/需求回读确认单-v4.47.0.md": {
+      "sha256": "f685ff6e9b0fb7f8d0e13f15b55f97e9782d56c37e14786a60559d4d89a432bc",
+      "size": 3117
+    },
+    "versions/v5.6.0/source-snapshot/atlas-canon-layer.css": {
+      "sha256": "57fff6ca5eabe4b5df8018049c1ed68ca7169100dfc1c9aab708d679fc4889b4",
+      "size": 4262
+    },
+    "versions/v5.6.0/source-snapshot/atlas-canon-layer.js": {
+      "sha256": "12a052541abc4703ac73263ad81469d38af3821dcd2c538516c3729b3655f15b",
+      "size": 7901
+    },
+    "versions/v5.6.0/source-snapshot/atlas-canon-places.js": {
+      "sha256": "2de14b8487e46c850904cf42c0f2bd2dd21ff7fa0ba3fb9f77e2275529655ac0",
+      "size": 30370
+    },
+    "versions/v5.7.0/source-snapshot/atlas-canon-layer.css": {
+      "sha256": "d49be05aedadc6be36d61e8b1b282c180009fc9fc9fe4206ea5e1c495fdf26e1",
+      "size": 4474
+    },
+    "versions/v5.7.0/source-snapshot/atlas-canon-layer.js": {
+      "sha256": "efac53b8f2baa9650feda8803c0d3d1fb32bf01c735a5ef175a1c28a4baa9450",
+      "size": 8721
+    },
+    "versions/v5.7.0/source-snapshot/atlas-canon-places.js": {
+      "sha256": "31db8050259fc57fc9558d11b39fc2c3a2cdb65ebd81821a323c9c060fac64bb",
+      "size": 31946
+    },
+    "versions/v5.8.0/source-snapshot/atlas-canon-layer.css": {
+      "sha256": "424e01c9644e54503fc3e944cc8302d4e7f1b8fa8685245285e5e7e7f83c7fea",
+      "size": 5880
+    },
+    "versions/v5.8.0/source-snapshot/atlas-canon-layer.js": {
+      "sha256": "14f4ce60ab1bf9e5bef9428afb9c93389939f643e7b691b2684e912da4f0119d",
+      "size": 10565
+    },
+    "versions/v5.8.0/source-snapshot/atlas-canon-places.js": {
+      "sha256": "9c59a3c64e282f357e4276f8e5b9984ad11cc9cbc3af524cd6a550102a987c2c",
+      "size": 44464
+    },
+    "versions/v5.9.0/source-snapshot/atlas-canon-layer.css": {
+      "sha256": "30515ccc73bcdf7ad1d44f73665d87b5f5288a121422c0f8bb32c02fda431d81",
+      "size": 6310
+    },
+    "versions/v5.9.0/source-snapshot/atlas-canon-layer.js": {
+      "sha256": "092c0f3c596b1a2428ca7a155e47e8ca5debb71003d85a0aca951df19bb2e046",
+      "size": 11333
+    },
+    "versions/v5.9.0/source-snapshot/atlas-canon-places.js": {
+      "sha256": "bb4989c9926adeb4019933071c9cca7a53dc4f1085e45e41881f61e969a8794b",
+      "size": 47498
+    },
+    "versions/v6.0.0/source-snapshot/atlas-canon-layer.css": {
+      "sha256": "45e195711e72ea53edfe377fe93076aaa277c78245e4083667c42c45ac53095f",
+      "size": 8489
+    },
+    "versions/v6.0.0/source-snapshot/atlas-canon-layer.js": {
+      "sha256": "c7a7e5c7e80c4ddee7984a7232999e23c82de3ded8ba6c8d8942559bfd7e9540",
+      "size": 14298
+    },
+    "versions/v6.0.0/source-snapshot/atlas-canon-places.js": {
+      "sha256": "0f4d88c63c5e36ffd9d9e9fef783ef8128cb1b9aef350417a0d1a42387687e9a",
+      "size": 48225
+    },
+    "versions/v6.0.0/source-snapshot/atlas-drill-data.js": {
+      "sha256": "d23a2bef01a043c9ca5afaa684c8fc1d487836334c485e15b4596e391f04bca5",
+      "size": 13288
+    },
+    "versions/v6.1.0/source-snapshot/atlas-canon-layer.css": {
+      "sha256": "a238d9c55f5d5e5f9bef47f4a74e9d652d99bfa25b75847fb6a2da51ebd60bc8",
+      "size": 6865
+    },
+    "versions/v6.1.0/source-snapshot/atlas-canon-layer.js": {
+      "sha256": "74d57ef8a0943d59f8cb8fc8334f91d10005df8dac22d36f63b0038f9393729d",
+      "size": 15375
+    },
+    "versions/v6.1.0/source-snapshot/atlas-canon-places.js": {
+      "sha256": "f9b54b0c8f04ca446cfadb906fa8fea4908d60e368763c7aa5871833984402da",
+      "size": 47474
+    },
+    "versions/v6.1.0/source-snapshot/atlas-drill-data.js": {
+      "sha256": "55cdd306489f9860672f000f174ac1cc04352293c3629b8e01466dd0b0caa6ba",
+      "size": 24015
+    },
+    "versions/v6.3.10/source-snapshot/compare-engine.js": {
+      "sha256": "a58d8b1dfc39960bad05aeb729ae70c0537e6ec7c5c6c36215806720afee835f",
+      "size": 14867
+    },
+    "versions/v6.3.10/source-snapshot/compare-panel.js": {
+      "sha256": "f2d8985e03a02c6e5c905a81331e03b28927c8c4d67a7b6d44c9381492f1c823",
+      "size": 12774
+    },
+    "versions/v6.3.10/source-snapshot/gen-realm-rules.mjs": {
+      "sha256": "20a62f0085b8523047886333acc5be3db945a9641d8ee7bc8abb8b1a357d239e",
+      "size": 5221
+    },
+    "versions/v6.3.10/source-snapshot/realm-ladders.mjs": {
+      "sha256": "c8f2c143822078916560c1bb2effa6d415b86431f353869a194d71a764afc490",
+      "size": 20558
+    },
+    "versions/v6.3.10/source-snapshot/realm-rules.js": {
+      "sha256": "675fa34e27bc548308a579b7c912a1589c632de7e7bed2368dc1ee43ce891440",
+      "size": 158633
+    },
+    "versions/v6.3.11/source-snapshot/atlas-verified-all.js": {
+      "sha256": "f27cbf6acaef584a4c3d83d9f64a0a25f79316c9f03f7dc4c55b545022305265",
+      "size": 1224548
+    },
+    "versions/v6.3.11/source-snapshot/dibao.js": {
+      "sha256": "0e17cf57253a55d85a23efdf120b0abc03f03fcf44b61197caa1ee3409313987",
+      "size": 26030
+    },
+    "versions/v6.3.12/source-snapshot/DECISIONS.md": {
+      "sha256": "73a6cc1769286ed9756450cf2f8d0cbe9168451eff0810a5a65b64dda1967736",
+      "size": 135250
+    },
+    "versions/v6.3.12/source-snapshot/ROLLBACK-v6312.sh": {
+      "sha256": "879c1abf0ab7bf22ac7ac1bfbd5f7257db4f75e275f3d8aa5287407462c306ed",
+      "size": 602
+    },
+    "versions/v6.3.12/source-snapshot/compare-engine.js": {
+      "sha256": "a58d8b1dfc39960bad05aeb729ae70c0537e6ec7c5c6c36215806720afee835f",
+      "size": 14867
+    },
+    "versions/v6.3.12/source-snapshot/compare-panel.js": {
+      "sha256": "f2d8985e03a02c6e5c905a81331e03b28927c8c4d67a7b6d44c9381492f1c823",
+      "size": 12774
+    },
+    "versions/v6.3.12/source-snapshot/gen-realm-rules.mjs": {
+      "sha256": "20a62f0085b8523047886333acc5be3db945a9641d8ee7bc8abb8b1a357d239e",
+      "size": 5221
+    },
+    "versions/v6.3.12/source-snapshot/map-verified.html": {
+      "sha256": "f72b8d53b40e561312724aa926ce1e2598dac5673d2abfd384196857c58ee96b",
+      "size": 2009
+    },
+    "versions/v6.3.12/source-snapshot/opening.html": {
+      "sha256": "3f00a6d4bd3684baf3e8b6dc6eab950f0289e67f2a13227d1f272185551d2f8b",
+      "size": 8903
+    },
+    "versions/v6.3.12/source-snapshot/realm-ladders.mjs": {
+      "sha256": "a0ed8152037ceae50e7b8bcd0d8a54f9214fa68aad5f47d60f76b16c177f882f",
+      "size": 21243
+    },
+    "versions/v6.3.12/source-snapshot/realm-rules.js": {
+      "sha256": "7547f972598e4dee77027fe90c329da42117cbc22074bfaaac36d7fa5611b9f6",
+      "size": 159692
+    },
+    "versions/v6.3.12/source-snapshot/studio.html": {
+      "sha256": "797308dc3415c4deae3b9b8ce9be267639f5a2af0ecab586939beac27eb07b6b",
+      "size": 82928
+    },
+    "versions/v6.3.12/source-snapshot/sw.js": {
+      "sha256": "ef2c265bb7a9871148b553f085a1a611c8bf90cd1384c897e49b830a5cd1d5b0",
+      "size": 26368
+    },
+    "versions/v6.3.13/source-snapshot/DECISIONS.md": {
+      "sha256": "5638e095c8e61039e4cc7fe411d79a1f8697a1cb782bc59fc864f8591a7658e4",
+      "size": 138412
+    },
+    "versions/v6.3.13/source-snapshot/ROLLBACK-v6313.sh": {
+      "sha256": "8f24d65da6d71827def99708e61a8b98707f6a2c1b93d6599a99e85532bec19a",
+      "size": 644
+    },
+    "versions/v6.3.13/source-snapshot/compare-engine.js": {
+      "sha256": "2557c7897ed579d0ab69b936573bd4febdf8dd8687170e647fdb02d1cb0dad4e",
+      "size": 21284
+    },
+    "versions/v6.3.13/source-snapshot/compare-panel.js": {
+      "sha256": "1adcf4eddcae5308de071ca482d656bea20450916f6c1f950a0b8622cce4b7a8",
+      "size": 14922
+    },
+    "versions/v6.3.13/source-snapshot/gen-realm-rules.mjs": {
+      "sha256": "171cab818e776e212c56fe063c76d60bf0408e294f14257d722c5c100bad50dc",
+      "size": 6726
+    },
+    "versions/v6.3.13/source-snapshot/map-verified.html": {
+      "sha256": "f72b8d53b40e561312724aa926ce1e2598dac5673d2abfd384196857c58ee96b",
+      "size": 2009
+    },
+    "versions/v6.3.13/source-snapshot/opening.html": {
+      "sha256": "3f00a6d4bd3684baf3e8b6dc6eab950f0289e67f2a13227d1f272185551d2f8b",
+      "size": 8903
+    },
+    "versions/v6.3.13/source-snapshot/realm-ladders.mjs": {
+      "sha256": "a3272c8b6f90259b8cd0e6d2ac0905a9e2b16a0b849cdef1c58bf0853d53f86b",
+      "size": 22898
+    },
+    "versions/v6.3.13/source-snapshot/realm-rules.js": {
+      "sha256": "9a4345d9390b4a9710876fd7978b20fb6b1934a94412d0d3f156bb8b38c7bc8c",
+      "size": 163922
+    },
+    "versions/v6.3.13/source-snapshot/studio.html": {
+      "sha256": "e49b8f7d3f9aaa769afdcc8d708757fbc716b60844464a2313bd96c1d8e89b1b",
+      "size": 82928
+    },
+    "versions/v6.3.13/source-snapshot/sw.js": {
+      "sha256": "ec339b204c9fbd1008c845c055056e39655f24a97aa5243806800a4226750a5c",
+      "size": 27048
+    },
+    "versions/v6.3.14/source-snapshot/DECISIONS.md": {
+      "sha256": "6dc2b605f0e7a73f0810c91bcfd0df390b429a88330faac9fd6d3dbd57d8dcc0",
+      "size": 141283
+    },
+    "versions/v6.3.14/source-snapshot/ROLLBACK-v6314.sh": {
+      "sha256": "bd62c231aaff21a4c02630b42e8b96e3fe8be7b046c41599d8cfc67055a28d00",
+      "size": 755
+    },
+    "versions/v6.3.14/source-snapshot/story-framework.js": {
+      "sha256": "7d86cecf3b846d3cf1c688fa9e03af412d89757e3280ece040a41946a62b2768",
+      "size": 53520
+    },
+    "versions/v6.3.14/source-snapshot/studio.html": {
+      "sha256": "2b29ad2f8cb7066d6632d1043c5b6c0358a3ab070ec414fef90884bcc2f0cef4",
+      "size": 82928
+    },
+    "versions/v6.3.14/source-snapshot/sw.js": {
+      "sha256": "c93faf2e1e5bc04d5bfe31de6e7ee5f1215411091b05fbb896fad81d7910b128",
+      "size": 27597
+    },
+    "versions/v6.3.14/source-snapshot/time-axis.js": {
+      "sha256": "206b6381b05514259542b7b03427751a12ed9a3b11f7ece8a43038699f052732",
+      "size": 8728
+    },
+    "versions/v6.3.3/docs/需求回读确认单-v6.3.3.md": {
+      "sha256": "dda8963bee027f06c7773797fdbb06c69307261e6b1ce59b724d6ec6d135634b",
+      "size": 4360
+    },
+    "versions/v6.3.3/source-snapshot/atlas-library.css": {
+      "sha256": "97d8414f56a431a40254359a4655b45987c4763c79f237a3afd4c3c0bf326fa4",
+      "size": 6031
+    },
+    "versions/v6.3.3/source-snapshot/cover-portal.css": {
+      "sha256": "719edff3f8b799efe2f44d3a74845a0ef5cee8d89127055cb3e29a70c9005ef8",
+      "size": 6780
+    },
+    "versions/v6.3.3/source-snapshot/cover-portal.js": {
+      "sha256": "a2a74b06d44c7684cb77c96951f9164558d47fb84f7936616a605275e949c122",
+      "size": 12271
+    },
+    "versions/v6.3.3/source-snapshot/first-run-guide.js": {
+      "sha256": "b367c7701408db4c982fb26ff63d4a25779a8f4a94fcced7afbc3ad9b24b4b8e",
+      "size": 4936
+    },
+    "versions/v6.3.3/source-snapshot/index.html": {
+      "sha256": "5f65ce4c90cd94deff60e5591d746f96b7fd49771ad32d52a8a1b76efc1917d8",
+      "size": 47320
+    },
+    "versions/v6.3.3/source-snapshot/manifest.webmanifest": {
+      "sha256": "78aeae801d81c2fca578b267a3566a32f10ca7c75181128eb0af1bfb2d711abe",
+      "size": 1016
+    },
+    "versions/v6.3.3/source-snapshot/opening.html": {
+      "sha256": "38699ca444758147f6b0f227502c2770e3b425c58bc4930602faf6f7b55d3cdc",
+      "size": 7236
+    },
+    "versions/v6.3.3/source-snapshot/package.json": {
+      "sha256": "b382ba5dbe166e7c965cf179932f24420a194c888e52637e5902263af71b830a",
+      "size": 1274
+    },
+    "versions/v6.3.3/source-snapshot/studio.html": {
+      "sha256": "cb78aff5ec132835b057971e8a553b4f05018f60c80b2ce70a1ce304e2596da4",
+      "size": 80929
+    },
+    "versions/v6.3.3/source-snapshot/sw.js": {
+      "sha256": "c32e56a567bc815904fcf80b781423fdd7c6ef509b4a29a32414feb355968d62",
+      "size": 24355
+    },
+    "versions/v6.3.3/source-snapshot/system-guard.js": {
+      "sha256": "ccef1b7e57a49b8f298eebfedf1b7b294b34354a7cca813b0e60e915dd1e782c",
+      "size": 18850
+    },
+    "versions/v6.3.3/source-snapshot/xiaoyun.html": {
+      "sha256": "2edd307c972d444908c1e0a45add28038e403d40619bbccee9e0761ec002e298",
+      "size": 20045
+    },
+    "versions/v6.3.5/docs/需求回读确认单-v6.3.5.md": {
+      "sha256": "5d049ad6b39fa0f9caf44326edd67c2e56e08b0fd30e74c988a5f8bf4e335604",
+      "size": 6530
+    },
+    "versions/v6.3.5/source-snapshot/ai-response-handler.js": {
+      "sha256": "777d37c2246b8893acea10f9ad8afe9abc423a845d9246cf9a045ea699ffd722",
+      "size": 86198
+    },
+    "versions/v6.3.5/source-snapshot/chat-virtualizer.js": {
+      "sha256": "10d3ea94f755e4070b9b1fccd6cff210c0ff897e5dcb5fb0cdc4a752e8069bf1",
+      "size": 9024
+    },
+    "versions/v6.3.5/source-snapshot/package.json": {
+      "sha256": "68839eccd4488fe04b9d1c03354bdb8d4c10821ac007c39d0ddf087622d8b7eb",
+      "size": 1274
+    },
+    "versions/v6.3.5/source-snapshot/story-framework.js": {
+      "sha256": "0667e1f560d9d10c847f50953587f960a12a5723954354c6ee5ee8618a59030a",
+      "size": 45288
+    },
+    "versions/v6.3.5/source-snapshot/studio.html": {
+      "sha256": "6e239383b44d09d1d41bdea2223bdd2a407f561982cf5a5480dafc7288bfd785",
+      "size": 81520
+    },
+    "versions/v6.3.5/source-snapshot/sw.js": {
+      "sha256": "fed5a09d283ca9981b930e1b35381a78625a4c027a3650bf9720f0cef4e8417e",
+      "size": 25173
+    },
+    "versions/v6.3.5/source-snapshot/user-input-handler.js": {
+      "sha256": "7d2141725dd1bfee658b959032a021027e669a07c42deeb4b1d488418ac7938c",
+      "size": 69236
+    },
+    "versions/v6.3.6/docs/需求回读确认单-v6.3.6.md": {
+      "sha256": "e4e00a07bfdfeeaba9cdb4ae1ad1f56228da1592bc377a21ea7d28a758197769",
+      "size": 4925
+    },
+    "versions/v6.3.6/source-snapshot/ai-message-builder.js": {
+      "sha256": "898ba20e90db3b8cebbfd57735359b30264d9cda9e31bb01bcaba56aff3244cc",
+      "size": 62284
+    },
+    "versions/v6.3.6/source-snapshot/attribute-engine.js": {
+      "sha256": "332b30a8e2db7145b01036cd7931bea7c72d509dae963734783db3558e7bfc7e",
+      "size": 43316
+    },
+    "versions/v6.3.6/source-snapshot/fill-rule.js": {
+      "sha256": "cd8b017b1ee7850e310be11abe0a3e4c08f9f26e296735039d3c61af18dd4b90",
+      "size": 7161
+    },
+    "versions/v6.3.6/source-snapshot/status-schema.js": {
+      "sha256": "409c924de6b4fd6f53e2430bda0ddf232a35a82e23f7a02de371c2f450ba2c1d",
+      "size": 46430
+    },
+    "versions/v6.3.6/source-snapshot/variable-parser.js": {
+      "sha256": "e06e0895eed5c43760be1205a0dc65550290f0f1ac7aca6fc927f8349f19d735",
+      "size": 41270
+    },
+    "versions/v6.3.7/source-snapshot/attribute-engine.js": {
+      "sha256": "1319fea1dc46342aa9ebbb2c1138854f352327b398688e14255e81fc2ba6d781",
+      "size": 47115
+    },
+    "versions/v6.3.7/source-snapshot/fill-rule.js": {
+      "sha256": "cffc30c95702044494a2cb533973b828ba8a2a44a7d4db7cfbeb64fd45284875",
+      "size": 9050
+    },
+    "versions/v6.3.7/source-snapshot/gen-world-rules.mjs": {
+      "sha256": "d35080a56d8f8afaf8f5ec80bf065df9d3c4b738cea22a2d744bbd8287d7d8b8",
+      "size": 7869
+    },
+    "versions/v6.3.7/source-snapshot/variable-parser.js": {
+      "sha256": "13c936af4d3e26e856fbae56d629bccf0c716104b812892ba50be99106e7a6ef",
+      "size": 42764
+    },
+    "versions/v6.3.8/source-snapshot/compare-engine.js": {
+      "sha256": "780cb71702f3c73ecef19fff01bcb647cf06de1dc4fa94260f99c79dc59ab109",
+      "size": 13923
+    },
+    "versions/v6.3.8/source-snapshot/compare-panel.js": {
+      "sha256": "159d90d010d2f5b0673a9a49f17092f3e35969b25bc85d8006f35176aa410f5e",
+      "size": 11314
+    },
+    "versions/v6.3.8/source-snapshot/gen-realm-rules.mjs": {
+      "sha256": "274cf7877f9f73fec942cca92aad2f12450226562ae8fd94334eeceb17cc61ed",
+      "size": 4549
+    },
+    "versions/v6.3.8/source-snapshot/realm-ladders.mjs": {
+      "sha256": "1df1a45ce5cb3aeded52732a0220eac3dd0b7f6b03079c440c07c0814a62eba0",
+      "size": 15051
+    },
+    "versions/v6.3.8/source-snapshot/realm-rules.js": {
+      "sha256": "aa261a2b7a45f6a611aeff5da2f1a008c58e02efe4332400bdf518f8e75b0798",
+      "size": 147249
+    },
+    "versions/v6.3.9/source-snapshot/ROLLBACK-v639.sh": {
+      "sha256": "47b8f19b23a4702d1a5f8a8b55d718198d2d9449943f4f9d73ebd27e40a884e1",
+      "size": 1994
+    },
+    "versions/v6.3.9/source-snapshot/compare-engine.js": {
+      "sha256": "a58d8b1dfc39960bad05aeb729ae70c0537e6ec7c5c6c36215806720afee835f",
+      "size": 14867
+    },
+    "versions/v6.3.9/source-snapshot/compare-panel.js": {
+      "sha256": "f2d8985e03a02c6e5c905a81331e03b28927c8c4d67a7b6d44c9381492f1c823",
+      "size": 12774
+    },
+    "versions/v6.3.9/source-snapshot/gen-realm-rules.mjs": {
+      "sha256": "20a62f0085b8523047886333acc5be3db945a9641d8ee7bc8abb8b1a357d239e",
+      "size": 5221
+    },
+    "versions/v6.3.9/source-snapshot/realm-ladders.mjs": {
+      "sha256": "db0ce327303d41cc9f8abaedd2cf34fc31ea92ffe42bd5260d158aecfb70ff63",
+      "size": 18897
+    },
+    "versions/v6.3.9/source-snapshot/realm-rules.js": {
+      "sha256": "4e46b7f64995d6b812da052cde5710f0b5743f8594b8f3b309abee95276413e2",
+      "size": 156048
+    },
+    "versions/v6.4.0/source-snapshot/DECISIONS.md": {
+      "sha256": "7cafcd1be18ff32659b3ee31ddd210a6fed2845956f99fd073a87fb44923dd4d",
+      "size": 145488
+    },
+    "versions/v6.4.0/source-snapshot/ROLLBACK-v640.sh": {
+      "sha256": "2bacd2da6c2a39e5da1f711a062a3f5dd6b2c5e89696bca87686c8bfdfbacbb4",
+      "size": 1076
+    },
+    "versions/v6.4.0/source-snapshot/floor-state.js": {
+      "sha256": "8e9c84ab37f955bd48ff7d0d43c81554e7efecc9e6fe27633e740a8310eed532",
+      "size": 10432
+    },
+    "versions/v6.4.0/source-snapshot/story-framework.js": {
+      "sha256": "3484571cf48aefbaf0696be8a3f6c45dadd7ba1a2bab58d2e411e36269c852b8",
+      "size": 59447
+    },
+    "versions/v6.4.0/source-snapshot/studio.html": {
+      "sha256": "fa4675e704ca364ae19b637b5d3458c4217ea6b8d06fe8b277dd9b5405cdd7b9",
+      "size": 83141
+    },
+    "versions/v6.4.0/source-snapshot/sw.js": {
+      "sha256": "4ec4b330ececc96f89b0d14c70b54231c6a773c62e0bef1f23b22edb4af1e1e0",
+      "size": 28278
+    },
+    "versions/v6.4.0/source-snapshot/time-axis.js": {
+      "sha256": "e4e6a99dbc382f5470bc39279a9b99b3c8307b1416c764550fc73e1d1cba5979",
+      "size": 9839
+    },
+    "versions/v7.0.0/docs/需求回读确认单-v7.0.0.md": {
+      "sha256": "085b14c2666d2d48ce3b2e2c530279e50bed30367d855ba065bc399f4d800e8a",
+      "size": 13895
+    },
+    "versions/v7.0.3/docs/云境-v7.0.3-逐按钮点击测试与根因报告.html": {
+      "sha256": "8ad3cf71d56cd885a015184c5c6f565854e2a56b8a154166e03f4f2da06f7e9c",
+      "size": 22196
+    },
+    "versions/v7.0.4/docs/云境-v7.0.4-修复验证报告.html": {
+      "sha256": "0d41ed803d4620e619c8aaef50bfa33b6ccbdf69633618d5c21c5aa9fb47bec8",
+      "size": 20766
+    },
     "xiaoyun.html": {
-      "sha256": "02f2dc72ebfd41c20de551b8aa2c94740912381838a9bbdd8f23270b7911db34",
+      "sha256": "50025adf91133720055a2e3e364de7089d58cf78780806bc0db025979ce3fa02",
       "size": 20808
     },
     "yunjing-test/DEFECTS-v4.07.2.md": {
@@ -2142,80 +2610,20 @@
       "size": 5103
     },
     "世界地图一览图-原著对照.html": {
-      "sha256": "88e184997ccc0bb8c71ade68154d982dc10d9d875204ba304286fd21153a039e",
+      "sha256": "f9788c2f37dafc455a90ebf8aef2cc7d22a9def803ce904a47eb9044fcfe339b",
       "size": 1619647
-    },
-    "云境-v7.0.3-逐按钮点击测试与根因报告.html": {
-      "sha256": "8ad3cf71d56cd885a015184c5c6f565854e2a56b8a154166e03f4f2da06f7e9c",
-      "size": 22196
-    },
-    "云境-v7.0.4-修复验证报告.html": {
-      "sha256": "0d41ed803d4620e619c8aaef50bfa33b6ccbdf69633618d5c21c5aa9fb47bec8",
-      "size": 20766
-    },
-    "云境-功能可用性对照表.md": {
-      "sha256": "5579135b56a97ab2376de173e9c7c114cbba50cd7bbe68a425cb96df618d3b90",
-      "size": 6742
-    },
-    "云境全量真浏览器测试报告.html": {
-      "sha256": "3289216802ce8d5aecc4a06ba3b68215911d93d858627a8b6162c80a10e84a58",
-      "size": 11520
     },
     "内存治理-体检与加固方案-v6.3.4.md": {
       "sha256": "cb06113dc5432401523e46e2f6c8d1d88114a2d00878500d01b4e1f86a737194",
       "size": 5119
     },
     "品牌资产总览.html": {
-      "sha256": "1ff0dcbaf309cf743b1a186a33ddf29e8ba57cbf5e3d4fe9ecedf0d36a41115a",
+      "sha256": "9abe6e8d56788cac8b75e4be6744f1fa53883eb42b721cb7b00db1195c7ec304",
       "size": 5995
-    },
-    "小云AI视频-进度预览.html": {
-      "sha256": "4a1568fa9bde355f4f5df0e43901b8f35ecac456a4400ce777de307625562148",
-      "size": 6393
-    },
-    "小云全形态精细情绪-预览.html": {
-      "sha256": "c0d11b763f128f7091732c00b9838b04d9a9c378cd06746fe69ce2497f5f6166",
-      "size": 4569
-    },
-    "小云全预设-零API预览.html": {
-      "sha256": "2388c671cb16e6a8ec51d6162032803f5d7f5a9e0400f4c1c1c0bfaeb7100dba",
-      "size": 4798
-    },
-    "小云情绪动作-垂直切片预览.html": {
-      "sha256": "fdf6547e69df302c97c2ae0599ac7e5123235d69a91f58ae66a3d9ebd70d866d",
-      "size": 5085
     },
     "手机端启动.html": {
       "sha256": "243a5407c10ae2ce047b567d4ef3a45552da82f1d34ea62ad740528edf7790af",
       "size": 7899
-    },
-    "需求回读确认单-v4.45.0.md": {
-      "sha256": "e8c27b46cc112193dcf02413797340f3054a8bf42cd08394fbe3cc7c3697e821",
-      "size": 4038
-    },
-    "需求回读确认单-v4.46.0.md": {
-      "sha256": "4035b0b5c0354cd363b6f19557cf954705857d31dad5282273c021a7e35b2ccc",
-      "size": 2823
-    },
-    "需求回读确认单-v4.47.0.md": {
-      "sha256": "f685ff6e9b0fb7f8d0e13f15b55f97e9782d56c37e14786a60559d4d89a432bc",
-      "size": 3117
-    },
-    "需求回读确认单-v6.3.3.md": {
-      "sha256": "dda8963bee027f06c7773797fdbb06c69307261e6b1ce59b724d6ec6d135634b",
-      "size": 4360
-    },
-    "需求回读确认单-v6.3.5.md": {
-      "sha256": "5d049ad6b39fa0f9caf44326edd67c2e56e08b0fd30e74c988a5f8bf4e335604",
-      "size": 6530
-    },
-    "需求回读确认单-v6.3.6.md": {
-      "sha256": "e4e00a07bfdfeeaba9cdb4ae1ad1f56228da1592bc377a21ea7d28a758197769",
-      "size": 4925
-    },
-    "需求回读确认单-v7.0.0.md": {
-      "sha256": "085b14c2666d2d48ce3b2e2c530279e50bed30367d855ba065bc399f4d800e8a",
-      "size": 13895
     }
   }
 }

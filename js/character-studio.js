@@ -141,24 +141,50 @@
     var codex = (window.PersonalityCodex && window.PersonalityCodex.TRAIT_CODEX) || [];
     var selected = getTraits();
     var cats = { positive: "正向", negative: "负向", neutral: "中性", complex: "复杂" };
+    var kw = (($("csTraitSearch") && $("csTraitSearch").value) || "").trim().toLowerCase();
+    var filter = ($("csTraitFilter") && $("csTraitFilter").value) || "";
     var html = "";
     var groups = {};
-    codex.forEach(function (t) { (groups[t.cat] = groups[t.cat] || []).push(t); });
+    codex.forEach(function (t) {
+      if (filter && t.cat !== filter) return;
+      if (kw && (String(t.name).toLowerCase().indexOf(kw) < 0 && String(t.feature || "").toLowerCase().indexOf(kw) < 0)) return;
+      (groups[t.cat] = groups[t.cat] || []).push(t);
+    });
+    var shown = 0;
     Object.keys(groups).forEach(function (cat) {
       html += '<div class="cs-trait-cat">' + esc(cats[cat] || cat) + '</div><div class="cs-trait-row">';
       groups[cat].forEach(function (t) {
+        shown++;
         var on = selected.indexOf(t.name) >= 0;
         html += '<button type="button" class="cs-trait' + (on ? ' on' : '') + '" data-trait="' + esc(t.name) +
           '" title="' + esc(t.feature) + '">' + esc(t.name) + '</button>';
       });
       html += '</div>';
     });
+    if (!shown) html = '<div style="opacity:.6;font-size:12px;padding:6px 0">没有匹配「' + esc(kw) + '」的性格点，换个词试试</div>';
     if (box.innerHTML !== html) box.innerHTML = html;
     Array.prototype.forEach.call(box.querySelectorAll('.cs-trait'), function (b) {
       b.onclick = function () { toggleTrait(b.getAttribute('data-trait')); };
     });
     var cnt = $("csTraitCount");
-    if (cnt) cnt.textContent = "已选 " + selected.length + " 项（不限个数）";
+    if (cnt) cnt.textContent = "已选 " + selected.length + " 项（不限个数）" + (kw || filter ? " · 显示 " + shown + " / " + codex.length : "");
+  }
+  /* 全选/清空：作用于当前搜索+筛选结果，避免误动看不见的项 */
+  function setVisibleTraits(on) {
+    var codex = (window.PersonalityCodex && window.PersonalityCodex.TRAIT_CODEX) || [];
+    var kw = (($("csTraitSearch") && $("csTraitSearch").value) || "").trim().toLowerCase();
+    var filter = ($("csTraitFilter") && $("csTraitFilter").value) || "";
+    var visible = codex.filter(function (t) {
+      if (filter && t.cat !== filter) return false;
+      if (kw && (String(t.name).toLowerCase().indexOf(kw) < 0 && String(t.feature || "").toLowerCase().indexOf(kw) < 0)) return false;
+      return true;
+    }).map(function (t) { return t.name; });
+    var a = getTraits().slice();
+    if (on) { visible.forEach(function (n) { if (a.indexOf(n) < 0) a.push(n); }); }
+    else { a = a.filter(function (n) { return visible.indexOf(n) < 0; }); }
+    setTraits(a);
+    renderTraits();
+    genPersona();
   }
 
   /* 切换原著立场时，先清掉上一次写入的【原著…】行，避免主角/配角设定混在一处 */
@@ -348,6 +374,12 @@
         '<input type="text" id="csLookInput" placeholder="例：剑眉星目，玄色劲装，气质桀骜…" value="' + esc(read(LOOK_KEY)) + '">' +
         '<button type="button" id="csLook">✨ AI 润色</button></div>' +
       '<div class="cs-field"><label>性格（世界书点选，不限个数）</label>' +
+        '<div class="cs-trait-tools">' +
+          '<input type="text" id="csTraitSearch" placeholder="🔍 搜索性格点…" style="flex:1;min-width:120px">' +
+          '<select id="csTraitFilter" style="max-width:96px"><option value="">全部分类</option><option value="positive">正向</option><option value="negative">负向</option><option value="neutral">中性</option><option value="complex">复杂</option></select>' +
+          '<button type="button" id="csTraitAll" class="cs-mini">全选</button>' +
+          '<button type="button" id="csTraitNone" class="cs-mini">清空</button>' +
+        '</div>' +
         '<div class="cs-trait-count" id="csTraitCount"></div>' +
         '<div class="cs-trait-list" id="csTraitList"></div>' +
         '<input type="text" id="csPersonaInput" placeholder="补充性格（自己填，选填）" value=""></div>' +
@@ -367,6 +399,10 @@
       genPersona();
       setStatus("✓ 已写入角色小传，性格已应用");
     };
+    if ($("csTraitSearch")) $("csTraitSearch").oninput = function () { renderTraits(); };
+    if ($("csTraitFilter")) $("csTraitFilter").onchange = function () { renderTraits(); };
+    if ($("csTraitAll")) $("csTraitAll").onclick = function () { setVisibleTraits(true); };
+    if ($("csTraitNone")) $("csTraitNone").onclick = function () { setVisibleTraits(false); };
     renderTraits();
     renderPreview();
   }

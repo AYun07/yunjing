@@ -132,6 +132,8 @@
   function setEmotion(intent, opts) {
     opts = opts || {};
     if (!ensureDom()) return false;
+    // v7.0.5 流畅模式：低配设备跳过情绪视频解码，保持静态形象，减负又不影响功能
+    try { if (window.YJPerf && YJPerf.enabled) return false; } catch (e) {}
     currentFormKey = detectForm();
     var picked = opts.src ? { src: opts.src, desc: 'override' } : resolveSrc(intent, currentFormKey);
     if (!picked) return false;

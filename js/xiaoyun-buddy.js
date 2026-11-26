@@ -437,6 +437,7 @@
 /* ============ 造物工坊：小云独立开发模式 ============ */
 (function () {
   var PRESETS = [
+    { n: 'Agnes · 云境主力', u: 'https://apihub.agnes-ai.com/v1', m: 'agnes-3.0-flash' },
     { n: 'OpenAI', u: 'https://api.openai.com/v1', m: 'gpt-4o-mini' },
     { n: 'DeepSeek', u: 'https://api.deepseek.com/v1', m: 'deepseek-chat' },
     { n: '智谱 GLM', u: 'https://open.bigmodel.cn/api/paas/v4', m: 'glm-4-flash' },
@@ -513,10 +514,28 @@
     var ta = el('textarea'); ta.placeholder = '例：加一个「每日签到」模块，签到领灵感积分，有连续签到日历…';
     f2.appendChild(ta);
     var chips = el('div', 'chips');
-    ['每日签到日历','专注写作番茄钟','随机世界骰子','灵感碎片收集罐','角色关系图谱','打字机小游戏'].forEach(function (s) {
-      var cp = el('span', 'chip', s); cp.onclick = function () { ta.value = '加一个「' + s + '」模块，要求界面精致、交互完整、贴合云境世界观。'; };
-      chips.appendChild(cp);
-    });
+    var DEFAULT_CHIPS = ['每日签到日历','专注写作番茄钟','随机世界骰子','灵感碎片收集罐','角色关系图谱','打字机小游戏'];
+    var CHIPS_KEY = 'xy_custom_chips';
+    function customChips(){ try{ var a=JSON.parse(localStorage.getItem(CHIPS_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+    function saveCustomChips(a){ try{ localStorage.setItem(CHIPS_KEY,JSON.stringify(a.slice(0,30))); }catch(e){} }
+    function renderChips(){
+      chips.innerHTML='';
+      DEFAULT_CHIPS.concat(customChips()).forEach(function (s) {
+        var cp = el('span', 'chip', s);
+        cp.onclick = function () { ta.value = '加一个「' + s + '」模块，要求界面精致、交互完整、贴合云境世界观。'; };
+        var isCustom = customChips().indexOf(s)>=0;
+        if(isCustom){ cp.title='点一下填入；长按/双击删除'; cp.ondblclick=function(){ saveCustomChips(customChips().filter(function(x){return x!==s;})); renderChips(); }; }
+        chips.appendChild(cp);
+      });
+      var add=el('span','chip','＋ 自定义');
+      add.style.opacity='.7'; add.title='添加你常用的需求芯片';
+      add.onclick=function(){
+        var v=window.prompt('添加一个常用需求芯片（最多30个，双击芯片可删除）：','');
+        if(v&&v.trim()){ var a=customChips(); if(a.indexOf(v.trim())<0){a.push(v.trim());saveCustomChips(a);renderChips();} }
+      };
+      chips.appendChild(add);
+    }
+    renderChips();
     f2.appendChild(chips);
     var go = el('button', 'go', '⚡ 让小云开工');
     f2.appendChild(go);
@@ -527,9 +546,9 @@
     var prev = el('div', 'prev');
     var pbar = el('div', 'bar');
     var ptitle = el('b', null, '模块预览');
-    var bMount = el('button', 'pbtn', '挂载到大厅');
-    var bDisk = el('button', 'pbtn', '写入项目源码');
-    var bOpen = el('button', 'pbtn', '全屏运行');
+    var bMount = el('button', 'pbtn', '装进大厅');
+    var bDisk = el('button', 'pbtn', '导出到文件夹');
+    var bOpen = el('button', 'pbtn', '放大预览');
     pbar.appendChild(ptitle); pbar.appendChild(bMount); pbar.appendChild(bDisk); pbar.appendChild(bOpen);
     DEV.varifr = el('iframe');
     prev.appendChild(pbar); prev.appendChild(DEV.varifr);
@@ -553,7 +572,7 @@
     renderList();
     f3.appendChild(ul);
     box.appendChild(f3);
-    box.appendChild(el('div', 'hint', '·「挂载到大厅」：模块存入本机模块库，随时从这里运行（刷新不丢）。<br>·「写入项目源码」：授权项目文件夹后，小云把模块真实写入 modules/ 目录并更新 registry.json——相当于直接修改源码。<br>· 没填 Key 也能体验：小云用内置模板生成演示模块；接入 API 后可按任何需求独立开发，且会<b>自检运行错误并自动修复（最多2轮）</b>。<br><br>🔒 <b>隐私承诺：</b>模块与代码只保存在你的本机（浏览器模块库 / 你授权的本地目录），代码层<b>无任何上传、无任何 git/GitHub 操作</b>，且项目 .gitignore 已永久排除 modules/ 目录——玩家造的东西绝不会被同步到仓库。唯一的外发请求，是把需求文本发给你自己配置的大模型 API。'));
+    box.appendChild(el('div', 'hint', '·「装进大厅」：模块存进你自己的模块库，随时运行（刷新不丢）。<br>·「导出到文件夹」：授权后小云把模块文件导出到你选的文件夹（仅高级玩家用；不授权也能用「装进大厅」）。<br>· 没填 Key 也能体验：小云用内置模板生成演示模块；接入 API 后可按任何需求独立开发，且会<b>自检运行错误并自动修复（最多2轮）</b>。<br><br>🔒 <b>隐私承诺：</b>模块与代码只保存在你的本机（浏览器模块库 / 你授权的本地目录），代码层<b>无任何上传、无任何 git/GitHub 操作</b>，且项目 .gitignore 已永久排除 modules/ 目录——玩家造的东西绝不会被同步到仓库。唯一的外发请求，是把需求文本发给你自己配置的大模型 API。'));
 
     var lastHTML = '', lastName = '';
 
@@ -600,12 +619,12 @@
     bMount.onclick = function () {
       if (!DEV.html) return;
       var a = mods(); a.unshift({ name: lastName, html: DEV.html, at: Date.now() }); saveMods(a);
-      renderList(); st.textContent = '✅「' + lastName + '」已挂载到大厅模块库';
+      renderList(); st.textContent = '✅「' + lastName + '」已装进大厅模块库';
     };
     bOpen.onclick = function () { if (DEV.html) run({ name: lastName, html: DEV.html }); };
     bDisk.onclick = function () {
       if (!DEV.html) return;
-      if (!window.showDirectoryPicker) { st.className = 'status err'; st.textContent = '当前浏览器不支持目录写入（需 Chrome/Edge 桌面版）。请用「挂载到大厅」或复制源码。'; return; }
+      if (!window.showDirectoryPicker) { st.className = 'status err'; st.textContent = '当前浏览器不支持目录写入（需 Chrome/Edge 桌面版）。请用「装进大厅」或复制源码。'; return; }
       window.showDirectoryPicker({ mode: 'readwrite' }).then(function (dir) {
         return dir.getDirectoryHandle('modules', { create: true }).then(function (md) {
           var fname = 'xy-' + Date.now().toString(36) + '.html';
@@ -615,7 +634,7 @@
                 return rh.createWritable().then(function (w2) {
                   return w2.write(JSON.stringify({ modules: [{ file: 'modules/' + fname, name: lastName }] }, null, 2)).then(function () { return w2.close(); });
                 });
-              }).then(function () { st.textContent = '✅ 已写入项目源码：modules/' + fname + ' + registry.json —— 小云直接修改了源文件！'; });
+              }).then(function () { st.textContent = '✅ 已导出到文件夹：modules/' + fname + ' + registry.json'; });
             });
           });
         });

@@ -278,7 +278,7 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.4">
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.5">
 </head>
 
 <body class="page-changelog">
@@ -316,11 +316,58 @@
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
 
+                        <article class="log-entry" data-tags="版本 发布 缺陷修复 热更新 同源 体验 稳健 稳定" style="--entry-hue:#4a8a6a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.0.5</span>
+                <span class="entry-date">2026-11-25</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">v7.0.4 缺陷与体验问题逐条核实修复</h3>
+            <p class="entry-lead">按开发者收到的缺陷总清单逐条核实：先修会让客户端同步 404 的知识库文件缺失根因，再补齐版本同源、统一配置占位、加懒加载守卫、让存档错误可见，最后处理一批玩家体验细节。</p>
+            <div class="ver-diff">
+                <div><b>核心链路</b>：跨题材常识库与知识索引此前被 .gitignore 误排除、从未进仓库，客户端同步必 404；现已纳入仓库并重生成内容清单，654 个文件存在性与校验零缺失。</div>
+                <div><b>版本同源</b>：更新公告与版本详情补齐到最新版，同源验收 19/19 全过。</div>
+                <div><b>配置体验</b>：主力 Agnes 列为首选预设，占位示例统一；档位摘要去除同词重复；更新区四按钮加说明并显示「当前版本 → 最新版本」。</div>
+                <div><b>稳健性</b>：创作室顶栏按钮加懒加载守卫，竞态点击不再报错；验收脚本去除 Linux 专用路径；存档落盘失败改为明确告警，不再静默吞异常。</div>
+                <div><b>玩家体验</b>：性格点加搜索/分类/全选；世界门面显示当前身份；设置页直达存档书架；自检页玩家可进、修正离线挂载误报；小云工坊按钮改玩家用语、需求芯片可自定义。</div>
+            </div>
+        </article>
+
+                        <article class="log-entry" data-tags="版本 发布 造物 设置 角色 原著设定 更新进度 稳定" style="--entry-hue:#4a8a6a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.0.4</span>
+                <span class="entry-date">2026-11-25</span>
+            </div>
+            <h3 class="entry-title">造物 / 设置 / 角色按你说的重做 · 原著设定联动 · 更新进度可见</h3>
+            <p class="entry-lead">按玩家实测反馈把造物、设置、角色三处重做，选原著主角/配角后设定自动联动填充，更新时能看到实时进度与具体出错文件，不再只有一句「失败」。</p>
+            <div class="ver-diff">
+                <div><b>造物入口</b>：封面点造物直接进纯小云创造中枢，移除背后的自由创作界面与叠加弹窗；装新版后自动用新基线重建本地内容目录，旧内容残留从根上清除。</div>
+                <div><b>设置页补全</b>：模型配置 / 阅读外观 / 全局开关 / 存储与隐私 / 更新与公告五个分区齐全，所有配置集中在此，深夜护眼 / 流畅模式 / 庆典特效点击即时生效。</div>
+                <div><b>角色塑造去重</b>：全库原有两处角色塑造统一为唯一新入口——自己填样貌 / 性格世界书多选不限个 / 生图模型生成头像。</div>
+                <div><b>原著设定联动</b>：选原著主角后姓名/身份/小传按原著填充（如凡人修仙传→韩立）；选配角后按该配角身份/性格/命运填充，切换立场不再混入上一位设定。</div>
+                <div><b>更新进度可见</b>：检查更新 / 同步内容时实时显示百分比与阶段，出错列出具体文件与原因；本地内容版本落后于打包基线时自动重建，杜绝旧文件压过新基线。</div>
+            </div>
+        </article>
+
+                        <article class="log-entry" data-tags="版本 发布 存档 更新 角色塑造 遮挡 状态栏 稳定" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.0.3</span>
+                <span class="entry-date">2026-11-25</span>
+            </div>
+            <h3 class="entry-title">存档不再丢 · 更新不再停在旧版 · 角色塑造按你说的重做</h3>
+            <p class="entry-lead">查到并修掉两个真根因：客户端每次启动用随机端口导致存档读不到；备用 CDN 停在旧版导致界面/公告永远停在旧版。并按你的要求重做角色塑造、修遮挡与状态栏可读性。</p>
+            <div class="ver-diff">
+                <div><b>存档丢失根因</b>：内置服务器改用固定端口并记住，重启 / 更新后端口不再变，旧存档稳定读得到（配合单实例锁）。</div>
+                <div><b>更新停在旧版根因</b>：检查内容清单时遍历全部 CDN 取版本号最高的那份，不再被缓存滞后的备用源误判成『已是最新』。</div>
+                <div><b>遮挡与可读性</b>：左上角进度/世界时钟移开不再压住返回按钮；状态栏文字加暗投影+高亮，浅色主题下也看得清。</div>
+                <div><b>角色塑造重做</b>：样貌自己填；性格从性格世界书点选、不限个数，还能手填补充；头像按设定调生图模型生成，未配绘图接口会明确提示。</div>
+            </div>
+        </article>
+
                         <article class="log-entry" data-tags="版本 发布 国内直连 加速下载 检查更新 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
                 <span class="entry-ver">v7.0.2</span>
                 <span class="entry-date">2026-11-25</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">国内网络直连更新 · 不用挂代理 · 检查更新不再卡 GitHub</h3>
             <p class="entry-lead">针对「检查更新一直说已是最新版、国内连不上 GitHub」的问题，把更新的检查与下载两条链路都改成国内可直连：版本信息改从国内 CDN 读取，安装包走国内加速镜像下载，全程强制 SHA-256 校验保证安全。</p>
@@ -1158,7 +1205,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.0.4 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.0.5 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

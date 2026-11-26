@@ -84,11 +84,17 @@
       write(K_SLOTS, this.list().filter(function (s) { return s.id !== id; }));
       try { if (this.activeId() === id) localStorage.removeItem(K_ACTIVE); } catch (e) {}
     },
-    /** 档位摘要（给下拉展示） */
+    /** 档位摘要（给下拉展示）：避免「模型名 · 模型名 @ 域名」同词重复 */
     label: function (s) {
       var c = s.cfg || {};
-      var bits = [c.model || "?", (c.endpoint || "").replace(/^https?:\/\//, "").split("/")[0] || ""].filter(Boolean);
-      return (s.name || "未命名") + " · " + bits.join(" @ ");
+      var nm = String(s.name || "未命名").trim();
+      var model = String(c.model || "").trim();
+      var host = (c.endpoint || "").replace(/^https?:\/\//, "").split("/")[0] || "";
+      // 名字里已含模型名（默认名就是模型名）时不再重复拼一遍
+      var bits = [];
+      if (model && nm.toLowerCase().indexOf(model.toLowerCase()) < 0) bits.push(model);
+      if (host && nm.toLowerCase().indexOf(host.toLowerCase()) < 0) bits.push(host);
+      return bits.length ? (nm + " · " + bits.join(" @ ")) : nm;
     }
   };
 

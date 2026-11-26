@@ -72,10 +72,10 @@ function load(){
     }
   }catch(e){}
 }
-function save(){ if(saveTid) return; saveTid=setTimeout(function(){ saveTid=0; try{ localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){} },150); }
+function save(){ if(saveTid) return; saveTid=setTimeout(function(){ saveTid=0; try{ localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){ console.warn('[云境] 事件总线状态落盘失败（可能存储已满或被禁用）：', e); } },150); }
 /* v4.08.0：立即落盘版本（切档冲盘用）。save() 有 150ms 防抖，
    切档 reload 时若防抖回调还没跑就被 unload 掐掉 → 事件总线状态丢失。 */
-function persist(){ try{ if(saveTid){ clearTimeout(saveTid); saveTid=0; } localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){} }
+function persist(){ try{ if(saveTid){ clearTimeout(saveTid); saveTid=0; } localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){ console.warn('[云境] 事件总线状态立即落盘失败（切档可能丢状态）：', e); } }
 load();
 
 function emit(ev){if(!ev||!ev.type)return;ev.ts=Date.now();bus.history.unshift(ev);if(bus.history.length>24)bus.history.length=24;save();try{react(ev)}catch(e){}var l=bus.handlers[ev.type]||[];for(var i=0;i<l.length;i++){try{l[i](ev)}catch(e2){}}var a=bus.handlers["*"]||[];for(var j=0;j<a.length;j++){try{a[j](ev)}catch(e3){}}}

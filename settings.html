@@ -7,8 +7,8 @@
 <!-- v7.0.0：补齐 icon，避免浏览器回退请求根目录 favicon.ico 产生 404 -->
 <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
 <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
-<link rel="stylesheet" href="css/base-style.css?v=7.0.4">
-<link rel="stylesheet" href="css/font-switcher.css?v=7.0.4">
+<link rel="stylesheet" href="css/base-style.css?v=7.0.5">
+<link rel="stylesheet" href="css/font-switcher.css?v=7.0.5">
 <style>
 :root{--jade:#d9b46a;--ink:#e8e4d8;--mut:#a8a290;--line:rgba(232,228,216,.1);--bg:#101019;--card:#191b28}
 *{box-sizing:border-box}
@@ -67,8 +67,8 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 .ncard li::marker{color:var(--jade)}
 </style>
 <!-- v7.0.0 游戏化客户端外壳：仅 Electron 生效，PWA 浏览器版零注入 -->
-<link rel="stylesheet" href="css/desktop-shell.css?v=7.0.4">
-<script src="js/desktop-shell.js?v=7.0.4"></script>
+<link rel="stylesheet" href="css/desktop-shell.css?v=7.0.5">
+<script src="js/desktop-shell.js?v=7.0.5"></script>
 </head>
 <body>
 <div class="top">
@@ -83,9 +83,9 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   <section class="sec">
     <h2>🔑 模型配置</h2>
     <p class="desc">云境的<strong>所有</strong>模型与接口配置都在这里：主笔正文模型、动态世界、变量 AI、绘图、提示词优化、连接档案、向量检索。填完点保存，再回封面开写。设置只存在本机。</p>
-    <div class="row"><label>接口地址</label><input type="text" id="cfg_endpoint" placeholder="https://api.deepseek.com/v1"></div>
+    <div class="row"><label>接口地址</label><input type="text" id="cfg_endpoint" placeholder="https://apihub.agnes-ai.com/v1"></div>
     <div class="row"><label>API 密钥</label><input type="password" id="cfg_apiKey" placeholder="sk-…（本地 Ollama 可填 ollama）"></div>
-    <div class="row"><label>模型名</label><input type="text" id="cfg_model" placeholder="deepseek-chat">
+    <div class="row"><label>模型名</label><input type="text" id="cfg_model" placeholder="agnes-3.0-flash">
       <button class="btn ghost" id="fetchModelsBtn" title="从接口地址拉取可用模型列表">获取模型</button></div>
     <div class="row"><label>上下文轮数</label><input type="text" id="cfg_ctx" placeholder="留空=自动"></div>
     <div class="row">
@@ -131,8 +131,12 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   <section class="sec">
     <h2>🗂 存储与隐私</h2>
     <p class="desc">全部数据只在本机浏览器。清理前请先导出存档，删除不可恢复。</p>
+    <div class="row"><button class="btn" id="openShelfBtn" title="查看/切换/新建/导出本机所有存档（一界多书）">📚 我的存档书架</button>
+      <span class="hint" id="shelfCount" style="padding:0">读取存档数…</span></div>
+    <p class="hint" style="margin:6px 0 10px;line-height:1.7">在这里可以查看有几份存档、切到另一份继续写、给存档改名、单独导出或做整机备份。每份存档互相独立，切换不会互相覆盖。</p>
     <div class="row"><button class="btn ghost" id="clearCacheBtn">清理运行缓存（不动存档）</button>
       <span class="saved" id="cacheSaved">✓ 已清理，请刷新</span></div>
+    <div class="row" style="margin-top:10px"><a href="selftest.html?view=selftest" class="hint" style="padding:0;text-decoration:underline">🔍 运行状态自检（71 项，玩家可点）</a></div>
   </section>
 
   <!-- 更新与公告 -->
@@ -142,10 +146,15 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
     <div class="row"><label>当前版本</label><span id="verCurrent">读取中…</span></div>
     <div class="row"><label>内容版本</label><span id="verContent">读取中…</span></div>
     <div class="row"><label>上次同步</label><span id="verLastSync">读取中…</span></div>
-    <div class="row" style="margin-top:14px">
-      <button class="btn" id="checkUpdateBtn">检查更新</button>
-      <button class="btn ghost" id="syncNowBtn">立即同步内容</button>
-      <button class="btn ghost" id="toggleNotesBtn">查看完整更新公告 ▾</button>
+    <div class="row"><label>更新状态</label><span id="verUpdateState" class="hint" style="padding:0">尚未检查</span></div>
+    <p class="hint" style="margin:10px 0 2px;line-height:1.7">
+      <b>检查更新</b>＝看有没有新版本（不改动本机）；<b>立即同步内容</b>＝拉取最新的文字/设置小文件（不改程序，秒级）；
+      <b>查看完整更新公告</b>＝逐版看改了什么。<b>立即更新</b>仅在发现新版本后出现，用于升级客户端程序本体。
+    </p>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" id="checkUpdateBtn" title="检查是否有新版本：只查询、不改动本机，检查后显示 当前版本 → 最新版本">检查更新</button>
+      <button class="btn ghost" id="syncNowBtn" title="立即拉取最新的文字/设置等小文件内容，不改变程序本体">立即同步内容</button>
+      <button class="btn ghost" id="toggleNotesBtn" title="展开/收起逐版更新公告">查看完整更新公告 ▾</button>
     </div>
     <div class="row"><span class="hint" style="padding:0" id="updateMsg"></span></div>
     <!-- DR-110 实时更新进度条 -->
@@ -169,16 +178,18 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   </section>
 </div>
 
-<script src="js/entry-guard.js?v=7.0.4"></script>
-<script src="js/font-switcher.js?v=7.0.4"></script>
-<script src="js/theme-studio.js?v=7.0.4"></script>
+<script src="js/entry-guard.js?v=7.0.5"></script>
+<script src="js/font-switcher.js?v=7.0.5"></script>
+<script src="js/theme-studio.js?v=7.0.5"></script>
 <!-- v7.0.1：全局开关与模型配置所需模块全部补齐；此前缺这些脚本导致开关点了没反应 -->
-<script src="js/api-calling-functions.js?v=7.0.4"></script>
-<script src="js/model-slots.js?v=7.0.4"></script>
-<script src="js/system-guard.js?v=7.0.4"></script>
-<script src="js/perf-mode.js?v=7.0.4"></script>
-<script src="js/celebration.js?v=7.0.4"></script>
-<script src="js/config-modal.js?v=7.0.4"></script>
+<script src="js/api-calling-functions.js?v=7.0.5"></script>
+<script src="js/model-slots.js?v=7.0.5"></script>
+<script src="js/system-guard.js?v=7.0.5"></script>
+<script src="js/perf-mode.js?v=7.0.5"></script>
+<script src="js/celebration.js?v=7.0.5"></script>
+<script src="js/config-modal.js?v=7.0.5"></script>
+<script src="js/slot-registry.js?v=7.0.5"></script>
+<script src="js/save-slots.js?v=7.0.5"></script>
 <script>
 (function(){
   var $ = function(id){return document.getElementById(id);};
@@ -343,6 +354,23 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
     try{if(window.caches&&caches.keys){caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));});}}catch(e){}
     flash($('cacheSaved'));
   };
+  // 我的存档书架：直接打开 SaveSlots 可视化面板，并显示本机存档数
+  (function(){
+    var btn=$('openShelfBtn'), cnt=$('shelfCount');
+    function refreshCount(){
+      if(!cnt)return;
+      try{
+        var slots=(window.SaveSlots&&SaveSlots.list)?SaveSlots.list():[];
+        var n=slots.length||0;
+        cnt.textContent='本机 '+n+' 份存档'+(n?'（点左侧查看/切换）':'（还没有，去创作室开一本）');
+      }catch(e){cnt.textContent='存档数读取失败';}
+    }
+    if(btn) btn.onclick=function(){
+      if(window.SaveSlots&&SaveSlots.open){try{SaveSlots.open();}catch(e){alert('存档书架打开失败：'+e.message);}}
+      else alert('存档模块未就绪，请刷新页面重试');
+    };
+    refreshCount();
+  })();
   // 返回封面
   $('backBtn').onclick=function(){location.href='opening.html';};
 
@@ -414,15 +442,21 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
     say('正在检查更新…');
     try{
       Promise.resolve(D.checkUpdate()).then(function(r){
-        if(!r||!r.ok){say('检查失败，请稍后再试');return;}
+        var cur=(($('verCurrent')&&$('verCurrent').textContent)||'当前版本').replace(/^当前版本\s*/,'').trim()||'?';
+        var state=$('verUpdateState');
+        if(!r||!r.ok){say('检查失败，请稍后再试');if(state)state.textContent='检查失败';return;}
         if(r.hasUpdate){
-          say('发现新版本 v'+String(r.latestVersion||'?')+'，可在后台自动更新，重启生效');
+          var latest='v'+String(r.latestVersion||'?');
+          var line='当前 '+cur+' → 最新 '+latest+'：建议更新（后台下载，重启生效）';
+          say(line);if(state)state.textContent='有新版本 '+latest;
           $('autoUpdateRow').style.display='flex';
         }else{
-          say('当前已是最新版本');
+          var v='v'+String(r.latestVersion||cur.replace(/^v/,''));
+          say('当前 '+cur+' → 最新 '+v+'：已是最新版本，无需更新');
+          if(state)state.textContent='已是最新 '+v;
           $('autoUpdateRow').style.display='none';
         }
-      }).catch(function(){say('检查失败，请稍后再试');});
+      }).catch(function(){say('检查失败，请稍后再试');var s=$('verUpdateState');if(s)s.textContent='检查失败';});
     }catch(e){say('检查失败，请稍后再试');}
   };
 

@@ -2,20 +2,24 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **106** 个版本，从 `v3.55.7` 到 `v7.0.4`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **107** 个版本，从 `v3.55.7` 到 `v7.0.5`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.0.4 为当前版本**；其余 **105 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.0.5 为当前版本**；其余 **106 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；106 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；107 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
 
 ## 版本速查（新→旧 · 首行为当前版本，其余 105 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.0.5** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.5) |
+| **v7.0.4** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.4) |
+| **v7.0.3** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.3) |
+| **v7.0.2** | 2026-11-25 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.0.2) |
 | **v6.9.4** | 2026-11-24 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v6.9.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v6.9.4) |
 | **v6.9.0** | 2026-11-23 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v6.9.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v6.9.0) |
 | **v6.8.0** | 2026-11-23 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v6.8.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v6.8.0) |
@@ -125,6 +129,54 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v7.0.5 · 2026-11-25
+
+按开发者收到的《v7.0.4 缺陷与体验问题总清单》逐条核实修复。本版为当前版本。
+
+- **核心链路（P0）**：`js/kb/_common.js` / `js/kb/_index.json` 此前被 .gitignore 的 `_*.js`/`_*.json` 规则误排除、从未进仓库，客户端同步必 404；现加 gitignore 例外、纳入跟踪并重生成内容清单，全清单 654 文件存在性与 SHA 核对零缺失。
+- **版本同源（P1）**：changelog 补 v7.0.3 / v7.0.4、VERSIONS 补三版详情段，版本同步验收 19/19。
+- **配置体验（P1/P3）**：主力 Agnes 列为首选预设，设置页/弹层占位示例统一为 `apihub.agnes-ai.com` + `agnes-3.0-flash`；档位摘要去除同词重复；更新四按钮加说明并显示「当前 → 最新」。
+- **稳健性（P2）**：创作室顶栏主题/沉浸/工具按钮加未就绪守卫，避免懒加载竞态点击报错；三个验收脚本去除 Linux 硬编码浏览器路径；事件总线存档落盘失败改为 console.warn 不再静默吞异常。
+- **角色与体验（P3）**：性格点加搜索/分类筛选/全选清空；世界门面显示当前身份；存档书架在设置页有直达入口；自检页加玩家入口并修正 sw.js 动态挂载的误报；小云工坊按钮改玩家用语、快捷芯片可自定义；流畅模式跳过情绪视频解码。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.0.5)  [🔍 与 v7.0.4 差异](https://github.com/AYun07/yunjing/compare/v7.0.4...v7.0.5)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.5.zip)
+
+## v7.0.4 · 2026-11-25
+
+造物 / 设置 / 角色按玩家实测反馈重做，原著设定联动，更新进度可见。本版为当前版本。
+
+- **造物入口**：从封面点造物直接进纯小云创造中枢，移除背后自由创作界面与叠加弹窗；装新版后自动用新基线重建本地内容目录，从根上清除旧内容残留。
+- **设置页补全**：模型配置 / 阅读外观 / 全局开关 / 存储与隐私 / 更新与公告五个分区齐全，所有配置集中于此。
+- **全局开关修复**：深夜护眼 / 流畅模式 / 庆典特效点击即时生效；朗读正文改为设置页自包含实现，不再因模块未就绪失效。
+- **角色塑造去重**：全库原有两处角色塑造统一为唯一新入口（自己填样貌 / 性格世界书多选不限个 / 生图模型生成头像）。
+- **原著设定联动**：选原著主角后姓名 / 身份 / 小传按原著填充（如凡人修仙传→韩立）；选配角后按该配角身份 / 性格 / 命运填充，切换立场不再混入上一位设定。
+- **更新进度条**：检查更新 / 同步内容时实时显示进度百分比与阶段，出错列出具体文件与原因。
+- **旧版残留修复**：本地内容目录版本落后于打包基线时自动重建，杜绝旧文件优先级高于新基线。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.0.4)  [🔍 与 v7.0.3 差异](https://github.com/AYun07/yunjing/compare/v7.0.3...v7.0.4)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.4.zip)
+
+## v7.0.3 · 2026-11-25
+
+查到并修掉两个真根因：客户端每次启动用随机端口导致存档读不到；备用 CDN 停在旧版导致界面 / 公告永远停在旧版。并按玩家要求重做角色塑造、修遮挡与状态栏可读性。
+
+- **存档丢失根因**：内置服务器改用固定端口并记住，重启 / 更新后端口不再变，旧存档稳定读得到（配合单实例锁）。
+- **更新停在旧版根因**：检查内容清单时遍历全部 CDN 取版本号最高的那份，不再被缓存滞后的备用源误判成『已是最新』。
+- **遮挡修复**：左上角的进度 / 世界时钟移开，不再压住『返回』按钮；边缘安全区加固。
+- **状态栏可读性**：文字统一加暗投影 + 高亮，浅色主题下也看得清。
+- **角色塑造重做**：样貌自己填；性格从性格世界书点选、不限个数，还能手填补充；头像按设定调生图模型生成（未配绘图接口会明确提示）。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.0.3)  [🔍 与 v7.0.2 差异](https://github.com/AYun07/yunjing/compare/v7.0.2...v7.0.3)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.3.zip)
+
+## v7.0.2 · 2026-11-25
+
+把检查更新与下载两条链路都改成国内可直连：版本信息从国内 CDN 读取、安装包走国内加速镜像下载，全程 SHA-256 校验。
+
+- **检查更新去 GitHub 接口**：版本信息不再读 api.github.com（国内常连不上），改从国内可直连的静态元数据读取。
+- **国内镜像下载**：安装包优先走 ghproxy.net / ghfast.top 加速镜像，逐个尝试，最后回退 GitHub 原始直链。
+- **强制校验**：每个镜像下载都按 Release 声明的 SHA-256 校验，内容不符自动换下一个，防篡改防损坏。
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.0.2)  [🔍 与 v7.0.1 差异](https://github.com/AYun07/yunjing/compare/v7.0.1...v7.0.2)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.0.2.zip)
 
 ## v6.9.4 · 2026-11-24
 

@@ -4,7 +4,7 @@
 
 > 打开网页就能用的 AI 互动小说加开放世界扮演。纯前端静态站，不用构建，没有后端，也不用注册账号。AI 接口自己填，故事和 Key 只留在本机浏览器里。封面只有一张，叫「万象入云」，四个入口进的是同一个世界。
 
-[![当前版本](https://img.shields.io/badge/version-v7.0.4-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.0.4) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
+[![当前版本](https://img.shields.io/badge/version-v7.0.5-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.0.4) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
 
 ---
 
@@ -113,10 +113,11 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v7.0.4（2026-11-22 · 唯一当前版）
+## 🆕 当前版本：v7.0.5（2026-11-25 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
+| **v7.0.5** | 2026-11-25 | **当前** | v7.0.4 缺陷与体验问题逐条核实修复：知识库文件进仓库根治热更新 404、版本文档同源 19/19、主力 Agnes 预设与占位统一、顶栏懒加载竞态守卫、存档落盘错误可见、性格点搜索筛选、世界门面显示身份、存档书架直达入口、自检误报修正、小云工坊玩家化措辞。 | [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.0.5) |
 | **v7.0.4** | 2026-11-25 | **当前** | 玩家实测 18 项问题全修；游戏化客户端外壳（无边框标题栏 + 金边云纹）；**内容自动更新 + 损坏自修复，装一次以后不用再重装**；设置页新增「更新与公告」，玩家不用开 GitHub 就能看每版区别；版本全站单一来源。 | [桌面客户端 exe](https://github.com/AYun07/yunjing/releases/download/v7.0.0/YunJing-v7.0.0-Windows-setup-x64.exe) · [完整包 665MB](https://github.com/AYun07/yunjing/releases/download/v7.0.0/云境-v7.0.0-完整包.zip) · [源码包](https://github.com/AYun07/yunjing/releases/download/v7.0.0/云境-v7.0.0-源码包.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.0.0) |
 
 > **完整包和源码包的区别**。「完整包」是 `云境-v7.0.0-完整包.zip`，665MB，含 38 界视频、考据地图、封面动画这些运行资产，下载解压就能离线跑。「源码包」是 `云境-v7.0.0-源码包.zip`，约 44MB，含代码与封面动画，大视频走外链或另下完整包。两个包的版本号都是 v7.0.0。

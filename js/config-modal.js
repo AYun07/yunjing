@@ -119,6 +119,16 @@ const ConfigModal = {
   /** AI 厂商库（v1.6.4：每家独立细分；选厂商自动带出协议 / 地址 / 常见模型）
    *  type 仍是运行时协议（openai / gemini），由厂商派生，用户不再手选协议 */
   PROVIDERS: [
+    // ---- 云境主力推荐（v7.0.5：玩家实测主力模型，列为首选预设）----
+    {
+      id: "agnes",
+      name: "Agnes · 云境主力",
+      group: "云境主力推荐",
+      type: "openai",
+      endpoint: "https://apihub.agnes-ai.com/v1",
+      models: ["agnes-3.0-flash", "agnes-3.0-pro", "agnes-image-2.5-flash"],
+      tip: "云境实测主力模型；agnes-3.0-flash 快且便宜适合主笔，pro 更强，image 系列用于生图。apihub 中转站返回跨域许可，浏览器可直连"
+    },
     // ---- 国内厂商直连 ----
     {
       id: "deepseek",
@@ -403,7 +413,7 @@ const ConfigModal = {
                             </div>
                             <div class="form-row">
                                 <label>API 地址 (Endpoint)</label>
-                                <input id="cfg_endpoint" type="text" placeholder="例如 https://api.deepseek.com/v1 或自定义中转完整地址">
+                                <input id="cfg_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1 或自定义中转完整地址">
                             </div>
                             <div class="form-row">
                                 <label>API Key</label>
@@ -535,7 +545,7 @@ const ConfigModal = {
                             </div>
                             <div class="form-row">
                                 <label>API 地址 (Endpoint)</label>
-                                <input id="dw_endpoint" type="text" placeholder="例如 https://api.deepseek.com/v1（可与主接口不同）">
+                                <input id="dw_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1（可与主接口不同）">
                             </div>
                             <div class="form-row">
                                 <label>API Key</label>
@@ -720,7 +730,7 @@ const ConfigModal = {
                             </div>
                             <div class="form-row">
                                 <label>API 地址 (Endpoint)</label>
-                                <input id="va_endpoint" type="text" placeholder="例如 https://api.deepseek.com/v1（可与主接口不同）">
+                                <input id="va_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1（可与主接口不同）">
                             </div>
                             <div class="form-row">
                                 <label>API Key</label>
@@ -799,7 +809,7 @@ const ConfigModal = {
                             </div>
                             <div class="form-row">
                                 <label>API 地址 (Endpoint)</label>
-                                <input id="cp_endpoint" type="text" placeholder="例如 https://api.deepseek.com/v1 或自定义中转完整地址">
+                                <input id="cp_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1 或自定义中转完整地址">
                             </div>
                             <div class="form-row">
                                 <label>API Key</label>
@@ -974,7 +984,7 @@ const ConfigModal = {
                             </div>
                             <div class="form-row">
                                 <label>API 地址 (Endpoint)</label>
-                                <input id="pe_endpoint" type="text" placeholder="例如 https://api.deepseek.com/v1（可与主接口不同）">
+                                <input id="pe_endpoint" type="text" placeholder="例如 https://apihub.agnes-ai.com/v1（可与主接口不同）">
                             </div>
                             <div class="form-row">
                                 <label>API Key</label>

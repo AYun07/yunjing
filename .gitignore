@@ -93,3 +93,8 @@ client/electron/build/
 云境-Windows-*.exe
 云境-Android-*.apk
 云境-*.zip
+
+# ===== v7.0.5：知识库核心文件例外（此前被 _*.js/_*.json 误伤，从未入库 → 客户端同步 404）=====
+# 这两份是运行时 loadOne / plugin-runtime 真实依赖，必须进仓库并经 CDN 分发。
+!js/kb/_common.js
+!js/kb/_index.json

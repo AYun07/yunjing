@@ -21,8 +21,7 @@ def op(pg, sel):
 
 def main():
     with sync_playwright() as p:
-        b = p.chromium.launch(executable_path="/usr/bin/google-chrome",
-                              args=["--no-sandbox", "--disable-dev-shm-usage",
+        b = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage",
                                     "--autoplay-policy=no-user-gesture-required"])
         pg = b.new_page(viewport={"width": 1280, "height": 800})
         errs = []; pg.on("pageerror", lambda e: errs.append(str(e)[:120]))

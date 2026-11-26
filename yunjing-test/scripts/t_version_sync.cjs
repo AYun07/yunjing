@@ -56,7 +56,13 @@ for (const [name, file, re] of constChecks) {
 function collect(dir, out) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const rel = path.relative(ROOT, path.join(dir, e.name));
-    if (['node_modules', '.git', 'libs', 'changelog', 'yunjing-test', '_shots_v398', '_shots_v399', 'scripts', 'test'].includes(e.name)) continue;
+    // v7.0.5 校正：?v= 同源只针对「当前可运行源码」。
+    // client/ 是 Electron/Capacitor 构建副本（源码在根目录，且已 gitignore，不入库、不走热更）；
+    // versions/ 是历史源码快照、_bak_* 是本地备份、shots-* 是验收截图——这些都不参与发版同源，
+    // 否则每次升版本号都要去改历史快照，既无意义又破坏版本可追溯性。
+    if (['node_modules', '.git', 'libs', 'changelog', 'yunjing-test', '_shots_v398', '_shots_v399',
+         'scripts', 'test', 'client', 'versions'].includes(e.name)) continue;
+    if (/^_bak/.test(e.name) || /^shots/.test(e.name)) continue;
     if (e.isDirectory()) { collect(path.join(dir, e.name), out); continue; }
     if (!/\.(html|js)$/.test(e.name)) continue;
     out.push(rel);

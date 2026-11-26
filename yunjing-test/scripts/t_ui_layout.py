@@ -29,8 +29,7 @@ def rec(name, ok, detail=""):
 
 def main():
     with sync_playwright() as p:
-        b = p.chromium.launch(executable_path="/usr/bin/google-chrome",
-                              args=["--no-sandbox", "--disable-dev-shm-usage"])
+        b = p.chromium.launch(args=["--no-sandbox", "--disable-dev-shm-usage"])
         pg = b.new_page(viewport={"width": 1440, "height": 900})
         errs = []
         pg.on("pageerror", lambda e: errs.append(str(e)[:150]))

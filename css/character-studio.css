@@ -18,6 +18,12 @@
   border-radius:8px;padding:7px 12px;font-size:11.5px;cursor:pointer;margin-top:6px;transition:.15s}
 .cs-field button:hover{background:rgba(217,180,106,.26)}
 .cs-field button.cs-mini{background:transparent;color:var(--text-muted,#a8a290);margin-left:6px}
+.cs-trait-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.cs-trait-tools input,.cs-trait-tools select{background:rgba(255,255,255,.06);border:1px solid rgba(232,228,216,.16);
+  border-radius:8px;color:var(--ink,#e8e4d8);padding:6px 9px;font-size:11.5px;font-family:inherit}
+.cs-trait-tools input::placeholder{color:var(--text-faint,#8a8578)}
+.cs-trait-tools button.cs-mini{margin-left:0;background:rgba(217,180,106,.12);border:1px solid rgba(217,180,106,.28);
+  border-radius:8px;padding:6px 10px}
 .cs-trait-count{font-size:10.5px;color:var(--text-faint,#8a8578);margin-bottom:5px}
 .cs-trait-list{max-height:180px;overflow:auto;border:1px solid rgba(232,228,216,.1);border-radius:9px;
   padding:8px;margin-bottom:7px;background:rgba(0,0,0,.12)}

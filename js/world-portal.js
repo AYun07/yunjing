@@ -31,12 +31,35 @@
       return (fw && fw.config && fw.config.genreName) || '未知世界';
     } catch (e) { return '未知世界'; }
   }
+  /* v7.0.5：选定身份后把主角名带进世界门面，让「你是谁」和「在哪一界」对得上 */
+  function heroName() {
+    try {
+      var ST = window.StoryStance;
+      if (ST) {
+        var mode = ST.get && ST.get();
+        if (mode === 'side') {
+          var side = ST.getSideCharInfo && ST.getSideCharInfo();
+          if (side && side.name) return side.name;
+        }
+        if (mode === 'hero') {
+          var canon = ST.canonHeroName && ST.canonHeroName();
+          if (canon) return canon;
+        }
+      }
+      var bio = document.getElementById('wiz_heroBio');
+      if (bio && bio.value) {
+        var m = bio.value.match(/姓名[：:]\s*([^\n，。；;]{1,12})/);
+        if (m && m[1]) return m[1].trim();
+      }
+    } catch (e) { }
+    return '';
+  }
   function worldInfo() {
     var k = genreKey();
     var SS = window.StatusSkins;
     var w = (SS && SS.worldOf) ? SS.worldOf(k) : { c: '#e0a84c', s: '境', m: '随心所至 · 万象由心' };
     var arch = (SS && SS.skinOf) ? SS.skinOf(k) : 'xianxia';
-    return { key: k, name: zhName(), c: w.c, s: w.s, m: w.m, arch: arch };
+    return { key: k, name: zhName(), c: w.c, s: w.s, m: w.m, arch: arch, hero: heroName() };
   }
 
   /* 每界入世引导语（通用意境，非原著专名，按题材） */
@@ -128,6 +151,8 @@
 .wp-eyebrow{font-size:10px;letter-spacing:.42em;text-indent:.42em;color:var(--wpri);opacity:.85;margin-bottom:8px}
 .wp-title{font:700 clamp(26px,4vw,38px) "STKaiti","KaiTi",serif;letter-spacing:.2em;text-indent:.2em;
   color:var(--wpri);text-shadow:0 0 26px var(--wpri-glow);margin:0 0 6px;line-height:1.3}
+.wp-hero-tag{font-size:.5em;font-weight:400;letter-spacing:.08em;text-indent:0;margin-left:.5em;
+  color:var(--text-muted,#b9ad93);text-shadow:none;vertical-align:middle}
 .wp-motto{font:13px "STKaiti","KaiTi",serif;letter-spacing:.16em;color:var(--text,#e8dcc0);opacity:.8;margin-bottom:4px}
 .wp-lead{font-size:12px;line-height:1.7;color:var(--text-muted,#b9ad93);opacity:.82;max-width:46ch;margin:4px 0 0}
 .wp-divider{width:90px;height:1px;margin:12px 0;
@@ -279,8 +304,8 @@
       sceneHTML(w.arch) +
       '<div class="wp-inner">' +
         '<div class="wp-sig">' + esc(w.s) + '</div>' +
-        '<div class="wp-eyebrow">— 云境 · 待君入世 —</div>' +
-        '<h1 class="wp-title">' + esc(w.name) + '</h1>' +
+        '<div class="wp-eyebrow">' + (w.hero ? ('— 此世身份：' + esc(w.hero) + ' —') : '— 云境 · 待君入世 —') + '</div>' +
+        '<h1 class="wp-title">' + esc(w.name) + (w.hero ? ('<span class="wp-hero-tag">· ' + esc(w.hero) + '</span>') : '') + '</h1>' +
         '<div class="wp-motto">' + esc(w.m) + '</div>' +
         '<div class="wp-divider"></div>' +
         '<div class="wp-lead">' + esc(LEAD[w.arch] || LEAD.xianxia) + '</div>' +
