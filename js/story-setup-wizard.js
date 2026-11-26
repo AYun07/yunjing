@@ -616,11 +616,13 @@ const StorySetupWizard = {
       const genderEl = document.getElementById("wiz_gender");
       const g = genderEl && genderEl.value || ((_a = this.state) == null ? void 0 : _a.gender) || "男";
       const v = this.NameForge.make(g, seeds.flavor);
-      document.getElementById("wiz_playerName").value = v;
+      const nameEl = document.getElementById("wiz_playerName");
+      if (nameEl) nameEl.value = v;
     } else if (field === "background") {
       const bs = seeds.backgrounds || [];
       const v = bs.length ? bs[Math.floor(Math.random() * bs.length)] : "";
-      document.getElementById("wiz_background").value = v;
+      const bgEl = document.getElementById("wiz_background");
+      if (bgEl) bgEl.value = v;
     } else if (field === "gender") {
       const el = document.getElementById("wiz_gender");
       if (el) el.value = Math.random() > 0.5 ? "女" : "男";
@@ -1558,9 +1560,17 @@ const StorySetupWizard = {
   },
   /** 随机书名/梗概/姓名/身世（从 config.nameSeeds 抽取） */
   dice(field) {
-    const fw = window.storyFramework;
-    const seeds = fw.config.nameSeeds || {};
-    if (fw.config.mode === "roleplay") return this.diceRoleplay(field);
+    /* v7.3.0 随缘开局「有时点了没反应」根因修复：
+       旧码只看 fw.config.mode 判断走哪套随机；当配置懒加载未就绪/被临时覆盖时，
+       mode 与当前渲染的向导 DOM 不一致（渲染的是扮演表单却按写作分支访问 wiz_title），
+       document.getElementById("wiz_title").value 直接抛 TypeError，整个 diceAll 中断。
+       改为：①按当前 DOM 里实际存在的字段元素判断分支；②所有赋值一律判空，绝不抛错。 */
+    const fw = window.storyFramework || {};
+    const config = fw.config || {};
+    const seeds = config.nameSeeds || {};
+    // 以 DOM 为准：扮演表单有 wiz_playerName，写作表单有 wiz_title
+    const isRoleplayDom = !!document.getElementById("wiz_playerName");
+    if (config.mode === "roleplay" || isRoleplayDom) return this.diceRoleplay(field);
     if (field === "heroName") {
       const genderEl = document.getElementById("wiz_heroGender");
       const g = genderEl && genderEl.value || "男";
@@ -1572,17 +1582,29 @@ const StorySetupWizard = {
     if (field === "title") {
       const t = seeds.titles || [];
       value = t.length ? t[Math.floor(Math.random() * t.length)] : `无题之书${Math.floor(Math.random() * 99)}`;
-      document.getElementById("wiz_title").value = value;
+      const titleEl = document.getElementById("wiz_title");
+      if (titleEl) titleEl.value = value;
     } else {
       const p = seeds.premises || [];
       value = p.length ? p[Math.floor(Math.random() * p.length)] : "一个普通人在非常境遇中的抉择";
-      document.getElementById("wiz_premise").value = value;
+      const premiseEl = document.getElementById("wiz_premise");
+      if (premiseEl) premiseEl.value = value;
     }
   },
   diceAll() {
-    const fw = window.storyFramework;
-    if (fw.config.mode === "roleplay") {
-      return fw.config.worldForge ? this.diceAllFreeworld() : this.diceAllRoleplay();
+    /* v7.3.0：分支判定改为「配置 + DOM 双确认」，避免配置未就绪时走错分支抛错导致按钮无反应 */
+    const fw = window.storyFramework || {};
+    const config = fw.config || {};
+    const isRoleplay = config.mode === "roleplay" || !!document.getElementById("wiz_playerName");
+    if (isRoleplay) {
+      // 创世表单存在与否以 DOM 为准（fw_ 前缀字段 / .forge-wizard 容器），避免 config.worldForge 未就绪误判
+      const isFreeworld = !!document.querySelector('[id^="fw_"]') || !!config.worldForge;
+      try {
+        return isFreeworld ? this.diceAllFreeworld() : this.diceAllRoleplay();
+      } catch (e) {
+        try { window.showToast && showToast('随缘开局出错：' + (e && e.message || '未知'), 'error'); } catch (_) {}
+        return false;
+      }
     }
     this.dice("title");
     this.dice("premise");

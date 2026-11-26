@@ -68,6 +68,20 @@
      v5.2.1（全量视觉审阅 P0）：改为「默认收起」——世界动态是大卡片，常驻必然压住正文左下角
      与快捷指令区（1003 张截图逐屏证实）。现默认只显示极小的 ⏱ 圆点，玩家主动点开才展开大面板，
      不自动遮挡任何正文。玩家点开后本次会话内保持展开，点 × 或刷新后回到收起态。 */
+  /* v7.3.0：世界动态图标与面板可用鼠标拖动，位置持久化。
+     统一入口，makeDraggable 内部按 _moDraggable 防重、并抑制拖拽后的误触 click。 */
+  function makeFeedDraggable(el, key) {
+    if (!el) return;
+    var tries = 0;
+    (function bind() {
+      if (el._moDraggable) return; // 已绑，停止
+      if (window.MoChibi && typeof window.MoChibi.makeDraggable === 'function') {
+        window.MoChibi.makeDraggable(el, { storageKey: key });
+      } else if (++tries < 40) {
+        setTimeout(bind, 300); // mo-chibi.js 懒加载，最多等约 12 秒
+      }
+    })();
+  }
   function ensureReopenDot() {
     if (document.getElementById('yjWorldFeedReopen')) return;
     var dot = document.createElement('button');
@@ -76,6 +90,7 @@
     dot.setAttribute('aria-label', '显示世界动态');
     dot.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9941;width:34px;height:34px;border-radius:50%;border:1px solid rgba(201,168,106,.4);background:rgba(14,16,30,.9);color:#e8c47a;font-size:15px;cursor:pointer;display:none;box-shadow:0 4px 14px rgba(0,0,0,.4)';
     dot.textContent = '⏱';
+    makeFeedDraggable(dot, 'storyWorldFeedDotPos');
     dot.onclick = function () {
       setFeedHidden(false); dot.style.display = 'none';
       var rd = dot.querySelector('i'); if (rd) rd.remove(); /* 打开后清掉未读红点 */
@@ -92,6 +107,7 @@
       el.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9940;width:250px;max-height:230px;overflow:hidden;border-radius:14px;background:rgba(14,16,30,.92);border:1px solid rgba(201,168,106,.3);color:#e8e2d0;font-family:"Noto Sans SC",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:12px;';
       el.innerHTML = '<div data-head style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid rgba(201,168,106,.18);"><span data-toggle style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;"><b style="font-size:12px;">⏱ 世界动态</b><span data-dot style="width:7px;height:7px;border-radius:50%;background:#c94b4b;display:none;"></span></span><span data-caret style="cursor:pointer;opacity:.6;padding:0 4px;">▾</span><button data-close title="收起世界动态" aria-label="收起世界动态" style="cursor:pointer;background:transparent;border:none;color:#c9b78f;font-size:15px;line-height:1;padding:2px 4px;">×</button></div><div data-body style="max-height:170px;overflow:auto;padding:6px 12px;"></div>';
       document.body.appendChild(el);
+      makeFeedDraggable(el, 'storyWorldFeedPanelPos');
       var head = el.querySelector('[data-toggle]'), body = el.querySelector('[data-body]'), caret = el.querySelector('[data-caret]');
       function toggleBody() { var open = body.style.display !== 'none'; body.style.display = open ? 'none' : ''; caret.textContent = open ? '▸' : '▾'; if (!open) el.querySelector('[data-dot]').style.display = 'none'; }
       head.onclick = toggleBody;

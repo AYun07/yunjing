@@ -7,8 +7,8 @@
 <!-- v7.0.0：补齐 icon，避免浏览器回退请求根目录 favicon.ico 产生 404 -->
 <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
 <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
-<link rel="stylesheet" href="css/base-style.css?v=7.2.1">
-<link rel="stylesheet" href="css/font-switcher.css?v=7.2.1">
+<link rel="stylesheet" href="css/base-style.css?v=7.3.0">
+<link rel="stylesheet" href="css/font-switcher.css?v=7.3.0">
 <style>
 :root{--jade:#d9b46a;--ink:#e8e4d8;--mut:#a8a290;--line:rgba(232,228,216,.1);--bg:#101019;--card:#191b28}
 *{box-sizing:border-box}
@@ -65,10 +65,20 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 .ncard ul{margin:0;padding-left:18px}
 .ncard li{font-size:11.5px;color:var(--ink);line-height:1.7;margin:3px 0}
 .ncard li::marker{color:var(--jade)}
+/* v7.3.0：配置弹窗内容内嵌到设置页——把 fixed 遮罩改成静态块、全宽、可随页滚动 */
+.yj-cfg-inline{position:static!important;display:block!important;background:none!important;backdrop-filter:none!important;
+  padding:0!important;z-index:auto!important;max-height:none!important;overflow:visible!important}
+.yj-cfg-inline .modal-box{width:100%!important;max-width:none!important;max-height:none!important;
+  background:transparent!important;border:none!important;box-shadow:none!important;border-radius:0!important}
+.yj-cfg-inline .modal-header{padding:6px 0 12px!important;border-bottom:1px solid var(--line)!important}
+.yj-cfg-inline .modal-body{padding:0!important;overflow:visible!important;max-height:none!important}
+.yj-cfg-inline .modal-footer{padding:14px 0 0!important;border-top:1px solid var(--line)!important;
+  display:flex!important;gap:10px!important;flex-wrap:wrap!important}
+.yj-cfg-inline .api-card{margin-bottom:12px}
 </style>
 <!-- v7.0.0 游戏化客户端外壳：仅 Electron 生效，PWA 浏览器版零注入 -->
-<link rel="stylesheet" href="css/desktop-shell.css?v=7.2.1">
-<script src="js/desktop-shell.js?v=7.2.1"></script>
+<link rel="stylesheet" href="css/desktop-shell.css?v=7.3.0">
+<script src="js/desktop-shell.js?v=7.3.0"></script>
 </head>
 <body>
 <div class="top">
@@ -79,27 +89,12 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   <p class="desc" style="text-align:center;color:var(--mut);font-size:12px;margin-bottom:20px">
     这里是云境的全局设置，对全部世界、两种玩法统一生效。设置只保存在你自己的浏览器里，不会上传。</p>
 
-  <!-- 模型接口：这里是全部模型配置的统一入口 -->
+  <!-- v7.3.0：这里是全站唯一的模型配置入口。原独立弹窗（config-modal）全部内容已搬到本页内嵌渲染，
+       不再有「全部接口配置」弹窗。主笔/动态世界/变量AI/绘图/提示词/连接档案/向量/云起预设/内容尺度全在此。 -->
   <section class="sec">
-    <h2>🔑 模型配置</h2>
-    <p class="desc">云境的<strong>所有</strong>模型与接口配置都在这里：主笔正文模型、动态世界、变量 AI、绘图、提示词优化、连接档案、向量检索。填完点保存，再回封面开写。设置只存在本机。</p>
-    <div class="row"><label for="cfg_endpoint">接口地址</label><input type="text" id="cfg_endpoint" placeholder="https://apihub.agnes-ai.com/v1"></div>
-    <div class="row"><label for="cfg_apiKey">API 密钥</label><input type="password" id="cfg_apiKey" placeholder="sk-…（本地 Ollama 可填 ollama）"></div>
-    <div class="row"><label for="cfg_model">模型名</label><input type="text" id="cfg_model" placeholder="agnes-3.0-flash">
-      <button class="btn ghost" id="fetchModelsBtn" title="从接口地址拉取可用模型列表">获取模型</button></div>
-    <div class="row"><label for="cfg_ctx">上下文轮数</label><input type="text" id="cfg_ctx" placeholder="留空=自动"></div>
-    <div class="row">
-      <label>模型档位</label>
-      <select id="ms_slotSelect" aria-label="选择模型槽位" style="flex:1;min-width:140px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:9px;color:var(--ink);font-size:13px;padding:9px 12px"><option value="">（尚未保存档位）</option></select>
-      <button class="btn ghost" id="msSaveBtn" title="把当前接口+密钥+模型存成一个档位">存为档位</button>
-      <button class="btn ghost" id="msRemoveBtn" title="删除选中的档位">删除</button>
-    </div>
-    <div class="hint" id="cfg_modelHint">支持同一接口配置多个模型：每个模型存成一个档位，选中即切换。公益站地址一般带 /v1；报 404 先确认路径末尾。</div>
-    <div class="row" style="margin-top:16px">
-      <button class="btn" id="saveModel">保存模型设置</button>
-      <button class="btn" id="openFullCfgBtn" title="打开全部接口配置（主笔/动态世界/变量AI/绘图/提示词/向量/连接档案）">全部接口配置 ▸</button>
-      <span class="saved" id="modelSaved">✓ 已保存</span>
-    </div>
+    <h2>🔑 模型配置（全部接口）</h2>
+    <p class="desc">云境的<strong>所有</strong>模型与接口配置都在这里：主笔正文模型、动态世界、变量 AI、绘图、提示词优化、连接档案、向量检索、云起预设、内容尺度。每个接口一个卡片，填完点底部「保存全部配置」。设置只存在本机，不会上传。</p>
+    <div id="cfgInlineHost"><div class="desc">配置面板加载中…若长时间停在这里，请刷新页面。</div></div>
   </section>
 
   <!-- 阅读外观 -->
@@ -112,6 +107,11 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
       <button class="btn ghost" id="fontMinus">A−</button>
       <button class="btn ghost" id="fontPlus">A＋</button>
       <span class="hint" style="padding:0" id="fontScaleLabel"></span></div>
+    <div class="row"><label>状态栏字号</label>
+      <button class="btn ghost" id="statusScaleMinus" aria-label="缩小状态栏字号">A−</button>
+      <button class="btn ghost" id="statusScalePlus" aria-label="放大状态栏字号">A＋</button>
+      <button class="btn ghost" id="statusScaleReset" title="恢复跟随正文字号">跟随正文</button>
+      <span class="hint" style="padding:0" id="statusScaleLabel"></span></div>
   </section>
 
   <!-- 全局开关：按钮式，直接调模块函数，避免用错存储 key -->
@@ -178,128 +178,36 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   </section>
 </div>
 
-<script src="js/entry-guard.js?v=7.2.1"></script>
-<script src="js/font-switcher.js?v=7.2.1"></script>
-<script src="js/theme-studio.js?v=7.2.1"></script>
+<script src="js/entry-guard.js?v=7.3.0"></script>
+<script src="js/font-switcher.js?v=7.3.0"></script>
+<script src="js/theme-studio.js?v=7.3.0"></script>
 <!-- v7.0.1：全局开关与模型配置所需模块全部补齐；此前缺这些脚本导致开关点了没反应 -->
-<script src="js/api-calling-functions.js?v=7.2.1"></script>
-<script src="js/model-slots.js?v=7.2.1"></script>
-<script src="js/system-guard.js?v=7.2.1"></script>
-<script src="js/perf-mode.js?v=7.2.1"></script>
-<script src="js/celebration.js?v=7.2.1"></script>
-<script src="js/config-modal.js?v=7.2.1"></script>
-<script src="js/slot-registry.js?v=7.2.1"></script>
-<script src="js/save-slots.js?v=7.2.1"></script>
+<script src="js/api-calling-functions.js?v=7.3.0"></script>
+<script src="js/model-slots.js?v=7.3.0"></script>
+<script src="js/system-guard.js?v=7.3.0"></script>
+<script src="js/perf-mode.js?v=7.3.0"></script>
+<script src="js/celebration.js?v=7.3.0"></script>
+<script src="js/config-modal.js?v=7.3.0"></script>
+<script src="js/slot-registry.js?v=7.3.0"></script>
+<script src="js/save-slots.js?v=7.3.0"></script>
 <script>
 (function(){
   var $ = function(id){return document.getElementById(id);};
   // 统一走 ConfigModal 的落盘路径，与主配置弹窗共用字段口径与存储键；模块缺失时兜底直读
   function readCfg(){return (window.ConfigModal&&ConfigModal.readApiConfig)?ConfigModal.readApiConfig():(function(){try{return JSON.parse(localStorage.getItem('storyApiConfig')||'{}')||{};}catch(e){return {};}})();}
   function flash(el){el.classList.add('on');setTimeout(function(){el.classList.remove('on');},1600);}
-  // 载入模型配置
-  var c=readCfg();
-  $('cfg_endpoint').value=c.endpoint||'';
-  $('cfg_apiKey').value=c.apiKey||'';
-  $('cfg_model').value=c.model||'';
-  try{$('cfg_ctx').value=localStorage.getItem('storyContextWindow')||'';}catch(e){}
-  // 把当前表单写入 storyApiConfig（供保存/存档位共用），返回是否成功
-  function commitForm(){
-    var fields={};
-    var ep=$('cfg_endpoint').value.trim(), key=$('cfg_apiKey').value.trim(), mo=$('cfg_model').value.trim();
-    if(ep) fields.endpoint=ep; if(key) fields.apiKey=key; if(mo) fields.model=mo;
-    var ok;
-    if(window.ConfigModal&&ConfigModal.saveApiFields){
-      ok=ConfigModal.saveApiFields(fields);
-    }else{
-      try{var cfg=readCfg();Object.assign(cfg,fields);localStorage.setItem('storyApiConfig',JSON.stringify(cfg));ok=true;}catch(e){ok=false;}
+  // v7.3.0：把完整配置界面（原独立弹窗的全部内容）内嵌到本页，成为全站唯一配置入口。
+  // 所有字段/按钮/档位/获取模型等逻辑全部复用 ConfigModal，本页不再重复实现，避免两套 id 冲突。
+  (function mountConfig(){
+    var host=$('cfgInlineHost');
+    if(!host) return;
+    if(!window.ConfigModal||!ConfigModal.mount){
+      host.textContent='配置模块未加载，请刷新页面重试。';
+      return;
     }
-    try{var ctx=$('cfg_ctx').value.trim(); if(ctx) localStorage.setItem('storyContextWindow',ctx);}catch(e){}
-    return ok;
-  }
-  $('saveModel').onclick=function(){
-    if(!commitForm()){alert('保存失败：本地存储不可用');return;}
-    flash($('modelSaved'));
-  };
-  // 全部接口配置：直达完整配置弹窗（主笔/动态世界/变量AI/绘图/提示词/向量/连接档案）
-  $('openFullCfgBtn').onclick=function(){
-    if(window.ConfigModal&&ConfigModal.open){ConfigModal.open();}
-    else $('switchNote').textContent='完整配置面板未能加载，请刷新页面重试。';
-  };
-  // 获取模型列表：直连 OpenAI 兼容 / Gemini / Ollama 发现端点，不依赖 ConfigModal 的元素 id
-  function modelsUrl(ep,type){
-    ep=String(ep||'').trim();
-    if(/11434|ollama/i.test(ep)){
-      var base=ep.replace(/\/v1\/?$/,'').replace(/\/$/,'');
-      return {url:/\/api\/tags$/.test(base)?base:(base+'/api/tags'),kind:'ollama'};
-    }
-    if(/gemini/i.test(type||'')||/generativelanguage/i.test(ep)) return null; // gemini 需 key 拼在 query，单独处理
-    var q='';var i=ep.indexOf('?');if(i>=0){q=ep.slice(i);ep=ep.slice(0,i);}
-    ep=ep.replace(/\/chat\/completions\/?$/,'').replace(/\/$/,'');
-    return {url:ep.replace(/\/v1$/,'')+'/v1/models'+q,kind:'openai'};
-  }
-  $('fetchModelsBtn').onclick=async function(){
-    var hint=$('cfg_modelHint'),btn=this;
-    var ep=$('cfg_endpoint').value.trim(),key=$('cfg_apiKey').value.trim();
-    if(!ep){hint.textContent='✕ 请先填写接口地址';hint.style.color='#e08a8a';return;}
-    btn.disabled=true;btn.textContent='获取中…';
-    try{
-      var models=[];
-      var isOllama=/11434|ollama/i.test(ep);
-      if(isOllama){
-        var u=modelsUrl(ep,'ollama').url;
-        var resp=await fetch(u,{method:'GET'});
-        if(!resp.ok) throw new Error('Ollama /api/tags 返回 '+resp.status);
-        var d=await resp.json();
-        models=(d&&Array.isArray(d.models))?d.models.map(function(m){return m.name||m.model;}).filter(Boolean):[];
-      }else if(window.fetchOpenAIModels){
-        models=await fetchOpenAIModels(ep,key);
-      }else{
-        var u2=modelsUrl(ep,'openai').url;
-        var resp2=await fetch(u2,{method:'GET',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'}});
-        if(!resp2.ok) throw new Error('接口返回 '+resp2.status);
-        var d2=await resp2.json();
-        models=(d2&&Array.isArray(d2.data))?d2.data.map(function(m){return m.id;}).filter(Boolean):[];
-      }
-      if(!models.length) throw new Error('接口未返回模型（可能不支持列表查询，请手填模型名）');
-      var sel=document.createElement('select');
-      sel.style.cssText='flex:1;min-width:180px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:9px;color:var(--ink);font-size:13px;padding:9px 12px';
-      models.forEach(function(m){var o=document.createElement('option');o.value=m;o.textContent=m;if(m===$('cfg_model').value.trim())o.selected=true;sel.appendChild(o);});
-      // 用一个内联行展示下拉，选中即写入模型名
-      var row=document.createElement('div');row.className='row';row.style.marginTop='8px';
-      var lab=document.createElement('label');lab.textContent='选择模型';row.appendChild(lab);row.appendChild(sel);
-      hint.parentNode.insertBefore(row,hint.nextSibling);
-      sel.onchange=function(){$('cfg_model').value=this.value;};
-      if(!$('cfg_model').value.trim())$('cfg_model').value=sel.value;
-      hint.textContent='✓ 已获取 '+models.length+' 个模型，从上方下拉选择';hint.style.color='#7fd8a0';
-    }catch(err){
-      hint.textContent='✕ '+(err&&err.message||'获取失败')+'（可检查地址是否需含 /v1，或手填模型名）';hint.style.color='#e08a8a';
-    }finally{btn.disabled=false;btn.textContent='获取模型';}
-  };
-  // 档位：同一接口下保存多个模型，选中即切换
-  function renderSlots(){
-    var sel=$('ms_slotSelect');if(!sel||!window.ModelSlots)return;
-    var arr=ModelSlots.list(),active=ModelSlots.activeId();
-    var html=arr.length?'':'<option value="">（尚未保存档位）</option>';
-    arr.forEach(function(s){html+='<option value="'+String(s.id).replace(/"/g,'&quot;')+'"'+(s.id===active?' selected':'')+'>'+String(ModelSlots.label(s)).replace(/</g,'&lt;')+'</option>';});
-    sel.innerHTML=html;
-  }
-  renderSlots();
-  $('ms_slotSelect').onchange=function(){
-    if(this.value&&window.ModelSlots){ModelSlots.activate(this.value);var c2=readCfg();$('cfg_endpoint').value=c2.endpoint||'';$('cfg_apiKey').value=c2.apiKey||'';$('cfg_model').value=c2.model||'';flash($('modelSaved'));}
-  };
-  $('msSaveBtn').onclick=function(){
-    if(!commitForm()){alert('保存失败：本地存储不可用');return;}
-    if(!window.ModelSlots){$('switchNote').textContent='档位模块未加载，请刷新重试';return;}
-    var name=($('cfg_model').value.trim()||'未命名模型');
-    var s=ModelSlots.saveCurrent(name);
-    renderSlots();flash($('modelSaved'));
-    $('switchNote').textContent=s?('已保存档位「'+name+'」'):'当前配置为空，未保存档位';
-  };
-  $('msRemoveBtn').onclick=function(){
-    var id=$('ms_slotSelect').value;
-    if(id&&window.ModelSlots){ModelSlots.remove(id);renderSlots();$('switchNote').textContent='已删除选中档位';}
-    else $('switchNote').textContent='请先选择一个档位';
-  };
+    try{ConfigModal.mount(host);}
+    catch(e){host.textContent='配置面板加载失败：'+(e&&e.message||'未知错误');}
+  })();
   // 全局开关：模块已在本页引入，直接调真实函数；缺函数时明确提示，不再静默无反应
   function callOrTip(getFn, name, okMsg){
     var fn=null;try{fn=getFn();}catch(e){}
@@ -346,6 +254,14 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   paintScale();
   $('fontMinus').onclick=function(){try{localStorage.setItem('storyFontScale',String(Math.max(.8,scale()-.05)));}catch(e){}paintScale();};
   $('fontPlus').onclick=function(){try{localStorage.setItem('storyFontScale',String(Math.min(1.5,scale()+.05)));}catch(e){}paintScale();};
+  // 状态栏独立字号（v7.3.0）：默认跟随正文，可单独调，存 storyStatusScale
+  function ssScale(){var v=localStorage.getItem('storyStatusScale');return v==null?null:Number(v);}
+  function paintSS(){$('statusScaleLabel').textContent=ssScale()==null?'跟随正文':('当前 '+ssScale().toFixed(2)+'×');}
+  function applySS(){var v=ssScale();document.documentElement.style.setProperty('--status-scale',v==null?'':String(v));paintSS();}
+  paintSS();applySS();
+  $('statusScaleMinus').onclick=function(){var n=ssScale()==null?scale():ssScale();n=Math.max(.8,n-.1);try{localStorage.setItem('storyStatusScale',String(n));}catch(e){}applySS();};
+  $('statusScalePlus').onclick=function(){var n=ssScale()==null?scale():ssScale();n=Math.min(1.6,n+.1);try{localStorage.setItem('storyStatusScale',String(n));}catch(e){}applySS();};
+  $('statusScaleReset').onclick=function(){try{localStorage.removeItem('storyStatusScale');}catch(e){}applySS();};
   // 字体/主题面板（自注入模块）
   $('fontBtn').onclick=function(){if(window.FontSwitcher)FontSwitcher.open();};
   $('themeBtn').onclick=function(){if(window.ThemeStudio)ThemeStudio.open();};

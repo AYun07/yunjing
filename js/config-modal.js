@@ -14,6 +14,26 @@ const ConfigModal = {
     this.renderModelSlots();
     modal.style.display = "flex";
   },
+  /* v7.3.0：把完整配置界面内嵌到指定容器（设置页「模型配置」区），取代独立弹窗。
+     复用同一套 buildHTML/bindEvents/fillForm，零逻辑重复；加 yj-cfg-inline 类让
+     .modal-overlay 从 fixed 遮罩改为静态块、.modal-box 全宽、隐藏关闭/取消按钮。
+     返回挂载的容器元素；重复调用会重渲染（幂等）。 */
+  mount(host) {
+    if (!host) return null;
+    host.classList.add("yj-cfg-inline");
+    host.innerHTML = this.buildHTML();
+    // 内联模式：隐藏弹窗专用的关闭 ✕ 与 footer 的「取消」按钮（保存/测试保留）
+    var closeBtn = host.querySelector(".modal-close");
+    if (closeBtn) closeBtn.style.display = "none";
+    host.querySelectorAll(".modal-footer .btn-ghost").forEach(function (b) {
+      if (/取消/.test(b.textContent)) b.style.display = "none";
+    });
+    this.bindEvents(host);
+    this.fillForm();
+    this.applyView();
+    this.renderModelSlots();
+    return host;
+  },
   /* v4.18.0 新手/专家两档视图。简洁模式只留主笔连接配置，副接口与高级参数折叠；
      偏好记在 localStorage，纯展示层切换，不动任何已填配置。 */
   _view: null,
@@ -84,8 +104,12 @@ const ConfigModal = {
     try { localStorage.setItem('cfgViewMode', this._view); } catch (e) {}
     this.applyView();
   },
+  /** 当前配置界面的根容器：内联优先（设置页），否则弹窗。v7.3.0 */
+  _root() {
+    return document.getElementById('cfgInlineHost') || document.getElementById('configModal');
+  },
   applyView() {
-    var modal = document.getElementById('configModal');
+    var modal = this._root();
     if (!modal) return;
     var simple = this._view !== 'full';
     // 标记副接口卡（第一个 .api-card 是主笔）
@@ -449,8 +473,8 @@ const ConfigModal = {
                             <div class="dw-sub-title">🎛 高级参数</div>
                             <div class="form-row three-col">
                                 <div>
-                                    <label for="cfg_maxTokens">最大Tokens</label>
-                                    <input id="cfg_maxTokens" type="number" value="16384">
+                                    <label for="cfg_maxTokens">最大Tokens <span style="opacity:.6;font-weight:400">— 默认 65k</span></label>
+                                    <input id="cfg_maxTokens" type="number" value="65536" title="主流长文模型默认 65536；低端模型（8K/16K/小窗）云境会自动压到安全值，无需手调">
                                 </div>
                                 <div>
                                     <label for="cfg_temperature">温度 (0-2)</label>
@@ -462,9 +486,9 @@ const ConfigModal = {
                                 </div>
                             </div>
                             <div class="form-row">
-                                <label>上下文窗口 (tokens) <span style="opacity:.65;font-weight:400">— 留空则按模型名自动推断；新型号/中转站建议手填</span></label>
-                                <input id="cfg_contextWindow" type="number" min="2000" max="2000000" placeholder="留空自动推断，例如 8192 / 32768 / 128000" title="模型单次请求可容纳的总 token 数。填对后云境会自动缩放提示词预算，避免小窗模型爆窗、大窗模型浪费">
-                                <div class="form-tip">正确填写可让 8K/16K/128K 模型各自拿到合适的上下文预算；不填则由云境按模型名推断，推断不出按保守档处理。</div>
+                                <label>上下文窗口 (tokens) <span style="opacity:.65;font-weight:400">— 默认 1m；低端模型自动下调</span></label>
+                                <input id="cfg_contextWindow" type="number" min="2000" max="2000000" placeholder="默认 1048576（1M）；低端模型填 8192 / 16384 / 32768" title="模型单次请求可容纳的总 token 数。主流长上下文模型默认 1048576（1M）；8K/16K 等低端模型云境会自动缩放提示词预算">
+                                <div class="form-tip">主流模型默认 1M 上下文；8K/16K 等低端模型会自动下调预算，避免爆窗。留空则按模型名自动推断，推断不出按保守档处理。</div>
                             </div>
                             <label class="check-row">
                                 <input type="checkbox" id="cfg_stream" checked>
@@ -3198,7 +3222,8 @@ const ConfigModal = {
     document.getElementById("cfg_endpoint").value = c.endpoint || "";
     document.getElementById("cfg_key").value = c.apiKey || "";
     document.getElementById("cfg_model").value = c.model || "";
-    document.getElementById("cfg_maxTokens").value = c.maxTokens || 16384;
+    /* v7.3.0：最大输出默认 65536（65k）；低端模型由 BaseModelMode.clampParams 运行时自动压到安全值 */
+    document.getElementById("cfg_maxTokens").value = c.maxTokens || 65536;
     document.getElementById("cfg_temperature").value = (_a = c.temperature) != null ? _a : 0.9;
     document.getElementById("cfg_timeout").value = c.timeout || 300;
     /* v4.18.0 上下文窗口回填：apiConfig → 独立 CTX_KEY。留空表示自动推断。 */
@@ -3248,7 +3273,8 @@ const ConfigModal = {
       model: document.getElementById("cfg_model").value.trim(),
       // v1.6.8 修复：主笔 maxTokens 此前无 clamp（负数/超大值直通 API → 400），
       // temperature 的 || 会把合法的 0 吞成 0.9
-      maxTokens: clamp(document.getElementById("cfg_maxTokens").value, 256, 131072, 16384),
+      /* v7.3.0：默认 65k 输出；低端模型运行时由 BaseModelMode 自动 clamp，无需在此区分 */
+      maxTokens: clamp(document.getElementById("cfg_maxTokens").value, 256, 131072, 65536),
       temperature: this.clampTemp(document.getElementById("cfg_temperature").value, 0.9),
       timeout: clamp(document.getElementById("cfg_timeout").value, 60, 1800, 300),
       /* v4.18.0 上下文窗口：0/空表示自动推断；手填值同步写入独立键供预算器优先采用。 */
@@ -3277,18 +3303,35 @@ const ConfigModal = {
     };
   },
   save() {
+    /* v7.3.0：配置已内嵌到设置页，那里没有 storyFramework 实例。旧码直接 fw.apiConfig 会抛
+       "Cannot read properties of undefined"，玩家点「保存全部配置」无反应。改为 fw 缺失时
+       纯 localStorage 落盘，字段口径与 readApiConfig/saveApiFields 完全一致；fw 存在时走原路径。 */
+    const form = this.readForm();
     const fw = window.storyFramework;
-    fw.apiConfig = { ...fw.apiConfig, ...this.readForm() };
-    fw.saveApiConfig();
+    if (fw) {
+      fw.apiConfig = { ...(fw.apiConfig || {}), ...form };
+      if (typeof fw.saveApiConfig === 'function') fw.saveApiConfig();
+    } else {
+      try {
+        const cfg = this.readApiConfig();
+        Object.assign(cfg, form);
+        localStorage.setItem("storyApiConfig", JSON.stringify(cfg));
+      } catch (e) {
+        this.setTestResult && this.setTestResult("error", "✕ 保存失败：本机存储不可用");
+        return false;
+      }
+    }
+    // 统一的安全配置来源：fw 存在用内存对象，否则用刚落盘的 form（设置页无 fw 场景）
+    const effCfg = fw ? (fw.apiConfig || {}) : form;
     /* v4.17.2 推理强度：额度自查。思考与正文**共享** max_tokens —— 玩家把档位调到
        「高/完全思考」却仍留着 4096 额度，结果会是正文一直为空（实测推理模型思考可达
        正文的 3～19 倍）。这里只提醒、不擅自改玩家的值，把选择权留给他。 */
     try {
       const R = window.ReasoningEffort;
-      const lv = fw.apiConfig.reasoningEffort;
+      const lv = effCfg.reasoningEffort;
       if (R && lv && R.isOn(lv)) {
         const floor = R.tokenFloor(lv);
-        const cur = fw.apiConfig.maxTokens || 0;
+        const cur = effCfg.maxTokens || 0;
         if (cur < floor) {
           this.setTestResult("info",
             `💡 当前推理强度「${R.label(lv)}」建议最大Tokens ≥ <b>${floor}</b>，你设的是 ${cur}。`
@@ -3301,7 +3344,7 @@ const ConfigModal = {
        免得玩家配好后开局，才发现请求根本发不出去、还以为是云境坏了。 */
     try {
       if (window.CorsGuard) {
-        const ep = fw.apiConfig.endpoint || "";
+        const ep = effCfg.endpoint || "";
         if (window.CorsGuard.isProxied(ep)) {
           this.setTestResult("info", "🛡 已通过本地代理接入，跨域不再受限。");
         } else if (window.CorsGuard.isKnownNoCors(ep)) {
@@ -3365,12 +3408,34 @@ const ConfigModal = {
         peMsg = "✍ 提示词工程师已启用：每章插图提示词先批量润色扩写，再送生图模型（同一提示词只调用一次）。";
       }
     }
-    this.close();
-    window.StoryResponseHandler.renderSystemMessage("✓ AI 接口配置已保存，可以开始创作了。" + (dwMsg ? "\n" + dwMsg : "") + (vaMsg ? "\n" + vaMsg : "") + (imgMsg ? "\n" + imgMsg : "") + (peMsg ? "\n" + peMsg : ""), "success");
+    const doneMsg = "✓ AI 接口配置已保存，可以开始创作了。" + (dwMsg ? "\n" + dwMsg : "") + (vaMsg ? "\n" + vaMsg : "") + (imgMsg ? "\n" + imgMsg : "") + (peMsg ? "\n" + peMsg : "");
+    // v7.3.0：内联在设置页时无 StoryResponseHandler / 无弹窗，改为就地反馈，绝不抛错
+    var inline = !!document.getElementById('cfgInlineHost');
+    if (!inline) {
+      this.close();
+      try {
+        if (window.StoryResponseHandler && StoryResponseHandler.renderSystemMessage)
+          StoryResponseHandler.renderSystemMessage(doneMsg, "success");
+      } catch (e) {}
+    } else {
+      try {
+        this.setTestResult && this.setTestResult("success", String(doneMsg).replace(/\n/g, "<br>"));
+        var note = document.getElementById('switchNote');
+        if (note) note.textContent = '✓ 配置已保存到本机';
+      } catch (e) {}
+    }
   },
   async testConnection() {
     const result = document.getElementById("cfg_testResult");
     const cfg = this.readForm();
+    if (!result) return;
+    // v7.3.0：未填接口地址/Key 时不发请求（旧码拿空地址打相对路径 /chat/completions，
+    // 既浪费一次必失败的请求，也污染日志）。给明确提示即可。
+    if (!cfg.endpoint || !cfg.apiKey) {
+      result.className = "test-result error";
+      result.textContent = "✕ 请先填写接口地址和 API Key 再测试。";
+      return;
+    }
     result.className = "test-result loading";
     result.textContent = "⏳ 正在测试连接…";
     try {

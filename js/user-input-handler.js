@@ -743,6 +743,9 @@ const StoryInput = {
   applyFontScale() {
     const s = parseFloat(localStorage.getItem(this.FS_KEY)) || 1;
     document.documentElement.style.setProperty("--font-scale", s);
+    // v7.3.0 状态栏独立字号：未设时留空，CSS 回退跟随 --font-scale
+    const ss = localStorage.getItem("storyStatusScale");
+    document.documentElement.style.setProperty("--status-scale", ss == null ? "" : String(parseFloat(ss) || 1));
   },
   setFontScale(delta) {
     var _a;

@@ -89,7 +89,11 @@
       const fw = window.storyFramework;
       const chapters = Number((_c = (_b = fw == null ? void 0 : fw.storyState) == null ? void 0 : _b.variables) == null ? void 0 : _c.chapter) || 0;
       const acts = this.actMapSVG(chapters);
-      const cards = window.ChapterNav && ChapterNav.scan ? ChapterNav.scan() : [];
+      /* v7.3.0：ChapterNav 是 YJLazy 懒加载代理，未就绪时 scan() 经代理返回 undefined，
+         直接 forEach 会抛 "Cannot read properties of undefined" —— 玩家快速点「质量仪表」
+         必现打不开。这里强制数组兜底，代理没准备好就渲染空仪表，不抛错。 */
+      let cards = [];
+      try { const scanned = window.ChapterNav && ChapterNav.scan ? ChapterNav.scan() : []; if (Array.isArray(scanned)) cards = scanned; } catch (e) { cards = []; }
       const groups = /* @__PURE__ */ new Map();
       cards.forEach((c) => {
         var _a2;

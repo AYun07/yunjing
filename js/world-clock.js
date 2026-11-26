@@ -427,6 +427,16 @@
     dot.style.cssText = "width:8px;height:8px;border-radius:50%;background:#8fd9a8;box-shadow:0 0 6px #8fd9a8";
     const label = document.createElement("span");
     pill.appendChild(dot); pill.appendChild(label);
+    /* v7.3.0：世界时钟可用鼠标拖动到任意位置，位置持久化（与其余悬浮组件同一套机制）。
+       拖拽与点击冻结/恢复共存：makeDraggable 内部会抑制拖拽后的误触 click。
+       mo-chibi.js 是懒加载，本模块先于它执行，故轮询等它就绪再绑定。 */
+    (function bindDrag() {
+      if (window.MoChibi && typeof window.MoChibi.makeDraggable === "function") {
+        window.MoChibi.makeDraggable(pill, { storageKey: "storyWorldClockPos" });
+      } else {
+        setTimeout(bindDrag, 300);
+      }
+    })();
     pill.onclick = function () {
       const st = toggle();
       if (!st.enabled) toast("⏱ 世界时钟已暂停（世界随你的回合推进）", "info");

@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.0.6">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.1.7">
-  <script src="../js/desktop-shell.js?v=7.1.7"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.3.0">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.3.0">
+  <script src="../js/desktop-shell.js?v=7.3.0"></script>
 </head>
 
 <body class="page-changelog">
@@ -317,11 +317,30 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 缺陷修复 真机 配置 存档 模型 稳定 视觉" style="--entry-hue:#4a8a6a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.3.0</span>
+                <span class="entry-date">2026-11-26</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">配置全量搬进天地设置 + 随缘开局与存档切换真修</h3>
+            <p class="entry-lead">按用户澄清重做四项：配置弹窗全部内容搬到设置页、模型档位自由切换、默认 65k/1m 低端自适应、随缘开局间歇无反应真修；真机确证并修复 5 项真实问题。</p>
+            <div class="ver-diff">
+                <div><b>配置全量内嵌</b>：原独立弹窗的 11 个接口卡片（主笔/动态世界/变量AI/绘图/提示词/连接档案/向量/云起预设/内容尺度等）全部搬到「天地设置」页，成为全站唯一完整配置入口；无重复 id、无脚本错误。</div>
+                <div><b>模型存档自由切换</b>：档位摘要固定「档名 · 模型 @ 域名」，两个不同端点/模型一眼可分；切换整份写回并同步上下文窗口与运行内存，刷新后仍激活。真机双端点双档切换全通过。</div>
+                <div><b>参数默认</b>：最大输出默认 65k（65536）、上下文默认 1M；8K/16K/32K 等低端模型自动下调，无需手调。</div>
+                <div><b>随缘开局真修</b>：根因是配置懒加载未就绪时走错分支访问不存在的字段抛错（"有时有反应有时没反应"）；改为配置+DOM 双确认、全字段判空，真机三场景复现后不再抛错。</div>
+                <div><b>真机确证 5 项并修</b>：随缘开局竞态、设置页保存两处崩溃（无 storyFramework / StoryResponseHandler）、质量仪表懒加载代理打不开、测试接口空配置乱发请求。全站 10 页回归零错误。</div>
+                <div><b>如实披露</b>：atlas 层级扫描初报 14 项逐条核实为正则误报（记录均有 where/lv），判定不修，未以误报凑数。</div>
+            </div>
+        </article>
+
+
                         <article class="log-entry" data-tags="版本 发布 缺陷修复 真机 视觉 显示 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
                 <span class="entry-ver">v7.2.1</span>
                 <span class="entry-date">2026-11-26</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">客户端真机实测：大厅顶栏遮挡与同步状态显示修复</h3>
             <p class="entry-lead">在虚拟显示器里真实启动 Electron 客户端，用真实鼠标点击、键盘输入遍历四入口、角色创建、设置、存档、地图与创作室。确认并修复两处真机可见缺陷。</p>
@@ -1239,7 +1258,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.0.5 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.3.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

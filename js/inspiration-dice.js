@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  const LIB = "libs/fantasy-names.min.js?v=7.2.1";
+  const LIB = "libs/fantasy-names.min.js?v=7.3.0";
   const HISTORY_KEY = "storyDiceHistory";
   const HISTORY_MAX = 24;
   const CATS = [

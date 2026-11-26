@@ -17,6 +17,10 @@
     KEY: "storyPromptBudget",
     CTX_KEY: "storyContextWindow",
     defaults: { enabled: true, limit: 11e4, auto: true },
+    /* v7.3.0：模型名推断不出时的默认上下文窗口。用户口径"上下文就 1m"——
+       主流长上下文模型直接按 1M 处理；低端模型由上面的 CTX_RULES（名字带 8k/16k/32k）
+       或 BaseModelMode.liteLimit()（运行时探测为 lite 时按 8K/16K 档兜底）自动下调，不在这里硬编码。 */
+    DEFAULT_CTX: 1048576,
     /** 上一次构建的账单（UI 展示用） */
     lastReport: null,
     /** 主接口模型的上下文窗口（tokens）；推断不出返回 0
@@ -47,12 +51,13 @@
       // 显式窗口字段（允许玩家在接口配置里直接填 contextWindow/上下文）
       const explicit = Number(api.contextWindow || api.ctxWindow || api.context_length || api.context || 0);
       if (explicit > 0) return explicit;
-      // 按模型名推断
+      // 按模型名推断（低端模型名带 8k/16k/32k/deepseek 等会命中小窗规则 → 自动下调）
       const model = String(api.model || "");
       if (model) {
         for (let i = 0; i < CTX_RULES.length; i++) if (CTX_RULES[i][0].test(model)) return CTX_RULES[i][1];
       }
-      return 0;
+      // v7.3.0：推断不出按 1M 默认（旧版返回 0 → 走 11 万字符保守档，与"上下文 1m"口径不符）
+      return this.DEFAULT_CTX;
     },
     /** 按上下文窗口换算成字符上限：中文约 1 字 ≈ 1.2 token，留 40% 给输出与波动 */
     autoLimit() {

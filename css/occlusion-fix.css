@@ -90,10 +90,10 @@ body:not(:has(#statusPanel.open)) .input-area { visibility: visible !important; 
 #worldClockPill { top: calc(60px + env(safe-area-inset-top, 0px)); }
 
 /* ============================================================
-   v7.0.3 状态栏可读性（玩家反馈：状态栏字色与底色相近，看不清）
-   实测 #yjStatusSection 文字 rgb(240,230,196) 浅米色、textShadow:none，
-   未套世界专属皮肤时浅字压浅底。统一加暗投影 + 数值高亮兜底，
-   不依赖是否套皮肤，所有 38 世界一致可读。
+   状态栏可读性（v7.3.0 调整）
+   旧版双层重投影 0.92/0.7 会让细字发糊（玩家反馈阴影过重看不清），
+   改为单层轻投影，靠底色对比保证可读；并接入独立缩放 --status-scale，
+   默认跟随正文 --font-scale，可在设置里单独调状态栏字号。
    ============================================================ */
 #yjStatusSection,
 #yjStatusSection .yj-st-k,
@@ -102,8 +102,12 @@ body:not(:has(#statusPanel.open)) .input-area { visibility: visible !important; 
 #yjStatusSection .section-title,
 #yjStatusSection .yj-st-cog,
 #yjStatusSection .yj-st-flags {
-  text-shadow: 0 1px 2px rgba(0,0,0,.92), 0 0 5px rgba(0,0,0,.7);
+  text-shadow: 0 1px 2px rgba(0,0,0,.38);
+  font-size: calc(13px * var(--status-scale, var(--font-scale, 1)));
 }
+#yjStatusSection .yj-st-k { font-size: calc(11px * var(--status-scale, var(--font-scale, 1))); }
+#yjStatusSection .yj-st-v { font-size: calc(13px * var(--status-scale, var(--font-scale, 1))); }
+#yjStatusSection .section-title { font-size: calc(14px * var(--status-scale, var(--font-scale, 1))); }
 #yjStatusSection .yj-st-v { color: #fff6dc !important; font-weight: 600; }
 #yjStatusSection .yj-st-k { color: #e9dfc4 !important; }
 /* 未套皮肤时给状态栏整体一层暗底，防止浅主题下浅字融入背景 */
