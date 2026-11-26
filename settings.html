@@ -7,8 +7,8 @@
 <!-- v7.0.0：补齐 icon，避免浏览器回退请求根目录 favicon.ico 产生 404 -->
 <link rel="icon" href="assets/yj-favicon.ico" sizes="48x48">
 <link rel="icon" href="assets/yj-icon-192.png" sizes="192x192" type="image/png">
-<link rel="stylesheet" href="css/base-style.css?v=7.1.7">
-<link rel="stylesheet" href="css/font-switcher.css?v=7.1.7">
+<link rel="stylesheet" href="css/base-style.css?v=7.1.8">
+<link rel="stylesheet" href="css/font-switcher.css?v=7.1.8">
 <style>
 :root{--jade:#d9b46a;--ink:#e8e4d8;--mut:#a8a290;--line:rgba(232,228,216,.1);--bg:#101019;--card:#191b28}
 *{box-sizing:border-box}
@@ -67,8 +67,8 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 .ncard li::marker{color:var(--jade)}
 </style>
 <!-- v7.0.0 游戏化客户端外壳：仅 Electron 生效，PWA 浏览器版零注入 -->
-<link rel="stylesheet" href="css/desktop-shell.css?v=7.1.7">
-<script src="js/desktop-shell.js?v=7.1.7"></script>
+<link rel="stylesheet" href="css/desktop-shell.css?v=7.1.8">
+<script src="js/desktop-shell.js?v=7.1.8"></script>
 </head>
 <body>
 <div class="top">
@@ -83,11 +83,11 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   <section class="sec">
     <h2>🔑 模型配置</h2>
     <p class="desc">云境的<strong>所有</strong>模型与接口配置都在这里：主笔正文模型、动态世界、变量 AI、绘图、提示词优化、连接档案、向量检索。填完点保存，再回封面开写。设置只存在本机。</p>
-    <div class="row"><label>接口地址</label><input type="text" id="cfg_endpoint" placeholder="https://apihub.agnes-ai.com/v1"></div>
-    <div class="row"><label>API 密钥</label><input type="password" id="cfg_apiKey" placeholder="sk-…（本地 Ollama 可填 ollama）"></div>
-    <div class="row"><label>模型名</label><input type="text" id="cfg_model" placeholder="agnes-3.0-flash">
+    <div class="row"><label for="cfg_endpoint">接口地址</label><input type="text" id="cfg_endpoint" placeholder="https://apihub.agnes-ai.com/v1"></div>
+    <div class="row"><label for="cfg_apiKey">API 密钥</label><input type="password" id="cfg_apiKey" placeholder="sk-…（本地 Ollama 可填 ollama）"></div>
+    <div class="row"><label for="cfg_model">模型名</label><input type="text" id="cfg_model" placeholder="agnes-3.0-flash">
       <button class="btn ghost" id="fetchModelsBtn" title="从接口地址拉取可用模型列表">获取模型</button></div>
-    <div class="row"><label>上下文轮数</label><input type="text" id="cfg_ctx" placeholder="留空=自动"></div>
+    <div class="row"><label for="cfg_ctx">上下文轮数</label><input type="text" id="cfg_ctx" placeholder="留空=自动"></div>
     <div class="row">
       <label>模型档位</label>
       <select id="ms_slotSelect" aria-label="选择模型槽位" style="flex:1;min-width:140px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:9px;color:var(--ink);font-size:13px;padding:9px 12px"><option value="">（尚未保存档位）</option></select>
@@ -178,18 +178,18 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   </section>
 </div>
 
-<script src="js/entry-guard.js?v=7.1.7"></script>
-<script src="js/font-switcher.js?v=7.1.7"></script>
-<script src="js/theme-studio.js?v=7.1.7"></script>
+<script src="js/entry-guard.js?v=7.1.8"></script>
+<script src="js/font-switcher.js?v=7.1.8"></script>
+<script src="js/theme-studio.js?v=7.1.8"></script>
 <!-- v7.0.1：全局开关与模型配置所需模块全部补齐；此前缺这些脚本导致开关点了没反应 -->
-<script src="js/api-calling-functions.js?v=7.1.7"></script>
-<script src="js/model-slots.js?v=7.1.7"></script>
-<script src="js/system-guard.js?v=7.1.7"></script>
-<script src="js/perf-mode.js?v=7.1.7"></script>
-<script src="js/celebration.js?v=7.1.7"></script>
-<script src="js/config-modal.js?v=7.1.7"></script>
-<script src="js/slot-registry.js?v=7.1.7"></script>
-<script src="js/save-slots.js?v=7.1.7"></script>
+<script src="js/api-calling-functions.js?v=7.1.8"></script>
+<script src="js/model-slots.js?v=7.1.8"></script>
+<script src="js/system-guard.js?v=7.1.8"></script>
+<script src="js/perf-mode.js?v=7.1.8"></script>
+<script src="js/celebration.js?v=7.1.8"></script>
+<script src="js/config-modal.js?v=7.1.8"></script>
+<script src="js/slot-registry.js?v=7.1.8"></script>
+<script src="js/save-slots.js?v=7.1.8"></script>
 <script>
 (function(){
   var $ = function(id){return document.getElementById(id);};

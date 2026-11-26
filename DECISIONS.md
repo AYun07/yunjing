@@ -1816,3 +1816,10 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 决策：① 各浮动元素在 html.yj-shell-on 下用 calc(原top + var(--yj-bar-h)) 下移让位，PWA 零影响；② 五个缺壳页补齐 desktop-shell.css/js；③ 标题栏 z-index 由 9500 提到 2147483640，压住应用内所有浮层（含工坊 9995、UI 弹层 99999、小云浮层 2147483000），仅低于崩溃哨兵 boot-error-guard(2147483647)；④ 顺带修页脚链接命中区、工坊底部截断、身份铭牌溢出、下拉无障碍标签。
 - 证据：verify-shell.mjs 七页 bar/fx/shell/关闭键可点 全✓、遮挡0、错误0；audit-deep2 遮挡 15→0。
 - 失效条件：若未来出现 z-index 高于 2147483640 的常规浮层且与标题栏右上角重叠，窗口键会再次被盖；boot-error-guard 触发时（脚本崩溃）会盖过标题栏，属预期。
+
+
+## DR-113 · 内容同步清单哈希失配与关键入口保护（2026-11-26，v7.1.8）
+- 背景：用户反馈"配置错误/运行错误"。深挖客户端内容同步链路发现上一版升版只改源码未重生成 content-manifest.json。
+- 决策：① 重生成清单，656 文件 sha256 与源码逐字节一致（修复 32 处失配）；② CRITICAL_FILES 补入 xiaoyun.html（造物工坊，四入口之一）与 changelog/index.html，使这两页下载失败时触发整批回滚而非切出残缺版本；③ 升版工作流固定顺序为「先 bump-code 升版本标识 → 再 gen-content-manifest 重生成清单」，杜绝再次失配；④ 顺带修 settings 4 个 label for 关联、多处输入 aria-label。
+- 证据：node 校验脚本 656 文件 0 哈希不符；5 入口页均在清单且 xiaoyun/changelog 纳入 CRITICAL_FILES；a11y 审计 settings 无标签输入 4→0。
+- 失效条件：若未来改源码后忘记重生成清单，失配会复现——已在决策中固定升版顺序，但仍需每次升版后校验。

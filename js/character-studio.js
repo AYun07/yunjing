@@ -371,18 +371,18 @@
     wrap.innerHTML =
       '<div class="cs-title">🎨 角色塑造 <span>自己填样貌 / 从性格世界书选性格（不限个）/ 生图模型生成头像</span></div>' +
       '<div class="cs-field"><label>样貌（自己填）</label>' +
-        '<input type="text" id="csLookInput" placeholder="例：剑眉星目，玄色劲装，气质桀骜…" value="' + esc(read(LOOK_KEY)) + '">' +
+        '<input type="text" id="csLookInput" aria-label="角色外貌描述" placeholder="例：剑眉星目，玄色劲装，气质桀骜…" value="' + esc(read(LOOK_KEY)) + '">' +
         '<button type="button" id="csLook">✨ AI 润色</button></div>' +
       '<div class="cs-field"><label>性格（世界书点选，不限个数）</label>' +
         '<div class="cs-trait-tools">' +
-          '<input type="text" id="csTraitSearch" placeholder="🔍 搜索性格点…" style="flex:1;min-width:120px">' +
+          '<input type="text" id="csTraitSearch" aria-label="搜索性格点" placeholder="🔍 搜索性格点…" style="flex:1;min-width:120px">' +
           '<select id="csTraitFilter" style="max-width:96px"><option value="">全部分类</option><option value="positive">正向</option><option value="negative">负向</option><option value="neutral">中性</option><option value="complex">复杂</option></select>' +
           '<button type="button" id="csTraitAll" class="cs-mini">全选</button>' +
           '<button type="button" id="csTraitNone" class="cs-mini">清空</button>' +
         '</div>' +
         '<div class="cs-trait-count" id="csTraitCount"></div>' +
         '<div class="cs-trait-list" id="csTraitList"></div>' +
-        '<input type="text" id="csPersonaInput" placeholder="补充性格（自己填，选填）" value=""></div>' +
+        '<input type="text" id="csPersonaInput" aria-label="补充性格" placeholder="补充性格（自己填，选填）" value=""></div>' +
       '<div class="cs-field"><label>角色头像（按上面设定生图）</label>' +
         '<button type="button" id="csIcon">🖼 用生图模型生成头像</button>' +
         '<button type="button" id="csIconAgain" class="cs-mini">↻ 重生成</button></div>' +

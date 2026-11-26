@@ -427,7 +427,7 @@ const StorySetupWizard = {
             <div class="wiz-row two-col">
                 <div class="wiz-section">
                     <div class="wiz-label">${num()} 姓名 <button class="dice-btn" onclick="StorySetupWizard.dice('playerName')">🎲 随机</button></div>
-                    <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" placeholder="你在原著世界的名字…">
+                    <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" aria-label="你在原著世界的名字" placeholder="你在原著世界的名字…">
                 </div>
                 <div class="wiz-section" style="grid-column:1/-1">
                 </div>
@@ -438,7 +438,7 @@ const StorySetupWizard = {
                             <option value="男">男</option>
                             <option value="女">女</option>
                         </select>
-                        <input id="wiz_age" class="wiz-input slim" type="number" min="8" max="70" value="18" oninput="StorySetupWizard.state.age=parseInt(this.value)||18">
+                        <input id="wiz_age" class="wiz-input slim" type="number" min="8" max="70" value="18" aria-label="角色年龄" oninput="StorySetupWizard.state.age=parseInt(this.value)||18">
                     </div>
                 </div>
             </div>
@@ -1066,7 +1066,7 @@ const StorySetupWizard = {
                 <div class="wiz-row two-col">
                     <div class="wiz-section">
                         <div class="wiz-label">姓名 <button class="dice-btn" onclick="StorySetupWizard.diceRoleplay('playerName')">🎲 随机</button></div>
-                        <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" placeholder="你在这个世界的名字…">
+                        <input id="wiz_playerName" class="wiz-input" type="text" maxlength="12" aria-label="你在这个世界的名字" placeholder="你在这个世界的名字…">
                     </div>
                     <div class="wiz-section" style="grid-column:1/-1">
                     </div>
@@ -1077,7 +1077,7 @@ const StorySetupWizard = {
                                 <option value="男">男</option>
                                 <option value="女">女</option>
                             </select>
-                            <input id="wiz_age" class="wiz-input slim" type="number" min="8" max="70" value="18" oninput="StorySetupWizard.state.age=parseInt(this.value)||18">
+                            <input id="wiz_age" class="wiz-input slim" type="number" min="8" max="70" value="18" aria-label="角色年龄" oninput="StorySetupWizard.state.age=parseInt(this.value)||18">
                         </div>
                     </div>
                 </div>

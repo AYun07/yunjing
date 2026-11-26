@@ -2,9 +2,9 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **119** 个版本，从 `v3.55.7` 到 `v7.1.7`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **120** 个版本，从 `v3.55.7` 到 `v7.1.8`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.0.4 口径）**：首行 **v7.1.7 为当前版本**；其余 **118 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.0.4 口径）**：首行 **v7.1.8 为当前版本**；其余 **119 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -16,6 +16,7 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.1.8** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.8) |
 | **v7.1.7** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.7) |
 | **v7.1.6** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.6.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.6) |
 | **v7.1.5** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.5) |
@@ -139,6 +140,29 @@
 | **v3.55.9** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.9) |
 | **v3.55.8** | 2026-10-30 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.8) |
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
+
+---
+
+## v7.1.8 · 2026-11-26
+
+**内容同步校验修复与无障碍补全**。修复内容清单SHA失配，补齐关键入口保护与输入标签
+
+- 修复 content-manifest 32 处 SHA 失配：升版改源码后未重生成清单，致客户端自修复误判文件损坏、增量同步校验失败
+- 重生成 content-manifest.json，656 文件 SHA 全部与源码一致（0 失配）
+- content-sync.js CRITICAL_FILES 补入 xiaoyun.html（造物工坊，四入口之一未受白屏回滚保护）
+- content-sync.js CRITICAL_FILES 补入 changelog/index.html（更新公告关键页）
+- settings.html 接口地址输入框补 label for 关联，点击标签可聚焦
+- settings.html API 密钥输入框补 label for 关联
+- settings.html 模型名输入框补 label for 关联
+- settings.html 上下文轮数输入框补 label for 关联
+- character-studio.js 角色外貌输入补 aria-label
+- character-studio.js 性格搜索输入补 aria-label
+- character-studio.js 补充性格输入补 aria-label
+- xiaoyun.html 对小云说话输入补 aria-label
+- story-setup-wizard.js 角色姓名输入补 aria-label（两处模板）
+- story-setup-wizard.js 角色年龄输入补 aria-label（两处模板）
+
+- [📂 该版文件（完整快照）](https://github.com/AYun07/yunjing/tree/v7.1.8)  [🔍 与 v7.1.7 差异](https://github.com/AYun07/yunjing/compare/v7.1.7...v7.1.8)  [⬇ 完整包 zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.8.zip)
 
 ---
 

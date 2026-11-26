@@ -15,7 +15,7 @@ const crypto = require('crypto');
 
 const MANIFEST_NAME = 'content-manifest.json';
 const STATE_NAME = 'selfupdate-state.json';
-const CRITICAL_FILES = ['index.html', 'opening.html', 'studio.html', 'settings.html'];
+const CRITICAL_FILES = ['index.html', 'opening.html', 'studio.html', 'settings.html', 'xiaoyun.html', 'changelog/index.html'];
 const DEFAULT_TIMEOUT_MS = 12000;
 const DEFAULT_MAX_BYTES = 32 * 1024 * 1024;
 

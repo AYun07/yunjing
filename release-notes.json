@@ -4,9 +4,32 @@
   "note": "每版改了什么，这里一看就知道，不用去 GitHub。列表按时间从新到旧。",
   "versions": [
     {
-      "version": "v7.1.7",
+      "version": "v7.1.8",
       "date": "2026-11-26",
       "current": true,
+      "title": "内容同步校验修复与无障碍补全",
+      "summary": "修复内容清单SHA失配，补齐关键入口保护与输入标签",
+      "changes": [
+        "修复 content-manifest 32 处 SHA 失配：升版改源码后未重生成清单，致客户端自修复误判文件损坏、增量同步校验失败",
+        "重生成 content-manifest.json，656 文件 SHA 全部与源码一致（0 失配）",
+        "content-sync.js CRITICAL_FILES 补入 xiaoyun.html（造物工坊，四入口之一未受白屏回滚保护）",
+        "content-sync.js CRITICAL_FILES 补入 changelog/index.html（更新公告关键页）",
+        "settings.html 接口地址输入框补 label for 关联，点击标签可聚焦",
+        "settings.html API 密钥输入框补 label for 关联",
+        "settings.html 模型名输入框补 label for 关联",
+        "settings.html 上下文轮数输入框补 label for 关联",
+        "character-studio.js 角色外貌输入补 aria-label",
+        "character-studio.js 性格搜索输入补 aria-label",
+        "character-studio.js 补充性格输入补 aria-label",
+        "xiaoyun.html 对小云说话输入补 aria-label",
+        "story-setup-wizard.js 角色姓名输入补 aria-label（两处模板）",
+        "story-setup-wizard.js 角色年龄输入补 aria-label（两处模板）"
+      ]
+    },
+    {
+      "version": "v7.1.7",
+      "date": "2026-11-26",
+      "current": false,
       "title": "客户端外壳一致性修复",
       "summary": "消除顶部遮挡、补齐无标题栏页面、窗口控制层级修复",
       "changes": [
