@@ -67,7 +67,6 @@
   /* 太虚阁 12 模块 → 并入玩卡·沉浸 */
   var IMMERSIVE = [
     entry("🎭", "众生相", "登场人物志", function () { immTab("gallery"); }, function () { return !!window.ImmersiveSuite; }),
-    entry("🌌", "羁绊速览", "沉浸式关系一览（跟剧情走）", function () { immTab("bonds"); }, function () { return !!window.ImmersiveSuite; }),
     entry("⛩", "境界梯", "境界 / 等级天梯", function () { immTab("realms"); }, function () { return !!window.ImmersiveSuite; }),
     entry("💎", "藏宝阁", "物品 / 法宝 / 战利品", function () { immTab("treasury"); }, function () { return !!window.ImmersiveSuite; }),
     entry("📜", "章节大事记", "按回目串起剧情大事", function () { immTab("chronicle"); }, function () { return !!window.ImmersiveSuite; }),
@@ -90,7 +89,8 @@
         entry("🖼", "立绘本", "NPC 登场画像", call0("NpcPortrait", "open"), has("NpcPortrait", "open")),
         entry("🔗", "关系网·可拖拽", "完整人物关系图（可拖拽编辑）", call0("RelationGraph", "open"), has("RelationGraph", "open")),
         entry("🐾", "灵宠伙伴", "契约 / 养成", call0("BeastSystem", "openUI"), has("BeastSystem", "openUI")),
-        entry("🛡", "小队编成", "同伴 / 灵宠入队", call0("SquadSystem", "openUI"), has("SquadSystem", "openUI"))
+        entry("🛡", "小队编成", "同伴 / 灵宠入队", call0("SquadSystem", "openUI"), has("SquadSystem", "openUI")),
+        entry("📱", "手机分身", "聊天 / 朋友圈", call0("PhonePanel", "open"), function () { return !!window.PhonePanel; })
       ]
     },
     {
@@ -100,13 +100,6 @@
         entry("💞", "动态关系 R18", "五维关系 / 表达尺度", function () { try { if (window.IntimacyUI) IntimacyUI.open(); } catch (e) {} }, function () { return !!window.IntimacyUI; }),
         entry("🎯", "行动判定骰", "骰点 + 属性判成败", function () { try { if (window.ActionCheck) ActionCheck.open(); } catch (e) {} }, function () { return !!window.ActionCheck; }),
         entry("📈", "成长账本", "六维增减留痕", function () { try { if (window.GrowthLedger) GrowthLedger.open(); } catch (e) {} }, function () { return !!window.GrowthLedger; })
-      ]
-    },
-    {
-      id: "cardplay", icon: "🎭", name: "扮演设定", items: [
-        entry("🌀", "玩家身份", "穿越者 / 本地人 · 点按切换", function () { try { if (window.StoryIdentity) { StoryIdentity.cycleIdentity(); LeftRail.say("玩家身份已切换"); } } catch (e) {} }, function () { return !!window.StoryIdentity; }),
-        entry("👑", "叙事立场", "取代主角 / 同行 / 搅局", function () { try { if (window.StoryStance) { StoryStance.cycle(); LeftRail.say("叙事立场已切换"); } } catch (e) {} }, function () { return !!window.StoryStance; }),
-        entry("📱", "手机分身", "聊天 / 朋友圈", call0("PhonePanel", "open"), function () { return !!window.PhonePanel; })
       ]
     },
     {

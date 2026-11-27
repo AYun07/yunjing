@@ -17,7 +17,7 @@
         || "free";
       return g;
     },
-    /** v7.3.1：书架搬到设置页后没有 storyFramework 实例，凡是要读当前界的
+    /** v7.4.0：书架搬到设置页后没有 storyFramework 实例，凡是要读当前界的
      *  地方统一走这里兜底，避免 `fw.genre` 抛 Cannot read properties of undefined。 */
     _fwGenre() {
       var fw = window.storyFramework;
@@ -170,7 +170,7 @@
     switchTo(slotId) {
       var _a;
       const fw = window.storyFramework;
-      /* v7.3.1：从设置页书架也能进入档位，那里没有 storyFramework。
+      /* v7.4.0：从设置页书架也能进入档位，那里没有 storyFramework。
          无 fw 时跳过存档冲刷，只记激活槽并重载即可（设置页本身无正文档可冲刷）。 */
       if (fw && fw.storyState && fw.storyState.isStoryStarted) fw.saveStory();
       /* v4.08.0 修复（切档丢进度）：此前只调 fw.saveStory()，

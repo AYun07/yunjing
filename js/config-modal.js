@@ -28,7 +28,7 @@ const ConfigModal = {
     host.querySelectorAll(".modal-footer .btn-ghost").forEach(function (b) {
       if (/取消/.test(b.textContent)) b.style.display = "none";
     });
-    // v7.3.1：设置页是唯一完整配置入口，强制展示全部接口，隐藏简洁/完整切换以免误切回隐藏卡片
+    // v7.4.0：设置页是唯一完整配置入口，强制展示全部接口，隐藏简洁/完整切换以免误切回隐藏卡片
     var viewSwitch = host.querySelector(".cfg-view-switch");
     if (viewSwitch) viewSwitch.style.display = "none";
     this.bindEvents(host);
@@ -114,7 +114,7 @@ const ConfigModal = {
   applyView() {
     var modal = this._root();
     if (!modal) return;
-    /* v7.3.1：设置页是「全站唯一完整配置入口」，必须默认展示全部 11 个接口卡
+    /* v7.4.0：设置页是「全站唯一完整配置入口」，必须默认展示全部 11 个接口卡
        （预设正则/向量/存档/多连接等）。v7.3.0 沿用弹窗的 simple 默认，把 10 个
        卡片 display:none，玩家反馈「预设正则不显示/向量不显示/存档界面不显示」。
        内联模式一律按完整视图渲染；只有非内联的旧弹窗才尊重 simple/full 切换。 */
@@ -1169,6 +1169,7 @@ const ConfigModal = {
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmImportPreset()">📥 导入预设 JSON</button>
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmUseBuiltinPreset()">↺ 恢复内置预设</button>
                                 <button type="button" class="btn-ghost" onclick="ConfigModal.mmExportPreset()">⤓ 导出当前预设</button>
+                                <button type="button" class="btn-ghost" onclick="ConfigModal.exportTavernCard()">🍺 导出为酒馆卡</button>
                             </div>
                             <input type="file" id="mmPresetFile" accept=".json,application/json" style="display:none" onchange="ConfigModal.mmPresetFilePicked(this)">
                             <div class="form-tip">
@@ -2953,6 +2954,33 @@ const ConfigModal = {
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 1500);
     } catch (e) { this.mmSay("导出失败：" + e.message, "error"); }
+  },
+  /** v7.4.0 C8：把云境导出为 SillyTavern 酒馆卡（chara_card_v2）——取内置 releases/yunqi-latest.json */
+  async exportTavernCard() {
+    try {
+      let txt = null;
+      const paths = ["releases/yunqi-latest.json", "./releases/yunqi-latest.json"];
+      for (const p of paths) {
+        try {
+          const r = await fetch(p, { cache: "no-store" });
+          if (r.ok) { txt = await r.text(); if (txt && txt.trim().charAt(0) === "{") break; }
+        } catch (e) {}
+      }
+      if (!txt) {
+        // 兜底：运行时用内存里的云起预设构造最小 v2 卡
+        const preset = window.YUNQI_PRESET || null;
+        if (!preset) { this.mmSay("酒馆卡源缺失（releases/yunqi-latest.json 未找到，且云起预设未加载）", "error"); return; }
+        txt = JSON.stringify({
+          spec: "chara_card_v2", spec_version: "2.0",
+          data: { name: "云境·云起", description: (window.YUNQI_PRESET && "云境原创云起预设") || "",
+            personality: "", scenario: "", first_mes: "", mes_example: "",
+            prompts: preset.prompts || [], prompt_order: preset.prompt_order || [],
+            character_book: undefined, extensions: {} }
+        }, null, 2);
+      }
+      this.mmDownload("云境·云起_酒馆卡.json", txt);
+      this.mmSay("✅ 已导出酒馆卡（SillyTavern chara_card_v2），可直接导入", "success");
+    } catch (e) { this.mmSay("导出酒馆卡失败：" + (e && e.message), "error"); }
   },
   /* ---------- 预设整份替换 ---------- */
   /* ---------- v3.55.10 云起预设 · 云端同步（不用重新导入的更新方式） ---------- */

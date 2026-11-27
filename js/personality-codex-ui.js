@@ -16,6 +16,18 @@
   }
   function C() { return G.PersonalityCodex || null; }
   var currentWorld = '', currentRole = '', tab = 'role';
+  /** v7.4.0 C9：读取当前世界 genre，性格世界书按此校对，避免串书/写死凡人修仙 */
+  function _curGenre() {
+    var fw = G.storyFramework;
+    var g = (fw && fw.config && (fw.config.genreKey || fw.genre))
+      || (G.SlotRegistry && G.SlotRegistry.genre && G.SlotRegistry.genre());
+    return g || '';
+  }
+  function _pickWorld(worlds) {
+    var cur = _curGenre();
+    if (cur && worlds.indexOf(cur) >= 0) return cur;
+    return worlds.indexOf('fanrenxiuxian') >= 0 ? 'fanrenxiuxian' : worlds[0];
+  }
 
   function ensureOverlay() {
     var ov = document.getElementById('codex-overlay');
@@ -88,7 +100,7 @@
 
   function renderRole(api, body) {
     var worlds = api.worlds();
-    if (!currentWorld) currentWorld = worlds.indexOf('fanrenxiuxian') >= 0 ? 'fanrenxiuxian' : worlds[0];
+    if (!currentWorld) currentWorld = _pickWorld(worlds);
     var roster = api.roster(currentWorld) || [];
     var note = api.rosterNote(currentWorld);
     var st = api.stats();
@@ -171,7 +183,7 @@
 
   function renderPlayer(api, body) {
     var worlds = api.worlds();
-    if (!currentWorld) currentWorld = worlds.indexOf('fanrenxiuxian') >= 0 ? 'fanrenxiuxian' : worlds[0];
+    if (!currentWorld) currentWorld = _pickWorld(worlds);
     if (!currentRole) currentRole = '我';
     var worldOpts = worlds.map(function (w) {
       return '<option value="' + esc(w) + '"' + (w === currentWorld ? ' selected' : '') + '>' + esc(w) + '</option>';
@@ -216,6 +228,11 @@
     ov.style.display = 'flex';
   }
 
-  function open() { render(); }
+  function open() {
+    // v7.4.0 C9：每次打开按当前 genre 复位世界，避免上一界残留串书
+    var api = C();
+    try { if (api) { var ws = api.worlds(); var cur = _pickWorld(ws); if (cur) currentWorld = cur; currentRole = ''; } } catch (e) {}
+    render();
+  }
   G.PersonalityCodexUI = { open: open, close: close, render: render };
 })();

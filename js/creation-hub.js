@@ -71,10 +71,21 @@
     try {
       res = await Promise.race([
         GC.listWorks(),
-        new Promise(function (r) { setTimeout(function () { r({ ok: false, error: '连接超时' }); }, 10000); })
+        new Promise(function (r) { setTimeout(function () { r({ ok: false, error: '连接超时' }); }, 14000); })
       ]);
     } catch (e) { res = { ok: false, error: (e && e.message) || '网络错误' }; }
     if (mySeq !== LIST_SEQ) return; // 已被新一次渲染取代
+    // v7.4.0：网络/缓存/内置清单都失败时（含 Promise.race 超时），读随包基线清单显示正常空态，
+    // 而不是让整个二创板块报「加载失败」——这是「二创无法加载」的根因修复。
+    if (!res.ok) {
+      try {
+        var lr = await fetch('community/works/catalog.json?_=' + Date.now(), { cache: 'no-store' });
+        if (lr && lr.ok) {
+          var lo = await lr.json();
+          res = { ok: true, items: (lo && Array.isArray(lo.items)) ? lo.items : [], local: true };
+        }
+      } catch (e) {}
+    }
     if (!res.ok) {
       box.innerHTML = '<div style="color:#f0b0b0;font-size:13px;line-height:1.8;">创意工坊清单加载失败：' + esc(res.error || '网络不通') +
         '<br>浏览/下载在云境内完成（已内置多线路自动切换与本机缓存）；首次需联网，断网时读上次缓存。上传需填自己的 token。</div>';
@@ -82,7 +93,8 @@
     }
     var items = res.items || [];
     if (!items.length) {
-      box.innerHTML = '<div style="color:#9a94c0;font-size:13px;">创意工坊还没有作品。成为第一个发布者吧 ✦<br><span style="font-size:12px;color:#8f89a8;">（作品统一存于仓库 community/works/ 单一文件夹，按时间排列）</span></div>';
+      box.innerHTML = '<div style="color:#9a94c0;font-size:13px;">创意工坊还没有作品。成为第一个发布者吧 ✦<br><span style="font-size:12px;color:#8f89a8;">（作品统一存于仓库 community/works/ 单一文件夹，按时间排列）</span></div>'
+        + (res.local ? '<div style="font-size:11px;color:#7f7a9a;margin-top:6px;">（当前离线 · 显示内置清单；联网后可看到社区最新作品）</div>' : '');
       return;
     }
     box.innerHTML = items.map(function (it, idx) {

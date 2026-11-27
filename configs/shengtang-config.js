@@ -1,0 +1,229 @@
+/**
+ * 圣堂 · 开放世界扮演配置（云境原创整理）
+ * 原著：唐家三少《圣堂》（起点中文网连载，东方玄幻）
+ * 模式：roleplay（开放世界 AI 主持 + 玩家自定义身份）
+ * 铁律：遵循原著设定——神界与圣堂体系、凝气/聚灵/化婴/夺舍的修练阶梯，
+ *       圣堂为核心圣地、密云城与天蒙位面为主要舞台，主角秦阳由凡入圣的征途。
+ *       禁止二创篡改原著已有境界与势力；玩家为原著世界中的自定义角色。
+ */
+
+const fullSystemPrompt = `角色设定：你是《圣堂》（唐家三少著）原著世界的主持人（GM），精通原著设定与剧情脉络，正在主持一场开放世界扮演。你扮演这个世界本身——从天蒙位面的凡俗城镇，到圣堂的巍峨山门，再到神界诸神的博弈；玩家扮演一个踏入圣堂世界的自定义角色，以资质、机缘、意志与抉择，在这条由凡入圣的道路上走出自己的路。
+
+【主角替代协议（与原著主角的相处铁律，最高优先级）】
+1. 默认共世：玩家是圣堂世界中真实的一个——秦阳自凡俗崛起、入圣堂、踏上神界征途的历程按原著时间线发生；玩家以自己的机缘另行其道，两线可在同一座城、同一场试炼、同一次圣堂遴选里交叉（共世模式）。
+2. 玩家亲笔至上：玩家自定义身份与开局细节逐条落实到开场处境与角色卡；与原著冲突处，以玩家设定为准做合理融合。
+3. 共世例外：若玩家在自定义身份中明确写明"替代秦阳"，则秦阳本人不再登场，其机缘与主线让渡给玩家——原著主线由玩家亲历，按替代模式主持。
+
+【原著忠实铁律（最高优先级）】
+1. 严格原著：圣堂世界的修炼体系（凝气、聚灵、结丹、化婴、神变、神王乃至神界诸境）、圣堂作为核心圣地的地位、天蒙位面与神界的格局、圣堂弟子遴选与试炼的规矩，一律以原著为准。禁止新增原著中不存在的境界、不得篡改境界划分、不得改动原著既有势力格局。
+2. 原著细节以你自身对原著的完整知识为准；个别细节拿不准时，采用最贴近原著气质与逻辑的处理，绝不凭空发明原著中不存在的设定。
+3. 原著大势不可改：原著主线事件按原作时间线推进；玩家可以同场、目击、交易或卷入边缘，但原著主线结局与原著人物命运不因玩家而改写。
+4. 玩家不是主角光环：自定义角色不享有主角光环——资质平常就是平常，机缘要自己搏，因果要自己扛；没有谁的路是白给的。
+5. 成长真实：圣堂之路的凶险是实打实的——试炼的淘汰、同门的倾轧、神界的算计；玩家受挫须有充分铺垫与合理因果，但绝不无痛。
+
+【圣堂世界运转机制（本模块世界引擎）】
+- 世界不围着玩家转：玩家闭关时，别处的市集照常开张、圣堂试炼照常进行、神界的博弈照常推进；原著事件照常推进，消息以传闻、通告、旧识来信自然涌入。
+- 原著人物独立意志：秦阳等原著人物按原著性格、立场与节奏行动，绝不迎合玩家——每个人各有其声，绝不共用一种腔调。
+- 玩家行动自由：拜入圣堂、接任务攒资源、闭关苦修、探索遗迹、参与试炼、炼丹炼器、结交同门或独来独往——世界按原著规则给出真实反馈（机缘与凶险永远等价）。
+- 双层张力：明面是圣堂世界的秩序运转——宗门、试炼、市集；暗面是由凡入圣的残酷竞争——资源的争夺、神界的算计、成长的代价。
+
+【原著文风还原（正文风格最高准则）】
+1. 热血而克制：叙事有玄幻的热血感，但关键处克制——大事临头先掂量，情绪藏在动作与决策里。
+2. 体系感：修炼写层次、斗法写次序与消耗、试炼写规矩与淘汰——体系感是骨架，但严禁写成说明书，一切考据融进具体抉择。
+3. 成长的分量：每一步境界的提升都有代价与铺垫，机缘与凶险等价。
+4. 对白见人：同门之间客气而设防的口风、长老的威严、市井商人的精明——对白是身份的指纹。
+禁止：无脑爽文的装逼打脸节奏、系统面板式的数值播报、白给的机缘与无代价的胜利；轻小说式卖萌腔一律禁用。
+
+【扮演输出规范】
+每轮回复包含：
+1. 场景正文（400-1300字，按剧情节奏浮动，连续两轮不得等长）：环境、事件、NPC言行、玩家行动的结果。叙述视角按玩家设定（默认第二人称"你"）。严禁出现"作为AI""根据设定"等出戏表述。
+2. (variable_update) 变量更新块——只写本轮有变化的字段，未变化者不重抄。
+3. 结尾以【行动选项】为题给出 6 个真正不同的行动选项（固定 6 个，不可少），玩家也可自由输入任意行动。
+
+【反八股条令】
+1. 开头变奏：连续轮次严禁同构起笔——环境铺陈、对话直入、动作切入、心理独白、结果倒叙轮换使用。
+2. 禁语清单："眸中闪过一丝精光""空气仿佛凝固""嘴角勾起一抹弧度""不知过了多久""仿佛过了一个世纪"等AI高频套话一律禁用，同义变体亦不得连环出现。
+3. 句式不复用：本轮正文不得复用上一轮的标志性句式与修辞。
+4. 节奏呼吸：凶险后须有松弛，长段后接短段；对白、动作、留白交替。
+5. NPC各有其声：同一NPC连续两轮的语气、用词、信息量须有差异；登场原著人物开口前先对照知识库还原其口癖与腔调。
+
+【紧张与松弛】
+默认危机权重 52%，日常权重 48%：
+- 危机：试炼淘汰、同门倾轧、遗迹凶险、神界算计。
+- 日常：市集交易的人情、同门往来、闭关苦修的沉静、凡俗故里的岁月——它们是成长路上的锚。`;
+
+const defaultSystemPrompt = fullSystemPrompt;
+
+const defaultDynamicWorldPrompt = `你是《圣堂》开放世界的支线事件生成器。根据当前剧情阶段与玩家处境，生成"此刻圣堂世界的别处正在发生的事"——某处市集的新货与行情、某位同门的动向、圣堂试炼的传闻、神界诸神的只言片语、某处遗迹的异动。要求：每条一句话（不超过60字），严格符合原著设定与圣堂世界的气质，可被玩家采纳追踪也可忽略；原著主线大事件可作背景传闻出现，但严禁剧透未发生的关键转折。`;
+
+const setupMeta = {
+    perspectives: [
+        { id: 'second', name: '第二人称沉浸（"你"）', desc: '推荐：以"你"直面圣堂之路，代入感最强' },
+        { id: 'first', name: '第一人称自述（"我"）', desc: '以"我"的自述展开，沉浸最深' },
+        { id: 'third_limited', name: '第三人称贴身跟随', desc: '镜头式跟随你的角色，适合喜欢"看故事"的玩家' },
+        { id: 'mixed', name: '混合视角', desc: '场景第三人称铺陈，关键抉择转第二人称聚焦' }
+    ],
+    styles: [
+        { id: 'canon', name: '原著文风·唐家三少', desc: '推荐：热血玄幻、层次分明的原著笔味' },
+        { id: 'dark', name: '沉郁写实', desc: '收敛热血，突出圣堂世界的残酷竞争' },
+        { id: 'light', name: '轻快明丽', desc: '节奏轻快，偏向少年成长的明朗感' },
+        { id: 'custom', name: '✎ 自定义文风', desc: '你亲笔指定笔法基调' }
+    ],
+    lengths: [
+        { id: 'short', name: '短（快切）', desc: '每轮 400-600 字，节奏紧凑' },
+        { id: 'medium', name: '中（推荐）', desc: '每轮 600-1000 字' },
+        { id: 'long', name: '长（铺陈）', desc: '每轮 1000-1300 字，从容铺陈' }
+    ],
+    eras: [
+        { id: 'mengyun', name: '天蒙位面·凡俗初入', desc: '凡俗城镇与圣堂遴选的起点' },
+        { id: 'shengtang', name: '圣堂修行', desc: '拜入圣堂、试炼与同门争锋的年代' },
+        { id: 'shenjie', name: '神界征途', desc: '触及神界、诸神博弈的更高舞台' },
+        { id: 'custom_era', name: '✎ 自定义入场时机', desc: '你亲笔指定踏入的年代与境况' }
+    ],
+    motifs: [
+        { id: 'destiny', name: '由凡入圣', desc: '以凡人之身踏上圣堂之路' },
+        { id: 'trial', name: '试炼争锋', desc: '圣堂试炼中的淘汰与崛起' },
+        { id: 'divine', name: '神界博弈', desc: '神界诸神的算计与布局' },
+        { id: 'revenge', name: '恩怨情仇', desc: '以血还血的快意与代价' }
+    ],
+    identities: [
+        { id: 'mortal', name: '凡俗少年', desc: '天蒙位面的凡人，因一次机缘触及圣堂之门' },
+        { id: 'disciple', name: '圣堂外门弟子', desc: '已入圣堂外门，正在为内门试炼苦修' },
+        { id: 'inner', name: '圣堂内门弟子', desc: '圣堂核心弟子，卷入更深的资源争夺' },
+        { id: 'wanderer', name: '散修', desc: '无门无派，在圣堂体系之外另寻大道' },
+        { id: 'noble', name: '世家子弟', desc: '豪门出身，带着家族的筹码与桎梏' },
+        { id: 'custom', name: '✎ 自定义身份（自由开局）', desc: '身份与开局细节由你亲笔写' }
+    ],
+    aptitudes: [
+        { id: 'high', name: '上乘资质', desc: '天赋卓绝，修炼速度冠绝同辈' },
+        { id: 'mid', name: '中人之资', desc: '资质平平，勤修加机缘方有出路' },
+        { id: 'low', name: '驽钝之资', desc: '起步极慢，但意志与机缘可补天资' },
+        { id: 'custom', name: '✎ 自定义资质', desc: '你亲笔指定资质与缺陷' }
+    ],
+    timelines: [
+        { id: 'mortal_start', name: '凡俗起点', desc: '故事自天蒙位面的凡俗城镇开始' },
+        { id: 'trial_start', name: '圣堂试炼', desc: '故事自圣堂试炼开启时开始' },
+        { id: 'divine_start', name: '神界初触', desc: '故事自触及神界之时开始' },
+        { id: 'custom_timeline', name: '✎ 自定义入场时机', desc: '你亲笔指定入场时机' }
+    ],
+    backgrounds: [
+        '天蒙位面凡俗人家的孩子，一次偶然触及圣堂遴选的门槛',
+        '圣堂外门的杂役弟子，烧火挑水偷学功法，等一次翻身的机会',
+        '没落世家的子弟，家族把最后的筹码押在你身上',
+        '散修之后，父母留下一卷残功与一个没讲完的仇家',
+        '市井里长大的孤儿，见惯了人情冷暖，靠机敏活到今天',
+        '曾是小有名的天才，一场变故跌回凡尘，如今重新起步'
+    ],
+    zones: [
+        { id: 'mengyun', name: '天蒙位面', desc: '凡俗与修炼交汇的起始位面' },
+        { id: 'shengtang', name: '圣堂', desc: '核心圣地，无数修士向往的修行殿堂' },
+        { id: 'shenjie', name: '神界', desc: '诸神博弈的更高舞台' }
+    ],
+    flavor: { surname: ['秦','林','叶','唐','沈','苏','赵','白'], m: ['秦阳','林墨','叶无道','唐轩','沈砚','苏离','赵无极','白问天'], f: ['林晚晴','叶知秋','苏挽云','唐月瑶','沈青禾','白若雪'] },
+    ageRange: [14, 32],
+    names: ['秦阳', '林晚晴', '叶无道', '唐轩', '沈砚', '苏离', '赵无极', '白问天', '林墨', '叶知秋', '苏挽云', '唐月瑶', '沈青禾', '白若雪']
+};
+
+const openings = [
+    { id: 'sect_test', name: '圣堂遴选', pointsModifier: 10, description: '圣堂三年一度的遴选：测灵台立在山门前，四面八方的少年挤在同一条路上', effectsText: '初始 谋略+15', effects: {} },
+    { id: 'mortal_start', name: '凡俗起步', pointsModifier: -8, description: '天蒙位面的凡俗小镇，你在这里长大，直到那件事发生', effectsText: '初始 心性+15', effects: {} },
+    { id: 'trial_call', name: '试炼征召', pointsModifier: 14, description: '圣堂试炼的征召令贴出来了：名额有限，生死自负——功法与淘汰名额一起发', effectsText: '初始 杀机+25', effects: { crisis: 25 } },
+    { id: 'ruin_chance', name: '遗迹奇缘', pointsModifier: -10, description: '一处上古遗迹的气息泄出：够大的机缘，也够引来盯梢的眼睛', effectsText: '初始 气运+15', effects: { fortune: 15 } },
+    { id: 'sect_strife', name: '同门倾轧', pointsModifier: 12, description: '内门的争斗已经摆上台面： resources 与名额，都得靠自己争', effectsText: '初始 杀机+20', effects: { crisis: 20 } },
+    { id: 'market_storm', name: '市集风波', pointsModifier: 10, description: '市集里两位修士当场翻脸斗法：灵光炸开，人群四散', effectsText: '初始 杀机+20', effects: { crisis: 20 } },
+    { id: 'fallen_family', name: '世家余烬', pointsModifier: -6, description: '家族败落，你带着仅剩的筹码离开，前路未卜', effectsText: '初始 气运+12', effects: { fortune: 12 } },
+    { id: 'quiet_start', name: '平静开局', pointsModifier: -12, description: '没有机缘没有奇遇：一间屋、一亩地、一口气——路自己一步一步走', effectsText: '初始 心性+20', effects: {} }
+];
+
+const techniques = [
+    { id: '凝气诀', name: '凝气诀', desc: '圣堂基础吐纳法，引天地灵气入体，凝于丹田', tier: '基础' },
+    { id: '聚灵掌', name: '聚灵掌', desc: '汇聚灵力于掌，一掌摧木碎石', tier: '基础' },
+    { id: '圣光盾', name: '圣光盾', desc: '圣堂护身法门，凝灵为盾，可挡强攻', tier: '进阶' },
+    { id: '御风诀', name: '御风诀', desc: '短距离御风而行，进退如风', tier: '进阶' },
+    { id: '化婴经', name: '化婴经', desc: '化婴境核心心法，凝灵成婴，寿元大增', tier: '高阶' },
+    { id: '神变术', name: '神变术', desc: '神变境秘法，短暂爆发超越境界的战力', tier: '高阶' }
+];
+
+const statKeys = [
+    { key: 'root', label: '资质' },
+    { key: 'spirit', label: '神识' },
+    { key: 'constitution', label: '体魄' },
+    { key: 'temper', label: '心性' },
+    { key: 'wit', label: '谋略' },
+    { key: 'fortune', label: '气运' }
+];
+
+const gauges = [
+    { key: 'crisis', label: '杀机', icon: '⚔', color: 'linear-gradient(90deg,#784848,#d85858)', default: 30 },
+    { key: 'mana', label: '灵力', icon: '✨', color: 'linear-gradient(90deg,#486878,#88b8d8)', default: 50 },
+    { key: 'fortune', label: '气运', icon: '🍀', color: 'linear-gradient(90deg,#687848,#b8d878)', default: 40 }
+];
+
+const nameSeeds = {
+    flavor: { surname: ['秦','林','叶','唐','沈','苏','赵','白'], m: ['秦阳','林墨','叶无道','唐轩','沈砚','苏离','赵无极','白问天'], f: ['林晚晴','叶知秋','苏挽云','唐月瑶','沈青禾','白若雪'] },
+    ageRange: [14, 32],
+    names: ['秦阳', '林晚晴', '叶无道', '唐轩', '沈砚', '苏离', '赵无极', '白问天', '林墨', '叶知秋', '苏挽云', '唐月瑶'],
+    backgrounds: [
+        '天蒙位面凡俗人家的孩子，一次偶然触及圣堂遴选的门槛',
+        '圣堂外门的杂役弟子，烧火挑水偷学功法，等一次翻身的机会',
+        '没落世家的子弟，家族把最后的筹码押在你身上',
+        '散修之后，父母留下一卷残功与一个没讲完的仇家'
+    ]
+};
+
+const ShengtangStoryConfig = {
+    mode: 'roleplay',
+    genreKey: 'shengtang',
+    genreName: '圣堂',
+    fullSystemPrompt,
+    defaultSystemPrompt,
+    defaultDynamicWorldPrompt,
+    systemPrompt: () => fullSystemPrompt,
+    dynamicWorldPrompt: () => defaultDynamicWorldPrompt,
+    setupMeta,
+    openings,
+    techniques,
+    statKeys,
+    gauges,
+    nameSeeds,
+    baseAttributes: { root: 10, spirit: 10, constitution: 10, temper: 10, wit: 10, fortune: 8 },
+    maxPoints: 100,
+    maxTechniques: 3,
+    startRealm: '凡人·未入圣堂',
+    statsLabel: '修练资质',
+    statusFields: ['crisis', 'mana', 'fortune'],
+    panelLabels: { progress: '回合进度', unit: '回合', notStarted: '未入场', gauges: '状态仪表盘', stats: '修练资质' },
+    identityHint: '决定你的出身与踏入圣堂前的底子',
+    timelineHint: '踏入圣堂世界的哪个阶段',
+    imageStyle: '东方玄幻插画，圣堂巍峨山门与神界流光，凝气聚灵的灵光与试炼场的锋芒，金白与青碧主调，工笔与写意结合，由凡入圣的苍茫',
+    renderStatus: (vars) => window.StoryStatusRenderer ? window.StoryStatusRenderer.refresh(vars) : '',
+    buildOpeningInstruction: (setup) => {
+        const identityPart = setup.customIdentity ? `自定义身份——玩家亲笔设定（最高优先级）：${setup.customIdentity}` : setup.identity;
+        const aptPart = setup.customAptitude ? `自定义资质——${setup.customAptitude}` : `资质：${setup.aptitude}`;
+        const stylePart = setup.customStyle ? `文风基调——玩家亲笔指定：${setup.customStyle}` : `文风基调：${setup.style || '原著文风·唐家三少'}`;
+        const timePart = setup.customTimeline ? `自定义入场时机（严格执行）：${setup.customTimeline}` : `入场时机：${setup.timeline}`;
+        const entryPart = setup.customEntry ? `；入场事件（玩家亲笔第一幕）：${setup.customEntry}` : '';
+        const boonPart = setup.customBoon ? `；起始机缘：${setup.customBoon}` : '';
+        return `【入场】玩家角色「${setup.playerName}」（${setup.gender}，${setup.age}岁，${identityPart}，${aptPart}）踏入《圣堂》原著世界——${timePart}${entryPart}${boonPart}。${stylePart}。请主持世界开场：呈现圣堂世界的具体场景与氛围，落实玩家处境与当务之急（玩家亲笔设定的每条细节都须体现），引入至少一个原著世界的真实事件或传闻与玩家产生交集；结尾附(variable_update)变量块（玩家角色卡完整建档+首批登场NPC卡）与6个【行动选项】。`;
+    },
+    onInit: function (framework) {
+        console.log('[ShengtangStoryConfig] 圣堂开放世界配置已加载');
+        document.body.classList.add('theme-shengtang');
+        const t = document.getElementById('gameTitle');
+        if (t) t.textContent = `圣堂 · 《云境工坊》`;
+        const statusPanelContainer = document.getElementById('statusPanelContainer');
+        if (statusPanelContainer && statusPanelContainer.children.length === 0 && window.StoryStatusRenderer) {
+            statusPanelContainer.innerHTML = window.StoryStatusRenderer.generatePanelHTML();
+        }
+    }
+};
+
+window.ShengtangStoryConfig = ShengtangStoryConfig;
+window.GenreStoryConfig = ShengtangStoryConfig;
+
+/* ## 圣堂原著设定锚点（供 build-codex 原料）
+ * 原著：唐家三少《圣堂》，东方玄幻，天蒙位面与圣堂、神界为三大舞台。
+ * 主角：秦阳——由凡入圣，历经圣堂试炼与神界征途。
+ * 修炼阶梯：凝气→聚灵→结丹→化婴→神变→神王（神界诸境）。
+ * 核心圣地：圣堂；主要舞台：天蒙位面、密云城、圣堂山门、神界。
+ */

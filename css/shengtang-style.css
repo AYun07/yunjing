@@ -1,0 +1,29 @@
+/* ============================================================
+   圣堂主题 - 由凡入圣（金白 × 青碧 × 神界流光）
+   v7.5.0 新增世界专属 UI 皮肤
+   ============================================================ */
+body.theme-shengtang {
+    --primary: #d8b24c;
+    --primary-dim: rgba(216, 178, 76, 0.12);
+    --primary-glow: rgba(216, 178, 76, 0.3);
+    --secondary: #4fae9c;
+    --accent: #f0e0b0;
+    --panel-border: rgba(216, 178, 76, 0.2);
+    background-color: #0d1016;
+    background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(216, 178, 76, 0.12), transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(79, 174, 156, 0.08), transparent 55%);
+    background-attachment: fixed;
+}
+body.theme-shengtang .top-bar,
+body.theme-shengtang .masthead {
+    border-color: var(--panel-border);
+    box-shadow: 0 2px 18px rgba(216, 178, 76, 0.12);
+}
+body.theme-shengtang .workshop-card,
+body.theme-shengtang .panel {
+    border-color: var(--panel-border);
+}
+body.theme-shengtang ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d8b24c, #4fae9c);
+}

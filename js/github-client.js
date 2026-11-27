@@ -260,6 +260,16 @@
       c.items.sort(function (a, b) { return String(b.createdAt || '').localeCompare(String(a.createdAt || '')); });
       return { ok: true, items: c.items, cached: true, error: res.error || '清单解析失败，显示本机缓存' };
     }
+    // v7.4.0：网络与本机缓存都没有时，读随包内置的基线清单（同源静态文件，断网/客户端均可读），
+    // 让创意工坊板块正常打开（哪怕是空态），不再因 GitHub 超时而整个板块报错。
+    try {
+      var lr = await fetch('community/works/catalog.json?_=' + Date.now(), { cache: 'no-store' });
+      if (lr && lr.ok) {
+        var lo = await lr.json();
+        var litems = Array.isArray(lo) ? lo : (Array.isArray(lo.items) ? lo.items : []);
+        return { ok: true, items: litems, cached: false, local: true };
+      }
+    } catch (e) {}
     return { ok: false, error: res.error || '无法读取作品清单', items: [] };
   }
 

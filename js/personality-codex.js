@@ -676,6 +676,12 @@
     Object.keys(ROSTER_NOTE).forEach(function (k) { set[k] = 1; });
     Object.keys(WORLD_TONE).forEach(function (k) { set[k] = 1; });
     Object.keys(CANON).forEach(function (k) { set[k.split('::')[0]] = 1; });
+    // v7.5.0：把有知识库的世界也纳入（含新增 shengtang、wangyou），避免新世界在
+    // 性格世界书里找不到、被回退到 fanrenxiuxian 造成串书。
+    try {
+      var KB = window.KB_PRESETS || {};
+      Object.keys(KB).forEach(function (k) { if (k && (KB[k] || []).length) set[k] = 1; });
+    } catch (e) {}
     return Object.keys(set);
   }
   function roster(world) { if (world == null) return JSON.parse(JSON.stringify(ROSTER)); return (ROSTER[world] || []).slice(); }

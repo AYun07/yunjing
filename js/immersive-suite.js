@@ -1683,8 +1683,19 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
   }
   function panelRealms() {
     const th = T();
-    const idx = state.realmIdx;
-    const rungs = th.realms.map((r, i) => {
+    // v7.4.0 C2：境界梯以 RealmRules 真源为准，切世界后显示对应世界的境界，避免张冠李戴
+    let realms = th.realms;
+    try {
+      const RR = window.RealmRules;
+      const genre = state.genre || (window.storyFramework && window.storyFramework.config && (window.storyFramework.config.genreKey || window.storyFramework.genre));
+      const rule = RR && RR.getByGenre && genre && RR.getByGenre(genre);
+      if (rule && Array.isArray(rule.tiers) && rule.tiers.length) {
+        realms = rule.tiers.map(function (t) { return t.name || t; });
+      }
+    } catch (e) {}
+    if (!Array.isArray(realms) || !realms.length) realms = th.realms;
+    const idx = Math.max(0, Math.min(state.realmIdx || 0, realms.length - 1));
+    const rungs = realms.map((r, i) => {
       const on = i < idx, cur = i === idx;
       return `<div class="rl-rung ${cur ? "cur" : on ? "passed" : ""}">
                 <div class="rl-node ${cur ? "cur" : on ? "on" : ""}">${on ? "●" : cur ? "◆" : "○"}</div>
@@ -1692,12 +1703,12 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
                 ${cur ? `<div class="rl-mark">此刻</div>` : ""}
             </div>`;
     }).reverse().join("");
-    const pct = Math.round(idx / (th.realms.length - 1) * 100);
+    const pct = realms.length > 1 ? Math.round(idx / (realms.length - 1) * 100) : 100;
     return `<div class="rl-head">
-                <div class="rl-now">${esc(th.realms[idx])}</div>
+                <div class="rl-now">${esc(realms[idx])}</div>
                 <div class="rl-raw">${state.realmRaw ? esc(state.realmRaw) : th.realmHint}</div>
                 <div class="rl-bar"><i style="width:${pct}%;"></i></div>
-                <div class="rl-pct">${esc(th.realmLabel)} · 天梯 ${idx + 1} / ${th.realms.length} 层（${pct}%）</div>
+                <div class="rl-pct">${esc(th.realmLabel)} · 天梯 ${idx + 1} / ${realms.length} 层（${pct}%）</div>
             </div>
             <div class="rl-ladder">${rungs}</div>`;
   }

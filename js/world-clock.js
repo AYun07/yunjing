@@ -419,7 +419,9 @@
     pill.title = "世界时钟：随正文时间演化——过去几天逐日演化几天，过去几年演化几年；短时辰只更新时刻。点击可冻结/恢复";
     /* 落点下移到顶栏之外：top:10px 会压住顶栏左侧品牌文字（实测「创作」被盖成「]作」）。
        --topbar-h 桌面 54px / 移动端 50px，用变量自适应。 */
-    pill.style.cssText = "position:fixed;left:12px;top:calc(var(--topbar-h, 54px) + 6px);z-index:9000;display:none;align-items:center;gap:6px;" +
+    /* v7.4.0：z-index 由 9000 降到 65——低于输入区(70/71)与抽屉，避免拖到输入框上时吞掉焦点
+       （「对话框有时无法输入」根因之一）；仍高于正文，正文区可正常点击/拖拽。 */
+    pill.style.cssText = "position:fixed;left:12px;top:calc(var(--topbar-h, 54px) + 6px);z-index:65;display:none;align-items:center;gap:6px;" +
       "padding:5px 9px;border-radius:18px;cursor:pointer;font-size:12px;color:#e8dcc0;" +
       "background:rgba(20,16,30,.82);border:1px solid color-mix(in srgb, #c9a86a 22%, transparent);" +
       "box-shadow:0 2px 10px rgba(0,0,0,.4);user-select:none;backdrop-filter:blur(6px)";
@@ -432,7 +434,7 @@
        mo-chibi.js 是懒加载，本模块先于它执行，故轮询等它就绪再绑定。 */
     (function bindDrag() {
       if (window.MoChibi && typeof window.MoChibi.makeDraggable === "function") {
-        // v7.3.1：occlusion-fix.css 用 left:...!important 做初始避让，会把拖拽写入的
+        // v7.4.0：occlusion-fix.css 用 left:...!important 做初始避让，会把拖拽写入的
         // inline left 覆盖，导致「只能上下移、不能左右移」。forceImportant 让拖拽/
         // 恢复位置都写成 inline !important，优先级高于样式表，全屏拖动恢复。
         window.MoChibi.makeDraggable(pill, {

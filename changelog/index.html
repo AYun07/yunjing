@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.3.1">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.3.1">
-  <script src="../js/desktop-shell.js?v=7.3.1"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.4.0">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.4.0">
+  <script src="../js/desktop-shell.js?v=7.4.0"></script>
 </head>
 
 <body class="page-changelog">
@@ -317,11 +317,29 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 功能 世界 圣堂 去重 真机 稳定" style="--entry-hue:#c9a86a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.4.0</span>
+                <span class="entry-date">2026-11-27</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">剩余清单收官：C 批功能去重 + 三个未确证项真修 + 《圣堂》大世界</h3>
+            <p class="entry-lead">把上一版如实披露的剩余项一次做完：羁绊去重、境界梯真源、性格世界书串书、酒馆卡导出、扮演设定并入预设；二创加载/对话框输入/地图层级三项真机定位根因并修复；新增《圣堂》完整世界与网游补两本。</p>
+            <div class="ver-diff">
+                <div><b>C 批功能去重/定位/同步</b>：羁绊速览与关系网去重；境界梯改用 RealmRules 真源切界跟随；小云上下文注入当前界面模式；新增「导出为酒馆卡」（chara_card_v2）；性格世界书按当前世界复位、新界不再串书；扮演设定并入云起预设。</div>
+                <div><b>二创无法加载根治</b>：根因=10s 超时先于缓存兜底返回 + 断网无本地清单；新增随包内置 catalog.json，网络/缓存双失败也能正常打开显示空态，不再报「清单加载失败」。</div>
+                <div><b>对话框无法输入根治</b>：状态抽屉 .open 残留让输入区永久 visibility:hidden；输入区改无条件可见可交互；世界时钟 z-index 9000→65，拖到输入框上不再吞焦点。</div>
+                <div><b>地图层级纠错</b>：超神学院地球根节点 lv2→0、去掉 rg 自引用。</div>
+                <div><b>D 批世界数据</b>：新增《圣堂》大世界（唐家三少东方玄幻，22 地点 + 14 条知识库 + 界专属模块，挂东方玄幻分类）；网游世界补《近战法师》《猛龙过江》世界书与地点；KB 索引刷新至 24511 条、世界目录 39 界。</div>
+                <div><b>回归</b>：真机遍历五世界/设置/工坊/全站点击，最终零脚本错误、零点击错误；被误改的历史版本号已逐条还原。</div>
+            </div>
+        </article>
+
                         <article class="log-entry" data-tags="版本 发布 缺陷修复 真机 配置 存档 拖拽 遮挡 视觉 稳定" style="--entry-hue:#4a8a6a;">
             <div class="entry-head">
                 <span class="entry-ver">v7.3.1</span>
                 <span class="entry-date">2026-11-27</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">客户端真机返修：配置全显 + 书架/时钟/小云遮挡六项</h3>
             <p class="entry-lead">按用户客户端截图与实玩反馈逐条真机复现并修复：配置默认只显示主笔导致预设正则/向量/存档不显示、书架打开失败、顶部多出 40px 空白、世界时钟只能上下移动、小云巨大隐形面板吞点击等。</p>
@@ -1276,7 +1294,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.3.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.4.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
