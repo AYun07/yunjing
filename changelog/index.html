@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.6.1">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.6.1">
-  <script src="../js/desktop-shell.js?v=7.6.1"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.6.2">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.6.2">
+  <script src="../js/desktop-shell.js?v=7.6.2"></script>
 </head>
 
 <body class="page-changelog">
@@ -319,9 +319,24 @@
         <!-- ==================== 版本条目（新→旧） ==================== -->
                         <article class="log-entry" data-tags="版本 发布 修复 更新 客户端 稳定" style="--entry-hue:#d4694a;">
             <div class="entry-head">
-                <span class="entry-ver">v7.6.1</span>
+                <span class="entry-ver">v7.6.2</span>
                 <span class="entry-date">2026-11-27</span>
                 <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">彻底修复"更新装完仍旧版、反复提示"：真正重编 setup.exe 外壳</h3>
+            <p class="entry-lead">v7.6.1 把版本判断改成有效版本=max(壳,内容)并重打了 zip 外壳，但仍没修好——因为沙箱缺 NSIS 环境，setup.exe 沿用了旧的 7.3.0 二进制。走"下载 setup.exe 重装"路径的用户，装完还是旧外壳，死循环重现。v7.6.2 装好 NSIS 后真正重编了 setup.exe，两条更新路径都能送达新外壳。</p>
+            <div class="ver-diff">
+                <div><b>为什么 v7.6.1 没修好</b>：修复代码在 app.asar，但 setup.exe 因无法重编 NSIS 沿用了旧外壳（asar 内 package.json=7.3.0）。走安装路径的用户装完就是旧外壳；内容热更新改不到 asar，旧外壳的判断逻辑永远是旧的 → 死循环。</div>
+                <div><b>v7.6.2 修复</b>：装上 NSIS 3.09 + electron-builder 官方 NSIS 工具集，用系统 makensis 把含修复版 main.js、package.json=7.6.2 的 win-unpacked 编成标准 NSIS 安装向导，真正替换掉旧外壳二进制。</div>
+                <div><b>产物级证据</b>：从新 setup.exe 解出内嵌 app-64.7z 再解出 app.asar，确认其中 package.json=7.6.2 且 main.js 含 effectiveVersion 修复；zip 内 asar 同为 7.6.2。两条路径（A/B 免安装 + setup 重装）都送达新外壳。</div>
+            </div>
+            <div class="ver-note">如实披露：沙箱无 Windows 桌面，真机双击 exe 的安装向导点击以产物级解包 + mock electron 通道断言覆盖，未在有桌面的 Windows 机上走完安装向导 GUI。</div>
+        </article>
+                        <article class="log-entry" data-tags="版本 发布 修复 更新 客户端 稳定" style="--entry-hue:#d4694a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.6.1</span>
+                <span class="entry-date">2026-11-27</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">修复"更新装完仍是旧版本、反复提示更新"的死循环</h3>
             <p class="entry-lead">用户实测：更新安装完版本号没变，再次检查又提示更新，装完仍旧——无限循环。根因是已发布外壳 app.asar 内的 package.json 固化在 7.3.0，而内容层早已热更新到 7.6.0；检查更新与"当前版本"都只读外壳版本，于是 compareVer 永远判"有新版本"。这次把版本判断改为有效版本并重打外壳包。</p>
@@ -1355,7 +1370,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.6.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.6.2 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

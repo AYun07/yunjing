@@ -4,9 +4,22 @@
   "note": "每版改了什么，这里一看就知道，不用去 GitHub。列表按时间从新到旧。",
   "versions": [
     {
-      "version": "v7.6.1",
+      "version": "v7.6.2",
       "date": "2026-11-27",
       "current": true,
+      "title": "彻底修复更新死循环：真正重编 setup.exe 外壳",
+      "summary": "v7.6.1 把版本判断改为有效版本=max(壳,内容)并重打了 zip 外壳，但因沙箱缺 NSIS 环境，setup.exe 沿用了旧 7.3.0 二进制；走 setup 重装路径的用户装完仍是旧外壳，死循环重现。v7.6.2 装好 NSIS 后真正重编了 setup.exe，两件套 asar 均升级为 7.6.2 且内置修复代码。",
+      "changes": [
+        "真正重编 setup.exe：用系统 makensis + electron-builder 官方 NSIS 工具集，把含修复版 main.js、package.json=7.6.2 的 win-unpacked 编译成标准 NSIS 安装向导",
+        "从新 setup.exe 解出内嵌 7z 与 app.asar，产物级确认外壳版本=7.6.2 且含 effectiveVersion 修复代码（决定性证据）",
+        "win-unpacked.zip 同步重打，asar 同为 7.6.2；两件套下载路径（A/B 与 setup 重装）都能送达新外壳",
+        "保留 v7.6.1 的有效版本=max(壳,内容)判断，双保险：即使某层版本滞后也不误报更新"
+      ]
+    },
+    {
+      "version": "v7.6.1",
+      "date": "2026-11-27",
+      "current": false,
       "title": "修复更新后仍显示旧版本、反复提示更新的死循环",
       "summary": "已发布外壳 app.asar 内 package.json 固化在 7.3.0，而内容层热更新到 7.6.0；检查更新与当前版本显示只读壳版本，导致 compareVer 永远判\"有新版本\"。改为有效版本=max(壳,内容)参与判断与显示，并重打带修复的外壳包。",
       "changes": [

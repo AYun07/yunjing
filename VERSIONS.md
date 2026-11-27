@@ -2,21 +2,22 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **131** 个版本，从 `v3.55.7` 到 `v7.6.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **132** 个版本，从 `v3.55.7` 到 `v7.6.2`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.6.1 口径）**：首行 **v7.6.1 为当前版本**；其余 **130 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
-> 当前口径（v7.6.1）：以下速查表首行即当前版本，历史条目中的版本号保持各自发布当时的史实。
+> **版本分层（v7.6.2 口径）**：首行 **v7.6.2 为当前版本**；其余 **131 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> 当前口径（v7.6.2）：以下速查表首行即当前版本，历史条目中的版本号保持各自发布当时的史实。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；131 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；132 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
 
-## 版本速查（新→旧 · 首行为当前版本，其余 130 版为旧版本）
+## 版本速查（新→旧 · 首行为当前版本，其余 131 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.6.2** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.2) |
 | **v7.6.1** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.1) |
 | **v7.6.0** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.0) |
 | **v7.5.0** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.5.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.5.0) |
@@ -151,6 +152,14 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v7.6.2 · 2026-11-27 · 彻底修复更新死循环：真正重编 setup.exe 外壳
+
+- 为什么 v7.6.1 没修好：修复代码在 app.asar，但 setup.exe 因沙箱缺 NSIS 环境沿用了旧 7.3.0 二进制；走"下载 setup.exe 重装"路径的用户装完仍是旧外壳，内容热更新改不到 asar → 死循环重现。
+- 修复（DR-118）：装 NSIS 3.09 + electron-builder 官方 NSIS 工具集，用系统 makensis 把含修复版 main.js、package.json=7.6.2 的 win-unpacked 编成标准 NSIS 安装向导，真正替换旧外壳。
+- 保留 v7.6.1 的有效版本=max(壳,内容)判断作双保险。
+- 产物级证据：从新 setup.exe 解出内嵌 7z 与 app.asar，确认 package.json=7.6.2 且含 effectiveVersion 修复；zip 内 asar 同为 7.6.2。
+- 如实披露：沙箱无 Windows 桌面，安装向导 GUI 点击以产物级解包 + mock electron 通道断言覆盖，未上真机 GUI。
 
 ## v7.6.1 · 2026-11-27 · 修复"更新装完仍显示旧版本、反复提示更新"的死循环
 

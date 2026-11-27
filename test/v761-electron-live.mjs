@@ -14,6 +14,7 @@ const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ELECTRON = path.join(ROOT, 'client/electron/node_modules/electron/dist/electron');
 const APPDIR = path.join(ROOT, 'client/electron');
+const expectVer = JSON.parse(require('node:fs').readFileSync(path.join(APPDIR, 'package.json'),'utf8')).version;
 const { chromium } = require('playwright');
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -57,8 +58,8 @@ const t = (n, ok, extra='') => { if (ok) { pass++; console.log('  PASS '+n+(extr
     });
     t('preload 桥 getInfo 可用', !!info, info ? JSON.stringify(info) : 'null');
     if (info) {
-      t('client-info.version = 7.6.1（有效版本）', info.version === '7.6.1', String(info.version));
-      t('client-info.shellVersion = 7.6.1（新壳）', info.shellVersion === '7.6.1', String(info.shellVersion));
+      t('client-info.version = 当前版本（有效版本）', info.version === expectVer, String(info.version));
+      t('client-info.shellVersion = 当前版本（新壳）', info.shellVersion === expectVer, String(info.shellVersion));
       t('client-info 含 contentVersion 字段', typeof info.contentVersion === 'string', String(info.contentVersion));
       t('isPackaged 为 false（源码运行）', info.isPackaged === false, String(info.isPackaged));
     }
@@ -70,7 +71,7 @@ const t = (n, ok, extra='') => { if (ok) { pass++; console.log('  PASS '+n+(extr
       const el = document.getElementById('verCurrent');
       return el ? el.textContent : '(no #verCurrent)';
     });
-    t('设置页显示当前版本 v7.6.1', /7\.6\.1/.test(verText), verText);
+    t('设置页显示当前版本 v' + expectVer, verText.indexOf(expectVer) >= 0, verText);
 
     const contentText = await page.evaluate(() => {
       const el = document.getElementById('verContent');

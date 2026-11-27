@@ -1857,3 +1857,15 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 证据：产物级校验——新 app.asar 内 package.json=7.6.1、main.js 含 effectiveVersion、5 文件齐全且可真实 require 加载；zip 内 asar 与 dist asar 字节一致；update-latest 三处 SHA 对齐。单元层——场景模拟 7.3.0 壳+7.6.0 内容时 hasUpdate 由真转假。
 - 未验证项强制披露：沙箱无 Windows GUI，真机双击 exe 的菜单点击以 mock electron 通道断言覆盖；A/B 目录切换的 Windows 文件占用重试以逻辑测试覆盖，未上真机 GUI。
 - 失效条件：若将来又复用固定外壳但忘记同步其内 package.json 版本，或 `client-info` 契约被外部依赖方锁定不允许新增字段，需重新评估；若远端 update-latest.json 版本未高于用户外壳版本，存量用户不会被触发更新，修复送不到。
+
+## DR-118 · v7.6.1 未修好死循环：setup.exe 外壳未重编（2026-11-27，v7.6.2）
+- 背景：v7.6.1 发布了"有效版本=max(壳,内容)"修复并重打了 zip 外壳，但用户反馈"还是不行"。全链路复核：远端 update-latest.json 字段完整、下载源（ghproxy/ghfast/github）可达、设置页版本读取走 client-info → 有效版本、A/B 逻辑正常——均非断点。
+- 决定性根因：修复代码在 app.asar；v7.6.1 因沙箱无 NSIS 环境，setup.exe 沿用了旧二进制（asar 内 package.json=7.3.0）。用户若走"下载 setup.exe 重装"路径，装完就是旧外壳；内容热更新只改 yj-content、改不到 asar，旧外壳的判断逻辑永远是旧的 → 死循环重现。这正是 v7.6.1 已如实披露、但未解决的边界。
+- 决策：
+  ① 在本环境装 NSIS 3.09（apt，腾讯镜像），并补齐 electron-builder 官方 NSIS 工具集（nsis-3.0.4.1.7z）与资源包（nsis-resources-3.4.1.7z，均通过官方 sha512 校验）。
+  ② 用系统 makensis + electron-builder installer.nsi 官方模板自包含脚本，把含修复版 main.js、package.json=7.6.2 的 win-unpacked 编译成真正的 NSIS 安装向导 setup.exe，替换旧外壳二进制。
+  ③ zip 同步重打为 7.6.2；两件套下载路径（A/B 免安装 + setup 重装）都能送达新外壳。
+  ④ 保留 DR-117 的有效版本判断作双保险。
+- 证据：从新 setup.exe 解出内嵌 app-64.7z 再解出 app.asar，产物级确认 package.json=7.6.2 + main.js 含 effectiveVersion 修复；zip 内 asar 同为 7.6.2；三方 SHA 对齐。
+- 未验证项强制披露：沙箱无 Windows 桌面，setup 安装向导的点选流程以产物级解包 + mock electron 通道断言覆盖，未在有桌面的 Windows 机走完 GUI 安装。
+- 失效条件：若将来又因环境缺 NSIS 而复用旧 setup 二进制，死循环会复发——发布门禁必须校验"setup.exe 内嵌 asar 版本 = 当前版本号"。
