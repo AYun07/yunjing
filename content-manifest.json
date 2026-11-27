@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "version": "7.6.0",
-  "generatedAt": "2026-11-27T11:20:17.087Z",
+  "generatedAt": "2026-11-27T11:27:19.063Z",
   "count": 678,
   "sources": [
     "https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/",
@@ -2190,7 +2190,7 @@
       "size": 30510
     },
     "update-latest.json": {
-      "sha256": "ee6cb84875df414b3bbaedd0c7426ccd9058b8b5c79bf8fdb2691c149612fc88",
+      "sha256": "9bb48734ad99c0302f726073eb778165f20ee457967b04f41953f2417104ca76",
       "size": 1852
     },
     "versions/README.md": {
