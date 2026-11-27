@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "version": "7.5.0",
-  "generatedAt": "2026-11-27T09:37:18.151Z",
-  "count": 677,
+  "version": "7.6.0",
+  "generatedAt": "2026-11-27T11:13:20.165Z",
+  "count": 678,
   "sources": [
     "https://ghproxy.net/https://raw.githubusercontent.com/AYun07/yunjing/main/",
     "https://raw.githubusercontent.com/AYun07/yunjing/main/",
@@ -30,12 +30,12 @@
       "size": 19467
     },
     "README.md": {
-      "sha256": "1395c620fabeaf0f6d6970b705251ee7f4e3bf51224aea1dc975b8dfae8d8b07",
-      "size": 21681
+      "sha256": "ae850d933677bb3b00eda0c3aec4286d2b2d5f9c5acc3ee6c6f84a3058579ba0",
+      "size": 17464
     },
     "VERSIONS.md": {
-      "sha256": "250b2d00844b7cd6c85a8f6db7286ea08c417263356b22e0edc4f884def9ef2b",
-      "size": 328624
+      "sha256": "5a38912f7a385f1ff15a6c1b79ab20cf9afa3429e8a4e0facec61177c6191959",
+      "size": 331890
     },
     "assets/chibi/jump.json": {
       "sha256": "9d6b7c89ebe333423d7d5d3e632fa341f97fe271fd67796e31e48c896ccd5814",
@@ -54,8 +54,8 @@
       "size": 136060
     },
     "changelog/index.html": {
-      "sha256": "1b7bbb5ae989280d81d1dd651198eba5ee19069d713bd5a888831cf7b460e1e1",
-      "size": 703552
+      "sha256": "3a3f831fb8ffc47ef39c966b8621fe7da05ecfa9ed6b77e6e539af789d3c9193",
+      "size": 705867
     },
     "changelog/research/multi-api-survey.md": {
       "sha256": "366311b2ac9c2731ff5016a2322c5b3b7a9fd1962574cc33ba140a5a293f3c73",
@@ -589,8 +589,12 @@
       "sha256": "23a293e385591f6e8c1ee15e26ae8e6816234975cad42f0c09274bae0f87355c",
       "size": 7035
     },
+    "docs/需求拆解与验收-v7.6.0.md": {
+      "sha256": "84fb755758807cb32e2eadfe9f8243168b19c72f9849a8116ed15f93ff604356",
+      "size": 4554
+    },
     "index.html": {
-      "sha256": "e2bccd15b9bbad0ef27cb4aec6ec108b6592bf9d4445d3af2b959534596a994a",
+      "sha256": "1a4202b366c728bc55f4d491a5afbcb955d5ee1fdb97ad1f09334678aad4a4d1",
       "size": 49336
     },
     "js/action-check.js": {
@@ -978,7 +982,7 @@
       "size": 13368
     },
     "js/cover-portal.js": {
-      "sha256": "df485da8728bfbe6006cb1cbd7af48da45d3b1a2f22623b34005715763e3c795",
+      "sha256": "a6e09c33c0025a54f0789a2c34ced3d24a7a5275f12db99d2713d295da1463d3",
       "size": 14346
     },
     "js/craft-meter.js": {
@@ -1038,7 +1042,7 @@
       "size": 10965
     },
     "js/first-run-guide.js": {
-      "sha256": "ea9360c54f70b0c52bfc66ae358a017b0dff04113768481dc189b08002245509",
+      "sha256": "b8efb4c141c5e55c17cfcaaa645b4479806f59f77096d6aab36b7ff9eb11bc49",
       "size": 5747
     },
     "js/floor-state.js": {
@@ -1082,7 +1086,7 @@
       "size": 135860
     },
     "js/inspiration-dice.js": {
-      "sha256": "1262d3c0e55609f08668e884a37c4950d27173f4c8df4f1e86d634e47eb951a7",
+      "sha256": "b835b6468ff8bd5be7bc5793cb3393a0bad3530292e5f08b0ccfbb88ef58df05",
       "size": 14334
     },
     "js/inspiration-engine.js": {
@@ -1450,7 +1454,7 @@
       "size": 86850
     },
     "js/lazy-boot.js": {
-      "sha256": "1bb8d753ef7b2fd95f588691f131b42a684131edf67e5e05f8195593aeb7dd8a",
+      "sha256": "fafc4dbe344358202f0289e07fce766e7d84715e511888949b845dd5bb38cc62",
       "size": 12547
     },
     "js/left-rail.js": {
@@ -1470,7 +1474,7 @@
       "size": 4130
     },
     "js/lunar-stamp.js": {
-      "sha256": "5cc8ec1e99812927462d13b8e6498a94c479d2c282cdc445b10a488acc396961",
+      "sha256": "592404365a116d60f785916a72a93158dbb39171f95e35fc7ca07ef8ba829c43",
       "size": 16094
     },
     "js/memory-layers.js": {
@@ -1478,11 +1482,11 @@
       "size": 18025
     },
     "js/mo-assistant.js": {
-      "sha256": "94245bcbddc0231c86f86105cbd1885492bd8cda258bf4a3a5a93c095b7c16a6",
+      "sha256": "1567f71c8105316c79e69d3cd6dffe3e1cb9a62d79adc1f27c00c98b81b2c3e4",
       "size": 50998
     },
     "js/mo-chibi.js": {
-      "sha256": "36767a3f20c5d35ccea740eb4611bb6c289beced7bfff77a0dbe69035017cd1b",
+      "sha256": "95a1d9063ceae834e3338e6fe956d20c367c8ad77a1fe7861ece60bedbd6b6fc",
       "size": 47247
     },
     "js/mo-devtools.js": {
@@ -1646,7 +1650,7 @@
       "size": 8996
     },
     "js/relationship-graph.js": {
-      "sha256": "5a667851a50170e2c840d88c022ac6ceb102bcd4d7f0d0e20f0604467743b4ac",
+      "sha256": "42a5cf12050e4f2de18e3d681b3dfe880c1694361d77b038d83dbdfbe061e29e",
       "size": 12771
     },
     "js/resume-portal.js": {
@@ -1654,7 +1658,7 @@
       "size": 7382
     },
     "js/rpg-core.js": {
-      "sha256": "7a0b4f2d540eead76c97f4c7261f3f58db77fcf69f53f49de2b649f7c84ccc1b",
+      "sha256": "2d3515e516c4b06d331a1ab43b23200fdb2394328f0270bbdd0c55eed32738eb",
       "size": 159151
     },
     "js/rpg-quests.js": {
@@ -2102,11 +2106,11 @@
       "size": 1016
     },
     "map-preview.html": {
-      "sha256": "8118a02f309b74f7d44403c91a684517aad086a4f79d4f9a91a47ced351af32c",
+      "sha256": "5b4671f7acfdfdfa428a9ff17e42123fbec13f690922424b13be53cd204a2a8f",
       "size": 3492
     },
     "map-verified.html": {
-      "sha256": "40b9b3ba6d8a7bd508cfd364f11b85f24b04ade0e8492ec55bbd7861c24354f7",
+      "sha256": "f68c9697ebf4211b8bedb4565a1e0792bd7713a230c9bdb9b9eea5fdf826a3b5",
       "size": 2176
     },
     "mobile-server.ps1": {
@@ -2114,11 +2118,11 @@
       "size": 3469
     },
     "opening.html": {
-      "sha256": "6618543ae00525cc885cfdcdeec5bb12f5ceae8339a1abea5f6909f45c0290aa",
+      "sha256": "ca018c3a9c0165891e980f8a1ea04acceebfcbf26d9bce9ba8a023b0f702410a",
       "size": 10124
     },
     "package.json": {
-      "sha256": "79203ce00625173141d11918bba60ecac0c04b1625554c237a573a39c29462ad",
+      "sha256": "be0f9220c7525a206e310df056409cd81246309eb86aaa0cc0b8ddd73e884625",
       "size": 1274
     },
     "plugin/yunjing-skill/README.md": {
@@ -2134,8 +2138,8 @@
       "size": 470
     },
     "release-notes.json": {
-      "sha256": "683af60c4630932647921e161a8966e5a02d2a5c8dbb21c5d439b38a764676f6",
-      "size": 28642
+      "sha256": "b8e1db403b3c650433079af546eca7aa573b5448772ec55e8893e2bc7471de58",
+      "size": 29458
     },
     "releases/yunqi-latest.json": {
       "sha256": "a124c9cbbb3e12a9738f243e83e912f7378834dd29a79ccd5fe07fde362f234d",
@@ -2150,11 +2154,11 @@
       "size": 1214
     },
     "selftest.html": {
-      "sha256": "d0ebeb31730a96c73d9021cca8012cde4513ffe0ebe89658e82e491a39dd7d74",
+      "sha256": "e13b4e139bb66828ecfb760b5bdc01e62e5fcb1c566f04a40ad646ec6cb377a7",
       "size": 8129
     },
     "settings.html": {
-      "sha256": "2c5186a70ad749036afb97247e196dd264965323a1736df64f367ef03cff56a7",
+      "sha256": "60a22aaaa7c87f504b05e895176cbe30d4a23c2b5d580bf12b537e0159f31f69",
       "size": 30357
     },
     "start-mac.command": {
@@ -2178,16 +2182,16 @@
       "size": 59702
     },
     "studio.html": {
-      "sha256": "93a3db97d21595d213ceeebcd9bd2d7a9e5bf19bd7725df4b4c6091b7397cc24",
+      "sha256": "c1e5d8357bed071260c4f84527a8a0902e1d1fdb4e48b495917830b065ccfb67",
       "size": 77239
     },
     "sw.js": {
-      "sha256": "c9a9d176b735ea6cbdc410187046a377e566a1938abe0f43ca3250aaff96b88c",
+      "sha256": "2c3d7d15fd4cda66af9606c346b31f81a1a235c6b30919eee9001b59dd134721",
       "size": 30510
     },
     "update-latest.json": {
-      "sha256": "843cf01c8f2f5bb8c250c032a161cf41bef104f3e59e698d37d377b089c43e16",
-      "size": 1852
+      "sha256": "9a435221bf29f909809cad353a7395adf4a31e7ab933629fc88b3b0c5ebb4094",
+      "size": 1842
     },
     "versions/README.md": {
       "sha256": "23482ef50f6a010d9e8af3bb1bf5ac2357e88c3bcda6aed0e9b85837b35a14ec",
@@ -2658,7 +2662,7 @@
       "size": 20766
     },
     "xiaoyun.html": {
-      "sha256": "3c2877ffaca2aded9952d0d4e84577f09f4a80dd1103d3db2937493243d32be4",
+      "sha256": "79e9dd0eaa55e249d5ed11c60102f99ff2c3ad0e091e2490b9ec1a44bf98b043",
       "size": 20955
     },
     "yunjing-test/DEFECTS-v4.07.2.md": {
@@ -2694,7 +2698,7 @@
       "size": 5103
     },
     "世界地图一览图-原著对照.html": {
-      "sha256": "7e34dbc6ebda0932675667381b0c66b6a4dc4ae1605b718575c5709ce34baa56",
+      "sha256": "26b9002f9307bacba9bfdf5440c6a4aae27ab77dbe0c477f8022fb41c64ba31d",
       "size": 1619708
     },
     "云境-v7.0.5-缺陷清单逐条验收报告.html": {
@@ -2710,7 +2714,7 @@
       "size": 5119
     },
     "品牌资产总览.html": {
-      "sha256": "93e9d4c4007febdb3bc4edd0aeecc79bf368f70eccd3b96fe67fe142a18f7367",
+      "sha256": "353562a1553fe78e0edcfd7c8725876cc82112c916439331feda6bdf6a7a88b3",
       "size": 5995
     },
     "手机端启动.html": {

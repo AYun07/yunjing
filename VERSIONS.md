@@ -2,9 +2,9 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **125** 个版本，从 `v3.55.7` 到 `v7.3.1`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **129** 个版本，从 `v3.55.7` 到 `v7.6.0`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.3.1 口径）**：首行 **v7.3.1 为当前版本**；其余 **124 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> **版本分层（v7.6.0 口径）**：首行 **v7.6.0 为当前版本**；其余 **128 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
@@ -16,6 +16,11 @@
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.6.0** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.0) |
+| **v7.5.0** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.5.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.5.0) |
+| **v7.4.1** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.4.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.4.1) |
+| **v7.4.0** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.4.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.4.0) |
+| **v7.3.1** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.3.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.3.1) |
 | **v7.2.0** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.2.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.2.0) |
 | **v7.1.9** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.9.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.9) |
 | **v7.1.8** | 2026-11-26 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.1.8.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.1.8) |
@@ -144,6 +149,29 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v7.6.0 · 2026-11-27 · 历史全量回归 + 五轮实测 + README 主页口径更新
+历史 19 项问题总账逐条真机回归零回退，五轮实测巡查锁定并修复文档层口径失真，README 主页全面更新到 41 世界与当前版本。
+
+- 历史问题总账 19 项逐条真机回归（顶部遮挡/配置保存/预设正则/书架/正文空白/时钟拖拽/小云边框/地图同源/随缘开局/双端点切换/获取模型/境界梯/地图层级/功法面板/错误专名/新世界信息/打包基线/版本号散落/README口径），回退零复现。
+- 五轮实测巡查：R1 交互信号甄别、R2 数据层硬约束（41 界地图 0 硬性问题、KB 48/35/29 条全有效、版本参数 0 残留）、R3 功能闭环（双端点/拖拽/极速开局零错误）、R4 KB/config 交叉、R5 锁定文档层真问题；不拿误报凑数。
+- README 主页对外口径全部更新：版本徽章 7.2.1→7.6.0、世界数 38→41、分类口径（原著同人31/地球1/自由6/网游3）、changelog 块唯一当前版、下载产物对齐真实两件套；VERSIONS.md 补齐 v7.3.1~v7.6.0 条目。
+
+## v7.5.0 · 2026-11-27 · 新世界信息补全与地图方位纠错
+- 三个新世界 KB 专题详录补全（联网核实原著）：圣堂 32→48 条、近战法师 15→35 条、猛龙过江 14→29 条。
+- 修席小天条目误用剑鬼「霜之回忆」、圣堂雷光城方位矛盾（where 与 x 一致）；打包基线过期修正；全站版本号 7.4.1→7.5.0 同源。
+- 回归 13 组全绿、自检 74/74、KB 运行时 48/35/29 条有效。
+
+## v7.4.1 · 2026-11-27 · 原著正名与世界补全
+- 圣堂整世界重写（骷髅精灵/王猛/命痕命格命器圣像），新增近战法师、猛龙过江独立世界；地图、KB、战斗/主线/阶段三引擎注册齐全。
+- 功法面板 techniques 字段改运行时口径（cost/description），修 undefined/-0；world-ext 404 补齐；网游新书分区与地图基础纠错。
+- 五轮实测循环收敛，终轮零问题，selftest 74/74。
+
+## v7.4.0 · 2026-11-27 · 剩余清单收官
+- C 批功能去重/同步、D 批《圣堂》、网游补书、地图基础纠错、二创兜底、输入遮挡修复。
+
+## v7.3.1 · 2026-11-26 · 客户端实玩返修
+- 配置无法保存、预设正则不显示、存档书架失败、正文顶部空白、时钟拖拽、小云透明边框遮挡等真机返修。
 
 ## v7.2.1 · 2026-11-26 · 客户端真机实测修复
 - 真机修复 2 项：世界大厅顶栏被标题栏遮挡、设置页同步状态 [object Object] 显示错误。

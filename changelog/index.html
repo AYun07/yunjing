@@ -317,11 +317,26 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 实测 回归 文档 README 稳定" style="--entry-hue:#4c8ac9;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.6.0</span>
+                <span class="entry-date">2026-11-27</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">历史全量回归 + 五轮实测巡查 + README 主页口径更新</h3>
+            <p class="entry-lead">把历史 v7.0.x～v7.5.0 修过的 19 项问题列成总账逐条真机回归，再用五轮实测反复挑刺；前四轮数据层与功能层零真问题（不拿误报凑数），第五轮锁定并修复对外文档的口径失真——README 主页全面更新到当前版本。</p>
+            <div class="ver-diff">
+                <div><b>历史全量回归</b>：19 项历史问题总账逐条真机取证——顶部遮挡、配置保存、预设正则、书架、正文空白、时钟拖拽、小云边框、地图同源、随缘开局、双端点切换、获取模型、境界梯、地图层级、功法面板、错误专名、新世界信息、打包基线、版本号散落、README 口径，零回退复现。</div>
+                <div><b>五轮实测巡查</b>：R1 交互信号甄别（404/遮罩/弹窗均确认为设计行为）；R2 数据层硬约束（41 界地图 0 硬性问题、三新世界 KB 48/35/29 条全有效、版本参数 0 残留）；R3 功能闭环（ModelSlots 双端点、makeDraggable 四向、极速开局三场景零错误）；R4 KB/config 交叉；R5 锁定文档层真问题。</div>
+                <div><b>README 主页更新</b>：版本徽章 7.2.1→7.6.0、世界数 38→41、分类口径（原著同人 31 / 真实地球 1 / 自由创作 6 / 网游大世界 3）；下载产物对齐真实两件套（setup.exe + win-unpacked.zip）；changelog 块 4 个「当前」合为唯一当前版；VERSIONS.md 补齐 v7.3.1～v7.6.0 条目。</div>
+            </div>
+            <div class="ver-note">如实披露：前四轮实测未复现真缺陷，是上一版质量的体现，未为凑数编造问题；README 早期产物（源码包/完整包/APK/AppImage）多为历史快照，当前统一为两件套 + PWA + 源码。</div>
+        </article>
                         <article class="log-entry" data-tags="版本 发布 世界 知识库 地图 原著校正 真机 稳定" style="--entry-hue:#c98a4c;">
             <div class="entry-head">
                 <span class="entry-ver">v7.5.0</span>
                 <span class="entry-date">2026-11-27</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">新世界信息补全 + 地图方位纠错</h3>
             <p class="entry-lead">用户指出新加入的世界信息肯定不够。量化核对发现三个新世界的知识库只有老世界的 2.5%~6%，AI 主笔缺少细节密度；据此联网核实原著，补全专题详录级知识库，并修正圣堂地图方位矛盾。</p>
@@ -596,7 +611,7 @@
             <div class="entry-head">
                 <span class="entry-ver">v6.6.1</span>
                 <span class="entry-date">2026-11-23</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">封面瘦身 · 存多个模型一键切换 · 关掉随便点开就能进的口子</h3>
             <p class="entry-lead">按实玩反馈做的一轮清理：封面不再一上来就加载整套地图引擎，模型可以提前存好几个随时切，那些预览页和报告页不再双击就能直接打开。</p>
