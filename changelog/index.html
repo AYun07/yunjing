@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.4.0">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.4.0">
-  <script src="../js/desktop-shell.js?v=7.4.0"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.4.1">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.4.1">
+  <script src="../js/desktop-shell.js?v=7.4.1"></script>
 </head>
 
 <body class="page-changelog">
@@ -317,11 +317,26 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 世界 原著校正 地图 真机 稳定" style="--entry-hue:#8a6ac9;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.4.1</span>
+                <span class="entry-date">2026-11-27</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">原著正名与世界补全：圣堂全套重写 + 近战法师/猛龙过江独立世界 + 地图纠错</h3>
+            <p class="entry-lead">用户指出「新加入的世界信息肯定不够、地图数据要修正」。联网核实发现上一版《圣堂》整个世界观是错的（作者/主角/境界体系全错），据此彻底重写；补建两本网游小说的独立世界；系统性修正地图数据；五轮真机实测循环收敛。</p>
+            <div class="ver-diff">
+                <div><b>圣堂世界彻底重写（原著正名）</b>：核实作者为骷髅精灵（原误记唐家三少）、主角王猛（原误记秦阳）、体系为命痕/命格/命器/圣像（原误记凝气聚灵化婴）。config 头部/开场/骨架速查表/variable 清单全改；KB core 8→18 条、ext 6→14 条（含王猛/杨颖/张小江/胡静/马甜儿/明人/莫山/妄天具名锚点）；atlas 22→31 地点（真实分堂与五界层级）；world-ext 境界模块改命痕；功法字段 desc/tier→cost/description 修复功法面板显示 undefined 的问题；sw.js 补 shengtang 离线预缓存。</div>
+                <div><b>新增两个独立世界</b>：《近战法师》（蝴蝶蓝，主角顾飞/千里一醉，全息网游《平行世界》，公子精英团）与《猛龙过江》（骷髅精灵，主角王钟/噬魂，第二世界，魔宫帝国）各建完整 config+KB core/ext+atlas+界专属模块+主题样式，挂载网游分类（1→3 界，全局 38→41 界）。</div>
+                <div><b>地图数据系统性纠错</b>：34 处 rg 自引用归零（28 处通用+6 处 earth）、凡人奇灵山/御灵宗方位反转修正、剑来骊珠洞天层级倒挂修正、网游新书 8 地点补父分区并修方位、三新世界补 map-art 底图。系统扫描确认 4517 地点零自引用、零越界。</div>
+                <div><b>五轮真机实测循环</b>：第1轮圣堂数据/root 404/秦阳残留；第2轮创建流程与功法面板验证；第3轮 DOM 审计发现缺底图；第4轮历史遗留回归（酒馆卡导出/小云吞点击/时钟/二创/底图）全过；第5轮终验清除错误专名与跨世界标签串书。终轮零问题。</div>
+            </div>
+            <div class="ver-note">未确证：三部新作原著细节按公开资料核实整理，仍可能与用户心中版本有出入；地图视觉底图差异需真机指出具体地点。</div>
+        </article>
                         <article class="log-entry" data-tags="版本 发布 功能 世界 圣堂 去重 真机 稳定" style="--entry-hue:#c9a86a;">
             <div class="entry-head">
                 <span class="entry-ver">v7.4.0</span>
                 <span class="entry-date">2026-11-27</span>
-                <span class="entry-badge new">当前版本</span>
             </div>
             <h3 class="entry-title">剩余清单收官：C 批功能去重 + 三个未确证项真修 + 《圣堂》大世界</h3>
             <p class="entry-lead">把上一版如实披露的剩余项一次做完：羁绊去重、境界梯真源、性格世界书串书、酒馆卡导出、扮演设定并入预设；二创加载/对话框输入/地图层级三项真机定位根因并修复；新增《圣堂》完整世界与网游补两本。</p>
@@ -1294,7 +1309,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.4.0 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.4.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

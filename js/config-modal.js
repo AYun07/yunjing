@@ -28,7 +28,7 @@ const ConfigModal = {
     host.querySelectorAll(".modal-footer .btn-ghost").forEach(function (b) {
       if (/取消/.test(b.textContent)) b.style.display = "none";
     });
-    // v7.4.0：设置页是唯一完整配置入口，强制展示全部接口，隐藏简洁/完整切换以免误切回隐藏卡片
+    // v7.4.1：设置页是唯一完整配置入口，强制展示全部接口，隐藏简洁/完整切换以免误切回隐藏卡片
     var viewSwitch = host.querySelector(".cfg-view-switch");
     if (viewSwitch) viewSwitch.style.display = "none";
     this.bindEvents(host);
@@ -114,7 +114,7 @@ const ConfigModal = {
   applyView() {
     var modal = this._root();
     if (!modal) return;
-    /* v7.4.0：设置页是「全站唯一完整配置入口」，必须默认展示全部 11 个接口卡
+    /* v7.4.1：设置页是「全站唯一完整配置入口」，必须默认展示全部 11 个接口卡
        （预设正则/向量/存档/多连接等）。v7.3.0 沿用弹窗的 simple 默认，把 10 个
        卡片 display:none，玩家反馈「预设正则不显示/向量不显示/存档界面不显示」。
        内联模式一律按完整视图渲染；只有非内联的旧弹窗才尊重 simple/full 切换。 */
@@ -2955,7 +2955,7 @@ const ConfigModal = {
       setTimeout(() => URL.revokeObjectURL(a.href), 1500);
     } catch (e) { this.mmSay("导出失败：" + e.message, "error"); }
   },
-  /** v7.4.0 C8：把云境导出为 SillyTavern 酒馆卡（chara_card_v2）——取内置 releases/yunqi-latest.json */
+  /** v7.4.1 C8：把云境导出为 SillyTavern 酒馆卡（chara_card_v2）——取内置 releases/yunqi-latest.json */
   async exportTavernCard() {
     try {
       let txt = null;

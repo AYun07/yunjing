@@ -1,0 +1,29 @@
+/* ============================================================
+   近战法师主题 - 平行世界（青碧 × 电光 × 数据流）
+   v7.4.1 新增世界专属 UI 皮肤
+   ============================================================ */
+body.theme-jinzhanfashi {
+    --primary: #6fd8c8;
+    --primary-dim: rgba(111, 216, 200, 0.12);
+    --primary-glow: rgba(111, 216, 200, 0.3);
+    --secondary: #7fb8e8;
+    --accent: #e0f4f0;
+    --panel-border: rgba(111, 216, 200, 0.2);
+    background-color: #0b1114;
+    background-image:
+        radial-gradient(ellipse at 40% 0%, rgba(111, 216, 200, 0.12), transparent 60%),
+        radial-gradient(ellipse at 85% 100%, rgba(127, 184, 232, 0.08), transparent 55%);
+    background-attachment: fixed;
+}
+body.theme-jinzhanfashi .top-bar,
+body.theme-jinzhanfashi .masthead {
+    border-color: var(--panel-border);
+    box-shadow: 0 2px 18px rgba(111, 216, 200, 0.12);
+}
+body.theme-jinzhanfashi .workshop-card,
+body.theme-jinzhanfashi .panel {
+    border-color: var(--panel-border);
+}
+body.theme-jinzhanfashi ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6fd8c8, #7fb8e8);
+}

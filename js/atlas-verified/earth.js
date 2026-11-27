@@ -360,7 +360,7 @@ window.ATLAS_VERIFIED["earth"] = {
         {
           "n": "新加坡",
           "cat": "place",
-          "rg": "新加坡",
+          "rg": "",
           "x": 78.8,
           "y": 49.3,
           "lv": 2,
@@ -583,7 +583,7 @@ window.ATLAS_VERIFIED["earth"] = {
         {
           "n": "欧洲",
           "cat": "region",
-          "rg": "欧洲",
+          "rg": "",
           "x": 52.8,
           "y": 22.2,
           "lv": 0,
@@ -744,7 +744,7 @@ window.ATLAS_VERIFIED["earth"] = {
         {
           "n": "北美洲",
           "cat": "region",
-          "rg": "北美洲",
+          "rg": "",
           "x": 22.2,
           "y": 27.8,
           "lv": 0,
@@ -905,7 +905,7 @@ window.ATLAS_VERIFIED["earth"] = {
         {
           "n": "南美洲",
           "cat": "region",
-          "rg": "南美洲",
+          "rg": "",
           "x": 33.3,
           "y": 58.3,
           "lv": 0,
@@ -989,7 +989,7 @@ window.ATLAS_VERIFIED["earth"] = {
         {
           "n": "非洲",
           "cat": "region",
-          "rg": "非洲",
+          "rg": "",
           "x": 55.6,
           "y": 48.9,
           "lv": 0,
@@ -1084,7 +1084,7 @@ window.ATLAS_VERIFIED["earth"] = {
         {
           "n": "大洋洲",
           "cat": "region",
-          "rg": "大洋洲",
+          "rg": "",
           "x": 88.9,
           "y": 65,
           "lv": 0,

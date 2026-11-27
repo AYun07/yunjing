@@ -8,7 +8,7 @@ window.ATLAS_VERIFIED["scifi"] = {
       id: "scifi_era1", name: "地球各时代都市", era: "人类母星从史前到远未来的城市舞台（不同时代并存于同一张示意地图，非同一时间切片）",
       places: [
         {
-          n: "地球", cat: "region", rg: "地球", x: 50, y: 50, lv: 0, d: 5,
+          n: "地球", cat: "region", rg: "", x: 50, y: 50, lv: 0, d: 5,
           where: "人类文明母星，本组各时代都市皆位于此；无统一原著地图，按通用设定置于全图中心",
           c: "科幻通用设定（非原著，可按需增改）"
         },
@@ -78,7 +78,7 @@ window.ATLAS_VERIFIED["scifi"] = {
       id: "scifi_era2", name: "近地轨道与太空站", era: "地球外围轨道空域（空间站、太空电梯、环形殖民地，按轨道力学关系布局）",
       places: [
         {
-          n: "近地轨道", cat: "region", rg: "近地轨道", x: 50, y: 50, lv: 1, d: 5,
+          n: "近地轨道", cat: "region", rg: "", x: 50, y: 50, lv: 1, d: 5,
           where: "地球外围航天器与空间站运行的空域；按通用设定环绕地球，置于全图中心",
           c: "航天/科幻通用设定（非原著）"
         },
@@ -143,7 +143,7 @@ window.ATLAS_VERIFIED["scifi"] = {
       id: "scifi_era3", name: "深空航行与母舰", era: "行星际与星际航路（世代飞船、冬眠船、星舰母舰及其组织）",
       places: [
         {
-          n: "深空", cat: "region", rg: "深空", x: 50, y: 50, lv: 0, d: 5,
+          n: "深空", cat: "region", rg: "", x: 50, y: 50, lv: 0, d: 5,
           where: "行星际与星际航行的广阔空间，本组各飞船航路所在；按通用设定置于全图",
           c: "科幻通用设定（非原著）"
         },
@@ -218,7 +218,7 @@ window.ATLAS_VERIFIED["scifi"] = {
       id: "scifi_era4", name: "外星殖民地", era: "太阳系与系外定居点（月球基地、火星城、沙漠星球与都市行星）",
       places: [
         {
-          n: "系外殖民地", cat: "region", rg: "系外殖民地", x: 50, y: 50, lv: 0, d: 5,
+          n: "系外殖民地", cat: "region", rg: "", x: 50, y: 50, lv: 0, d: 5,
           where: "人类在太阳系内外建立定居点的总称；按通用设定置于全图",
           c: "科幻通用设定（非原著）"
         },
@@ -343,7 +343,7 @@ window.ATLAS_VERIFIED["scifi"] = {
       id: "scifi_era6", name: "通用科幻场景素材库", era: "可复用科幻舞台（实验室、星港、反应堆、遗迹等，无原著）",
       places: [
         {
-          n: "通用场景", cat: "region", rg: "通用场景", x: 50, y: 50, lv: 1, d: 5,
+          n: "通用场景", cat: "region", rg: "", x: 50, y: 50, lv: 1, d: 5,
           where: "科幻创作可复用场景集合，无统一原著地理；按通用设定人为拼合布局",
           c: "科幻通用设定（非原著，可按需增改）"
         },

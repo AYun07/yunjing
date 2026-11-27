@@ -1683,7 +1683,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
   }
   function panelRealms() {
     const th = T();
-    // v7.4.0 C2：境界梯以 RealmRules 真源为准，切世界后显示对应世界的境界，避免张冠李戴
+    // v7.4.1 C2：境界梯以 RealmRules 真源为准，切世界后显示对应世界的境界，避免张冠李戴
     let realms = th.realms;
     try {
       const RR = window.RealmRules;

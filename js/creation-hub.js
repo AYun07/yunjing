@@ -75,7 +75,7 @@
       ]);
     } catch (e) { res = { ok: false, error: (e && e.message) || '网络错误' }; }
     if (mySeq !== LIST_SEQ) return; // 已被新一次渲染取代
-    // v7.4.0：网络/缓存/内置清单都失败时（含 Promise.race 超时），读随包基线清单显示正常空态，
+    // v7.4.1：网络/缓存/内置清单都失败时（含 Promise.race 超时），读随包基线清单显示正常空态，
     // 而不是让整个二创板块报「加载失败」——这是「二创无法加载」的根因修复。
     if (!res.ok) {
       try {

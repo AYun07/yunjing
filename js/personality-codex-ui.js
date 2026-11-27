@@ -16,7 +16,7 @@
   }
   function C() { return G.PersonalityCodex || null; }
   var currentWorld = '', currentRole = '', tab = 'role';
-  /** v7.4.0 C9：读取当前世界 genre，性格世界书按此校对，避免串书/写死凡人修仙 */
+  /** v7.4.1 C9：读取当前世界 genre，性格世界书按此校对，避免串书/写死凡人修仙 */
   function _curGenre() {
     var fw = G.storyFramework;
     var g = (fw && fw.config && (fw.config.genreKey || fw.genre))
@@ -229,7 +229,7 @@
   }
 
   function open() {
-    // v7.4.0 C9：每次打开按当前 genre 复位世界，避免上一界残留串书
+    // v7.4.1 C9：每次打开按当前 genre 复位世界，避免上一界残留串书
     var api = C();
     try { if (api) { var ws = api.worlds(); var cur = _pickWorld(ws); if (cur) currentWorld = cur; currentRole = ''; } } catch (e) {}
     render();
