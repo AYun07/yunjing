@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.4.1">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.4.1">
-  <script src="../js/desktop-shell.js?v=7.4.1"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.5.0">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.5.0">
+  <script src="../js/desktop-shell.js?v=7.5.0"></script>
 </head>
 
 <body class="page-changelog">
@@ -317,11 +317,27 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 世界 知识库 地图 原著校正 真机 稳定" style="--entry-hue:#c98a4c;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.5.0</span>
+                <span class="entry-date">2026-11-27</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">新世界信息补全 + 地图方位纠错</h3>
+            <p class="entry-lead">用户指出新加入的世界信息肯定不够。量化核对发现三个新世界的知识库只有老世界的 2.5%~6%，AI 主笔缺少细节密度；据此联网核实原著，补全专题详录级知识库，并修正圣堂地图方位矛盾。</p>
+            <div class="ver-diff">
+                <div><b>圣堂 KB 补强</b>：新增王猛/杨颖/雷光三友/明人卧底与净土双线/莫山妄天半神/八分堂考/命痕命格命器圣像体系/五界层级/万魔教暗线/雷光城地标/原著铁律等 16 条专题详录，32→48 条、22→44.8KB。</div>
+                <div><b>近战法师 KB 补强</b>：顾飞成长轴、公子精英团六人各自详录（ID/职业/性格/声口）、席小天黑手归属辨析、通缉与双向任务体系、装备道具考据、主城志、行会格局等 20 条，15→35 条、11→31.8KB。</div>
+                <div><b>猛龙过江 KB 补强</b>：王钟、女主群、情缘（宠物蛋孵化的 AI 生命·全书最精密伏笔，此前完全缺失）、魔宫班底、对手清清苹果香/非法入境、七大行会、神器体系、剧情决战锚点等 15 条，14→29 条、9→29.3KB。</div>
+                <div><b>纠错与实测</b>：修正席小天条目误用剑鬼『霜之回忆』的原著错误；圣堂雷光城 where『东部』与 x=28 矛盾，按原著无明文+x西→东契约改为西部（源文件与 all.js 同步）；多轮真机实测甄别（封面 portal 拦截、设置页连锁、随缘开局无配置降级均为设计行为非 bug），回归全绿、自检 74/74。</div>
+            </div>
+            <div class="ver-note">未确证：三部新作原著细节按公开资料核实整理，仍可能与用户心中版本有出入；资料有分歧处（如猛龙过江女主群、近战法师部分装备归属）已在 KB 条目内标注「原著未明确，按公开资料推定」。</div>
+        </article>
                         <article class="log-entry" data-tags="版本 发布 世界 原著校正 地图 真机 稳定" style="--entry-hue:#8a6ac9;">
             <div class="entry-head">
                 <span class="entry-ver">v7.4.1</span>
                 <span class="entry-date">2026-11-27</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">原著正名与世界补全：圣堂全套重写 + 近战法师/猛龙过江独立世界 + 地图纠错</h3>
             <p class="entry-lead">用户指出「新加入的世界信息肯定不够、地图数据要修正」。联网核实发现上一版《圣堂》整个世界观是错的（作者/主角/境界体系全错），据此彻底重写；补建两本网游小说的独立世界；系统性修正地图数据；五轮真机实测循环收敛。</p>
