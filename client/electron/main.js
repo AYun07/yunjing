@@ -19,6 +19,10 @@ const shellUpdate = require('./shell-update.js');
 
 // 版本单一来源：client/electron/package.json 的 version，main.js 不再重复硬编码。
 const VERSION = require('./package.json').version;
+// DR-117：壳层(setup/zip 的 app.asar)曾长期复用固定基线，其内嵌 package.json 固化在 7.3.0，
+// 而内容层走清单热更新能到最新版。若"检查更新"与"当前版本"只读外壳 VERSION，
+// 就会出现「更新装完仍显示旧版本号 + 反复提示有新版本」的死循环（用户实测反馈）。
+// 修复：版本判断与显示统一走 effectiveVersion() = max(外壳版本, 内容版本)。
 const HOME_URL = 'https://github.com/AYun07/yunjing';
 const RELEASE_API = 'https://api.github.com/repos/AYun07/yunjing/releases/latest';
 const RELEASE_PAGE = HOME_URL + '/releases/latest';
@@ -46,6 +50,16 @@ const DEFAULT_SOURCES = [
 // 版本比较交给 content-sync.js 单一实现，避免两处口径漂移
 const parseVer = contentSync.parseVer;
 const compareVer = contentSync.compareVer;
+
+// DR-117：有效当前版本 = max(壳版本, 内容版本)。
+// 壳版本固化时内容层热更新到新版，直接读壳会把已更新的用户误判为旧版、反复提示更新。
+// 内容版本从 state 读取（内容层同步成功后写入），读不到时回退壳版本。
+function effectiveVersion() {
+  try {
+    const cv = contentSync.getStatus(stateFilePath(), contentDirPath()).version;
+    return (cv && compareVer(cv, VERSION) > 0) ? cv : VERSION;
+  } catch (_) { return VERSION; }
+}
 
 // 带超时 + 重定向 + 体积上限的 HTTPS JSON 请求；异常抛给上层转中文提示
 function requestJson(url, { timeoutMs = 12000, redirects = 0 } = {}) {
@@ -115,7 +129,7 @@ function fromCnMeta(data) {
   }));
   return {
     latestVersion: latest,
-    hasUpdate: compareVer(String(data.version), VERSION) > 0,
+    hasUpdate: compareVer(String(data.version), effectiveVersion()) > 0,
     releasePage: (typeof data.releasePage === 'string' && data.releasePage) || RELEASE_PAGE,
     assets,
     source: 'cn-meta'
@@ -138,7 +152,7 @@ async function fetchRelease() {
   const latest = String(data.tag_name).trim();
   return {
     latestVersion: latest,
-    hasUpdate: compareVer(latest, VERSION) > 0,
+    hasUpdate: compareVer(latest, effectiveVersion()) > 0,
     releasePage: (typeof data.html_url === 'string' && data.html_url) || RELEASE_PAGE,
     assets: Array.isArray(data.assets) ? data.assets : [],
     source: 'github-api'
@@ -150,7 +164,7 @@ function showFoundDialog(info, silent) {
   return dialog.showMessageBoxSync({
     type: 'info', title: '发现新版本',
     message: '云境 ' + info.latestVersion + ' 已发布',
-    detail: '当前版本 v' + VERSION + '。\n可自动更新（重启后生效），或前往 Release 页面手动下载。',
+    detail: '当前版本 v' + effectiveVersion() + '。\n可自动更新（重启后生效），或前往 Release 页面手动下载。',
     buttons: ['自动更新', '前往下载页', '稍后再说'], defaultId: silent ? 2 : 0, cancelId: 2
   });
 }
@@ -273,13 +287,13 @@ async function checkForUpdate({ silent = false } = {}) {
   try {
     const info = await fetchRelease();
     const result = {
-      ok: true, currentVersion: VERSION, latestVersion: info.latestVersion,
+      ok: true, currentVersion: effectiveVersion(), latestVersion: info.latestVersion,
       hasUpdate: info.hasUpdate, releasePage: info.releasePage
     };
     if (!info.hasUpdate) {
       if (!silent) dialog.showMessageBoxSync({
         type: 'info', title: '检查更新', message: '当前已是最新版本',
-        detail: '云境 v' + VERSION + '，无需更新。', buttons: ['好的']
+        detail: '云境 v' + effectiveVersion() + '，无需更新。', buttons: ['好的']
       });
       return result;
     }
@@ -297,7 +311,7 @@ async function checkForUpdate({ silent = false } = {}) {
       type: 'warning', title: '检查更新', message: '暂时无法检查更新',
       detail: text, buttons: ['知道了']
     });
-    return { ok: false, currentVersion: VERSION, latestVersion: null, hasUpdate: false, error: text };
+    return { ok: false, currentVersion: effectiveVersion(), latestVersion: null, hasUpdate: false, error: text };
   }
 }
 
@@ -307,7 +321,7 @@ async function autoUpdate(info) {
   try {
     if (!target) target = await fetchRelease();
     if (!target.hasUpdate) {
-      return { ok: true, currentVersion: VERSION, latestVersion: target.latestVersion, hasUpdate: false, message: '当前已是最新版本' };
+      return { ok: true, currentVersion: effectiveVersion(), latestVersion: target.latestVersion, hasUpdate: false, message: '当前已是最新版本' };
     }
     if (process.platform !== 'win32') {
       shell.openExternal(target.releasePage);
@@ -341,7 +355,7 @@ async function autoUpdate(info) {
       buttons: ['立即安装', '打开所在目录', '稍后再说'], defaultId: 0, cancelId: 2
     });
     const result = {
-      ok: true, currentVersion: VERSION, latestVersion: target.latestVersion,
+      ok: true, currentVersion: effectiveVersion(), latestVersion: target.latestVersion,
       downloadedTo: dest, verified: !!expect
     };
     if (choice === 1) { shell.showItemInFolder(dest); return Object.assign(result, { action: 'show-folder' }); }
@@ -581,8 +595,8 @@ function createWindow() {
         const stt = contentSync.getStatus(stateFilePath(), contentDirPath());
         const choice = dialog.showMessageBoxSync({
           type: 'info', title: '关于云境',
-          message: `云境 v${VERSION}`,
-          detail: `壳版本 v${VERSION} · 内容版本 ${stt.version}\n万象入云 · 一念一世界\nAI 互动小说 + 开放世界扮演\n纯本地运行，故事与密钥只存本机。`,
+          message: `云境 v${effectiveVersion()}`,
+          detail: `当前版本 v${effectiveVersion()} · 壳版本 v${VERSION} · 内容版本 ${stt.version}\n万象入云 · 一念一世界\nAI 互动小说 + 开放世界扮演\n纯本地运行，故事与密钥只存本机。`,
           buttons: ['检查更新', '好的'], defaultId: 1, cancelId: 1
         });
         if (choice === 0) checkForUpdate();
@@ -640,7 +654,8 @@ app.on('before-quit', () => { if (server) server.close(); });
 // 供 UI 读取客户端信息（授权占位模块会用到）；version 来自 package.json 单一来源
 ipcMain.handle('client-info', () => ({
   platform: process.platform,
-  version: VERSION,
+  version: effectiveVersion(),       // DR-117：显示/判断用有效版本，避免固化外壳导致的"旧版+反复提示"
+  shellVersion: VERSION,             // 保留壳版本供诊断
   contentVersion: contentSync.getStatus(stateFilePath(), contentDirPath()).version,
   port: serverPort,
   isPackaged: app.isPackaged

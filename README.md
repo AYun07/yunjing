@@ -4,7 +4,7 @@
 
 > 打开网页就能用的 AI 互动小说加开放世界扮演。纯前端静态站，不用构建，没有后端，也不用注册账号。AI 接口自己填，故事和 Key 只留在本机浏览器里。封面只有一张，叫「万象入云」，四个入口进的是同一个世界。
 
-[![当前版本](https://img.shields.io/badge/version-7.6.0-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.6.0) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
+[![当前版本](https://img.shields.io/badge/version-7.6.1-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.6.1) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
 
 ---
 
@@ -72,12 +72,12 @@
 
 ## 三·五、怎么下载安装（五种方式）
 
-一开始定的几种方式，具体产物以当前版 [Release 页](https://github.com/AYun07/yunjing/releases/latest) 的 Assets 为准。**当前版本（v7.6.0）实际发布的是 Windows 两件套**；源码可随时从该版 tag 直接下载，PWA 与本地部署不需要安装包。
+一开始定的几种方式，具体产物以当前版 [Release 页](https://github.com/AYun07/yunjing/releases/latest) 的 Assets 为准。**当前版本（v7.6.1）实际发布的是 Windows 两件套**；源码可随时从该版 tag 直接下载，PWA 与本地部署不需要安装包。
 
 | 方式 | 适合谁 | 怎么用 | 当前实际产物 |
 |---|---|---|---|
-| ① 桌面安装版 | 不想碰命令行、想要「成熟软件」体验的人 | Windows 双击 `.exe` 安装向导，一路下一步装好，桌面/开始菜单生成「云境」图标，点图标启动即播电影片头→封面→游玩；可随时在「设置→应用」卸载 | `YunJing-v7.6.0-Windows-setup-x64.exe`（NSIS 安装向导） |
-| ② 桌面免安装版 | 想直接用、不便安装的人 | 解压后运行其中的可执行文件，无需安装、 portable | `YunJing-v7.6.0-win-unpacked-x64.zip` |
+| ① 桌面安装版 | 不想碰命令行、想要「成熟软件」体验的人 | Windows 双击 `.exe` 安装向导，一路下一步装好，桌面/开始菜单生成「云境」图标，点图标启动即播电影片头→封面→游玩；可随时在「设置→应用」卸载 | `YunJing-v7.6.1-Windows-setup-x64.exe`（NSIS 安装向导） |
+| ② 桌面免安装版 | 想直接用、不便安装的人 | 解压后运行其中的可执行文件，无需安装、 portable | `YunJing-v7.6.1-win-unpacked-x64.zip` |
 | ③ 源码 / 本地部署 | 想改代码、本地部署、Linux / 自建网关的人 | 下载该版 tag 的 Source code (zip)，或 `git clone` 后跑启动器 / `python3 -m http.server 8899` | GitHub tag 源码包 / 仓库源码本身 |
 | ④ 手机与 macOS | 手机、macOS 上玩的人 | iOS：Safari 打开站点→分享→添加到主屏幕；macOS：Safari 添加到程序坞；安卓浏览器亦可添加到主屏幕 | PWA（免费方案，不需签名包） |
 | ⑤ 智能体插件 | 在 agent 框架里玩的人 | 把 skill 装进 deepseekharness / Claude 等，让 AI 按云境规则创作 | 仓库内 skill 目录（见项目文件树） |
@@ -114,13 +114,13 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v7.6.0（2026-11-27 · 唯一当前版）
+## 🆕 当前版本：v7.6.1（2026-11-27 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v7.6.0** | 2026-11-27 | **当前** | 历史 19 项问题总账逐条真机回归零回退，五轮实测巡查锁定并修复文档层口径失真，README 主页全面更新到 41 世界与当前版本。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.0.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.0) |
+| **v7.6.1** | 2026-11-27 | **当前** | 修复"更新装完仍显示旧版本、反复提示更新"的死循环：外壳 asar 固化旧版本号导致判断失真，改为有效版本=max(壳,内容)并重打外壳包，存量用户一次更新后永久免重装。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.1.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.1) |
 
-**看版本**：[📚 版本页（132 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v7.5.0 的差异](https://github.com/AYun07/yunjing/compare/v7.5.0...v7.6.0) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.0)
+**看版本**：[📚 版本页（132 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v7.6.0 的差异](https://github.com/AYun07/yunjing/compare/v7.6.0...v7.6.1) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.1)
 
 > 逐版沿革、历史功能说明与验收数据统一由 [VERSIONS.md](VERSIONS.md) 维护；本板块由 `scripts/update-readme.mjs` 自动生成，**主页不再展开版本列表**。新增版本请插到 VERSIONS.md 最上方。
 

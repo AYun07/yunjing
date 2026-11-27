@@ -1,16 +1,94 @@
 {
-  "name": "yunjing",
-  "version": "7.6.0",
-  "private": true,
-  "description": "云境 · AI 互动小说 + 开放世界扮演（纯前端静态站，零运行时依赖）",
+  "name": "yunjing-desktop",
+  "version": "7.6.1",
+  "description": "云境 · AI创作与开放世界扮演 桌面客户端",
+  "main": "main.js",
+  "author": "云境",
+  "license": "MIT",
   "scripts": {
-    "test": "node test/regression.mjs && node test/core-regression.mjs && node test/npc-chronicle-regression.mjs && node test/npc-bridge-regression.mjs && node test/intimacy-archive-regression.mjs && node test/personality-codex-regression.mjs && node test/psyche-model-regression.mjs && node test/relation-codex-bridge-regression.mjs && node test/ai-augment-regression.mjs && node test/ai-augment-bridge-regression.mjs && node test/beast-profile-regression.mjs && node test/bonus-title-regression.mjs && node test/semantic-engine-regression.mjs",
-    "check": "node test/regression.mjs",
-    "test:core": "node test/core-regression.mjs",
-    "test:npc": "node test/npc-chronicle-regression.mjs && node test/npc-bridge-regression.mjs",
-    "test:augment": "node test/intimacy-archive-regression.mjs && node test/personality-codex-regression.mjs && node test/psyche-model-regression.mjs && node test/relation-codex-bridge-regression.mjs && node test/ai-augment-regression.mjs && node test/ai-augment-bridge-regression.mjs"
+    "dev": "electron main.js --no-sandbox",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac"
   },
   "devDependencies": {
-    "playwright": "^1.65.1"
+    "electron": "33.2.0",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.yunjing.studio",
+    "productName": "YunJing",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build-res"
+    },
+    "extraResources": [
+      {
+        "from": "build-resources/yunjing",
+        "to": "yunjing",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build-res/yj-icon-512.png",
+      "artifactName": "云境-Windows-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": [
+        "zh_CN",
+        "en_US"
+      ],
+      "language": "2052",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "云境"
+    },
+    "portable": {
+      "artifactName": "云境-Windows-${version}-便携版.exe"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build-res/yj-icon-512.png",
+      "artifactName": "云境-macOS-${version}-${arch}.${ext}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build-res/yj-icon-512.png",
+      "artifactName": "云境-Linux-${version}-${arch}.${ext}",
+      "category": "Education"
+    }
   }
 }

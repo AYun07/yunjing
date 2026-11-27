@@ -225,7 +225,7 @@
   }
 
   return {
-    version: "7.4.1",
+    version: "7.6.1",
     legalNumbers: legalNumbers,
     legalMoney: legalMoney,
     legalPairs: legalPairs,

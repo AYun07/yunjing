@@ -1846,3 +1846,14 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 决策2：st.state 语义是完整 state 对象而非状态文案，禁止 String() 直拼 UI；只取 lastResult 字符串，null 时不渲染括号。
 - 失效条件：若客户端改为非 fixed 外壳或标题栏高度变化，需复核 shell-on 补丁；若 getStatus 契约调整，需同步设置页取值。
 - 证据：两处均有真机截图前后对比；其余 10+ 类实测通过项与误报判定见验收报告。如实披露确认真缺陷 2 项，未凑数。
+
+## DR-117 · 更新死循环：外壳版本固化导致"装完仍显示旧版+反复提示"（2026-11-27，v7.6.1）
+- 背景：用户实测反馈"更新安装完后显示的还是旧版本，并且再次提醒更新，更新完后还是旧版本并再次提醒更新"。这是 DR-104「检查更新一直说已是最新版」的镜像问题——那次是壳旧、Release 缺包导致恒判"最新"，这次是壳旧导致恒判"有更新"。
+- 决定性排查：本地源码各处（根/package.json、client/electron/package.json、content-manifest、dist 基线 manifest）均为 7.6.0，但已发布并运行的 `app.asar` 内 `package.json.version = 7.3.0`（setup 长期复用固定外壳）。`main.js` 的 `VERSION` 直接读该值；`checkForUpdate()` 用 `compareVer(远端7.6.x, VERSION7.3.0) > 0` → hasUpdate 恒真；"当前版本"显示同样读外壳 → 装完仍旧。内容热更新只能改 yj-content 站点文件，改不到 app.asar，故存量用户死循环无解。
+- 决策：
+  ① 代码层引入 `effectiveVersion() = max(外壳版本, 内容版本)`；hasUpdate 判断、当前版本显示、发现新版本提示、关于框、`client-info.version` 全部改用有效版本，`client-info` 另保留 `shellVersion` 供诊断（契约向后兼容，新增可选字段）。
+  ② 治本必须重打外壳包：修复代码在 app.asar 内、内容热更新改不到，故重打带修复且 package.json=7.6.1 的 app.asar 与 win-unpacked.zip，经默认 A/B 通道送达存量用户；装完有效版本=max(7.6.1,内容) 与远端一致，不再提示，此后恢复免重装。
+  ③ 版本升到 v7.6.1（高于存量外壳 7.3.0 才触发更新判断），update-latest.json 资产名/版本/双 SHA 同步。
+- 证据：产物级校验——新 app.asar 内 package.json=7.6.1、main.js 含 effectiveVersion、5 文件齐全且可真实 require 加载；zip 内 asar 与 dist asar 字节一致；update-latest 三处 SHA 对齐。单元层——场景模拟 7.3.0 壳+7.6.0 内容时 hasUpdate 由真转假。
+- 未验证项强制披露：沙箱无 Windows GUI，真机双击 exe 的菜单点击以 mock electron 通道断言覆盖；A/B 目录切换的 Windows 文件占用重试以逻辑测试覆盖，未上真机 GUI。
+- 失效条件：若将来又复用固定外壳但忘记同步其内 package.json 版本，或 `client-info` 契约被外部依赖方锁定不允许新增字段，需重新评估；若远端 update-latest.json 版本未高于用户外壳版本，存量用户不会被触发更新，修复送不到。

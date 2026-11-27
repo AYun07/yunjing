@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.5.0">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.5.0">
-  <script src="../js/desktop-shell.js?v=7.5.0"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.6.1">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.6.1">
+  <script src="../js/desktop-shell.js?v=7.6.1"></script>
 </head>
 
 <body class="page-changelog">
@@ -317,11 +317,26 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 修复 更新 客户端 稳定" style="--entry-hue:#d4694a;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.6.1</span>
+                <span class="entry-date">2026-11-27</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">修复"更新装完仍是旧版本、反复提示更新"的死循环</h3>
+            <p class="entry-lead">用户实测：更新安装完版本号没变，再次检查又提示更新，装完仍旧——无限循环。根因是已发布外壳 app.asar 内的 package.json 固化在 7.3.0，而内容层早已热更新到 7.6.0；检查更新与"当前版本"都只读外壳版本，于是 compareVer 永远判"有新版本"。这次把版本判断改为有效版本并重打外壳包。</p>
+            <div class="ver-diff">
+                <div><b>根因</b>：setup.exe 长期复用固定外壳，其内嵌 package.json 停在 7.3.0；内容热更新只改站点文件、改不到 app.asar。外壳 7.3.0 vs 远端 7.6.x → hasUpdate 恒为真，装完外壳仍旧 → 死循环。</div>
+                <div><b>修复（DR-117）</b>：main.js 新增 effectiveVersion()=max(外壳版本, 内容版本)；检查更新 hasUpdate、当前版本显示、发现新版本提示、关于框、client-info 全部改用有效版本，client-info 另保留 shellVersion 供诊断。</div>
+                <div><b>送达存量用户</b>：修复代码在 app.asar 内，内容热更新改不到，必须走一次壳层更新——重打带修复且版本为 7.6.1 的 app.asar 与 win-unpacked.zip，经默认 A/B 通道送达；装完后有效版本=max(7.6.1, 内容) 与远端一致，不再提示，此后永久免重装。</div>
+            </div>
+            <div class="ver-note">如实披露：沙箱无 Windows GUI，真机双击 exe 的菜单点击用 mock electron 通道断言覆盖；A/B 目录切换的 Windows 文件占用重试以逻辑测试覆盖，未上真机 GUI。校验停在"产物 asar 内版本=7.6.1 + 修复代码在 + 模块可真实加载"层。</div>
+        </article>
                         <article class="log-entry" data-tags="版本 发布 实测 回归 文档 README 稳定" style="--entry-hue:#4c8ac9;">
             <div class="entry-head">
                 <span class="entry-ver">v7.6.0</span>
                 <span class="entry-date">2026-11-27</span>
-                <span class="entry-badge new">当前版本</span>
+                <span class="entry-badge">历史版本</span>
             </div>
             <h3 class="entry-title">历史全量回归 + 五轮实测巡查 + README 主页口径更新</h3>
             <p class="entry-lead">把历史 v7.0.x～v7.5.0 修过的 19 项问题列成总账逐条真机回归，再用五轮实测反复挑刺；前四轮数据层与功能层零真问题（不拿误报凑数），第五轮锁定并修复对外文档的口径失真——README 主页全面更新到当前版本。</p>
@@ -1340,7 +1355,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.4.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.6.1 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
