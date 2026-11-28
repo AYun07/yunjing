@@ -37,10 +37,10 @@
       var c = fw && fw.config;
       var g = c && (c.genreKey || c.genre || c.id);
       if (g) return g;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] canon-timeline",e)}
     try {
       if (window.SlotRegistry && window.SlotRegistry.genre) return window.SlotRegistry.genre();
-    } catch (e2) {}
+    } catch(e2){console.warn("[swallowed] canon-timeline",e2)}
     return "default";
   }
 
@@ -72,12 +72,12 @@
   }
 
   function save(o) {
-    try { localStorage.setItem(key(), JSON.stringify(o)); } catch (e) {}
+    try { localStorage.setItem(key(), JSON.stringify(o)); } catch(e){console.warn("[swallowed] canon-timeline",e)}
     emit();
   }
 
   function emit() {
-    listeners.forEach(function (fn) { try { fn(); } catch (e) {} });
+    listeners.forEach(function (fn) { try { fn(); } catch(e){console.warn("[swallowed] canon-timeline",e)} });
   }
 
   function heroName() {

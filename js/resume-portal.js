@@ -51,7 +51,7 @@
           try {
             var pkg = JSON.parse(body);
             title = (pkg.save && pkg.save.title) || (pkg.title) || "";
-          } catch (e) {}
+          } catch(e){console.warn("[swallowed] resume-portal",e)}
         }
         out.push({
           genre: g,
@@ -94,7 +94,7 @@
       var a = act.getAttribute("data-act");
       if (a === "back" || a === "close") { close(); return; }
       if (a === "load") { load(act.getAttribute("data-genre"), act.getAttribute("data-slot")); return; }
-      if (a === "new") { close(); try { window.CoverPortal && window.CoverPortal.open(); } catch (e) {} return; }
+      if (a === "new") { close(); try { window.CoverPortal && window.CoverPortal.open(); } catch(e){console.warn("[swallowed] resume-portal",e)} return; }
     });
     return host;
   }
@@ -140,7 +140,7 @@
   function close() {
     var host = document.getElementById(OVERLAY);
     if (host) host.classList.remove("rp-open");
-    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch(e){console.warn("[swallowed] resume-portal",e)} }
   }
 
   function load(genre, slot) {
@@ -148,7 +148,7 @@
     try {
       // 与 SaveSlots.switchTo 同机制：先设当前档，storyFramework.init()→loadSave() 会据此载入
       window.localStorage.setItem("storyActiveSlot_" + genre, slot || "main");
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] resume-portal",e)}
     location.href = "studio.html?genre=" + encodeURIComponent(genre);
   }
 

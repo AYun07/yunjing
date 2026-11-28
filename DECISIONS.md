@@ -1905,3 +1905,18 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 证据：静态全库 424 JS 语法扫描 0 失败；版本同源 sync-version --check 全绿 + t_version_sync 19/19；第一轮 DOM/点击 19/19、pageerror 0；第二轮 longzu 真实创作流程（mock API）markdown 标记 0 残留、创作闭环正常；第三轮 15 界×15 点击=225 次、配额告警全 0、LS 键稳定 19–25；第四轮 XSS 未执行/损坏配置容错/注入窗口点遮罩无崩溃/骰子连点24次无 rejection；第五轮真机 Electron（Xvfb+CDP）版本/踏入/R2清洗/无栈溢出/R5/胶囊/pageerror 核心项全过。
 - 未验证项强制披露：① R9「小云弹层背后残字/立绘错位」属 P3 需实图确认，未盲目改，如实留待玩家提供截图；② 第五轮 Electron 的 `.page-studio .panel-title` computed 断言有 DOM 时序抖动（首轮 Chromium 已 19/19 确认 CSS 生效，两端共用同一份 CSS），`#rpgFab` 注入依赖特定游戏态、本轮未改其注入逻辑仅改定位（首轮已覆盖）；③ 全库空 catch 未清零（994 处多为防御性 UI 兜底，仅高频写入路径补 warn）；④ setup.exe GUI 双击安装流程沙箱无 Windows 桌面，以产物级解包 + Electron 实测覆盖。
 - 失效条件：若将来世界时钟拖拽位置持久化写入了旧 top 值，需清理 localStorage storyWorldClockPos 才生效新默认；若 longzu 输出让面板字段与叙事同行而非独立成行，成组清洗规则需重估；若 GenreStoryConfig/nameSeeds 消费端字段口径变更，wangyou 补齐项需同步。
+
+## DR-122 · v7.6.6 · 100 条清单「无误报」逐条实修 + 装完旧版根因 + exe 真机键鼠（2026-11-29）
+- 背景：玩家第二次提交《v7.6.5-100条实测问题清单》，明确「没有误报，仔细对照全部修复，修复完后自己在沙箱里实地安装 exe 并实际模拟鼠标键盘全量点击输入测试」。与 DR-121 的「甄别剔除误报」口径不同，本轮按用户要求逐条实修、逐项给出动作，不再以「误报」为由跳过。
+- 关键修复（按清单分节实修，均有代码动作）：
+  - 版本同源：根 package.json / content-manifest.json 停 7.6.4、README badge 停 7.6.2 → 统一 7.6.6；t_version_sync 补根 package.json/content-manifest/README badge 三处锚点，回归 22/22。
+  - 正文语言：ai-message-builder 两个 prompt 分支加「正文一律纯中文叙事、禁夹杂外文」约束；ai-response-handler 的结构行剥离从逐界打地鼠升级为通用规则（标题 1–6 级、独立加粗标题、表格行、多前缀字段行，连续≥2 行成组删）。
+  - 72 芯片（本次核心）：lazy PersonalityCodex 加载晚于 CharacterStudio.mount，代码读到空 codex 渲染成「没有匹配」，且 boot 定时裸重建会覆盖选中态。改为模块内 `_traitState` 内存真源 + 写失败 toast 提示 + codex 未就绪时轮询重绘；真机 exe 复验 chips=72、on=true、`.cs-trait on`。
+  - 等待卡/反馈：user-input-handler 加「预计 20–60 秒」；story-setup-wizard 单个骰无选项加 toast；studio panelToggle 桌面态加 .on 闪高亮+toast、修 snapList/bindEvents 竞态；xiaoyun 全页按钮（trySay/renderActs/renderForms/pluginsAction/开工/造物工坊）补 toast 反馈、去 alert、subhd 玩家化、遮罩 .62→.92。
+  - 视觉：world-clock 回合胶囊移到右上避让标题；rpgFab/Drawer 移左下；道水印 .045→.02；theme-gold panel-title 修省略号（去 background-clip:text）；xiaoyun-buddy 遮罩加深+sub 省略号。
+  - 存储/健壮性：mo-store 配额告警按 key+60 秒节流、新增 pruneStaleWorldKeys 清旧界键；store-guard isStaleGenreKey 在 genre 未就绪时保守放行、rescue 延后 400ms；wangyou-config 补 identities/timelines/aptitudes getter；品牌资产文案「即将上线」改「筹备中」；新增 test/no-empty-catch.mjs 门禁，源码空 catch 清零。
+  - 装完仍显示旧版的真根因：上次 v7.6.6 构建时，最后一步 72 芯片修复发生在打包之后，且 client/electron/package.json 外壳版本停在 7.6.5、app.asar 内 package.json=7.6.5。本轮把修复同步进 build-resources/yunjing 与 dist/win-unpacked/resources/yunjing，重建 app.asar（版本 7.6.6 + headersSent 修复），清 yj-content 旧缓存，重编两件套。
+- 产物级证据（从新 setup.exe 内嵌 `$PLUGINSDIR/app-64.7z` 抽取实测）：asar package.json 版本 7.6.6、main.js 含 res.headersSent 修复、character-studio.js 含 4 处 _traitRetryTimer、content-manifest 7.6.6。setup SHA256 4dd1edc9…fcc / zip SHA256 bd4eaec2…dbc，update-latest.json 同步。
+- 沙箱真机测试（wine 9.0 + Xvfb + CDP 连真实 YunJing.exe）：四入口 4/4、20 界 dispatch、72 芯片高亮、键盘输入+回车、小云发送反馈、创作室按钮、0 pageerror 全部通过。专项复验脚本 v766-exe-reverify.mjs：A72芯片 PASS（chips=72/on=true/cls=cs-trait on）、B全按钮 PASS（12/24 可交互按钮真实点击、遮罩期跳过正确、存活）、0 JS 报错。
+- 测试方法论决策（诚实披露）：创作室「全按钮」在 wine 下用裸 page.mouse.click 命中偶发零尺寸 rect 会点到无边框窗口角触发 app.quit()（测试假象，非产品 bug）——用逐按钮 locator.click 诊断证明 24 按钮全程客户端存活、设置面板可正常开关（closeSettings 只隐藏 div、closeWindow IPC 调用为 0）、用 DOM click 关闭面板后客户端存活。故测试统一改用带命中检查的 locator.click，遮罩覆盖期跳过底层按钮（本就不可交互），不把测试工具的坐标误差计入产品缺陷，也不为凑数把跳过的按钮算作失败。
+- 失效条件：若将来 lazy 加载的 codex 数据结构或缓存键 `yunjingHeroTraits` 变更，需同步 _traitState 真源逻辑；若 setup.exe 的 NSIS 内嵌路径 `$PLUGINSDIR/app-64.7z` 变更，产物级校验脚本需改路径；若 Electron 外壳版本再次漏升，装完仍会判旧版——每次发版必须校验 app.asar 内 package.json 与 client/electron/package.json 同号。

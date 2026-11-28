@@ -202,13 +202,13 @@
   }
   function undo() {
     var b = null;
-    try { b = JSON.parse(localStorage.getItem(BACKUP_KEY) || 'null'); } catch (e) { }
+    try { b = JSON.parse(localStorage.getItem(BACKUP_KEY) || 'null'); } catch(e){console.warn("[swallowed] vault",e)}
     if (!b || !b.data) throw new Error('没有可回滚的备份');
     var n = 0;
     Object.keys(b.data).forEach(function (k) {
-      try { localStorage.setItem(k, b.data[k]); n++; } catch (e) { }
+      try { localStorage.setItem(k, b.data[k]); n++; } catch(e){console.warn("[swallowed] vault",e)}
     });
-    try { localStorage.removeItem(BACKUP_KEY); } catch (e) { }
+    try { localStorage.removeItem(BACKUP_KEY); } catch(e){console.warn("[swallowed] vault",e)}
     return n;
   }
 

@@ -140,7 +140,7 @@
             try {
                 const db = vars.dashboard || vars.gauges || {};
                 if (db.demon != null) dv = db.demon;
-            } catch (e) { }
+            } catch(e){console.warn("[swallowed] xianni-ext",e)}
             if (dv == null) dv = WXH.pick(vars, ['心魔', '心魔值', '心魔侵蚀', 'demon']);
             if (dv != null) {
                 const m = String(dv).match(/(\d{1,3})/);

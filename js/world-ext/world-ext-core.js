@@ -164,7 +164,7 @@
           if (window.showToast) {
             window.showToast("⚠ 界内进度保存失败：浏览器存储空间已满，本次改动刷新后会丢失。请到「接口设置」清理旧数据或导出存档后再试。", "error");
           }
-        } catch (e3) {}
+        } catch(e3){console.warn("[swallowed] world-ext-core",e3)}
       }
     }
   }
@@ -300,8 +300,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       if (window.PlayerKit && typeof window.PlayerKit.augment === "function") {
         modules = window.PlayerKit.augment(g, modules);
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] world-ext-core",e)}
     load();
     modules.forEach(ensureState);
     entMod = modules.find((m) => m && (m.eeLedger || m.eeOps)) || null;
@@ -309,15 +308,13 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       if (!ent || !ent.ledger) ent = EE.blank();
       try {
         EE.Ledger.seed(ent, ((_a = entMod.eeLedger) == null ? void 0 : _a.start) || {}, null);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] world-ext-core",e)}
       ent._modId = entMod.id;
     }
     try {
       const fw = window.storyFramework;
       if (fw && fw.storyState && fw.storyState.variables) onVars(fw.storyState.variables, Number(fw.storyState.variables.chapter) || 0);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] world-ext-core",e)}
     console.debug(`[WorldExt] ${genre} 界专属模块就位：${modules.map((m) => m.name).join(" / ")}${entMod ? "（实体引擎已挂载）" : ""}`);
     mountStrip();
   }
@@ -358,7 +355,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
        玩家会以为自己的委托、灵田、背包进度全没了（实测：reload 后立即读状态，
        resources 与 cooldowns 已被清空，3 秒后才恢复）。
        这里在 init() 里就先把存档读回来，与界扩展的加载时机解耦。 */
-    try { load(); } catch (e) { }
+    try { load(); } catch(e){console.warn("[swallowed] world-ext-core",e)}
     try {
       /* v4.07.2：判断条件从「一个模块都没有」改为「缺随身器官」——
          本界专属模块已就绪但 PlayerKit 晚到时，同样要把随身器官补挂上，
@@ -368,8 +365,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
           YJWait.for(tryPlayerKit, null, { name: "world-ext.playerkit", base: 150, max: 60 });
         }
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] world-ext-core",e)}
     try {
       if (pending.length) {
         const before = modules.length;
@@ -380,8 +376,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
           mountStrip();
         }
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] world-ext-core",e)}
     booted = true;
   }
   function hasModules() {
@@ -390,7 +385,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
   function onVars(vars, round) {
     if (!vars) return;
     /* v3.56.1：每轮同步统一实体镜像（引用级，零破坏旧路径） */
-    try { if (window.EntityStore) window.EntityStore.bootstrap(vars); } catch (e) {}
+    try { if (window.EntityStore) window.EntityStore.bootstrap(vars); } catch(e){console.warn("[swallowed] world-ext-core",e)}
     if (!modules.length) return;
     let dirty = false;
     for (const m of modules) {
@@ -420,8 +415,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
             try {
               (_a = window.showToast) == null ? void 0 : _a.call(window, `🏗 ${ev.text}`, "success");
               (_c = (_b = window.Celebration) == null ? void 0 : _b.fire) == null ? void 0 : _c.call(_b, "seal");
-            } catch (e) {
-            }
+            } catch(e){console.warn("[swallowed] world-ext-core",e)}
           });
           /* v4.08.0 修复（无上限增长）：dayEvents 是模块级累积数组，从不被清空
              → 每次 EE.tick 产生的完工事件永久堆积（纯内存泄漏，长时挂机时单调增长）。
@@ -439,8 +433,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
       if (body && body.dataset.wxTab === "1") {
         body.innerHTML = panelHTML();
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] world-ext-core",e)}
   }
   function panelHTML() {
     if (!modules.length) return empty("🧬", "本界暂无专属模块", "界专属扩展按世界定制——自由工坊可自定义追踪字段");
@@ -522,8 +515,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
             toast = `🏗 ${def.name} 已开工——资源已扣，工期 ${def.days || 1} 天`;
             try {
               (_b = m.eeWrap) == null ? void 0 : _b.call(m, action, payload, r, s);
-            } catch (e) {
-            }
+            } catch(e){console.warn("[swallowed] world-ext-core",e)}
           }
           break;
         }
@@ -652,8 +644,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
                     <span class="ws-reswrap">${res}</span>
                     <span class="ws-tail">${tail}</span>
                 </div>`;
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] world-ext-core",e)}
     }
     if (!groups.length && !entRow) return null;
     return `<div class="ws-board" onclick="ImmersiveSuite.openTab('ext')" title="打开界专属操作台">
@@ -697,8 +688,7 @@ table.wx-matrix{border-collapse:collapse;width:100%;font-size:12px;min-width:420
           const d = m.directive(s);
           if (d) directives.push(`· ${m.name}——${d}`);
         }
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] world-ext-core",e)}
     }
     let opsTicket = null;
     if (ent && entMod && window.EE && ent.ops.tickets.length) {
@@ -727,8 +717,7 @@ ${directives.join("\n")}
       try {
         const body = $id("immBody");
         if (body && body.dataset.wxTab === "1") body.innerHTML = panelHTML();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] world-ext-core",e)}
     }
     return true;
   }
@@ -738,10 +727,10 @@ ${directives.join("\n")}
      但「关页面」这条路径仍然没有）。现挂 pagehide + beforeunload 双保险。 */
   try {
     if (typeof window.addEventListener === "function") {
-      window.addEventListener("pagehide", () => { try { save(); } catch (e) {} }, { capture: true });
-      window.addEventListener("beforeunload", () => { try { save(); } catch (e) {} }, { capture: true });
+      window.addEventListener("pagehide", () => { try { save(); } catch(e){console.warn("[swallowed] world-ext-core",e)} }, { capture: true });
+      window.addEventListener("beforeunload", () => { try { save(); } catch(e){console.warn("[swallowed] world-ext-core",e)} }, { capture: true });
     }
-  } catch (e) {}
+  } catch(e){console.warn("[swallowed] world-ext-core",e)}
   window.WorldExt = {
     version: VERSION,
     genre,
@@ -815,8 +804,7 @@ ${directives.join("\n")}
         ent._modId = entMod.id;
         try {
           EE.Ledger.seed(ent, ((_a = entMod.eeLedger) == null ? void 0 : _a.start) || {}, null);
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] world-ext-core",e)}
       }
       save();
     }
@@ -824,7 +812,6 @@ ${directives.join("\n")}
   document.addEventListener("DOMContentLoaded", () => {
     try {
       init();
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] world-ext-core",e)}
   });
 })();

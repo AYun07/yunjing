@@ -34,10 +34,10 @@
       var cfg = fw && fw.config;
       var g = cfg && (cfg.genreKey || cfg.genre || cfg.id);
       if (g) return g;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] canon-ledger",e)}
     try {
       if (window.SlotRegistry && window.SlotRegistry.genre) return window.SlotRegistry.genre();
-    } catch (e2) {}
+    } catch(e2){console.warn("[swallowed] canon-ledger",e2)}
     return "default";
   }
 
@@ -72,7 +72,7 @@
     } catch (e) {
       try {
         window.MoStore && MoStore.setItem(key(), JSON.stringify(o));
-      } catch (e2) {}
+      } catch(e2){console.warn("[swallowed] canon-ledger",e2)}
     }
     emit();
   }
@@ -81,7 +81,7 @@
     listeners.forEach(function (fn) {
       try {
         fn();
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] canon-ledger",e)}
     });
   }
 
@@ -149,7 +149,7 @@
       try {
         var fw = window.storyFramework;
         heroName = (fw && fw.storyState && fw.storyState.setup && fw.storyState.setup.playerName) || "";
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] canon-ledger",e)}
       var holder = classify(who, heroName, canonHero());
       var prev = o[name];
       o[name] = {
@@ -254,7 +254,7 @@
             }
           }
         });
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] canon-ledger",e)}
       return updated.filter(Boolean);
     },
 

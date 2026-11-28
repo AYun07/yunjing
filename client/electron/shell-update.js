@@ -20,7 +20,7 @@ const SWITCH_FILE = 'shell-switch.json';
 const NEXT_DIR = 'yunjing-next';
 const OLD_DIR = 'yunjing-old';
 
-function rmrf(p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch (_) {} }
+function rmrf(p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch(_){console.warn("[swallowed] shell-update",_)} }
 
 // 只认完整目录包：优先带 win-unpacked / portable / 免安装字样的 zip
 function pickUnpackedAsset(assets) {
@@ -43,7 +43,7 @@ function downloadZip(url, dest, expectedShaHex, redirects = 0) {
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return reject(new Error('BAD_URL'));
     const mod = parsed.protocol === 'https:' ? https : http;
     const tmp = dest + '.part';
-    const clean = () => { try { fs.unlinkSync(tmp); } catch (_) {} };
+    const clean = () => { try { fs.unlinkSync(tmp); } catch(_){console.warn("[swallowed] shell-update",_)} };
     let req;
     try {
       req = mod.get(parsed, {
@@ -124,7 +124,7 @@ function findExe(root, depth = 0) {
         if (found) return found;
       } else if (/^YunJing\.exe$/i.test(ent.name)) return path.join(root, ent.name);
     }
-  } catch (_) {}
+  } catch(_){console.warn("[swallowed] shell-update",_)}
   return null;
 }
 
@@ -158,7 +158,7 @@ async function prepareShellUpdate({ assets, latestVersion, exeDir, userData, tem
     return { ok: true, nextDir, exe, version: latestVersion, verified: !!expect };
   } catch (e) {
     rmrf(nextDir);
-    try { fs.unlinkSync(zip); } catch (_) {}
+    try { fs.unlinkSync(zip); } catch(_){console.warn("[swallowed] shell-update",_)}
     throw e;
   }
 }
@@ -183,7 +183,7 @@ function finalizeSwitch({ userData }) {
     result.action = 'rename-failed';
     result.error = '旧目录改名失败（可能被占用），不影响新版运行：' + e.message;
   }
-  try { fs.unlinkSync(marker); } catch (_) {}
+  try { fs.unlinkSync(marker); } catch(_){console.warn("[swallowed] shell-update",_)}
   return result;
 }
 

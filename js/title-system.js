@@ -20,7 +20,7 @@
   function slot() { try { return (G.storyFramework && G.storyFramework.slotId) || "main"; } catch (e) { return "main"; } }
   function keyOf(base) { return base + "~" + slot(); }
   function lsGet(k, fb) { try { var raw = G.localStorage && G.localStorage.getItem(k); return raw ? JSON.parse(raw) : fb; } catch (e) { return fb; } }
-  function lsSet(k, v) { try { if (G.localStorage) { G.localStorage.setItem(k, JSON.stringify(v)); return true; } } catch (e) {} return false; }
+  function lsSet(k, v) { try { if (G.localStorage) { G.localStorage.setItem(k, JSON.stringify(v)); return true; } } catch(e){console.warn("[swallowed] title-system",e)} return false; }
   function vars() { try { return (G.storyFramework && G.storyFramework.storyState && G.storyFramework.storyState.variables) || {}; } catch (e) { return {}; } }
 
   /* =====================================================================
@@ -52,7 +52,7 @@
     try {
       var arr = (G.BeastSystem && G.BeastSystem.list && G.BeastSystem.list()) || [];
       arr.forEach(function (b) { if (b && (b.bond || 0) > m) m = b.bond; });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] title-system",e)}
     return m;
   }
   function maxRealm() {
@@ -60,7 +60,7 @@
     try {
       var arr = (G.BeastSystem && G.BeastSystem.list && G.BeastSystem.list()) || [];
       arr.forEach(function (b) { if (b && (b.realmIdx || 0) > m) m = b.realmIdx; });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] title-system",e)}
     /* 也读主角境界字段 */
     var v = vars();
     var rr = Number(v.realmIdx || (v["境界"] && v["境界"].level));
@@ -72,7 +72,7 @@
     try {
       var w = G.WorldRuntime && G.WorldRuntime.state && G.WorldRuntime.state() && G.WorldRuntime.state().wr_combat;
       if (w) n = Number(w.wins) || 0;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] title-system",e)}
     return n;
   }
   function isUnlocked(t, ctx) {
@@ -107,12 +107,12 @@
       var wornName = current();
       v["称号"] = wornName || "";
       v.title = wornName || "";
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] title-system",e)}
   }
 
   function recompute() {
     syncVars();
-    try { if (G.BonusEngine && G.BonusEngine.recompute) G.BonusEngine.recompute(); } catch (e) {}
+    try { if (G.BonusEngine && G.BonusEngine.recompute) G.BonusEngine.recompute(); } catch(e){console.warn("[swallowed] title-system",e)}
   }
 
   /** 可领取的称号（满足解锁条件、尚未领取） */
@@ -124,7 +124,7 @@
     if (!isUnlocked(t)) return false;
     var d = state(); if (d.claimed[id]) return false;
     d.claimed[id] = true; saveState(d);
-    try { if (G.showToast) G.showToast("已获得称号「" + t.name + "」", "success"); } catch (e) {}
+    try { if (G.showToast) G.showToast("已获得称号「" + t.name + "」", "success"); } catch(e){console.warn("[swallowed] title-system",e)}
     return true;
   }
 
@@ -135,14 +135,14 @@
     if (!d.claimed[id] && !isUnlocked(t)) return false;
     d.claimed[id] = true; d.worn = id; saveState(d);
     recompute();
-    try { if (G.showToast) G.showToast("已佩戴称号「" + t.name + "」", "success"); } catch (e) {}
+    try { if (G.showToast) G.showToast("已佩戴称号「" + t.name + "」", "success"); } catch(e){console.warn("[swallowed] title-system",e)}
     if (G.MoChibi && G.MoChibi.say) G.MoChibi.say("佩戴称号「" + t.name + "」——" + t.desc, 3000);
     return true;
   }
   function unwear() {
     var d = state(); if (!d.worn) return false;
     d.worn = ""; saveState(d); recompute();
-    try { if (G.showToast) G.showToast("已卸下称号"); } catch (e) {}
+    try { if (G.showToast) G.showToast("已卸下称号"); } catch(e){console.warn("[swallowed] title-system",e)}
     return true;
   }
 

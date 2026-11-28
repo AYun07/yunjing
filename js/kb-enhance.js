@@ -7,16 +7,16 @@
   }
   function readKB(g) {
     var box = { knowledge: [] };
-    try { box = JSON.parse(localStorage.getItem('storyKnowledge_' + g)) || box; } catch (e) {}
+    try { box = JSON.parse(localStorage.getItem('storyKnowledge_' + g)) || box; } catch(e){console.warn("[swallowed] kb-enhance",e)}
     var gl = { knowledge: [] };
-    try { gl = JSON.parse(localStorage.getItem('storyKBGlobal')) || gl; } catch (e) {}
+    try { gl = JSON.parse(localStorage.getItem('storyKBGlobal')) || gl; } catch(e){console.warn("[swallowed] kb-enhance",e)}
     return (box.knowledge || []).concat(gl.knowledge || []);
   }
   function readTrash(g) {
     try { return JSON.parse(localStorage.getItem('storyKBTrash_' + g)) || []; } catch (e) { return []; }
   }
   function writeTrash(g, arr) {
-    try { localStorage.setItem('storyKBTrash_' + g, JSON.stringify(arr.slice(-50))); } catch (e) {}
+    try { localStorage.setItem('storyKBTrash_' + g, JSON.stringify(arr.slice(-50))); } catch(e){console.warn("[swallowed] kb-enhance",e)}
   }
 
   /* ---- 回收站:包裹 deleteItem ---- */
@@ -27,7 +27,7 @@
     var orig = KM.deleteItem;
     KM.deleteItem = function (id) {
       var e = null;
-      try { e = KM.getById(id); } catch (e0) {}
+      try { e = KM.getById(id); } catch(e0){console.warn("[swallowed] kb-enhance",e0)}
       if (e) {
         var arr = readTrash(genreNow());
         arr.push({ entry: e, at: Date.now() });
@@ -105,7 +105,7 @@
         b.onclick = openTrash;
         row.appendChild(b);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] kb-enhance",e)}
   }
   MoUtils.pollUntil(mountUI, { interval: 2500, max: 80 });
   console.debug('[KBEnhance] 统计条+序号+回收站 就绪');
@@ -127,7 +127,7 @@
     names: names,
     save: function (n) {
       var box = '{}';
-      try { box = localStorage.getItem('storyKnowledge_' + g()) || '{}'; } catch (e) {}
+      try { box = localStorage.getItem('storyKnowledge_' + g()) || '{}'; } catch(e){console.warn("[swallowed] kb-enhance",e)}
       localStorage.setItem(key(n), box);
       return '已保存预设「' + n + '」(' + ((JSON.parse(box).knowledge || []).length) + ' 条)';
     },
@@ -138,7 +138,7 @@
       try {
         var KM = window.StoryKnowledge || window.KnowledgeManager;
         if (KM && KM.load) { KM.load(); }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] kb-enhance",e)}
       return '已切换到「' + n + '」,重新打开面板生效';
     },
     del: function (n) { localStorage.removeItem(key(n)); return '已删除「' + n + '」'; }
@@ -177,7 +177,7 @@
         });
       };
       if (row.nextSibling) parent.insertBefore(b, row.nextSibling); else parent.appendChild(b);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] kb-enhance",e)}
   }
   MoUtils.pollUntil(mount, { interval: 2500, max: 80 });
 })();
@@ -207,7 +207,7 @@
       };
       hud.insertBefore(b, hud.firstChild);
       apply();
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] kb-enhance",e)}
   }
   window.hudToggle = mount;
   MoUtils.pollUntil(mount, { interval: 2500, max: 80 });

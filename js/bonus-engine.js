@@ -34,7 +34,7 @@
       return raw ? JSON.parse(raw) : fallback;
     } catch (e) { return fallback; }
   }
-  function lsSet(k, v) { try { if (G.localStorage) { G.localStorage.setItem(k, JSON.stringify(v)); return true; } } catch (e) {} return false; }
+  function lsSet(k, v) { try { if (G.localStorage) { G.localStorage.setItem(k, JSON.stringify(v)); return true; } } catch(e){console.warn("[swallowed] bonus-engine",e)} return false; }
 
   function clamp(n, lo, hi) { n = Number(n); if (!isFinite(n)) n = lo; return n < lo ? lo : (n > hi ? hi : n); }
   function hash(str) {
@@ -181,12 +181,12 @@
       var hist = G.localStorage && G.localStorage.getItem("storyDiceHistory");
       var arr = hist ? JSON.parse(hist) : [];
       if (arr && arr[0] && arr[0].ts) diceSeed = Number(arr[0].ts) % 100000;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] bonus-engine",e)}
     var inBattle = false;
     try {
       var wm = G.WorldExt && G.WorldExt.modState && G.WorldExt.modState("wr_combat");
       inBattle = !!(wm && wm.inBattle);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] bonus-engine",e)}
     return {
       genre: (function () { try { return new URLSearchParams(G.location && G.location.search).get("genre") || "free"; } catch (e) { return "free"; } })(),
       round: Number(v.chapter) || 0,
@@ -226,7 +226,7 @@
       if (wm && wm.gear && wm.gear.equipped) {
         Object.keys(wm.gear.equipped).forEach(function (k) { var it = wm.gear.equipped[k]; if (it && it.name && !it.missing && names.indexOf(it.name) < 0) names.push(it.name); });
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] bonus-engine",e)}
     return names.filter(Boolean).slice(0, 24);
   }
 
@@ -295,7 +295,7 @@
     var engine = AE();
     for (var i = 0; i < keys.length; i++) {
       if (engine && engine.axisOf) {
-        try { var ax = engine.axisOf(keys[i], keys[i]); if (ax && ax.id === axisId) return keys[i]; } catch (e) {}
+        try { var ax = engine.axisOf(keys[i], keys[i]); if (ax && ax.id === axisId) return keys[i]; } catch(e){console.warn("[swallowed] bonus-engine",e)}
       }
     }
     /* 兜底：若真实键名恰好就是轴 id */
@@ -333,7 +333,7 @@
         var sk = (b && b.skills) || [];
         for (var i = 0; i < sk.length; i++) add(sk[i]);
       });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] bonus-engine",e)}
     return texts.slice(0, 8);
   }
   /** 防抖调度大模型补充解读；delay 默认 400ms。返回是否真的排了队。 */
@@ -341,7 +341,7 @@
     var se = SE();
     if (!se || !se.enrich || typeof G.fetch !== "function") return false;  /* Node/离线：纯本地 */
     if (typeof G.setTimeout !== "function") return false;
-    if (enrichTimer) { try { G.clearTimeout(enrichTimer); } catch (e) {} }
+    if (enrichTimer) { try { G.clearTimeout(enrichTimer); } catch(e){console.warn("[swallowed] bonus-engine",e)} }
     enrichTimer = G.setTimeout(function () {
       enrichTimer = null;
       if (enriching) return;
@@ -404,7 +404,7 @@
           var Ctor = G.CustomEvent || G.Event;
           G.dispatchEvent(new Ctor("yj:bonus-change", { bubbles: false, detail: { net: net } }));
         }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] bonus-engine",e)}
     }
     lsSet(keyOf("yunjingBonusSnapshot"), {
       at: Date.now(), hp: net.hp, atk: net.atk, def: net.def, spd: net.spd, crit: net.crit,
@@ -568,17 +568,17 @@
     if (!ta || !API._editTarget) return;
     API.customAffix(API._editTarget, ta.value);
     API.closeAffixEditor();
-    try { if (G.showToast) G.showToast("词条已按语意结算，加成已更新", "success"); } catch (e) {}
+    try { if (G.showToast) G.showToast("词条已按语意结算，加成已更新", "success"); } catch(e){console.warn("[swallowed] bonus-engine",e)}
     try {
       var body = G.document.getElementById("immBody");
       if (body && G.WorldExt && G.WorldExt.panelHTML) body.innerHTML = G.WorldExt.panelHTML();
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] bonus-engine",e)}
   }
   function clearAffixEditor() {
     if (!API._editTarget) return;
     API.customAffix(API._editTarget, null);
     API.closeAffixEditor();
-    try { if (G.showToast) G.showToast("已清除自定义，恢复自动语意生成"); } catch (e) {}
+    try { if (G.showToast) G.showToast("已清除自定义，恢复自动语意生成"); } catch(e){console.warn("[swallowed] bonus-engine",e)}
   }
   function closeAffixEditor() {
     var mask = G.document && G.document.getElementById("semAffixMask");

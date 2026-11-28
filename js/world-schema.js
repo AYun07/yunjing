@@ -126,13 +126,13 @@
       genre = genre || this.resolveGenre();
       const merged = deepMerge(this.get(genre), patch);
       this._cache[genre] = merged;
-      try { localStorage.setItem("yunjing.schema." + genre, JSON.stringify(merged)); } catch (e) {}
+      try { localStorage.setItem("yunjing.schema." + genre, JSON.stringify(merged)); } catch(e){console.warn("[swallowed] world-schema",e)}
       return merged;
     },
     reset(genre) {
       genre = genre || this.resolveGenre();
       delete this._cache[genre];
-      try { localStorage.removeItem("yunjing.schema." + genre); } catch (e) {}
+      try { localStorage.removeItem("yunjing.schema." + genre); } catch(e){console.warn("[swallowed] world-schema",e)}
       return this.base();
     }
   };

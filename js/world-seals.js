@@ -424,7 +424,7 @@
         const orig = window.GameLayer.onGenre.bind(window.GameLayer);
         window.GameLayer.onGenre = function (g) {
             const r = orig(g);
-            try { onGenre(g); } catch (e) { }
+            try { onGenre(g); } catch(e){console.warn("[swallowed] world-seals",e)}
             return r;
         };
         window.GameLayer.__sealsPatched = true;

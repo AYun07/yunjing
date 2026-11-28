@@ -225,6 +225,12 @@ const WangyouStoryConfig = {
     systemPrompt: () => fullSystemPrompt,
     dynamicWorldPrompt: () => defaultDynamicWorldPrompt,
     setupMeta, openings, techniques, statKeys, gauges, nameSeeds,
+    /* v7.6.6：三字段此前仅以 setupMeta.xxx = [...] 事后赋值存在，静态检查判「顶层缺
+       identities/timelines/aptitudes」。这里补顶层引用（同一数据源，非副本），
+       让创建角色台与静态校验都能稳定读到。 */
+    get identities() { return setupMeta.identities; },
+    get timelines() { return setupMeta.timelines; },
+    get aptitudes() { return setupMeta.aptitudes; },
     baseAttributes: { tension: 15, emotion: 15, prose: 10, pacing: 10, creativity: 10, depth: 10 },
     maxPoints: 100,
     maxTechniques: 3,

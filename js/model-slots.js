@@ -14,7 +14,7 @@
     try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }
     catch (e) { return d; }
   }
-  function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){console.warn("[swallowed] model-slots",e)} }
   function uid() { return "ms_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function currentCfg() {
     try {
@@ -54,7 +54,7 @@
         arr.push(hit);
       }
       write(K_SLOTS, arr);
-      try { localStorage.setItem(K_ACTIVE, hit.id); } catch (e) {}
+      try { localStorage.setItem(K_ACTIVE, hit.id); } catch(e){console.warn("[swallowed] model-slots",e)}
       return hit;
     },
     /** 覆盖某档为当前配置（用于"存到当前档"）。 */
@@ -87,8 +87,8 @@
       } catch (e) { return false; }
       var fw = window.storyFramework;
       if (fw) {
-        try { fw.apiConfig = cfg; } catch (e) {}
-        if (typeof fw.loadApiConfig === "function") { try { fw.loadApiConfig(); } catch (e) {} }
+        try { fw.apiConfig = cfg; } catch(e){console.warn("[swallowed] model-slots",e)}
+        if (typeof fw.loadApiConfig === "function") { try { fw.loadApiConfig(); } catch(e){console.warn("[swallowed] model-slots",e)} }
       }
       // 让 prompt-budget 重新计算上下文预算（清掉上一次的超限降级，避免旧档的降级影响新档）
       try {
@@ -96,12 +96,12 @@
           localStorage.removeItem("storyPromptOverflow");
           if (PromptBudget.resetOverflow) PromptBudget.resetOverflow();
         }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] model-slots",e)}
       return true;
     },
     remove: function (id) {
       write(K_SLOTS, this.list().filter(function (s) { return s.id !== id; }));
-      try { if (this.activeId() === id) localStorage.removeItem(K_ACTIVE); } catch (e) {}
+      try { if (this.activeId() === id) localStorage.removeItem(K_ACTIVE); } catch(e){console.warn("[swallowed] model-slots",e)}
     },
     /** 档位摘要（给下拉展示）：一眼看清「模型名 @ 端点域名」，两个不同端点/模型不混淆。
      *  v7.3.0：用户反馈"输入两个端点API，存档里两个API模型在一起、无法自由切换"——

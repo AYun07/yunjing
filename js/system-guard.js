@@ -35,8 +35,7 @@
           const r = orig();
           try {
             (_b = (_a = window.SystemGuard) == null ? void 0 : _a.refreshBudget) == null ? void 0 : _b.call(_a);
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] system-guard",e)}
           return r;
         };
         fw.__sgPatched = true;
@@ -120,8 +119,7 @@
           const v = localStorage.getItem(k) || "";
           out.push({ key: k, bytes: v.length * 2 });
         }
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] system-guard",e)}
       return out.sort((a, b) => b.bytes - a.bytes);
     },
     /** 世界书（知识库）缓存占用：每界一个 storyKnowledge_<genre> 键 */
@@ -134,8 +132,7 @@
           const v = localStorage.getItem(k) || "";
           list.push({ key: k, genre: k.slice("storyKnowledge_".length), bytes: v.length * 2 });
         }
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] system-guard",e)}
       list.sort((a, b) => b.bytes - a.bytes);
       const cur = (window.StoryKnowledge && window.StoryKnowledge.genre) || "";
       return { list, cur, total: list.reduce((s, x) => s + x.bytes, 0) };
@@ -157,7 +154,7 @@
       if (!ok) return;
       let n = 0;
       others.forEach((x) => {
-        try { localStorage.removeItem(x.key); n++; } catch (e) { }
+        try { localStorage.removeItem(x.key); n++; } catch(e){console.warn("[swallowed] system-guard",e)}
       });
       window.showToast && window.showToast(`✓ 已清理 ${n} 个世界的缓存，释放约 ${mb} MB`, "success");
       document.getElementById("sgCheckup") && document.getElementById("sgCheckup").remove();
@@ -174,8 +171,7 @@
           quota = est.quota || null;
           used = est.usage || null;
         }
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] system-guard",e)}
       const fw = window.storyFramework;
       const saveKey = (fw == null ? void 0 : fw.SAVE_KEY) || (fw == null ? void 0 : fw.saveKey);
       let saveOK = null, saveBytes = 0;
@@ -201,7 +197,7 @@
       const isBig = (v) => typeof v === "string" && (v.length > 6e4 || /^data:image\//.test(v));
       // 扫描一层：变量与 turn 快照里是否混进 base64 图片 / >60KB 大字符串
       let bigInVars = 0;
-      try { for (const k in (st.variables || {})) if (isBig(st.variables[k])) bigInVars++; } catch (e) { }
+      try { for (const k in (st.variables || {})) if (isBig(st.variables[k])) bigInVars++; } catch(e){console.warn("[swallowed] system-guard",e)}
       let bigInTurns = 0;
       const turns = Array.isArray(st.turns) ? st.turns : [];
       try {
@@ -209,7 +205,7 @@
           if (isBig(t && t.varsBefore)) bigInTurns++;
           if (t && t.varsBefore) for (const k in t.varsBefore) if (isBig(t.varsBefore[k])) { bigInTurns++; break; }
         }
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] system-guard",e)}
       const overCap = turns.length > 40;
       if (bigInVars) notes.push(`变量里有 ${bigInVars} 个大对象/图片（星海式病根，建议改用插图引擎存 IDB）`);
       if (bigInTurns) notes.push(`轮次快照里有 ${bigInTurns} 条含大对象/图片，会被每轮复制留档`);
@@ -296,8 +292,7 @@
       const on = !this.nightOn();
       try {
         localStorage.setItem(NIGHT_KEY, on ? "1" : "0");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] system-guard",e)}
       this.applyNight();
       (_a = window.showToast) == null ? void 0 : _a.call(window, on ? "🌙 深夜护眼已开启（暖光 · 低动效）" : "☀️ 深夜护眼已关闭", "info");
       return on;

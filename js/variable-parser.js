@@ -70,7 +70,7 @@ const VariableInstructionParser = {
         } else {
           AE.stashClampsForNextTurn();   // 本轮无拦截：清空上一轮回执，避免回写陈旧信息
         }
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] variable-parser",e)}
     }
     return res;
   },
@@ -194,8 +194,7 @@ const VariableInstructionParser = {
     if (!t.startsWith("{")) return null;
     try {
       return JSON.parse(t);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] variable-parser",e)}
     try {
       const fixed = t.replace(/，/g, ",").replace(/：/g, ":").replace(/，\s*([}\]])/g, "$1").replace(/,\s*([}\]])/g, "$1");
       return JSON.parse(fixed);
@@ -844,8 +843,7 @@ const VariableInstructionParser = {
     if (/^\[.*\]$/.test(rawValue)) {
       try {
         return JSON.parse(rawValue.replace(/'/g, '"'));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] variable-parser",e)}
     }
     return rawValue;
   },

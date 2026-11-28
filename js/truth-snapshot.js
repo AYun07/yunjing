@@ -210,7 +210,7 @@
       try {
         var sw = window.WorldStage && window.WorldStage.data && window.WorldStage.data[genre];
         if (sw && sw.st && sw.st.length) total = sw.st.length;
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] truth-snapshot",e)}
       return { current: cur, total: total };
     }, null);
     return nums;
@@ -428,5 +428,5 @@
     if (window.storyFramework && window.storyFramework.debugVersion) {
       /* 与主版本号同源，避免两处漂移 */
     }
-  } catch (e) { }
+  } catch(e){console.warn("[swallowed] truth-snapshot",e)}
 })();

@@ -33,8 +33,8 @@
                 var mime = m ? m[1] : 'application/octet-stream';
                 var b64 = dataUrl.split(',')[1] || '';
                 window.AndroidBridge.saveFile(name, mime, b64);
-            }).catch(function () { });
-        } catch (ignored) { }
+            }).catch(function(e){console.warn("[swallowed-promise] android-bridge",e)});
+        } catch(ignored){console.warn("[swallowed] android-bridge",ignored)}
     }, true);
 
     /* ── ② window.open 替身：外链交系统浏览器 ── */
@@ -47,7 +47,7 @@
             }
             return rawOpen.apply(null, arguments);
         };
-    } catch (ignored) { }
+    } catch(ignored){console.warn("[swallowed] android-bridge",ignored)}
 
     /* 标记：控制台与设置页可识别运行环境 */
     window.__MOSHU_ANDROID__ = true;

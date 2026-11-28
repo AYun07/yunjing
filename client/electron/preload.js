@@ -23,9 +23,9 @@ contextBridge.exposeInMainWorld('YunJingDesktop', {
   // 回调收到 { phase, percent, detail, error?, errors? }，用于设置页实时进度条与错误详情。
   onUpdateProgress: (cb) => {
     if (typeof cb !== 'function') return () => {};
-    const handler = (_e, payload) => { try { cb(payload); } catch (_) {} };
+    const handler = (_e, payload) => { try { cb(payload); } catch(_){console.warn("[swallowed] preload",_)} };
     ipcRenderer.on('update-progress', handler);
-    return () => { try { ipcRenderer.removeListener('update-progress', handler); } catch (_) {} };
+    return () => { try { ipcRenderer.removeListener('update-progress', handler); } catch(_){console.warn("[swallowed] preload",_)} };
   },
 
   // 无边框窗口控制：与 main.js 的 win-* 通道一一对应，均返回 Promise

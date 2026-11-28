@@ -345,12 +345,12 @@
       f.territoryX = Math.round(x * 10) / 10;
       f.territoryY = Math.round(y * 10) / 10;
       f.territoryNodeId = nodeId || null;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] atlas-faction-layer",e)}
     // 尝试持久化到存档（若世界实体对象是从 storyState 取的真实引用，改它即可随存档保存）
     try {
       var fw = window.storyFramework;
       if (fw && window.saveGame) { /* 存档由宿主线统一落盘，实体引用已被修改 */ }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] atlas-faction-layer",e)}
   }
   function cancelPickSeat() {
     picking = null;

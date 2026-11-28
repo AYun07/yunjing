@@ -10,8 +10,7 @@
   function save() {
     try {
       window.storyFramework && window.storyFramework.saveStory();
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] freeworld-ext",e)}
   }
   const codeMod = {
     id: "code",

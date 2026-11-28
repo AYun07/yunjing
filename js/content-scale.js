@@ -66,8 +66,8 @@
 
   function set(level) {
     if (!LEVELS[level]) return false;
-    try { localStorage.setItem(KEY, level); } catch (e) {}
-    try { if (window.StoryResponseHandler) StoryResponseHandler.renderSystemMessage('已切换内容尺度：' + LEVELS[level].icon + ' ' + LEVELS[level].name, 'info'); } catch (e) {}
+    try { localStorage.setItem(KEY, level); } catch(e){console.warn("[swallowed] content-scale",e)}
+    try { if (window.StoryResponseHandler) StoryResponseHandler.renderSystemMessage('已切换内容尺度：' + LEVELS[level].icon + ' ' + LEVELS[level].name, 'info'); } catch(e){console.warn("[swallowed] content-scale",e)}
     return true;
   }
 
@@ -78,7 +78,7 @@
     try { return localStorage.getItem('storyBreakLimit') === '1'; } catch (e) { return false; }
   }
   function setBreak(on) {
-    try { if (on) localStorage.setItem('storyBreakLimit', '1'); else localStorage.removeItem('storyBreakLimit'); } catch (e) {}
+    try { if (on) localStorage.setItem('storyBreakLimit', '1'); else localStorage.removeItem('storyBreakLimit'); } catch(e){console.warn("[swallowed] content-scale",e)}
   }
 
   /** 生成要注入 system 层的文本；safe 级别也带底线，确保任何时候都有保护 */
@@ -95,7 +95,7 @@
     try { return localStorage.getItem('storyAdultConfirmed') === '1'; } catch (e) { return false; }
   }
   function confirmAdult() {
-    try { localStorage.setItem('storyAdultConfirmed', '1'); } catch (e) {}
+    try { localStorage.setItem('storyAdultConfirmed', '1'); } catch(e){console.warn("[swallowed] content-scale",e)}
   }
 
   window.MoContentScale = {

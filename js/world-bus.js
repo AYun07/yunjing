@@ -11,7 +11,7 @@
 (function(){"use strict";
 
 function slotId(){ try { return (window.storyFramework && window.storyFramework.slotId) || "main"; } catch(e){ return "main"; } }
-function genreKey(){ try { if (window.WorldExt && WorldExt.genre) return WorldExt.genre; } catch(e){} try { return new URLSearchParams(location.search).get("genre") || "free"; } catch(e){ return "free"; } }
+function genreKey(){ try { if (window.WorldExt && WorldExt.genre) return WorldExt.genre; } catch(e){console.warn("[swallowed] world-bus",e)} try { return new URLSearchParams(location.search).get("genre") || "free"; } catch(e){ return "free"; } }
 function STORE(){ return "yunjingWorldBus~" + slotId() + "~" + genreKey(); }
 
 /* 玩家名：与关系图/众生相同源逻辑 */
@@ -22,7 +22,7 @@ function playerName(){
     if(pn) return String(pn);
     var vars=(st&&st.variables)||{};
     for(var k in (vars.characters||{})){ var c=vars.characters[k]; if(c&&(c.isPlayer||k==="玩家"||k==="主角")) return k; }
-  }catch(e){}
+  }catch(e){console.warn("[swallowed] world-bus",e)}
   return "主角";
 }
 /* relations 真源：v.entities.relations（随存档持久化、按槽隔离） */
@@ -70,7 +70,7 @@ function load(){
         if(rels){ for(var k in d.grudges){ if(!d.grudges.hasOwnProperty(k))continue; var v=Math.round(Number(d.grudges[k])||0); if(!findRel(me,k)) rels.push({id:"rel_"+me+"_"+k,type:"relation",a:me,b:k,kind:grudgeKind(v),strength:v,at:Date.now()}); } }
       }
     }
-  }catch(e){}
+  }catch(e){console.warn("[swallowed] world-bus",e)}
 }
 function save(){ if(saveTid) return; saveTid=setTimeout(function(){ saveTid=0; try{ localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){ console.warn('[云境] 事件总线状态落盘失败（可能存储已满或被禁用）：', e); } },150); }
 /* v4.08.0：立即落盘版本（切档冲盘用）。save() 有 150ms 防抖，
@@ -78,13 +78,13 @@ function save(){ if(saveTid) return; saveTid=setTimeout(function(){ saveTid=0; t
 function persist(){ try{ if(saveTid){ clearTimeout(saveTid); saveTid=0; } localStorage.setItem(STORE(), JSON.stringify({grudgeFlags:bus.grudgeFlags,counters:bus.counters,history:bus.history})); }catch(e){ console.warn('[云境] 事件总线状态立即落盘失败（切档可能丢状态）：', e); } }
 load();
 
-function emit(ev){if(!ev||!ev.type)return;ev.ts=Date.now();bus.history.unshift(ev);if(bus.history.length>24)bus.history.length=24;save();try{react(ev)}catch(e){}var l=bus.handlers[ev.type]||[];for(var i=0;i<l.length;i++){try{l[i](ev)}catch(e2){}}var a=bus.handlers["*"]||[];for(var j=0;j<a.length;j++){try{a[j](ev)}catch(e3){}}}
+function emit(ev){if(!ev||!ev.type)return;ev.ts=Date.now();bus.history.unshift(ev);if(bus.history.length>24)bus.history.length=24;save();try{react(ev)}catch(e){console.warn("[swallowed] world-bus",e)}var l=bus.handlers[ev.type]||[];for(var i=0;i<l.length;i++){try{l[i](ev)}catch(e2){console.warn("[swallowed] world-bus",e2)}}var a=bus.handlers["*"]||[];for(var j=0;j<a.length;j++){try{a[j](ev)}catch(e3){console.warn("[swallowed] world-bus",e3)}}}
 function on(t,f){(bus.handlers[t]=bus.handlers[t]||[]).push(f)}
 function fact(t){if(!t)return;bus.facts.push(String(t).slice(0,180));if(bus.facts.length>8)bus.facts.shift()}
 function recent(){ return bus.facts.slice(); }
 function drainFacts(){return bus.facts.splice(0,bus.facts.length)}
-function signal(type,text){ fact(text); try{ if(window.showToast) window.showToast(text, type==="ally"?"success":"warn"); }catch(e){} }
-function grudge(n,d){n=String(n||"").trim();if(!n||!d)return;var me=playerName();var rels=relStore();if(!rels)return;var r=findRel(me,n);if(!r){r={id:"rel_"+me+"_"+n,type:"relation",a:me,b:n,kind:"中立",strength:0,at:Date.now()};rels.push(r);}r.strength=Math.max(-100,Math.min(100,(Number(r.strength)||0)+Number(d)));r.kind=grudgeKind(r.strength);r.at=Date.now();r.hist=r.hist||[];r.hist.push({t:Date.now(),v:r.strength,why:(d<0?"敌意加深":"亲厚加深")});if(r.hist.length>12)r.hist.shift();save();if(r.strength<=-25&&!bus.grudgeFlags[n+":hostile"]){bus.grudgeFlags[n+":hostile"]=1;delete bus.grudgeFlags[n+":ally"];signal("hostile","「"+n+"」对你的敌意已经藏不住了——它们的名单上有你。")}else if(r.strength>=25&&!bus.grudgeFlags[n+":ally"]){bus.grudgeFlags[n+":ally"]=1;delete bus.grudgeFlags[n+":hostile"];signal("ally","「"+n+"」已视你为可托付的自己人。")}try{if(window.storyFramework&&storyFramework.saveStory)storyFramework.saveStory();}catch(e){}}
+function signal(type,text){ fact(text); try{ if(window.showToast) window.showToast(text, type==="ally"?"success":"warn"); }catch(e){console.warn("[swallowed] world-bus",e)} }
+function grudge(n,d){n=String(n||"").trim();if(!n||!d)return;var me=playerName();var rels=relStore();if(!rels)return;var r=findRel(me,n);if(!r){r={id:"rel_"+me+"_"+n,type:"relation",a:me,b:n,kind:"中立",strength:0,at:Date.now()};rels.push(r);}r.strength=Math.max(-100,Math.min(100,(Number(r.strength)||0)+Number(d)));r.kind=grudgeKind(r.strength);r.at=Date.now();r.hist=r.hist||[];r.hist.push({t:Date.now(),v:r.strength,why:(d<0?"敌意加深":"亲厚加深")});if(r.hist.length>12)r.hist.shift();save();if(r.strength<=-25&&!bus.grudgeFlags[n+":hostile"]){bus.grudgeFlags[n+":hostile"]=1;delete bus.grudgeFlags[n+":ally"];signal("hostile","「"+n+"」对你的敌意已经藏不住了——它们的名单上有你。")}else if(r.strength>=25&&!bus.grudgeFlags[n+":ally"]){bus.grudgeFlags[n+":ally"]=1;delete bus.grudgeFlags[n+":hostile"];signal("ally","「"+n+"」已视你为可托付的自己人。")}try{if(window.storyFramework&&storyFramework.saveStory)storyFramework.saveStory();}catch(e){console.warn("[swallowed] world-bus",e)}}
 function topGrudge(){var w=null,g=grudgesView();for(var k in g){if(!g.hasOwnProperty(k))continue;if(!w||g[k]<w.favor)w={name:k,favor:g[k]}}return w}
 function topAlly(){var b=null,g=grudgesView();for(var k in g){if(!g.hasOwnProperty(k))continue;if(!b||g[k]>b.favor)b={name:k,favor:g[k]}}return b}
 var BREAK_RE=/突破|升格|晋升|破关|破境|进化|蜕变|开辟|觉醒成功|凝丹成功|炼成|完工|告捷|瓶颈破开|更进一步|境界松动|晋阶|跃升|迈过|升到|提升到/;
@@ -95,7 +95,7 @@ on("custom",function(ev){if(BREAK_RE.test(ev.text||""))emit({type:"breakthrough"
 var API={
   emit:emit,on:on,fact:fact,drainFacts:drainFacts,recent:recent,grudge:grudge,topGrudge:topGrudge,topAlly:topAlly,
   history:bus.history,counters:bus.counters,save:save,persist:persist,
-  reset:function(){ try{ var me=playerName(), rels=relStore(); if(rels){ for(var i=rels.length-1;i>=0;i--){ var r=rels[i]; if(r&&(r.a===me||r.b===me)) rels.splice(i,1); } } }catch(e){} bus.grudgeFlags={};bus.counters={};bus.history=[];save(); }
+  reset:function(){ try{ var me=playerName(), rels=relStore(); if(rels){ for(var i=rels.length-1;i>=0;i--){ var r=rels[i]; if(r&&(r.a===me||r.b===me)) rels.splice(i,1); } } }catch(e){console.warn("[swallowed] world-bus",e)} bus.grudgeFlags={};bus.counters={};bus.history=[];save(); }
 };
 Object.defineProperty(API,"grudges",{ get:function(){ return grudgesView(); }, enumerable:true, configurable:true });
 window.WorldBus=API;

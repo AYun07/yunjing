@@ -22,7 +22,7 @@
     } catch (e) { return { activated: false, code: '', ts: 0 }; }
   }
   function writeState(s) {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (e) {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch(e){console.warn("[swallowed] yj-license",e)}
   }
 
   /** 占位校验：只做格式检查 + 固定演示码，绝非真实授权。 */

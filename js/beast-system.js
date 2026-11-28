@@ -108,7 +108,7 @@
       };
       var arr = load(); arr.push(b); save(arr);
       /* v4.48.0：同步建档（失败不影响契约本身） */
-      try { if (window.BeastProfileBridge && b.profileEnabled) window.BeastProfileBridge.syncChronicle(b); } catch (e) {}
+      try { if (window.BeastProfileBridge && b.profileEnabled) window.BeastProfileBridge.syncChronicle(b); } catch(e){console.warn("[swallowed] beast-system",e)}
       return b;
     },
 
@@ -167,7 +167,7 @@
       try {
         var label = this.FORM_LABEL[target];
         if (br) br.addDeed(b, "形态转为「" + label + "」" + (b.transformForm && target !== "beast" ? "（" + b.transformForm + "）" : "") + "。", {}, "transform");
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] beast-system",e)}
       if (window.MoChibi) MoChibi.say("「" + b.name + "」现为「" + this.FORM_LABEL[target] + "」" + (target === "human" && b.transformForm ? "：" + b.transformForm : "") + "。", 3000);
       return b;
     },
@@ -217,7 +217,7 @@
     release(id) {
       var b = this.get(id);
       /* v4.48.0：放归前把专属档案转 vault（只增不删），留一段完整快照 */
-      if (b) { try { var br = this._bridge(); if (br) br.archive(b, "release"); } catch (e) {} }
+      if (b) { try { var br = this._bridge(); if (br) br.archive(b, "release"); } catch(e){console.warn("[swallowed] beast-system",e)} }
       var arr = load().filter(function (x) { return x.id !== id; });
       save(arr); return true;
     },
@@ -314,9 +314,9 @@
           if (defected) { b.stance = "背弃"; b.goal = "反噬旧主"; }
           changes.push({ name: b.name, kind: b.kind, mode: defected ? "叛变" : "离队" });
           var txt = "「" + b.name + "」" + (defected ? "背弃了玩家，反目成仇" : "心生去意，悄然离队") + "。";
-          try { if (window.CanonTimeline && CanonTimeline.event) CanonTimeline.event("伙伴" + (defected ? "叛变" : "离队") + "·" + b.name, "changed", { kind: "companion", now: txt, round: this._round() }); } catch (e) {}
-          try { if (window.WorldBus) { WorldBus.fact(txt); if (defected) WorldBus.grudge(b.name, -25); WorldBus.emit({ type: "beast." + (defected ? "defect" : "leave"), name: b.name }); } } catch (e) {}
-          try { if (window.showToast) window.showToast("💔 " + txt, "warn"); } catch (e) {}
+          try { if (window.CanonTimeline && CanonTimeline.event) CanonTimeline.event("伙伴" + (defected ? "叛变" : "离队") + "·" + b.name, "changed", { kind: "companion", now: txt, round: this._round() }); } catch(e){console.warn("[swallowed] beast-system",e)}
+          try { if (window.WorldBus) { WorldBus.fact(txt); if (defected) WorldBus.grudge(b.name, -25); WorldBus.emit({ type: "beast." + (defected ? "defect" : "leave"), name: b.name }); } } catch(e){console.warn("[swallowed] beast-system",e)}
+          try { if (window.showToast) window.showToast("💔 " + txt, "warn"); } catch(e){console.warn("[swallowed] beast-system",e)}
         }
       }
       save(arr);
@@ -344,7 +344,7 @@
           SquadSystem.list().forEach(function (m) { if (m && m.beastId) sqIds[m.beastId] = 1; });
         }
         if (Object.keys(sqIds).length) arr = arr.filter(function (b) { return !sqIds[b.id]; });
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] beast-system",e)}
       if (!arr.length) return "";
       arr = arr.filter(function (b) { return b.status !== "left"; });
       if (!arr.length) return "";
@@ -368,7 +368,7 @@
           var rich = br.buildPromptBlock(arr);
           if (rich) base += "\n" + rich;
         }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] beast-system",e)}
       return base;
     },
 
@@ -383,7 +383,7 @@
         try {
           var afs = window.BeastSystem.semanticBonusOf(b);
           if (afs && afs.length) sem = "，特性倾向【" + afs.map(function (a) { return a.text; }).join("、") + "】";
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] beast-system",e)}
         return b.name + "（" + KINDS[b.kind].name + " Lv" + b.level + "，攻" + b.stats.atk + "/速" + b.stats.spd + "，技能【" + b.skills.join("、") + "】" + sem + "）";
       }).join("；") + "。协同技按羁绊触发，羁绊越高配合越默契；特性倾向须在协同描写中体现。";
     },
@@ -549,7 +549,7 @@
           + (custB ? '<div class="row" style="opacity:.7;margin-top:4px">已自定义：' + esc(custB) + '</div>' : '')
           + '<div class="row" style="margin-top:8px"><button onclick="window.BonusEngine&&BonusEngine.openAffixEditor(\'beast:' + esc(b.id) + '\',{title:\'✦ ' + esc(b.name) + ' · 自定义特性\'})">✎ 自定义特性</button> '
           + '<span style="opacity:.6">(写任意词，按语意附加效果)</span></div></div>';
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] beast-system",e)}
       /* 生平经历 */
       var deeds = (chron.deeds || []).slice(-8).reverse();
       html += '<div class="bpf-card"><h4>📜 生平经历（只增不删）</h4>'

@@ -49,11 +49,11 @@
     try {
       var M = window.YunqiPreset;
       if (M && typeof M.enabled === 'function') return !!M.enabled();
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] yunqi-regex",e)}
     return false;
   }
   function setEnabled(on) {
-    try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+    try { localStorage.setItem(KEY, on ? '1' : '0'); } catch(e){console.warn("[swallowed] yunqi-regex",e)}
     return !!on;
   }
   function getOverrides() {
@@ -62,10 +62,10 @@
   function setOverride(id, on) {
     var o = getOverrides();
     o[id] = !!on;
-    try { localStorage.setItem(OV_KEY, JSON.stringify(o)); } catch (e) {}
+    try { localStorage.setItem(OV_KEY, JSON.stringify(o)); } catch(e){console.warn("[swallowed] yunqi-regex",e)}
   }
   function clearOverrides() {
-    try { localStorage.removeItem(OV_KEY); } catch (e) {}
+    try { localStorage.removeItem(OV_KEY); } catch(e){console.warn("[swallowed] yunqi-regex",e)}
   }
 
   /* ---------------- ST 正则字符串 → JS RegExp ---------------- */
@@ -268,16 +268,16 @@
       var re = toRegex(adaptSource(r));
       if (!re) return;
       if (isWipeRule(re, r.replaceString)) {
-        try { console.warn('[正则] 已跳过会清空全文的规则：' + (r.scriptName || r.id)); } catch (e) {}
+        try { console.warn('[正则] 已跳过会清空全文的规则：' + (r.scriptName || r.id)); } catch(e){console.warn("[swallowed] yunqi-regex",e)}
         return;
       }
       var flags = re.flags.indexOf('g') >= 0 ? re.flags : re.flags + 'g';
-      try { re = new RegExp(re.source, flags); } catch (e) {}
+      try { re = new RegExp(re.source, flags); } catch(e){console.warn("[swallowed] yunqi-regex",e)}
       try {
         var next = out.replace(re, r.replaceString || '');
         if (next !== out) touched = true;
         out = next;
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] yunqi-regex",e)}
     });
     return touched ? polish(out) : out;
   }
@@ -311,8 +311,8 @@
       var re = toRegex(r.findRegex);
       if (!re) return;
       var flags = re.flags.indexOf('g') >= 0 ? re.flags : re.flags + 'g';
-      try { re = new RegExp(re.source, flags); } catch (e) {}
-      try { out = out.replace(re, r.replaceString || ''); } catch (e) {}
+      try { re = new RegExp(re.source, flags); } catch(e){console.warn("[swallowed] yunqi-regex",e)}
+      try { out = out.replace(re, r.replaceString || ''); } catch(e){console.warn("[swallowed] yunqi-regex",e)}
     });
     return out;
   }

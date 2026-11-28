@@ -27,7 +27,7 @@
       if (c.model) return c.model;
       var raw = localStorage.getItem('storyApiConfig');
       if (raw) { var j = JSON.parse(raw); return (j && j.model) || ''; }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] api-status-badge",e)}
     return '';
   }
   function shortModel(m) {
@@ -69,7 +69,7 @@
     try {
       if (window.ConfigModal && ConfigModal.open) ConfigModal.open();
       else if (window.showToast) showToast('接口设置模块未就绪，请刷新页面', 'error');
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] api-status-badge",e)}
   }
 
   function refresh() {
@@ -80,7 +80,7 @@
         var stale = document.querySelector('.apiHintBar');
         if (stale) stale.remove();
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] api-status-badge",e)}
     if (!badge) return;
     var ok = configured();
     badge.className = ok ? 'on' : 'off';
@@ -127,11 +127,11 @@
         + '<span class="ah-x" title="不再提示">✕</span>';
       bar.querySelector('.ah-btn').addEventListener('click', openConfig);
       bar.querySelector('.ah-x').addEventListener('click', function () {
-        try { localStorage.setItem(K_HINT_DISMISSED, '1'); } catch (e) {}
+        try { localStorage.setItem(K_HINT_DISMISSED, '1'); } catch(e){console.warn("[swallowed] api-status-badge",e)}
         bar.remove();
       });
       host.insertBefore(bar, host.firstChild);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] api-status-badge",e)}
   }
 
   function init() {

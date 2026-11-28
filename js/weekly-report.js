@@ -166,8 +166,7 @@
           var _a, _b;
           try {
             (_b = (_a = window.WeeklyReport) == null ? void 0 : _a.upsert) == null ? void 0 : _b.call(_a);
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] weekly-report",e)}
           return orig();
         };
         fw.__weeklyPatched = true;

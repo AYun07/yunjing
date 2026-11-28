@@ -13,7 +13,7 @@
     const fw = window.storyFramework;
     return (fw && fw.storyState && fw.storyState.variables) || null;
   }
-  function toast(m, t) { try { window.showToast && window.showToast(m, t || "info"); } catch (e) {} }
+  function toast(m, t) { try { window.showToast && window.showToast(m, t || "info"); } catch(e){console.warn("[swallowed] mo-tools",e)} }
 
   function overlay(title, bodyHTML, footHTML) {
     const ov = document.createElement("div");
@@ -47,7 +47,7 @@
     });
     /* 推演 5 步 */
     let simLine = "推演不可用";
-    try { if (window.SimCore) simLine = SimCore.project(v, 5).summary; } catch (e) {}
+    try { if (window.SimCore) simLine = SimCore.project(v, 5).summary; } catch(e){console.warn("[swallowed] mo-tools",e)}
     /* 规划进度 */
     const plan = window.Planner && Planner.get();
     const planLine = plan ? `「${plan.goal}」 ${plan.steps.filter((s) => s.status === "done").length}/${plan.steps.length} 完成` : "尚未设立规划";
@@ -74,7 +74,7 @@
         if (Array.isArray(rels)) {
           const before = rels.length;
           v.entities.relations = rels.filter((r) => exists(r.a) && exists(r.b));
-          try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (err) {}
+          try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch(err){console.warn("[swallowed] mo-tools",err)}
           toast(`已清理 ${before - v.entities.relations.length} 条悬空关系`, "success");
           ov.remove(); diagnose();
         }

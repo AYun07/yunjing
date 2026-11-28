@@ -125,11 +125,11 @@ async function downloadFile(sources, rel, dest, expectedSha, opts = {}) {
     const tmp = dest + '.part-' + process.pid;
     try {
       fs.mkdirSync(path.dirname(dest), { recursive: true });
-      try { fs.unlinkSync(tmp); } catch (_) {}
+      try { fs.unlinkSync(tmp); } catch(_){console.warn("[swallowed] content-sync",_)}
       fs.writeFileSync(tmp, buf);
       fs.renameSync(tmp, dest);
     } catch (e) {
-      try { fs.unlinkSync(tmp); } catch (_) {}
+      try { fs.unlinkSync(tmp); } catch(_){console.warn("[swallowed] content-sync",_)}
       throw e;
     }
     return { size: buf.length, sha256: sha };
@@ -147,7 +147,7 @@ function sha256File(file) {
   });
 }
 
-function rmrf(p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch (_) {} }
+function rmrf(p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch(_){console.warn("[swallowed] content-sync",_)} }
 
 // 硬链接优先构建目录树（713MB 基线秒级完成），跨设备失败时回退为复制
 function linkTree(src, dst) {
@@ -170,7 +170,7 @@ function readLocalManifest(contentDir) {
     const m = JSON.parse(fs.readFileSync(path.join(contentDir, MANIFEST_NAME), 'utf8'));
     if (m && m.schema === 1 && typeof m.version === 'string'
       && m.files && typeof m.files === 'object' && !Array.isArray(m.files)) return m;
-  } catch (_) {}
+  } catch(_){console.warn("[swallowed] content-sync",_)}
   return { schema: 1, version: '0.0.0', generatedAt: null, count: 0, sources: [], files: {} };
 }
 
@@ -197,7 +197,7 @@ function readState(stateFile) {
   try {
     const s = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
     if (s && typeof s === 'object') return Object.assign(defaultState(), s);
-  } catch (_) {}
+  } catch(_){console.warn("[swallowed] content-sync",_)}
   return defaultState();
 }
 function writeState(stateFile, patch) {
@@ -247,7 +247,7 @@ async function ensureContentDir({ contentDir, baselineDir }) {
   const bak = contentDir + '.bak-baseline';
   rmrf(bak);
   if (fs.existsSync(contentDir)) {
-    try { fs.renameSync(contentDir, bak); } catch (_) {}
+    try { fs.renameSync(contentDir, bak); } catch(_){console.warn("[swallowed] content-sync",_)}
   }
   try {
     fs.renameSync(tmp, contentDir);
@@ -269,7 +269,7 @@ async function atomicSwap(live, staging, bak, retries = 3) {
       return true;
     } catch (_) {
       if (moved && !fs.existsSync(live) && fs.existsSync(bak)) {
-        try { fs.renameSync(bak, live); } catch (__) {}
+        try { fs.renameSync(bak, live); } catch(__){console.warn("[swallowed] content-sync",__)}
       }
       await delay(300 * (i + 1));
     }
@@ -335,7 +335,7 @@ async function syncContent(opts) {
       try {
         const localFile = relToAbs(contentDir, rel);
         if (fs.existsSync(localFile) && (await sha256File(localFile)) === String(meta.sha256).toLowerCase()) reuse = true;
-      } catch (_) {}
+      } catch(_){console.warn("[swallowed] content-sync",_)}
       if (reuse) { result.reused++; doneCount++; continue; }
 
       progress({ phase: 'files', percent: 12 + Math.round(72 * doneCount / totalFiles), detail: '下载 ' + rel });
@@ -403,7 +403,7 @@ async function repairContent(opts) {
     for (const [rel, meta] of entries) {
       const f = relToAbs(contentDir, rel);
       let ok = false;
-      try { ok = fs.existsSync(f) && (await sha256File(f)) === String(meta.sha256).toLowerCase(); } catch (_) {}
+      try { ok = fs.existsSync(f) && (await sha256File(f)) === String(meta.sha256).toLowerCase(); } catch(_){console.warn("[swallowed] content-sync",_)}
       if (!ok) broken.push([rel, meta]);
     }
     if (!broken.length) { finish(); return result; }
@@ -420,7 +420,7 @@ async function repairContent(opts) {
           const base = relToAbs(baselineDir, rel);
           if (!fs.existsSync(base)) throw new Error('基线也无此文件');
           fs.mkdirSync(path.dirname(dst), { recursive: true });
-          try { fs.unlinkSync(dst); } catch (__) {}
+          try { fs.unlinkSync(dst); } catch(__){console.warn("[swallowed] content-sync",__)}
           fs.copyFileSync(base, dst);
           result.baselineFixed++;
           result.errors.push(rel + '：联网修复失败，已用打包基线兜底');
@@ -463,7 +463,7 @@ async function rollbackToBackup(opts) {
         break;
       } catch (_) {
         if (moved && !fs.existsSync(contentDir) && fs.existsSync(discard)) {
-          try { fs.renameSync(discard, contentDir); } catch (__) {}
+          try { fs.renameSync(discard, contentDir); } catch(__){console.warn("[swallowed] content-sync",__)}
         }
         await delay(300 * (i + 1));
       }

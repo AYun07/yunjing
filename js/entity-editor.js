@@ -15,8 +15,8 @@
     const fw = window.storyFramework;
     return (fw && fw.storyState && fw.storyState.variables) || null;
   }
-  function save() { try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) {} }
-  function toast(m, t) { try { window.showToast && window.showToast(m, t || "success"); } catch (e) {} }
+  function save() { try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch(e){console.warn("[swallowed] entity-editor",e)} }
+  function toast(m, t) { try { window.showToast && window.showToast(m, t || "success"); } catch(e){console.warn("[swallowed] entity-editor",e)} }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]); }
   function fieldsOf(type) {
     const s = window.SchemaRegistry && window.SchemaRegistry.get();
@@ -72,7 +72,7 @@
       if (target) Object.assign(target, data);
       else if (oldName) { /* 改名：替换整项保序 */ const i = v.items.findIndex((x) => x && x.name === oldName); if (i >= 0) v.items[i] = data; else v.items.push(data); }
       else v.items.push(data);
-      try { window.EntityStore && window.EntityStore.bootstrap(v); } catch (e) {}
+      try { window.EntityStore && window.EntityStore.bootstrap(v); } catch(e){console.warn("[swallowed] entity-editor",e)}
     } else {
       if (!window.EntityStore) return { ok: false, msg: "实体库未加载" };
       const ents = window.EntityStore.list(type, v);
@@ -81,7 +81,7 @@
       else window.EntityStore.upsert(type, data, v);
     }
     save();
-    try { window.MoChibi && MoChibi.react && MoChibi.react("entity", { type }); } catch (e) {}
+    try { window.MoChibi && MoChibi.react && MoChibi.react("entity", { type }); } catch(e){console.warn("[swallowed] entity-editor",e)}
     return { ok: true };
   }
 
@@ -146,7 +146,7 @@
       const r = _applySave(type, data, oldName);
       if (!r.ok) { toast(r.msg, "error"); return false; }
       toast(`${TYPES[type].label}「${data.name}」已${oldName ? "更新" : "登记"}`);
-      try { window.StoryStatusRenderer && window.StoryStatusRenderer.renderItems(Array.isArray(v.items) ? v.items : []); } catch (e) {}
+      try { window.StoryStatusRenderer && window.StoryStatusRenderer.renderItems(Array.isArray(v.items) ? v.items : []); } catch(e){console.warn("[swallowed] entity-editor",e)}
     });
   }
 
@@ -159,7 +159,7 @@
       if (es) for (const t of ["characters", "factions", "places", "items"]) {
         Object.values(es.list(t, v) || {}).forEach((e) => { if (e && e.name && !names.includes(e.name)) names.push(e.name); });
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] entity-editor",e)}
     if (names.length < 2) { toast("先登记至少两个实体再来连线", "error"); return; }
     const opt = (sel) => names.map((n) => `<option ${n === sel ? "selected" : ""}>${esc(n)}</option>`).join("");
     const kinds = relationKinds().map((k) => `<option>${esc(k)}</option>`).join("");

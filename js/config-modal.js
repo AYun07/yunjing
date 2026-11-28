@@ -1439,7 +1439,7 @@ const ConfigModal = {
     this._lazyRetry[name] = setInterval(() => {
       if (this._lazyOk(name)) {
         clearInterval(this._lazyRetry[name]); delete this._lazyRetry[name];
-        try { onReady(); } catch (e) {}
+        try { onReady(); } catch(e){console.warn("[swallowed] config-modal",e)}
       } else if (++n > 20) {
         clearInterval(this._lazyRetry[name]); delete this._lazyRetry[name];
         if (chip) chip.textContent = "—";
@@ -2573,7 +2573,7 @@ const ConfigModal = {
       if (!ok) { this.renderCSSection(); return; }
       CS.setBreak(true);
       /* 破限同时解锁成人向状态字段组（用户仍可在状态栏设置里单独关） */
-      try { if (CS.adultConfirmed()) localStorage.setItem("yunjingAdultFields", "1"); } catch (e) {}
+      try { if (CS.adultConfirmed()) localStorage.setItem("yunjingAdultFields", "1"); } catch(e){console.warn("[swallowed] config-modal",e)}
     } else {
       CS.setBreak(false);
     }
@@ -2607,7 +2607,7 @@ const ConfigModal = {
     body.style.display = open ? "block" : "none";
     if (caret) caret.textContent = open ? "▾" : "▸";
     if (open) {
-      if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
+      if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch(e){console.warn("[swallowed] config-modal",e)} }
       this.renderMMSection();
     }
   },
@@ -2668,12 +2668,12 @@ const ConfigModal = {
           if (st.at) {
             try {
               s += `（${new Date(st.at).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}）`;
-            } catch (e) { }
+            } catch(e){console.warn("[swallowed] config-modal",e)}
           }
           tipS.innerHTML = s;
         }
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] config-modal",e)}
 
     /* v3.51.0：当前预设 / 正则的来源（内置 or 导入） */
     const PIO = window.YunjingPresetIO;
@@ -2967,7 +2967,7 @@ const ConfigModal = {
         try {
           const r = await fetch(p, { cache: "no-store" });
           if (r.ok) { txt = await r.text(); if (txt && txt.trim().charAt(0) === "{") break; }
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] config-modal",e)}
       }
       if (!txt) {
         // 兜底：运行时用内存里的云起预设构造最小 v2 卡
@@ -2990,7 +2990,7 @@ const ConfigModal = {
   yqSyncCheck() {
     const YS = window.YunqiSync;
     if (!YS) {
-      try { window.showToast && window.showToast("云端同步模块未加载", "error"); } catch (e) { }
+      try { window.showToast && window.showToast("云端同步模块未加载", "error"); } catch(e){console.warn("[swallowed] config-modal",e)}
       return;
     }
     YS.uiCheck().then(() => this.renderMMSection());
@@ -2998,7 +2998,7 @@ const ConfigModal = {
   yqSyncPull() {
     const YS = window.YunqiSync;
     if (!YS) {
-      try { window.showToast && window.showToast("云端同步模块未加载", "error"); } catch (e) { }
+      try { window.showToast && window.showToast("云端同步模块未加载", "error"); } catch(e){console.warn("[swallowed] config-modal",e)}
       return;
     }
     YS.uiSync(false).then((r) => { if (r) this.renderMMSection(); });
@@ -3017,7 +3017,7 @@ const ConfigModal = {
     const f = input && input.files && input.files[0];
     if (!f) return;
     const IO = window.YunjingPresetIO;
-    const done = () => { try { input.value = ""; } catch (e) { } };
+    const done = () => { try { input.value = ""; } catch(e){console.warn("[swallowed] config-modal",e)} };
     if (!IO) { done(); return this.mmSay("预设导入模块未加载", "error"); }
     IO.importFile(f).then((info) => {
       const rx = info && info.regexes ? `，配套正则 ${info.regexes} 条已一并装载` : "";
@@ -3059,7 +3059,7 @@ const ConfigModal = {
     const f = input && input.files && input.files[0];
     if (!f) return;
     const R = window.YunjingRegexIO;
-    const done = () => { try { input.value = ""; } catch (e) { } };
+    const done = () => { try { input.value = ""; } catch(e){console.warn("[swallowed] config-modal",e)} };
     if (!R) { done(); return this.mmSay("正则导入模块未加载", "error"); }
     R.importFile(f).then((info) => {
       this.mmSay(`✅ 已导入 ${info.count} 条正则，整份替换内置云起正则`, "success");
@@ -3093,7 +3093,7 @@ const ConfigModal = {
     const M = window.YunqiPreset;
     const IO = window.YunjingPresetIO;
     if (!M || !IO) return;
-    if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
+    if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch(e){console.warn("[swallowed] config-modal",e)} }
     const p = M.preset ? M.preset() : null;
     const blk = p && p.prompts ? p.prompts.filter((b) => b.identifier === id)[0] : null;
     if (!blk) return this.mmSay("找不到这条提示词", "error");
@@ -3125,7 +3125,7 @@ const ConfigModal = {
     const ta = document.getElementById("mmEditText");
     ta.value = cur != null ? cur : def;
     ta.focus();
-    try { ta.setSelectionRange(0, 0); ta.scrollTop = 0; } catch (e) { }
+    try { ta.setSelectionRange(0, 0); ta.scrollTop = 0; } catch(e){console.warn("[swallowed] config-modal",e)}
   },
   mmSaveBlock(id) {
     const IO = window.YunjingPresetIO;
@@ -3247,7 +3247,7 @@ const ConfigModal = {
     const lv = sel.value;
     const R = window.ReasoningEffort;
     let v = '自动适配：';
-    try { v = '将按接口地址与模型名自动适配该厂商的参数（' + R.vendorOf(document.getElementById("cfg_endpoint").value, document.getElementById("cfg_model").value) + '）｜'; } catch (e) { }
+    try { v = '将按接口地址与模型名自动适配该厂商的参数（' + R.vendorOf(document.getElementById("cfg_endpoint").value, document.getElementById("cfg_model").value) + '）｜'; } catch(e){console.warn("[swallowed] config-modal",e)}
     tip.textContent = v + R.hint(lv) + '　建议最大Tokens ≥ ' + R.tokenFloor(lv) + '（思考与正文共享额度，额度太小会导致正文为空）';
   },
 
@@ -3273,7 +3273,7 @@ const ConfigModal = {
         if (!cv) { const s = Number(localStorage.getItem('storyContextWindow') || 0); cv = s > 0 ? s : ''; }
         ctxEl.value = cv || '';
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] config-modal",e)}
     document.getElementById("cfg_stream").checked = c.stream !== false;
     /* v3.55.11 模型能力档位回填（apiConfig 优先，其次 localStorage；默认 auto） */
     const tierVal = (typeof c.baseModelMode === 'string' && (c.baseModelMode === 'auto' || c.baseModelMode === 'lite' || c.baseModelMode === 'full')) ? c.baseModelMode : (window.BaseModelMode && BaseModelMode.getTier ? BaseModelMode.getTier() : 'auto');
@@ -3284,7 +3284,7 @@ const ConfigModal = {
       if (re) re.value = (typeof c.reasoningEffort === 'string' && window.ReasoningEffort
         && ReasoningEffort.LEVELS.indexOf(c.reasoningEffort) >= 0) ? c.reasoningEffort : 'medium';
       this.onReasoningChange();
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] config-modal",e)}
     this.updateProviderUI("cfg");
     this.fillDynamicWorldForm();
     this.fillVarAIForm();
@@ -3377,7 +3377,7 @@ const ConfigModal = {
             + `思考与正文共享这份额度，额度偏小会导致<b>正文为空</b>（推理模型的思考常是正文的 3～19 倍）。`);
         }
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] config-modal",e)}
     /* v4.16.0：保存时对「已知不给跨域头」的官方端点给出预警。
        不阻止保存（真有中转站复用同域名也能用），只提前把代价说清楚——
        免得玩家配好后开局，才发现请求根本发不出去、还以为是云境坏了。 */
@@ -3393,11 +3393,11 @@ const ConfigModal = {
             + `（需先双击 <code>start-proxy-windows.bat</code>），或改用支持跨域的中转站地址。`);
         }
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] config-modal",e)}
     /* v3.51.1：设置页里的向量检索也随「保存全部配置」一起落盘，
        免得改完忘了点那块小号的「保存」 */
     if (window.KBVector && document.getElementById("cfgVecKey")) {
-      try { window.KBVector.saveFromUI("cfgVec", true); } catch (e) {}
+      try { window.KBVector.saveFromUI("cfgVec", true); } catch(e){console.warn("[swallowed] config-modal",e)}
     }
     let dwMsg = "";
     const dw = window.DynamicWorld;
@@ -3455,13 +3455,13 @@ const ConfigModal = {
       try {
         if (window.StoryResponseHandler && StoryResponseHandler.renderSystemMessage)
           StoryResponseHandler.renderSystemMessage(doneMsg, "success");
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] config-modal",e)}
     } else {
       try {
         this.setTestResult && this.setTestResult("success", String(doneMsg).replace(/\n/g, "<br>"));
         var note = document.getElementById('switchNote');
         if (note) note.textContent = '✓ 配置已保存到本机';
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] config-modal",e)}
     }
   },
   async testConnection() {

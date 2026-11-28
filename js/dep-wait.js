@@ -52,7 +52,7 @@
 
     var resolve, reject;
     var promise = new Promise(function (res, rej) { resolve = res; reject = rej; });
-    promise.catch(function () { });          /* 吞掉默认 rejection，避免控制台噪声 */
+    promise.catch(function(e){console.warn("[swallowed-promise] dep-wait",e)});          /* 吞掉默认 rejection，避免控制台噪声 */
     var rec = jobs[key] = { promise: promise, tries: 0, timer: 0, done: false };
 
     function stop() {

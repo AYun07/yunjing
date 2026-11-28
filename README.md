@@ -4,7 +4,7 @@
 
 > 打开网页就能用的 AI 互动小说加开放世界扮演。纯前端静态站，不用构建，没有后端，也不用注册账号。AI 接口自己填，故事和 Key 只留在本机浏览器里。封面只有一张，叫「万象入云」，四个入口进的是同一个世界。
 
-[![当前版本](https://img.shields.io/badge/version-7.6.2-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.6.2) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
+[![当前版本](https://img.shields.io/badge/version-7.6.6-orange)](https://github.com/AYun07/yunjing/releases/tag/v7.6.6) ![许可证](https://img.shields.io/badge/license-开源非盈利-blue) ![平台](https://img.shields.io/badge/platform-纯前端%20PWA-green)
 
 ---
 
@@ -72,7 +72,7 @@
 
 ## 三·五、怎么下载安装（五种方式）
 
-一开始定的几种方式，具体产物以当前版 [Release 页](https://github.com/AYun07/yunjing/releases/latest) 的 Assets 为准。**当前版本（v7.6.2）实际发布的是 Windows 两件套**；源码可随时从该版 tag 直接下载，PWA 与本地部署不需要安装包。
+一开始定的几种方式，具体产物以当前版 [Release 页](https://github.com/AYun07/yunjing/releases/latest) 的 Assets 为准。**当前版本发布的是 Windows 两件套**（版本号见页首徽章与 `update-latest.json`）；源码可随时从该版 tag 直接下载，PWA 与本地部署不需要安装包。
 
 | 方式 | 适合谁 | 怎么用 | 当前实际产物 |
 |---|---|---|---|
@@ -114,11 +114,11 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v7.6.5（2026-11-28 · 唯一当前版）
+## 🆕 当前版本：v7.6.6（2026-11-28 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v7.6.5** | 2026-11-28 | **当前** | 创作态栈溢出修复 + 六轮真实实测：修复 bonus-engine recompute ↔ story-status-renderer renderStats 经 yj:bonus-change 无限递归导致的栈溢出（silent 参数断开递归，装备/称号即时反馈保留）；六轮 200+ 次真实交互（含真机 Electron 创作全流程 7/7）仅此 1 真 bug，误报如实甄别。详见 DR-120。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.4.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.4) |
+| **v7.6.6** | 2026-11-28 | **当前** | 创作态栈溢出修复 + 六轮真实实测：修复 bonus-engine recompute ↔ story-status-renderer renderStats 经 yj:bonus-change 无限递归导致的栈溢出（silent 参数断开递归，装备/称号即时反馈保留）；六轮 200+ 次真实交互（含真机 Electron 创作全流程 7/7）仅此 1 真 bug，误报如实甄别。详见 DR-120。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.4.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.4) |
 
 **看版本**：[📚 版本页（132 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v7.6.3 的差异](https://github.com/AYun07/yunjing/compare/v7.6.3...v7.6.4) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.4)
 

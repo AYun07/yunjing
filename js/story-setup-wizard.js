@@ -233,8 +233,7 @@ const StorySetupWizard = {
     if (this.state.customVars.length >= 6) {
       try {
         window.showToast && window.showToast("最多 6 条自定义变量", "warn");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] story-setup-wizard",e)}
       return;
     }
     this.state.customVars.push({ key, val });
@@ -561,10 +560,17 @@ const StorySetupWizard = {
     };
     const arr = map[field];
     const el = document.getElementById("wiz_" + field);
-    if (!arr || !arr.length || !el) return;
+    /* v7.6.6：静默 return 会让玩家以为「单个骰是死按钮」，给出可见反馈 */
+    if (!arr || !arr.length || !el) {
+      if (window.showToast) window.showToast("这一项暂时没有可随机的选项，稍后再试", "info");
+      return;
+    }
     const pool = arr.filter((x) => x.id !== "custom" && x.id !== el.value);
     const use = pool.length ? pool : arr.filter((x) => x.id !== "custom");
-    if (!use.length) return;
+    if (!use.length) {
+      if (window.showToast) window.showToast("这一项只有一个选项，没法再随机了", "info");
+      return;
+    }
     el.value = this.NameForge.pick(use).id;
     if (this.updateDesc) this.updateDesc(field);
     if (this.toggleCustomField) this.toggleCustomField(field);
@@ -1605,7 +1611,7 @@ const StorySetupWizard = {
       try {
         return isFreeworld ? this.diceAllFreeworld() : this.diceAllRoleplay();
       } catch (e) {
-        try { window.showToast && showToast('随缘开局出错：' + (e && e.message || '未知'), 'error'); } catch (_) {}
+        try { window.showToast && showToast('随缘开局出错：' + (e && e.message || '未知'), 'error'); } catch(_){console.warn("[swallowed] story-setup-wizard",_)}
         return false;
       }
     }

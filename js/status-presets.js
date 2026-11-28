@@ -223,7 +223,7 @@
   };
 
   function jget(k, d) { try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? d : v; } catch (e) { return d; } }
-  function jset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+  function jset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){console.warn("[swallowed] status-presets",e)} }
 
   function genre() {
     try {
@@ -275,9 +275,9 @@
           var kept = all.filter(function (f) { return f && !f.genre; });
           jset('yunjingStatusCustom', kept);
         }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] status-presets",e)}
       localStorage.setItem(K_EXCL_VER, '4.19.2');
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] status-presets",e)}
   }
 
   /** 套用本界预设（幂等；已套用过或玩家改过则跳过） */
@@ -303,9 +303,9 @@
     var p = presetOf(g);
     if (!p) return false;
     /* ① 组开关：关掉本原型不需要的组（只写 K_OFF，不碰别的） */
-    try { jset('yunjingStatusGroupOff', p.off.slice()); } catch (e) { }
+    try { jset('yunjingStatusGroupOff', p.off.slice()); } catch(e){console.warn("[swallowed] status-presets",e)}
     /* ② 字段改名：只改本界声明过的键 */
-    try { jset(K_RELABEL, Object.assign({}, p.relabel)); } catch (e) { }
+    try { jset(K_RELABEL, Object.assign({}, p.relabel)); } catch(e){console.warn("[swallowed] status-presets",e)}
     /* ③ 追加本界专属字段：带 genre 前缀存，切界时按前缀换成新界的
           （旧字段不删——玩家切回原世界时还在） */
     try {
@@ -324,7 +324,7 @@
         mine = p.fields.map(function (f) { return { k: f.k, label: f.label, group: f.group, genre: g }; });
       }
       jset('yunjingStatusCustom', playerOwn.concat(mine, stash));
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] status-presets",e)}
     return true;
   }
 
@@ -337,8 +337,8 @@
     var r = applyIfNeeded(g, true);
     try {
       if (window.showToast) window.showToast(r.applied ? '已恢复本界专属状态预设' : ('恢复失败：' + (r.reason || '')), r.applied ? 'info' : 'error');
-    } catch (e) { }
-    try { if (window.StatusSchema && window.StatusSchema.render) window.StatusSchema.render(); } catch (e) { }
+    } catch(e){console.warn("[swallowed] status-presets",e)}
+    try { if (window.StatusSchema && window.StatusSchema.render) window.StatusSchema.render(); } catch(e){console.warn("[swallowed] status-presets",e)}
     return r;
   }
 
@@ -364,5 +364,5 @@
   };
 
   /* 启动即套用（幂等，不打扰玩家） */
-  try { applyIfNeeded(); } catch (e) { }
+  try { applyIfNeeded(); } catch(e){console.warn("[swallowed] status-presets",e)}
 })();

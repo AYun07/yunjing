@@ -40,7 +40,7 @@
   /* ---------- 工具 ---------- */
   function slot() { try { return (G.storyFramework && G.storyFramework.slotId) || "main"; } catch (e) { return "main"; } }
   function lsGet(k, fb) { try { var raw = G.localStorage && G.localStorage.getItem(k); return raw ? JSON.parse(raw) : fb; } catch (e) { return fb; } }
-  function lsSet(k, v) { try { if (G.localStorage) { G.localStorage.setItem(k, JSON.stringify(v)); return true; } } catch (e) {} return false; }
+  function lsSet(k, v) { try { if (G.localStorage) { G.localStorage.setItem(k, JSON.stringify(v)); return true; } } catch(e){console.warn("[swallowed] semantic-engine",e)} return false; }
   function clamp(n, lo, hi) { n = Number(n); if (!isFinite(n)) n = lo; return n < lo ? lo : (n > hi ? hi : n); }
   function hash(str) {
     var h = 2166136261; str = String(str == null ? "" : str);
@@ -75,8 +75,8 @@
     catch (e) { return true; }
   }
   function setLLMEnabled(on) {
-    try { if (G.localStorage) G.localStorage.setItem(LLM_ON_KEY, on ? "1" : "0"); } catch (e) {}
-    try { if (G.dispatchEvent) { var C = G.CustomEvent || G.Event; G.dispatchEvent(new C("yj:bonus-change", { bubbles: false })); } } catch (e) {}
+    try { if (G.localStorage) G.localStorage.setItem(LLM_ON_KEY, on ? "1" : "0"); } catch(e){console.warn("[swallowed] semantic-engine",e)}
+    try { if (G.dispatchEvent) { var C = G.CustomEvent || G.Event; G.dispatchEvent(new C("yj:bonus-change", { bubbles: false })); } } catch(e){console.warn("[swallowed] semantic-engine",e)}
     return !!on;
   }
   function llmStore() { return lsGet(LLM_KEY, { items: {} }); }
@@ -327,7 +327,7 @@
   function contextOf(opts) {
     var o = opts || {};
     var v = {};
-    try { v = (G.storyFramework && G.storyFramework.storyState && G.storyFramework.storyState.variables) || {}; } catch (e) {}
+    try { v = (G.storyFramework && G.storyFramework.storyState && G.storyFramework.storyState.variables) || {}; } catch(e){console.warn("[swallowed] semantic-engine",e)}
     return {
       genre: o.genre || v.genre || (function () { try { return new URLSearchParams(G.location && G.location.search).get("genre") || "free"; } catch (e) { return "free"; } })(),
       round: o.round != null ? o.round : (Number(v.chapter) || 0),
@@ -387,13 +387,13 @@
   function setCustom(target, text) {
     var o = customStore(); o[String(target)] = String(text == null ? "" : text);
     lsSet("yunjingSemanticCustom~" + slot(), o);
-    try { if (G.dispatchEvent) { var Ctor = G.CustomEvent || G.Event; G.dispatchEvent(new Ctor("yj:bonus-change", { bubbles: false })); } } catch (e) {}
+    try { if (G.dispatchEvent) { var Ctor = G.CustomEvent || G.Event; G.dispatchEvent(new Ctor("yj:bonus-change", { bubbles: false })); } } catch(e){console.warn("[swallowed] semantic-engine",e)}
     return o[String(target)];
   }
   function clearCustom(target) {
     var o = customStore(); delete o[String(target)];
     lsSet("yunjingSemanticCustom~" + slot(), o);
-    try { if (G.dispatchEvent) { var Ctor = G.CustomEvent || G.Event; G.dispatchEvent(new Ctor("yj:bonus-change", { bubbles: false })); } } catch (e) {}
+    try { if (G.dispatchEvent) { var Ctor = G.CustomEvent || G.Event; G.dispatchEvent(new Ctor("yj:bonus-change", { bubbles: false })); } } catch(e){console.warn("[swallowed] semantic-engine",e)}
   }
   function getCustomText(target) { return customStore()[String(target)] || ""; }
   /** 取某目标的自定义词条（已解读）；无自定义返回 [] */
@@ -506,7 +506,7 @@
       { role: "system", content: llmPrompt(todo) },
       { role: "user", content: JSON.stringify(todo) }
     ];
-    try { if (G.TokenUsage && G.TokenUsage.recordRequest) G.TokenUsage.recordRequest(messages, "语义解读"); } catch (e) {}
+    try { if (G.TokenUsage && G.TokenUsage.recordRequest) G.TokenUsage.recordRequest(messages, "语义解读"); } catch(e){console.warn("[swallowed] semantic-engine",e)}
 
     var reply = "";
     try {
@@ -541,7 +541,7 @@
       } else {
         reply = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || "";
       }
-      try { if (G.TokenUsage && G.TokenUsage.recordOutput) G.TokenUsage.recordOutput(reply, "语义解读"); } catch (e) {}
+      try { if (G.TokenUsage && G.TokenUsage.recordOutput) G.TokenUsage.recordOutput(reply, "语义解读"); } catch(e){console.warn("[swallowed] semantic-engine",e)}
 
       var parsed = parseLLMResult(reply);
       /* 按 text 回填缓存：大模型可能漏条，未解读到的文本本次不写缓存（下次可重试） */
@@ -561,7 +561,7 @@
       if (result.done) {
         result.source = "llm";
         /* 通知加成引擎重算：面板/战斗/prompt 下次取数即命中新缓存 */
-        try { if (G.dispatchEvent) { var C = G.CustomEvent || G.Event; G.dispatchEvent(new C("yj:bonus-change", { bubbles: false })); } } catch (e) {}
+        try { if (G.dispatchEvent) { var C = G.CustomEvent || G.Event; G.dispatchEvent(new C("yj:bonus-change", { bubbles: false })); } } catch(e){console.warn("[swallowed] semantic-engine",e)}
       }
     } catch (e) {
       todo.forEach(function (t) { delete llmInflight[t]; });

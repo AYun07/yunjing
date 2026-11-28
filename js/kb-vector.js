@@ -84,7 +84,7 @@
       localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
     } catch (e) {
       console.warn("[KBVector] 向量配置写入失败（存储空间可能已满）:", e);
-      try { if (window.showToast) window.showToast("⚠ 向量检索配置保存失败：浏览器存储空间不足，配置未生效。", "error"); } catch (e2) {}
+      try { if (window.showToast) window.showToast("⚠ 向量检索配置保存失败：浏览器存储空间不足，配置未生效。", "error"); } catch(e2){console.warn("[swallowed] kb-vector",e2)}
     }
     return cfg;
   }
@@ -128,7 +128,7 @@
       });
       if (!res.ok) {
         var txt = '';
-        try { txt = (await res.text()).slice(0, 200); } catch (e) {}
+        try { txt = (await res.text()).slice(0, 200); } catch(e){console.warn("[swallowed] kb-vector",e)}
         throw new Error('HTTP ' + res.status + (txt ? ' ' + txt : ''));
       }
       return await res.json();

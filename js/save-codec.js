@@ -15,7 +15,7 @@
      仅当本机从未配置过该项时才允许用档内值做首次引导。 */
   var NETWORK_FIELDS = ['endpoint', 'baseUrl'];
 
-  function log() { try { if (window.YJ_DEBUG) console.debug('[SaveCodec]', ...arguments); } catch (e) {} }
+  function log() { try { if (window.YJ_DEBUG) console.debug('[SaveCodec]', ...arguments); } catch(e){console.warn("[swallowed] save-codec",e)} }
 
   /* ==================== gzip 压缩 / 解压 ==================== */
   function hasGzip() { return typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined'; }
@@ -154,11 +154,11 @@
   /** 采集当前接口配置；includeKey=true 时明文带上 apiKey，否则留空占位 */
   function collectConfig(includeKey) {
     var raw = {};
-    try { raw = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}') || {}; } catch (e) {}
+    try { raw = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}') || {}; } catch(e){console.warn("[swallowed] save-codec",e)}
     try {
       var fwCfg = (window.storyFramework && window.storyFramework.apiConfig) || {};
       raw = Object.assign({}, raw, fwCfg);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] save-codec",e)}
     var out = {};
     CFG_FIELDS.forEach(function (k) { if (raw[k] !== undefined && raw[k] !== null && raw[k] !== '') out[k] = raw[k]; });
     /* 密钥：显式勾选才带；否则记一个标记，导入端据此提示"需补填密钥" */
@@ -172,7 +172,7 @@
     var result = { applied: [], keyRestored: false, keyNeeded: false, networkKept: false };
     if (!cfg || typeof cfg !== 'object') return result;
     var cur = {};
-    try { cur = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}') || {}; } catch (e) {}
+    try { cur = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}') || {}; } catch(e){console.warn("[swallowed] save-codec",e)}
     var next = Object.assign({}, cur);
     CFG_FIELDS.forEach(function (k) {
       if (cfg[k] === undefined || cfg[k] === null || cfg[k] === '') return;
@@ -183,12 +183,12 @@
     /* 密钥：本机已有密钥始终优先，档内密钥只在 _keyIncluded 且本机为空时采用。 */
     if (cfg._keyIncluded && cfg.apiKey && !cur.apiKey) { next.apiKey = cfg.apiKey; result.keyRestored = true; }
     else if (!cur.apiKey) { result.keyNeeded = true; }
-    try { localStorage.setItem(CONFIG_KEY, JSON.stringify(next)); } catch (e) {}
+    try { localStorage.setItem(CONFIG_KEY, JSON.stringify(next)); } catch(e){console.warn("[swallowed] save-codec",e)}
     /* 同步内存态：让当前会话立即生效，无需刷新 */
     try {
       var fw = window.storyFramework;
       if (fw) { fw.apiConfig = Object.assign({}, fw.apiConfig, next); if (typeof fw.loadApiConfig === 'function') fw.loadApiConfig(); }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] save-codec",e)}
     return result;
   }
 

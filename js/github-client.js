@@ -27,18 +27,18 @@
 
   function store() { return window.MoStore || window.localStorage; }
   function getToken() { try { return store().getItem(K_TOKEN) || ''; } catch (e) { return ''; } }
-  function setToken(t) { try { store().setItem(K_TOKEN, String(t || '').trim()); } catch (e) {} }
+  function setToken(t) { try { store().setItem(K_TOKEN, String(t || '').trim()); } catch(e){console.warn("[swallowed] github-client",e)} }
   function getUser() { try { return store().getItem(K_USER) || ''; } catch (e) { return ''; } }
-  function setUser(u) { try { store().setItem(K_USER, String(u || '').trim()); } catch (e) {} }
+  function setUser(u) { try { store().setItem(K_USER, String(u || '').trim()); } catch(e){console.warn("[swallowed] github-client",e)} }
   function repo() {
-    try { var r = JSON.parse(store().getItem(K_REPO) || 'null'); if (r && r.owner && r.repo) return r; } catch (e) {}
+    try { var r = JSON.parse(store().getItem(K_REPO) || 'null'); if (r && r.owner && r.repo) return r; } catch(e){console.warn("[swallowed] github-client",e)}
     return DEF_REPO;
   }
   function setRepo(owner, name) {
-    try { store().setItem(K_REPO, JSON.stringify({ owner: String(owner).trim(), repo: String(name).trim() })); } catch (e) {}
+    try { store().setItem(K_REPO, JSON.stringify({ owner: String(owner).trim(), repo: String(name).trim() })); } catch(e){console.warn("[swallowed] github-client",e)}
   }
   function hasToken() { return !!getToken(); }
-  function clearToken() { try { store().removeItem(K_TOKEN); store().removeItem(K_USER); } catch (e) {} }
+  function clearToken() { try { store().removeItem(K_TOKEN); store().removeItem(K_USER); } catch(e){console.warn("[swallowed] github-client",e)} }
 
   function headers(json) {
     var h = { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
@@ -73,7 +73,7 @@
             return { ok: true, data: data, status: r.status, line: base };
           }
           if (r.status === 403 || r.status === 404) {
-            var txt = ''; try { txt = await r.text(); } catch (e) {}
+            var txt = ''; try { txt = await r.text(); } catch(e){console.warn("[swallowed] github-client",e)}
             return { ok: false, status: r.status, error: txt.slice(0, 200), line: base };
           }
           lastErr = 'HTTP ' + r.status;
@@ -141,7 +141,7 @@
           // v6.5.1：包体可能存为原始 zip 二进制（contents API 解码 b64 后所得），
           // 也可能存为 b64 文本（旧版 Gist）。同时返回文本与字节，由上层按魔数判定。
           var ab = null;
-          try { ab = await r.arrayBuffer(); } catch (e) {}
+          try { ab = await r.arrayBuffer(); } catch(e){console.warn("[swallowed] github-client",e)}
           var text = ab ? (function (u8) { var s = ''; for (var j = 0; j < u8.length; j++) s += String.fromCharCode(u8[j]); return s; })(new Uint8Array(ab)) : await r.text();
           return { ok: true, text: text, bytes: ab ? new Uint8Array(ab) : null, line: bases[i] };
         }
@@ -215,7 +215,7 @@
     try {
       var g = await once(base + '?ref=main', { method: 'GET', headers: headers(false) }, 15000);
       if (g.ok) { var gj = await g.json(); sha = gj.sha || null; }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] github-client",e)}
     var payload = { message: commitMsg || ('二创包体：' + fileName), content: String(b64 || ''), branch: 'main' };
     if (sha) payload.sha = sha;
     var put = await write(base, 'PUT', payload);
@@ -234,7 +234,7 @@
     return file ? base + '/' + file : base;
   }
   function worksCacheGet() { try { return JSON.parse(store().getItem(K_WORKS_CACHE) || 'null'); } catch (e) { return null; } }
-  function worksCacheSet(items) { try { store().setItem(K_WORKS_CACHE, JSON.stringify({ at: Date.now(), items: items || [] })); } catch (e) {} }
+  function worksCacheSet(items) { try { store().setItem(K_WORKS_CACHE, JSON.stringify({ at: Date.now(), items: items || [] })); } catch(e){console.warn("[swallowed] github-client",e)} }
 
   /** 列作品清单：读 catalog.json（多线路），按 createdAt 倒序；失败回退本机缓存。
    *  返回 {ok, items, cached, error}。 */
@@ -269,7 +269,7 @@
         var litems = Array.isArray(lo) ? lo : (Array.isArray(lo.items) ? lo.items : []);
         return { ok: true, items: litems, cached: false, local: true };
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] github-client",e)}
     return { ok: false, error: res.error || '无法读取作品清单', items: [] };
   }
 
@@ -332,7 +332,7 @@
     try {
       var g = await once(apiPath + '?ref=main', { method: 'GET', headers: headers(false) }, 15000);
       if (g.ok) { var gj = await g.json(); sha = gj.sha || null; }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] github-client",e)}
     var payload = { message: commitMsg || ('二创作品：' + path), content: String(contentB64 || ''), branch: 'main' };
     if (sha) payload.sha = sha;
     var put = await write(apiPath, 'PUT', payload);
@@ -366,7 +366,7 @@
         var obj = JSON.parse(decodeBase64Content(gj.content));
         items = Array.isArray(obj) ? obj : (Array.isArray(obj.items) ? obj.items : []);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] github-client",e)}
     items = items.filter(function (it) { return it.slug !== slug; });
     items.push({
       slug: slug, title: info.title || slug, author: info.author || '',
@@ -392,7 +392,7 @@
 
   /* ---------- 断网队列 ---------- */
   function queueGet() { try { return JSON.parse(store().getItem(K_QUEUE) || '[]'); } catch (e) { return []; } }
-  function queueSet(q) { try { store().setItem(K_QUEUE, JSON.stringify(q)); } catch (e) {} }
+  function queueSet(q) { try { store().setItem(K_QUEUE, JSON.stringify(q)); } catch(e){console.warn("[swallowed] github-client",e)} }
   function queueAdd(job) { var q = queueGet(); q.push(job); queueSet(q); return q.length; }
   /** 发布：优先直接发，失败入队；返回 {ok,queued,data} */
   async function publishOrQueue(title, body) {

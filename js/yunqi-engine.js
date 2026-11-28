@@ -285,7 +285,7 @@
     return true;
   }
   function setEnabled(on) {
-    try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+    try { localStorage.setItem(KEY, on ? '1' : '0'); } catch(e){console.warn("[swallowed] yunqi-engine",e)}
     return !!on;
   }
 
@@ -299,10 +299,10 @@
   function setOverride(nameOrId, on) {
     var o = getOverrides();
     o[nameOrId] = !!on;
-    try { localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); } catch (e) {}
+    try { localStorage.setItem(OVERRIDE_KEY, JSON.stringify(o)); } catch(e){console.warn("[swallowed] yunqi-engine",e)}
   }
   function clearOverrides() {
-    try { localStorage.removeItem(OVERRIDE_KEY); } catch (e) {}
+    try { localStorage.removeItem(OVERRIDE_KEY); } catch(e){console.warn("[swallowed] yunqi-engine",e)}
   }
 
   /** 在 render 之上叠加用户覆盖（按块名或 identifier 匹配） */

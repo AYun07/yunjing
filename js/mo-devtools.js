@@ -125,7 +125,7 @@
         }
         // 用路径集合判定（不逐个读文件）
         var pathSet = null;
-        try { pathSet = await enumeratePaths(); } catch (e) {}
+        try { pathSet = await enumeratePaths(); } catch(e){console.warn("[swallowed] mo-devtools",e)}
         if (pathSet) {
           var ps = Array.isArray(pathSet) ? new Set(pathSet) : new Set(Object.keys(pathSet));
           refs.forEach(function (ref) {

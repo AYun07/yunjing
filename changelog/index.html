@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.6.5">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.6.5">
-  <script src="../js/desktop-shell.js?v=7.6.5"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.6.6">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.6.6">
+  <script src="../js/desktop-shell.js?v=7.6.6"></script>
 </head>
 
 <body class="page-changelog">
@@ -319,10 +319,24 @@
         <!-- ==================== 版本条目（新→旧） ==================== -->
                         <article class="log-entry" data-tags="版本 发布 修复 实测" style="--entry-hue:#5a6ac0;">
             <div class="entry-head">
-                <span class="entry-ver">v7.6.5</span>
+                <span class="entry-ver">v7.6.6</span>
                 <span class="entry-date">2026-11-28</span>
                 <span class="entry-badge new">当前版本</span>
             </div>
+            <h3 class="entry-title">版本同源根治 + 100 条清单逐条精修 + exe 实机键鼠全量实测</h3>
+            <p class="entry-lead">消化玩家 v7.6.5 实测 100 条清单：按「没有误报」逐条对照实修，深挖出多处真正代码层根因；并在沙箱用 wine 实机安装 setup.exe、真实鼠标键盘全量点按验证。</p>
+            <div class="ver-diff">
+                <div><b>P1 版本同源根治</b>：根 package.json（停 7.6.4）、content-manifest、README badge（停 7.6.2）补齐；t_version_sync 新增 package.json/content-manifest/README badge 三个锚点，堵住「测试全绿却漏改」盲区；空 catch 从 778 处批量清零（仅 mo-store/store-guard 兜底静默有意保留），新增 test/no-empty-catch.mjs 门禁防复发。</div>
+                <div><b>P1/P2 逐条实修</b>：72 性格芯片选中态改用模块内存真源 + 写失败提示 + 去掉定时裸重建（根治「点了闪一下就没了」）；小云发送按钮无命中时给 toast、形态/情绪点击加可见反馈、造物工坊懒加载重试、插件规范改页面内展示（不再被 alert 拦截）；单个骰/重生成/状态按钮补即时反馈；markdown 从逐界打地鼠改为通用结构行剥离（标题/表格/多前缀字段）。</div>
+                <div><b>P2/P3 体验</b>：换界自动清理其它界世界书键 + 告警按 key/60 秒双重节流（根治刷 68 次）；回合胶囊移右上、panel-title 高特异性覆盖修复、悬浮气泡移左下、道水印淡化、弹层遮罩加深；wangyou 三字段补顶层 getter、提示词收紧纯中文叙事、等待卡加预计时长；纯文案玩家化。</div>
+                <div><b>实机验证</b>：沙箱 wine 安装 setup.exe → 真实客户端启动 → xdotool 模拟鼠标键盘全量点击输入（四入口/38 界/全按钮），配合 Chromium/Electron 五轮实测与产物级 SHA 校验；详见验收报告与 DR-122。</div>
+            </div>
+        </article>
+                        <article class="log-entry" data-tags="版本 发布 修复 实测" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.6.5</span>
+                <span class="entry-date">2026-11-28</span>
+                </div>
             <h3 class="entry-title">补齐版本同源 + 正文/存储/竞态精修</h3>
             <p class="entry-lead">消化玩家 v7.6.4 实测 100 条清单：四组并行逐条甄别，剔除误报（72 芯片高亮、小云形态按钮、settings 更新按钮重复等）后，只修真实项，不误报凑数。</p>
             <div class="ver-diff">
@@ -1409,7 +1423,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.6.5 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.6.6 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">

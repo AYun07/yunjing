@@ -421,9 +421,10 @@
        --topbar-h 桌面 54px / 移动端 50px，用变量自适应。 */
     /* v7.4.1：z-index 由 9000 降到 65——低于输入区(70/71)与抽屉，避免拖到输入框上时吞掉焦点
        （「对话框有时无法输入」根因之一）；仍高于正文，正文区可正常点击/拖拽。 */
-    /* v7.6.5：原 +6px(=60px) 实测压在标题文字上挡字，提到 +32px 落到标题栏下方。
-       此内联样式优先级高于 occlusion-fix.css 的 #worldClockPill top，故必须在此改。 */
-    pill.style.cssText = "position:fixed;left:12px;top:calc(var(--topbar-h, 54px) + 32px);z-index:65;display:none;align-items:center;gap:6px;" +
+    /* v7.6.6：+32px 实测仍压在大字标题（.logo-kai 52px，字形延伸到 ~110px）上。
+       改到右上角（right 定位，避开左侧品牌标题列），并把 top 提到 +72px 彻底脱离标题带。
+       此内联样式优先级高于 occlusion-fix.css 的 #worldClockPill，故必须在此改。 */
+    pill.style.cssText = "position:fixed;right:12px;left:auto;top:calc(var(--topbar-h, 54px) + 72px);z-index:65;display:none;align-items:center;gap:6px;" +
       "padding:5px 9px;border-radius:18px;cursor:pointer;font-size:12px;color:#e8dcc0;" +
       "background:rgba(20,16,30,.82);border:1px solid color-mix(in srgb, #c9a86a 22%, transparent);" +
       "box-shadow:0 2px 10px rgba(0,0,0,.4);user-select:none;backdrop-filter:blur(6px)";

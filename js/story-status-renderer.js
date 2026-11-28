@@ -849,7 +849,7 @@ const StoryStatusRenderer = {
              catch 给人话提示，finally 保证关闭路径一定还原 overflow。 */
           try { save(); }
           catch (err) {
-            try { window.showToast && window.showToast("档案保存失败：" + ((err && err.message) || "未知错误"), "error"); } catch (e2) {}
+            try { window.showToast && window.showToast("档案保存失败：" + ((err && err.message) || "未知错误"), "error"); } catch(e2){console.warn("[swallowed] story-status-renderer",e2)}
           }
           finally { finish(true); }
           return;
@@ -890,7 +890,7 @@ const StoryStatusRenderer = {
     const vars = fw.storyState.variables;
     vars.characters = vars.characters || {};
     /* v3.56.1：建档即同步统一实体镜像（引用级，零破坏） */
-    try { if (window.EntityStore) window.EntityStore.bootstrap(vars); } catch (e) {}
+    try { if (window.EntityStore) window.EntityStore.bootstrap(vars); } catch(e){console.warn("[swallowed] story-status-renderer",e)}
     if (vars.characters[name]) {
       (_d = window.showToast) == null ? void 0 : _d.call(window, "已有同名角色，直接打开 TA 的档案", "info");
       return this.editCharacter(name);
@@ -922,8 +922,7 @@ const StoryStatusRenderer = {
         p.chats = (p.chats || []).filter((x) => x && x.name !== name);
         if (typeof PP.refresh === "function") PP.refresh();
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] story-status-renderer",e)}
     fw.saveStory();
     this.renderCharacters(chars);
     (_c = window.showToast) == null ? void 0 : _c.call(window, `已删除「${name}」`, "info");
@@ -1001,5 +1000,5 @@ document.addEventListener('yunjing:theme', function () {
     var fw = window.storyFramework;
     if (!fw || !fw.storyState) return;
     StoryStatusRenderer.refresh(fw.storyState.variables || {});
-  } catch (e) {}
+  } catch(e){console.warn("[swallowed] story-status-renderer",e)}
 });

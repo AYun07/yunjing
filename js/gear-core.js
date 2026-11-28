@@ -442,7 +442,7 @@
                 vv.entities = vv.entities || {}; vv.entities.items = vv.entities.items || {};
                 if (!vv.entities.items[nm]) vv.entities.items[nm] = { id: "item_" + nm, name: nm, slot: target.key, count: 1, source: "ai" };
               }
-            } catch (e) {}
+            } catch(e){console.warn("[swallowed] gear-core",e)}
             const cur = s.equipped[target.key];
             if (!cur || cur.name !== nm) {
               s.equipped[target.key] = { name: nm, src: "ai", round };
@@ -462,7 +462,7 @@
         }
       }
       /* v4.49.0：AI 随剧情换装/失装后重算词条加成 */
-      if (d) { try { if (window.BonusEngine) BonusEngine.refresh(); } catch (e) {} }
+      if (d) { try { if (window.BonusEngine) BonusEngine.refresh(); } catch(e){console.warn("[swallowed] gear-core",e)} }
       return d;
     },
     /* 状态板：佩戴件数 + 首件名 */
@@ -513,7 +513,7 @@
               `<span class="gr-tag ${a.tone === 'debuff' ? 'negative' : ''} ${a.source === 'custom' || a.source === 'explicit' ? 'custom' : ''}" title="${esc(a.desc || '')}">${esc(a.text)}</span>`).join("")
               + `<span class="gr-tag edit" title="自定义词条：写下任意文本，按语意附加效果；可写显式数值直接指定" onclick="event.stopPropagation();BonusEngine.openAffixEditor('gear:${esc(it.name)}',{title:'✦ ${esc(it.name)} · 自定义词条'})">✎ ${custom ? '改' : '自定义'}</span></div>`;
           }
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] gear-core",e)}
         const body = it ? `<div class="gr-on" style="--rc:${rc.c};">
                         <b title="${rc.n}">● ${esc(it.name)}</b>
                         <i class="gr-src">${it.src === "ai" ? "随剧情" : "手动"}${it.missing ? " · ⚠不在囊中" : ""}</i>
@@ -540,7 +540,7 @@
             + (net.debuffs && net.debuffs.length ? `<br><span style="color:#e07070">减益：${net.debuffs.map((x) => esc(x.text)).join("、")}</span>` : "")
             + `</div>`;
         }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] gear-core",e)}
       return `${summaryHTML}<div class="gr-grid">${cards}</div>${customMgr}${log}
                 <div class="wx-banner">佩戴与正文互相咬合：战斗/行路描写须与佩戴一致，本命级装备离手要写；每件装备按品级自带词条，增益减益即时计入战斗与检定；称号在「称号阁」领取佩戴，加成同源叠加。</div>`;
     },
@@ -557,7 +557,7 @@
         s.log.unshift(`第${curRound()}回：${sl.key} → ${nm}（从行囊佩上）`);
         if (s.log.length > 8) s.log.length = 8;
         /* v4.49.0：佩戴即重算词条加成（战斗/检定/面板/主笔统一真源） */
-        try { window.WorldExt && WorldExt.persist && WorldExt.persist(); if (window.BonusEngine) BonusEngine.refresh(); } catch (e) {}
+        try { window.WorldExt && WorldExt.persist && WorldExt.persist(); if (window.BonusEngine) BonusEngine.refresh(); } catch(e){console.warn("[swallowed] gear-core",e)}
         return `${nm} 已佩入「${sl.key}」 · 词条加成已结算`;
       }
       if (action === "un") {
@@ -567,7 +567,7 @@
         s.log.unshift(`第${curRound()}回：卸下${it.name}（${payload}）`);
         if (s.log.length > 8) s.log.length = 8;
         /* v4.49.0：卸下即重算，移除该装备的词条加成 */
-        try { window.WorldExt && WorldExt.persist && WorldExt.persist(); if (window.BonusEngine) BonusEngine.refresh(); } catch (e) {}
+        try { window.WorldExt && WorldExt.persist && WorldExt.persist(); if (window.BonusEngine) BonusEngine.refresh(); } catch(e){console.warn("[swallowed] gear-core",e)}
         return `已卸下「${payload}」的 ${it.name} · 词条加成已更新`;
       }
       if (action === "add") {
@@ -623,27 +623,23 @@
       if (!key) {
         try {
           window.showToast && showToast("槽位名不能为空", "error");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] gear-core",e)}
         return;
       }
       if ((s.custom || []).some((x) => x.key === key) || CFG.slots.some((x) => x.key === key)) {
         try {
           window.showToast && showToast("已有同名槽位", "error");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] gear-core",e)}
         return;
       }
       s.custom.push({ key: key.slice(0, 8), icon: icon || "◈", fit: fit || "." });
       try {
         window.showToast && showToast(`自建槽位「${key}」已就位`, "success");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] gear-core",e)}
       WorldExt.persist();
       const body = document.getElementById("immBody");
       if (body && body.dataset.wxTab === "1") body.innerHTML = WorldExt.panelHTML();
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] gear-core",e)}
   }
   function injectStyle() {
     if (document.getElementById("gearStyle")) return;

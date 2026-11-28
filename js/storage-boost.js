@@ -146,7 +146,7 @@
                     const quota = Number(est.quota) || 0;
                     return { ok: true, used, quota, pct: quota ? Math.round(used / quota * 1000) / 10 : null };
                 }
-            } catch (e) { }
+            } catch(e){console.warn("[swallowed] storage-boost",e)}
             return { ok: false, used: 0, quota: 0, pct: null };
         },
 

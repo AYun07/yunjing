@@ -130,7 +130,7 @@
       profiled: true
     };
     v.characters[name] = c;
-    try { ES.bootstrap(v); } catch (e) {}
+    try { ES.bootstrap(v); } catch(e){console.warn("[swallowed] npc-spawn",e)}
     /* 自动结缘：与 1-2 个既有实体连关系边 */
     const kinds = ["陌路", "盟友", "敌对", "同乡", "旧识"];
     const linked = [];
@@ -146,7 +146,7 @@
         ES.link(name, rnd() < 0.5 ? "从属" : "敌对", f.id || f.name, Math.round(rnd() * 50 + 10), v);
         linked.push(f.name);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] npc-spawn",e)}
     bump(v, "chars");
     return { name, c, linked };
   }
@@ -180,7 +180,7 @@
     if (!ent) return null;
     try {
       if (others.length) ES.link(name, rnd() < 0.5 ? "敌对" : "盟友", pick(others, rnd).name, Math.round(rnd() * 60), v);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] npc-spawn",e)}
     bump(v, "factions");
     return ent;
   }
@@ -404,7 +404,7 @@
         try {
           if (window.WorldRuntime && WorldRuntime.NPC && WorldRuntime.NPC.upsert)
             WorldRuntime.NPC.upsert({ name: c.name, emotion: c.emotion, goals: c.goal, trust: c.trust, memory: c.memory });
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] npc-spawn",e)}
       }
       for (let s = 0; s < sig.length && events.length < WILL_SIGNAL_MAX; s++) events.push(sig[s]);
     }
@@ -414,7 +414,7 @@
   /* ---------- 世界时钟日结算入口（有界，返回事件文案数组） ---------- */
   function daily(v, day, rnd) {
     const events = [];
-    try { driftFactions(v, rnd, events); } catch (e) {}
+    try { driftFactions(v, rnd, events); } catch(e){console.warn("[swallowed] npc-spawn",e)}
     try {
       if (rnd() < 0.22) {
         const r = spawnOne(v, rnd);
@@ -430,7 +430,7 @@
       }
       /* 人物意志漂移由 world-clock 的 tick 显式调用 NpcSpawn.driftWills()（v3.88.0 P1），此处不重复 */
       enrich(v);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] npc-spawn",e)}
     return events;
   }
 
@@ -446,7 +446,7 @@
   }
   function rosterPanel() {
     const v = vars();
-    if (!v) { try { window.showToast && showToast("世界尚未开始", "error"); } catch (e) {} return; }
+    if (!v) { try { window.showToast && showToast("世界尚未开始", "error"); } catch(e){console.warn("[swallowed] npc-spawn",e)} return; }
     enrich(v);
     const list = roster(v);
     const orig = list.filter((r) => r.origin === "原创");
@@ -473,8 +473,8 @@
       if (e.target === ov || e.target.dataset.act === "close") { ov.remove(); return; }
       if (e.target.dataset.act === "spawn") {
         const r = spawnOne(v, mulberry32((Date.now() ^ 0x5f3759df) >>> 0));
-        try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (err) {}
-        try { window.showToast && showToast(r ? `「${r.name}」已入众生谱` : "众生谱已满（24 人上限）", r ? "success" : "info"); } catch (err) {}
+        try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch(err){console.warn("[swallowed] npc-spawn",err)}
+        try { window.showToast && showToast(r ? `「${r.name}」已入众生谱` : "众生谱已满（24 人上限）", r ? "success" : "info"); } catch(err){console.warn("[swallowed] npc-spawn",err)}
         ov.remove(); rosterPanel();
       }
       if (e.target.dataset.act === "ask") {
@@ -482,7 +482,7 @@
         try {
           const brief = list.slice(0, 10).map((r) => `${r.name}（${r.origin}·${r.role}，志在${r.ambition}）`).join("；");
           if (window.MoAssistant && MoAssistant.send) MoAssistant.send(`这是本世界的众生谱节选：${brief}。请以说书人口吻点评这群人物，并指出哪两位之间最可能起故事（不要复述档案）。`);
-        } catch (err) {}
+        } catch(err){console.warn("[swallowed] npc-spawn",err)}
       }
     });
   }

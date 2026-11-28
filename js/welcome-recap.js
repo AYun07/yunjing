@@ -156,8 +156,7 @@ ${facts}` }
       };
       try {
         fw.saveStory();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] welcome-recap",e)}
       const box = document.getElementById("wrSayText");
       if (box) {
         box.classList.remove("wr-fallback");

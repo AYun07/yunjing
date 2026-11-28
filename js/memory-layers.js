@@ -146,8 +146,7 @@ ${text}`
           const fixed = s.slice(start, end + 1).replace(/'/g, '"').replace(/,\s*([}\]])/g, "$1");
           const o = JSON.parse(fixed);
           if (o && typeof o === "object") return o;
-        } catch (e2) {
-        }
+        } catch(e2){console.warn("[swallowed] memory-layers",e2)}
       }
       return null;
     },

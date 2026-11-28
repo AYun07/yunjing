@@ -10,7 +10,7 @@
   var KEY = 'yunjingFirstRunGuideDone';
 
   function done() { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
-  function markDone() { try { localStorage.setItem(KEY, '1'); } catch (e) {} }
+  function markDone() { try { localStorage.setItem(KEY, '1'); } catch(e){console.warn("[swallowed] first-run-guide",e)} }
 
   var STEPS = [
     {
@@ -64,15 +64,15 @@
         if (step < STEPS.length - 1) { step++; render(); return; }
         close();
         // 走到最后一步：跳到创作室并打开接口设置
-        try { location.href = 'studio.html?v=7.6.5&fromGuide=1'; } catch (e) {}
+        try { location.href = 'studio.html?v=7.6.6&fromGuide=1'; } catch(e){console.warn("[swallowed] first-run-guide",e)}
       };
     }
 
     function close() {
-      try { markDone(); } catch (e) {}
+      try { markDone(); } catch(e){console.warn("[swallowed] first-run-guide",e)}
       /* v7.0.0 组1-T04：引导层 z-index:10060，关闭瞬间先撤掉层级与命中再移除节点；
          若节点残留会整页吞点击。老内核 remove 不可用时用 removeChild 兜底。 */
-      try { wrap.style.pointerEvents = 'none'; wrap.style.zIndex = '-1'; } catch (e) {}
+      try { wrap.style.pointerEvents = 'none'; wrap.style.zIndex = '-1'; } catch(e){console.warn("[swallowed] first-run-guide",e)}
       try {
         if (wrap.remove) wrap.remove();
         else if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
@@ -95,5 +95,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 
-  window.FirstRunGuide = { show: show, reset: function () { try { localStorage.removeItem(KEY); } catch (e) {} } };
+  window.FirstRunGuide = { show: show, reset: function () { try { localStorage.removeItem(KEY); } catch(e){console.warn("[swallowed] first-run-guide",e)} } };
 })();

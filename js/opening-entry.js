@@ -26,7 +26,7 @@
         'padding:10px 18px;border-radius:10px;font:14px system-ui;box-shadow:0 6px 24px rgba(0,0,0,.5)';
       document.body.appendChild(d);
       setTimeout(function () { d.remove(); }, 3600);
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] opening-entry",e)}
   }
 
   if (entry === 'settings') {
@@ -48,5 +48,5 @@
   try {
     var clean = location.pathname;
     history.replaceState(null, '', clean);
-  } catch (e) { }
+  } catch(e){console.warn("[swallowed] opening-entry",e)}
 })();

@@ -27,7 +27,7 @@
     return (window.MoStore && typeof window.MoStore.getItem === 'function') ? window.MoStore : window.localStorage;
   }
   function toast(t, type) {
-    try { if (window.showToast) window.showToast(t, type || 'info'); } catch (e) { }
+    try { if (window.showToast) window.showToast(t, type || 'info'); } catch(e){console.warn("[swallowed] yunqi-sync",e)}
   }
 
   function repo() {
@@ -36,7 +36,7 @@
       if (c && c.owner && c.repo) {
         return { owner: c.owner, repo: c.repo, branch: c.branch || 'main', base: c.base || '' };
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] yunqi-sync",e)}
     return DEFAULT_REPO;
   }
   function setRepo(o) {
@@ -77,7 +77,7 @@
     return new Promise(function (resolve, reject) {
       var ctl = (typeof AbortController === 'function') ? new AbortController() : null;
       var timer = setTimeout(function () {
-        try { if (ctl) ctl.abort(); } catch (e) { }
+        try { if (ctl) ctl.abort(); } catch(e){console.warn("[swallowed] yunqi-sync",e)}
         reject(new Error('超时'));
       }, ms || 12000);
       fetch(url, { cache: 'no-store', signal: ctl ? ctl.signal : undefined }).then(function (r) {
@@ -143,13 +143,13 @@
           RX.importText(JSON.stringify({ regex_scripts: rx }), '云起正则（云端同步）');
           rxCount = rx.length;
         }
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] yunqi-sync",e)}
 
       var ver = meta.version || '';
       try {
         store().setItem(K_VER, ver);
         store().setItem(K_AT, String(Date.now()));
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] yunqi-sync",e)}
       return { version: ver, blocks: info && info.blocks, regex: rxCount || (info && info.regexes) || 0, meta: meta };
     });
   }
@@ -209,7 +209,7 @@
       if (r.upToDate) { toast('已是最新 v' + r.version + '，不用更新'); }
       else if (r.synced) {
         toast('✓ 云起预设已更新到 v' + r.version + '（' + r.blocks + ' 块 + ' + r.regex + ' 条正则）', 'success');
-        try { window.ConfigModal && window.ConfigModal.renderMMSection && window.ConfigModal.renderMMSection(); } catch (e) { }
+        try { window.ConfigModal && window.ConfigModal.renderMMSection && window.ConfigModal.renderMMSection(); } catch(e){console.warn("[swallowed] yunqi-sync",e)}
       }
       return r;
     }).catch(function (e) {

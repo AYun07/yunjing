@@ -16,7 +16,7 @@ const TimelineBranch = function() {
     const base = "tl_" + genre;
     try {
       if (window.SlotRegistry && window.SlotRegistry.claimLegacy) return window.SlotRegistry.claimLegacy(base, genre);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] timeline-branch",e)}
     return window.claimSlotKey ? window.claimSlotKey(base, genre) : base;
   };
   function load() {
@@ -53,8 +53,7 @@ const TimelineBranch = function() {
     const immK = window.ImmersiveSuite && window.ImmersiveSuite.immKey ? window.ImmersiveSuite.immKey(genre) : "imm_" + genre;
     try {
       imm = localStorage.getItem(immK) || null;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] timeline-branch",e)}
     return {
       story: {
         variables: s.variables || {},
@@ -109,8 +108,7 @@ const TimelineBranch = function() {
     save(d);
     try {
       window.GameLayer && GameLayer.notify("worldline");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] timeline-branch",e)}
     (_c = window.showToast) == null ? void 0 : _c.call(window, "🌐 已立界点：" + n.label, "success");
     return n.id;
   }
@@ -194,13 +192,11 @@ const TimelineBranch = function() {
         const immK = window.ImmersiveSuite && window.ImmersiveSuite.immKey ? window.ImmersiveSuite.immKey(genre) : "imm_" + genre;
         if (snap.imm != null) localStorage.setItem(immK, snap.imm);
         else localStorage.removeItem(immK);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] timeline-branch",e)}
       if (window.ImmersiveSuite) {
         try {
           (_b = (_a = window.ImmersiveSuite).reload) == null ? void 0 : _b.call(_a);
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] timeline-branch",e)}
       }
       const box = document.getElementById("chatMessages");
       if (box) box.innerHTML = "";
@@ -432,8 +428,7 @@ const TimelineBranch = function() {
     resetAll() {
       try {
         localStorage.removeItem(KEY());
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] timeline-branch",e)}
       selId = cmpA = cmpB = null;
     }
   };

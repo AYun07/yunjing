@@ -53,8 +53,7 @@
       try {
         apply(String(input).trim());
         WorldExt.persist();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] world-plus",e)}
       const body = document.getElementById("immBody");
       if (body && body.dataset.wxTab === "1") body.innerHTML = WorldExt.panelHTML();
     }).catch(() => {
@@ -1374,8 +1373,7 @@
         for (const b of done) {
           try {
             window.showToast && showToast(`⚙ 竣工：${b.name}`, "success");
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] world-plus",e)}
         }
       }
       return d;

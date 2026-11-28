@@ -348,7 +348,7 @@
       if (typeof localStorage !== 'undefined' && localStorage.setItem) {
         localStorage.setItem(LS_PLAYER, JSON.stringify(PLAYER));
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] personality-codex",e)}
   }
   function loadPlayer() {
     try {
@@ -359,7 +359,7 @@
           if (d && typeof d === 'object') Object.keys(d).forEach(function (k) { PLAYER[k] = d[k]; });
         }
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] personality-codex",e)}
   }
   loadPlayer();
 
@@ -665,7 +665,7 @@
         if (reaction.breaking) out.tendency.push('破防：' + reaction.real);
         else if (reaction.tier === '中度') out.tendency.push('心理波动：' + reaction.mechanism);
         // 破防会覆盖情绪标记（原 mood 保留在 out.mood，心理情绪单列）
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] personality-codex",e)}
     }
     return out;
   }
@@ -681,7 +681,7 @@
     try {
       var KB = window.KB_PRESETS || {};
       Object.keys(KB).forEach(function (k) { if (k && (KB[k] || []).length) set[k] = 1; });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] personality-codex",e)}
     return Object.keys(set);
   }
   function roster(world) { if (world == null) return JSON.parse(JSON.stringify(ROSTER)); return (ROSTER[world] || []).slice(); }

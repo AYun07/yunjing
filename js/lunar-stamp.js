@@ -4,7 +4,7 @@
   const GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
   const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
   const MONTHS = ["正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "冬月", "腊月"];
-  const LIB = "libs/lunar.min.js?v=7.6.5";
+  const LIB = "libs/lunar.min.js?v=7.6.6";
   const HOUR_MAP = [
     [/黎明|拂晓|破晓|平旦/, "寅时"],
     [/清晨|早晨|晨光|日出/, "卯时"],
@@ -27,8 +27,7 @@
       let s = { on: true, turnsPerYear: 24, turnsPerMonth: 2 };
       try {
         s = { ...s, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] lunar-stamp",e)}
       const tpy = parseInt(s.turnsPerYear, 10), tpm = parseInt(s.turnsPerMonth, 10);
       s.turnsPerYear = Math.max(6, Math.min(240, Number.isFinite(tpy) ? tpy : 24));
       s.turnsPerMonth = Math.max(1, Math.min(12, Number.isFinite(tpm) ? tpm : 2));
@@ -37,8 +36,7 @@
     saveSettings(s) {
       try {
         localStorage.setItem(KEY, JSON.stringify({ ...this.getSettings(), ...s }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] lunar-stamp",e)}
     },
     toggle() {
       var _a;

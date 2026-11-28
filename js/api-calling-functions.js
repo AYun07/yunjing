@@ -29,8 +29,7 @@ window.TokenUsage = {
       st.total.inTok += entry.inTok;
       st.total.requests += 1;
       return entry;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] api-calling-functions",e)}
     return null;
   },
   /** 回复侧记账（输出 token；同一 tag 的末次请求累加） */
@@ -44,8 +43,7 @@ window.TokenUsage = {
       const agg = st.byTag && st.byTag[t];
       if (agg) agg.outTok += outTok;
       st.total.outTok += outTok;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] api-calling-functions",e)}
   },
   /** v4.18.0 成本估算：按玩家自填单价（元/百万 token）把累计 token 换算成金额。
    *  单价口径由玩家自己填（各厂商价格常变，产品不内置硬编码价格，避免说假话）。
@@ -110,7 +108,7 @@ const STREAM_FIRST_MS_REASON = 3e5;   // 推理模型首字节给到 300 秒
    注意仍保留「不超过 fullMs」——玩家把总超时调小是明确意图，要尊重。 */
 function firstByteMs(cfg, fullMs) {
   var reason = false;
-  try { reason = !!(window.isReasoningModel && cfg && window.isReasoningModel(cfg.model)); } catch (e) { }
+  try { reason = !!(window.isReasoningModel && cfg && window.isReasoningModel(cfg.model)); } catch(e){console.warn("[swallowed] api-calling-functions",e)}
   var base = reason ? STREAM_FIRST_MS_REASON : STREAM_FIRST_MS;
   return Math.min(base, fullMs);
 }
@@ -127,16 +125,16 @@ function fetchWithTimeout(url, opts = {}, timeoutMs = 3e5, guardOpts = {}) {
     const ext = guardOpts.signal || (opts && opts.signal);
     if (ext) {
       if (ext.aborted) {
-        try { controller.abort(); } catch (e) {}
+        try { controller.abort(); } catch(e){console.warn("[swallowed] api-calling-functions",e)}
       } else if (typeof ext.addEventListener === "function") {
-        extAbort = () => { try { controller.abort(); } catch (e) {} };
+        extAbort = () => { try { controller.abort(); } catch(e){console.warn("[swallowed] api-calling-functions",e)} };
         ext.addEventListener("abort", extAbort, { once: true });
       }
     }
     return fetch(url, { ...opts, signal: controller.signal }).finally(() => {
       clearTimeout(timer);
       if (extAbort && ext && typeof ext.removeEventListener === "function") {
-        try { ext.removeEventListener("abort", extAbort); } catch (e) {}
+        try { ext.removeEventListener("abort", extAbort); } catch(e){console.warn("[swallowed] api-calling-functions",e)}
       }
     });
   };
@@ -239,7 +237,7 @@ window.looksLikeRawReasoning = function (text, sample) {
       var sl = (smp.match(/[A-Za-z]/g) || []).length;
       expectLatin = sl > sc;
     }
-  } catch (e) { }
+  } catch(e){console.warn("[swallowed] api-calling-functions",e)}
 
   /* 中英混排：中文语境里成段英文推演（玩家用英文时不适用） */
   if (!expectLatin && cjk > 0 && latin > cjk * 1.5 && latin > 120) return true;
@@ -307,8 +305,7 @@ async function readSSEStream(response, opts = {}) {
       if (idleReject) idleReject(e);
       try {
         reader.cancel();
-      } catch (err) {
-      }
+      } catch(err){console.warn("[swallowed] api-calling-functions",err)}
     }, base && base > 0 ? base : 3e5);
     return p;
   };
@@ -338,8 +335,7 @@ async function readSSEStream(response, opts = {}) {
     clearTimeout(timer);
     try {
       reader.cancel();
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] api-calling-functions",e)}
   }
   if (typeof opts.finish === "function") {
     try {
@@ -458,7 +454,7 @@ function _streamBody(messages, cfg, opts) {
     if (window.ReasoningEffort && cfg.reasoningEffort) {
       window.ReasoningEffort.apply(b, cfg.reasoningEffort, { endpoint: cfg.endpoint, model: cfg.model });
     }
-  } catch (e) { }
+  } catch(e){console.warn("[swallowed] api-calling-functions",e)}
   return b;
 }
 
@@ -624,7 +620,7 @@ async function callOpenAINonStream(messages, cfg, fullEndpoint, timeoutMs, opts)
     if (window.ReasoningEffort && cfg.reasoningEffort) {
       window.ReasoningEffort.apply(_rBody, cfg.reasoningEffort, { endpoint: fullEndpoint, model: cfg.model });
     }
-  } catch (e) { }
+  } catch(e){console.warn("[swallowed] api-calling-functions",e)}
   const response = await fetchWithTimeout(fullEndpoint, {
     method: "POST",
     headers: {
@@ -684,7 +680,7 @@ async function callGemini(messages, opts = {}, cfgOverride) {
       const b = window.ReasoningEffort.BUDGET[lv];
       genConfig.thinkingConfig = { thinkingBudget: lv === 'off' ? 0 : (b > 0 ? b : -1) };
     }
-  } catch (e) { }
+  } catch(e){console.warn("[swallowed] api-calling-functions",e)}
   if (cfg.stream === false) {
     return await callGeminiNonStream(base, toContents(), systemInstruction, genConfig, cfg, fullMs);
   }
@@ -793,7 +789,7 @@ window.abortMainGeneration = function (reason) {
       `⏹ 已停止本次生成${reason ? "（" + String(reason).slice(0, 40) + "）" : ""}。`,
       "info"
     );
-  } catch (e) {}
+  } catch(e){console.warn("[swallowed] api-calling-functions",e)}
   return true;
 };
 
@@ -877,7 +873,7 @@ async function callStoryAI(userMessage, isTest = false, opts = {}) {
       for (let i = messages.length - 1; i >= 0; i--) {
         if (messages[i] && messages[i].role === "user") { langSample = String(messages[i].content || ""); break; }
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] api-calling-functions",e)}
     const badOut = reply && bmm && (
       (bmm.detectCollapse && bmm.detectCollapse(reply)) ||
       (bmm.detectDegeneration && bmm.detectDegeneration(reply, langSample))
@@ -1041,8 +1037,7 @@ async function testApiConnection(endpoint, apiKey, model, type, maxTokens) {
     let reason = errText.slice(0, 150);
     try {
       reason = ((_b = JSON.parse(errText).error) == null ? void 0 : _b.message) || reason;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] api-calling-functions",e)}
     throw new Error(`连接失败: ${response.status} ${response.statusText}${reason ? " - " + reason : ""}`);
   }
   const data = await withTimeoutMs(response.json(), 3e4);

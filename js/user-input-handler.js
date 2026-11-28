@@ -5,15 +5,15 @@ const StoryInput = {
     const input = document.getElementById("userInput");
     const message = (text !== void 0 ? text : input ? input.value : "").trim();
     /* v4.16.0：记下玩家本次输入，供「按玩家语言判退化」推断期望语种（写英文就不按中文要求） */
-    try { window.__yjLastUserInput = message; } catch (e) { }
+    try { window.__yjLastUserInput = message; } catch(e){console.warn("[swallowed] user-input-handler",e)}
     /* v5.2.1（开局世界静止）：silent 指令是开局向导生成开篇正文的内部调用，不是玩家回合指令。
        打标记供 StoryResponseHandler 消费——开局回复不触发世界演化（不 dispatch story:turn-saved），
        但 turnCount 照常推进，保证下游回合计数/章节/记忆等系统正常。玩家真实指令（非 silent）不受影响。 */
-    try { if (opts && opts.silent) window.__yjOpeningTurn = true; } catch (e) { }
+    try { if (opts && opts.silent) window.__yjOpeningTurn = true; } catch(e){console.warn("[swallowed] user-input-handler",e)}
     /* v4.17.0：玩家发起的这一次操作开一个新的「请求预算」周期。
        此后主笔首轮、空正文重试、自检重发、纠偏重写、截断续写都从这一份额度里扣，
        避免四层各自重试叠乘把额度打爆（本会话实测 503/ECONNRESET 成片的主因之一）。 */
-    try { window.YJTurnBudget && window.YJTurnBudget.begin(message.slice(0, 24) || '玩家操作'); } catch (e) { }
+    try { window.YJTurnBudget && window.YJTurnBudget.begin(message.slice(0, 24) || '玩家操作'); } catch(e){console.warn("[swallowed] user-input-handler",e)}
     if (!message) return;
     /* v3.55.3：生成中点击不再静默吞掉——给出可见反馈，避免"按钮没反应"的错觉 */
     if (fw.isProcessing) {
@@ -93,11 +93,11 @@ const StoryInput = {
         const arc = await fw.loadTurnArchive();
         const snap = arc.find(x => x && x.index === index) || (fw.storyState.turns || []).find(x => x && x.index === index);
         userMsg = (snap && snap.user) || '';
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] user-input-handler",e)}
       const rr = await fw.rewindTo(index, 'before');
       if (!rr) { window.showToast && showToast("该轮快照不可用（老存档仅支持最近 40 轮）", "error"); return; }
       // 先把聊天列表重建到该轮前的干净状态（虚拟器下尤其必要），再重发
-      try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch (e) { }
+      try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch(e){console.warn("[swallowed] user-input-handler",e)}
       fw.pushTurnSnapshot(userMsg || rr.user || '（继续）');
       (_c = window.showToast) == null ? void 0 : _c.call(window, "↻ 已回滚到第 " + (index + 1) + " 轮前，正在用原指令重新生成……", "info");
       if (userMsg || rr.user) window.StoryResponseHandler.renderUserMessage(userMsg || rr.user);
@@ -149,7 +149,7 @@ const StoryInput = {
       const rr = await fw.rewindTo(index, 'before');
       if (!rr) { window.showToast && showToast("该轮快照不可用（老存档仅支持最近 40 轮）", "error"); return; }
       // 整体重建聊天列表（虚拟器下必须重挂，否则 floors[] 仍是回档前的旧楼）
-      try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch (e) { }
+      try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch(e){console.warn("[swallowed] user-input-handler",e)}
       window.StoryResponseHandler.renderSystemMessage(
         `↩ 已回档到第 ${index + 1} 轮开始前（指令「${String(rr.user).slice(0, 30)}${String(rr.user).length > 30 ? "…" : ""}」），其后的剧情已丢弃。`,
         "info"
@@ -280,7 +280,7 @@ const StoryInput = {
             const v = window.AIOutputGate.evaluate(r, { sample: smp });
             if (!v.ok && (v.action === "rewrite" || v.action === "error")) return true;
           }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] user-input-handler",e)}
         const body = String(RH.extractBody(r, RH.extractOptions(r)) || "");
         if (body.replace(/\s/g, "").length < 200) return false;
         const flat = body.replace(/\s/g, "");
@@ -351,7 +351,7 @@ const StoryInput = {
           try {
             const gv = window.AIOutputGate && window.AIOutputGate.evaluate(reply, { sample: String(window.__yjLastUserInput || "") });
             if (gv) gateHint = window.AIOutputGate.rewriteHint(gv, String(window.__yjLastUserInput || ""));
-          } catch (e0) { }
+          } catch(e0){console.warn("[swallowed] user-input-handler",e0)}
           const rewriteMsg = message + (gateHint || "\n\n（系统纠偏：你上一轮回复的正文不合格——或为空，或出现词表狂奔/复读循环/整段无标点，或掺入了外文与乱码片段。本轮必须重新完整输出小说正文：**全文必须是通顺的简体中文**，用规范中文标点与完整句子，纯叙事散文、不要放进代码块；禁止夹带英文/法文/俄文/日文等外文词与无意义字符，禁止同义词罗列式推进，禁止省略标点。之后再在结尾按协议输出 (variable_update) 变量更新块与【行动选项】。）");
           const body0 = bodyLenOf(reply);
           if (window.YJTurnBudget && window.YJTurnBudget.spend) window.YJTurnBudget.spend('纠偏重写');
@@ -429,7 +429,7 @@ const StoryInput = {
       }
       /* v3.60.0 小云剧情感知：回合完成即反应（表情必有、碎碎念限流在 react 内部） */
       if (window.MoChibi && window.MoChibi.react) {
-        try { window.MoChibi.react("turn", { tension: fw.storyState.variables && fw.storyState.variables.tension }); } catch (e) { }
+        try { window.MoChibi.react("turn", { tension: fw.storyState.variables && fw.storyState.variables.tension }); } catch(e){console.warn("[swallowed] user-input-handler",e)}
       }
     } catch (err) {
       console.error(err);
@@ -485,7 +485,7 @@ const StoryInput = {
         indicator = document.createElement("div");
         indicator.id = "typingIndicator";
         indicator.className = "message-card ai-card typing-card";
-        indicator.innerHTML = `<div class="typing"><span></span><span></span><span></span></div><span class="typing-text">${isRP ? "世界正在回应……" : "主笔 AI 正在落笔……"}</span><button type="button" class="typing-stop" title="停止本次生成">⏹ 停止</button>`;
+        indicator.innerHTML = `<div class="typing"><span></span><span></span><span></span></div><span class="typing-text">${isRP ? "世界正在回应……（预计 20–60 秒）" : "主笔 AI 正在落笔……（预计 20–60 秒）"}</span><button type="button" class="typing-stop" title="停止本次生成">⏹ 停止</button>`;
         container.appendChild(indicator);
         container.scrollTop = container.scrollHeight;
         /* v4.08.0：等待卡上的「停止生成」按钮——此前慢响应只能干等 150s+ */
@@ -515,7 +515,7 @@ const StoryInput = {
             const stage = s > 150 ? "（响应明显偏慢，多半是模型侧排队；可继续等待，或在「接口设置」调大超时后重试）"
               : s > 90 ? "（已超过一分半，模型仍在生成，可继续等待）"
               : s > 45 ? "（长章正常，可继续等待）" : "";
-            txt.textContent = `${isRP ? "世界正在回应" : "主笔 AI 正在落笔"}…${s}s${stage}`;
+            txt.textContent = `${isRP ? "世界正在回应" : "主笔 AI 正在落笔"}…${s}s${s < 20 ? "（预计 20–60 秒）" : ""}${stage}`;
             if (s > 90) txt.setAttribute("data-slow", "1");
           }
         }, 1000);
@@ -952,7 +952,7 @@ ${body.trim()}
       ? Promise.resolve(window.StorageBoost.remove("主档/" + fw.getSaveKey())).catch(() => { })
       : Promise.resolve();
     waitIdb.then(() => {
-      try { fw.clearSave(); } catch (e) { }
+      try { fw.clearSave(); } catch(e){console.warn("[swallowed] user-input-handler",e)}
       location.reload();
     });
   },
@@ -987,13 +987,13 @@ ${body.trim()}
         };
         toggle.addEventListener("click", () => {
           bar.classList.toggle("qb-collapsed");
-          try { localStorage.setItem("yjQuickBarCollapsed", bar.classList.contains("qb-collapsed") ? "1" : "0"); } catch (e) {}
+          try { localStorage.setItem("yjQuickBarCollapsed", bar.classList.contains("qb-collapsed") ? "1" : "0"); } catch(e){console.warn("[swallowed] user-input-handler",e)}
           paint();
         });
         if (localStorage.getItem("yjQuickBarCollapsed") === "0") bar.classList.remove("qb-collapsed");
         bar.appendChild(toggle);
         paint();
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] user-input-handler",e)}
       /* v7.0.0 组1-T09：桌面鼠标按住条形空白处横向拖动，补上触控之外的横滑方式。
          点在按钮上仍走按钮自身的点击，不抢命中。 */
       let qbDrag = null;

@@ -8,7 +8,7 @@ const ReaderLetters = function() {
   const KEY = () => {
     try {
       if (window.SlotRegistry && window.SlotRegistry.scoped) return window.SlotRegistry.scoped("rl_", genre);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] reader-letters",e)}
     return "rl_" + genre;
   };
   function loadSent() {
@@ -22,8 +22,7 @@ const ReaderLetters = function() {
   function saveSent(a) {
     try {
       localStorage.setItem(KEY(), JSON.stringify(a.slice(-60)));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] reader-letters",e)}
   }
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const PERSONAS = [
@@ -96,8 +95,7 @@ ${recent.join("\n——\n") || "（开局不久）"}
         saveSent(sent);
         try {
           (_a = window.showToast) == null ? void 0 : _a.call(window, "📬 读者来信已送达传书匣", "info");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] reader-letters",e)}
       }
     } catch (e) {
       console.warn("[ReaderLetters]", e.message);
@@ -127,8 +125,7 @@ ${recent.join("\n——\n") || "（开局不久）"}
       if (sent.includes(-1)) {
         try {
           (_a = window.showToast) == null ? void 0 : _a.call(window, "读者刚写过啦，去传书匣看", "info");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] reader-letters",e)}
         return;
       }
       sent.push(-1);
@@ -143,14 +140,12 @@ ${recent.join("\n——\n") || "（开局不久）"}
       });
       try {
         (_b = window.showToast) == null ? void 0 : _b.call(window, "📬 读者被你戳了一下，回信了", "success");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] reader-letters",e)}
     },
     resetAll() {
       try {
         localStorage.removeItem(KEY());
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] reader-letters",e)}
     }
   };
   return api;

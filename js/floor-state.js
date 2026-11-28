@@ -46,7 +46,7 @@
       if (!global.SlotRegistry || !global.SlotRegistry.keysOf) return out;
       var all = global.SlotRegistry.keysOf(fw.slotId || 'main', fw.genre);
       all.forEach(function (k) { if (!PERSIST_RE.test(k)) out.push(k); });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] floor-state",e)}
     return out;
   }
 
@@ -59,13 +59,13 @@
           if (PERSIST_RE.test(k)) set[k] = 1;
         });
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] floor-state",e)}
     try {
       for (var i = 0; i < localStorage.length; i++) {
         var k = localStorage.key(i);
         if (k && PERSIST_RE.test(k)) set[k] = 1;
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] floor-state",e)}
     return Object.keys(set);
   }
 
@@ -81,10 +81,10 @@
       if (s[f] !== undefined) snap.ss[f] = clone(s[f]);
     });
     sideKeys(fw).forEach(function (k) {
-      try { var v = localStorage.getItem(k); if (v != null) snap.sk[k] = v; } catch (e) {}
+      try { var v = localStorage.getItem(k); if (v != null) snap.sk[k] = v; } catch(e){console.warn("[swallowed] floor-state",e)}
     });
     persistKeys(fw).forEach(function (k) {
-      try { var v = localStorage.getItem(k); if (v != null) snap.persist[k] = v; } catch (e) {}
+      try { var v = localStorage.getItem(k); if (v != null) snap.persist[k] = v; } catch(e){console.warn("[swallowed] floor-state",e)}
     });
     return snap;
   }
@@ -139,7 +139,7 @@
     if (!st) return Promise.resolve(emptyDoc());
     return st.get(key(fw)).then(function (raw) {
       if (!raw) return emptyDoc();
-      try { var d = typeof raw === 'string' ? JSON.parse(raw) : raw; if (d && d.v === 1) return d; } catch (e) {}
+      try { var d = typeof raw === 'string' ? JSON.parse(raw) : raw; if (d && d.v === 1) return d; } catch(e){console.warn("[swallowed] floor-state",e)}
       return emptyDoc();
     }).catch(function () { return emptyDoc(); });
   }
@@ -223,13 +223,13 @@
       try {
         if (k in full.sk) { if (full.sk[k] != null) localStorage.setItem(k, full.sk[k]); }
         else localStorage.removeItem(k);
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] floor-state",e)}
     });
     if (includePersistent) {
       persistKeys(fw).forEach(function (k) {
         try {
           if (k in (full.persist || {})) { if (full.persist[k] != null) localStorage.setItem(k, full.persist[k]); }
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] floor-state",e)}
       });
     }
     return full.histLen;
@@ -243,7 +243,7 @@
     if (!st || !full) return Promise.resolve(false);
     var job = st.get(undoKey(fw)).then(function (raw) {
       var arr = [];
-      try { if (raw) { var p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } } catch (e) {}
+      try { if (raw) { var p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } } catch(e){console.warn("[swallowed] floor-state",e)}
       arr.push({ at: Date.now(), full: clone(full) });
       if (arr.length > 5) arr = arr.slice(-5);
       return st.put(undoKey(fw), JSON.stringify(arr));
@@ -257,7 +257,7 @@
     if (!st) return Promise.resolve(null);
     var job = st.get(undoKey(fw)).then(function (raw) {
       var arr = [];
-      try { if (raw) { var p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } } catch (e) {}
+      try { if (raw) { var p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } } catch(e){console.warn("[swallowed] floor-state",e)}
       var last = arr.pop();
       return st.put(undoKey(fw), JSON.stringify(arr)).then(function () { return last ? last.full : null; });
     }).catch(function () { return null; });
@@ -269,8 +269,8 @@
     var st = storage();
     if (!st) return Promise.resolve();
     return Promise.all([
-      st.remove(key(fw)).catch(function () {}),
-      st.remove(undoKey(fw)).catch(function () {})
+      st.remove(key(fw)).catch(function(e){console.warn("[swallowed-promise] floor-state",e)}),
+      st.remove(undoKey(fw)).catch(function(e){console.warn("[swallowed-promise] floor-state",e)})
     ]);
   }
 

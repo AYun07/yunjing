@@ -16,7 +16,7 @@
   var VER = "v1.0.0";
 
   function genre() {
-    try { if (window.WorldExt && WorldExt.genre) return WorldExt.genre; } catch (e) {}
+    try { if (window.WorldExt && WorldExt.genre) return WorldExt.genre; } catch(e){console.warn("[swallowed] opportunity-system",e)}
     try { return new URLSearchParams(location.search).get("genre") || "free"; } catch (e) { return "free"; }
   }
   function vars() {
@@ -31,7 +31,7 @@
     var a = seed >>> 0;
     return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   }
-  function save() { try { var fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) {} }
+  function save() { try { var fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch(e){console.warn("[swallowed] opportunity-system",e)} }
 
   function ensureState() {
     var v = vars(); if (!v) return null;
@@ -54,7 +54,7 @@
       parts.push("T" + (Number(v.tension) || 0));
       var st = (window.WorldExt && WorldExt.modState) ? WorldExt.modState("wr_stage") : null;
       parts.push("S" + (st ? (Number(st.state.stage) || 1) : 1));
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] opportunity-system",e)}
     return parts.join("|");
   }
 
@@ -73,7 +73,7 @@
           cost: defaultCost(it), ttl: 6, kb: true, refs: refsIn(it)
         });
       });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] opportunity-system",e)}
     return out;
   }
   function refsIn(it) {
@@ -84,7 +84,7 @@
       Object.keys(facs).forEach(function (k) { var nm = facs[k].name || k; if (txt.indexOf(nm) >= 0) refs.push(nm); });
       var chars = v.characters || {};
       Object.keys(chars).forEach(function (k) { if (txt.indexOf(k) >= 0) refs.push(k); });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] opportunity-system",e)}
     return refs;
   }
   function defaultCost(it) {
@@ -113,7 +113,7 @@
       var st = (window.WorldExt && WorldExt.modState) ? WorldExt.modState("wr_stage") : null;
       var s = st ? (Number(st.state.stage) || 1) : 1;
       if (s >= 2) out.push({ title: "变局之机", desc: "大势已入中段，旧秩序松动，新机缘随之浮现。", cost: "顺势而动的眼光", ttl: 6, kb: false, refs: [] });
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] opportunity-system",e)}
     return out;
   }
 
@@ -124,7 +124,7 @@
         var facs = (v.entities && v.entities.factions) || {};
         var names = Object.keys(facs).map(function (k) { return facs[k].name || k; });
         t.refs.forEach(function (r) { if (names.indexOf(r) >= 0) ok = true; });
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] opportunity-system",e)}
       if (!ok) return false;
     }
     return true;
@@ -188,7 +188,7 @@
     for (var i = 0; i < arr.length; i++) {
       if (arr[i].id === id) {
         arr[i].status = "taken"; arr[i].resolvedRound = nowRound(); if (note) arr[i].note = note;
-        try { if (window.CanonLedger) CanonLedger.claim(arr[i].title, "player", { note: note || "机缘了结", round: nowRound() }); } catch (e) {}
+        try { if (window.CanonLedger) CanonLedger.claim(arr[i].title, "player", { note: note || "机缘了结", round: nowRound() }); } catch(e){console.warn("[swallowed] opportunity-system",e)}
         save();
         return true;
       }
@@ -223,7 +223,7 @@
       else if (top && top.v >= 25) form = "借「" + top.n + "」之援，开辟同盟路线";
       else if (s >= 2) form = "于旧秩序松动处，另辟蹊径";
       else form = "循本界常轨推进";
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] opportunity-system",e)}
     if (form) q.branch[act] = form;
     return form;
   }

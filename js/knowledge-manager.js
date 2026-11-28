@@ -95,7 +95,7 @@ const StoryKnowledge = {
     this._ensureKB().then(function () {
       self._injectPreset();
       console.debug(`[StoryKnowledge] 知识库已加载（${self.genre}）：本界 ${self._localCount()} 条 + 全局 ${self._globalKB.length} 条`);
-      try { document.dispatchEvent(new CustomEvent("story:kb-ready", { detail: { genre: self.genre } })); } catch (e) { }
+      try { document.dispatchEvent(new CustomEvent("story:kb-ready", { detail: { genre: self.genre } })); } catch(e){console.warn("[swallowed] knowledge-manager",e)}
     });
   },
   /** 确保本界世界书已就位（已存在则立即兑现；否则动态装载，失败回退整包） */
@@ -153,7 +153,7 @@ const StoryKnowledge = {
         const presets = ((window.KB_PRESETS && window.KB_PRESETS[g]) || []).concat(window.KB_COMMON || []);
         const added = self._mergePresets(presets);
         if (added) self.save({ silent: true });
-        try { document.dispatchEvent(new CustomEvent("story:kb-ext-ready", { detail: { genre: g, added } })); } catch (e) { }
+        try { document.dispatchEvent(new CustomEvent("story:kb-ext-ready", { detail: { genre: g, added } })); } catch(e){console.warn("[swallowed] knowledge-manager",e)}
         if (added) console.debug(`[StoryKnowledge] 世界书扩展包已补齐 ${added} 条（${g}）`);
       });
       });
@@ -336,7 +336,7 @@ const StoryKnowledge = {
       return true;
     } catch (e) {
       console.warn("[KnowledgeManager] 开关状态写入失败:", e);
-      try { if (window.showToast) window.showToast("⚠ 资料库开关保存失败：浏览器存储空间不足。", "error"); } catch (e2) {}
+      try { if (window.showToast) window.showToast("⚠ 资料库开关保存失败：浏览器存储空间不足。", "error"); } catch(e2){console.warn("[swallowed] knowledge-manager",e2)}
       return false;
     }
   },
@@ -461,7 +461,7 @@ const StoryKnowledge = {
     if (Array.isArray(data)) items = data;
     else if (Array.isArray(data == null ? void 0 : data.knowledge)) items = data.knowledge;
     else if (Array.isArray(data == null ? void 0 : data.items)) items = data.items;
-    if (!items && typeof window !== "undefined" && window.STImport && window.STImport.parse) {      try {        const _stEs = window.STImport.parse(typeof data === "string" ? data : JSON.stringify(data));        if (Array.isArray(_stEs) && _stEs.length) items = _stEs;      } catch (_eST) {}    }    if (!items) throw new Error("未识别的知识库格式（支持条目数组或 { knowledge: [...] } 结构）");
+    if (!items && typeof window !== "undefined" && window.STImport && window.STImport.parse) {      try {        const _stEs = window.STImport.parse(typeof data === "string" ? data : JSON.stringify(data));        if (Array.isArray(_stEs) && _stEs.length) items = _stEs;      } catch(_eST){console.warn("[swallowed] knowledge-manager",_eST)}    }    if (!items) throw new Error("未识别的知识库格式（支持条目数组或 { knowledge: [...] } 结构）");
     if (replace) {
       this.knowledgeBase = [];
       this._vecCache = {};

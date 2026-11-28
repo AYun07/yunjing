@@ -55,12 +55,12 @@
         if (!Array.isArray(d.vault)) d.vault = [];
         return d;
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] beast-profile-bridge",e)}
     return { records: {}, vault: [] };
   }
   function saveStore(d) {
     try { if (G.localStorage) { G.localStorage.setItem(storeKey(), JSON.stringify(d)); return true; } }
-    catch (e) {}
+    catch(e){console.warn("[swallowed] beast-profile-bridge",e)}
     return false;
   }
   function getProfile(id) { return loadStore().records[id] || null; }
@@ -172,7 +172,7 @@
     if (!out.deeds || !out.deeds.length) {
       var intro = "与玩家缔结羁绊的" + ({ pet: "伴宠", spirit: "灵兽", demon: "妖兽", companion: "伙伴" }[b.kind] || "随行")
         + "「" + (b.name || "无名") + "」，特性「" + (b.trait || "忠诚") + "」，立场「" + (b.stance || "忠诚") + "」。";
-      if (chron && chron.addDeed) { try { out = chron.addDeed(out, { text: intro, kind: "origin", weight: 2 }, ctx || {}).record; } catch (e) {} }
+      if (chron && chron.addDeed) { try { out = chron.addDeed(out, { text: intro, kind: "origin", weight: 2 }, ctx || {}).record; } catch(e){console.warn("[swallowed] beast-profile-bridge",e)} }
       else out.deeds = [{ text: intro, kind: "origin", weight: 2, at: "某时" }];
     }
     return putProfile(out);
@@ -293,8 +293,8 @@
     var ia = IA(); if (!ia || !ia.view) return null;
     var key = intimacyKey(b);
     var rec = null;
-    try { rec = ia.get ? ia.get(key) : (ia.ensure ? ia.ensure(key) : null); } catch (e) {}
-    if (!rec && ia.ensure) { try { rec = ia.ensure(key); } catch (e) {} }
+    try { rec = ia.get ? ia.get(key) : (ia.ensure ? ia.ensure(key) : null); } catch(e){console.warn("[swallowed] beast-profile-bridge",e)}
+    if (!rec && ia.ensure) { try { rec = ia.ensure(key); } catch(e){console.warn("[swallowed] beast-profile-bridge",e)} }
     if (!rec) return null;
     var view = ia.view(key, "玩家");
     return view ? Object.assign({ key: key }, view) : { key: key, stageLabel: "陌生", stage: 0 };
@@ -377,7 +377,7 @@
     syncAll: function (ctx) {
       var bs = BS(); var arr = bs && bs.list ? bs.list() : [];
       var n = 0;
-      arr.forEach(function (b) { try { if (syncChronicle(b, ctx)) n++; } catch (e) {} });
+      arr.forEach(function (b) { try { if (syncChronicle(b, ctx)) n++; } catch(e){console.warn("[swallowed] beast-profile-bridge",e)} });
       return n;
     },
     stats: function () {

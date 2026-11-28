@@ -95,13 +95,13 @@
       var btn = document.getElementById('ncClose');
       if (btn) btn.addEventListener('click', close);
       // 打开时先同步一次最新数据
-      try { if (B()) B().syncAll(); } catch (e) {}
+      try { if (B()) B().syncAll(); } catch(e){console.warn("[swallowed] npc-chronicle-ui",e)}
       var list = document.getElementById('ncList');
       if (list) {
         try {
           var fresh = build().querySelector('#ncList');
           if (fresh) list.innerHTML = fresh.innerHTML;
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] npc-chronicle-ui",e)}
       }
     },
     close: function () {

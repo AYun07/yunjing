@@ -51,7 +51,7 @@
     try {
       var v = (localStorage.getItem(LS_KEY) || '').trim();
       if (PRESETS[v]) return v;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] ai-governor",e)}
     /* 老玩家/新玩家都从均衡偏保守起步 */
     return 'balanced';
   }
@@ -67,7 +67,7 @@
   function pump() {
     while (inflight < limit && queue.length) {
       var item = queue.shift();
-      if (item.timer) { try { clearTimeout(item.timer); } catch (e) {} }
+      if (item.timer) { try { clearTimeout(item.timer); } catch(e){console.warn("[swallowed] ai-governor",e)} }
       inflight++;
       item.resolve();
     }
@@ -125,7 +125,7 @@
     limit = preset().start;
     successStreak = 0;
     penalizedUntil = 0;
-    try { localStorage.setItem(LS_KEY, v); } catch (e) {}
+    try { localStorage.setItem(LS_KEY, v); } catch(e){console.warn("[swallowed] ai-governor",e)}
     pump();
     return true;
   }

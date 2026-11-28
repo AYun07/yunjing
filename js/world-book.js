@@ -52,11 +52,11 @@
   }
   function save(o) {
     try { localStorage.setItem(key(), JSON.stringify(o)); }
-    catch (e) { try { window.MoStore && window.MoStore.setItem(key(), JSON.stringify(o)); } catch (e2) {} }
+    catch (e) { try { window.MoStore && window.MoStore.setItem(key(), JSON.stringify(o)); } catch(e2){console.warn("[swallowed] world-book",e2)} }
     _emit();
   }
   var _listeners = [];
-  function _emit() { _listeners.forEach(function (fn) { try { fn(); } catch (e) {} }); }
+  function _emit() { _listeners.forEach(function (fn) { try { fn(); } catch(e){console.warn("[swallowed] world-book",e)} }); }
   function onChange(fn) { if (typeof fn === "function") _listeners.push(fn); }
   function uid() { return "wb" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36); }
 
@@ -84,7 +84,7 @@
       if (!have[s.name]) o.entries.push({ id: uid(), cat: s.cat, name: s.name, text: s.text, src: "seed" });
     });
     save(o);
-    try { localStorage.setItem(flag, "1"); } catch (e) {}
+    try { localStorage.setItem(flag, "1"); } catch(e){console.warn("[swallowed] world-book",e)}
   }
 
   /* ---------- 增删查 ---------- */
@@ -144,7 +144,7 @@
       var ch = v.大事记 || v.chronicle;
       if (Array.isArray(ch)) ch.slice(-20).forEach(function (c) { var t = typeof c === "string" ? c : (c && (c.text || c.event || c.内容)); if (t) push("事件", String(t).slice(0, 18), String(t)); });
       save(o);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] world-book",e)}
     return added;
   }
 

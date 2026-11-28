@@ -57,7 +57,7 @@
   function importEntries(entries, asGlobal) {
     var key = asGlobal ? 'storyKBGlobal' : 'storyKnowledge_' + genreNow();
     var box = { knowledge: [] };
-    try { box = JSON.parse(localStorage.getItem(key)) || box; } catch (e) {}
+    try { box = JSON.parse(localStorage.getItem(key)) || box; } catch(e){console.warn("[swallowed] st-import",e)}
     var have = {};
     (box.knowledge || []).forEach(function (e) { have[e.title] = 1; });
     var added = 0;
@@ -66,7 +66,7 @@
     try {
       var KM = window.KnowledgeManager || window.KBMgr;
       if (KM && KM.load) { KM.load(); if (KM._loadGlobal) KM._loadGlobal(); if (KM.init) KM.init(); }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] st-import",e)}
     return added;
   }
   function readFile(file, asGlobal) {
@@ -111,8 +111,8 @@
       btn.style.cssText = 'padding:8px 12px;border-radius:10px;border:1px solid rgba(224,168,76,.45);background:rgba(224,168,76,.14);color:#e0a84c;cursor:pointer;font-size:13px;min-height:38px';
       btn.onclick = function () { try { pick(); } catch (e) { alert('导入功能异常:' + e.message); } };
       if (anchor.nextSibling) row.insertBefore(btn, anchor.nextSibling); else row.appendChild(btn);
-    } catch (e) {}
-  }MoUtils.pollUntil(function () { try { tryMount(); } catch (e) {} }, { interval: 2500, max: 80 });
+    } catch(e){console.warn("[swallowed] st-import",e)}
+  }MoUtils.pollUntil(function () { try { tryMount(); } catch(e){console.warn("[swallowed] st-import",e)} }, { interval: 2500, max: 80 });
   window.STImport = { pick: pick, parse: parseST, importEntries: importEntries };
   console.debug('[预设导入] 常见前端预设导入就绪(世界书/角色卡/预设)');
 })();
@@ -129,7 +129,7 @@
         KM.knowledgeBase = (KM.knowledgeBase || []).filter(function (e) { return !e || e.enabled !== false; });
         disG = (KM._globalKB || []).filter(function (e) { return e && e.enabled === false; });
         KM._globalKB = (KM._globalKB || []).filter(function (e) { return !e || e.enabled !== false; });
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] st-import",e)}
     }
     ['load', 'init', '_loadGlobal'].forEach(function (fn) {
       var o = KM[fn];
@@ -152,19 +152,19 @@
       (KM.knowledgeBase || []).concat(KM._globalKB || []).forEach(function (x) { if (x && x.id === id) e = x; });
       if (!e) return;
       e.enabled = e.enabled === false;
-      try { KM.save && KM.save(); KM._saveGlobal && KM._saveGlobal(); } catch (e3) {}
+      try { KM.save && KM.save(); KM._saveGlobal && KM._saveGlobal(); } catch(e3){console.warn("[swallowed] st-import",e3)}
       try {
         var bar = document.querySelector('[data-kbstats]');
         if (bar) {
           var g2 = (window.WorldExt && WorldExt.genre) || 'free';
           var all = [];
-          try { all = (JSON.parse(localStorage.getItem('storyKnowledge_' + g2)) || {}).knowledge || []; } catch (e5) {}
-          try { all = all.concat((JSON.parse(localStorage.getItem('storyKBGlobal')) || {}).knowledge || []); } catch (e6) {}
+          try { all = (JSON.parse(localStorage.getItem('storyKnowledge_' + g2)) || {}).knowledge || []; } catch(e5){console.warn("[swallowed] st-import",e5)}
+          try { all = all.concat((JSON.parse(localStorage.getItem('storyKBGlobal')) || {}).knowledge || []); } catch(e6){console.warn("[swallowed] st-import",e6)}
           var on = all.filter(function (x) { return x && x.enabled !== false; });
           var alw = on.filter(function (x) { return x.alwaysInclude === true; });
           bar.innerHTML = '条目 <b>' + on.length + '</b>/' + all.length + ' 启用 · 常驻 ' + alw.length + ' · 已关 ' + (all.length - on.length);
         }
-      } catch (e7) {}Array.prototype.forEach.call(document.querySelectorAll('.kb-item'), function (row) {
+      } catch(e7){console.warn("[swallowed] st-import",e7)}Array.prototype.forEach.call(document.querySelectorAll('.kb-item'), function (row) {
         var m = (row.getAttribute('onclick') || '').match(/'([^']+)'/);
         if (m && m[1] === id) row.classList.toggle("kb-off");
       });
@@ -259,7 +259,7 @@
   function exportST() {
     var g = (window.WorldExt && WorldExt.genre) || 'free';
     var box = {};
-    try { box = JSON.parse(localStorage.getItem('storyKnowledge_' + g)) || {}; } catch (e) {}
+    try { box = JSON.parse(localStorage.getItem('storyKnowledge_' + g)) || {}; } catch(e){console.warn("[swallowed] st-import",e)}
     var entries = {}, n = 0;
     (box.knowledge || []).forEach(function (e, ix) {
       if (!e || e.enabled === false) return;
@@ -305,7 +305,7 @@
         b2.onclick = function () { alert(exportST()); };
         row.appendChild(b2);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] st-import",e)}
   }
   /* v3.55.3 性能：轮询改「页面可见才跑 + 挂上即降频」——低配设备不再每 2.5s 白扫一遍 DOM */
   var mountTick = 0;
@@ -313,7 +313,7 @@
     if (document.hidden) return;               /* 后台标签页零开销 */
     mountTick++;
     if (mountTick > 3 && mountTick % 4 !== 0) return; /* 挂上后降到 10s 一巡 */
-    try { mount(); } catch (e) {}
+    try { mount(); } catch(e){console.warn("[swallowed] st-import",e)}
   }, 2500);
   console.debug('[STImport] PNG卡+ST导出 就绪');
 })();
@@ -339,5 +339,5 @@ setInterval(function () {
       });
       if (!hasVisible) { ov.style.display = 'none'; console.warn('[Janitor] 清理幽灵遮罩'); }
     });
-  } catch (e) {}
+  } catch(e){console.warn("[swallowed] st-import",e)}
 }, 10000);

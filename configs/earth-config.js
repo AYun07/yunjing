@@ -491,7 +491,7 @@ const EarthStoryConfig = {
            framework.storyState 缺席时静默跳过——单测/无框架环境不炸） */
         if (framework && framework.storyState && framework.storyState.isStoryStarted && framework.storyState.phone) {
             const tryRestore = (n) => {
-                if (window.PhonePanel) { try { window.PhonePanel.onStoryLoaded(); } catch (e) { } }
+                if (window.PhonePanel) { try { window.PhonePanel.onStoryLoaded(); } catch(e){console.warn("[swallowed] earth-config",e)} }
                 else if (n > 0) setTimeout(() => tryRestore(n - 1), 400);
             };
             setTimeout(() => tryRestore(6), 600);

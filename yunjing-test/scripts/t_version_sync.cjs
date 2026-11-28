@@ -45,6 +45,10 @@ const constChecks = [
   ['README      逐版表首行',     'README.md',     new RegExp(`\\| \\*\\*v${esc}\\*\\* \\|`)],
   ['changelog   v 条目',         'changelog/index.html', new RegExp(`<span class="entry-ver">v${esc}</span>`)],
   ['changelog   CSS ?v=',        'changelog/index.html', new RegExp(`yunjing-theme\\.css\\?v=${esc}`)],
+  // v7.6.6：堵住 v7.6.5「版本同源更新」漏改根 package.json / README badge 的测试盲区
+  ['根 package.json  version',   'package.json',       new RegExp(`"version": "${esc}"`)],
+  ['content-manifest version',   'content-manifest.json', new RegExp(`"version": "${esc}"`)],
+  ['README      shields badge',  'README.md',          new RegExp(`shields\\.io/badge/version-${esc}-orange`)],
 ];
 for (const [name, file, re] of constChecks) {
   let s = '';

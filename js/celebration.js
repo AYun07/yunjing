@@ -18,8 +18,7 @@
     saveSettings(s) {
       try {
         localStorage.setItem(KEY, JSON.stringify({ on: s.on !== false }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] celebration",e)}
     },
     toggle() {
       var _a;

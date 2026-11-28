@@ -84,7 +84,7 @@
 
     body.querySelector('.aia-master').addEventListener('click', function () {
       api.setEnabled(!st.enabled); render();
-      try { if (G.showToast) G.showToast(api.isEnabled() ? 'AI 增强已开启（会产生真实调用）' : 'AI 增强已关闭', 'info'); } catch (e) {}
+      try { if (G.showToast) G.showToast(api.isEnabled() ? 'AI 增强已开启（会产生真实调用）' : 'AI 增强已关闭', 'info'); } catch(e){console.warn("[swallowed] ai-augment-ui",e)}
     });
     Array.prototype.forEach.call(body.querySelectorAll('.aia-task'), function (b) {
       b.addEventListener('click', function () {
@@ -97,6 +97,6 @@
     ov.style.display = 'flex';
   }
 
-  function open() { try { if (G.AIAugmentBridge) G.AIAugmentBridge.boot(); } catch (e) {} render(); }
+  function open() { try { if (G.AIAugmentBridge) G.AIAugmentBridge.boot(); } catch(e){console.warn("[swallowed] ai-augment-ui",e)} render(); }
   G.AIAugmentUI = { open: open, close: close, render: render };
 })();

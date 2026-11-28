@@ -88,8 +88,7 @@ window.StoryImageGen = {
   save(cfg) {
     try {
       localStorage.setItem(this.API_KEY, JSON.stringify(cfg || {}));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
   },
   /* ---- 首次自举默认值（v3.55.3）：预选 Agnes 生图厂商 ----
      接口地址/模型默认填好，Key 留空由使用者在设置里填自己的（不内置任何密钥）。
@@ -112,8 +111,7 @@ window.StoryImageGen = {
       if (!localStorage.getItem(this.SET_KEY)) {
         localStorage.setItem(this.SET_KEY, JSON.stringify({ enabled: false, maxPerChapter: 1, promptLang: "zh", autoGen: true, styleSuffix: "" }));
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
   },
   /** 行为配置（启用开关 / 每章上限 / 提示词语言 / 自动生成 / 画风补充） */
   getSettings() {
@@ -134,8 +132,7 @@ window.StoryImageGen = {
   saveSettings(s) {
     try {
       localStorage.setItem(this.SET_KEY, JSON.stringify(s || {}));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
   },
   isConfigured() {
     const c = this.get();
@@ -344,8 +341,7 @@ window.StoryImageGen = {
           el.appendChild(box);
         }
         box.innerHTML = `<summary>✍ 实际生图提示词（工程师润色稿）</summary><div class="illust-final-text">${this.esc(finalP)}</div>`;
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] image-gen",e)}
     }
   },
   showError(el, msg) {
@@ -588,8 +584,7 @@ window.StoryImageGen = {
     if (st.styleSuffix) imgPrompt = imgPrompt + "，" + st.styleSuffix;
     try {
       (_a = window.TokenUsage) == null ? void 0 : _a.recordRequest([{ role: "user", content: imgPrompt }], "插图");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
     /* v4.17.3 模式分派：ink / nai / chat / comfy / images(默认 OpenAI 兼容)
        覆盖用户要求的全部来源：ComfyUI 原生、NovelAI 原生、OpenAI 及一切类 OpenAI 的
        玩家个人端点与 agnes 这类第三方生图端点。 */
@@ -803,10 +798,8 @@ window.StoryImageGen = {
       try {
         const j = JSON.parse(reason);
         reason = j.error && j.error.message || j.message || reason;
-      } catch (e) {
-      }
-    } catch (e) {
-    }
+      } catch(e){console.warn("[swallowed] image-gen",e)}
+    } catch(e){console.warn("[swallowed] image-gen",e)}
     return `${prefix}: ${res.status} ${res.statusText}${reason ? " - " + reason : ""}`;
   },
   /** 连通测试（生成一张小样图验证全链路）
@@ -913,14 +906,12 @@ window.StoryImageGen = {
       let txt = "";
       try {
         txt = new TextDecoder().decode(buf);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] image-gen",e)}
       let msg = String(txt || "").slice(0, 180);
       try {
         const j = JSON.parse(txt);
         msg = String(j.message || j.error && j.error.message || msg).slice(0, 180);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] image-gen",e)}
       throw new Error("NovelAI 接口返回 JSON 而非图片压缩包——请检查地址是否为 NAI 站点（需以 /ai/generate-image 结尾或填站点根地址）：" + msg);
     }
     const png = await this._naiUnzipPng(buf);
@@ -983,8 +974,7 @@ window.StoryImageGen = {
               candidates.push({ name, bytes: this._clipPng(raw) });
               break;
             }
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] image-gen",e)}
         }
       }
     }
@@ -1053,8 +1043,7 @@ window.StoryImageGen = {
         const c = JSON.parse(raw);
         if (c && c.endpoint && c.apiKey && c.model) return c;
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
     const fw = window.storyFramework;
     return fw && fw.apiConfig && fw.apiConfig.endpoint && fw.apiConfig.apiKey && fw.apiConfig.model ? fw.apiConfig : null;
   },
@@ -1116,13 +1105,11 @@ ${prompt}` }
             svg = fixed2;
           }
         }
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] image-gen",e)}
     }
     try {
       (_a = window.TokenUsage) == null ? void 0 : _a.recordOutput(svg, "插图");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   },
   /** 画师系统提示词：锁定色板 + 五层构图骨架 + 人物剪影铁律 + 范例标杆 + 硬性约束
@@ -1312,8 +1299,7 @@ ${this._inkExemplar()}
     this._trimHeavy();
     try {
       fw.saveStory();
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
   },
   /** 总量防御：dataUrl 合计超 2.5MB 时从最老的开始清空（保留记录骨架，可重绘） */
   _trimHeavy() {
@@ -1364,7 +1350,7 @@ ${this._inkExemplar()}
     try {
       window.StoryImageGen && window.StoryImageGen._seedDefaults && window.StoryImageGen._seedDefaults();
       window.StoryImageGen && window.StoryImageGen.initSelectToImage();
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] image-gen",e)}
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
   else run();

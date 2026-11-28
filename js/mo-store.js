@@ -89,8 +89,14 @@
       // 配额超限：暂存到 IndexedDB + 内存镜像，绝不抛错
       try { _mem[key] = String(val); } catch (e) { _mem[key] = val; }
       idbPut(key, _mem[key]);
-      if (window.console && console.warn) {
-        console.warn('[MoStore] 配额超限，已暂存至 IndexedDB：' + key);
+      /* v7.6.6：这条 warn 此前完全无去重，配额满时每写必刷（38 界实测刷 68 次）。
+         纳入与 localStorage 通道相同的按 key 去重表。 */
+      var _nowM = Date.now();
+      if (!_quotaWarned[key] || _nowM - _quotaWarned[key] > 60000) {
+        _quotaWarned[key] = _nowM;
+        if (window.console && console.warn) {
+          console.warn('[MoStore] 配额超限，已暂存至 IndexedDB：' + key + '（60 秒内不再重复告警）');
+        }
       }
       return false;
     },
@@ -105,6 +111,36 @@
     clear: function () {
       try { localStorage.clear(); } catch (e) {}
       _mem = {};
+    },
+    /* v7.6.6：清理「非当前界」的世界书/世界扩展缓存键，根治换界累积打满 localStorage。
+       知识库预置条目下次进界会自动补回，只丢其它界的自建条目（与系统体检的
+       cleanupKBCache 同口径）。返回清理条数。 */
+    pruneStaleWorldKeys: function () {
+      var cur = '';
+      try {
+        var q = new URLSearchParams(location.search).get('genre');
+        var fw = window.storyFramework;
+        cur = q || (fw && (fw.genre || (fw.config && fw.config.genreKey))) || '';
+      } catch (e) {}
+      var prefixRe = /^(storyKnowledge_|worldExt_|storyKBEnabled_)(.+)$/;
+      var n = 0;
+      try {
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (!k) continue;
+          var m = prefixRe.exec(k);
+          if (!m) continue;
+          var g = m[2].split('~')[0];
+          if (g && g !== cur) keys.push(k);
+        }
+        keys.forEach(function (k) {
+          try { localStorage.removeItem(k); n++; } catch (e) {}
+          delete _mem[k];
+          idbDel(k);
+        });
+      } catch (e) {}
+      return n;
     },
     get length() {
       try { return localStorage.length; } catch (e) { return 0; }
@@ -131,8 +167,9 @@
             delete _mem[k];
             idbDel(k);
           }
-          // v7.6.5：成功写回 localStorage 后清除该键告警标记，后续再超限可重新提示一次
-          if (isLocal && _quotaWarned[k]) delete _quotaWarned[k];
+          /* v7.6.6：不再因单次成功写回就清标记——配额满时 localStorage 写入会在
+             「成功/失败」间抖动，清标记 = 每写必告警（38 界刷 68 次主因之一）。
+             改由 time-quota 窗口自动控制（见下方告警处 60 秒节流），这里只保留兜底回退。 */
           return ok;
         } catch (err) {
           var quota = err && (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED" || err.code === 22 || err.code === 1014);
@@ -143,12 +180,13 @@
           try { s = String(v); } catch (e2) { s = v; }
           _mem[k] = s;
           idbPut(k, s);
-          // v7.6.5：同一 key 在配额持续满时会每次写入都失败，告警只需一次；
-          // 转存/内存兜底照常执行，只压掉重复的 console.warn，不影响功能。
-          if (!_quotaWarned[k]) {
-            _quotaWarned[k] = 1;
+          // v7.6.6：同一 key 60 秒内只告警一次（时间窗口节流），兼顾「不刷屏」与
+          // 「真正的新一轮超限仍可提示」。转存/内存兜底照常执行，不影响功能。
+          var _now = Date.now();
+          if (!_quotaWarned[k] || _now - _quotaWarned[k] > 60000) {
+            _quotaWarned[k] = _now;
             if (window.console && console.warn) {
-              console.warn("[存储兜底] 配额超限，已转存 IndexedDB：" + k + "（约 " + Math.round(String(s).length / 1024) + "KB，本键后续不再重复告警）");
+              console.warn("[存储兜底] 配额超限，已转存 IndexedDB：" + k + "（约 " + Math.round(String(s).length / 1024) + "KB，60 秒内不再重复告警）");
             }
           }
           return undefined;
@@ -193,6 +231,24 @@
         req.onsuccess = function () {
           var cur = req.result;
           if (!cur) {
+            /* v7.6.6：换界重载创作态时，若 localStorage 世界书缓存已接近配额（>3MB），
+               自动清理其它界残留键，避免每写必兜底、告警刷屏。仅在 studio 创作页触发，
+               且不碰当前界数据。清理在回灌完成、当前界已由 URL/config 确定之后进行。 */
+            try {
+              if (/studio\.html/.test(location.pathname) && MoStore.pruneStaleWorldKeys) {
+                var _used = 0;
+                for (var _i = 0; _i < localStorage.length; _i++) {
+                  var _k = localStorage.key(_i);
+                  if (_k) _used += (localStorage.getItem(_k) || "").length * 2;
+                }
+                if (_used > 3 * 1024 * 1024) {
+                  var _n = MoStore.pruneStaleWorldKeys();
+                  if (_n > 0 && window.console && console.info) {
+                    console.info("[MoStore] 已自动清理 " + _n + " 个其它界的世界书缓存，释放配额");
+                  }
+                }
+              }
+            } catch (e) { /* 清理失败不影响正常启动 */ }
             try { window.dispatchEvent(new CustomEvent("yj-store-ready", { detail: { keys: Object.keys(_mem).length } })); } catch (e) {}
             return;
           }

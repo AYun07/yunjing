@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  const LIB = "libs/fantasy-names.min.js?v=7.6.5";
+  const LIB = "libs/fantasy-names.min.js?v=7.6.6";
   const HISTORY_KEY = "storyDiceHistory";
   const HISTORY_MAX = 24;
   const CATS = [
@@ -115,15 +115,13 @@
       h.unshift({ label, items: items.map((x) => ({ name: x.name, rarity: x.rarity || "" })), ts: Date.now() });
       try {
         localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, HISTORY_MAX)));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] inspiration-dice",e)}
     },
     clearHistory() {
       var _a;
       try {
         localStorage.removeItem(HISTORY_KEY);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] inspiration-dice",e)}
       this._renderHistory();
       (_a = window.showToast) == null ? void 0 : _a.call(window, "🎲 骰子历史已清空", "info");
     },

@@ -600,8 +600,7 @@ ${FreeWorldForge.gaugeContract(null)}`;
       const c = document.getElementById("statusPanelContainer");
       if (c) c.innerHTML = window.StoryStatusRenderer.generatePanelHTML();
       window.StoryStatusRenderer.refresh(((_b = framework.storyState) == null ? void 0 : _b.variables) || {});
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] freeworld-config",e)}
   },
   /** 读档时从 setup.worldCode 恢复量表（旧档/未开篇静默跳过，保持兜底量表） */
   restoreGauges: function(framework) {
@@ -612,8 +611,7 @@ ${FreeWorldForge.gaugeContract(null)}`;
         this.gauges = wc.gauges;
         this.statusFields = wc.gauges.map((g) => g.key);
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] freeworld-config",e)}
   }
 };
 window.FreeWorldForge = FreeWorldForge;

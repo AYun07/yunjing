@@ -16,8 +16,8 @@
     const fw = window.storyFramework;
     return (fw && fw.storyState && fw.storyState.variables) || null;
   }
-  function save() { try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) {} }
-  function toast(m, t) { try { window.showToast && window.showToast(m, t || "success"); } catch (e) {} }
+  function save() { try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch(e){console.warn("[swallowed] life-mode",e)} }
+  function toast(m, t) { try { window.showToast && window.showToast(m, t || "success"); } catch(e){console.warn("[swallowed] life-mode",e)} }
 
   const ORIGINS = ["寒门子弟", "落魄世家", "市井小民", "异乡来客", "山野猎户", "商队遗孤", "没入门派的散修", "官宦之后（家道中落）"];
 
@@ -53,7 +53,7 @@
       day: Number(v.人生 && v.人生.day) || 0,
       log: Array.isArray(v.人生 && v.人生.log) ? v.人生.log : []
     };
-    try { window.EntityStore && window.EntityStore.bootstrap(v); } catch (e) {}
+    try { window.EntityStore && window.EntityStore.bootstrap(v); } catch(e){console.warn("[swallowed] life-mode",e)}
     save();
     return { ok: true, name };
   }
@@ -109,7 +109,7 @@
     const orig = WorldExt.takeDirective;
     WorldExt.takeDirective = function () {
       const out = orig.apply(WorldExt, arguments);
-      try { const line = directiveLine(); if (line) return (out ? out + "\n\n" : "") + line; } catch (e) {}
+      try { const line = directiveLine(); if (line) return (out ? out + "\n\n" : "") + line; } catch(e){console.warn("[swallowed] life-mode",e)}
       return out;
     };
     WorldExt.takeDirective.__life = true;

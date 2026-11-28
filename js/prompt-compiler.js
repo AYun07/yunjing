@@ -53,7 +53,7 @@
       var BMM = window.BaseModelMode;
       env.tier = BMM && BMM.resolveTier ? BMM.resolveTier() : '?';
       env.ctxTier = BMM && BMM.ctxTier ? BMM.ctxTier() : '?';
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] prompt-compiler",e)}
     try {
       var fw = window.storyFramework;
       var cfg = fw && fw.apiConfig || {};
@@ -61,12 +61,12 @@
       env.maxTokens = cfg.maxTokens;
       env.stream = cfg.stream;
       env.baseModelMode = cfg.baseModelMode;
-    } catch (e) { }
-    try { env.varAI = !!(window.VariableAI && window.VariableAI.isEnabled && window.VariableAI.isEnabled()); } catch (e) { }
-    try { env.kbVector = !!(window.KBVector && window.KBVector.isEnabled && window.KBVector.isEnabled()); } catch (e) { }
-    try { env.stance = window.StoryStance && window.StoryStance.get ? window.StoryStance.get() : ''; } catch (e) { }
-    try { env.freedom = window.StoryFreedom && window.StoryFreedom.get ? window.StoryFreedom.get() : ''; } catch (e) { }
-    try { env.genre = (fw && fw.genre) || (new URLSearchParams(location.search).get('genre')) || ''; } catch (e) { }
+    } catch(e){console.warn("[swallowed] prompt-compiler",e)}
+    try { env.varAI = !!(window.VariableAI && window.VariableAI.isEnabled && window.VariableAI.isEnabled()); } catch(e){console.warn("[swallowed] prompt-compiler",e)}
+    try { env.kbVector = !!(window.KBVector && window.KBVector.isEnabled && window.KBVector.isEnabled()); } catch(e){console.warn("[swallowed] prompt-compiler",e)}
+    try { env.stance = window.StoryStance && window.StoryStance.get ? window.StoryStance.get() : ''; } catch(e){console.warn("[swallowed] prompt-compiler",e)}
+    try { env.freedom = window.StoryFreedom && window.StoryFreedom.get ? window.StoryFreedom.get() : ''; } catch(e){console.warn("[swallowed] prompt-compiler",e)}
+    try { env.genre = (fw && fw.genre) || (new URLSearchParams(location.search).get('genre')) || ''; } catch(e){console.warn("[swallowed] prompt-compiler",e)}
     return env;
   }
 
@@ -83,7 +83,7 @@
         _worldInitFired = true;
         window.PluginRuntime.emit('world:init', { genre: (environment() || {}).genre });
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] prompt-compiler",e)}
     if (typeof window.buildStoryMessages !== 'function') {
       throw new Error('buildStoryMessages 未就绪（ai-message-builder.js 未加载？）');
     }
@@ -104,7 +104,7 @@
           }
         }
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] prompt-compiler",e)}
     var t1 = (window.performance && performance.now) ? performance.now() : Date.now();
     record(messages, userMessage, Math.round(t1 - t0));
     return messages;

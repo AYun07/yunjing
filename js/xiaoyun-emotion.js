@@ -117,14 +117,14 @@
   function reset(restoreImg) {
     clearTimeout(resetTimer);
     if (video) {
-      try { video.pause(); } catch (e) {}
+      try { video.pause(); } catch(e){console.warn("[swallowed] xiaoyun-emotion",e)}
       if (video.parentNode) video.parentNode.removeChild(video);
       video = null;
     }
     playing = false;
     if (restoreImg && img) {
       img.style.display = '';
-      try { if (window.XYBuddy && window.XYBuddy.currentImg) img.src = window.XYBuddy.currentImg(); } catch (e) {}
+      try { if (window.XYBuddy && window.XYBuddy.currentImg) img.src = window.XYBuddy.currentImg(); } catch(e){console.warn("[swallowed] xiaoyun-emotion",e)}
     }
   }
 
@@ -133,7 +133,7 @@
     opts = opts || {};
     if (!ensureDom()) return false;
     // v7.0.5 流畅模式：低配设备跳过情绪视频解码，保持静态形象，减负又不影响功能
-    try { if (window.YJPerf && YJPerf.enabled) return false; } catch (e) {}
+    try { if (window.YJPerf && YJPerf.enabled) return false; } catch(e){console.warn("[swallowed] xiaoyun-emotion",e)}
     currentFormKey = detectForm();
     var picked = opts.src ? { src: opts.src, desc: 'override' } : resolveSrc(intent, currentFormKey);
     if (!picked) return false;
@@ -157,7 +157,7 @@
     img.style.display = 'none';
     orb.insertBefore(video, img);
     var p = video.play();
-    if (p && p.catch) p.catch(function () {});
+    if (p && p.catch) p.catch(function(e){console.warn("[swallowed-promise] xiaoyun-emotion",e)});
     playing = true;
     window.__emoPlaying = picked.desc;
     clearTimeout(resetTimer);

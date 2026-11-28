@@ -84,14 +84,12 @@
     save(id, cfg) {
       try {
         localStorage.setItem(this.PREFIX + id, JSON.stringify(cfg));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] channel-hub",e)}
     },
     clear(id) {
       try {
         localStorage.removeItem(this.PREFIX + id);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] channel-hub",e)}
     },
     /** 通道就绪 = 地址 / Key / 模型 三项填全 */
     ready(id) {

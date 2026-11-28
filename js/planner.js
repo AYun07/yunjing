@@ -8,7 +8,7 @@
   "use strict";
   function key() { return "yunjing.plan." + ((window.WorldExt && WorldExt.genre) || "free"); }
   function load() { try { return JSON.parse(localStorage.getItem(key()) || "null") || null; } catch (e) { return null; } }
-  function save(p) { try { localStorage.setItem(key(), JSON.stringify(p)); } catch (e) {} }
+  function save(p) { try { localStorage.setItem(key(), JSON.stringify(p)); } catch(e){console.warn("[swallowed] planner",e)} }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]); }
 
   function get() { return load(); }
@@ -26,7 +26,7 @@
   function _savePlan(goal, steps) {
     const p = { goal: String(goal || "").slice(0, 80), steps, createdAt: Date.now(), updatedAt: Date.now() };
     save(p);
-    try { window.MoChibi && MoChibi.react && MoChibi.react("plan", { goal: p.goal }); } catch (e) {}
+    try { window.MoChibi && MoChibi.react && MoChibi.react("plan", { goal: p.goal }); } catch(e){console.warn("[swallowed] planner",e)}
     return p;
   }
 
@@ -54,7 +54,7 @@
     if (s) { s.status = status === "done" ? "done" : status === "doing" ? "doing" : "todo"; p.updatedAt = Date.now(); save(p); }
     return p;
   }
-  function reset() { try { localStorage.removeItem(key()); } catch (e) {} }
+  function reset() { try { localStorage.removeItem(key()); } catch(e){console.warn("[swallowed] planner",e)} }
 
   /** 当前规划 → 指令行（doing 优先，其次第一个 todo） */
   function directiveLine() {
@@ -79,7 +79,7 @@
     const orig = WorldExt.takeDirective;
     WorldExt.takeDirective = function () {
       const out = orig.apply(WorldExt, arguments);
-      try { const line = directiveLine(); if (line) return (out ? out + "\n\n" : "") + line; } catch (e) {}
+      try { const line = directiveLine(); if (line) return (out ? out + "\n\n" : "") + line; } catch(e){console.warn("[swallowed] planner",e)}
       return out;
     };
     WorldExt.takeDirective.__planned = true;
@@ -122,7 +122,7 @@
           if (msg) msg.textContent = "正在生成规划…";
           await generate(goal);
           ov.remove(); panel();
-          try { window.showToast && showToast("规划已生成并注入后续提示词", "success"); } catch (err) {}
+          try { window.showToast && showToast("规划已生成并注入后续提示词", "success"); } catch(err){console.warn("[swallowed] planner",err)}
         } catch (err) {
           const msg = ov.querySelector("[data-msg]");
           if (msg) msg.textContent = "生成失败：" + String(err && err.message || err);

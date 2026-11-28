@@ -106,7 +106,7 @@
         try {
             const st = (typeof window !== 'undefined' && window.storyFramework && window.storyFramework.storyState) || {};
             if (st.setup && st.setup.playerName) return st.setup.playerName;
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] player-kit",e)}
         const cs = (vars && vars.characters) || {};
         for (const k of Object.keys(cs)) { const v = cs[k]; if (v && (v.isPlayer || k === '玩家' || k === '主角')) return k; }
         /* 通道③：工坊模式（创作五工坊无 playerName/isPlayer）——
@@ -150,7 +150,7 @@
             const ex = v.items.find(i => i && i.name === name);
             if (sign > 0) { if (ex) ex.count = (ex.count || 1) + count; else v.items.push({ name, count }); }
             else if (ex) { ex.count = (ex.count || 1) - count; if (ex.count <= 0) v.items = v.items.filter(i => i !== ex); }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] player-kit",e)}
     }
 
     /* ==================== 标准字段键位 ==================== */
@@ -296,7 +296,7 @@
         function asObjX(v) {
             if (v && typeof v === 'object' && !Array.isArray(v)) return v;
             if (typeof v === 'string') {
-                try { const o = JSON.parse(v); if (o && typeof o === 'object' && !Array.isArray(o)) return o; } catch (e) { }
+                try { const o = JSON.parse(v); if (o && typeof o === 'object' && !Array.isArray(o)) return o; } catch(e){console.warn("[swallowed] player-kit",e)}
             }
             return {};
         }
@@ -361,7 +361,7 @@
                             const ek = (typeof document !== 'undefined') && document.getElementById('pkCvKey');
                             const ev = (typeof document !== 'undefined') && document.getElementById('pkCvVal');
                             if (ek) { key = String(ek.value || '').trim(); val = String(ev && ev.value || '').trim(); }
-                        } catch (e) { }
+                        } catch(e){console.warn("[swallowed] player-kit",e)}
                     }
                     if (!key) return '字段名不能为空';
                     key = key.slice(0, 10);
@@ -553,7 +553,7 @@
                             const el = (typeof document !== 'undefined') && document.getElementById('pkBagName');
                             const ce = (typeof document !== 'undefined') && document.getElementById('pkBagCnt');
                             if (el) { name = String(el.value || '').trim(); count = Math.max(1, Math.round(Number(ce && ce.value) || 1)); }
-                        } catch (e) { }
+                        } catch(e){console.warn("[swallowed] player-kit",e)}
                     }
                     if (!name || name.length > 48) return '品名不能为空';
                     const it = s.items.find(x => x.name === name);

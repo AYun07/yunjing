@@ -156,7 +156,7 @@
   function warnOnce(k, msg) {
     if (_warned[k]) return;
     _warned[k] = 1;
-    try { console.warn('[主题工坊] ' + msg); } catch (e) { }
+    try { console.warn('[主题工坊] ' + msg); } catch(e){console.warn("[swallowed] theme-studio",e)}
   }
 
   function safeParse(s, d) {
@@ -174,7 +174,7 @@
   function persist(st) {
     try { localStorage.setItem(KEY, JSON.stringify(st)); return true; }
     catch (e) {
-      try { window.showToast && window.showToast('主题保存失败：本地存储已满', 'error'); } catch (e2) { }
+      try { window.showToast && window.showToast('主题保存失败：本地存储已满', 'error'); } catch(e2){console.warn("[swallowed] theme-studio",e2)}
       return false;
     }
   }
@@ -275,7 +275,7 @@
     if (!opts || opts.persist !== false) persist(st);
     try {
       document.dispatchEvent(new CustomEvent('yunjing:theme', { detail: { id: theme.id, name: theme.name } }));
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] theme-studio",e)}
     return theme;
   }
 
@@ -451,7 +451,7 @@
   function refresh() {
     var body = document.getElementById('yjThemeBody');
     if (body && body.offsetParent !== null) body.innerHTML = panelHTML();
-    if (window.ConfigModal && ConfigModal.refreshThemeSection) { try { ConfigModal.refreshThemeSection(); } catch (e) { } }
+    if (window.ConfigModal && ConfigModal.refreshThemeSection) { try { ConfigModal.refreshThemeSection(); } catch(e){console.warn("[swallowed] theme-studio",e)} }
   }
 
   function pick(id) {

@@ -18,7 +18,7 @@
       return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
     });
   }
-  function toast(msg, kind) { try { window.showToast && window.showToast(msg, kind || "info"); } catch (e) {} }
+  function toast(msg, kind) { try { window.showToast && window.showToast(msg, kind || "info"); } catch(e){console.warn("[swallowed] cover-portal",e)} }
   function catGlyph(cat) { return { canon: "原", earth: "寰", free: "笔", wangyou: "游" }[cat] || "界"; }
   function catHue(cat) { return { canon: "#c9a86a", earth: "#5a9e7f", free: "#e3a9c2", wangyou: "#6fc9d8" }[cat] || "#c9a86a"; }
 
@@ -59,7 +59,7 @@
           cats.push({ key: "dlc", name: "自建世界", desc: "玩家自建的大世界", groups: [{ name: "自建世界", worlds: dlc }], total: dlc.length });
         }
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] cover-portal",e)}
     return cats;
   }
 
@@ -111,7 +111,7 @@
     var host = document.getElementById(OVERLAY);
     if (host) host.classList.remove("cp-open");
     closeDetail();
-    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch(e){console.warn("[swallowed] cover-portal",e)} }
   }
 
   function renderCats(cats) {
@@ -159,7 +159,7 @@
   /* ---------- 世界详情抽屉 ---------- */
   function worldInfo(g) {
     var meta = null;
-    try { meta = window.WorldCatalog && window.WorldCatalog.get(g); } catch (e) {}
+    try { meta = window.WorldCatalog && window.WorldCatalog.get(g); } catch(e){console.warn("[swallowed] cover-portal",e)}
     var V = window.ATLAS_VERIFIED || {};
     var d = V[g];
     var eraCount = d && d.eras ? d.eras.length : 0;
@@ -254,7 +254,7 @@
     "css/atlas-drilldown.css", "css/atlas-faction-layer.css",
     "css/atlas-canon-layer.css", "css/atlas-library.css"
   ];
-  var V = "?v=7.6.5";
+  var V = "?v=7.6.6";
   var atlasPromise = null;
   function ensureAtlas() {
     if (atlasPromise) return atlasPromise;

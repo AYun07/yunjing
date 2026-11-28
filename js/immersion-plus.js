@@ -15,8 +15,7 @@ const ImmersionPlus = function() {
     c[k] = !c[k];
     try {
       localStorage.setItem(CFG_KEY, JSON.stringify(c));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
     return c[k];
   }
   function esc(s) {
@@ -32,8 +31,7 @@ const ImmersionPlus = function() {
   function sfx(name) {
     try {
       window.ImmersiveSuite && ImmersiveSuite._audio && ImmersiveSuite._audio(name);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
   }
   /* v3.53.0：模型常自作主张给标记加前缀（实测 agnes-3.0-flash 输出 "(cho: next: …)"），
      旧正则只认 "(next: …)" 于是整段标记落进正文。这里允许括号内 1~10 字符的任意前缀词。 */
@@ -92,13 +90,11 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     let last = 0;
     try {
       last = Number(localStorage.getItem(key)) || 0;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
     if (ch <= last) return;
     try {
       localStorage.setItem(key, String(ch));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
     /* v4.38.0 修 P1-1（章名"未题"）：模型常只报 chapter 数字、不报 chapterTitle，
        转场大字就长期显示"未题"，像半成品。用一组按回目轮转的雅致兜底名，保证每章
        都有像样的题名；模型一旦上报真实 chapterTitle 仍优先用它。 */
@@ -176,15 +172,13 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     try {
       shown = JSON.parse(localStorage.getItem(key) || "[]");
       if (!Array.isArray(shown)) shown = [];
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
     if (shown.includes(hit.id)) return;
     shown.push(hit.id);
     if (shown.length > 60) shown = shown.slice(-60);
     try {
       localStorage.setItem(key, JSON.stringify(shown));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
     const container = document.getElementById("chatMessages");
     if (!container || !container.children || !container.children.length) return;
     let card = null;
@@ -216,8 +210,7 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     try {
       last = Number(localStorage.getItem(key));
       if (!Number.isFinite(last)) last = -1;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
     if (ch && last === ch) return;
     const hooks = extractHooks(reply);
     let cause = hooks.gameover || "";
@@ -237,8 +230,7 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     if (ch) {
       try {
         localStorage.setItem(key, String(ch));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersion-plus",e)}
     }
     showDeathCard(cause, ch);
   }
@@ -325,8 +317,7 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     }
     try {
       (_a = window.showToast) == null ? void 0 : _a.call(window, on ? "📖 沉浸阅读态已开启（Esc / R 退出）" : "已退出沉浸阅读态");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
     return on;
   }
   function exitReading() {
@@ -402,12 +393,10 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     if (sheet) {
       try {
         window.Toolbox && Toolbox.close();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersion-plus",e)}
       try {
         window.Snapshots && Snapshots.close();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersion-plus",e)}
       return;
     }
     const modal = document.querySelector(".modal-overlay.show");
@@ -441,8 +430,7 @@ ${c.death ? "- 殒命标记：主角死亡或全书走向终结时，正文最�
     const on = setCfg(k);
     try {
       (_a = window.showToast) == null ? void 0 : _a.call(window, on ? "已开启" : "已关闭");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersion-plus",e)}
   }
   function boot() {
     if (cfg().hotkeys) initHotkeys();

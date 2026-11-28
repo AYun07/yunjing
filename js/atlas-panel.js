@@ -14974,7 +14974,7 @@
        现走 SlotRegistry.scoped()，首次访问自动迁移旧数据（主档有存档时不搬走）。 */
     try {
       if (window.SlotRegistry && window.SlotRegistry.scoped) return window.SlotRegistry.scoped("storyAtlas_", state.genre);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] atlas-panel",e)}
     return `storyAtlas_${state.genre}`;
   }
   function save() {
@@ -15151,7 +15151,7 @@
     const genre = state.genre;
     if (!genre) return 0;
     /* 种子词条可能还没落库（首次开局未发过消息）——先确保种子存在 */
-    try { if (WorldBook.ensureSeed) WorldBook.ensureSeed(); } catch (e) {}
+    try { if (WorldBook.ensureSeed) WorldBook.ensureSeed(); } catch(e){console.warn("[swallowed] atlas-panel",e)}
     let added = 0;
     const geo = WorldBook.byCat("地理") || [];
     const people = (WorldBook.byCat("人物") || []).concat(WorldBook.byCat("势力") || []);
@@ -15261,8 +15261,8 @@
       changed++;
       return poi;
     };
-    Object.values(ent.factions || {}).forEach((f) => { if (f && f.name) try { ensureNode(f.name, "faction", f); } catch (e) {} });
-    Object.values(ent.places || {}).forEach((p) => { if (p && p.name) try { ensureNode(p.name, "place", p); } catch (e) {} });
+    Object.values(ent.factions || {}).forEach((f) => { if (f && f.name) try { ensureNode(f.name, "faction", f); } catch(e){console.warn("[swallowed] atlas-panel",e)} });
+    Object.values(ent.places || {}).forEach((p) => { if (p && p.name) try { ensureNode(p.name, "place", p); } catch(e){console.warn("[swallowed] atlas-panel",e)} });
     if (changed) { save(); if (state.open) render(); }
     return changed;
   }
@@ -15353,7 +15353,7 @@
       setFactionState(k, { status: "active", round, ...m });
     }
     const v = window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables;
-    try { syncFactions(v || { entities: {} }); } catch (e) {}
+    try { syncFactions(v || { entities: {} }); } catch(e){console.warn("[swallowed] atlas-panel",e)}
     save();
     if (state.open) render();
     return 1;
@@ -15403,7 +15403,7 @@
     }
     if (!state.genre || !ATLAS_DATA[state.genre]) return;
     /* v3.93.0 每次变量更新同步世界实体上图 + 势力状态（新势力落位/消长/覆灭即时体现） */
-    try { syncFactions(vars); } catch (e) {}
+    try { syncFactions(vars); } catch(e){console.warn("[swallowed] atlas-panel",e)}
     const loc = extractPlayerLocation(vars);
     if (!loc) return;
     const round = Number(vars && (vars.chapter || vars["回合数"])) || window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.turnCount || 0;
@@ -16840,10 +16840,9 @@
       try {
         const vars = window.storyFramework && window.storyFramework.storyState && window.storyFramework.storyState.variables;
         if (vars) onVars(vars);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] atlas-panel",e)}
       /* v3.55.23 打开面板即同步资料库地理条目上地图（幂等，已登记的不重复落） */
-      try { syncFromWorldBook(); } catch (e) {}
+      try { syncFromWorldBook(); } catch(e){console.warn("[swallowed] atlas-panel",e)}
       render();
       ov.classList.add("on");
       pn.classList.add("on");
@@ -17394,17 +17393,17 @@
             Object.keys(POT).forEach((g) => {
               if (!ATLAS_DATA[g] && POT[g] && Array.isArray(POT[g].layers)) ATLAS_DATA[g] = POT[g];
             });
-          } catch (e) { }
-          try { mergeEras(); } catch (e) { }  /* v5.2.2 补做时代层合并：让懒加载晚到的分部地图 tab 出现 */
-          try { fitLayers(); } catch (e) { }
-          try { packRegions(); } catch (e) { }
-          try { injectSupplement(); } catch (e) { }
-          try { relaxSupp(); } catch (e) { }
-          try { if (state.genre) load(state.genre); } catch (e) { }
+          } catch(e){console.warn("[swallowed] atlas-panel",e)}
+          try { mergeEras(); } catch(e){console.warn("[swallowed] atlas-panel",e)}  /* v5.2.2 补做时代层合并：让懒加载晚到的分部地图 tab 出现 */
+          try { fitLayers(); } catch(e){console.warn("[swallowed] atlas-panel",e)}
+          try { packRegions(); } catch(e){console.warn("[swallowed] atlas-panel",e)}
+          try { injectSupplement(); } catch(e){console.warn("[swallowed] atlas-panel",e)}
+          try { relaxSupp(); } catch(e){console.warn("[swallowed] atlas-panel",e)}
+          try { if (state.genre) load(state.genre); } catch(e){console.warn("[swallowed] atlas-panel",e)}
           if (window.YJ_DEBUG) console.debug("[StoryAtlas] 舆图懒加载数据到位，已补做合并与落位");
         }).catch(() => { });
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] atlas-panel",e)}
     const genre = new URLSearchParams(location.search).get("genre");
     if (genre) {
       if (!ATLAS_DATA[genre]) ensureGenreData(genre);
@@ -17416,15 +17415,15 @@
     });
     /* v3.55.23 资料库增补地理条目时，自动同步上地图 */
     if (window.WorldBook && WorldBook.onChange) {
-      WorldBook.onChange(() => { try { syncFromWorldBook(); } catch (e) {} });
+      WorldBook.onChange(() => { try { syncFromWorldBook(); } catch(e){console.warn("[swallowed] atlas-panel",e)} });
     }
   }
   /* v5.2.1：切换地点呈现密度（精简/完整）。只改 state + 重渲染，绝不动 ATLAS_DATA / visits / dyn——
      「出现过的地点一定要有」是硬底线：精简只折叠远处未到访的补录小点，到访/当前/关键/势力状态点全保留。 */
   function toggleDensity() {
     state.denseMode = !state.denseMode;
-    try { save(); } catch (e) {}
-    if (state.open) { try { render(); } catch (e) {} }
+    try { save(); } catch(e){console.warn("[swallowed] atlas-panel",e)}
+    if (state.open) { try { render(); } catch(e){console.warn("[swallowed] atlas-panel",e)} }
     return state.denseMode;
   }
   const StoryAtlas = {

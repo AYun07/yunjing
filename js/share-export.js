@@ -38,7 +38,7 @@
       var fw = window.storyFramework;
       pkg.setup = fw && fw.storyState ? fw.storyState.setup : null;
       pkg.variables = fw && fw.storyState ? fw.storyState.variables : null;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] share-export",e)}
     try {
       // 世界书：优先 KB_PRESETS[genre]（内置）+ 玩家改写（yunjingWorldBook:genre）
       var kb = [];
@@ -46,11 +46,11 @@
       var custom = localStorage.getItem('yunjingWorldBook:' + g);
       if (custom) { var c = JSON.parse(custom); if (Array.isArray(c)) kb = kb.concat(c); }
       pkg.worldBook = kb;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] share-export",e)}
     try {
       pkg.presets = localStorage.getItem('yunjingPresets') ? JSON.parse(localStorage.getItem('yunjingPresets')) : null;
       pkg.regex = localStorage.getItem('yunjingRegex') ? JSON.parse(localStorage.getItem('yunjingRegex')) : null;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] share-export",e)}
     return pkg;
   }
 
@@ -91,8 +91,8 @@
     ov.onclick = function (e) { if (e.target === ov) ov.remove(); };
     if (isOutput) {
       box.querySelector('[data-copy]').onclick = function () {
-        ta.select(); try { document.execCommand('copy'); } catch (e) {}
-        if (navigator.clipboard) navigator.clipboard.writeText(ta.value).catch(function () {});
+        ta.select(); try { document.execCommand('copy'); } catch(e){console.warn("[swallowed] share-export",e)}
+        if (navigator.clipboard) navigator.clipboard.writeText(ta.value).catch(function(e){console.warn("[swallowed-promise] share-export",e)});
         box.querySelector('[data-msg]').textContent = '已复制，发给你朋友吧～';
       };
     } else {
@@ -107,7 +107,7 @@
           var g = pkg.genre || genre();
           var key = 'yunjingWorldBook:' + g;
           var cur = [];
-          try { var raw = localStorage.getItem(key); if (raw) { var cj = JSON.parse(raw); if (Array.isArray(cj)) cur = cj; } } catch (e) {}
+          try { var raw = localStorage.getItem(key); if (raw) { var cj = JSON.parse(raw); if (Array.isArray(cj)) cur = cj; } } catch(e){console.warn("[swallowed] share-export",e)}
           var merged = cur.concat(pkg.worldBook);
           localStorage.setItem(key, JSON.stringify(merged));
           msg.style.color = '#8fe0a8'; msg.textContent = '✅ 导入成功：' + pkg.worldBook.length + ' 条世界书已加入「' + g + '」界（共 ' + merged.length + ' 条）';

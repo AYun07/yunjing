@@ -732,8 +732,7 @@ const ImmersiveSuite = function() {
     const v = JSON.stringify(state);
     try {
       MoStore.setItem(skey(), v);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     store[skey()] = v;
   }
   function load(genre) {
@@ -751,8 +750,7 @@ const ImmersiveSuite = function() {
       try {
         const o = JSON.parse(raw);
         Object.assign(state, o, { genre, open: state.open });
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
     }
     if (!Array.isArray(state.tensions)) state.tensions = [];
     try {
@@ -770,38 +768,31 @@ const ImmersiveSuite = function() {
       if (state.weather != null) state.weather = String(state.weather);
       if (state.day != null) state.day = String(state.day);
       if (state.realmRaw != null) state.realmRaw = String(state.realmRaw);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     try {
       if (window.AmbienceLayer) AmbienceLayer.setGenre(genre);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     try {
       if (window.TimelineBranch) TimelineBranch.onGenre(genre);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     try {
       if (window.GameLayer) GameLayer.onGenre(genre);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     try {
       if (window.ReaderLetters) ReaderLetters.onGenre(genre);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function reload() {
     if (!state.genre) return;
     try {
       delete store[skey()];
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     load(state.genre);
     if ($("immDrawerMount")) {
       try {
         $("immDrawerMount").innerHTML = hubHTML();
         renderTab();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
     }
   }
   const T = () => THEMES[state.genre] || THEMES.mystery;
@@ -945,8 +936,7 @@ const ImmersiveSuite = function() {
         if (state.weather) window.AmbienceLayer.setWeather(state.weather);
         if (state.time) window.AmbienceLayer.setTime(state.time);
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function hourIdx() {
     const th = T();
@@ -1009,8 +999,7 @@ const ImmersiveSuite = function() {
           return String(hist[i].content || "").replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, "").replace(/【行动选项】[\s\S]*$/i, "").trim();
         }
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     return "";
   }
   function portrait(name, size) {
@@ -1251,8 +1240,7 @@ const ImmersiveSuite = function() {
       const dm = $("immDrawerMount");
       if (dm) dm.remove();
       state.open = false;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function makeFabDraggable(fab) {
     const POS_KEY = "immFabPos";
@@ -1264,8 +1252,7 @@ const ImmersiveSuite = function() {
       fab.style.bottom = "";
       try {
         MoStore.removeItem(POS_KEY);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       toastBanner("⛩ 小门已归位");
     };
     try {
@@ -1278,8 +1265,7 @@ const ImmersiveSuite = function() {
         fab.style.right = "auto";
         fab.style.bottom = "auto";
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     let dragging = false, moved = false, longFired = false, holdTimer = 0;
     let sx = 0, sy = 0, bx = 0, by = 0;
     fab.addEventListener("pointerdown", (ev) => {
@@ -1306,8 +1292,7 @@ const ImmersiveSuite = function() {
       }, 600);
       try {
         fab.setPointerCapture(ev.pointerId);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       ev.preventDefault();
     });
     fab.addEventListener("pointermove", (ev) => {
@@ -1322,8 +1307,7 @@ const ImmersiveSuite = function() {
             toastBanner("⛩ 小门已解锁：可拖到任意处，长按归位");
             MoStore.setItem(HINT_KEY, "1");
           }
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] immersive-suite",e)}
       }
       const maxX = window.innerWidth - fab.offsetWidth;
       const maxY = window.innerHeight - fab.offsetHeight;
@@ -1340,8 +1324,7 @@ const ImmersiveSuite = function() {
       if (moved) {
         try {
           MoStore.setItem(POS_KEY, JSON.stringify({ x: parseInt(fab.style.left, 10), y: parseInt(fab.style.top, 10) }));
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] immersive-suite",e)}
       } else if (!longFired) {
         ImmersiveSuite2.toggle(true);
       }
@@ -1531,8 +1514,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
     }, 20);
     try {
       AudioBox.event("letter");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function renderWhispers(typing) {
     const flow = $("whisperFlow");
@@ -1560,8 +1542,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
     if (pendingIntel.some((p) => p.name === name && p.text === lastNpc.t)) {
       try {
         (_a = window.showToast) == null ? void 0 : _a.call(window, "这句已带在身上了", "info");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       return;
     }
     pendingIntel.push({ name, text: lastNpc.t.slice(0, 200), at: Date.now() });
@@ -1573,8 +1554,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
     }
     try {
       (_b = window.showToast) == null ? void 0 : _b.call(window, `🧿 ${name} 的密语已随身——下一轮正文将悄然生效`, "success");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function takeIntel() {
     const p = pendingIntel;
@@ -1626,8 +1606,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
       save();
       try {
         AudioBox.event("letter");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
     } catch (e) {
       g.whispers.pop();
       (_a = window.showToast) == null ? void 0 : _a.call(window, "密谈传音失败：" + (e.message || "网络异常").slice(0, 80), "error");
@@ -1692,7 +1671,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
       if (rule && Array.isArray(rule.tiers) && rule.tiers.length) {
         realms = rule.tiers.map(function (t) { return t.name || t; });
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     if (!Array.isArray(realms) || !realms.length) realms = th.realms;
     const idx = Math.max(0, Math.min(state.realmIdx || 0, realms.length - 1));
     const rungs = realms.map((r, i) => {
@@ -1878,8 +1857,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
     box.appendChild(el);
     try {
       box.scrollTop = box.scrollHeight;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function panelEvents() {
     if (!state.events.length) return emptyBox("⏳", "四野无讯", "AI 上报的 events（大事倒计时）会在此挂牌：精英赛开赛、兽潮将至、宗门大比…");
@@ -2094,18 +2072,15 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
         try {
           if (n.stop) n.stop();
           n.disconnect && n.disconnect();
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] immersive-suite",e)}
       });
       this._nodes = [];
       if (ctx) try {
         this._master.gain.setTargetAtTime(1e-4, ctx.currentTime, 0.3);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       if (ctx) try {
         this._master.gain.setTargetAtTime(0.16, ctx.currentTime + 1.5, 0.3);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
     },
     /** 事件音：突破/得胜/败北/来信/名场面/战鼓/落雷/盖章/心跳
         v3.2.0 扩展：war=战鼓滚奏 · thunder=金榜落雷 · seal=印章重击 · heart=紧张心跳
@@ -2283,8 +2258,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
     box.appendChild(el);
     try {
       box.scrollTop = box.scrollHeight;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function mountBattleCard(b) {
     if (isEarth()) return;
@@ -2293,8 +2267,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
     const R = { "胜": "#8fd9a8", "败": "#e07070", "平": "#d8c8a0", "逃": "#8ab0f0" };
     try {
       AudioBox.event("war");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     const el = document.createElement("div");
     el.className = "imm-battle-card";
     el.style.setProperty("--brc", R[b.result] || "#d8c8a0");
@@ -2305,8 +2278,7 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
     box.appendChild(el);
     try {
       box.scrollTop = box.scrollHeight;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   function toastBanner(txt) {
     const t = document.createElement("div");
@@ -2382,14 +2354,12 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
       if (state.highlights.length !== hN) dirty = true;
       try {
         window.WorldExt && WorldExt.onVars(vars, round);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       const ten = Number(vars.tension != null ? vars.tension : vars.dashboard && vars.dashboard.tension);
       if (ten >= 70) {
         try {
           AudioBox.event("heart");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] immersive-suite",e)}
       }
       if (Number.isFinite(ten) && ten >= 0) {
         const v = Math.min(100, ten);
@@ -2421,20 +2391,17 @@ ${recent.join("\n——\n") || "（故事刚开始）"}
       try {
         const a2 = JSON.parse(MoStore.getItem("storyAtlas_" + state.genre) || "null");
         if (a2 && Array.isArray(a2.visits)) visits = a2.visits.map((x) => x.id || x.name).filter(Boolean);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       let lines = [];
       try {
         const t = JSON.parse(MoStore.getItem("tl_" + state.genre) || "null");
         if (t && Array.isArray(t.nodes)) lines = t.nodes;
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       let seals = [];
       try {
         const g2 = JSON.parse(MoStore.getItem("gl_" + state.genre) || "null");
         seals = g2 && g2.seals || [];
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       const sealTags = window.GameLayer && GameLayer.sealLabels ? GameLayer.sealLabels() : seals.map((id) => ({ icon: "🏆", name: id }));
       const sec = (icon, name, inner) => inner ? `<section><h2><span>${icon}</span>${name}</h2>${inner}</section>` : "";
       const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${esc(book)} · 设定集</title>
@@ -2514,14 +2481,12 @@ ${(() => {
       }, 800);
       try {
         (_a = window.showToast) == null ? void 0 : _a.call(window, "📜 设定集已导出（HTML）", "success");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
     } catch (e) {
       console.warn("[Codex]", e.message);
       try {
         (_b = window.showToast) == null ? void 0 : _b.call(window, "设定集导出失败：" + e.message, "error");
-      } catch (e2) {
-      }
+      } catch(e2){console.warn("[swallowed] immersive-suite",e2)}
     }
   }
   const ImmersiveSuite2 = {
@@ -2566,8 +2531,7 @@ ${(() => {
       AudioBox.event("letter");
       try {
         mountLetterCard(letter);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       if (state.open) renderTab();
       return true;
     },
@@ -2614,8 +2578,8 @@ ${(() => {
       }
       state.open = open == null ? !state.open : !!open;
       /* v3.68.0 面板互斥：开太虚阁时收起手机与小云抽屉 */
-      try { if (state.open && document.getElementById("phShell") && document.getElementById("phShell").classList.contains("open") && window.PhonePanel) PhonePanel.close(); } catch (e) {}
-      try { if (state.open) { const _md = document.getElementById("moDrawer"); if (_md && _md.classList.contains("open") && window.MoAssistant && MoAssistant.closePanel) MoAssistant.closePanel(); } } catch (e) {}
+      try { if (state.open && document.getElementById("phShell") && document.getElementById("phShell").classList.contains("open") && window.PhonePanel) PhonePanel.close(); } catch(e){console.warn("[swallowed] immersive-suite",e)}
+      try { if (state.open) { const _md = document.getElementById("moDrawer"); if (_md && _md.classList.contains("open") && window.MoAssistant && MoAssistant.closePanel) MoAssistant.closePanel(); } } catch(e){console.warn("[swallowed] immersive-suite",e)}
       const d = $("immDrawer");
       if (state.open) {
         try {
@@ -2646,14 +2610,12 @@ ${(() => {
       if (AudioBox.enabled()) {
         try {
           MoStore.setItem(AudioBox.KEY, "off");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] immersive-suite",e)}
         AudioBox.stopAmbient();
       } else {
         try {
           MoStore.setItem(AudioBox.KEY, "on");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] immersive-suite",e)}
         AudioBox.ambient();
         AudioBox.event("letter");
       }
@@ -2662,15 +2624,13 @@ ${(() => {
     toggleAmbParticle() {
       try {
         window.AmbienceLayer && AmbienceLayer.toggleParticle();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       if (state.open && state.tab === "settings") renderTab();
     },
     toggleAmbTint() {
       try {
         window.AmbienceLayer && AmbienceLayer.toggleTint();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       if (state.open && state.tab === "settings") renderTab();
     },
     get _tab() {
@@ -2690,16 +2650,13 @@ ${(() => {
       } else if (!confirm(msg)) return;
       try {
         window.TimelineBranch && TimelineBranch.resetAll();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       try {
         window.GameLayer && GameLayer.resetAll();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       try {
         window.ReaderLetters && ReaderLetters.resetAll();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       load(state.genre);
       save();
       renderTab();
@@ -2713,12 +2670,10 @@ ${(() => {
       const keep = { genre: state.genre, open: state.open, tab: state.tab };
       try {
         MoStore.removeItem(skey());
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       try {
         delete store[skey()];
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] immersive-suite",e)}
       Object.assign(state, {
         gallery: {},
         items: [],
@@ -2739,8 +2694,7 @@ ${(() => {
       if ($("immDrawerMount")) {
         try {
           renderTab();
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] immersive-suite",e)}
       }
     },
     themes: THEMES
@@ -2748,8 +2702,7 @@ ${(() => {
   function applyVertical(on) {
     try {
       document.body.classList.toggle("imm-vertical", !!on);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   }
   return ImmersiveSuite2;
 }();
@@ -2770,12 +2723,10 @@ window.ImmersiveSuite = ImmersiveSuite;
     try {
       const g = window.storyFramework && storyFramework.config && storyFramework.config.genreKey;
       window.AmbienceLayer && AmbienceLayer.init(g);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
     try {
       if (MoStore.getItem("immVertical") === "on") document.body.classList.add("imm-vertical");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] immersive-suite",e)}
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
   else go();

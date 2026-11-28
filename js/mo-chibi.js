@@ -48,7 +48,7 @@ const MoChibi = {
   resolveStyle() {
     if (this._resolved && this._style) return this._style;
     let s = "random";
-    try { s = localStorage.getItem(this.STYLE_KEY) || "random"; } catch (e) { }
+    try { s = localStorage.getItem(this.STYLE_KEY) || "random"; } catch(e){console.warn("[swallowed] mo-chibi",e)}
     if (!this.STYLES.includes(s)) s = this.STYLES[Math.floor(Math.random() * this.STYLES.length)];
     this._style = s;
     this._resolved = true;
@@ -58,12 +58,12 @@ const MoChibi = {
   chibiSrc() { return this.IMGS[this.currentStyle()] || this.IMGS.luo; },
   faceSrc() { return this.FACES[this.currentStyle()] || this.FACES.luo; },
   buildIMG() {
-    return `<img class="mc-img" src="${this.chibiSrc()}?v=7.6.5" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
+    return `<img class="mc-img" src="${this.chibiSrc()}?v=7.6.6" alt="小云" draggable="false" decoding="async" aria-label="小云">`;
   },
   /** 手动设定形态（合法 key），持久化并立刻刷新宠物与所有头像 */
   setStyle(s) {
     if (!this.STYLES.includes(s)) return;
-    try { localStorage.setItem(this.STYLE_KEY, s); } catch (e) { }
+    try { localStorage.setItem(this.STYLE_KEY, s); } catch(e){console.warn("[swallowed] mo-chibi",e)}
     this._style = s;
     this._resolved = true;
     this.applyStyle();
@@ -85,7 +85,7 @@ const MoChibi = {
     ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(8,14,22,.66);display:flex;align-items:center;justify-content:center;padding:18px;";
     const card = (k) => `
       <button data-style="${k}" style="width:31%;min-width:96px;padding:10px 6px;border:2px solid ${k === cur ? "#7ab8e8" : "rgba(140,180,220,.28)"};border-radius:14px;background:linear-gradient(160deg,rgba(20,32,48,.92),rgba(14,22,34,.92));cursor:pointer;text-align:center;transition:transform .15s;">
-        <img src="${this.IMGS[k]}?v=7.6.5" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
+        <img src="${this.IMGS[k]}?v=7.6.6" style="height:110px;max-width:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));" alt="${this.STYLE_LABEL[k]}">
         <div style="font-size:13.5px;font-weight:700;color:#cfe6f8;margin-top:6px;">${this.STYLE_LABEL[k]}</div>
         <div style="font-size:10.5px;color:#7e9ab4;margin-top:2px;">${this.STYLE_DESC[k] || ""}</div>
       </button>`;
@@ -115,11 +115,11 @@ const MoChibi = {
     if (box) box.dataset.style = this.currentStyle();
     const img = document.querySelector("#moChibi .mc-img");
     if (img) {
-      try { clearTimeout(this._poseTimer); this._poseTimer = null; } catch (e) {}
-      img.src = this.chibiSrc() + "?v=7.6.5";
+      try { clearTimeout(this._poseTimer); this._poseTimer = null; } catch(e){console.warn("[swallowed] mo-chibi",e)}
+      img.src = this.chibiSrc() + "?v=7.6.6";
       img.classList.remove("mc-pose-pop"); void img.offsetWidth; img.classList.add("mc-pose-pop");
     }
-    const face = this.faceSrc() + "?v=7.6.5";
+    const face = this.faceSrc() + "?v=7.6.6";
     document.querySelectorAll(".mo-avatar img, .mo-welcome-avatar img, .mo-msg-avatar img").forEach((el) => {
       el.src = face;
     });
@@ -277,7 +277,7 @@ const MoChibi = {
         window.XYBuddy.say(String(text == null ? "" : text), ms);
         return;
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] mo-chibi",e)}
     console.debug("[小云]", String(text == null ? "" : text));
   },
   hideBubble() {
@@ -420,7 +420,7 @@ const MoChibi = {
       b.onclick = () => {
         const it = items[parseInt(b.dataset.i, 10)];
         host.classList.remove("show");
-        try { if (it && it.act) it.act(); } catch (e) {}
+        try { if (it && it.act) it.act(); } catch(e){console.warn("[swallowed] mo-chibi",e)}
       };
     });
     host.querySelectorAll("[data-close]").forEach((el) => { el.onclick = () => host.classList.remove("show"); });
@@ -605,7 +605,7 @@ const MoChibi = {
         return;
       }
       if (Math.random() < 0.2) {
-        try { this.playAction(Math.random() < 0.5 ? "wave" : "happy"); } catch (e) {}
+        try { this.playAction(Math.random() < 0.5 ? "wave" : "happy"); } catch(e){console.warn("[swallowed] mo-chibi",e)}
         return;
       }
       const act = ACTS[Math.floor(Math.random() * ACTS.length)];
@@ -686,7 +686,7 @@ const MoChibi = {
      叠加既有 CSS 动效（hop/twirl…）。图片缺失时自动退回纯 CSS 动作。 */
   POSES: ["wave", "battle", "happy"],
   poseSrc(pose) {
-    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=7.6.5`;
+    return `assets/xiaoyun-${this.currentStyle()}-${pose}.png?v=7.6.6`;
   },
   _preloadPoses() {
     this._poseCache = {};
@@ -718,7 +718,7 @@ const MoChibi = {
   clearPose() {
     clearTimeout(this._poseTimer);
     this._poseTimer = null;
-    this._setImg(this.chibiSrc() + "?v=7.6.5");
+    this._setImg(this.chibiSrc() + "?v=7.6.6");
   },
   /** 公开动作 API：玩家/系统调用——做到"像动画一样可以做动作" */
   playAction(name, _internal) {
@@ -754,7 +754,7 @@ const MoChibi = {
   _bondLoaded: false,
   loadBond() {
     if (this._bondLoaded) return this._bond;
-    try { this._bond = Number(localStorage.getItem(this.BOND_KEY)) || 0; } catch (e) { }
+    try { this._bond = Number(localStorage.getItem(this.BOND_KEY)) || 0; } catch(e){console.warn("[swallowed] mo-chibi",e)}
     this._bondLoaded = true;
     return this._bond;
   },
@@ -762,7 +762,7 @@ const MoChibi = {
     this.loadBond();
     const before = this.bondLevel();
     this._bond = Math.max(0, this._bond + n);
-    try { localStorage.setItem(this.BOND_KEY, String(this._bond)); } catch (e) { }
+    try { localStorage.setItem(this.BOND_KEY, String(this._bond)); } catch(e){console.warn("[swallowed] mo-chibi",e)}
     const after = this.bondLevel();
     if (after > before) {
       this.setFace("surprise", 2600);
@@ -877,8 +877,7 @@ const MoChibi = {
     if (!silent) setTimeout(doHide, 900); else doHide();
     try {
       localStorage.setItem(this.HIDE_KEY, "1");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] mo-chibi",e)}
   },
   show() {
     var _a;
@@ -887,8 +886,7 @@ const MoChibi = {
     (_a = document.getElementById("moChibiRestore")) == null ? void 0 : _a.classList.remove("show");
     try {
       localStorage.setItem(this.HIDE_KEY, "0");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] mo-chibi",e)}
     this.setFace("happy", 2500);
     this.spawnHearts(3);
     this.say("小云回来啦!主人想我了没有呀 (≧▽≦)", 3e3);
@@ -945,8 +943,7 @@ const MoChibi = {
       startY = e.clientY;
       try {
         (_a = el.setPointerCapture) == null ? void 0 : _a.call(el, e.pointerId);
-      } catch (err) {
-      }
+      } catch(err){console.warn("[swallowed] mo-chibi",err)}
       clearTimeout(pressTimer);
       pressTimer = setTimeout(() => {
         var _a2;
@@ -1065,16 +1062,14 @@ const MoChibi = {
           x: x / window.innerWidth,
           y: y / window.innerHeight
         }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] mo-chibi",e)}
     }
   },
   _loadPos(key) {
     try {
       const p = JSON.parse(localStorage.getItem(key) || "null");
       if (p && typeof p.x === "number" && typeof p.y === "number") return p;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] mo-chibi",e)}
     return null;
   },
   _applyPos(el, p, opt) {

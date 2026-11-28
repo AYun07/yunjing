@@ -76,7 +76,7 @@
   function writeRaw(k, v) {
     try { localStorage.setItem(k, v); return true; }
     catch (e) {
-      try { if (window.MoStore) return window.MoStore.setItem(k, v); } catch (e2) {}
+      try { if (window.MoStore) return window.MoStore.setItem(k, v); } catch(e2){console.warn("[swallowed] story-identity",e2)}
       return false;
     }
   }

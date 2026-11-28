@@ -17,7 +17,7 @@
     var orig = WorldExt.takeDirective;
     WorldExt.takeDirective = function () {
       var out = orig.apply(WorldExt, arguments);
-      try { var line = compose(); if (line) out = (out ? out + "\n\n" : "") + line; } catch (e) {}
+      try { var line = compose(); if (line) out = (out ? out + "\n\n" : "") + line; } catch(e){console.warn("[swallowed] world-director",e)}
       return out;
     };
     WorldExt.takeDirective.__directed = true;

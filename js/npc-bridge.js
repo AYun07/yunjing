@@ -158,7 +158,7 @@
       try {
         var sf = G.storyFramework;
         round = (sf && sf.storyState && Number(sf.storyState.turnCount)) || 0;
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] npc-bridge",e)}
       var ctx = { round: round, seed: "world", situation: {} };
       var list = WRx.NPC.list ? WRx.NPC.list() : [];
       var advanced = [];
@@ -170,7 +170,7 @@
       });
       if (advanced.length && G.showToast) {
         // 低频提示：仅当有实质经历产出时
-        try { G.showToast("📖 " + advanced.length + " 位离场角色有了新的动向", "info"); } catch (e) {}
+        try { G.showToast("📖 " + advanced.length + " 位离场角色有了新的动向", "info"); } catch(e){console.warn("[swallowed] npc-bridge",e)}
       }
       return advanced;
     },

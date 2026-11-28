@@ -232,7 +232,7 @@
     try { return JSON.parse(localStorage.getItem(KEY_TPL) || '[]'); } catch (e) { return []; }
   }
   function saveTpls(list) {
-    try { localStorage.setItem(KEY_TPL, JSON.stringify(list.slice(-30))); } catch (e) {}
+    try { localStorage.setItem(KEY_TPL, JSON.stringify(list.slice(-30))); } catch(e){console.warn("[swallowed] creator-forge",e)}
   }
 
   /* ==================== 导入导出 ==================== */

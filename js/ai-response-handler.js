@@ -42,12 +42,12 @@ const StoryResponseHandler = {
        覆盖未经 buildStoryMessages 的路径（如载入旧存档后直接开图）。 */
     try {
       if (window.WorldAlive && window.WorldAlive.seedFactions) window.WorldAlive.seedFactions();
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     /* v3.55.23 行旅图鉴实时追踪：每轮变量落地即上报——AI 报了玩家新位置，
        地图足迹与剧情地标立刻生成，不再等到打开面板才补读 */
     try {
       if (window.StoryAtlas && StoryAtlas.onVars) StoryAtlas.onVars(fw.storyState.variables);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     const options = this.extractOptions(reply);
     const body = this.extractBody(reply, options);
     const IP = window.ImmersionPlus;
@@ -62,28 +62,26 @@ const StoryResponseHandler = {
        第1日，逐屏截图证实）。故开局回复照常 +turnCount（下游计数正常），但不 dispatch story:turn-saved。
        玩家此后每次真实指令都会正常 dispatch，世界随回合演化；显式 setMode('wall')/跳时间仍可脱离回合驱动。 */
     var isOpening = false;
-    try { isOpening = !!window.__yjOpeningTurn; } catch (e) {}
+    try { isOpening = !!window.__yjOpeningTurn; } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     if (isOpening) {
-      try { window.__yjOpeningTurn = false; } catch (e) {}
+      try { window.__yjOpeningTurn = false; } catch(e){console.warn("[swallowed] ai-response-handler",e)}
       /* 明确把开局后的世界时间重置为初始静止态：清空因任何早期误触发积压的 pendingEvents，
          并把 clockDay 归零，确保「玩家未指令前世界静止」不留残余。 */
       try {
         var vv = fw.storyState.variables;
         if (vv && vv.时间) { vv.时间.pendingEvents = []; vv.时间.clockDay = 0; }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     } else {
       try {
         document.dispatchEvent(new CustomEvent("story:turn-saved", { detail: { turn: fw.storyState.turnCount } }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     }
     if (IP && IP.onTurnRendered) IP.onTurnRendered(reply, body, newVariables);
     if (window.NpcPortrait && NpcPortrait.onTurnRendered) {
       try {
         const box = document.getElementById("chatMessages");
         NpcPortrait.onTurnRendered(newVariables, box ? box.lastElementChild : null);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     }
     return { body, updateBlock, options };
   },
@@ -111,7 +109,7 @@ const StoryResponseHandler = {
     if (window.CanonLedger) {
       try {
         CanonLedger.parse(reply);
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     }
     /* v4.10.0 修 P1-8：剥离无条件执行。
        canon-ledger / canon-timeline 在 studio.html 是 yj-lazy 懒加载（首屏未完成或
@@ -124,7 +122,7 @@ const StoryResponseHandler = {
     if (window.CanonTimeline) {
       try {
         CanonTimeline.parse(reply);
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     }
     body = body.replace(/\(world\)[\s\S]*?\(\/world\)/gi, "").replace(/【world】[\s\S]*?【\/world】/gi, "").replace(/<world>[\s\S]*?<\/world>/gi, "");
     /* v3.53.0：先摘掉迷你状态协议（(: 名.字段: 值; …)），再走常规剥离 */
@@ -330,19 +328,27 @@ const StoryResponseHandler = {
        偶发的单行 `**强调**：` 句式。两种都只作用于独立整行，绝不改行内正文。 */
     body = (function (text) {
       var lines = String(text).split("\n");
-      /* v7.6.5：longzu 界实测仍有面板字段残留——旧正则只认「- **键**：值」且键长≤24，
-         无列表前缀的「**键**：值」、长键名漏网。放宽为「可选 - 前缀 + 键长≤40」，
-         仍保留「连续≥2 行成组才删」的判定，避免误伤正文偶发单行 **强调**：句式。 */
-      var fieldRe = /^(?:[-*]\s+)?\*\*[^*\n]{1,40}\*\*\s*[:：]\s*\S/;
-      var headRe = /^#{1,4}\s+\S/;
+      /* v7.6.6：改通用剥离，终结「逐界打地鼠」。v7.6.3 只认 #{1,4} 标题 + 「- **键**：值」，
+         v7.6.5 放宽键长后 longzu 修好、shrouding(遮天)又漏——根因是每换一界模型面板格式都不同
+         （表格行、+/·/数字/圈号前缀、无冒号独立加粗标题行）。这里统一按「结构行」判定，
+         与具体世界/字段名无关：
+           ① 标题行：#{1,6} 开头，或整行是 **加粗标题**（无冒号、无动词叙事）；
+           ② 表格行：|...|；
+           ③ 字段行：任意列表前缀(- * + • · 数字. 圈号) + 可选加粗键 + 冒号 + 值。
+         仍保留「连续≥2 行成组才删」的判定，避免误伤正文偶发单行 **强调**：句式；
+         标题/表格行是确定性结构，单行直接删。全部只作用于独立整行，不改行内正文。 */
+      var fieldRe = /^\s*(?:[-*+•·]|\d+[.、)]|[①-⑩])\s*\*{0,2}[^*\n]{1,80}?\*{0,2}\s*[:：]\s*\S/;
+      var headRe = /^#{1,6}\s*\S|^\*{1,3}[^*\n]{1,60}\*{1,3}\s*$/;
+      var tableRe = /^\s*\|.*\|\s*$/;
       return lines.filter(function (line) {
         var t = line.trim();
         if (headRe.test(t)) return false;
+        if (tableRe.test(t)) return false;
         return true;
       }).filter(function (line, idx, arr) {
         var t = line.trim();
         if (!fieldRe.test(t)) return true;
-        // 成组判定：前一行或后一行也是加粗字段列表行
+        // 成组判定：前一行或后一行也是字段结构行
         var prev = idx > 0 && fieldRe.test(String(arr[idx - 1]).trim());
         var next = idx < arr.length - 1 && fieldRe.test(String(arr[idx + 1]).trim());
         return !(prev || next);
@@ -447,7 +453,7 @@ const StoryResponseHandler = {
     if (this._kpKeys) return this._kpKeys;
     const set = new Set(["万能市集", "世界阶段", "法宝栏", "装备栏", "储物袋", "储物袋账簿", "行囊", "名牌", "状态面板", "属性面板", "资产", "六维", "仪表盘", "境界", "境界长梯", "仙路长梯", "修行境界", "伏笔", "未解之事", "大事记", "编年史", "状态卡", "主角状态卡", "佩剑栏", "随身物", "蛊窍", "法器栏"]);
     const grab = (obj, pick) => {
-      try { Object.values(obj || {}).forEach(pick); } catch (e) { }
+      try { Object.values(obj || {}).forEach(pick); } catch(e){console.warn("[swallowed] ai-response-handler",e)}
     };
     grab(window.PlayerKit && window.PlayerKit.config, (w) => {
       if (w && w.panel && typeof w.panel === "object" && w.panel.name) set.add(String(w.panel.name));
@@ -960,8 +966,7 @@ const StoryResponseHandler = {
       if (dramatic && opts.live !== false) {
         try {
           window.ImmersionPlus && window.ImmersionPlus.sfx("drum");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] ai-response-handler",e)}
       }
     }
     if (opts.hook && opts.live !== false) {
@@ -1439,7 +1444,7 @@ const StoryResponseHandler = {
       requestAnimationFrame(() => el.classList.add("in"));
       const kill = () => {
         el.classList.remove("in");
-        setTimeout(() => { try { el.remove(); } catch (e) { } }, 320);
+        setTimeout(() => { try { el.remove(); } catch(e){console.warn("[swallowed] ai-response-handler",e)} }, 320);
       };
       setTimeout(kill, ttl);
       el.addEventListener("click", kill);

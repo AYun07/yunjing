@@ -43,7 +43,7 @@
   function lenientParse(text) {
     var s = String(text == null ? '' : text);
     if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);            // UTF-8 BOM
-    try { return JSON.parse(s); } catch (e) { }
+    try { return JSON.parse(s); } catch(e){console.warn("[swallowed] preset-io",e)}
     // 剥注释（不在字符串里的）：粗暴但对预设 JSON 足够——字符串里的 '//' 极罕见
     var noComment = s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
     // 剥尾逗号：, 后面紧跟 } 或 ]
@@ -255,7 +255,7 @@
     var c = custom();
     if (c) {
       var m = {};
-      try { m = JSON.parse(get(K_SRC) || '{}'); } catch (e) { }
+      try { m = JSON.parse(get(K_SRC) || '{}'); } catch(e){console.warn("[swallowed] preset-io",e)}
       return { source: 'custom', name: c.name, version: c.version, blocks: c.prompts.length, chars: c._yunjing.chars, file: m.file || '', at: m.at || 0 };
     }
     var b = window.YUNQI_PRESET;
@@ -313,7 +313,7 @@
     if (!set(K_CUSTOM, payload)) throw new Error('写入本地存储失败（可能空间已满）');
     set(K_SRC, JSON.stringify({ name: p.name, version: p.version, blocks: p.prompts.length, chars: p._yunjing.chars, file: fileName || '', at: Date.now() }));
     del(K_EDITS);                                  // 换预设 → 旧的逐块修改作废（identifier 已变）
-    try { window.YunqiPreset && window.YunqiPreset.clearOverrides && window.YunqiPreset.clearOverrides(); } catch (e) { }
+    try { window.YunqiPreset && window.YunqiPreset.clearOverrides && window.YunqiPreset.clearOverrides(); } catch(e){console.warn("[swallowed] preset-io",e)}
     _cache = null; _cacheRaw = null;
     /* v3.55.5 配套正则自动适配：ST 预设导出常把正则嵌在 extensions.regex_scripts
        （双人成行/夏瑾/Reborn/Kemini 四套实测皆是）——导入预设时顺手装载，免手工拆包 */
@@ -348,7 +348,7 @@
 
   function useBuiltin() {
     del(K_CUSTOM); del(K_SRC); del(K_EDITS);
-    try { window.YunqiPreset && window.YunqiPreset.clearOverrides && window.YunqiPreset.clearOverrides(); } catch (e) { }
+    try { window.YunqiPreset && window.YunqiPreset.clearOverrides && window.YunqiPreset.clearOverrides(); } catch(e){console.warn("[swallowed] preset-io",e)}
     _cache = null; _cacheRaw = null;
     return info();
   }

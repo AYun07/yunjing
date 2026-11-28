@@ -62,7 +62,7 @@
       var ia = G.IntimacyArchive;
       var r = ia && ia.get && ia.get(name);
       if (r && r.stageLabel) return r.stageLabel;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] personality-codex-ui",e)}
     return '陌生';
   }
 
@@ -231,7 +231,7 @@
   function open() {
     // v7.4.1 C9：每次打开按当前 genre 复位世界，避免上一界残留串书
     var api = C();
-    try { if (api) { var ws = api.worlds(); var cur = _pickWorld(ws); if (cur) currentWorld = cur; currentRole = ''; } } catch (e) {}
+    try { if (api) { var ws = api.worlds(); var cur = _pickWorld(ws); if (cur) currentWorld = cur; currentRole = ''; } } catch(e){console.warn("[swallowed] personality-codex-ui",e)}
     render();
   }
   G.PersonalityCodexUI = { open: open, close: close, render: render };

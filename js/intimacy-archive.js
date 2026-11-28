@@ -62,7 +62,7 @@
     } catch (e) { return 'subtle'; }
   }
   function saveScale(v) {
-    try { if (global.localStorage) global.localStorage.setItem(LS_SCALE, v); } catch (e) {}
+    try { if (global.localStorage) global.localStorage.setItem(LS_SCALE, v); } catch(e){console.warn("[swallowed] intimacy-archive",e)}
   }
 
   /* ---------- 关系阶段：双向覆盖（负=敌对，正=亲密） ----------
@@ -111,7 +111,7 @@
   function loadEnabled() {
     try { return (global.localStorage && global.localStorage.getItem(LS_KEY)) === '1'; } catch (e) { return false; }
   }
-  function saveEnabled(v) { try { if (global.localStorage) global.localStorage.setItem(LS_KEY, v ? '1' : '0'); } catch (e) {} }
+  function saveEnabled(v) { try { if (global.localStorage) global.localStorage.setItem(LS_KEY, v ? '1' : '0'); } catch(e){console.warn("[swallowed] intimacy-archive",e)} }
   state.enabled = loadEnabled();
 
   function stageOf(total) {

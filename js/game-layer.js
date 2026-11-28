@@ -15,7 +15,7 @@ const GameLayer = function() {
   const KEY = () => {
     try {
       if (window.SlotRegistry && window.SlotRegistry.scoped) return window.SlotRegistry.scoped("gl_", genre);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] game-layer",e)}
     return "gl_" + genre;
   };
   const st = {
@@ -30,14 +30,12 @@ const GameLayer = function() {
     try {
       const o = JSON.parse(localStorage.getItem(KEY()) || "{}");
       if (o && typeof o === "object") Object.assign(st, { seals: [], diceCount: 0, lastRankRound: 0, oracle: null }, o);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] game-layer",e)}
   }
   function save() {
     try {
       localStorage.setItem(KEY(), JSON.stringify(st));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] game-layer",e)}
   }
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const theme = () => window.ImmersiveSuite && ImmersiveSuite.themes && (ImmersiveSuite.themes[genre] || ImmersiveSuite.themes.mystery) || null;
@@ -82,16 +80,13 @@ const GameLayer = function() {
       sealFlash(def);
       try {
         (_a = window.showToast) == null ? void 0 : _a.call(window, `🏆 成就解锁 · ${def.icon} ${def.name}`, "success");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
       try {
         window.ImmersiveSuite && ImmersiveSuite._audio ? ImmersiveSuite._audio("highlight") : null;
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
       try {
         window.Celebration && window.Celebration.fire("seal");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
     }
     return true;
   }
@@ -106,8 +101,7 @@ const GameLayer = function() {
         ov.classList.remove("go");
         setTimeout(() => ov.remove(), 500);
       }, 2100);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] game-layer",e)}
   }
   function isEarth() {
     try {
@@ -125,8 +119,7 @@ const GameLayer = function() {
         let hit = false;
         try {
           hit = d.test(vars || {}, s);
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] game-layer",e)}
         if (hit) unlock(d.id);
       }
       return;
@@ -137,8 +130,7 @@ const GameLayer = function() {
         let hit = false;
         try {
           hit = d.test(s);
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] game-layer",e)}
         if (hit) unlock(d.id);
       }
     }
@@ -147,8 +139,7 @@ const GameLayer = function() {
       let hit = false;
       try {
         hit = d.test(vars || {}, s);
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
       if (hit) unlock(d.id);
     }
     const round = Number(vars && vars.chapter) || 0;
@@ -157,16 +148,13 @@ const GameLayer = function() {
       save();
       try {
         (_a = window.showToast) == null ? void 0 : _a.call(window, `📜 天道金榜已刷新（第${round}章）`, "info");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
       try {
         window.ImmersiveSuite && ImmersiveSuite._audio && ImmersiveSuite._audio("thunder");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
       try {
         window.Celebration && window.Celebration.fire("rank");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
     }
   }
   const ORACLES = {
@@ -325,12 +313,10 @@ const GameLayer = function() {
     }
     try {
       (_a = window.showToast) == null ? void 0 : _a.call(window, "🎲 天机已批：" + o.text, "info");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] game-layer",e)}
     try {
       window.Celebration && window.Celebration.fire("dice");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] game-layer",e)}
   }
   const api = {
     onGenre(g) {
@@ -365,8 +351,7 @@ const GameLayer = function() {
     resetAll() {
       try {
         localStorage.removeItem(KEY());
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] game-layer",e)}
       Object.assign(st, { seals: [], diceCount: 0, lastRankRound: 0, oracle: null });
     }
   };

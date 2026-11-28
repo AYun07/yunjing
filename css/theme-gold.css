@@ -337,10 +337,15 @@ html body.page-studio .panel-header {
 html body.page-studio .panel-title {
   font-family: var(--serif);
   letter-spacing: 2px;
-  background: linear-gradient(120deg, #fbeec8, #e8b964);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  /* v7.6.6：本选择器比 ui-refresh.css 的 .page-studio .panel-title 特异性更高（多 html body），
+     此前覆盖了上轮的 nowrap 修复，导致右栏标题仍竖排断字/露残字。在此补齐单行省略号。
+     渐变文字的省略号会透明，故右栏标题改用纯色，确保截断符号可见。 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #edc887;
+  background: none;
+  -webkit-text-fill-color: #edc887;
 }
 html body.page-studio .panel-section {
   background: linear-gradient(170deg, rgba(232, 185, 100, .055), rgba(232, 185, 100, .012));

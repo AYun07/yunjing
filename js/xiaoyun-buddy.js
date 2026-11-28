@@ -11,7 +11,7 @@
       if (window.AIGovernor && window.AIGovernor.run) {
         return window.AIGovernor.run('小云', function () { return fetch(url, opts); });
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)}
     return fetch(url, opts);
   }
   var FORMS = [
@@ -121,7 +121,7 @@
   function parseTools(text) {
     var out = [], re = /⟦tool⟧(\{[^\n⟦]*\})/g, m;
     while ((m = re.exec(text))) {
-      try { var o = JSON.parse(m[1]); if (o && o.tool) out.push(o); } catch (e) {}
+      try { var o = JSON.parse(m[1]); if (o && o.tool) out.push(o); } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)}
     }
     return out;
   }
@@ -178,14 +178,14 @@
       } else if (/全量备份|备份存档|备份所有|导出全部|搬家/.test(t)) {
         Promise.resolve(runTool('saves.backup')).then(function (r) {
           bot(r && r.ok ? r.msg : ((r && r.msg) || '备份失败，请到书架面板手动导出。'));
-          if (window.SaveSlots) { try { SaveSlots.open(); } catch (e) {} }
+          if (window.SaveSlots) { try { SaveSlots.open(); } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)} }
         });
       } else if (/容量|存储占用|还剩多少空间|存储体检/.test(t)) {
         Promise.resolve(runTool('saves.capacity')).then(function (r) { bot(r && r.msg || '容量信息不可用。'); });
       } else if (/存档|书档|存档管理/.test(t)) {
         var r = runTool('saves.ui');
         bot(r && r.ok ? r.msg : (window.SaveSlots ? '已帮你打开存档管理。' : (r && r.msg) || '存档系统未加载。'));
-        if (r && !r.ok && window.SaveSlots) { try { SaveSlots.open(); } catch (e) {} }
+        if (r && !r.ok && window.SaveSlots) { try { SaveSlots.open(); } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)} }
       } else if (/预设|前端|第三方/.test(t)) {
         var p = runTool('preset.info'); var g = runTool('regex.info');
         bot((p && p.msg || '') + '\n' + (g && g.msg || '') + '\n想换成你自己的预设？创作室 → 云起预设面板 → 导入预设，或直接把 JSON 发给我（接入 API 后我自己导）。');
@@ -281,7 +281,7 @@
       if (window.MoChibi && typeof window.MoChibi.moduleEntries === "function") {
         if (!/studio\.html/.test(location.pathname)) list = window.MoChibi.moduleEntries() || [];
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)}
     if (!list.length) { modules.style.display = "none"; return; }
     modules.style.display = "";
     modules.appendChild(el('div', 'xy-sec-title', '🧰 模块'));
@@ -293,7 +293,7 @@
         '<span class="xy-mod-note">' + it.note + '</span>';
       /* v3.92.1 按钮紧凑化后说明文字不占位，改由悬浮提示承载，信息不丢 */
       b.title = it.name + (it.note ? ' · ' + it.note : '');
-      b.onclick = function () { try { if (it.act) it.act(); } catch (e) {} };
+      b.onclick = function () { try { if (it.act) it.act(); } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)} };
       grid.appendChild(b);
     });
     modules.appendChild(grid);
@@ -328,7 +328,7 @@
     if (root.classList) root.classList.remove('flip-panel');
   }
   function xyResetPos() {
-    try { localStorage.removeItem(XY_POS_KEY); } catch (e) {}
+    try { localStorage.removeItem(XY_POS_KEY); } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)}
     xyClearPos();
   }
   function xyRestorePos() {
@@ -340,7 +340,7 @@
         var h = Math.min(p.y, Math.max(0, window.innerHeight - 140));
         xyApplyPos(w, h);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)}
   }
   xyRestorePos();
 
@@ -357,7 +357,7 @@
       dragging = true; moved = false; sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; pid = e.pointerId;
       // 立刻切换到 left/top 定位，避免 fixed 的 right/bottom 让拖拽跳动
       xyApplyPos(r.left, r.top);
-      try { orb.setPointerCapture(e.pointerId); } catch (err) {}
+      try { orb.setPointerCapture(e.pointerId); } catch(err){console.warn("[swallowed] xiaoyun-buddy",err)}
     }
     function move(e) {
       if (!dragging) return;
@@ -373,12 +373,12 @@
     function up(e) {
       if (!dragging) return;
       dragging = false;
-      try { if (pid != null) orb.releasePointerCapture(pid); } catch (err) {}
+      try { if (pid != null) orb.releasePointerCapture(pid); } catch(err){console.warn("[swallowed] xiaoyun-buddy",err)}
       pid = null;
       if (!moved) return; // 纯点击：保持默认定位，交给 click 打开面板
       __xyDragSuppressed = true; // 拖拽结束的那次 click 不打开面板
       var r = root.getBoundingClientRect();
-      try { localStorage.setItem(XY_POS_KEY, JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top) })); } catch (err) {}
+      try { localStorage.setItem(XY_POS_KEY, JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top) })); } catch(err){console.warn("[swallowed] xiaoyun-buddy",err)}
       // 兜底清除抑制标记，防止某些浏览器拖拽后不再派发 click 导致下次点击被吞
       setTimeout(function () { __xyDragSuppressed = false; }, 350);
     }
@@ -414,12 +414,12 @@
       if (!modules || !/studio\.html/.test(location.pathname)) return;
       /* 主动拉起 demand 组：玩家提前打开时 window.MoChibi 仍是懒加载桩，模块区会是空的。
          不能用「已渲染过 grid」当门槛，否则空区永远补不回来。 */
-      if (window.YJLazy && window.YJLazy.ensure) { try { window.YJLazy.ensure('MoChibi'); } catch (e) {} }
+      if (window.YJLazy && window.YJLazy.ensure) { try { window.YJLazy.ensure('MoChibi'); } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)} }
       if (!window.MoChibi || typeof window.MoChibi.moduleEntries !== "function") return;
       var n = (window.MoChibi.moduleEntries() || []).length;
       var cur = modules.querySelectorAll('.xy-mod').length;
       if (n > cur) buildModules();
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] xiaoyun-buddy",e)}
   }
   if (/studio\.html/.test(location.pathname)) {
     setTimeout(refreshModulesWhenReady, 3000);
@@ -453,7 +453,7 @@
   var ov = el('div', 'xy-dev'); var box = el('div', 'xy-dev-box');
   ov.appendChild(box); document.body.appendChild(ov);
   var DEV = { html: '', wish: '', fix: 0, api: null, busy: false, st: null, varifr: null, ptitle: null, prev: null, tt: null };
-  var CAP = '<script>window.addEventListener("error",function(e){try{parent.postMessage({xyerr:(e.message||"script error")+(e.lineno?" @line "+e.lineno:"")},"*")}catch(_){}},true)<\/script>';
+  var CAP = '<script>window.addEventListener("error",function(e){try{parent.postMessage({xyerr:(e.message||"script error")+(e.lineno?" @line "+e.lineno:"")},"*")}catch(_){console.warn("[swallowed] xiaoyun-buddy",_)}},true)<\/script>';
   function mountHTML(html) {
     DEV.html = html;
     if (!DEV.varifr) return;
@@ -517,7 +517,7 @@
     var DEFAULT_CHIPS = ['每日签到日历','专注写作番茄钟','随机世界骰子','灵感碎片收集罐','角色关系图谱','打字机小游戏'];
     var CHIPS_KEY = 'xy_custom_chips';
     function customChips(){ try{ var a=JSON.parse(localStorage.getItem(CHIPS_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
-    function saveCustomChips(a){ try{ localStorage.setItem(CHIPS_KEY,JSON.stringify(a.slice(0,30))); }catch(e){} }
+    function saveCustomChips(a){ try{ localStorage.setItem(CHIPS_KEY,JSON.stringify(a.slice(0,30))); }catch(e){console.warn("[swallowed] xiaoyun-buddy",e)} }
     function renderChips(){
       chips.innerHTML='';
       DEFAULT_CHIPS.concat(customChips()).forEach(function (s) {
@@ -579,7 +579,14 @@
 
     go.onclick = function () {
       var wish = ta.value.trim();
-      if (!wish) { st.className = 'status err'; st.textContent = '先说说你想要什么模块～'; return; }
+      if (!wish) {
+        st.className = 'status err'; st.textContent = '先说说你想要什么模块～';
+        if (window.showToast) window.showToast('先写下你想要的小工具，再让小云开工', 'info');
+        return;
+      }
+      /* v7.6.6：点下去的瞬间就给一条可见反馈，无 key 时明确说将用内置模板，
+         避免玩家在生成成功前以为按钮没反应。 */
+      if (window.showToast) window.showToast('小云开工中…（未填模型 Key 将用内置模板演示）', 'info');
       go.disabled = true; st.className = 'status'; st.textContent = '小云正在开发中：分析需求 → 设计界面 → 编写代码…';
       saveCfg({ u: inU.value.trim(), m: inM.value.trim(), k: inK.value.trim() });
       var key = inK.value.trim(), base = inU.value.trim(), model = inM.value.trim();

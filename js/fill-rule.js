@@ -23,8 +23,8 @@
   }
   function setMode(v) {
     v = (v === 'free') ? 'free' : 'strict';
-    try { localStorage.setItem(KEY, v); } catch (e) {}
-    try { window.dispatchEvent(new CustomEvent('yj:fillmode-changed', { detail: { mode: v } })); } catch (e) {}
+    try { localStorage.setItem(KEY, v); } catch(e){console.warn("[swallowed] fill-rule",e)}
+    try { window.dispatchEvent(new CustomEvent('yj:fillmode-changed', { detail: { mode: v } })); } catch(e){console.warn("[swallowed] fill-rule",e)}
     return v;
   }
   function isStrict() { return mode() === 'strict'; }
@@ -135,9 +135,9 @@
   function setFromUI(v) {
     setMode(v);
     // 重开设置面板以刷新选中态；状态栏标记随下次 render 更新
-    try { if (window.StatusSchema && window.StatusSchema.openSettings) window.StatusSchema.openSettings(); } catch (e) {}
-    try { if (window.storyFramework && window.storyFramework.updateStatusPanel) window.storyFramework.updateStatusPanel(); } catch (e) {}
-    try { if (window.StatusSchema && window.StatusSchema.render) window.StatusSchema.render(); } catch (e) {}
+    try { if (window.StatusSchema && window.StatusSchema.openSettings) window.StatusSchema.openSettings(); } catch(e){console.warn("[swallowed] fill-rule",e)}
+    try { if (window.storyFramework && window.storyFramework.updateStatusPanel) window.storyFramework.updateStatusPanel(); } catch(e){console.warn("[swallowed] fill-rule",e)}
+    try { if (window.StatusSchema && window.StatusSchema.render) window.StatusSchema.render(); } catch(e){console.warn("[swallowed] fill-rule",e)}
   }
 
   /* ---------- 面板标记（供状态栏标题区显示当前规则） ---------- */

@@ -34,7 +34,7 @@
       try {
         const v = Number(localStorage.getItem(this.CTX_KEY) || 0);
         if (v > 0) return v;
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] prompt-budget",e)}
       var api = {};
       // 2) 内存中的真实 API 配置
       try {
@@ -42,12 +42,12 @@
         if (sf.apiConfig && typeof sf.apiConfig === 'object') api = Object.assign({}, api, sf.apiConfig);
         // 兼容历史/插件里可能存在的 config.api 写法
         if (sf.config && sf.config.api && typeof sf.config.api === 'object') api = Object.assign({}, api, sf.config.api);
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] prompt-budget",e)}
       // 3) localStorage 里的持久化接口配置（内存未就绪时兜底，如首屏预算预计算）
       try {
         const raw = localStorage.getItem('storyApiConfig');
         if (raw) { const cfg = JSON.parse(raw); if (cfg && typeof cfg === 'object') api = Object.assign({}, cfg, api); }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] prompt-budget",e)}
       // 显式窗口字段（允许玩家在接口配置里直接填 contextWindow/上下文）
       const explicit = Number(api.contextWindow || api.ctxWindow || api.context_length || api.context || 0);
       if (explicit > 0) return explicit;
@@ -126,14 +126,14 @@
       const next = cur > SAFE ? SAFE : Math.max(3000, Math.round(cur * 0.75));
       try {
         localStorage.setItem(this.OVERFLOW_KEY, String(next));
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] prompt-budget",e)}
       console.warn(`[PromptBudget] 服务端报告上下文超限，上限自动下调：${cur} → ${next} 字符`);
       return next;
     },
     clearOverflow() {
       try {
         localStorage.removeItem(this.OVERFLOW_KEY);
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] prompt-budget",e)}
     },
     /**
      * v3.99.0 上下文窗口循环（玩家侧唯一的可操作项）
@@ -156,7 +156,7 @@
       try {
         if (n > 0) localStorage.setItem(this.CTX_KEY, String(n));
         else localStorage.removeItem(this.CTX_KEY);
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] prompt-budget",e)}
     },
     /** 循环到下一档，返回 {ctx, label} */
     cycleContext() {
@@ -171,7 +171,7 @@
       /* 手动切过窗口后，之前的超限记录失效（玩家已经明确告知了真实窗口） */
       this.clearOverflow();
       this.KEY_MANUAL = true;
-      try { localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), auto: true })); } catch (e) {}
+      try { localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), auto: true })); } catch(e){console.warn("[swallowed] prompt-budget",e)}
       return { ctx: next, label: next ? `${Math.round(next / 1000)}K 上下文` : "自适应" };
     },
     /** 被 noteOverflow 记录过的上限（没有则 0） */
@@ -223,8 +223,7 @@
     save(cfg) {
       try {
         localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), ...cfg }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] prompt-budget",e)}
     },
     _chars(m) {
       return String((m == null ? void 0 : m.content) || "").length;

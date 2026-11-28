@@ -18,7 +18,7 @@
   };
 
   function log() {
-    try { if (window.YJ_DEBUG) console.debug('[GrowthLedger]', ...arguments); } catch (e) {}
+    try { if (window.YJ_DEBUG) console.debug('[GrowthLedger]', ...arguments); } catch(e){console.warn("[swallowed] growth-ledger",e)}
   }
 
   function readLog() {

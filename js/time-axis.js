@@ -14,7 +14,7 @@
   var includePersistent = false;  // v6.4.0：是否连足迹/传承一起退回（玩家自选，默认否）
 
   function fw() { return window.storyFramework; }
-  function toast(m, t) { try { window.showToast && window.showToast(m, t || 'info'); } catch (e) { } }
+  function toast(m, t) { try { window.showToast && window.showToast(m, t || 'info'); } catch(e){console.warn("[swallowed] time-axis",e)} }
 
   function ensureOverlay() {
     var host = document.getElementById(OVERLAY);
@@ -169,7 +169,7 @@
         toast('↩ 已回档，故事已还原到所选节点', 'info');
         selected = null;
         close();
-        try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch (e) { }
+        try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch(e){console.warn("[swallowed] time-axis",e)}
       });
     }).catch(function (e) { toast('回档失败：' + (e && e.message || '未知错误'), 'error'); });
   }
@@ -198,7 +198,7 @@
         toast('↩ 已撤销回档，故事恢复到回档前', 'info');
         selected = null;
         close();
-        try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch (e) { }
+        try { window.StudioReplay && window.StudioReplay.replayHistory && window.StudioReplay.replayHistory(); } catch(e){console.warn("[swallowed] time-axis",e)}
       });
     }).catch(function (e) { toast('撤销失败：' + (e && e.message || '未知错误'), 'error'); });
   }

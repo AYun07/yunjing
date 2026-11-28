@@ -105,7 +105,7 @@ const AmbienceLayer = (function () {
 
     const ls = {
         get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
-        set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
+        set(k, v) { try { localStorage.setItem(k, v); } catch(e){console.warn("[swallowed] ambience-layer",e)} }
     };
     const particleOn = () => ls.get('ambParticle', 'on') === 'on';
     const tintOn = () => ls.get('ambTint', 'on') === 'on';

@@ -2,13 +2,13 @@
 <html lang="zh-CN">
 <head>
 <!-- v6.3.3 唯一启动界面守卫：单独打开本页（无参数/无封面会话/非同源）弹回封面；开发者 ?dev=1 豁免 -->
-<script src="js/entry-guard.js?v=7.6.5"></script>
+<script src="js/entry-guard.js?v=7.6.6"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0e0b1e">
 <title>造物 · 小云创造中枢</title>
 <link rel="icon" href="assets/yj-favicon.ico">
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=7.6.5">
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=7.6.6">
 <style>
   :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; --panel:rgba(24,20,48,.72); --line:rgba(244,216,150,.28); --ok:#8fd6a8; }
   *{ box-sizing:border-box; }
@@ -97,8 +97,8 @@
   /* 造物页自带底部小云展示区，隐藏 buddy.js 附带注入的全局助手浮窗，避免遮挡卡片 */
   .xy-buddy{ display:none!important; }
 </style>
-  <link rel="stylesheet" href="css/desktop-shell.css?v=7.6.5">
-  <script src="js/desktop-shell.js?v=7.6.5"></script>
+  <link rel="stylesheet" href="css/desktop-shell.css?v=7.6.6">
+  <script src="js/desktop-shell.js?v=7.6.6"></script>
 </head>
 <body>
 <div class="wrap">
@@ -120,9 +120,9 @@
           <video id="video" playsinline muted preload="none"></video>
         </div>
         <!-- v7.6.2：形态与情绪明确分组标注，避免玩家把「温柔/雨/邻家」和「欢呼/生气/害羞」混为一谈 -->
-        <div class="subhd">① 形态 · 点按切换小云的模样（高亮为当前形态）</div>
+        <div class="subhd">① 形态 · 长相（点按切换小云的模样，高亮为当前形态）</div>
         <div class="forms" id="forms"></div>
-        <div class="subhd">② 情绪 · 点按试播动作</div>
+        <div class="subhd">② 情绪 · 动作（点按试播，与上面的长相是两套）</div>
         <div class="acts" id="emoActs"></div>
         <div class="try">
           <div class="sayrow">
@@ -151,12 +151,12 @@
 
 <!-- 造物工坊本体依赖的小云脚本 + 四项本页可用的基建 -->
 <!-- v4.41.0 全局动态并发闸门：早于小云（小云的大模型 fetch 需过闸） -->
-<script src="js/ai-governor.js?v=7.6.5"></script>
-<script src="js/xiaoyun-ops.js?v=7.6.5"></script>
-<script src="js/xiaoyun-buddy.js?v=7.6.5"></script>
-<script src="js/file-bridge.js?v=7.6.5"></script>
-<script src="js/plugin-runtime.js?v=7.6.5"></script>
-<script src="js/mo-devtools.js?v=7.6.5"></script>
+<script src="js/ai-governor.js?v=7.6.6"></script>
+<script src="js/xiaoyun-ops.js?v=7.6.6"></script>
+<script src="js/xiaoyun-buddy.js?v=7.6.6"></script>
+<script src="js/file-bridge.js?v=7.6.6"></script>
+<script src="js/plugin-runtime.js?v=7.6.6"></script>
+<script src="js/mo-devtools.js?v=7.6.6"></script>
 <script>
 /* ================= 六项创造能力卡片 ================= */
 function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on');
@@ -166,7 +166,17 @@ var CARDS = [
   { ic:'🛠', name:'造物工坊', sub:'造新模块 · 新功能', here:true,
     desc:'说出你想要的功能，小云做出完整的小工具。可即时装进大厅使用，或导出保存到你选的文件夹。',
     chips:['按想法制作','预览自检','装进大厅/导出'], req:'<b>本页可用</b> · 导出到文件夹需 Chrome/Edge 桌面版选一个保存位置；填自己的模型 Key 可按任意需求创作。',
-    btn:'打开造物工坊', act:function(){ if(window.XYDev){XYDev.open();} else toast('造物工坊未就绪，请刷新'); } },
+    btn:'打开造物工坊', act:function(){
+      /* v7.6.6：工坊模块是懒加载，早于它挂载时点按钮会走「未就绪」空提示，玩家以为死了。
+         现在先给即时反馈，并在短暂延时后重试挂载，仍失败才提示刷新。 */
+      if (window.XYDev && window.XYDev.open) { XYDev.open(); return; }
+      toast('造物工坊正在加载，马上就好…');
+      var tries = 0;
+      var t = setInterval(function () {
+        if (window.XYDev && window.XYDev.open) { clearInterval(t); XYDev.open(); }
+        else if (++tries > 20) { clearInterval(t); toast('造物工坊加载失败，请刷新页面再试'); }
+      }, 150);
+    } },
 
   { ic:'📝', name:'文件桥', sub:'生成文件 · 自动备份', here:true,
     desc:'给小云一双手：在你授权的文件夹里读写文件。改动前自动留备份、随时可撤销，做完自动检查有没有出错。',
@@ -223,7 +233,11 @@ function pluginsAction(){
   var list = PR.list ? PR.list() : [];
   var n = Array.isArray(list)? list.length : (list&&Object.keys(list).length)||0;
   var guideText = Array.isArray(guide) ? guide.join('\n') : String(guide);
-  alert(guideText+'\n\n当前已发现插件：'+n+' 个');
+  /* v7.6.6：原用 alert() 弹窗——Electron 内嵌 webview 常拦截 alert，玩家点了零反应。
+     改为：写入页面可见的 #log 全文 + toast 即时提示，任何环境都能看到反馈。 */
+  var out = document.getElementById('log');
+  if (out) out.innerHTML = '<b>插件规范</b><br><pre style="white-space:pre-wrap;word-break:break-word;font-size:12px">' + esc(guideText) + '</pre><br>当前已发现插件：<b>' + n + '</b> 个';
+  toast('插件规范已显示在下方（已发现 '+n+' 个插件）');
 }
 
 /* ---- 研发中枢：巡检（只读）---- */
@@ -239,7 +253,7 @@ async function devtoolsAction(){
 
 /* ================= 小云形态/情绪（辅助展示，与 xiaoyun-emotion 同源） ================= */
 var FORMS=[['wenrou','温柔'],['aojiao','傲娇'],['keai','可爱'],['gaoguai','高傲'],['yu','雨'],['qingchun','青春'],['luo','萝莉'],['jiaohua','校花'],['linjia','邻家'],['kusa','酷飒'],['youtai','幼态'],['zhixing','知性']];
-var EMOS=[['cheer','欢呼'],['angry','生气'],['pout','傲娇'],['shy','害羞'],['surprised','惊讶'],['think','思考'],['sleep','困倦'],['proud','得意']];
+var EMOS=[['cheer','欢呼'],['angry','生气'],['pout','撇嘴'],['shy','害羞'],['surprised','惊讶'],['think','思考'],['sleep','困倦'],['proud','得意']];
 var BASE=[['happy','开心'],['wave','挥手'],['battle','战斗']];
 var INTENTS=[{emo:'sleep',kw:['困','睡觉','晚安','累了']},{emo:'surprised',kw:['惊讶','震惊','居然']},{emo:'angry',kw:['生气','愤怒','讨厌']},{emo:'shy',kw:['害羞','脸红','不好意思']},{emo:'pout',kw:['哼','才不是','不理你']},{emo:'think',kw:['想想','思考','怎么办']},{emo:'proud',kw:['得意','本小姐','骄傲']},{emo:'cheer',kw:['开心','高兴','太好了','好耶']},{act:'battle',kw:['战斗','攻击','出击']},{act:'wave',kw:['挥手','你好','再见']},{act:'happy',kw:['笑一个','跳舞','转圈']}];
 var EMO_CN={};EMOS.forEach(function(e){EMO_CN[e[0]]=e[1];});
@@ -247,22 +261,35 @@ var BASE_CN={};BASE.forEach(function(b){BASE_CN[b[0]]=b[1];});
 var cur='wenrou', portrait=document.getElementById('portrait'), video=document.getElementById('video'), stage=document.getElementById('stage'), timer=null;
 function renderForms(){ var box=document.getElementById('forms');box.innerHTML='';
   FORMS.forEach(function(f){var b=document.createElement('button');b.textContent=f[1];if(f[0]===cur)b.className='on';
-    b.onclick=function(){cur=f[0];stop();portrait.src='assets/xiaoyun-'+cur+'-happy.png';renderForms();};box.appendChild(b);}); }
+    b.onclick=function(){cur=f[0];stop();portrait.src='assets/xiaoyun-'+cur+'-happy.png';renderForms();
+      /* v7.6.6：原来点了只换图，玩家在形态区看不到文字反馈；给条 toast 明确「已切换」，
+         雨/青春等此前被当成死按钮的形态也有即时反馈了。 */
+      if(window.showToast)window.showToast('已切换形态：'+f[1],'info');
+    };box.appendChild(b);}); }
 function play(type,key,label){ clearTimeout(timer);
   var src=type==='emo'?'assets/videos/xiaoyun-'+cur+'-emo-'+key+'.webm':'assets/videos/xiaoyun-'+cur+'-'+key+'.webm';
   video.src=src;video.load();video.onloadeddata=function(){video.play().catch(function(){});};
   video.onerror=function(){stop();};stage.classList.add('playing');timer=setTimeout(stop,4400); }
 function stop(){clearTimeout(timer);try{video.pause();}catch(e){}stage.classList.remove('playing');video.removeAttribute('src');}
 function renderActs(){var eb=document.getElementById('emoActs');eb.innerHTML='';
-  EMOS.forEach(function(e){var b=document.createElement('button');b.className='emo';b.textContent=e[1];b.onclick=function(){play('emo',e[0],e[1]);};eb.appendChild(b);}); }
+  EMOS.forEach(function(e){var b=document.createElement('button');b.className='emo';b.textContent=e[1];
+    b.onclick=function(){
+      Array.prototype.forEach.call(eb.querySelectorAll('.emo'),function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      play('emo',e[0],e[1]);
+      if(window.showToast)window.showToast('小云：'+e[1]+'（已试播）','info');
+    };eb.appendChild(b);}); }
 function match(t){var s=String(t||'');for(var i=0;i<INTENTS.length;i++)for(var j=0;j<INTENTS[i].kw.length;j++)if(s.indexOf(INTENTS[i].kw[j])>=0)return INTENTS[i];return null;}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function log(h){document.getElementById('log').innerHTML=h;}
 var CH=['太好了！','战斗','哼，才不是','你好','害羞了'];
 document.getElementById('chips2').innerHTML=CH.map(function(c){return '<span>'+esc(c)+'</span>';}).join('');
-function trySay(t){if(!t)return;var safe=esc(t);var it=match(t);if(!it){log('「'+safe+'」未命中预设动作——正常聊天小云不干预。');return;}
-  if(it.emo){play('emo',it.emo);log('「'+safe+'」→ 命中情绪 <b>'+esc(EMO_CN[it.emo])+'</b>');}
-  else{play('base',it.act);log('「'+safe+'」→ 命中动作 <b>'+esc(BASE_CN[it.act])+'</b>');}}
+function trySay(t){if(!t)return;var safe=esc(t);var it=match(t);
+  /* v7.6.6：原实现只改底部 #log 一行小字，玩家在输入区看不到任何变化，误以为发送按钮是死的。
+     现在无论命中与否都给顶部 toast 即时反馈；未命中时明确告知本页是预设试播、自由对话去工坊填 Key。 */
+  if(!it){log('「'+safe+'」未命中预设动作——本页是形象试播，自由对话请到造物工坊填模型 Key。');toast('本页只试播预设动作；自由聊天请到「造物工坊」填模型 Key');return;}
+  if(it.emo){play('emo',it.emo);log('「'+safe+'」→ 命中情绪 <b>'+esc(EMO_CN[it.emo])+'</b>');toast('小云：'+esc(EMO_CN[it.emo])+'（已试播）');}
+  else{play('base',it.act);log('「'+safe+'」→ 命中动作 <b>'+esc(BASE_CN[it.act])+'</b>');toast('小云：'+esc(BASE_CN[it.act])+'（已试播）');}}
 document.getElementById('say').addEventListener('keydown',function(e){if(e.key==='Enter')trySay(this.value);});
 /* v7.6.2：可见发送按钮，点击完全等同回车（同一 trySay 出口，沿用 esc() 的 XSS 防护） */
 document.getElementById('sayBtn').addEventListener('click',function(){trySay(document.getElementById('say').value);});

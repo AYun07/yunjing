@@ -51,7 +51,7 @@
     /* 主题工坊注入的变量也同步，避免它下次 apply 时把 body 字体改回去 */
     try {
       document.documentElement.style.setProperty("--yj-font-body", f.stack);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] font-switcher",e)}
   }
 
   function panelHTML() {
@@ -85,10 +85,10 @@
     wrap.querySelectorAll(".fs-opt").forEach(function (b) {
       b.addEventListener("click", function () {
         var id = b.getAttribute("data-font");
-        try { localStorage.setItem(LS_KEY, id); } catch (e) {}
+        try { localStorage.setItem(LS_KEY, id); } catch(e){console.warn("[swallowed] font-switcher",e)}
         apply();
         close();
-        try { window.showToast && window.showToast("字体已切换为「" + find(id).name + "」", "success"); } catch (e) {}
+        try { window.showToast && window.showToast("字体已切换为「" + find(id).name + "」", "success"); } catch(e){console.warn("[swallowed] font-switcher",e)}
       });
     });
   }
@@ -101,7 +101,7 @@
     version: "6.8.0",
     fonts: function () { return FONTS.map(function (f) { return { id: f.id, name: f.name }; }); },
     current: currentId,
-    set: function (id) { try { localStorage.setItem(LS_KEY, id); } catch (e) {} apply(); },
+    set: function (id) { try { localStorage.setItem(LS_KEY, id); } catch(e){console.warn("[swallowed] font-switcher",e)} apply(); },
     apply: apply,
     open: open,
     close: close

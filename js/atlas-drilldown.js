@@ -441,7 +441,7 @@
         window.AtlasVerifiedAdapter.ensure(genre);
         DATA = window.ATLAS_DRILL; // 重新绑定（ensure 可能替换 eras）
       }
-    } catch (err) {}
+    } catch(err){console.warn("[swallowed] atlas-drilldown",err)}
     state.eraIdx = 0;
     state.path = [];
     render();
@@ -471,7 +471,7 @@
     btn.addEventListener("click", function (e) {
       e.stopPropagation();
       var g = null;
-      try { g = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey) || new URLSearchParams(location.search).get("genre"); } catch (err) {}
+      try { g = (window.storyFramework && window.storyFramework.config && window.storyFramework.config.genreKey) || new URLSearchParams(location.search).get("genre"); } catch(err){console.warn("[swallowed] atlas-drilldown",err)}
       show(g);
     });
     panel.insertBefore(btn, panel.firstChild);

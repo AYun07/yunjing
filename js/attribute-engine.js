@@ -339,10 +339,10 @@
     try {
       if (window.FillRule && window.FillRule.playerWantsException) {
         var pu = '';
-        try { pu = String(window.__yjLastUserInput || ''); } catch (e) { }
+        try { pu = String(window.__yjLastUserInput || ''); } catch(e){console.warn("[swallowed] attribute-engine",e)}
         TURN.playerException = window.FillRule.playerWantsException(pu);
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] attribute-engine",e)}
     try {
       var fw = typeof window !== "undefined" ? window.storyFramework : null;
       var st = null;
@@ -430,7 +430,7 @@
         try {
           var _fw = window.storyFramework, _cfg = _fw && _fw.config;
           (_cfg && _cfg.statKeys || []).forEach(function (sk) { if (sk && sk.key === key && sk.label) dlabel = sk.label; });
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] attribute-engine",e)}
         var reason = (Math.abs(delta) > capForStat(key) + 0.01) ? ('单项单轮上限 ' + capForStat(key))
           : ((capForTurn() - (TURN.total - Math.abs(r.delta))) < Math.abs(delta) - 0.01) ? ('本轮合计上限 ' + capForTurn())
           : '值域 0-100';
@@ -756,7 +756,7 @@
             lines.push('🧮 数值校验回执（上轮）：' + rp.join('；') + '。本轮请据实推导，勿再填越界值；若玩家本轮明确要求突破，以其要求为准并在正文写明。');
           }
         }
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] attribute-engine",e)}
       return lines.join("\n");
     } catch (e) {
       return "";

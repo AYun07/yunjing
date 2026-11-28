@@ -14,8 +14,7 @@
     save(cfg) {
       try {
         localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), ...cfg }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] quality-suite",e)}
     },
     esc(s) {
       return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

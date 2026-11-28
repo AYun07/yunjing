@@ -35,7 +35,7 @@
     try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? d : v; } catch (e) { return d; }
   }
   function jset(k, v) {
-    try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){console.warn("[swallowed] status-schema",e)}
   }
 
   /* ==================== 字段总表 ==================== */
@@ -174,15 +174,15 @@
   function adultOn() { return localStorage.getItem(K_ADULT) === '1'; }
   function setAdult(v) {
     if (v) {
-      try { localStorage.setItem(K_ADULT, '1'); } catch (e) {}
+      try { localStorage.setItem(K_ADULT, '1'); } catch(e){console.warn("[swallowed] status-schema",e)}
     } else {
-      try { localStorage.removeItem(K_ADULT); } catch (e) {}
+      try { localStorage.removeItem(K_ADULT); } catch(e){console.warn("[swallowed] status-schema",e)}
     }
   }
   function breakOn() { return localStorage.getItem(K_BREAK) === '1'; }
   function setBreak(v) {
-    if (v) { try { localStorage.setItem(K_BREAK, '1'); } catch (e) {} }
-    else { try { localStorage.removeItem(K_BREAK); } catch (e) {} }
+    if (v) { try { localStorage.setItem(K_BREAK, '1'); } catch(e){console.warn("[swallowed] status-schema",e)} }
+    else { try { localStorage.removeItem(K_BREAK); } catch(e){console.warn("[swallowed] status-schema",e)} }
   }
   /* v4.17.3：自定义字段按世界过滤。
      世界专属预设会给字段打上 `genre` 标记；**只有本界的（或玩家自己加的、无标记的）
@@ -248,7 +248,7 @@
           base.push({ k: f.k, label: f.label, group: f.group || 'custom', keys: keysForLabel(f.label, f.k), custom: true, fromPlugin: true });
         });
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] status-schema",e)}
     return base;
   }
   function setCustom(list) { jset(K_CUSTOM, list); }
@@ -336,7 +336,7 @@
     try {
       var SW = window.StatusWorldFields;
       if (SW && SW.isMulti && SW.isMulti(f.label)) return true;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] status-schema",e)}
     return false;
   }
   /* 把任意值规整成字符串数组：数组直接用；字符串按常见分隔符拆；空→[] */
@@ -367,7 +367,7 @@
           if (list.length) return list;
         }
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] status-schema",e)}
     return [];
   }
 
@@ -389,7 +389,7 @@
         if (c) { var b = cleanVal(c[key]); if (b) return b; }
         if (pn) { var flat = cleanVal(v[pn + '.' + key]); if (flat) return flat; }
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] status-schema",e)}
     return '';
   }
   function writeField(f, value) {
@@ -489,7 +489,7 @@
     }
     var flags = [];
     /* v4.28.0 填表规则标记：让玩家随时看清当前是严格演算还是玩家自由 */
-    try { if (window.FillRule && window.FillRule.flagHTML) flags.push(window.FillRule.flagHTML()); } catch (e) {}
+    try { if (window.FillRule && window.FillRule.flagHTML) flags.push(window.FillRule.flagHTML()); } catch(e){console.warn("[swallowed] status-schema",e)}
     if (adultOn() && adultConfirmed()) flags.push('<span class="yj-st-flag adult">🔞 成人字段已开</span>');
     if (breakOn()) flags.push('<span class="yj-st-flag brk">⛓ 破限已开</span>');
     host.innerHTML = (flags.length ? '<div class="yj-st-flags">' + flags.join('') + '</div>' : '') +
@@ -504,12 +504,12 @@
     var origRefresh = SSR.refresh.bind(SSR);
     SSR.refresh = function (vars) {
       try { origRefresh(vars); } catch (e) { console.warn('[StatusSchema] refresh 外层异常', e); }
-      try { render(); } catch (e) {}
+      try { render(); } catch(e){console.warn("[swallowed] status-schema",e)}
     };
     var origGen = SSR.generatePanelHTML.bind(SSR);
     SSR.generatePanelHTML = function () {
       var html = '';
-      try { html = origGen(); } catch (e) {}
+      try { html = origGen(); } catch(e){console.warn("[swallowed] status-schema",e)}
       var sec = '<div class="panel-section" id="yjStatusSection">' +
         '<div class="section-title">◈ 完整状态栏' +
         '<button class="yj-st-cog" onclick="StatusSchema.openSettings()" title="字段组开关 / 自定义字段 / 成人向 / 破限">⚙ 设置</button>' +
@@ -717,7 +717,7 @@
     breakOn: breakOn,
     setBreak: setBreak,
     setShowEmpty: function (on) {
-      try { if (on) localStorage.setItem(K_SHOWEMPTY, '1'); else localStorage.removeItem(K_SHOWEMPTY); } catch (e) {}
+      try { if (on) localStorage.setItem(K_SHOWEMPTY, '1'); else localStorage.removeItem(K_SHOWEMPTY); } catch(e){console.warn("[swallowed] status-schema",e)}
       render();
     },
     addCustom: function () {
@@ -846,7 +846,7 @@
         out += '\n【多值栏目】' + multiLabels.join('、') + ' 可同时有多项：请逐项分行列出，形如 `魂环配置：第一魂环·百年曼陀罗蛇 / 第二魂环·千年大力猩猩`（用 / 分隔多项；只有一项就写一项，确实没有填「无」）。';
       }
       /* v4.28.0 填表规则分叉：严格演算 / 玩家自由两套行为准则，随模式注入。 */
-      try { if (window.FillRule && window.FillRule.directive) out += window.FillRule.directive(); } catch (e) {}
+      try { if (window.FillRule && window.FillRule.directive) out += window.FillRule.directive(); } catch(e){console.warn("[swallowed] status-schema",e)}
       return out;
     },
     /** 自检用：当前启用字段数 */

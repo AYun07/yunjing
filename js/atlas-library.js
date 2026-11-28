@@ -24,7 +24,7 @@
     return "assets/map-art/" + id + ".webp";
   }
 
-  function toast(msg, kind) { try { window.showToast && window.showToast(msg, kind || "info"); } catch (e) {} }
+  function toast(msg, kind) { try { window.showToast && window.showToast(msg, kind || "info"); } catch(e){console.warn("[swallowed] atlas-library",e)} }
 
   function ensureOverlay() {
     var host = document.getElementById(OVERLAY_ID);

@@ -85,8 +85,7 @@
       fw.storyState.bookmarks = list;
       try {
         fw.saveStory();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] chapter-nav",e)}
       (_b = window.showToast) == null ? void 0 : _b.call(window, `🔖 已收藏名场面（第 ${item.chapter} 章）`, "success");
       this.render();
     },
@@ -96,8 +95,7 @@
       fw.storyState.bookmarks = this.bookmarks().filter((b) => String(b.turn) !== String(turn));
       try {
         fw.saveStory();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] chapter-nav",e)}
       this.render();
     },
     /* ==================== 跳转 ==================== */
@@ -182,8 +180,7 @@
         setTimeout(() => {
           try {
             inp.focus();
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] chapter-nav",e)}
         }, 60);
       }
     },

@@ -39,7 +39,7 @@
   function hostOf(endpoint) {
     var s = cleanUrl(endpoint);
     if (!s) return '';
-    try { return new URL(s).hostname.toLowerCase(); } catch (e) {}
+    try { return new URL(s).hostname.toLowerCase(); } catch(e){console.warn("[swallowed] cors-guard",e)}
     var m = /^https?:\/\/([^\/:]+)/i.exec(s);
     return m ? m[1].toLowerCase() : '';
   }
@@ -110,7 +110,7 @@
     var ms = opts.timeout || 20000;
     var t0 = Date.now();
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timer = setTimeout(function () { try { ctrl && ctrl.abort(); } catch (e) {} }, ms);
+    var timer = setTimeout(function () { try { ctrl && ctrl.abort(); } catch(e){console.warn("[swallowed] cors-guard",e)} }, ms);
 
     function finish(r) {
       clearTimeout(timer);
@@ -143,7 +143,7 @@
            no-cors 请求不读响应（opaque），只要TCP能到就会 resolve。
            它 resolve 而上面 reject ⇒ 网络是通的，纯粹是被同源策略挡了。 */
         var ctrl2 = typeof AbortController !== 'undefined' ? new AbortController() : null;
-        var t2 = setTimeout(function () { try { ctrl2 && ctrl2.abort(); } catch (e2) {} }, Math.min(ms, 12000));
+        var t2 = setTimeout(function () { try { ctrl2 && ctrl2.abort(); } catch(e2){console.warn("[swallowed] cors-guard",e2)} }, Math.min(ms, 12000));
         return fetch(tryUrl, { method: 'GET', mode: 'no-cors', signal: ctrl2 ? ctrl2.signal : undefined })
           .then(function () { clearTimeout(t2); return finish({ kind: 'cors', detail: '网络可达，但该端点未返回跨域许可（Access-Control-Allow-Origin）' }); })
           .catch(function () { clearTimeout(t2); return finish({ kind: 'network', detail: String((e && e.message) || e).slice(0, 120) }); });

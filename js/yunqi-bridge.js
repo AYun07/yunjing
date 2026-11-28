@@ -136,7 +136,7 @@
         var p = window.YunqiPreset.preset();
         if (p) return p;
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] yunqi-bridge",e)}
     /* v3.55.5：内置默认改「云起预设」 */
     return window.YUNQI_PRESET || null;
   }

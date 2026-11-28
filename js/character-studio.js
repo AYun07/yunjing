@@ -35,7 +35,7 @@
 
   function $(id) { return document.getElementById(id); }
   function read(key) { try { return localStorage.getItem(key) || ""; } catch (e) { return ""; } }
-  function write(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+  function write(key, val) { try { localStorage.setItem(key, val); } catch(e){console.warn("[swallowed] character-studio",e)} }
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
@@ -53,11 +53,25 @@
     try { var c = window.storyFramework && window.storyFramework.config; return (c && c.genreName) || ""; }
     catch (e) { return ""; }
   }
+  /* v7.6.6：性格选中态的唯一真源改为模块内 _traitState。
+     v7.6.3/7.6.5 把 localStorage 当唯一真源，但配额满/隐私模式下 write() 静默失败，
+     下一次 renderTraits 从 localStorage 回读到旧值 → 玩家看到「点了闪一下就没了」、
+     检测脚本持有重建前旧节点更读不到高亮。改为内存态为真源，localStorage 仅作持久化，
+     写失败时明确提示「本次仅会话有效」，不再让静默失败抹掉选中态。 */
+  var _traitState = null;
   function getTraits() {
-    try { var a = JSON.parse(read(TRAITS_KEY) || "[]"); return Array.isArray(a) ? a : []; }
-    catch (e) { return []; }
+    if (_traitState) return _traitState.slice();
+    try { var a = JSON.parse(read(TRAITS_KEY) || "[]"); _traitState = Array.isArray(a) ? a : []; }
+    catch (e) { _traitState = []; }
+    return _traitState.slice();
   }
-  function setTraits(a) { write(TRAITS_KEY, JSON.stringify(a)); }
+  function setTraits(a) {
+    _traitState = a.slice();
+    try { localStorage.setItem(TRAITS_KEY, JSON.stringify(a)); }
+    catch (e) {
+      if (window.showToast) window.showToast("性格已选中，但本机存储写入失败（空间不足），刷新后可能不保留", "warn");
+    }
+  }
 
   /* ---------- 文本 AI 辅助（主笔模型），失败返回 null ---------- */
   function aiText(prompt) {
@@ -143,10 +157,26 @@
     renderTraits();
     genPersona(); // 同步刷新性格文本与小传
   }
+  var _traitRetryTimer = null;
   function renderTraits() {
     var box = $("csTraitList");
     if (!box) return;
     var codex = (window.PersonalityCodex && window.PersonalityCodex.TRAIT_CODEX) || [];
+    /* v7.6.6 真机 exe 实测：personality-codex.js 是 lazy 加载，常晚于本模块 mount。
+       此前 renderTraits 读到空 codex 就直接渲染成「没有匹配」，且 v7.6.6 去掉定时重建后
+       再无人重绘 → 玩家看到 72 芯片区永久空白（这才是「点了无高亮」的真正根因，
+       上两版按「测试持旧节点」误判结案）。这里在 codex 未就绪时轮询等待并自动重绘；
+       选中态以 _traitState 为真源，重绘不会丢失玩家已选。 */
+    if (!codex.length) {
+      if (!_traitRetryTimer) {
+        _traitRetryTimer = setTimeout(function () {
+          _traitRetryTimer = null;
+          renderTraits();
+        }, 300);
+      }
+      box.innerHTML = '<div style="opacity:.6;font-size:12px;padding:6px 0">性格库加载中…</div>';
+      return;
+    }
     var selected = getTraits();
     var cats = { positive: "正向", negative: "负向", neutral: "中性", complex: "复杂" };
     var kw = (($("csTraitSearch") && $("csTraitSearch").value) || "").trim().toLowerCase();
@@ -402,7 +432,15 @@
       setStatus("生成中…"); genLook().then(function () { setStatus("✓ 样貌已就绪"); });
     };
     $("csIcon").onclick = function () { genIcon(); };
-    $("csIconAgain").onclick = function () { genIcon(); };
+    /* v7.6.6：无头像/无设定时「重生成」原本静默兜底生成，玩家看不出差别。
+       先给出明确提示，避免被当成死按钮；仍允许继续生成兜底图。 */
+    $("csIconAgain").onclick = function () {
+      if (!read(ICON_KEY) && !read(LOOK_KEY) && !read(PERSONA_KEY)) {
+        setStatus("还没有生成过头像，先点「用生图模型生成头像」再重生成");
+        if (window.showToast) window.showToast("先生成一次头像，才能重生成", "info");
+      }
+      genIcon();
+    };
     $("csApply").onclick = function () {
       genPersona();
       setStatus("✓ 已写入角色小传，性格已应用");
@@ -420,9 +458,12 @@
       var mo = new MutationObserver(function () { if (findHost()) mount(); });
       mo.observe($("setupWrap"), { childList: true, subtree: true });
     }
-    // codex/image-gen 是 lazy 批量加载，晚于本脚本；延后重绘性格列表，确保点选可用
+    /* v7.6.6：codex/图库 lazy 加载晚于本脚本，延时补挂载即可；
+       不再每次都裸调 renderTraits()——那会在玩家已点选后重建列表覆盖选中态（真源已在内存，
+       但重建仍会换掉按钮节点，让手持旧引用的检测/辅助读到假象）。mount() 内部已渲染，
+       且渲染读的是 _traitState，选中态稳定保留。 */
     [400, 1200, 2600].forEach(function (ms) {
-      setTimeout(function () { mount(); renderTraits(); renderPreview(); }, ms);
+      setTimeout(function () { mount(); }, ms);
     });
   }
 

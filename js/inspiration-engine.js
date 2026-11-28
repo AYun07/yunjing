@@ -21,15 +21,13 @@ const StoryInspiration = {
           tbState.classList.add("on");
         }
       }
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] inspiration-engine",e)}
   },
   toggle() {
     this.enabled = !this.enabled;
     try {
       localStorage.setItem(this.STORE_KEY, this.enabled ? "1" : "0");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] inspiration-engine",e)}
     const btn = document.getElementById("inspirationBtn");
     if (btn) btn.classList.toggle("active", this.enabled);
     const tbState = document.getElementById("tbInspState");

@@ -62,11 +62,11 @@
 
     /* 应用：状态板与界专属面板就地重绘（引擎未就绪时静默） */
     function apply() {
-        try { window.WorldExt && WorldExt.refreshStrip && WorldExt.refreshStrip(); } catch (e) { }
+        try { window.WorldExt && WorldExt.refreshStrip && WorldExt.refreshStrip(); } catch(e){console.warn("[swallowed] module-settings",e)}
         try {
             const body = document.getElementById('immBody');
             if (body && body.dataset.wxTab === '1' && window.WorldExt) body.innerHTML = WorldExt.panelHTML();
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] module-settings",e)}
     }
 
     /* ==================== ⚙ 按钮（world-ext-core 渲染模块头时取用） ==================== */
@@ -172,5 +172,5 @@
 
     /* v3.36.1 修复：⚙ 按钮样式此前在首次打开设置弹窗时才注入——模块头部的 ⚙
        在那之前是裸按钮。改为装载即注入（脚本位于 head，document.head 已就绪） */
-    try { if (typeof document !== 'undefined' && document.head) injectStyle(); } catch (e) { }
+    try { if (typeof document !== 'undefined' && document.head) injectStyle(); } catch(e){console.warn("[swallowed] module-settings",e)}
 })();

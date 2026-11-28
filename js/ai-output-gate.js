@@ -40,7 +40,7 @@
       if (RH && RH.extractBody) {
         return String(RH.extractBody(reply, RH.extractOptions ? RH.extractOptions(reply) : undefined) || '');
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] ai-output-gate",e)}
     return String(reply || '')
       .replace(/\(variable_update\)[\s\S]*?\(\/variable_update\)/gi, '')
       .replace(/<selection>[\s\S]*?<\/selection>/gi, '')
@@ -106,7 +106,7 @@
         reasons.push('正文看起来是原始思维链（reasoning_content 泄漏）');
         sev = Math.max(sev, SEV.FATAL);
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] ai-output-gate",e)}
 
     var body = bodyOf(raw, opts);
     detail.bodyLen = body.replace(/\s/g, '').length;
@@ -143,7 +143,7 @@
           sev = Math.max(sev, SEV.MAJOR);
         }
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] ai-output-gate",e)}
 
     /* ---- 6. 复读崩塌（词表狂奔 / n-gram 复读） ---- */
     try {
@@ -152,7 +152,7 @@
         reasons.push('正文疑似解码失控（词表狂奔 / 复读循环）');
         sev = Math.max(sev, SEV.MAJOR);
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] ai-output-gate",e)}
 
     /* ---- 7. 占位回复（连通测试等的短回复不算记录） ---- */
     if (opts.isPlaceholder) {

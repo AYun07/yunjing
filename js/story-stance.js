@@ -255,7 +255,7 @@
     try {
       var fw = window.storyFramework;
       if (fw && fw.config) return fw.config;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] story-stance",e)}
     return {};
   }
   function genreKey() {
@@ -311,7 +311,7 @@
         localStorage.setItem(KEY, id);
         /* 同步旧「自由度」开关（storyFreedom）：主角/配角走原著轨道，原创自由 */
         localStorage.setItem("storyFreedom", id === "original" ? "free" : "canon");
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] story-stance",e)}
       return id;
     },
     cycle() {
@@ -325,7 +325,7 @@
     /* —— side 配角选择 —— */
     sideCharId() { return this.get() === "side" ? readSide() : ""; },
     setSideChar(id) {
-      try { localStorage.setItem(KEY_SIDE, id); } catch (e) {}
+      try { localStorage.setItem(KEY_SIDE, id); } catch(e){console.warn("[swallowed] story-stance",e)}
       return id;
     },
     getSideChars() { return sideChars(genreKey()); },

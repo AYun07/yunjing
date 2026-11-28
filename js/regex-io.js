@@ -96,7 +96,7 @@
     var a = active();
     if (a) {
       var m = {};
-      try { m = JSON.parse(get(K_SRC) || '{}'); } catch (e) { }
+      try { m = JSON.parse(get(K_SRC) || '{}'); } catch(e){console.warn("[swallowed] regex-io",e)}
       return { source: 'custom', count: a.length, file: m.file || '', at: m.at || 0 };
     }
     var b = window.YUNQI_REGEX || [];
@@ -110,7 +110,7 @@
     var payload = JSON.stringify(list);
     if (!set(K_CUSTOM, payload)) throw new Error('写入本地存储失败（可能空间已满）');
     set(K_SRC, JSON.stringify({ count: list.length, file: fileName || '', at: Date.now() }));
-    try { window.YunqiPresetRegex && window.YunqiPresetRegex.clearOverrides && window.YunqiPresetRegex.clearOverrides(); } catch (e) { }
+    try { window.YunqiPresetRegex && window.YunqiPresetRegex.clearOverrides && window.YunqiPresetRegex.clearOverrides(); } catch(e){console.warn("[swallowed] regex-io",e)}
     _cache = null; _cacheRaw = null;
     return info();
   }
@@ -131,7 +131,7 @@
 
   function useBuiltin() {
     del(K_CUSTOM); del(K_SRC);
-    try { window.YunqiPresetRegex && window.YunqiPresetRegex.clearOverrides && window.YunqiPresetRegex.clearOverrides(); } catch (e) { }
+    try { window.YunqiPresetRegex && window.YunqiPresetRegex.clearOverrides && window.YunqiPresetRegex.clearOverrides(); } catch(e){console.warn("[swallowed] regex-io",e)}
     _cache = null; _cacheRaw = null;
     return info();
   }

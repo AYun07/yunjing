@@ -57,7 +57,7 @@
         var m = bio.value.match(/姓名[：:]\s*([^\n，。；;]{1,12})/);
         if (m && m[1]) return m[1].trim();
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] world-portal",e)}
     return '';
   }
   function worldInfo() {

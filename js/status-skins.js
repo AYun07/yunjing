@@ -114,7 +114,7 @@
   }
   function skinOf(g) {
     var arch = '';
-    try { arch = (window.StatusPresets && window.StatusPresets.archOf) ? (window.StatusPresets.archOf(g) || '') : ''; } catch (e) {}
+    try { arch = (window.StatusPresets && window.StatusPresets.archOf) ? (window.StatusPresets.archOf(g) || '') : ''; } catch(e){console.warn("[swallowed] status-skins",e)}
     return arch || 'xianxia';
   }
   function visibleFields(g) {
@@ -346,7 +346,7 @@
       document.body.setAttribute('data-skin', skin);
       document.body.style.setProperty('--wpri', WID.c);
       document.body.style.setProperty('--wpri-glow', hexA(WID.c, 0.42));
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] status-skins",e)}
     /* v4.28.0 减法：去掉状态栏里重复的「身份铭牌」——窄条里徽记/题词/名字重复三次太挤。
        世界身份改由主内容区「入世封面」承载（空间大、更好看）；状态栏只留一处徽记印章。
        v5.2.1：新增 artHTML() 生图美术层（无文字，仅氛围底图），压在内容之下。图不存在时透明回退，
@@ -396,7 +396,8 @@
     radial-gradient(ellipse 48% 15% at 78% 86%,rgba(190,225,210,.09),transparent 70%),
     radial-gradient(ellipse 60% 14% at 45% 96%,rgba(200,232,218,.08),transparent 70%),
     repeating-linear-gradient(0deg,transparent 0 6px,rgba(232,200,119,.014) 6px 7px)}
-.ss1-sky::after{content:"道";position:absolute;right:-10px;top:26%;font:700 190px "STKaiti","KaiTi",serif;color:rgba(232,200,119,.045);line-height:1;text-shadow:none}
+/* v7.6.6：190px 大「道」水印压在角色正文上干扰可读性，淡化并移到边缘 */
+.ss1-sky::after{content:"道";position:absolute;right:-80px;top:60%;font:700 190px "STKaiti","KaiTi",serif;color:rgba(232,200,119,.02);line-height:1;text-shadow:none}
 .ss1-mt{position:absolute;left:-4%;bottom:-2%;width:70%;height:32%;
   background:linear-gradient(180deg,rgba(120,170,150,.16),transparent);
   clip-path:polygon(0 100%,8% 62%,18% 80%,30% 34%,42% 72%,55% 46%,68% 78%,82% 40%,100% 82%,100% 100%)}

@@ -219,7 +219,7 @@ function downloadTo(url, dest, { timeoutMs = 180000, redirects = 0 } = {}) {
   return new Promise((resolve, reject) => {
     if (!/^https:\/\//i.test(url)) return reject(new Error('BAD_URL'));
     const tmp = dest + '.part';
-    const clean = () => { try { fs.unlinkSync(tmp); } catch (_) {} };
+    const clean = () => { try { fs.unlinkSync(tmp); } catch(_){console.warn("[swallowed] main",_)} };
     let req;
     try {
       req = https.get(url, { headers: { 'User-Agent': UA, 'Accept': 'application/octet-stream' }, timeout: timeoutMs }, (res) => {
@@ -259,14 +259,14 @@ async function downloadToMulti(urls, dest, expectedShaHex) {
       if (expectedShaHex) {
         const actual = await sha256File(dest);
         if (actual !== expectedShaHex) {
-          try { fs.unlinkSync(dest); } catch (_) {}
+          try { fs.unlinkSync(dest); } catch(_){console.warn("[swallowed] main",_)}
           throw new Error('SHA_MISMATCH');
         }
       }
       return { path: dest };
     } catch (e) {
       errs.push((e && e.message) || String(e));
-      try { fs.unlinkSync(dest); } catch (_) {}
+      try { fs.unlinkSync(dest); } catch(_){console.warn("[swallowed] main",_)}
     }
   }
   throw new Error('ALL_SOURCES_FAILED: ' + errs.join(' | '));
@@ -342,7 +342,7 @@ async function autoUpdate(info) {
     if (expect) {
       const actual = await sha256File(dest);
       if (actual !== expect) {
-        try { fs.unlinkSync(dest); } catch (_) {}
+        try { fs.unlinkSync(dest); } catch(_){console.warn("[swallowed] main",_)}
         throw new Error('SHA_MISMATCH');
       }
     }
@@ -393,7 +393,7 @@ function resolveSiteRoot() {
     path.join(process.resourcesPath || '', 'app', 'yunjing')
   ];
   for (const c of candidates) {
-    try { if (fs.existsSync(path.join(c, 'index.html'))) return c; } catch (_) {}
+    try { if (fs.existsSync(path.join(c, 'index.html'))) return c; } catch(_){console.warn("[swallowed] main",_)}
   }
   return candidates[0];
 }
@@ -416,7 +416,7 @@ function sendUpdateProgress(payload) {
     if (mainWindow && !mainWindow.isDestroyed() && mainWindow.webContents) {
       mainWindow.webContents.send('update-progress', payload);
     }
-  } catch (_) {}
+  } catch(_){console.warn("[swallowed] main",_)}
 }
 
 // 启动同步与手动同步共用；并发复用同一 Promise，避免两个流程同时切换目录
@@ -471,7 +471,7 @@ function saveFixedPort(p) {
   try {
     fs.mkdirSync(app.getPath('userData'), { recursive: true });
     fs.writeFileSync(path.join(app.getPath('userData'), PORT_FILE), JSON.stringify({ port: p }));
-  } catch (_) {}
+  } catch(_){console.warn("[swallowed] main",_)}
 }
 
 function startServer() {
@@ -487,7 +487,7 @@ function startServer() {
         for (const root of roots) {
           const candidate = path.join(root, safe);
           if (candidate !== root && !candidate.startsWith(root + path.sep)) continue;
-          try { if (fs.statSync(candidate).isFile()) { filePath = candidate; break; } } catch (_) {}
+          try { if (fs.statSync(candidate).isFile()) { filePath = candidate; break; } } catch(_){console.warn("[swallowed] main",_)}
         }
         if (!filePath) { res.writeHead(404); return res.end('Not Found'); }
         const ext = path.extname(filePath).toLowerCase();
@@ -497,7 +497,16 @@ function startServer() {
           'Access-Control-Allow-Origin': '*'
         });
         fs.createReadStream(filePath).pipe(res);
-      } catch (e) { res.writeHead(500); res.end('Server Error'); }
+      } catch (e) {
+        /* v7.6.6 真机 wine 安装实测：请求在 writeHead(200)/pipe 之后出错时，
+           这里再 writeHead(500) 会抛 ERR_HTTP_HEADERS_SENT 直接崩掉 Electron 主进程
+           （真机报错栈 Server.sendAnonymous at main.js）。headers 已发出时只能结束响应。 */
+        console.warn('[Server] 请求处理异常:', e && e.message || e);
+        try {
+          if (!res.headersSent) { res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Server Error'); }
+          else { res.end(); }
+        } catch (_) { /* 连接已断开，忽略 */ }
+      }
     });
     server.on('error', reject);
     // 先尝试上次记住的端口（或默认端口），被占用则向后找最多 20 个，记住最终端口供下次复用。
@@ -533,7 +542,7 @@ function saveWindowState() {
     fs.writeFileSync(stateFile(), JSON.stringify({
       x: b.x, y: b.y, width: b.width, height: b.height, maximized: mainWindow.isMaximized()
     }));
-  } catch (_) {}
+  } catch(_){console.warn("[swallowed] main",_)}
 }
 
 function createWindow() {
@@ -631,7 +640,7 @@ if (!gotLock) {
 
   app.whenReady().then(async () => {
     // 若这是 A/B 切换后的新进程，先收尾：旧目录改名保留，不删除
-    try { shellUpdate.finalizeSwitch({ userData: app.getPath('userData') }); } catch (_) {}
+    try { shellUpdate.finalizeSwitch({ userData: app.getPath('userData') }); } catch(_){console.warn("[swallowed] main",_)}
     await startServer();
     createWindow();
     // 内容层：窗口已可加载本地内容后才在后台同步，不阻塞首屏开场动画

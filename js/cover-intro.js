@@ -24,7 +24,7 @@
         localStorage.setItem('yunjingFirstRunGuideDone','1');
       var g = document.getElementById('yjFirstGuide');
       if (g && g.parentNode) g.parentNode.removeChild(g);
-    } catch(e){}
+    } catch(e){console.warn("[swallowed] cover-intro",e)}
   }
 
   /* ============ 粒子引擎：从第一帧起全程运行 ============ */
@@ -165,7 +165,7 @@
     var engine=ParticleEngine(canvasEl);
     engine.start(portrait);
     engine.enable();   // 粒子全程开启（从第 0 帧）
-    function tryPlay(v){ try { var pr=v.play(); if(pr && pr.catch) pr.catch(function(){}); } catch(e){} }
+    function tryPlay(v){ try { var pr=v.play(); if(pr && pr.catch) pr.catch(function(e){console.warn("[swallowed-promise] cover-intro",e)}); } catch(e){console.warn("[swallowed] cover-intro",e)} }
 
     // 降级兜底：竖版视频缺失/损坏时回退横版，避免竖屏黑屏（横版视频始终存在）
     function fallbackToLandscape(){

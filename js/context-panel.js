@@ -195,7 +195,7 @@
       var covPct = histL.length ? Math.round(covL / histL.length * 100) : 0;
       var blksL = (dgL.blocks || []).length;
       var trOn = false;
-      try { trOn = !!(fwL && localStorage.getItem(fwL.getSaveKey() + ".tr")); } catch (e2) {}
+      try { trOn = !!(fwL && localStorage.getItem(fwL.getSaveKey() + ".tr")); } catch(e2){console.warn("[swallowed] context-panel",e2)}
       var retrL = window.TranscriptRetrieval && TranscriptRetrieval.stats ? TranscriptRetrieval.stats() : null;
       var estTok = 0;
       for (var ti = 0; ti < histL.length; ti++) estTok += Math.ceil(String(histL[ti] && histL[ti].content || "").length / 1.6);
@@ -204,7 +204,7 @@
       memHtml += '<div class="ctx-cat-line"><b>前情提要</b>已压缩 ' + covL + "/" + histL.length + " 楼（" + covPct + "%）" + (blksL ? " · 章节存档 " + blksL + " 段" : "") + "</div>";
       if (retrL) memHtml += '<div class="ctx-cat-line"><b>旧章检索</b>BM25 已索引 ' + retrL.indexed + " 楼" + (window.KBVector && KBVector.isOn() ? " + 向量精排 ✅" : "（纯本地）") + "</div>";
       html += section("🧠 长程记忆体检", memHtml);
-    } catch (eL) {}
+    } catch(eL){console.warn("[swallowed] context-panel",eL)}
 
     /* 机缘归属：世界动态性的那一栏 */
     html += section("🔑 机缘归属（唯一性）", led.length ? led.map(function (x) {
@@ -227,7 +227,7 @@
         return card(esc(b.name), tag + (b.note ? '<span class="ctx-sub">' + esc(b.note) + "</span>" : ""));
       }).join("");
       html += section("🌊 大势账本（因果可改）", tlHtml || empty("原著大事按轨道酝酿。玩家终结诱因、改写际遇、羁绊易主时，主笔会上报 (world) 块落账——大势随因果而活。"), ctlEvs.length + ctlBds.length);
-    } catch (eT) {}
+    } catch(eT){console.warn("[swallowed] context-panel",eT)}
 
     html += section("👥 人物", chars.length ? chars.slice(0, 60).map(function (c) {
       var sub = fieldLine(c.fields) || c.value || "";
@@ -258,7 +258,7 @@
     try {
       var fw = window.storyFramework;
       hist = (fw && fw.storyState && fw.storyState.conversationHistory) || [];
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] context-panel",e)}
     var rounds = [];
     var idx = 0;
     for (var i = 0; i < hist.length; i++) {
@@ -338,7 +338,7 @@
         curView = t.dataset.view || "cat";
         try {
           localStorage.setItem(KEY_VIEW, curView);
-        } catch (err) {}
+        } catch(err){console.warn("[swallowed] context-panel",err)}
         render();
       }
     });
@@ -351,7 +351,7 @@
     if (view) curView = view;
     try {
       curView = localStorage.getItem(KEY_VIEW) || curView || "cat";
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] context-panel",e)}
     el.classList.add("show");
     render();
   }

@@ -25,7 +25,7 @@
     catch (e) { return {}; }
   }
   function saveCfg(c) {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(c)); } catch (e) {}
+    try { localStorage.setItem(LS_KEY, JSON.stringify(c)); } catch(e){console.warn("[swallowed] left-rail",e)}
   }
   function mode() { return cfg().mode === "card" ? "card" : "novel"; }
 
@@ -43,25 +43,25 @@
     return function () {
       var o = window[obj];
       if (!o || typeof o[method] !== "function") return;
-      try { o[method](arg); } catch (e) {}
+      try { o[method](arg); } catch(e){console.warn("[swallowed] left-rail",e)}
     };
   }
   function call0(obj, method) {
     return function () {
       var o = window[obj];
       if (!o || typeof o[method] !== "function") return;
-      try { o[method](); } catch (e) {}
+      try { o[method](); } catch(e){console.warn("[swallowed] left-rail",e)}
     };
   }
   function immTab(id) {
     var im = window.ImmersiveSuite;
     if (!im) return;
     try { im.openTab(id); im.toggle(true); } catch (e) {
-      try { im.toggle(true); im.openTab(id); } catch (e2) {}
+      try { im.toggle(true); im.openTab(id); } catch(e2){console.warn("[swallowed] left-rail",e2)}
     }
   }
   function toolbox(act) {
-    return function () { try { if (window.Toolbox && Toolbox.act) Toolbox.act(act); } catch (e) {} };
+    return function () { try { if (window.Toolbox && Toolbox.act) Toolbox.act(act); } catch(e){console.warn("[swallowed] left-rail",e)} };
   }
 
   /* 太虚阁 12 模块 → 并入玩卡·沉浸 */
@@ -95,11 +95,11 @@
     },
     {
       id: "cardrole2", icon: "📇", name: "角色档案", items: [
-        entry("🧬", "性格世界书", "全界人物性格设定", function () { try { if (window.PersonalityCodexUI) PersonalityCodexUI.open(); } catch (e) {} }, function () { return !!window.PersonalityCodexUI; }),
-        entry("📅", "角色生平志", "单个 NPC 生平 / 态度 / 离场", function () { try { if (window.NPCChronicleUI) NPCChronicleUI.open(); } catch (e) {} }, function () { return !!window.NPCChronicleUI; }),
-        entry("💞", "动态关系 R18", "五维关系 / 表达尺度", function () { try { if (window.IntimacyUI) IntimacyUI.open(); } catch (e) {} }, function () { return !!window.IntimacyUI; }),
-        entry("🎯", "行动判定骰", "骰点 + 属性判成败", function () { try { if (window.ActionCheck) ActionCheck.open(); } catch (e) {} }, function () { return !!window.ActionCheck; }),
-        entry("📈", "成长账本", "六维增减留痕", function () { try { if (window.GrowthLedger) GrowthLedger.open(); } catch (e) {} }, function () { return !!window.GrowthLedger; })
+        entry("🧬", "性格世界书", "全界人物性格设定", function () { try { if (window.PersonalityCodexUI) PersonalityCodexUI.open(); } catch(e){console.warn("[swallowed] left-rail",e)} }, function () { return !!window.PersonalityCodexUI; }),
+        entry("📅", "角色生平志", "单个 NPC 生平 / 态度 / 离场", function () { try { if (window.NPCChronicleUI) NPCChronicleUI.open(); } catch(e){console.warn("[swallowed] left-rail",e)} }, function () { return !!window.NPCChronicleUI; }),
+        entry("💞", "动态关系 R18", "五维关系 / 表达尺度", function () { try { if (window.IntimacyUI) IntimacyUI.open(); } catch(e){console.warn("[swallowed] left-rail",e)} }, function () { return !!window.IntimacyUI; }),
+        entry("🎯", "行动判定骰", "骰点 + 属性判成败", function () { try { if (window.ActionCheck) ActionCheck.open(); } catch(e){console.warn("[swallowed] left-rail",e)} }, function () { return !!window.ActionCheck; }),
+        entry("📈", "成长账本", "六维增减留痕", function () { try { if (window.GrowthLedger) GrowthLedger.open(); } catch(e){console.warn("[swallowed] left-rail",e)} }, function () { return !!window.GrowthLedger; })
       ]
     },
     {
@@ -209,7 +209,7 @@
     rail.querySelectorAll(".lr-mode").forEach(function (b) {
       b.addEventListener("click", function () {
         var c = cfg(); c.mode = b.getAttribute("data-mode"); saveCfg(c); render();
-        try { window.dispatchEvent(new CustomEvent("yj-mode-change", { detail: { mode: c.mode } })); } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent("yj-mode-change", { detail: { mode: c.mode } })); } catch(e){console.warn("[swallowed] left-rail",e)}
       });
     });
     rail.querySelectorAll(".lr-group-head").forEach(function (b) {
@@ -256,7 +256,7 @@
     rail.style.display = show ? "" : "none";
     document.body.classList.toggle("has-left-rail", show);
   }
-  function say(msg) { try { if (window.showToast) showToast(msg, "success"); } catch (e) {} }
+  function say(msg) { try { if (window.showToast) showToast(msg, "success"); } catch(e){console.warn("[swallowed] left-rail",e)} }
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) {
@@ -307,7 +307,7 @@
       [["card", CARD_GROUPS], ["novel", NOVEL_GROUPS]].forEach(function (pair) {
         pair[1].forEach(function (g) {
           g.items.forEach(function (it) {
-            var ok = false; try { ok = !it.need || it.need(); } catch (e) {}
+            var ok = false; try { ok = !it.need || it.need(); } catch(e){console.warn("[swallowed] left-rail",e)}
             out.push({ mode: pair[0], group: g.id, name: it.name, enabled: ok });
           });
         });

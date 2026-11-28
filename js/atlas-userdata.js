@@ -298,7 +298,7 @@
   }
   function reset() {
     state = blank();
-    try { localStorage.removeItem(KEY); } catch (e) {}
+    try { localStorage.removeItem(KEY); } catch(e){console.warn("[swallowed] atlas-userdata",e)}
     apply();
     return { ok: true, msg: "玩家数据已清空，恢复为内置 38 世界" };
   }

@@ -151,7 +151,7 @@
       desc: "查看当前装载的正文渲染正则数量", args: "{}",
       fn: function () {
         var n = 0;
-        try { var raw = localStorage.getItem("yunjingRegexCustom"); n = raw ? (JSON.parse(raw) || []).length : 0; } catch (e) {}
+        try { var raw = localStorage.getItem("yunjingRegexCustom"); n = raw ? (JSON.parse(raw) || []).length : 0; } catch(e){console.warn("[swallowed] xiaoyun-ops",e)}
         return { ok: true, msg: "当前玩家自定义正则 " + n + " 条（第三方预设的配套正则导入预设时会自动带上）。" };
       }
     },
@@ -242,7 +242,7 @@
       fn: function () {
         var ck = function (n) { return window[n] ? "✅" : "—"; };
         var api = "未接入（可在造物工坊里接入大模型 API 解锁我的全部开发力）";
-        try { var c = JSON.parse(localStorage.getItem("xy_dev_cfg") || "{}"); if (c.k && c.u) api = "已接入 " + (c.m || "自定义模型"); } catch (e) {}
+        try { var c = JSON.parse(localStorage.getItem("xy_dev_cfg") || "{}"); if (c.k && c.u) api = "已接入 " + (c.m || "自定义模型"); } catch(e){console.warn("[swallowed] xiaoyun-ops",e)}
         return { ok: true, msg: "工坊体检：世界书 " + ck("WorldBook") + " · 存档 " + ck("SaveSlots") + " · 预设 " + ck("YunjingPresetIO") + " · 正则 " + ck("YunjingRegexIO") + " · 机缘账本 " + ck("CanonLedger") + " · 造物工坊 " + ck("XYDev") + "。\n我的开发接口：" + api + "。" };
       }
     },
@@ -315,7 +315,7 @@
           try {
             var mb = window.MemoryLayers.buildInjection(a.q || '', hist);
             if (mb && mb.content) lines.push('· 【长期记忆】' + String(mb.content).replace(/^【[^】]*】\s*/, '').replace(/\s+/g, ' ').slice(0, 300));
-          } catch (e2) { }
+          } catch(e2){console.warn("[swallowed] xiaoyun-ops",e2)}
         }
         if (!lines.length) {
           return { ok: true, msg: '本轮没有捞到相关世界书条目或长期记忆（可能剧情刚开始、资料库为空）。', data: { lines: [] } };
@@ -326,7 +326,7 @@
           var el = document.getElementById('userInput');
           if (el) {
             el.value = (el.value ? el.value + '\n' : '') + brief;
-            try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (e3) { }
+            try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch(e3){console.warn("[swallowed] xiaoyun-ops",e3)}
             sent = true;
           }
         }

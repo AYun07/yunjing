@@ -157,7 +157,7 @@ class StoryFramework {
             if (!this._saveDirty) return;   // clearSave 已取消：本次合并写作废
             this._saveDirty = false;
             try { this._saveStoryNow(); } catch (e) { console.error('[StoryFramework] 存档异常:', e); }
-            try { this._checkQuotaHint(); } catch (e) { }
+            try { this._checkQuotaHint(); } catch(e){console.warn("[swallowed] story-framework",e)}
         };
         if (typeof queueMicrotask === 'function') queueMicrotask(run);
         else Promise.resolve().then(run);
@@ -183,7 +183,7 @@ class StoryFramework {
                 this._quotaHinted = true;
                 window.showToast?.('💾 本地存储已用 ' + usedMB.toFixed(1) + ' MB（上限约 5 MB）。继续长篇前建议先「导出存档」留一份备份', 'info');
             }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] story-framework",e)}
     }
 
     /** 立即冲刷挂起的合并写（切档 reload 前等紧急场景可显式调用；平时无需） */
@@ -245,7 +245,7 @@ class StoryFramework {
         const trKey = this.getSaveKey();
         const fullCH = this.storyState.conversationHistory;
         if (window.StorageBoost && StorageBoost.ready() && Array.isArray(fullCH) && fullCH.length) {
-            try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+            try { localStorage.setItem(trKey + '.tr', '1'); } catch(e){console.warn("[swallowed] story-framework",e)}
             if (fullCH.length !== (this._trFlushedLen || 0)) {
                 this._trFlushedLen = fullCH.length;
                 /* StorageBoost.get 会 String(v)——对象必须先 JSON.stringify，读端再 parse 回来 */
@@ -259,7 +259,7 @@ class StoryFramework {
            写满时逐级瘦身保主档落盘，不再一轮爆死。
            梯队①撤备份 → ②插图骨架化 → ③立绘转 IndexedDB → ④整档转 IndexedDB */
         const write = (j) => { try { localStorage.setItem(key, j); return true; } catch (e) { return false; } };
-        const done = () => { try { window.SaveSlots?.syncMeta(this); } catch (e) { } };
+        const done = () => { try { window.SaveSlots?.syncMeta(this); } catch(e){console.warn("[swallowed] story-framework",e)} };
 
         // 正常路径：先把上一份存档挪到 .bak 槽再写主档（主档写坏时 loadSave 自动回退备份）
         try {
@@ -267,12 +267,12 @@ class StoryFramework {
             if (prev && prev !== json) {
                 try { localStorage.setItem(key + '.bak', prev); } catch (e) { /* 配额不足：跳过备份 */ }
             }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] story-framework",e)}
         if (write(json)) { done(); return; }
 
         /* 梯队①：配额已满——撤掉 .bak 腾出整档空间直写主档。
            备份是锦上添花，主档落盘才是正事 */
-        try { localStorage.removeItem(key + '.bak'); } catch (e) { }
+        try { localStorage.removeItem(key + '.bak'); } catch(e){console.warn("[swallowed] story-framework",e)}
         if (write(json)) {
             window.showToast?.('💾 存储空间紧张：已停用自动备份保住本轮存档。建议「导出存档」备份，或清理本站数据', 'info');
             done(); return;
@@ -322,7 +322,7 @@ class StoryFramework {
             const j = json;
             StorageBoost.put('主档/' + key, j).then(ok => {
                 if (ok) {
-                    try { localStorage.setItem(key + '.idb', '1'); } catch (e) { }
+                    try { localStorage.setItem(key + '.idb', '1'); } catch(e){console.warn("[swallowed] story-framework",e)}
                     window.showToast?.('💾 localStorage 配额已满：存档已转入浏览器大容量存储（IndexedDB），进度不丢', 'info');
                 } else {
                     window.showToast?.('⚠ 存档失败：浏览器本地存储空间不足或被禁用，本轮回合未落盘。请导出存档备份，或清理本站数据后重试', 'error');
@@ -358,7 +358,7 @@ class StoryFramework {
                 d._schema = v + 1;
             } catch (e) {
                 console.warn(`[StoryFramework] 存档迁移 v${v}→v${v + 1} 失败，保留原样继续：`, e);
-                try { window.showToast?.('⚠ 存档来自更早的版本，部分新功能可能需重新设置', 'info'); } catch (e2) { }
+                try { window.showToast?.('⚠ 存档来自更早的版本，部分新功能可能需重新设置', 'info'); } catch(e2){console.warn("[swallowed] story-framework",e2)}
                 break;
             }
         }
@@ -385,7 +385,7 @@ class StoryFramework {
             data = this._migrateSave(data);
             this.storyState = { ...this.storyState, ...data, lastVariables: {} };
             // v3.27.5：读档即自愈（旧档 items 等容器可能已被历史版本的行式指令污染）
-            try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e) { }
+            try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch(e){console.warn("[swallowed] story-framework",e)}
             console.log('[StoryFramework] 读取存档成功，共', this.storyState.conversationHistory.length, '条历史');
             if (fromBak) {
                 console.warn('[StoryFramework] 主存档损坏，已从自动备份恢复');
@@ -447,10 +447,10 @@ class StoryFramework {
                     const d = JSON.parse(j);
                     this.storyState = { ...this.storyState, ...d, lastVariables: {} };
                     // v3.27.5：IDB 大档恢复同样走容器自愈
-                    try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e2) { }
+                    try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch(e2){console.warn("[swallowed] story-framework",e2)}
                     console.log('[StoryFramework] localStorage 配额不足，已从 IndexedDB 恢复存档，共', this.storyState.conversationHistory.length, '条历史');
                     window.showToast?.('💾 存档较大，已从浏览器大容量存储（IndexedDB）恢复', 'info');
-                } catch (e) { }
+                } catch(e){console.warn("[swallowed] story-framework",e)}
             }).catch(() => { });
         }
         return false;
@@ -470,7 +470,7 @@ class StoryFramework {
         localStorage.removeItem(this.getSaveKey());
         localStorage.removeItem(this.getSaveKey() + '.bak');   // v1.6.9：显式清档时备份一并清除（尊重清空意图）
         // v3.55.22：全量 transcript 的 IDB 记录一并清理，防止幽灵档
-        try { localStorage.removeItem(this.getSaveKey() + '.tr'); } catch (e) { }
+        try { localStorage.removeItem(this.getSaveKey() + '.tr'); } catch(e){console.warn("[swallowed] story-framework",e)}
         // v3.19.2：配额耗尽时转存 IndexedDB 的整档一并清理（旗标+原档），
         // 防止清档后 IDB 幽灵档在下次启动时又被恢复回来
         try {
@@ -479,9 +479,9 @@ class StoryFramework {
                 StorageBoost.remove('主档/' + this.getSaveKey());
                 StorageBoost.remove('transcript/' + this.getSaveKey());
                 StorageBoost.remove(this._arcKey());   // v6.3.5：全量轮次档案一并清，防旧剧情幽灵复活
-                if (window.FloorState) { try { window.FloorState.clear(this); } catch (e) { } } // v6.3.14：楼层快照+撤销点一并清
+                if (window.FloorState) { try { window.FloorState.clear(this); } catch(e){console.warn("[swallowed] story-framework",e)} } // v6.3.14：楼层快照+撤销点一并清
             }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] story-framework",e)}
         this._trFlushedLen = 0;   /* v3.55.22 transcript 节流游标归零 */
         this._transcriptPromise = null;
         window.TokenUsage?.reset();   // v1.6.9 T2-⑩：用量记账一并清零
@@ -516,16 +516,16 @@ class StoryFramework {
             } else {
                 var _sid = this.slotId && this.slotId !== 'main' ? '~' + this.slotId : '';
                 ['yunjingBeasts', 'yunjingSquad', 'yunjingStoryStance', 'yunjingSideChar', 'yunjingPlayerIdentity', 'yunjingHeroRelation'].forEach(function (k) {
-                    try { localStorage.removeItem(k + _sid); localStorage.removeItem(k); localStorage.removeItem(k + '~' + (window.storyFramework && window.storyFramework.slotId || 'main')); } catch (e) { }
+                    try { localStorage.removeItem(k + _sid); localStorage.removeItem(k); localStorage.removeItem(k + '~' + (window.storyFramework && window.storyFramework.slotId || 'main')); } catch(e){console.warn("[swallowed] story-framework",e)}
                 });
                 if (this.config && this.config.genreKey) {
-                    try { localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey + _sid); localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey); } catch (e) { }
-                    try { localStorage.removeItem('worldExt_' + this.config.genreKey + _sid); localStorage.removeItem('worldExt_' + this.config.genreKey); } catch (e) { }
+                    try { localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey + _sid); localStorage.removeItem('yunjingWorldBook:' + this.config.genreKey); } catch(e){console.warn("[swallowed] story-framework",e)}
+                    try { localStorage.removeItem('worldExt_' + this.config.genreKey + _sid); localStorage.removeItem('worldExt_' + this.config.genreKey); } catch(e){console.warn("[swallowed] story-framework",e)}
                 }
             }
             if (this.config && this.config.genreKey) {
                 // 沉浸演出游标（扉页章号 / 回响去重）也是书内状态，一并清
-                ['immTitle_', 'immFlash_'].forEach(p => { try { localStorage.removeItem(p + this.config.genreKey); } catch (e) { } });
+                ['immTitle_', 'immFlash_'].forEach(p => { try { localStorage.removeItem(p + this.config.genreKey); } catch(e){console.warn("[swallowed] story-framework",e)} });
             }
         } catch (e) { /* 附属系统故障不影响清档主流程 */ }
         this.storyState = {
@@ -586,11 +586,11 @@ class StoryFramework {
         });
         if (s.turns.length > 40) s.turns.shift(); // 防存档膨胀（index 为绝对轮号，滑动无需重编号）
         // v6.3.5：异步备一份到全量档案，突破 40 轮热栈限制以支持任意回合回档
-        try { this.archiveTurn(s.turns[s.turns.length - 1]); } catch (e) { }
+        try { this.archiveTurn(s.turns[s.turns.length - 1]); } catch(e){console.warn("[swallowed] story-framework",e)}
         /* v6.3.14：全量楼层快照。此刻状态 = 第 nextIdx 轮开始前 = 上一轮结束后，
            与 turns[i].varsBefore / turnArc 语义一致。差量+锚点存到固定 IDB 键，
            体积有界；失败静默降级不影响创作。 */
-        try { if (window.FloorState) window.FloorState.record(this, nextIdx); } catch (e) { }
+        try { if (window.FloorState) window.FloorState.record(this, nextIdx); } catch(e){console.warn("[swallowed] story-framework",e)}
     }
 
     /**
@@ -682,7 +682,7 @@ class StoryFramework {
             };
             const write = () => StorageBoost.get(key).then(raw => {
                 let arr = [];
-                if (raw) { try { const p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } catch (e) { } }
+                if (raw) { try { const p = JSON.parse(raw); if (Array.isArray(p)) arr = p; } catch(e){console.warn("[swallowed] story-framework",e)} }
                 const i = arr.findIndex(x => x && x.index === snap.index);
                 if (i >= 0) arr[i] = copy; else arr.push(copy);
                 arr.sort((a, b) => a.index - b.index);
@@ -690,7 +690,7 @@ class StoryFramework {
             }).catch(() => { });
             // 串行队列：无论调用多密集，读-改-写一次一个
             this._arcQueue = (this._arcQueue || Promise.resolve()).then(write, write);
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] story-framework",e)}
     }
 
     /** 读取本档全量轮次档案（Promise<Array>）；无档案返回 [] */
@@ -717,8 +717,8 @@ class StoryFramework {
         mode = (mode === 'after') ? 'after' : 'before';
         const includePersistent = !!(opts && opts.includePersistent);
         // 先等归档队列排空，否则残留的归档写会基于旧档案复活已删轮次
-        try { if (this._arcQueue) await this._arcQueue; } catch (e) { }
-        try { if (this._fsQueue) await this._fsQueue; } catch (e) { }
+        try { if (this._arcQueue) await this._arcQueue; } catch(e){console.warn("[swallowed] story-framework",e)}
+        try { if (this._fsQueue) await this._fsQueue; } catch(e){console.warn("[swallowed] story-framework",e)}
 
         /* v6.3.14：优先走全量楼层快照——任意层、所有随剧情演化的数据一起还原。
            目标层 index 的快照语义 = 该轮开始前状态；'after' 用 index+1。
@@ -726,7 +726,7 @@ class StoryFramework {
         const FS = window.FloorState;
         let fullTarget = null;
         if (FS) {
-            try { fullTarget = await FS.load(this, mode === 'after' ? index + 1 : index); } catch (e) { }
+            try { fullTarget = await FS.load(this, mode === 'after' ? index + 1 : index); } catch(e){console.warn("[swallowed] story-framework",e)}
         }
         if (fullTarget) {
             // 撤销点：回档前的当前全量状态 + 完整对话（上限 5，覆盖式）。
@@ -735,7 +735,7 @@ class StoryFramework {
                 const undoSnap = FS.capture(this);
                 undoSnap.fullHistory = s.conversationHistory.slice();
                 FS.pushUndo(this, undoSnap);
-            } catch (e) { }
+            } catch(e){console.warn("[swallowed] story-framework",e)}
 
             // 1) 全量还原 storyState 各字段 + 所有旁路键（v6.4.0：持久项按玩家勾选决定）
             const restoredHistLen = FS.restore(this, fullTarget, includePersistent);
@@ -756,9 +756,9 @@ class StoryFramework {
                 if (window.StorageBoost && StorageBoost.ready()) {
                     StorageBoost.put(this._arcKey(), JSON.stringify(arc0.filter(x => x && typeof x.index === 'number' && x.index < cut)));
                 }
-            } catch (e) { }
+            } catch(e){console.warn("[swallowed] story-framework",e)}
             // 5) 楼层快照本身截断 + transcript 按 histLen 截断
-            try { await FS.truncate(this, cut); } catch (e) { }
+            try { await FS.truncate(this, cut); } catch(e){console.warn("[swallowed] story-framework",e)}
             try {
                 if (window.StorageBoost && StorageBoost.ready()) {
                     const trKey = this.getSaveKey();
@@ -766,9 +766,9 @@ class StoryFramework {
                         upTo: s.conversationHistory.length, floors: s.conversationHistory.slice()
                     }));
                     this._trFlushedLen = s.conversationHistory.length;
-                    try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+                    try { localStorage.setItem(trKey + '.tr', '1'); } catch(e){console.warn("[swallowed] story-framework",e)}
                 }
-            } catch (e) { }
+            } catch(e){console.warn("[swallowed] story-framework",e)}
             // 6) DOM 卡片删除 data-turn >= cut
             const container = document.getElementById('chatMessages');
             if (container) {
@@ -837,7 +837,7 @@ class StoryFramework {
                 const kept = arc.filter(x => x && typeof x.index === 'number' && x.index < cutIndex);
                 StorageBoost.put(this._arcKey(), JSON.stringify(kept));
             }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] story-framework",e)}
 
         // 5) 同步 IndexedDB transcript：按目标 histLen 截断（改写 upTo+floors）
         try {
@@ -847,9 +847,9 @@ class StoryFramework {
                     upTo: target.histLen, floors: s.conversationHistory.slice(0, target.histLen)
                 }));
                 this._trFlushedLen = target.histLen;
-                try { localStorage.setItem(trKey + '.tr', '1'); } catch (e) { }
+                try { localStorage.setItem(trKey + '.tr', '1'); } catch(e){console.warn("[swallowed] story-framework",e)}
             }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] story-framework",e)}
 
         // 6) DOM 卡片：删除 data-turn >= cutIndex 的卡片；并让虚拟滚动整体重挂
         const container = document.getElementById('chatMessages');
@@ -876,7 +876,7 @@ class StoryFramework {
     async undoRewind() {
         const FS = window.FloorState;
         if (!FS) return false;
-        try { if (this._fsQueue) await this._fsQueue; } catch (e) { }
+        try { if (this._fsQueue) await this._fsQueue; } catch(e){console.warn("[swallowed] story-framework",e)}
         const full = await FS.popUndo(this);
         if (!full) return false;
         try { FS.restore(this, full); } catch (e) { return false; }
@@ -893,7 +893,7 @@ class StoryFramework {
                 }));
                 this._trFlushedLen = s.conversationHistory.length;
             }
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] story-framework",e)}
         s._rollbackEpoch = (Number(s._rollbackEpoch) || 0) + 1;
         this.updateStatusPanel();
         this.saveStory();
@@ -922,8 +922,8 @@ class StoryFramework {
             } catch (e) { /* 沉浸层故障不影响主流程 */ }
         }
         // v3.2.0 天道层（成就/金榜）与读者来信：随每轮检定
-        if (window.GameLayer) { try { window.GameLayer.onVars(this.storyState.variables); } catch (e) { } }
-        if (window.ReaderLetters) { try { window.ReaderLetters.onVars(this.storyState.variables); } catch (e) { } }
+        if (window.GameLayer) { try { window.GameLayer.onVars(this.storyState.variables); } catch(e){console.warn("[swallowed] story-framework",e)} }
+        if (window.ReaderLetters) { try { window.ReaderLetters.onVars(this.storyState.variables); } catch(e){console.warn("[swallowed] story-framework",e)} }
     }
 
     /**
@@ -934,7 +934,7 @@ class StoryFramework {
         this.storyState.variables = { ...this.storyState.variables, ...newVars };
         // v3.27.5：落地前容器自愈（任何路径写脏 items/foreshadowings/history 都在此修复，
         // 下游 GameLayer 成就判定与面板渲染拿到的恒为数组）
-        try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch (e) { }
+        try { window.VariableInstructionParser?.normalizeContainers(this.storyState.variables); } catch(e){console.warn("[swallowed] story-framework",e)}
         this.updateStatusPanel();
         this.saveStory();
     }

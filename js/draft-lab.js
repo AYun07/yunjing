@@ -13,8 +13,7 @@
     save(cfg) {
       try {
         localStorage.setItem(this.KEY, JSON.stringify({ ...this.get(), ...cfg }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] draft-lab",e)}
     },
     esc(s) {
       return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -58,8 +57,7 @@
       await this._review(last);
       try {
         (_d = window.QualitySuite) == null ? void 0 : _d.open("review");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] draft-lab",e)}
     },
     /** 责编质检主流程：责编官通道（责编官 → 登记官 → 主笔）评审 → 卡片 + 手记回流 */
     async _review(reply) {
@@ -153,8 +151,7 @@ ${body.slice(0, 6e3)}` }
       (_a = window.showToast) == null ? void 0 : _a.call(window, this._armed ? `🎯 多候选已武装：下一轮指令将并行生成 ${Math.min(3, Math.max(2, this.get().multiN || 3))} 版供择优` : "已解除多候选武装", "info");
       try {
         (_b = window.QualitySuite) == null ? void 0 : _b.open("multi");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] draft-lab",e)}
     },
     /** 本地速评（启发式：字数区间/对话占比/句密度——仅排序参考，不是真理） */
     quickScore(t) {
@@ -306,8 +303,7 @@ ${body.slice(0, 6e3)}` }
       (_a = window.showToast) == null ? void 0 : _a.call(window, "已保存", "info");
       try {
         (_b = window.QualitySuite) == null ? void 0 : _b.open(k === "multiN" ? "multi" : "review");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] draft-lab",e)}
     },
     /* ==================== 启动：挂页签 + 样式 ==================== */
     init() {

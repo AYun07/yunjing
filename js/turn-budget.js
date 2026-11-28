@@ -41,7 +41,7 @@
       var fw = window.storyFramework;
       var v = fw && fw.apiConfig && fw.apiConfig.turnBudget;
       if (typeof v === 'number' && v >= 1 && v <= 30) return v;
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] turn-budget",e)}
     return DEFAULT_MAX;
   }
 
@@ -64,8 +64,8 @@
       _warned = true;
       try {
         window.showToast?.(explain(), 'warn');
-      } catch (e) { }
-      try { console.warn('[YJTurnBudget] 超出每轮预算：', trace()); } catch (e) { }
+      } catch(e){console.warn("[swallowed] turn-budget",e)}
+      try { console.warn('[YJTurnBudget] 超出每轮预算：', trace()); } catch(e){console.warn("[swallowed] turn-budget",e)}
     }
     return _used <= _max;
   }

@@ -14,7 +14,7 @@
     var secure = p === "https:" || h === "localhost" || h === "127.0.0.1" || h === "[::1]" || h === "::1";
     if (!secure) return;               // file:// 或局域网 http：非安全上下文，注册必然失败，直接跳过
     var reg = function () {
-      try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {}
+      try { navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("[swallowed-promise] pwa-register",e)}); } catch(e){console.warn("[swallowed] pwa-register",e)}
     };
     if (document.readyState === "complete") reg();
     else window.addEventListener("load", reg);

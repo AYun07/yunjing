@@ -31,7 +31,7 @@
     } catch (e) { return dflt; }
   }
   function write(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { }
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){console.warn("[swallowed] connection-profiles",e)}
   }
   function uid() {
     return "cp_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -41,7 +41,7 @@
   function changed() {
     try {
       if (window.dispatchEvent) window.dispatchEvent(new Event(EVT_CHANGED));
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] connection-profiles",e)}
   }
   /** 把本模块的档位镜像成 ModelSlots 结构，供「全部接口配置」里的主笔下拉即时读取。
    *  只增删带 _cpProfile 标记的镜像项，不碰玩家手工存的主笔档；不改动 storyApiConfig。 */
@@ -70,7 +70,7 @@
         }
       });
       write(LS_MODEL_SLOTS, slots);
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] connection-profiles",e)}
   }
 
   var ConnectionProfiles = {
@@ -181,15 +181,15 @@
           });
           this.assign("varAI", p.id);
         }
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] connection-profiles",e)}
     }
   };
 
   // 模块加载即迁移一次（config-modal 打开前数据就绪，VariableAI 取值不踩空）
-  try { ConnectionProfiles.migrateLegacy(); } catch (e) { }
+  try { ConnectionProfiles.migrateLegacy(); } catch(e){console.warn("[swallowed] connection-profiles",e)}
   /* v7.6.2：老玩家此前已存的档位在升级前没有镜像，加载时补一次，
      确保设置页/创作室打开配置面板时主笔下拉立刻有档，不再显示「尚未保存档位」。 */
-  try { mirrorToModelSlots(ConnectionProfiles.list()); } catch (e) { }
+  try { mirrorToModelSlots(ConnectionProfiles.list()); } catch(e){console.warn("[swallowed] connection-profiles",e)}
 
   window.ConnectionProfiles = ConnectionProfiles;
 })();

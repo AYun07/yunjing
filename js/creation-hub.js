@@ -84,7 +84,7 @@
           var lo = await lr.json();
           res = { ok: true, items: (lo && Array.isArray(lo.items)) ? lo.items : [], local: true };
         }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] creation-hub",e)}
     }
     if (!res.ok) {
       box.innerHTML = '<div style="color:#f0b0b0;font-size:13px;line-height:1.8;">创意工坊清单加载失败：' + esc(res.error || '网络不通') +
@@ -132,7 +132,7 @@
         try {
           var r = await GC.readWorkFile(work.slug, 'README.md');
           if (r.ok) work._sec = parseSections(r.text);
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] creation-hub",e)}
         if (mySeq !== LIST_SEQ) return;
         // 就地更新该卡片的三段文本
         var card = box.querySelector('.ch-work[data-idx="' + i + '"]');
@@ -243,7 +243,7 @@
       var theirs = (manifest.changes || []).map(function (c) {
         var f = files.find(function (x) { return x.name === c.file; });
         var data = PE.TOMB;
-        if (f) { try { data = JSON.parse(ZW.entryText(f)).data; } catch (e) {} }
+        if (f) { try { data = JSON.parse(ZW.entryText(f)).data; } catch(e){console.warn("[swallowed] creation-hub",e)} }
         return { key: c.key, kind: c.kind, hash: c.newHash || PE.hash(data), data: data };
       });
       // 本机现状 + 基线
@@ -303,21 +303,21 @@
         lastBackup = PE.makeBackup(decisions, 'install ' + new Date().toLocaleString());
         // 备份入栈（固定上限）
         var stack = [];
-        try { stack = JSON.parse((globalThis.MoStore || localStorage).getItem(K_BACKUPS) || '[]'); } catch (e) {}
+        try { stack = JSON.parse((globalThis.MoStore || localStorage).getItem(K_BACKUPS) || '[]'); } catch(e){console.warn("[swallowed] creation-hub",e)}
         stack = PE.pushBackup(stack, lastBackup);
-        try { (globalThis.MoStore || localStorage).setItem(K_BACKUPS, JSON.stringify(stack)); } catch (e) {}
+        try { (globalThis.MoStore || localStorage).setItem(K_BACKUPS, JSON.stringify(stack)); } catch(e){console.warn("[swallowed] creation-hub",e)}
         var res = CA.apply(ops, CA.localWriter());
         if (res.errors.length) { log.style.color = '#ff9b9b'; log.textContent = '部分写入失败：' + res.errors.map(function(e){return e.key}).join(', '); return; }
         log.style.color = '#8fd6a8'; log.textContent = '✅ 已应用 ' + res.done.length + ' 项。原始内容已备份；若有问题点"回滚到安装前"。';
       };
       document.getElementById('ins-rollback').onclick = function () {
         var stack = [];
-        try { stack = JSON.parse((globalThis.MoStore || localStorage).getItem(K_BACKUPS) || '[]'); } catch (e) {}
+        try { stack = JSON.parse((globalThis.MoStore || localStorage).getItem(K_BACKUPS) || '[]'); } catch(e){console.warn("[swallowed] creation-hub",e)}
         if (!stack.length) { log.style.color = '#f0c98f'; log.textContent = '没有可回滚的备份。'; return; }
         var bak = stack[stack.length - 1];
         var res = CA.apply(PE.rollbackList(bak), CA.localWriter());
         stack.pop();
-        try { (globalThis.MoStore || localStorage).setItem(K_BACKUPS, JSON.stringify(stack)); } catch (e) {}
+        try { (globalThis.MoStore || localStorage).setItem(K_BACKUPS, JSON.stringify(stack)); } catch(e){console.warn("[swallowed] creation-hub",e)}
         log.style.color = res.errors.length ? '#ff9b9b' : '#8fd6a8';
         log.textContent = res.errors.length ? ('回滚部分失败：' + res.errors.map(function(e){return e.key}).join(', ')) : ('↩ 已回滚 ' + res.done.length + ' 项到安装前。');
       };
@@ -341,10 +341,10 @@
         if (!k || BLOCK.test(k)) continue;
         if (/^(xy_|yunjing|DLC|Creator|forge|storyKB|worldExt|regex)/i.test(k)) found.push(k);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] creation-hub",e)}
     // IDB 里的长文本/DLC 若可枚举，交给上层异步补；这里先收 localStorage
     found.slice(0, 200).forEach(function (k) {
-      try { picked.push({ name: 'local/' + k.replace(/[^\w.\-]/g, '_') + '.json', data: ls.getItem(k) || '' }); } catch (e) {}
+      try { picked.push({ name: 'local/' + k.replace(/[^\w.\-]/g, '_') + '.json', data: ls.getItem(k) || '' }); } catch(e){console.warn("[swallowed] creation-hub",e)}
     });
     return picked;
   }
@@ -364,7 +364,7 @@
     try {
       var PE = globalThis.PatchEngine;
       (globalThis.MoStore || localStorage).setItem(K_BASE, JSON.stringify(PE.baseline(window.YJ_VER || 'unknown', items)));
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] creation-hub",e)}
   }
   CH._readLocalBaseline = readLocalBaseline;
   CH._writeLocalBaseline = writeLocalBaseline;

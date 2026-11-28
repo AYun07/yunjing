@@ -29,7 +29,7 @@
       if (/^\d+(\.\d+)?$/.test(v.trim())) return Math.round(parseFloat(v) * 1000);
       var t = Date.parse(v);
       if (!isNaN(t)) return Math.max(0, t - Date.now());
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] net-guard",e)}
     return 0;
   }
 
@@ -77,7 +77,7 @@
           if (wait <= 0) { st.last = Date.now(); resolve(); return; }
           setTimeout(function () { st.last = Date.now(); resolve(); }, wait);
         });
-      }).catch(function () {});
+      }).catch(function(e){console.warn("[swallowed-promise] net-guard",e)});
       return st.chain;
     }
 
@@ -116,8 +116,8 @@
         h.renderSystemMessage(msg, level || 'info');
         return;
       }
-    } catch (e) {}
-    try { console.warn('[云境·网络]', msg); } catch (e) {}
+    } catch(e){console.warn("[swallowed] net-guard",e)}
+    try { console.warn('[云境·网络]', msg); } catch(e){console.warn("[swallowed] net-guard",e)}
   }
 
   /**
@@ -183,7 +183,7 @@
       // 非 2xx
       if (!shouldRetry(resp.status)) {
         var txt = '';
-        try { txt = await resp.clone().text(); } catch (e) {}
+        try { txt = await resp.clone().text(); } catch(e){console.warn("[swallowed] net-guard",e)}
         var e2 = new Error(label + '请求失败: ' + resp.status + ' ' + resp.statusText + ' ' + String(txt).slice(0, 200));
         e2.isHttpError = true;
         e2.status = resp.status;
@@ -191,7 +191,7 @@
       }
       if (attempt >= max) {
         var txt2 = '';
-        try { txt2 = await resp.clone().text(); } catch (e) {}
+        try { txt2 = await resp.clone().text(); } catch(e){console.warn("[swallowed] net-guard",e)}
         var e3 = new Error(label + '请求失败（已重试 ' + max + ' 次）: ' + resp.status + ' ' + resp.statusText + ' ' + String(txt2).slice(0, 160));
         e3.isHttpError = true;
         e3.status = resp.status;
@@ -205,7 +205,7 @@
       if (window.AIGovernor && window.AIGovernor.penalize) window.AIGovernor.penalize();
       var reason = resp.status === 429 ? '限流(429)' : ('服务端错误(' + resp.status + ')');
       if (!opts.silent) notify('⚠ ' + label + ' ' + reason + '，' + Math.round(d / 1000) + ' 秒后自动重试（' + (attempt + 1) + '/' + max + '）' + (ra ? '［按服务端 Retry-After］' : '') + '；本接口请求间隔已放宽至 ' + Math.round(newGap) + 'ms', 'warn');
-      try { await resp.body && resp.body.cancel && resp.body.cancel(); } catch (e) {}
+      try { await resp.body && resp.body.cancel && resp.body.cancel(); } catch(e){console.warn("[swallowed] net-guard",e)}
       await sleep(d);
     }
     throw lastErr || new Error(label + ' 请求失败');

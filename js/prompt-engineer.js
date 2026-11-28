@@ -22,8 +22,7 @@ window.StoryPromptEngineer = {
     try {
       const saved = localStorage.getItem(this.KEY);
       if (saved) cfg = { ...cfg, ...JSON.parse(saved) };
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] prompt-engineer",e)}
     return cfg;
   },
   save(cfg) {
@@ -80,8 +79,7 @@ window.StoryPromptEngineer = {
   clearCache() {
     try {
       localStorage.removeItem(this.CACHE_KEY);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] prompt-engineer",e)}
   },
   /* ==================== 批量改写 ==================== */
   /**
@@ -155,8 +153,7 @@ window.StoryPromptEngineer = {
         if (Array.isArray(arr) && arr.length) {
           jsonArr = arr.map((x) => String(x == null ? "" : x).trim());
         }
-      } catch (err) {
-      }
+      } catch(err){console.warn("[swallowed] prompt-engineer",err)}
     }
     const hasNum = /(?:^|\n)\s*\d+\s*[.、:：)）]/.test(t);
     const lines = t.split(/\n+/).map((l) => l.replace(/^\s*(?:#{1,4}\s*)?(?:\d+\s*)?[.、:：)）]?\s*/, "").replace(/^\s*\d+\s*[.、:：)）]\s*/, "").trim()).filter(Boolean);
@@ -267,12 +264,10 @@ window.StoryPromptEngineer = {
     let reason = "";
     try {
       reason = (await res.text()).slice(0, 180);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] prompt-engineer",e)}
     try {
       reason = ((_a = JSON.parse(reason).error) == null ? void 0 : _a.message) || reason;
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] prompt-engineer",e)}
     return `提示词工程师请求失败: ${res.status} ${res.statusText}${reason ? " - " + reason : ""}`;
   }
 };

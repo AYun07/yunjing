@@ -33,7 +33,7 @@
         var m = new URLSearchParams(location.search).get('genre');
         if (m) return m;
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] relation-codex-bridge",e)}
     return 'free';
   }
 
@@ -119,7 +119,7 @@
           var bh2 = C.behaviorOf(nm, wk, { events: rawEvents, days: days, tension: ten, stage: stage2 });
           behaviorLedger.push(Object.assign({ tick: stats.ticks, world: wk }, bh2));
           stats.behaviors++;
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] relation-codex-bridge",e)}
       });
       if (behaviorLedger.length > 200) behaviorLedger = behaviorLedger.slice(-200);
     }
@@ -149,7 +149,7 @@
           });
           patch = adj;
           stats.npcBiased++;
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] relation-codex-bridge",e)}
       }
       return orig.call(this, name, patch, opts);
     };
@@ -200,7 +200,7 @@
 
   try {
     if (typeof global.addEventListener === 'function') {
-      global.addEventListener('DOMContentLoaded', function () { try { boot(); } catch (e) {} });
+      global.addEventListener('DOMContentLoaded', function () { try { boot(); } catch(e){console.warn("[swallowed] relation-codex-bridge",e)} });
     }
-  } catch (e) {}
+  } catch(e){console.warn("[swallowed] relation-codex-bridge",e)}
 })(typeof window !== 'undefined' ? window : globalThis);

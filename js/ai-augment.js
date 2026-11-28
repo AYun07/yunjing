@@ -53,7 +53,7 @@
         if (state.tasks[t] && typeof d.tasks[t].enabled === 'boolean') state.tasks[t].enabled = d.tasks[t].enabled;
       });
     }
-  } catch (e) {}
+  } catch(e){console.warn("[swallowed] ai-augment",e)}
 
   function persist() {
     try {
@@ -61,7 +61,7 @@
         enabled: state.enabled,
         tasks: state.tasks
       }));
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] ai-augment",e)}
   }
 
   function isTaskAvailable(tag) {
@@ -103,7 +103,7 @@
       { role: 'user', content: String(prompt || '') }
     ];
     /* 记账：输入 token（用 TokenUsage 已有 recordRequest，tag 用增强项名） */
-    try { if (global.TokenUsage && global.TokenUsage.recordRequest) global.TokenUsage.recordRequest(messages, '增强·' + tag); } catch (e) {}
+    try { if (global.TokenUsage && global.TokenUsage.recordRequest) global.TokenUsage.recordRequest(messages, '增强·' + tag); } catch(e){console.warn("[swallowed] ai-augment",e)}
     try {
       var text = await call(messages, {
         maxTokens: opts.maxTokens || 512,
@@ -115,13 +115,13 @@
       state.cost[tag].calls++;
       state.cost[tag].tokIn += messages.reduce(function (a, m) { return a + estimateTok(m.content); }, 0);
       state.cost[tag].tokOut += estimateTok(clean);
-      try { if (global.TokenUsage && global.TokenUsage.recordOutput) global.TokenUsage.recordOutput(clean, '增强·' + tag); } catch (e) {}
+      try { if (global.TokenUsage && global.TokenUsage.recordOutput) global.TokenUsage.recordOutput(clean, '增强·' + tag); } catch(e){console.warn("[swallowed] ai-augment",e)}
       var parsed = null;
       if (typeof opts.parse === 'function') {
-        try { parsed = opts.parse(clean); } catch (e) {}
+        try { parsed = opts.parse(clean); } catch(e){console.warn("[swallowed] ai-augment",e)}
       }
       /* 奖励闸门：增强成功也算一次顺畅调用 */
-      try { if (global.AIGovernor && global.AIGovernor.reward) global.AIGovernor.reward(); } catch (e) {}
+      try { if (global.AIGovernor && global.AIGovernor.reward) global.AIGovernor.reward(); } catch(e){console.warn("[swallowed] ai-augment",e)}
       return { ok: true, sampled: true, fallback: false, text: clean, parsed: parsed };
     } catch (err) {
       state.errors++;

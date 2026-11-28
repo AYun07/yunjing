@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  const LIB = "libs/cytoscape.min.js?v=7.6.5";
+  const LIB = "libs/cytoscape.min.js?v=7.6.6";
   const RelationGraph = {
     esc(s) {
       return String(s != null ? s : "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -183,7 +183,7 @@
     },
     close() {
       var _a, _b;
-      try { (_a = this._cy) == null ? void 0 : _a.destroy(); } catch (e) {}
+      try { (_a = this._cy) == null ? void 0 : _a.destroy(); } catch(e){console.warn("[swallowed] relationship-graph",e)}
       this._cy = null;
       (_b = document.getElementById("graphPanel")) == null ? void 0 : _b.remove();
     },

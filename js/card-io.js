@@ -179,8 +179,7 @@
       if (window.TextDecoder) {
         try {
           return new TextDecoder("utf-8").decode(bytes);
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] card-io",e)}
       }
       let s = "";
       let i = 0;
@@ -245,8 +244,7 @@
       try {
         const card = JSON.parse(this.bytesToUtf8(hit.bytes));
         if (card && typeof card === "object") return card;
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] card-io",e)}
       const asText = this._latin1(hit.bytes).trim();
       if (!asText || !/^[A-Za-z0-9+/\-_=\s]+$/.test(asText)) return null;
       try {

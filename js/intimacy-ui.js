@@ -90,12 +90,12 @@
     var btn = body.querySelector('.ia-toggle');
     if (btn) btn.addEventListener('click', function () {
       A.toggle(); render();
-      try { if (G.showToast) G.showToast(A.isEnabled() ? '关系档案已开启（R18）' : '关系档案已关闭', 'info'); } catch (e) {}
+      try { if (G.showToast) G.showToast(A.isEnabled() ? '关系档案已开启（R18）' : '关系档案已关闭', 'info'); } catch(e){console.warn("[swallowed] intimacy-ui",e)}
     });
     Array.prototype.forEach.call(body.querySelectorAll('.ia-expr'), function (b) {
       b.addEventListener('click', function () {
         A.setExpression(b.getAttribute('data-expr')); render();
-        try { if (G.showToast) G.showToast('表达尺度已切换为「' + b.textContent + '」', 'info'); } catch (e) {}
+        try { if (G.showToast) G.showToast('表达尺度已切换为「' + b.textContent + '」', 'info'); } catch(e){console.warn("[swallowed] intimacy-ui",e)}
       });
     });
     Array.prototype.forEach.call(body.querySelectorAll('.ia-lock'), function (b) {
@@ -111,6 +111,6 @@
     ov.style.display = 'flex';
   }
 
-  function open() { try { if (G.AIAugmentBridge) G.AIAugmentBridge.boot(); } catch (e) {} try { if (G.RelationCodexBridge) G.RelationCodexBridge.boot(); } catch (e) {} render(); }
+  function open() { try { if (G.AIAugmentBridge) G.AIAugmentBridge.boot(); } catch(e){console.warn("[swallowed] intimacy-ui",e)} try { if (G.RelationCodexBridge) G.RelationCodexBridge.boot(); } catch(e){console.warn("[swallowed] intimacy-ui",e)} render(); }
   G.IntimacyUI = { open: open, close: close, render: render };
 })();

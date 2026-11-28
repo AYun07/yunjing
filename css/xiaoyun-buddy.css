@@ -14,14 +14,16 @@
 .xy-tip.on{opacity:1;transform:none}
 .xy-tip::after{content:"";position:absolute;right:-5px;top:14px;border:5px solid transparent;border-left-color:#fff;border-top-color:#fff}
 /* 开发模式：造物工坊 */
-.xy-dev{position:fixed;inset:0;z-index:9995;background:rgba(8,7,20,.62);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif}
+/* v7.6.6：原背景 .62 透明度，弹层背后「→ 造物 · 小云创造中枢」大字透出残影显脏，加深遮罩 */
+.xy-dev{position:fixed;inset:0;z-index:9995;background:rgba(8,7,20,.92);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;font-family:'Noto Sans SC',sans-serif}
 .xy-dev.on{display:flex}
 .xy-dev-box{width:min(660px,92vw);max-height:88vh;overflow-y:auto;background:linear-gradient(170deg,rgba(30,26,54,.98),rgba(18,16,34,.99));
   border:1px solid rgba(200,180,255,.3);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.12);color:#efedfa;padding:22px 24px}
 .xy-dev h3{display:flex;align-items:center;gap:10px;font-size:17px;margin:0 0 4px;letter-spacing:.06em}
 .xy-dev h3 .x{margin-left:auto;cursor:pointer;color:#9a94c0;font-size:20px;padding:0 4px}
 .xy-dev h3 .x:hover{color:#fff}
-.xy-dev .sub{font-size:11px;color:#9a94c0;letter-spacing:.12em;margin-bottom:14px}
+/* v7.6.6：副标题过长折行不全被玩家报为「截断」，改为单行省略号，观感干净 */
+.xy-dev .sub{font-size:11px;color:#9a94c0;letter-spacing:.12em;margin-bottom:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .xy-dev fieldset{border:1px solid rgba(170,160,255,.22);border-radius:13px;padding:12px 14px;margin-bottom:13px}
 .xy-dev legend{font-size:12px;color:#cfc8f0;padding:0 8px;letter-spacing:.14em}
 .xy-dev .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}

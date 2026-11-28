@@ -51,7 +51,7 @@
     return p.replace(/^\.\//, '');
   }
   function log(list) {
-    try { localStorage.setItem(LOG_KEY, JSON.stringify(list.slice(-30))); } catch (e) {}
+    try { localStorage.setItem(LOG_KEY, JSON.stringify(list.slice(-30))); } catch(e){console.warn("[swallowed] file-bridge",e)}
   }
   function getLog() {
     try { var v = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
@@ -454,7 +454,7 @@
       try {
         var h = await idbGet(KEY);
         if (h) { root = h; return true; }
-      } catch (e) {}
+      } catch(e){console.warn("[swallowed] file-bridge",e)}
       return false;
     },
     read: read,

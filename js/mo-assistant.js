@@ -30,8 +30,7 @@ const MoAssistant = {
     const cfg = { ...this.getCfg(), ...patch };
     try {
       localStorage.setItem(this.CFG_KEY, JSON.stringify(cfg));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] mo-assistant",e)}
     return cfg;
   },
   /* ==================== 聊天记录 ==================== */
@@ -172,7 +171,7 @@ ${dlcNote}${pluginProto}`;
     var MD = window.MoDevtools;
     if (!MD) return '';
     var ready = false;
-    try { var FB = window.FileBridge; ready = !!(FB && FB.hasRoot && FB.hasRoot()); } catch (e) {}
+    try { var FB = window.FileBridge; ready = !!(FB && FB.hasRoot && FB.hasRoot()); } catch(e){console.warn("[swallowed] mo-assistant",e)}
     var head = ready
       ? '【研发中枢已就绪】你能主动开发、验证、迭代整个项目，不只是被动改文件。'
       : '【研发中枢待授权】主人授权项目文件夹后，你就能主动巡检、看懂项目结构、改完自验。';
@@ -202,7 +201,7 @@ ${dlcNote}${pluginProto}`;
     try {
       const railMode = window.LeftRail && typeof window.LeftRail.mode === "function" ? window.LeftRail.mode() : "";
       if (railMode) lines.push(`当前界面：${railMode === "card" ? "玩卡模式（角色/卡牌/扮演侧栏）" : "小说创作模式"}`);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] mo-assistant",e)}
     if (fw.storyState.isStoryStarted) {
       lines.push(`进度：${isRP ? `第 ${v.chapter || 1} / ${v.totalChapters || "?"} 回合` : `第 ${v.chapter || 1} / ${v.totalChapters || "?"} 章`} · 累计 ${v.wordCount || 0} 字`);
       const s = fw.storyState.setup || {};
@@ -291,8 +290,7 @@ ${String(recap.summary).slice(0, 600)}`);
       const kb = Math.round(total / 1024);
       const level = kb > 4e3 ? "（接近配额，建议导出存档后清理旧数据）" : kb > 2e3 ? "（偏高，留意别超配额）" : "（健康）";
       out.push(`[存储] localStorage 累计约 ${kb} KB（浏览器配额一般约 5MB）${level}`);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] mo-assistant",e)}
     return out.join("\n");
   },
   /* ==================== 发送主链路 ==================== */
@@ -335,9 +333,9 @@ ${String(recap.summary).slice(0, 600)}`);
       reply = text.replace(/⟦dev:[^\n⟧]*⟧/g, "").trim();
       // 把工具结果作为 user 消息回注，让模型基于真实数据继续
       messages.push({ role: "user", content: "（你刚请求的工具已由云境本地执行，真实结果如下。请据此给主人简洁结论，不要重复罗列原始数据，也不要再编造其他数字。）\n" + results.join("\n\n") });
-      try { window.TokenUsage && window.TokenUsage.recordRequest(messages, "小云·工具"); } catch (e) {}
+      try { window.TokenUsage && window.TokenUsage.recordRequest(messages, "小云·工具"); } catch(e){console.warn("[swallowed] mo-assistant",e)}
       reply = String(await this.callModel(messages, { onDelta: onDelta }) || "").trim();
-      try { window.TokenUsage && window.TokenUsage.recordOutput(reply, "小云·工具"); } catch (e) {}
+      try { window.TokenUsage && window.TokenUsage.recordOutput(reply, "小云·工具"); } catch(e){console.warn("[swallowed] mo-assistant",e)}
     }
     return { final: reply, used: used };
   },
@@ -625,8 +623,7 @@ ${report}${fileRep}`;
       if (zhVoice) u.voice = zhVoice;
       speechSynthesis.cancel();
       speechSynthesis.speak(u);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] mo-assistant",e)}
   },
   toggleTTS() {
     var _a, _b;
@@ -635,8 +632,7 @@ ${report}${fileRep}`;
     if (!next && "speechSynthesis" in window) {
       try {
         speechSynthesis.cancel();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] mo-assistant",e)}
     }
     (_a = window.MoChibi) == null ? void 0 : _a.setFace(next ? "sing" : "sleepy", 2400);
     (_b = window.MoChibi) == null ? void 0 : _b.say(next ? "以后小云开口说话给你听～" : "小云安静模式,专心打字 (｡•̀ᴗ-)✧", 2800);
@@ -662,7 +658,7 @@ ${report}${fileRep}`;
     drawer.innerHTML = `
             <div class="mo-head">
                 <div class="mo-head-id">
-                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.5" alt="小云" draggable="false" decoding="async"></div>
+                    <div class="mo-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.6" alt="小云" draggable="false" decoding="async"></div>
                     <div class="mo-head-txt">
                         <div class="mo-name">小云 <span class="mo-name-tag" id="moModeTag">管家</span></div>
                         <div class="mo-status" id="moStatus"><i class="mo-dot"></i><span>随时待命</span></div>
@@ -754,7 +750,7 @@ ${report}${fileRep}`;
       box.innerHTML = `
                 <div class="mo-welcome">
                     <div class="mo-welcome-drop">
-                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.5" alt="小云" draggable="false" decoding="async"></div>
+                        <div class="mo-welcome-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.6" alt="小云" draggable="false" decoding="async"></div>
                     </div>
                     <div class="mo-welcome-title">云端的小云，已就位 ✨</div>
                     <div class="mo-welcome-sub">聊灵感、点评剧情、卡文急救，或者让小云给工坊做个体检～</div>
@@ -786,7 +782,7 @@ ${report}${fileRep}`;
     ).join("");
     return `
         <div class="mo-msg mo-msg-mo">
-            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.5" alt="小云" draggable="false" decoding="async"></div>
+            <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.6" alt="小云" draggable="false" decoding="async"></div>
             <div class="mo-bubble mo-bubble-mo">${this.mdLite(body)}${chips ? `<div class="mo-suggests">${chips}</div>` : ""}</div>
         </div>`;
   },
@@ -807,7 +803,7 @@ ${report}${fileRep}`;
     if (!box) return null;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.5" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.6" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo" id="moTypingBubble">
                     <div class="mo-typing"><i></i><i></i><i></i></div>
                 </div>
@@ -825,7 +821,7 @@ ${report}${fileRep}`;
     if (!box) return;
     box.insertAdjacentHTML("beforeend", `
             <div class="mo-msg mo-msg-mo">
-                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.5" alt="小云" draggable="false" decoding="async"></div>
+                <div class="mo-msg-avatar"><img src="${window.MoChibi ? MoChibi.faceSrc() : 'assets/xiaoyun-face-luo.png'}?v=7.6.6" alt="小云" draggable="false" decoding="async"></div>
                 <div class="mo-bubble mo-bubble-mo ${type === "error" ? "mo-bubble-error" : ""}">${this.mdLite(text)}</div>
             </div>`);
     this.scrollBottom();
@@ -866,8 +862,8 @@ ${report}${fileRep}`;
     this.bindSuggestClicks();
     this.syncModeTag();
     /* v3.68.0 面板互斥：开小云抽屉时收起手机与太虚阁 */
-    try { if (window.PhonePanel && document.getElementById("phShell") && document.getElementById("phShell").classList.contains("open")) PhonePanel.close(); } catch (e) {}
-    try { if (window.ImmersiveSuite && ImmersiveSuite.toggle && document.getElementById("immDrawer") && document.getElementById("immDrawer").classList.contains("show")) ImmersiveSuite.toggle(false); } catch (e) {}
+    try { if (window.PhonePanel && document.getElementById("phShell") && document.getElementById("phShell").classList.contains("open")) PhonePanel.close(); } catch(e){console.warn("[swallowed] mo-assistant",e)}
+    try { if (window.ImmersiveSuite && ImmersiveSuite.toggle && document.getElementById("immDrawer") && document.getElementById("immDrawer").classList.contains("show")) ImmersiveSuite.toggle(false); } catch(e){console.warn("[swallowed] mo-assistant",e)}
     if (drawer) drawer.classList.add("open");
     if (overlay) overlay.classList.add("show");
     this.clearBadge();
@@ -949,8 +945,7 @@ ${report}${fileRep}`;
     if (!ok) return;
     try {
       localStorage.removeItem(this.CHAT_KEY);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] mo-assistant",e)}
     this.renderMessages();
     this.clearBadge();
   },

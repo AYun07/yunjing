@@ -1,7 +1,7 @@
 /* 云境 v3.55.28 · 分层加载器（lazy-boot）
    目标：首屏只加载「能进世界、能对话、能渲染状态」的最小集合，其余脚本分帧/按需加载。
    用法（HTML 侧）：
-     <script type="text/yj-lazy" data-src="js/atlas-panel.js?v=7.6.5"
+     <script type="text/yj-lazy" data-src="js/atlas-panel.js?v=7.6.6"
              data-yj-group="demand" data-yj-globals="StoryAtlas"></script>
    - data-yj-group="batch"  ：首屏完成后按帧依次加载（保持原顺序，行为与 defer 一致）
    - data-yj-group="demand" ：只在真正被用到（或首次交互后空闲）时加载
@@ -19,8 +19,8 @@
   }
   window.YJ_DEBUG = flagOn('yjdebug', 'yjDebug');
   window.YJDebug = {
-    on: function () { window.YJ_DEBUG = true; try { localStorage.setItem('yjDebug', '1'); } catch (e) { } },
-    off: function () { window.YJ_DEBUG = false; try { localStorage.setItem('yjDebug', '0'); } catch (e) { } }
+    on: function () { window.YJ_DEBUG = true; try { localStorage.setItem('yjDebug', '1'); } catch(e){console.warn("[swallowed] lazy-boot",e)} },
+    off: function () { window.YJ_DEBUG = false; try { localStorage.setItem('yjDebug', '0'); } catch(e){console.warn("[swallowed] lazy-boot",e)} }
   };
   var NO_LAZY = new RegExp('[?&]yjlazy=0').test(QS) ||
     (function () { try { return localStorage.getItem('yjLazy') === '0'; } catch (e) { return false; } })();
@@ -158,7 +158,7 @@
       rec.wanted = true;
       /* 用户已经动过手（说明是要真的用）→ 立刻加载；否则只排队，不跟首屏抢带宽 */
       (interacted ? loadRec(rec) : scheduleLoad(rec)).then(function () {
-        try { invoke(prop, args); } catch (e) { }
+        try { invoke(prop, args); } catch(e){console.warn("[swallowed] lazy-boot",e)}
       });
       return undefined;
     };

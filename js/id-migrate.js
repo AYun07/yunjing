@@ -42,7 +42,7 @@
           if (localStorage.getItem(EXACT[k]) == null) localStorage.setItem(EXACT[k], v);
           localStorage.removeItem(k);
           moved.push(k);
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] id-migrate",e)}
       });
       var all = [];
       try {
@@ -50,7 +50,7 @@
           var k = localStorage.key(i);
           if (k) all.push(k);
         }
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] id-migrate",e)}
       all.forEach(function (k) {
         Object.keys(PREFIX).forEach(function (p) {
           if (k.indexOf(p) !== 0) return;
@@ -60,11 +60,11 @@
             if (v != null && localStorage.getItem(nk) == null) localStorage.setItem(nk, v);
             localStorage.removeItem(k);
             moved.push(k);
-          } catch (e) { }
+          } catch(e){console.warn("[swallowed] id-migrate",e)}
         });
       });
-      try { localStorage.setItem(MARK_LS, V); } catch (e) { }
-    } catch (e) { }
+      try { localStorage.setItem(MARK_LS, V); } catch(e){console.warn("[swallowed] id-migrate",e)}
+    } catch(e){console.warn("[swallowed] id-migrate",e)}
     return moved;
   }
 
@@ -81,7 +81,7 @@
   function dbMark(oldName) {
     var d = dbDone();
     if (d.indexOf(oldName) < 0) d.push(oldName);
-    try { localStorage.setItem(MARK_DB, JSON.stringify(d)); } catch (e) { }
+    try { localStorage.setItem(MARK_DB, JSON.stringify(d)); } catch(e){console.warn("[swallowed] id-migrate",e)}
   }
   /**
    * 该用哪个库名：已迁完 → 新名；没迁完（含首次启动）→ 旧名。
@@ -95,36 +95,36 @@
 
   /** 把旧库整库复制到新库（out-of-line key 的 object store），成功后删旧库 */
   function copyDB(oldName, newName, cb) {
-    var done = function (ok) { try { cb && cb(ok); } catch (e) { } };
+    var done = function (ok) { try { cb && cb(ok); } catch(e){console.warn("[swallowed] id-migrate",e)} };
     if (!window.indexedDB) return done(false);
     var req;
     try { req = indexedDB.open(oldName); } catch (e) { return done(false); }
     req.onerror = function () { done(false); };
     req.onupgradeneeded = function () {
       /* 旧库不存在 → 会被创建成空库，直接放弃并删掉这个空壳 */
-      try { req.transaction.abort(); } catch (e) { }
+      try { req.transaction.abort(); } catch(e){console.warn("[swallowed] id-migrate",e)}
     };
     req.onsuccess = function () {
       var db = req.result;
       var stores = Array.prototype.slice.call(db.objectStoreNames || []);
-      if (!stores.length) { try { db.close(); } catch (e) { } return done(false); }
+      if (!stores.length) { try { db.close(); } catch(e){console.warn("[swallowed] id-migrate",e)} return done(false); }
       var r2;
-      try { r2 = indexedDB.open(newName); } catch (e) { try { db.close(); } catch (e2) { } return done(false); }
+      try { r2 = indexedDB.open(newName); } catch (e) { try { db.close(); } catch(e2){console.warn("[swallowed] id-migrate",e2)} return done(false); }
       r2.onupgradeneeded = function (ev) {
         var ndb = ev.target.result;
         stores.forEach(function (s) {
           if (!ndb.objectStoreNames.contains(s)) {
-            try { ndb.createObjectStore(s); } catch (e) { }
+            try { ndb.createObjectStore(s); } catch(e){console.warn("[swallowed] id-migrate",e)}
           }
         });
       };
-      r2.onerror = function () { try { db.close(); } catch (e) { } done(false); };
+      r2.onerror = function () { try { db.close(); } catch(e){console.warn("[swallowed] id-migrate",e)} done(false); };
       r2.onsuccess = function () {
         var ndb = r2.result;
         var pending = stores.length;
         var finish = function () {
-          try { db.close(); } catch (e) { }
-          try { ndb.close(); } catch (e) { }
+          try { db.close(); } catch(e){console.warn("[swallowed] id-migrate",e)}
+          try { ndb.close(); } catch(e){console.warn("[swallowed] id-migrate",e)}
           done(true);
         };
         if (!pending) return finish();
@@ -141,7 +141,7 @@
             try {
               var w = ndb.transaction(s, 'readwrite');
               w.objectStore(s).put(c.value, c.key);
-            } catch (err) { }
+            } catch(err){console.warn("[swallowed] id-migrate",err)}
             try { c.continue(); } catch (err) { tick(); }
           };
         });
@@ -168,7 +168,7 @@
            旧库留作数据兜底，消费方切换完毕后自然不再读写它 */
         try {
           window.dispatchEvent(new CustomEvent('yunjing-db-migrated', { detail: { from: oldName, to: DBS[oldName] } }));
-        } catch (e) { }
+        } catch(e){console.warn("[swallowed] id-migrate",e)}
       });
     });
   }

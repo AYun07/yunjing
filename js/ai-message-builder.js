@@ -50,8 +50,7 @@ const StoryFreedom = {
   toggle() {
     try {
       localStorage.setItem(this.KEY, this.isFree() ? "canon" : "free");
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] ai-message-builder",e)}
     return this.isFree();
   }
 };
@@ -83,7 +82,7 @@ function buildAgencyGuard() {
 async function buildStoryMessages(userMessage) {
   var _a;
   /* v3.55.4 云起预设数据懒加载：装配前确保 297KB 数据已就位（正常已在空闲期预热） */
-  if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch (e) { } }
+  if (window.YJEnsureMiaoPreset) { try { await window.YJEnsureMiaoPreset(); } catch(e){console.warn("[swallowed] ai-message-builder",e)} }
   const fw = window.storyFramework;
   const config = fw.config;
   const state = fw.storyState;
@@ -119,11 +118,13 @@ ${state.inspirations.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : "";
   const varAIRule = vaOn ? `
 
 【变量登记说明】状态登记（章节/字数/仪表盘/角色档案/伏笔/道具/大事记）由独立系统自动完成，你只负责写好正文与情节选项。严禁输出任何变量更新块、状态指令或键值清单，严禁在正文或结尾罗列任何状态、数值、面板内容——只写小说。
-【禁止面板标题（v4.07.2 新增）】严禁输出「【状态栏】」「【面板】」「【状态面板】」「【属性】」「【数值】」「【信息栏】」这类 UI 面板标题及其下方条目——那是界面自己画的，不是正文该有的东西。状态只允许通过 (variable_update) 块与 <status> 块登记；正文必须是连贯的叙事段落，绝不能只剩面板没有故事。` : `
+【禁止面板标题（v4.07.2 新增）】严禁输出「【状态栏】」「【面板】」「【状态面板】」「【属性】」「【数值】」「【信息栏】」这类 UI 面板标题及其下方条目——那是界面自己画的，不是正文该有的东西。状态只允许通过 (variable_update) 块与 <status> 块登记；正文必须是连贯的叙事段落，绝不能只剩面板没有故事。
+【正文语言（v7.6.6 新增）】正文一律用纯中文叙事；除作品专有名词、直接引文与必要数字外，不得夹杂英文单词、日文假名、韩文或整段外文，避免中英夹杂拉低中文比率。` : `
 
 【变量块格式（系统解析依赖）】
 (variable_update) 与 (/variable_update) 之间逐行写"键: 值"，一行一条，禁止 JSON、禁止花括号。
 【禁止面板标题（v4.07.2 新增）】严禁输出「【状态栏】」「【面板】」「【状态面板】」「【属性】」「【数值】」「【信息栏】」这类 UI 面板标题及其下方条目——那是界面自己画的。正文必须是连贯的叙事段落，绝不能只剩面板没有故事。
+【正文语言（v7.6.6 新增）】正文一律用纯中文叙事；除作品专有名词、直接引文与必要数字外，不得夹杂英文单词、日文假名、韩文或整段外文，避免中英夹杂拉低中文比率。
 【每轮必做】本轮正文里新登场或有变化的人物必须登记档案（新登场者至少报 角色名.role / .appearance / .personality / .motivation / .status 五项，有变化者报变化字段）；在场人物位置/状态/信任度变动须更新；如 >>角色名.history: 一句话轨迹。
 正确示例：
 (variable_update)
@@ -263,10 +264,10 @@ ${rulePrompt}${inspirationNote}${freedomRule}${agencyGuard}${varAIRule}${closure
     if (window.BeastSystem && BeastSystem.buildPromptBlock) { const _bs = BeastSystem.buildPromptBlock(); if (_bs) liveParts.push(_bs); }
     if (window.SquadSystem && SquadSystem.buildPromptBlock) { const _sq = SquadSystem.buildPromptBlock(); if (_sq) liveParts.push(_sq); }
     if (window.WorldAlive) {
-      try { WorldAlive.seedFactions(); } catch (e) {}
+      try { WorldAlive.seedFactions(); } catch(e){console.warn("[swallowed] ai-message-builder",e)}
       /* v3.94.0：玩家自己宣告「另立 X盟 / 灭掉 X帮」时，机械层直接落图，
          不等模型写 (world_update)，也不因模型在正文里否决而跟着失效。 */
-      try { if (WorldAlive.applyPlayerDirective) WorldAlive.applyPlayerDirective(userMessage); } catch (e) {}
+      try { if (WorldAlive.applyPlayerDirective) WorldAlive.applyPlayerDirective(userMessage); } catch(e){console.warn("[swallowed] ai-message-builder",e)}
       const _wa = WorldAlive.buildPromptBlock();
       if (_wa) liveParts.push(_wa);
     }
@@ -278,7 +279,7 @@ ${rulePrompt}${inspirationNote}${freedomRule}${agencyGuard}${varAIRule}${closure
     /* v4.49.0：装备词条 + 称号净加成上行——先重算（读当前佩戴/称号），再注入，
        让主笔行文与即时计算的加成一致；无佩戴无称号时返回空串，零 token 浪费。 */
     if (window.BonusEngine) {
-      try { BonusEngine.recompute(true); const _bb = BonusEngine.buildPromptBlock(); if (_bb) liveParts.push(_bb); } catch (e) {}
+      try { BonusEngine.recompute(true); const _bb = BonusEngine.buildPromptBlock(); if (_bb) liveParts.push(_bb); } catch(e){console.warn("[swallowed] ai-message-builder",e)}
     }
     if (liveParts.length) push({ role: "system", content: liveParts.join("\n") }, "活世界", 26);
   } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 活世界上行装配失败:", e); }
@@ -392,8 +393,7 @@ ${intel.map((p) => `· ${p.name}私下透露：${p.text}`).join("\n")}
     try {
       const phoneNote = window.PhonePanel && PhonePanel.takePhoneNotes ? PhonePanel.takePhoneNotes() : null;
       if (phoneNote) notes.push(phoneNote);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] ai-message-builder",e)}
     /* v3.68.0 兼容老档：driftNotes 曾被写成字符串，统一归一化为 {text} 数组再消费 */
     let drift = state.driftNotes;
     if (typeof drift === "string" && drift.trim()) drift = [{ text: drift }];
@@ -619,7 +619,7 @@ function buildPlayerIdentityCard(setup, config) {
   }
   /* v3.55.20 本界资料库：注入相关设定锚点，提升设定一致性与世界真实感 */
   if (window.WorldBook) {
-    try { WorldBook.ensureSeed(); } catch (e) {}
+    try { WorldBook.ensureSeed(); } catch(e){console.warn("[swallowed] ai-message-builder",e)}
     const _wb = WorldBook.buildPromptBlock();
     if (_wb) parts.push(_wb);
   }

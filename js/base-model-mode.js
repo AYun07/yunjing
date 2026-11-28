@@ -72,7 +72,7 @@
     try {
       const fw = window.storyFramework;
       if (fw) return fw.apiConfig || (fw.apiConfig = {});
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] base-model-mode",e)}
     return null;
   }
 
@@ -91,8 +91,8 @@
   /* ---------- 档位读取/写入（兼容旧 boolean） ---------- */
   function getTier() {
     let v;
-    try { const cfg = fwApiConfig(); if (cfg && typeof cfg.baseModelMode === 'string') v = cfg.baseModelMode; } catch (e) {}
-    if (!v) { try { v = localStorage.getItem(SET_KEY); } catch (e) {} }
+    try { const cfg = fwApiConfig(); if (cfg && typeof cfg.baseModelMode === 'string') v = cfg.baseModelMode; } catch(e){console.warn("[swallowed] base-model-mode",e)}
+    if (!v) { try { v = localStorage.getItem(SET_KEY); } catch(e){console.warn("[swallowed] base-model-mode",e)} }
     if (v === true || v === 'true') return 'lite';
     if (v === false || v === 'false') return 'auto';
     if (v !== 'lite' && v !== 'full') return 'auto';
@@ -107,8 +107,8 @@
         cfg.baseModelMode = tier;
         if (window.storyFramework && window.storyFramework.saveApiConfig) window.storyFramework.saveApiConfig();
       }
-    } catch (e) {}
-    try { localStorage.setItem(SET_KEY, tier); } catch (e) {}
+    } catch(e){console.warn("[swallowed] base-model-mode",e)}
+    try { localStorage.setItem(SET_KEY, tier); } catch(e){console.warn("[swallowed] base-model-mode",e)}
     clearResolvedCache(); // 用户改档后强迫重新判定
   }
 
@@ -154,7 +154,7 @@
   function cacheResolved(tier) {
     const key = epModelKey();
     if (!key) return;
-    try { localStorage.setItem(CACHE_PREFIX + hash(key), tier + '|' + Date.now()); } catch (e) {}
+    try { localStorage.setItem(CACHE_PREFIX + hash(key), tier + '|' + Date.now()); } catch(e){console.warn("[swallowed] base-model-mode",e)}
   }
 
   function clearResolvedCache() {
@@ -163,7 +163,7 @@
         const k = localStorage.key(i);
         if (k && k.indexOf(CACHE_PREFIX) === 0) localStorage.removeItem(k);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] base-model-mode",e)}
   }
 
   /* ---------- 输出质量探针（v4.11.1，模型无关：只看这一轮回复本身） ----------

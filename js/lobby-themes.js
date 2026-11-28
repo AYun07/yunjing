@@ -23,13 +23,13 @@
       if (valid(u)) return u;
       var s = localStorage.getItem(KEY);
       if (valid(s)) return s;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] lobby-themes",e)}
     return DEFAULT;
   }
   function apply(id) {
     document.documentElement.dataset.theme = id;
     if (document.body) document.body.dataset.theme = id;
-    try { localStorage.setItem(KEY, id); } catch (e) {}
+    try { localStorage.setItem(KEY, id); } catch(e){console.warn("[swallowed] lobby-themes",e)}
     var name = (THEMES.filter(function (t) { return t.id === id; })[0] || {}).name || '主题';
     var lbl = document.querySelector('.theme-switcher .ts-name-cur');
     if (lbl) lbl.textContent = name;
@@ -57,7 +57,7 @@
         apply(t.id);
         panel.classList.remove('on');
         var u = new URL(location.href); u.searchParams.set('theme', t.id);
-        try { history.replaceState(null, '', u); } catch (e) {}
+        try { history.replaceState(null, '', u); } catch(e){console.warn("[swallowed] lobby-themes",e)}
       });
       panel.appendChild(it);
     });

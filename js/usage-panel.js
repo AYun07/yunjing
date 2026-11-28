@@ -34,14 +34,14 @@
       if (fw.apiConfig && fw.apiConfig.model) return fw.apiConfig.model;
       var raw = localStorage.getItem('storyApiConfig');
       if (raw) { var j = JSON.parse(raw); return (j && j.model) || '未命名'; }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] usage-panel",e)}
     return '未配置';
   }
   function loadRates() {
-    try { var r = JSON.parse(localStorage.getItem(RATE_KEY) || 'null'); if (r) return r; } catch (e) {}
+    try { var r = JSON.parse(localStorage.getItem(RATE_KEY) || 'null'); if (r) return r; } catch(e){console.warn("[swallowed] usage-panel",e)}
     return { in: '', out: '' };
   }
-  function saveRates(r) { try { localStorage.setItem(RATE_KEY, JSON.stringify(r)); } catch (e) {} }
+  function saveRates(r) { try { localStorage.setItem(RATE_KEY, JSON.stringify(r)); } catch(e){console.warn("[swallowed] usage-panel",e)} }
 
   /* v4.41.0 全局并发偏好切换：让玩家按自己的端点/机器选档（因人而异），动态上限自动自适应。
      不设费用/次数硬熔断——这里只调「同时在途的请求数」，请求最终都会发出。 */

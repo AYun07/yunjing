@@ -73,8 +73,13 @@
   function isStaleGenreKey(k) {
     var m = /^(storyKnowledge_|worldExt_|storyKBEnabled_)(.+)$/.exec(String(k));
     if (!m) return false;
+    /* v7.6.6：启动早期 currentGenre() 可能取不到（StoryKnowledge/WorldExt 未就绪、URL 无
+       genre 参数），此时若一律判 stale 会把「当前界」键漏掉不恢复 → 触发「从镜像恢复
+       丢失键」偶现。 genre 为空时保守放行（不当旧界），待 rescue 延迟到就绪后再精确判定。 */
+    var cur = currentGenre();
+    if (!cur) return false;
     var keyGenre = m[2].split('~')[0];
-    return keyGenre !== currentGenre();
+    return keyGenre !== cur;
   }
   function rescue() {
     if (recovering) return;
@@ -115,6 +120,13 @@
     },
     rescue: rescue
   };
-  rescue();
+  /* v7.6.6：原在模块加载瞬间就 rescue()，此时 genre 尚未就绪，判定不准。
+     延后到 DOM 就绪 + 一个短延时，让 StoryKnowledge/WorldExt 挂载完，恢复更准。 */
+  function runRescue() { setTimeout(function () { rescue(); }, 400); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runRescue, { once: true });
+  } else {
+    runRescue();
+  }
   console.debug('[StoreGuard] 存储防线就绪(镜像+配额自愈)');
 })();

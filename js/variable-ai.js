@@ -90,7 +90,7 @@ const VariableAI = {
             if (resp.ok && window.AIGovernor.reward) window.AIGovernor.reward();
             else if ((resp.status === 429 || resp.status >= 500) && window.AIGovernor.penalize) window.AIGovernor.penalize();
           }
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] variable-ai",e)}
         return resp;
       }).finally(() => clearTimeout(timer));
     };
@@ -530,8 +530,7 @@ ${text}` }
       fw.storyState.driftNotes = notes.slice(-4);
       fw.saveStory();
       console.warn("[变量AI·审计] 检出数值漂移：", fw.storyState.driftNotes.map((n) => n.text));
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] variable-ai",e)}
   },
   /** 上一轮待落库的提取任务（发送下一轮前等待，保证上下文状态最新） */
   get pending() {
@@ -650,7 +649,7 @@ ${text}` }
         + '<span class="va-label">登记官没给出可用的状态块，已用确定性兜底保住本轮状态（' + nLines + ' 条：字数 / 章节 / 张力'
         + (names && names.length ? ' / 新登场 ' + names.join("、") : '') + '）</span>';
       host.appendChild(el);
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] variable-ai",e)}
   },
 
   /* ==================== 提取主链路 ==================== */
@@ -720,7 +719,7 @@ ${text}` }
       try { rescued = this.applyFallback(this._lastBody || "", turnIdx); } catch (e2) { rescued = false; }
       this.renderFailCard(friendly, turnIdx);
       if (rescued) {
-        try { this.renderFallbackCard("(保底登记)", turnIdx, this._fallbackNames(this._lastBody || "")); } catch (e3) { }
+        try { this.renderFallbackCard("(保底登记)", turnIdx, this._fallbackNames(this._lastBody || "")); } catch(e3){console.warn("[swallowed] variable-ai",e3)}
       }
     } finally {
       this._busy = false;

@@ -19,7 +19,7 @@
 
     function isMobile() { try { return window.matchMedia(MQ).matches; } catch (e) { return false; } }
     function applyClass() {
-        try { document.body.classList.toggle('yunjing-mobile', isMobile()); } catch (e) { }
+        try { document.body.classList.toggle('yunjing-mobile', isMobile()); } catch(e){console.warn("[swallowed] mobile-fit",e)}
     }
 
     /* ==================== 样式注入 ==================== */
@@ -166,10 +166,10 @@
             OV_IDS.forEach(function (id) {
                 const el = document.getElementById(id);
                 if (!el) return;
-                try { el.style.pointerEvents = isOpen(el) ? '' : 'none'; } catch (e) {}
+                try { el.style.pointerEvents = isOpen(el) ? '' : 'none'; } catch(e){console.warn("[swallowed] mobile-fit",e)}
                 if (isOpen(el)) lock = true;
             });
-            try { document.body.classList.toggle('yunjing-lock', lock && isMobile()); } catch (e) { }
+            try { document.body.classList.toggle('yunjing-lock', lock && isMobile()); } catch(e){console.warn("[swallowed] mobile-fit",e)}
         };
         try {
             new MutationObserver(apply).observe(document.documentElement, {
@@ -185,11 +185,11 @@
         if (!wrap) return;
         var sync = function () {
             var on = false;
-            try { on = getComputedStyle(wrap).display !== 'none'; } catch (e) { }
+            try { on = getComputedStyle(wrap).display !== 'none'; } catch(e){console.warn("[swallowed] mobile-fit",e)}
             document.body.classList.toggle('in-setup', on);
         };
         sync();
-        try { new MutationObserver(sync).observe(wrap, { attributes: true, attributeFilter: ['style', 'class'] }); } catch (e) { }
+        try { new MutationObserver(sync).observe(wrap, { attributes: true, attributeFilter: ['style', 'class'] }); } catch(e){console.warn("[swallowed] mobile-fit",e)}
     }
 
     /* ==================== 启动 ==================== */
@@ -199,7 +199,7 @@
     if (document.body) { applyClass(); watchSetup(); }
     else { document.addEventListener('DOMContentLoaded', function () { applyClass(); watchSetup(); }); }
     try { window.matchMedia(MQ).addEventListener ? window.matchMedia(MQ).addEventListener('change', applyClass)
-        : window.matchMedia(MQ).addListener(applyClass); } catch (e) { }
+        : window.matchMedia(MQ).addListener(applyClass); } catch(e){console.warn("[swallowed] mobile-fit",e)}
     /* v3.55.4 resize 防抖：低配机拖拽窗口时 resize 每帧触发，applyClass 含
        getComputedStyle 测量——150ms 静默后只算一次 */
     var _rsT = 0;

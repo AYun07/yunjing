@@ -44,7 +44,7 @@
   function log(msg, level) {
     _log.push({ at: Date.now(), level: level || 'info', msg: String(msg) });
     if (_log.length > 200) _log.shift();
-    try { if (window.YJ_DEBUG) console.debug('[Plugin]', msg); } catch (e) { }
+    try { if (window.YJ_DEBUG) console.debug('[Plugin]', msg); } catch(e){console.warn("[swallowed] plugin-runtime",e)}
   }
 
   function validate(manifest) {
@@ -125,7 +125,7 @@
         try { return window.StoryKnowledge && window.StoryKnowledge.search ? window.StoryKnowledge.search(q, n || 5) : []; } catch (e) { return []; }
       },
       /** 提示（总是允许：只是 UI 反馈） */
-      toast: function (m, t) { try { window.showToast && window.showToast('【' + rec.manifest.name + '】' + m, t || 'info'); } catch (e) { } },
+      toast: function (m, t) { try { window.showToast && window.showToast('【' + rec.manifest.name + '】' + m, t || 'info'); } catch(e){console.warn("[swallowed] plugin-runtime",e)} },
       log: function (m) { log('[' + rec.manifest.id + '] ' + m); }
     };
   }
@@ -146,7 +146,7 @@
           /* 容错：插件出错只停用它，不影响主流程 */
           rec.error = String((e && e.message) || e);
           log('插件 ' + rec.manifest.id + ' 在 ' + hook + ' 抛错，已停用：' + rec.error, 'error');
-          try { window.showToast && window.showToast('插件「' + rec.manifest.name + '」出错已停用：' + rec.error, 'error'); } catch (e2) { }
+          try { window.showToast && window.showToast('插件「' + rec.manifest.name + '」出错已停用：' + rec.error, 'error'); } catch(e2){console.warn("[swallowed] plugin-runtime",e2)}
         }
       }
     }
@@ -297,7 +297,7 @@
   /* 启动时若已授权，自动发现插件（失败静默，不打扰） */
   try {
     setTimeout(function () {
-      try { discoverFromFileBridge().then(function (r) { if (r && r.ok) log('自动发现插件 ' + r.count + ' 个'); }); } catch (e) { }
+      try { discoverFromFileBridge().then(function (r) { if (r && r.ok) log('自动发现插件 ' + r.count + ' 个'); }); } catch(e){console.warn("[swallowed] plugin-runtime",e)}
     }, 3500);
-  } catch (e) { }
+  } catch(e){console.warn("[swallowed] plugin-runtime",e)}
 })();

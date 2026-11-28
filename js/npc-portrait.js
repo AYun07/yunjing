@@ -24,8 +24,7 @@
     saveSettings(s) {
       try {
         localStorage.setItem(SET_KEY, JSON.stringify({ on: s.on !== false }));
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] npc-portrait",e)}
     },
     toggle() {
       var _a;
@@ -65,8 +64,7 @@
             if (ok) {
               try {
                 fw.saveStory();
-              } catch (e) {
-              }
+              } catch(e){console.warn("[swallowed] npc-portrait",e)}
             } else {
               delete this._mem[name];
             }
@@ -97,8 +95,7 @@
       fw.storyState.npcPortraits = p;
       try {
         fw.saveStory();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] npc-portrait",e)}
     },
     remove(name) {
       var _a, _b, _c;
@@ -113,8 +110,7 @@
       if (this._mem) delete this._mem[name];
       try {
         fw.saveStory();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] npc-portrait",e)}
       this.open();
     },
     /** idb:// 标记 → 会话内存表中的真实 dataURL（未预热返回 ''） */
@@ -199,8 +195,7 @@
         this.decorateGallery();
         try {
           (_d = window.showToast) == null ? void 0 : _d.call(window, `🎭 已为「${key}」绘成立绘`, "success");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] npc-portrait",e)}
       } catch (e) {
         this.put(key, { url: "", prompt: "", failed: true });
         const fig = card ? card.querySelector(".np-fig") : null;

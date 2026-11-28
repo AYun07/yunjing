@@ -50,8 +50,7 @@
     let t = {};
     try {
       t = window.ImmersiveSuite && ImmersiveSuite.themes && ImmersiveSuite.themes[genre] || {};
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] comm-core",e)}
     return `--ip:${t.primary || "#c9a86a"};--ia:${t.accent || "#a8d8e0"};--id:${t.deep || "#161410"};--ipn:${t.panel || "#1d1a16"};--itx:${t.text || "#e8dcc0"};--imt:${t.muted || "#9a8c6e"};`;
   }
   const jn = (name) => String(name).replace(/'/g, "");
@@ -69,8 +68,7 @@
       const c = (window.storyFramework.storyState.variables.characters || {})[name];
       const f = c && ((_a = c.favor) != null ? _a : c.好感);
       if (Number.isFinite(Number(f))) favor = Number(f);
-    } catch (e) {
-    }
+    } catch(e){console.warn("[swallowed] comm-core",e)}
     s.temp[name] = { w: Math.max(0, Math.min(100, favor)), idle: 0, star: false };
   }
   function attitude(w) {
@@ -165,12 +163,10 @@
       d = true;
       try {
         window.showToast && showToast(`${CFG.icon} ${name} 传讯抵达（${CFG.name}）`, "success");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] comm-core",e)}
       try {
         window.AudioBox && AudioBox.event("letter");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] comm-core",e)}
     }
     return d;
   }
@@ -291,8 +287,7 @@
       if (unread.length) {
         try {
           WorldExt.persist();
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] comm-core",e)}
         return `【${CFG.name}·世界近讯】主角的${CFG.name}里有未读讯息：${unread.map((u) => `「${u.name}」：「${u.t}」`).join("；")}。下轮正文开头应自然衔接（主角收到讯息、被此事牵动），是否回复由剧情决定；讯息内容与其身份、当前关系相符。`;
       }
       if (OPT("proactive", true) && s.lastRound > 2) {
@@ -329,8 +324,7 @@
       });
       try {
         WorldExt.persist();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] comm-core",e)}
       const t = s.temp[name] || { w: 50, star: false };
       const old = $id("commOv");
       if (old) old.remove();
@@ -369,8 +363,7 @@
       }, 20);
       try {
         window.AudioBox && AudioBox.event("letter");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] comm-core",e)}
     },
     render(typing, streamText) {
       const flow = $id("commFlow");
@@ -422,8 +415,7 @@
       bumpTemp(s, name, 2.5);
       try {
         WorldExt.persist();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] comm-core",e)}
       this.render();
       if (CFG.sendCost && OPT("sendCostOn", !!CFG.sendCost)) {
         const vars = fw && fw.storyState && fw.storyState.variables || {};
@@ -433,31 +425,27 @@
           ch.msgs.pop();
           try {
             WorldExt.persist();
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] comm-core",e)}
           this.busy = false;
           if (sendBtn) sendBtn.disabled = false;
           this.render();
           try {
             window.showToast && showToast(CFG.costHint || `囊中没有${CFG.sendCost.item}`, "error");
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] comm-core",e)}
           return;
         }
         it.count -= CFG.sendCost.count;
         if (it.count <= 0) vars.items = vars.items.filter((x) => x !== it);
         try {
           window.showToast && showToast(`${CFG.icon} 已耗去「${CFG.sendCost.item}」×${CFG.sendCost.count}`, "info");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] comm-core",e)}
       }
       if (!OPT("autoReply", true)) {
         this.busy = false;
         if (sendBtn) sendBtn.disabled = false;
         try {
           window.showToast && showToast(`${CFG.icon} 讯已发出（自动回信已关闭）`, "info");
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] comm-core",e)}
         return;
       }
       if (OPT("delaySim", true)) {
@@ -489,8 +477,7 @@
           ch.msgs.pop();
           try {
             WorldExt.persist();
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] comm-core",e)}
         } else {
           const bubbles = fin.split(/[|\n]+/).map((x) => x.trim()).filter(Boolean).slice(0, 3);
           for (const b of bubbles) {
@@ -501,23 +488,20 @@
           bumpTemp(s, name, 1);
           try {
             window.AudioBox && AudioBox.event("letter");
-          } catch (e) {
-          }
+          } catch(e){console.warn("[swallowed] comm-core",e)}
         }
       } catch (e) {
         const mi = ch.msgs.map((m) => m.r).lastIndexOf("me");
         if (mi >= 0) ch.msgs.splice(mi, 1);
         try {
           window.showToast && showToast("传讯失败：" + String(e.message || "网络异常").slice(0, 80), "error");
-        } catch (e2) {
-        }
+        } catch(e2){console.warn("[swallowed] comm-core",e2)}
       } finally {
         this.busy = false;
         if (sendBtn) sendBtn.disabled = false;
         try {
           WorldExt.persist();
-        } catch (e) {
-        }
+        } catch(e){console.warn("[swallowed] comm-core",e)}
         this.render();
         const i2 = $id("commText");
         if (i2) i2.focus();
@@ -531,14 +515,12 @@
       t.star = !t.star;
       try {
         WorldExt.persist();
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] comm-core",e)}
       const btn = document.querySelector("#commOv .cm-star");
       if (btn) btn.classList.toggle("on", t.star);
       try {
         window.showToast && showToast(t.star ? `已将「${this.cur}」设为特别关心` : `已取消特别关心`, "info");
-      } catch (e) {
-      }
+      } catch(e){console.warn("[swallowed] comm-core",e)}
     }
   };
   function replyMsgs(s, name, hist) {

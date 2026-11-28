@@ -64,7 +64,7 @@
           return { id: a.id, name: a.name, kw: (a.kw || []).concat([a.name]) };
         });
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] action-check",e)}
     return AX_FALLBACK;
   }
 
@@ -78,7 +78,7 @@
       stats = (window.BonusEngine && typeof window.BonusEngine.effectiveStats === 'function')
         ? window.BonusEngine.effectiveStats()
         : ((st && st.variables && st.variables.stats) || {});
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] action-check",e)}
     var axes = [];
     var AX_IDS = axisTable();
     Object.keys(stats).forEach(function (k) {
@@ -93,7 +93,7 @@
           var ax = AE.axisOf(k, k);
           if (ax) hit = { id: ax.id, name: ax.name };
         }
-      } catch (e) { }
+      } catch(e){console.warn("[swallowed] action-check",e)}
       if (!hit) {
         for (var i = 0; i < AX_IDS.length && !hit; i++) {
           var a = AX_IDS[i];
@@ -127,7 +127,7 @@
     catch (e) { return {}; }
   }
   function saveDraft(d) {
-    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch (e) { }
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e){console.warn("[swallowed] action-check",e)}
   }
   function loadHistory() {
     try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
@@ -137,7 +137,7 @@
     var h = loadHistory();
     h.unshift(rec);
     h = h.slice(0, HISTORY_MAX);
-    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch (e) { }
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch(e){console.warn("[swallowed] action-check",e)}
   }
 
   /* 核心判定：d20 骰点由调用方传入（演算用真随机，口述可给固定 10 作参考线） */
@@ -180,7 +180,7 @@
         });
         if (v.statLog.length > 80) v.statLog = v.statLog.slice(-80);
       }
-    } catch (e) { }
+    } catch(e){console.warn("[swallowed] action-check",e)}
     return {
       act: String(opts.act || ' unspecified action').trim(),
       die: die, axis: axis || null, axes: axes,
@@ -218,7 +218,7 @@
     var el = document.getElementById('userInput');
     if (!el) return;
     el.value = (el.value ? el.value + '\n' : '') + text;
-    try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) { }
+    try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch(e){console.warn("[swallowed] action-check",e)}
     el.focus();
   }
 
@@ -311,7 +311,7 @@
     }).join('');
   }
   function clearHistory() {
-    try { localStorage.removeItem(HISTORY_KEY); } catch (e) { }
+    try { localStorage.removeItem(HISTORY_KEY); } catch(e){console.warn("[swallowed] action-check",e)}
     _renderHistory();
   }
 

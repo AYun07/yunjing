@@ -26,7 +26,7 @@
         var m = new URLSearchParams(location.search).get('genre');
         if (m) return m;
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] ai-augment-bridge",e)}
     return 'free';
   }
 
@@ -52,7 +52,7 @@
             var clean = IA.sanitize(r.text);
             if (clean) base.text = clean; /* 覆盖本地文本；已被护栏过滤 */
           }
-        }).catch(function () {});
+        }).catch(function(e){console.warn("[swallowed-promise] ai-augment-bridge",e)});
       }
       return base;
     };
@@ -78,7 +78,7 @@
           system: system, maxTokens: 160, temperature: 0.8
         }).then(function (r) {
           if (r.ok) base.deed = r.text;
-        }).catch(function () {});
+        }).catch(function(e){console.warn("[swallowed-promise] ai-augment-bridge",e)});
       }
       return base;
     };
@@ -102,7 +102,7 @@
         system: system, maxTokens: 160, temperature: 0.75
       }).then(function (r) {
         if (r.ok && v.时间.pendingEvents[0] === ev) v.时间.pendingEvents[0] = r.text;
-      }).catch(function () {});
+      }).catch(function(e){console.warn("[swallowed-promise] ai-augment-bridge",e)});
     });
     global.__yjWorldAIHooked = true;
   }
@@ -143,7 +143,7 @@
   /* 自动引导：DOMContentLoaded 后尝试接入（各模块已挂载） */
   try {
     if (typeof global.addEventListener === 'function') {
-      global.addEventListener('DOMContentLoaded', function () { try { boot(); } catch (e) {} });
+      global.addEventListener('DOMContentLoaded', function () { try { boot(); } catch(e){console.warn("[swallowed] ai-augment-bridge",e)} });
     }
-  } catch (e) {}
+  } catch(e){console.warn("[swallowed] ai-augment-bridge",e)}
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -45,7 +45,7 @@
       requestAnimationFrame(function () { item.style.opacity = '1'; item.style.transform = 'translateY(0)'; });
       setTimeout(function () { item.style.opacity = '0'; item.style.transform = 'translateY(-8px)'; setTimeout(function () { item.remove(); }, 420); }, 2600);
       while (layer.children.length > 6) layer.removeChild(layer.firstChild);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] live-feedback",e)}
   }
   window.addEventListener('yj:stat-change', function (e) { floatStat(e && e.detail); });
 
@@ -53,14 +53,14 @@
   var LOG_KEY = 'yjWorldFeed';
   var feed = [];
   try { feed = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); if (!Array.isArray(feed)) feed = []; } catch (e) { feed = []; }
-  function saveFeed() { try { localStorage.setItem(LOG_KEY, JSON.stringify(feed.slice(-30))); } catch (e) {} }
+  function saveFeed() { try { localStorage.setItem(LOG_KEY, JSON.stringify(feed.slice(-30))); } catch(e){console.warn("[swallowed] live-feedback",e)} }
   var FEED_HIDE_KEY = 'yjWorldFeedHidden';
   /* v5.2.1：默认收起，且「收起/展开」只在本会话内有效——刷新后总是回到干净的收起态。
      不用 localStorage 记忆展开态，否则老玩家历史残留的「展开」会继续遮挡正文。
      FEED_HIDE_KEY 保留仅为兼容旧调用，不再参与默认态判定。 */
   var _feedHidden = true; /* 会话级：默认收起 */
   function feedHidden() { return _feedHidden; }
-  function setFeedHidden(v) { _feedHidden = !!v; try { localStorage.setItem(FEED_HIDE_KEY, v ? '1' : '0'); } catch (e) {} }
+  function setFeedHidden(v) { _feedHidden = !!v; try { localStorage.setItem(FEED_HIDE_KEY, v ? '1' : '0'); } catch(e){console.warn("[swallowed] live-feedback",e)} }
 
   /* v4.38.0 修 P1-4：世界动态面板常驻左下、遮挡内容且不能整体收起。
      加一个「×」关闭按钮 → 隐藏面板并在左下留一个极小的「⏱」重开圆点（不再是碍眼大卡片）。
@@ -178,10 +178,10 @@
       localStorage.setItem('yjVisitStreak', String(streak));
       if (streak >= 2 && streak <= 30) {
         setTimeout(function () {
-          try { window.showToast && window.showToast('🌤 连续回归第 ' + streak + ' 天 · 世界一直在这里等你', 'info'); } catch (e) {}
+          try { window.showToast && window.showToast('🌤 连续回归第 ' + streak + ' 天 · 世界一直在这里等你', 'info'); } catch(e){console.warn("[swallowed] live-feedback",e)}
         }, 2600);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] live-feedback",e)}
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', checkStreak);
   else checkStreak();

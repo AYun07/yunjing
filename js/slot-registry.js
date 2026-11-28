@@ -34,16 +34,16 @@
     try {
       var q = new URLSearchParams(location.search).get("genre");
       if (q) return q;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     try {
       var fw = global.storyFramework;
       var cfg = fw && fw.config;
       var g = cfg && (cfg.genreKey || cfg.genre || cfg.id);
       if (g) return g;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     try {
       if (global.WorldExt && global.WorldExt.genre) return global.WorldExt.genre;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     return "free";
   }
 
@@ -52,11 +52,11 @@
     try {
       var fw = global.storyFramework;
       if (fw && fw.slotId) return fw.slotId;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     try {
       var s = localStorage.getItem("storyActiveSlot_" + genre());
       if (s) return s;
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     return "main";
   }
 
@@ -129,7 +129,7 @@
     var gg = g || genre();
     var out = [];
     for (var i = 0; i < RULES.length; i++) {
-      try { out.push(RULES[i].build(gg, sid)); } catch (e) {}
+      try { out.push(RULES[i].build(gg, sid)); } catch(e){console.warn("[swallowed] slot-registry",e)}
     }
     return out;
   }
@@ -170,7 +170,7 @@
         if (GENRE && !GENRE.test(k)) continue;
         out.push(k);
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     return out;
   }
 
@@ -191,7 +191,7 @@
     var push = function (k) { if (k && !seen[k]) { seen[k] = 1; keys.push(k); } };
     var i;
     for (i = 0; i < RULES.length; i++) {
-      try { push(RULES[i].build(gg, sid)); } catch (e) {}
+      try { push(RULES[i].build(gg, sid)); } catch(e){console.warn("[swallowed] slot-registry",e)}
     }
     var scanned = scanKeysOf(sid, gg);
     for (i = 0; i < scanned.length; i++) push(scanned[i]);
@@ -202,7 +202,7 @@
           var r = RULES[i];
           if (r.genreAt !== "end") continue;
           push(r.base + gg);
-        } catch (e) {}
+        } catch(e){console.warn("[swallowed] slot-registry",e)}
       }
     }
     var removed = [];
@@ -214,11 +214,11 @@
         localStorage.removeItem(keys[i]);
         removed.push(keys[i]);
         /* 连带清理 .bak / .idb 变体 */
-        try { localStorage.removeItem(keys[i] + ".bak"); localStorage.removeItem(keys[i] + ".idb"); } catch (e2) {}
-      } catch (e) {}
+        try { localStorage.removeItem(keys[i] + ".bak"); localStorage.removeItem(keys[i] + ".idb"); } catch(e2){console.warn("[swallowed] slot-registry",e2)}
+      } catch(e){console.warn("[swallowed] slot-registry",e)}
     }
     /* 槽位归属标记 */
-    try { localStorage.removeItem("yunjingLegacyOwner:" + gg); } catch (e) {}
+    try { localStorage.removeItem("yunjingLegacyOwner:" + gg); } catch(e){console.warn("[swallowed] slot-registry",e)}
     return removed;
   }
 
@@ -259,7 +259,7 @@
       /* 认领：孤儿数据搬进本档 */
       localStorage.setItem(mine, localStorage.getItem(legacyKey));
       localStorage.removeItem(legacyKey);
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     return mine;
   }
 
@@ -288,7 +288,7 @@
           if (!mainHasSave) localStorage.removeItem(old);
         }
       }
-    } catch (e) {}
+    } catch(e){console.warn("[swallowed] slot-registry",e)}
     return key;
   }
 
