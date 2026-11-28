@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<script src="js/entry-guard.js?v=7.6.2"></script>
+<script src="js/entry-guard.js?v=7.6.3"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>云境 · 一致性自检</title>
@@ -16,15 +16,15 @@ b{font-family:monospace}
 #sum{position:sticky;top:0;background:#12141d;padding:10px 0;font-size:16px}
 button{padding:10px 22px;background:#e0a84c;color:#16181f;border:none;border-radius:8px;font-size:15px;cursor:pointer;margin-bottom:14px}
 </style>
-  <link rel="stylesheet" href="css/desktop-shell.css?v=7.6.2">
-  <script src="js/desktop-shell.js?v=7.6.2"></script>
+  <link rel="stylesheet" href="css/desktop-shell.css?v=7.6.3">
+  <script src="js/desktop-shell.js?v=7.6.3"></script>
 </head>
 <body class="page-selftest">
 <h1>🩺 云境 · 一致性自检</h1>
 <button onclick="runAll()">▶ 运行全部检查</button>
 <div id="sum"></div><div id="out"></div>
 <script>
-const ENGINE_VER = '7.6.2';
+const ENGINE_VER = '7.6.3';
 const ENGINES = ['js/world-runtime.js','js/world-bus.js','js/module-forge.js','js/combat-core.js','js/rpg-quests.js','js/rpg-core.js','js/quest-chain.js','js/world-stage.js','js/story-hooks.js','js/world-director.js','js/world-legacy.js','js/world-ext/world-ext-core.js','js/player-kit.js','js/knowledge-manager.js','js/kb-vector.js','js/st-import.js','js/store-guard.js','js/mobile-fit.js','js/id-migrate.js','js/preset-io.js','js/regex-io.js','js/ai-message-builder.js','js/ai-response-handler.js','js/opportunity-system.js','js/world-alive.js'];
 const GENRES = ["mystery","scifi","wuxia","cthulhu","free","swallowedstar","shrouding","quanzhigaoshou","doupocangqiong","wanmeishijie","douluodalu","daoguiyixian","zhongshengdushi","dibao","longzu","quanzhifashi","limingzhijian","lunhuileyuan","wulianfengdian","shengxu","shenmifusu","ditandali","fanrenxiuxian","xianni","earth","freeworld","quanqiubingfeng","chaoshenxueyuan","zhanhen","jianlai","guimi","guzhenren","xuanjianxianzu","dazhuzai","wudongqiankun","yuanzun","wanxiangzhiwang","wangyou","shengtang","jinzhanfashi","menglongguojiang"];
 function item(cls, name, detail){ const d=document.getElementById('out'); d.insertAdjacentHTML('beforeend', `<div class="item ${cls}">${cls==='ok'?'✅':cls==='fail'?'❌':'⚠️'} <b>${name}</b> — ${detail}</div>`); return cls==='ok'?1:cls==='fail'?0:1; }

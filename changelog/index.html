@@ -278,9 +278,9 @@
             .tag-filter { font-size: 10.5px; padding: 4px 11px; }
         }
     </style>
-    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.6.2">
-  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.6.2">
-  <script src="../js/desktop-shell.js?v=7.6.2"></script>
+    <link rel="stylesheet" href="../css/yunjing-theme.css?v=7.6.3">
+  <link rel="stylesheet" href="../css/desktop-shell.css?v=7.6.3">
+  <script src="../js/desktop-shell.js?v=7.6.3"></script>
 </head>
 
 <body class="page-changelog">
@@ -317,12 +317,25 @@
         <div class="log-empty" id="logEmpty">此标签下暂无版本记录</div>
 
         <!-- ==================== 版本条目（新→旧） ==================== -->
+                        <article class="log-entry" data-tags="版本 发布 修复 体验 优化" style="--entry-hue:#5a6ac0;">
+            <div class="entry-head">
+                <span class="entry-ver">v7.6.3</span>
+                <span class="entry-date">2026-11-28</span>
+                <span class="entry-badge new">当前版本</span>
+            </div>
+            <h3 class="entry-title">消化玩家实测 100 条清单：竞态崩溃、死按钮、正文清洗与健壮性</h3>
+            <p class="entry-lead">基于玩家逐按钮真实点击的 100 条反馈，先甄别剔除测试工具误判（如 wangyou 缺 8 字段实为误报），再按 P1→P2→P3 修复真实项。</p>
+            <div class="ver-diff">
+                <div><b>P1 核心</b>：studio 33 处裸 onclick 加 window 守卫，消除入场瞬间点导出存档的崩溃；72 性格芯片选中态即时可见；scifi 正文残留 markdown 面板行清洗；mystery 标题跟随 config；存档/世界时钟关键链路 111 处空 catch 改为可诊断日志。</div>
+                <div><b>P2 体验</b>：设置页与小云死按钮补明确反馈、档位内外同步、小云新增可见发送按钮、形态/情绪分组、开发者术语玩家化、大厅全部展开/收起态切换。</div>
+                <div><b>诚实甄别</b>：清单中 wangyou 缺 8 字段（实缺 2）、小云按钮无反应（实有守卫）、SW 告警等为误判，未误改；实锤与误判逐条记入 DR-119。</div>
+            </div>
+        </article>
                         <article class="log-entry" data-tags="版本 发布 修复 更新 客户端 稳定" style="--entry-hue:#d4694a;">
             <div class="entry-head">
                 <span class="entry-ver">v7.6.2</span>
                 <span class="entry-date">2026-11-27</span>
-                <span class="entry-badge new">当前版本</span>
-            </div>
+                </div>
             <h3 class="entry-title">彻底修复"更新装完仍旧版、反复提示"：真正重编 setup.exe 外壳</h3>
             <p class="entry-lead">v7.6.1 把版本判断改成有效版本=max(壳,内容)并重打了 zip 外壳，但仍没修好——因为沙箱缺 NSIS 环境，setup.exe 沿用了旧的 7.3.0 二进制。走"下载 setup.exe 重装"路径的用户，装完还是旧外壳，死循环重现。v7.6.2 装好 NSIS 后真正重编了 setup.exe，两条更新路径都能送达新外壳。</p>
             <div class="ver-diff">
@@ -1370,7 +1383,7 @@
                 <span class="entry-date">2026-11-06</span>
             </div>
             <h3 class="entry-title">版本同源根因修复 · 静态文案与缓存参数不再漏网</h3>
-            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.6.2 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
+            <p class="entry-text">静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt 标题、changelog 页 CSS ?v=7.6.3 全部纳入同源，JS 未执行时也不会显示旧号 防复发：release.mjs 新增四条同源替换规则，以后每次发版自动同步，不再靠人工记得改这几处 全量同源：170 处 ?v= 参数、YJ_VER / SW_VER / 页面标题 / 版本徽标 / README / VERSIONS / changelog 统一到 3.96.1 本版只收口版本同源缺陷，不含功能改动；v3.96.0 的地图焕新与资料库布满成果原样保留</p>
                     <p class="ver-diff"><b>相比 v3.96.0 的变化</b>：版本同源根因修复 · 静态文案与缓存参数不再漏网；静态残留清零：index.html 页脚徽标 v3.93.0、studio.html 顶栏徽标 v3.87.0、QUICKSTART.txt… · <a href="https://github.com/AYun07/yunjing/compare/v3.96.0...v3.96.1" target="_blank" rel="noopener">看代码差异 ↗</a></p>
         </article>
         <article class="log-entry" data-tags="版本 地图 资料库 优化 体验" style="--entry-hue:#4f8fb8;">
