@@ -2,21 +2,24 @@
 
 > 每个版本都已打 **git 标签**，并在 [Releases](https://github.com/AYun07/yunjing/releases) 建了对应发布页。每版的 **完整内容包** = `https://github.com/AYun07/yunjing/archive/refs/tags/<版本>.zip`（或发布页 Assets 里的 Source code (zip)），下载解压就是那一版 100% 的可运行工程。点击「📂 该版文件」看在线文件树；点击「🔍 与上一版差异」在 GitHub 直接对比改了什么。
 
-> 共 **132** 个版本，从 `v3.55.7` 到 `v7.6.4`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
+> 共 **135** 个版本，从 `v3.55.7` 到 `v7.6.5`。带 `*` 标记的版本与下一版同批发布、共用同一份快照。
 >
-> **版本分层（v7.6.4 口径）**：首行 **v7.6.4 为当前版本**；其余 **131 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
-> 当前口径（v7.6.4）：以下速查表首行即当前版本，历史条目中的版本号保持各自发布当时的史实。
+> **版本分层（v7.6.5 口径）**：首行 **v7.6.5 为当前版本**；其余 **134 个版本均为旧版本**，已归档，每版仍保留独立 tag、发布页与完整内容包。旧版本完整清单同时列在 [README](README.md) 的「版本列表」一节。
+> 当前口径（v7.6.5）：以下速查表首行即当前版本，历史条目中的版本号保持各自发布当时的史实。
 
 > **版本号规则（v3.87.0 起执行）**：功能批次升次版号（3.x.0），修 bug 升修订号（3.x.y）；`git tag` / `window.YJ_VER` / `sw.js SW_VER` / 页面标题 / 本文件条目四者必须同号；静态资源 `?v=` 参数一律等于当前版本号，不再保留历史世代的号。
 
 ---
 
-> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；132 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
+> **怎么读这一页**：全页按 **新 → 旧** 排列，**最新版永远在最上方**。每一版分两块——「**本版做了什么**」（原有沿革说明）与「**相比上一版的变化**」（本版相对前一版改了什么，附 GitHub 代码 diff 链接）。想跳到某一版用下面的速查表；135 版全部有独立 git tag、发布页与完整内容包。页尾另按版本归档了 v1.x–v3.55.6 时期的早期功能说明。
 
-## 版本速查（新→旧 · 首行为当前版本，其余 131 版为旧版本）
+## 版本速查（新→旧 · 首行为当前版本，其余 134 版为旧版本）
 
 | 版本 | 日期 | 完整包（zip） | 发布页 |
 |---|---|---|---|
+| **v7.6.5** | 2026-11-28 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.5.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.5) |
+| **v7.6.4** | 2026-11-28 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.4.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.4) |
+| **v7.6.3** | 2026-11-28 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.3.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.3) |
 | **v7.6.2** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.2.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.2) |
 | **v7.6.1** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.1.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.1) |
 | **v7.6.0** | 2026-11-27 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.0.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v7.6.0) |
@@ -152,6 +155,27 @@
 | **v3.55.7** | 2026-10-29 | [下载](https://github.com/AYun07/yunjing/archive/refs/tags/v3.55.7.zip) | [查看](https://github.com/AYun07/yunjing/releases/tag/v3.55.7) |
 
 ---
+
+## v7.6.5 · 2026-11-28 · 补齐版本同源 + 正文/存储/竞态精修
+
+- 玩家 v7.6.4 实测 100 条清单，四组并行逐条实读代码甄别，把「实锤」与「需前置/待复核/设计如此/已修」分开，同一根因逐条销号合并，误报一律不改。
+- P1：补 VERSIONS.md 速查表与详情段（v7.6.3/v7.6.4/v7.6.5）恢复版本同源；studio 遮罩关闭最后 2 处裸 onclick 加 window 守卫；wangyou 主力界 nameSeeds 补 backgrounds/ageRange/names，创建角色台不再退回默认年龄。
+- P2：正文清洗正则放宽到无列表前缀/长键名（longzu markdown 残留）；存储配额超限告警按 key 去重（实测曾刷 79 次）、旧界知识库键不再被镜像 rescue 回灌占满配额；右栏标题单行省略号、回合胶囊下移 82px、角色面板悬浮气泡上移避开派系/剧本按钮。
+- P3：小云「写入项目源码/挂载到大厅/改源码」技术措辞玩家化；高频配置写入 catch 补 warn。
+- 诚实甄别：72 芯片高亮失效（实为测试脚本持旧 DOM 引用，代码已高亮）、小云 13 形态按钮（点击实际生效）、settings 更新按钮重复（实为 4 个且职责各异）、无战斗/委托/图鉴面（自由界设计如此）等为误判，未误改；逐条见验收契约。
+
+## v7.6.4 · 2026-11-28 · 创作态栈溢出修复 + 六轮实测
+
+- 按玩家要求继续找问题、连续实测。六轮真实交互（200+ 点击，含真机 Electron 创作全流程）定位到 1 个真 bug 并修复，其余误报如实甄别。
+- P1：修复创作态渲染正文的无限递归栈溢出（bonus-engine recompute ↔ story-status-renderer renderStats 经 yj:bonus-change 回环）——recompute 增加 silent 参数断开递归，装备/称号即时反馈保留（DR-120）。
+- 六轮实测：全页点击、工具箱 24 项、7 世界切换、XSS、快速连点、损坏存档容错、真机创作全流程 7/7、Promise rejection 0。
+- 如实披露：沙箱无 Windows 桌面，setup.exe GUI 双击流程未真机走完，以产物级解包 + mock 通道断言覆盖。
+
+## v7.6.3 · 2026-11-28 · 消化玩家实测 100 条清单
+
+- 基于玩家逐按钮真实点击的 100 条反馈，先甄别剔除测试工具误判，再按 P1→P2→P3 修复真实项（DR-119）。
+- P1：studio 33 处裸 onclick 加 window 守卫；72 性格芯片选中态即时可见；scifi 正文残留 markdown 清洗；mystery 标题跟随 config；关键链路 111 处空 catch 改可诊断日志。
+- P2：设置页与小云死按钮补反馈、档位同步、小云可见发送按钮、形态/情绪分组、开发者术语玩家化。
 
 ## v7.6.2 · 2026-11-27 · 彻底修复更新死循环：真正重编 setup.exe 外壳
 

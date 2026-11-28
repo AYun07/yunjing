@@ -61,7 +61,7 @@
         if (step < STEPS.length - 1) { step++; render(); return; }
         close();
         // 走到最后一步：跳到创作室并打开接口设置
-        try { location.href = 'studio.html?v=7.6.4&fromGuide=1'; } catch (e) {}
+        try { location.href = 'studio.html?v=7.6.5&fromGuide=1'; } catch (e) {}
       };
     }
 
