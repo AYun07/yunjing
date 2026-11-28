@@ -216,6 +216,8 @@ const WangyouStoryConfig = {
     baseAttributes: { tension: 15, emotion: 15, prose: 10, pacing: 10, creativity: 10, depth: 10 },
     maxPoints: 100,
     maxTechniques: 3,
+    startRealm: '新手谷 · 1级新人',
+    panelLabels: { progress: '赛季进度', unit: '回合', notStarted: '未入场', gauges: '状态仪表盘', stats: '角色面板' },
     statusFields: ['tension','emotionGauge'],
     renderStatus: (vars) => window.StoryStatusRenderer.refresh(vars),
     buildOpeningInstruction: (setup) => {

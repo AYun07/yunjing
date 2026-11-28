@@ -1869,3 +1869,13 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 证据：从新 setup.exe 解出内嵌 app-64.7z 再解出 app.asar，产物级确认 package.json=7.6.2 + main.js 含 effectiveVersion 修复；zip 内 asar 同为 7.6.2；三方 SHA 对齐。
 - 未验证项强制披露：沙箱无 Windows 桌面，setup 安装向导的点选流程以产物级解包 + mock electron 通道断言覆盖，未在有桌面的 Windows 机走完 GUI 安装。
 - 失效条件：若将来又因环境缺 NSIS 而复用旧 setup 二进制，死循环会复发——发布门禁必须校验"setup.exe 内嵌 asar 版本 = 当前版本号"。
+
+## DR-119 · 玩家实测 100 条清单的甄别与分批修复（2026-11-28，v7.6.3）
+- 背景：玩家提交《v7.6.2-100条实测问题清单（玩家视角·吹毛求疵）》，带严重度/置信度/根因定位。上一轮 P0 已全修，本轮以体验打磨/死按钮/一致性/健壮性为主。
+- 关键决策：不照单全收，先逐条核实根因、剔除测试工具误判，再派工修复。
+  - 误报甄别：① #38 wangyou"缺8字段"实为误报——它用 `setupMeta.X=` 赋值形式已有6项，真缺 `panelLabels`/`startRealm` 2项；② #20/#21 小云两按钮实际有 toast/alert 守卫，是工具只读 DOM 未捕获弹层的误判；③ #23/#63 形态按钮实际有 onclick 切换，测试读的"形态标签"DOM 本不存在；④ #43 SW 告警、#49 32界vague、#69 可访问性均清单自行甄别为非缺陷。这些不写进修复数、不误改。
+  - P1 真修：① #44/45/46 竞态——studio 33 处裸 `onX="StoryInput./Toolbox./SceneState./Snapshots."` 全部加 `if(window.X)` 守卫（项目既有先例，不用全局占位代理避免副作用）；② #17 芯片选中态——`toggleTrait` 改为点击瞬间在按钮节点切换 `on` 类+`aria-pressed`，不依赖整段 innerHTML 重建（重建会换节点导致检测工具读到 stateChanged:false）；③ #1 markdown 面板行——scifi 正文残留 `### 面板标题`/`- **字段**：值`，原清洗只认"第X章"标题，新增保守清理（标题行直接删、加粗字段行连续≥2行成组才删）；④ #47 mystery 标题——`zhName()` 只读 `storyFramework.config.genreName` 时序未就绪，改为优先 `GenreStoryConfig.genreName`（与 card-hub/dlc-manager 同源）；⑤ #60/#61 关键链路空 catch——save-slots/world-alive/world-clock 共 111 处改 `console.warn`（控制流不变），其余全库空 catch 加 lint 建议不追求清零。
+  - P2 真修：设置页/小云死按钮补 toast 反馈、档位内外同步（connection-profiles 派发 `yunjing:profiles-changed` 事件）、小云加可见发送按钮、形态/情绪分组、措辞玩家化、大厅"全部展开"态切换。
+- 证据：v763 静态断言 29/29、真机 Electron（Xvfb+CDP+Playwright 真实点击）8/8（芯片 cs-trait→cs-trait on、竞态裸调用0、导出存档不崩、mystery标题悬疑推理、发送按钮命中情绪、设置页反馈）。
+- 未验证项强制披露：B6 scifi markdown 以清单证据+纯函数复刻验证，未实 API 重跑 38 界（耗时20+分钟）；config 字段按甄别后真实缺项补，未实现的字段缺口如实披露；setup GUI 双击流程沙箱无 Windows 桌面，以产物级解包+Electron 实测覆盖。
+- 失效条件：若将来流式输出让 markdown 面板行与叙事同行，成组清理规则需重估；若 GenreStoryConfig 导出名变更，mystery 标题兜底需同步。

@@ -14,6 +14,11 @@
   "use strict";
   var LS_PROFILES = "yunjing.profiles";
   var LS_ROLES = "yunjing.profileRoles";
+  /* v7.6.2：配置面板（config-modal.js）的「主笔模型档位」下拉读 localStorage['yunjing.modelSlots']，
+     而本模块此前只写 'yunjing.profiles'——两套口径导致外层存成功、内层下拉仍是「尚未保存档位」。
+     这里把本模块作为唯一权威源，写入后镜像一份同结构档位进 modelSlots，并派发事件让面板立即重渲染。 */
+  var LS_MODEL_SLOTS = "yunjing.modelSlots";
+  var EVT_CHANGED = "yunjing:profiles-changed";
   var ROLES = ["varAI", "summary"];
   // 角色选择里的伪选项（非真实 profile id）
   var LEGACY = "__legacy__"; // varAI：沿用下方「变量AI」单配置
@@ -32,6 +37,41 @@
     return "cp_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
   function normType(t) { return t === "gemini" ? "gemini" : "openai"; }
+  /** 通知配置面板重读同一份档位数据（设置页已监听此事件） */
+  function changed() {
+    try {
+      if (window.dispatchEvent) window.dispatchEvent(new Event(EVT_CHANGED));
+    } catch (e) { }
+  }
+  /** 把本模块的档位镜像成 ModelSlots 结构，供「全部接口配置」里的主笔下拉即时读取。
+   *  只增删带 _cpProfile 标记的镜像项，不碰玩家手工存的主笔档；不改动 storyApiConfig。 */
+  function mirrorToModelSlots(arr) {
+    try {
+      var slots = read(LS_MODEL_SLOTS, []);
+      if (!Array.isArray(slots)) slots = [];
+      var ids = {};
+      (arr || []).forEach(function (p) { if (p && p.id) ids[p.id] = 1; });
+      slots = slots.filter(function (s) { return !(s && s._cpProfile && !ids[s.id]); });
+      (arr || []).forEach(function (p) {
+        if (!p || !p.id || !p.endpoint || !p.model) return;
+        var cfg = {
+          endpoint: p.endpoint, apiKey: p.apiKey || "", model: p.model,
+          type: normType(p.type), maxTokens: Number(p.maxTokens) || 4096,
+          temperature: (p.temperature != null) ? p.temperature : 0.2,
+          timeout: Number(p.timeout) || 90
+        };
+        var name = p.name || p.model || p.endpoint;
+        var hit = null;
+        for (var i = 0; i < slots.length; i++) if (slots[i] && slots[i].id === p.id) { hit = slots[i]; break; }
+        if (hit) {
+          hit.name = name; hit.cfg = cfg; hit.ts = Date.now(); hit._cpProfile = true;
+        } else {
+          slots.push({ id: p.id, name: name, ts: Date.now(), cfg: cfg, _cpProfile: true });
+        }
+      });
+      write(LS_MODEL_SLOTS, slots);
+    } catch (e) { }
+  }
 
   var ConnectionProfiles = {
     KEY_PROFILES: LS_PROFILES,
@@ -65,16 +105,21 @@
       for (var i = 0; i < arr.length; i++) if (arr[i].id === p.id) { idx = i; break; }
       if (idx >= 0) arr[idx] = p; else arr.push(p);
       write(LS_PROFILES, arr);
+      mirrorToModelSlots(arr);
+      changed();
       return p;
     },
     remove: function (id) {
-      write(LS_PROFILES, this.list().filter(function (p) { return p.id !== id; }));
+      var left = this.list().filter(function (p) { return p.id !== id; });
+      write(LS_PROFILES, left);
+      mirrorToModelSlots(left);
       var roles = this.roles();
-      var changed = false;
+      var rolesChanged = false;
       ROLES.forEach(function (r) {
-        if (roles[r] === id) { roles[r] = null; changed = true; }
+        if (roles[r] === id) { roles[r] = null; rolesChanged = true; }
       });
-      if (changed) write(LS_ROLES, roles);
+      if (rolesChanged) write(LS_ROLES, roles);
+      changed();
     },
     roles: function () {
       var r = read(LS_ROLES, {});
@@ -86,6 +131,7 @@
       var roles = this.roles();
       roles[role] = id || null;
       write(LS_ROLES, roles);
+      changed();
     },
     /** 该角色当前指派（含伪选项值）；未指派返回 null */
     roleValue: function (role) { return this.roles()[role] || null; },
@@ -141,6 +187,9 @@
 
   // 模块加载即迁移一次（config-modal 打开前数据就绪，VariableAI 取值不踩空）
   try { ConnectionProfiles.migrateLegacy(); } catch (e) { }
+  /* v7.6.2：老玩家此前已存的档位在升级前没有镜像，加载时补一次，
+     确保设置页/创作室打开配置面板时主笔下拉立刻有档，不再显示「尚未保存档位」。 */
+  try { mirrorToModelSlots(ConnectionProfiles.list()); } catch (e) { }
 
   window.ConnectionProfiles = ConnectionProfiles;
 })();

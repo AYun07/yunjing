@@ -572,7 +572,8 @@
     renderList();
     f3.appendChild(ul);
     box.appendChild(f3);
-    box.appendChild(el('div', 'hint', '·「装进大厅」：模块存进你自己的模块库，随时运行（刷新不丢）。<br>·「导出到文件夹」：授权后小云把模块文件导出到你选的文件夹（仅高级玩家用；不授权也能用「装进大厅」）。<br>· 没填 Key 也能体验：小云用内置模板生成演示模块；接入 API 后可按任何需求独立开发，且会<b>自检运行错误并自动修复（最多2轮）</b>。<br><br>🔒 <b>隐私承诺：</b>模块与代码只保存在你的本机（浏览器模块库 / 你授权的本地目录），代码层<b>无任何上传、无任何 git/GitHub 操作</b>，且项目 .gitignore 已永久排除 modules/ 目录——玩家造的东西绝不会被同步到仓库。唯一的外发请求，是把需求文本发给你自己配置的大模型 API。'));
+    /* v7.6.2 措辞精简：长段隐私说明压成玩家读得进去的短句，保留「本机运行、不上传」要点 */
+    box.appendChild(el('div', 'hint', '·「装进大厅」：存进你的模块库，随时运行，刷新不丢。<br>·「导出到文件夹」：想要文件就导出到自己选的文件夹，不导出也能用。<br>·「放大预览」：大屏看效果。<br>🔒 模块只在你本机运行，不上传、不外传；唯一的外发是把需求发给你自己配置的 AI。'));
 
     var lastHTML = '', lastName = '';
 
@@ -595,7 +596,11 @@
           })
           .catch(function (e) { st.className = 'status err'; st.textContent = 'API 调用失败：' + e.message + '（已改用内置模板生成演示模块）'; done(demo(wish), wish, true); });
       } else {
-        setTimeout(function () { done(demo(wish), wish, true); }, 700);
+        /* v7.6.2：未配置模型 Key 时此前只有一句笼统的「正在开发中」，玩家以为按钮没反应。
+           明确告知将走内置模板，并稍作停留让提示可读，再生成演示模块。 */
+        st.className = 'status';
+        st.textContent = '未配置模型 Key，将用内置模板生成演示模块…（填上方 API 地址与 Key 可按任意需求独立开发）';
+        setTimeout(function () { done(demo(wish), wish, true); }, 1200);
       }
     };
     function done(html, wish, demoMode) {

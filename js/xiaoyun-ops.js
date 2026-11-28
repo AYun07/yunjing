@@ -251,7 +251,7 @@
       fn: function () { if (!window.WorldBook) return { ok: false, msg: "世界书系统未加载。" }; window.WorldBook.open(); return { ok: true, msg: "已打开世界书面板。" }; }
     },
     "ui.devforge": {
-      desc: "打开造物工坊（小云独立开发新模块 / 写入项目源码）", args: "{}",
+      desc: "打开造物工坊（小云独立开发新模块 / 导出到文件夹）", args: "{}",
       fn: function () { if (window.XYDev) { window.XYDev.open(); return { ok: true, msg: "造物工坊已打开。" }; } return { ok: false, msg: "造物工坊未加载。" }; }
     },
     /* —— 行动判定骰 —— */

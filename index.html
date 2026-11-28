@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 
 <head>
-    <!-- v6.3.3 唯一启动界面守卫：单独打开本页（无参数/无封面会话/非同源）弹回封面；开发者 ?dev=1 豁免 -->
+    <!-- v6.3.3 唯一启动界面守卫：单独打开本页（无参数/无封面会话/非同源）弹回封面；开发者 ?dev=1 可跳过守卫 -->
     <script src="js/entry-guard.js?v=7.6.2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -88,8 +88,8 @@
              原「五大类型工坊」已并入「自由创作世界」分类，不再单独成区。 -->
         <div class="section-title">开放世界扮演 · 41 界｜四大分类：原著同人 31 · 真实地球 1 · 自由创作 6 · 网游大世界 3</div>
         <div class="ws-groups-ctl" id="wsGroupsCtl">
-            <button type="button" class="ws-ctl-btn" id="wsExpandAll">⊕ 全部展开</button>
-            <button type="button" class="ws-ctl-btn" id="wsCollapseAll">⊖ 全部收起</button>
+            <!-- v7.6.2：总控改为单一按钮，文案随当前状态在「全部展开 / 全部收起」间切换，不再有点击无反应的空按钮 -->
+            <button type="button" class="ws-ctl-btn" id="wsToggleAll">⊕ 全部展开</button>
         </div>
 
         <div class="ws-cat" data-cat="canon" style="--cat-hue:#c9a86a;">
@@ -553,13 +553,13 @@
             <div class="info-card">
                 <div class="info-title"><span class="dot"></span>框架特性</div>
                 <ul class="info-list">
-                    <li>配置驱动：一个 config 文件定义一个文学世界</li>
+                    <li>专属设定：一份设定文件定义一个文学世界</li>
                     <li>设定台 60+ 选项：视角/文风/时代/母题全维可调</li>
                     <li>开放世界扮演：原著知识库 + 原著忠实铁律 + 玩家身份卡</li>
                     <li>变量系统：角色卡 / 伏笔 / 状态仪表盘全程追踪</li>
                     <li>动态世界：第二 API 推演远方事件，NPC 档案自动并入</li>
                     <li>变量AI：第三模型提取状态，主笔专注写正文</li>
-                    <li>双格式接口：OpenAI 兼容 / Gemini</li>
+                    <li>AI 接口：OpenAI 兼容 / Gemini 任选</li>
                     <li>灵感引擎 + DLC 知识包 + 数据隔离存档</li>
                 </ul>
             </div>
@@ -662,6 +662,7 @@
 
         // 开放世界折叠分组（v3.19.3）：同题材归组手风琴 + localStorage 状态记忆
         // 首访默认展开第一组；无 JS 时全部展开（控制条隐藏），渐进增强
+        // v7.6.2：总控改为单一按钮，文案随当前状态在「全部展开 / 全部收起」间切换
         (function () {
             var groups = Array.prototype.slice.call(document.querySelectorAll('.ws-group'));
             if (!groups.length) return;
@@ -669,6 +670,7 @@
 
             var ctlBar = document.getElementById('wsGroupsCtl');
             if (ctlBar) ctlBar.style.display = 'flex';
+            var toggleAll = document.getElementById('wsToggleAll');
 
             function setGroup(g, open) {
                 g.classList.toggle('closed', !open);
@@ -699,52 +701,55 @@
                 var h = c.querySelector('.ws-cat-head');
                 if (h) h.setAttribute('aria-expanded', open ? 'true' : 'false');
             }
+            function persistCats() {
+                var st = {};
+                CATS.forEach(function (x) { st[x.getAttribute('data-cat') || ''] = !x.classList.contains('closed'); });
+                try { localStorage.setItem(CAT_KEY, JSON.stringify(st)); } catch (e) { }
+            }
             CATS.forEach(function (c, i) {
                 var k = c.getAttribute('data-cat') || String(i);
                 setCat(c, catSaved ? !!catSaved[k] : true);
             });
+
+            /* 总控按钮：按「分组 + 分类」是否全部展开切换文案与动作，点击永远有可见变化 */
+            function allOpen() {
+                return groups.every(function (g) { return !g.classList.contains('closed'); })
+                    && CATS.every(function (c) { return !c.classList.contains('closed'); });
+            }
+            function syncToggle() {
+                if (!toggleAll) return;
+                var open = allOpen();
+                toggleAll.textContent = open ? '⊖ 全部收起' : '⊕ 全部展开';
+                toggleAll.setAttribute('aria-label', open ? '全部收起' : '全部展开');
+            }
+
             CATS.forEach(function (c) {
                 var head = c.querySelector('.ws-cat-head');
                 if (!head) return;
                 head.addEventListener('click', function () {
                     setCat(c, c.classList.contains('closed'));
-                    var st = {};
-                    CATS.forEach(function (x) { st[x.getAttribute('data-cat') || ''] = !x.classList.contains('closed'); });
-                    try { localStorage.setItem(CAT_KEY, JSON.stringify(st)); } catch (e) { }
+                    persistCats();
+                    syncToggle();
                 });
             });
-            var ec = document.getElementById('wsExpandAll');
-            var cc = document.getElementById('wsCollapseAll');
-            if (ec) ec.addEventListener('click', function () {
-                groups.forEach(function (g) { setGroup(g, true); });
-                CATS.forEach(function (c) { setCat(c, true); });
-                persist();
-            });
-            if (cc) cc.addEventListener('click', function () {
-                groups.forEach(function (g) { setGroup(g, false); });
-                CATS.forEach(function (c) { setCat(c, false); });
-                persist();
-            });
-
             groups.forEach(function (g) {
                 var head = g.querySelector('.ws-group-head');
                 if (!head) return;
                 head.addEventListener('click', function () {
                     setGroup(g, g.classList.contains('closed'));
                     persist();
+                    syncToggle();
                 });
             });
-
-            var expandAll = document.getElementById('wsExpandAll');
-            var collapseAll = document.getElementById('wsCollapseAll');
-            if (expandAll) expandAll.addEventListener('click', function () {
-                groups.forEach(function (g) { setGroup(g, true); });
+            if (toggleAll) toggleAll.addEventListener('click', function () {
+                var open = !allOpen();
+                groups.forEach(function (g) { setGroup(g, open); });
+                CATS.forEach(function (c) { setCat(c, open); });
                 persist();
+                persistCats();
+                syncToggle();
             });
-            if (collapseAll) collapseAll.addEventListener('click', function () {
-                groups.forEach(function (g) { setGroup(g, false); });
-                persist();
-            });
+            syncToggle();
         })();
 
         // 预加载创作室

@@ -39,7 +39,7 @@
     try {
       cfg.enabled = (cfg.mode === "wall");
       localStorage.setItem(lsKey(), JSON.stringify(cfg));
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldClock] 保存时钟配置失败：', e); }
   }
 
   let cfg = loadCfg();
@@ -51,8 +51,8 @@
     const fw = window.storyFramework;
     return (fw && fw.storyState && fw.storyState.variables) || null;
   }
-  function save() { try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) {} }
-  function toast(m, t) { try { window.showToast && window.showToast(m, t || "info"); } catch (e) {} }
+  function save() { try { const fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) { console.warn('[WorldClock] 保存故事失败：', e); } }
+  function toast(m, t) { try { window.showToast && window.showToast(m, t || "info"); } catch (e) { console.warn('[WorldClock] 弹出提示失败：', e); } }
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function hashStr(s) { let h = 2166136261; s = String(s || ""); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
   function mulberry32(seed) {
@@ -101,10 +101,10 @@
     v.时间.clockDay = day;
     /* 众生繁衍 + 自由人生日结算（先于事件抽取：新人物可入当日传闻；有界幂等） */
     let spawnEvents = [];
-    try { if (window.NpcSpawn) spawnEvents = NpcSpawn.daily(v, day, rnd) || []; } catch (e) {}
-    try { if (window.LifeMode) LifeMode.daily(v, day, rnd); } catch (e) {}
+    try { if (window.NpcSpawn) spawnEvents = NpcSpawn.daily(v, day, rnd) || []; } catch (e) { console.warn('[WorldClock] 众生繁衍结算(NpcSpawn.daily)失败：', e); }
+    try { if (window.LifeMode) LifeMode.daily(v, day, rnd); } catch (e) { console.warn('[WorldClock] 自由人生日结算(LifeMode.daily)失败：', e); }
     /* 确保真实势力实体存在，供 SimCore 演化 */
-    try { if (window.WorldAlive && WorldAlive.seedFactions) WorldAlive.seedFactions(); } catch (e) {}
+    try { if (window.WorldAlive && WorldAlive.seedFactions) WorldAlive.seedFactions(); } catch (e) { console.warn('[WorldClock] 播种真实势力(seedFactions)失败：', e); }
     /* 张力向中值 50 的弱回归（无偏抖动）——lifecycle() 接管主要因果演化，这里只做温和回归。
        注：太平生乱软地板放在本拍末尾（lifecycle 之后），避免被覆灭放血覆盖，见下方。 */
     if (v.tension != null) {
@@ -125,13 +125,13 @@
     v.history.push(`【世界】第${day}日 · ${ev}`);
     spawnEvents.forEach((e) => v.history.push(`【众生】第${day}日 · ${e}`));
     /* 新实体自动上图 */
-    try { var _sa = window.StoryAtlas; var _fn = _sa && (_sa.syncFactions || _sa.syncEntities); if (_fn) _fn(v); } catch (e) {}
+    try { var _sa = window.StoryAtlas; var _fn = _sa && (_sa.syncFactions || _sa.syncEntities); if (_fn) _fn(v); } catch (e) { console.warn('[WorldClock] 新实体同步舆图失败：', e); }
     /* 大势推演（steps=1，逐日各演化一拍） */
-    try { if (window.SimCore && SimCore.advance) SimCore.advance(v, 1, rnd); } catch (e) {}
+    try { if (window.SimCore && SimCore.advance) SimCore.advance(v, 1, rnd); } catch (e) { console.warn('[WorldClock] 大势推演(SimCore.advance)失败：', e); }
     /* 涌现式机缘 */
-    try { if (window.OpportunitySystem && OpportunitySystem.roll) OpportunitySystem.roll(day); } catch (e) {}
+    try { if (window.OpportunitySystem && OpportunitySystem.roll) OpportunitySystem.roll(day); } catch (e) { console.warn('[WorldClock] 涌现机缘(OpportunitySystem.roll)失败：', e); }
     /* 势力生命周期（弱者愈弱→覆灭、新势力崛起） */
-    try { if (window.WorldAlive && WorldAlive.lifecycle) WorldAlive.lifecycle(); } catch (e) {}
+    try { if (window.WorldAlive && WorldAlive.lifecycle) WorldAlive.lifecycle(); } catch (e) { console.warn('[WorldClock] 势力生命周期(lifecycle)失败：', e); }
     /* v4.42.0 逐日演化后置护栏（真实长跑实测后补）：
        子系统 lifecycle 是为「每回合一次」设计的，逐日连跑上千拍时有两个放大效应——
        ① 存活<3 时每天可能新生一个势力 → 三年累积几十个已覆灭壳子（实测 88 个）；
@@ -163,17 +163,17 @@
     try {
       if (window.BeastSystem && BeastSystem.driftAll) {
         var _crisis = false;
-        try { var _c = (window.WorldBus && WorldBus.counters) || {}; _crisis = (_c.lossStreak || 0) >= 2 || /重创|失守|告急|溃败|覆灭|洗劫|劫/.test(ev); } catch (e2) {}
+        try { var _c = (window.WorldBus && WorldBus.counters) || {}; _crisis = (_c.lossStreak || 0) >= 2 || /重创|失守|告急|溃败|覆灭|洗劫|劫/.test(ev); } catch (e2) { console.warn('[WorldClock] 读取危机计数(WorldBus.counters)失败：', e2); }
         BeastSystem.driftAll({ crisis: _crisis, day: day });
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldClock] 伙伴意志演化(BeastSystem.driftAll)失败：', e); }
     /* 人物意志（每拍 ≤3 人，按天幂等） */
     try {
       if (window.NpcSpawn && NpcSpawn.driftWills) {
         var _wEv = NpcSpawn.driftWills(v, day, rnd) || [];
         _wEv.forEach(function (t) { v.history.push("【众生】第" + day + "日 · " + t); });
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldClock] 人物意志演化(NpcSpawn.driftWills)失败：', e); }
     if (v.history.length > MAX_HISTORY) v.history.splice(0, v.history.length - MAX_HISTORY);
     /* 待注入事件（供主笔「近期世界自行发生」） */
     v.时间.pendingEvents = [ev].concat(Array.isArray(v.时间.pendingEvents) ? v.时间.pendingEvents : []).slice(0, 3);
@@ -201,7 +201,7 @@
         else if (v.time && typeof v.time === "object") v.time.shichen = shichenTxt;
         v.时间.shichen = shichenTxt;
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldClock] 推进时刻(时辰)失败：', e); }
     /* 轻量短时动态：确定性种子，写 pendingEvents 注入下一轮主笔 */
     const rnd = mulberry32(hashStr(genre() + ":moment:" + mins + ":" + (v.时间.clockDay || 0) + ":" + Date.now()));
     const pool = [
@@ -215,13 +215,13 @@
       .concat(Array.isArray(v.时间.pendingEvents) ? v.时间.pendingEvents : []).slice(0, 3);
     v.时间.lastClockAt = Date.now();
     save();
-    try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
+    try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) { console.warn('[WorldClock] 同步时钟药丸失败：', e); }
     try {
       var _we = new (window.CustomEvent || window.Event)("yj:world-tick", {
         detail: { moment: true, minutes: mins, text: `${shichenTxt ? shichenTxt + "，" : ""}${ev}`, ev: ev, major: false }
       });
       window.dispatchEvent(_we);
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldClock] 派发短时世界事件失败：', e); }
     return { ev: ev, minutes: mins, shichen: shichenTxt };
   }
 
@@ -266,7 +266,7 @@
         }
         done = upto;
         batchStart = upto;
-      } catch (e) { /* 单拍失败不杀死整批 */ }
+      } catch (e) { /* 单拍失败不杀死整批 */ console.debug('[WorldClock] 单日结算失败（按设计不中断整批）：', e); }
       if (done < step) {
         setTimeout(runBatch, 0);      /* 让出主线程，界面保持响应 */
       } else {
@@ -282,11 +282,11 @@
     try {
       const v = vars();
       save();
-      try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
+      try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) { console.warn('[WorldClock] 收尾同步时钟药丸失败：', e); }
       /* 舆图同步收口：逐拍 syncFactions 跑在 SimCore/lifecycle 之前，最后一拍的势力兴衰
          到批次末才定稿。收尾补一次同步（幂等，无变化不 render），让「演化全程舆图都开着」
          时最后一拍也即时上图，并与主存档里的势力状态保持一致。 */
-      try { if (window.StoryAtlas && StoryAtlas.syncFactions && v) StoryAtlas.syncFactions(v); } catch (e) {}
+      try { if (window.StoryAtlas && StoryAtlas.syncFactions && v) StoryAtlas.syncFactions(v); } catch (e) { console.warn('[WorldClock] 收尾同步舆图势力失败：', e); }
       if (!quiet) toast(`⏱ 世界推进 ${step} 日至第${endDay}日：${lastEv}`, "info");
       /* 长跨度汇总一条入史（势力兴衰 / 众生增减可查） */
       if (step >= 30 && v) {
@@ -297,7 +297,7 @@
           const fallen = Object.values(facs).filter((f) => f && f.collapsed).length;
           const ppl = v.characters && typeof v.characters === "object" ? Object.keys(v.characters).length : 0;
           summary += `： extant势力${alive}、覆灭${fallen}、众生谱${ppl}人`;
-        } catch (e) {}
+        } catch (e) { console.warn('[WorldClock] 生成长跨度演化摘要失败：', e); }
         if (!Array.isArray(v.history)) v.history = [];
         v.history.push(summary);
         if (v.history.length > MAX_HISTORY) v.history.splice(0, v.history.length - MAX_HISTORY);
@@ -307,9 +307,9 @@
           detail: { day: endDay, span: step, text: `第${endDay}日：${lastEv}`, ev: lastEv, major: /灭|覆|陨|大战|突破|降临|剧变/.test(String(lastEv)) }
         });
         window.dispatchEvent(_we);
-      } catch (e) {}
-      try { window.StoryStatusRenderer && StoryStatusRenderer.renderHistory && StoryStatusRenderer.renderHistory(v && v.history); } catch (e) {}
-      try { window.MoChibi && MoChibi.react && MoChibi.react("day", { day: endDay, ev: lastEv }); } catch (e) {}
+      } catch (e) { console.warn('[WorldClock] 派发世界演化事件失败：', e); }
+      try { window.StoryStatusRenderer && StoryStatusRenderer.renderHistory && StoryStatusRenderer.renderHistory(v && v.history); } catch (e) { console.warn('[WorldClock] 刷新历史渲染失败：', e); }
+      try { window.MoChibi && MoChibi.react && MoChibi.react("day", { day: endDay, ev: lastEv }); } catch (e) { console.warn('[WorldClock] 萌宠反应(MoChibi.react)失败：', e); }
     } finally {
       ticking = false;
       /* v4.42.0：批次末排空排队请求（合并后的最大跨度），让连续推进不丢回合 */
@@ -319,7 +319,7 @@
           try {
             if (p.kind === "moment") evolveByQuantum({ minutes: p.minutes, level: "moment" });
             else tick(p.quiet !== false, p.days);
-          } catch (e) {}
+          } catch (e) { console.warn('[WorldClock] 补跑排队演化请求失败：', e); }
         }, 16);
       }
     }
@@ -349,7 +349,7 @@
     cfg.mode = (mode === "wall" || mode === "off") ? mode : "turn";
     if (cfg.mode === "wall") startWallTimer();
     saveCfg();
-    try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
+    try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) { console.warn('[WorldClock] 切换模式后同步时钟药丸失败：', e); }
     return status();
   }
   function start() { return setMode("wall"); }   /* 兼容旧 API：start 现等同切到墙钟模式 */
@@ -379,7 +379,7 @@
     if (tries++ > 60) return; /* 有界：最多 2 分钟，绝不无限链 */
     if (window.storyFramework && window.storyFramework.storyState) {
       if (cfg.mode === "wall") startWallTimer();   /* 仅墙钟模式恢复 interval */
-      try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) {}
+      try { if (window.WorldClock && window.WorldClock._syncPill) window.WorldClock._syncPill(); } catch (e) { console.warn('[WorldClock] 等待故事就绪后同步药丸失败：', e); }
       return;
     }
     setTimeout(waitBoot, 2000);
@@ -399,16 +399,16 @@
       try {
         const AE = window.AttributeEngine;
         if (AE && AE.currentSpanQ) q = AE.currentSpanQ();
-      } catch (e) {}
+      } catch (e) { console.warn('[WorldClock] 读取正文时间跨度(AttributeEngine)失败：', e); }
       /* 与可能存在的墙钟 tick 错峰：回合驱动延后一小段，避免抢同一拍 */
       setTimeout(function () {
         try {
           if (q && q.minutes > 0) evolveByQuantum(q);
           else tick(true, 1);
-        } catch (e) {}
+        } catch (e) { console.warn('[WorldClock] 回合驱动演化失败：', e); }
       }, 350);
     });
-  } catch (e) {}
+  } catch (e) { console.warn('[WorldClock] 注册回合保存监听失败：', e); }
 
   /* v3.85.0 可视开关：世界时钟默认开启后，给玩家一个显眼且随时可暂停/恢复的入口（P0-4）。
      固定悬浮药丸，落在左上角避开水云伙伴（右下）与切换坞（左下）。 */
@@ -462,9 +462,9 @@
     window.WorldClock && (window.WorldClock._syncPill = update);
     document.body.appendChild(pill);
     update();
-    try { const fw = window.storyFramework; if (fw && fw.storyState) { (fw.storyState._clockPillSync = update); } } catch (e) {}
+    try { const fw = window.storyFramework; if (fw && fw.storyState) { (fw.storyState._clockPillSync = update); } } catch (e) { console.warn('[WorldClock] 挂载时钟药丸同步钩子失败：', e); }
   }
-  function tryMount() { try { if (document.body) mountToggle(); else setTimeout(tryMount, 300); } catch (e) {} }
+  function tryMount() { try { if (document.body) mountToggle(); else setTimeout(tryMount, 300); } catch (e) { console.warn('[WorldClock] 挂载世界时钟药丸失败：', e); } }
 
   window.WorldClock = { start, stop, toggle, tick, status, setMode, setIntervalSec, mountToggle, evolveByQuantum, momentDrift, _pickEvent: pickEvent };
   tryMount();

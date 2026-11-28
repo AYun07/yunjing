@@ -75,6 +75,17 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 .yj-cfg-inline .modal-footer{padding:14px 0 0!important;border-top:1px solid var(--line)!important;
   display:flex!important;gap:10px!important;flex-wrap:wrap!important}
 .yj-cfg-inline .api-card{margin-bottom:12px}
+/* v7.6.2 修复：本页未加载 story-framework.js，ConfigModal 里的 window.showToast?.() 会静默跳过；
+   这里补一个本页可见的 toast，让「存档/切档/代理/测试」等按钮的前置条件提示真正显示出来。 */
+.yj-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(18px);opacity:0;pointer-events:none;
+  z-index:99999;max-width:88vw;background:#241f42;border:1px solid rgba(217,180,106,.45);color:var(--ink);
+  padding:12px 20px;border-radius:12px;font-size:13px;line-height:1.6;box-shadow:0 10px 30px rgba(0,0,0,.42);
+  transition:.25s;text-align:center}
+.yj-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.yj-toast.error{border-color:rgba(232,90,90,.55);color:#ffb4b4}
+.yj-toast.success{border-color:rgba(127,216,160,.55);color:#a8e8bf}
+/* 字号按钮点完立即高亮标签，补即时视觉反馈 */
+#fontScaleLabel.on,#statusScaleLabel.on{color:var(--jade);font-weight:700}
 </style>
 <!-- v7.0.0 游戏化客户端外壳：仅 Electron 生效，PWA 浏览器版零注入 -->
 <link rel="stylesheet" href="css/desktop-shell.css?v=7.6.2">
@@ -177,6 +188,7 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
     </div>
   </section>
 </div>
+<div class="yj-toast" id="yjToast" role="status" aria-live="polite"></div>
 
 <script src="js/entry-guard.js?v=7.6.2"></script>
 <script src="js/font-switcher.js?v=7.6.2"></script>
@@ -187,12 +199,29 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
 <script src="js/system-guard.js?v=7.6.2"></script>
 <script src="js/perf-mode.js?v=7.6.2"></script>
 <script src="js/celebration.js?v=7.6.2"></script>
+<!-- v7.6.2 修复：弹层按钮依赖这两个模块；本页此前漏引导致「接入本地代理/还原直连」静默、
+     连接配置档读不到（内外档位不同步）。与 connection-profiles.js 共用同一份档位数据。 -->
+<script src="js/cors-guard.js?v=7.6.2"></script>
+<script src="js/connection-profiles.js?v=7.6.2"></script>
 <script src="js/config-modal.js?v=7.6.2"></script>
 <script src="js/slot-registry.js?v=7.6.2"></script>
 <script src="js/save-slots.js?v=7.6.2"></script>
 <script>
 (function(){
   var $ = function(id){return document.getElementById(id);};
+  /* v7.6.2：ConfigModal 的档位/代理/测试按钮都走 window.showToast?.() 反馈。
+     本页没有引入定义 showToast 的 story-framework.js，缺它就会「点了没反应」。
+     补一个本页兜底实现（纯 DOM，零依赖），并保留后续脚本覆盖的可能。 */
+  function showToast(msg, type){
+    var box=$('yjToast');
+    if(box){
+      box.textContent=String(msg==null?'':msg);
+      box.className='yj-toast on'+(type==='error'?' error':type==='success'?' success':'');
+      clearTimeout(showToast._t);
+      showToast._t=setTimeout(function(){box.className='yj-toast';},2800);
+    }
+  }
+  if(!window.showToast) window.showToast=showToast;
   // 统一走 ConfigModal 的落盘路径，与主配置弹窗共用字段口径与存储键；模块缺失时兜底直读
   function readCfg(){return (window.ConfigModal&&ConfigModal.readApiConfig)?ConfigModal.readApiConfig():(function(){try{return JSON.parse(localStorage.getItem('storyApiConfig')||'{}')||{};}catch(e){return {};}})();}
   function flash(el){el.classList.add('on');setTimeout(function(){el.classList.remove('on');},1600);}
@@ -208,6 +237,34 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
     try{ConfigModal.mount(host);}
     catch(e){host.textContent='配置面板加载失败：'+(e&&e.message||'未知错误');}
   })();
+  /* v7.6.2 前置条件兜底提示：这些按钮虽已由 ConfigModal 绑定 onclick，但此前缺
+     showToast / CorsGuard 时静默；现在模块已补齐，这里再补一层「点了就能看见」的反馈。 */
+  (function bindCfgFeedback(){
+    var host=$('cfgInlineHost'); if(!host) return;
+    host.addEventListener('click',function(e){
+      var b=e.target&&e.target.closest?e.target.closest('button'):null; if(!b)return;
+      var oc=b.getAttribute('onclick')||'';
+      if(/msActivate/.test(oc)){
+        var sel=$('ms_slotSelect');
+        if(!sel||!sel.value) showToast('请先保存并选中一个模型档位，再点「切到选中档」','error');
+      }else if(/testConnection/.test(oc)){
+        showToast('正在测试主接口，结果会显示在上方「连接测试」区域','info');
+      }else if(/applyProxy|revertProxy/.test(oc)&&!window.CorsGuard){
+        showToast('本地代理模块未就绪，请刷新页面重试','error');
+      }
+    });
+  })();
+  /* v7.6.2 档位内外同步：外层（connection-profiles.js）存档后会派发此事件，
+     内层配置面板立即重读同一份数据源并重渲染下拉，不再出现「尚未保存档位」。 */
+  window.addEventListener('yunjing:profiles-changed',function(){
+    try{
+      if(!window.ConfigModal)return;
+      if(ConfigModal.renderModelSlots)ConfigModal.renderModelSlots();
+      if(ConfigModal.renderProfileList)ConfigModal.renderProfileList();
+      if(ConfigModal.fillCPRoles)ConfigModal.fillCPRoles();
+      if(ConfigModal.refreshApiCardStates)ConfigModal.refreshApiCardStates();
+    }catch(e){}
+  });
   // 全局开关：模块已在本页引入，直接调真实函数；缺函数时明确提示，不再静默无反应
   function callOrTip(getFn, name, okMsg){
     var fn=null;try{fn=getFn();}catch(e){}
@@ -250,18 +307,42 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#22243a,var(--bg) 60
   };
   // 字号
   function scale(){return Number(localStorage.getItem('storyFontScale')||1);}
-  function paintScale(){$('fontScaleLabel').textContent='当前 '+scale().toFixed(2)+'×';}
+  // v7.6.2：不再只改一行小字——同步 CSS 变量 + 标签高亮 + toast，点一下立刻看得见
+  function paintScale(){
+    var v=scale();
+    try{document.documentElement.style.setProperty('--font-scale',String(v));}catch(e){}
+    $('fontScaleLabel').textContent='当前 '+v.toFixed(2)+'×';
+  }
   paintScale();
-  $('fontMinus').onclick=function(){try{localStorage.setItem('storyFontScale',String(Math.max(.8,scale()-.05)));}catch(e){}paintScale();};
-  $('fontPlus').onclick=function(){try{localStorage.setItem('storyFontScale',String(Math.min(1.5,scale()+.05)));}catch(e){}paintScale();};
+  $('fontMinus').onclick=function(){
+    var v=Math.max(.8,scale()-.05);
+    try{localStorage.setItem('storyFontScale',String(v));}catch(e){}
+    paintScale();flash($('fontScaleLabel'));showToast('正文字号已缩小：'+v.toFixed(2)+'×','info');
+  };
+  $('fontPlus').onclick=function(){
+    var v=Math.min(1.5,scale()+.05);
+    try{localStorage.setItem('storyFontScale',String(v));}catch(e){}
+    paintScale();flash($('fontScaleLabel'));showToast('正文字号已放大：'+v.toFixed(2)+'×','info');
+  };
   // 状态栏独立字号（v7.3.0）：默认跟随正文，可单独调，存 storyStatusScale
   function ssScale(){var v=localStorage.getItem('storyStatusScale');return v==null?null:Number(v);}
   function paintSS(){$('statusScaleLabel').textContent=ssScale()==null?'跟随正文':('当前 '+ssScale().toFixed(2)+'×');}
   function applySS(){var v=ssScale();document.documentElement.style.setProperty('--status-scale',v==null?'':String(v));paintSS();}
   paintSS();applySS();
-  $('statusScaleMinus').onclick=function(){var n=ssScale()==null?scale():ssScale();n=Math.max(.8,n-.1);try{localStorage.setItem('storyStatusScale',String(n));}catch(e){}applySS();};
-  $('statusScalePlus').onclick=function(){var n=ssScale()==null?scale():ssScale();n=Math.min(1.6,n+.1);try{localStorage.setItem('storyStatusScale',String(n));}catch(e){}applySS();};
-  $('statusScaleReset').onclick=function(){try{localStorage.removeItem('storyStatusScale');}catch(e){}applySS();};
+  $('statusScaleMinus').onclick=function(){
+    var n=ssScale()==null?scale():ssScale();n=Math.max(.8,n-.1);
+    try{localStorage.setItem('storyStatusScale',String(n));}catch(e){}
+    applySS();flash($('statusScaleLabel'));showToast('状态栏字号已缩小：'+n.toFixed(2)+'×','info');
+  };
+  $('statusScalePlus').onclick=function(){
+    var n=ssScale()==null?scale():ssScale();n=Math.min(1.6,n+.1);
+    try{localStorage.setItem('storyStatusScale',String(n));}catch(e){}
+    applySS();flash($('statusScaleLabel'));showToast('状态栏字号已放大：'+n.toFixed(2)+'×','info');
+  };
+  $('statusScaleReset').onclick=function(){
+    try{localStorage.removeItem('storyStatusScale');}catch(e){}
+    applySS();flash($('statusScaleLabel'));showToast('状态栏字号已恢复跟随正文','info');
+  };
   // 字体/主题面板（自注入模块）
   $('fontBtn').onclick=function(){if(window.FontSwitcher)FontSwitcher.open();};
   $('themeBtn').onclick=function(){if(window.ThemeStudio)ThemeStudio.open();};

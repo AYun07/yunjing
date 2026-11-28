@@ -126,12 +126,20 @@
     return Promise.resolve(persona);
   }
 
-  /* 让玩家从性格世界书点选/取消，不限个数 */
-  function toggleTrait(tname) {
+  /* 让玩家从性格世界书点选/取消，不限个数
+   * v7.6.3：点击瞬间即在被点按钮上切换 on 类 + aria-pressed，
+   * 不依赖 renderTraits 的整段 innerHTML 重建（重建会换掉按钮节点，
+   * 令持有旧引用的检测/辅助工具读到 stateChanged:false 的假象）。 */
+  function toggleTrait(tname, btn) {
     var a = getTraits();
     var idx = a.indexOf(tname);
+    var nowOn = idx < 0;
     if (idx >= 0) a.splice(idx, 1); else a.push(tname);
     setTraits(a);
+    if (btn && btn.classList) {
+      if (nowOn) btn.classList.add("on"); else btn.classList.remove("on");
+      btn.setAttribute("aria-pressed", nowOn ? "true" : "false");
+    }
     renderTraits();
     genPersona(); // 同步刷新性格文本与小传
   }
@@ -157,14 +165,14 @@
         shown++;
         var on = selected.indexOf(t.name) >= 0;
         html += '<button type="button" class="cs-trait' + (on ? ' on' : '') + '" data-trait="' + esc(t.name) +
-          '" title="' + esc(t.feature) + '">' + esc(t.name) + '</button>';
+          '" aria-pressed="' + (on ? 'true' : 'false') + '" title="' + esc(t.feature) + '">' + esc(t.name) + '</button>';
       });
       html += '</div>';
     });
     if (!shown) html = '<div style="opacity:.6;font-size:12px;padding:6px 0">没有匹配「' + esc(kw) + '」的性格点，换个词试试</div>';
     if (box.innerHTML !== html) box.innerHTML = html;
     Array.prototype.forEach.call(box.querySelectorAll('.cs-trait'), function (b) {
-      b.onclick = function () { toggleTrait(b.getAttribute('data-trait')); };
+      b.onclick = function () { toggleTrait(b.getAttribute('data-trait'), b); };
     });
     var cnt = $("csTraitCount");
     if (cnt) cnt.textContent = "已选 " + selected.length + " 项（不限个数）" + (kw || filter ? " · 显示 " + shown + " / " + codex.length : "");

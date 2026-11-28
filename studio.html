@@ -208,12 +208,12 @@
             <!-- v4.17.0 无障碍：原本是纯 div+onclick，**键盘完全够不到**（Tab 跳不过去、回车没反应）。
              改为可聚焦按钮语义，并补键盘激活（Enter/Space）。backdrop 类遮罩无需键盘语义，
              另有 Esc 关闭，故标 aria-hidden。 -->
-        <div id="ssPanelBadge" style="display:none" onclick="SceneState.open()" role="button" tabindex="0" aria-label="打开舞台状态面板" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();SceneState.open();}"></div>
+        <div id="ssPanelBadge" style="display:none" onclick="if(window.SceneState)SceneState.open()" role="button" tabindex="0" aria-label="打开舞台状态面板" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();if(window.SceneState)SceneState.open();}"></div>
             <div class="panel-utils">
-                <button class="btn-ghost" onclick="StoryInput.exportSave()">导出存档</button>
+                <button class="btn-ghost" onclick="if(window.StoryInput)StoryInput.exportSave()">导出存档</button>
                 <button class="btn-ghost" onclick="document.getElementById('importFile').click()">导入存档</button>
-                <button class="btn-ghost danger" onclick="StoryInput.restart()">重新开篇</button>
-                <input type="file" id="importFile" accept=".json" style="display:none" onchange="StoryInput.importSave(this.files[0])">
+                <button class="btn-ghost danger" onclick="if(window.StoryInput)StoryInput.restart()">重新开篇</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="if(window.StoryInput)StoryInput.importSave(this.files[0])">
             </div>
         </div>
     </div>
@@ -226,26 +226,26 @@
         <div class="sheet-box">
             <div class="sheet-header">
                 <span>☰ 工具箱</span>
-                <button class="modal-close" onclick="Toolbox.close()" aria-label="关闭工具箱">✕</button>
+                <button class="modal-close" onclick="if(window.Toolbox)Toolbox.close()" aria-label="关闭工具箱">✕</button>
             </div>
             <div class="sheet-body">
                 <!-- v3.8.3 工具箱扩容：顶栏与阅读工具条的功能全部收纳于此，按场景分组 -->
                 <div class="sheet-sec">创作辅助</div>
-                <button class="sheet-item" onclick="Toolbox.act('mo')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('mo')">
                     <span class="si-ico">🖋</span>
                     <span class="si-main"><b>小云 · AI 管家</b><i>聊天解闷 / 剧情灵感 / 卡文急救 / 工坊体检</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('inspToggle')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('inspToggle')">
                     <span class="si-ico">🌌</span>
                     <span class="si-main"><b>灵感引擎</b><i>开启后每 3 轮正文自动送来支线灵感</i></span>
                     <span class="si-state" id="tbInspState">关</span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('inspRun')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('inspRun')">
                     <span class="si-ico">✨</span>
                     <span class="si-main"><b>来点灵感</b><i>立即生成 3 条支线灵感，点击即可采纳</i></span>
                 </button>
                 <!-- v3.19.0 万象扩展版：灵感骰子（仙侠名词骰盅）——地球界隐藏（仙侠名词与真实世界不符） -->
-                <button class="sheet-item" id="tbDiceItem" onclick="Toolbox.act('dice')">
+                <button class="sheet-item" id="tbDiceItem" onclick="if(window.Toolbox)Toolbox.act('dice')">
                     <span class="si-ico">🎲</span>
                     <span class="si-main"><b>灵感骰子</b><i>仙侠名词骰盅：人名/功法/法宝/丹药等十二类 · 机缘卡组合抽取</i></span>
                 </button>
@@ -254,24 +254,24 @@
 <div class="sheet-sec">面板与资料</div>
 <!-- v6.3.5 对话时光轴：任意回合回档 / 重 roll -->
 <!-- v6.4.0 二创版块：玩家上传/下载二创作品，按时间排列 -->
-<button class="sheet-item" onclick="Toolbox.act('channel')">
+<button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('channel')">
                     <span class="si-ico">🔌</span>
                     <span class="si-main"><b>通道枢纽</b><i>摘要官 / 责编官 / 群演道 / 文风道 分道配置</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('knowledge')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('knowledge')">
                     <span class="si-ico">📚</span>
                     <span class="si-main"><b>知识库</b><i>管理世界观与设定资料，AI 写作时自动引用</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('dlc')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('dlc')">
                     <span class="si-ico">📦</span>
                     <span class="si-main"><b>DLC 知识包</b><i>成套设定资料包，一键激活 / 停用</i></span>
                 </button>
                 <!-- v3.18.0 万卡归宗版：角色卡互通 / 分层记忆 / 舞台追踪 -->
-<button class="sheet-item" onclick="Toolbox.act('memory')">
+<button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('memory')">
                     <span class="si-ico">🧠</span>
                     <span class="si-main"><b>记忆分层</b><i>五层长期记忆明账：事实 / 关系 / 秘密 / 场景 / 故事弧</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('scene')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('scene')">
                     <span class="si-ico">🎬</span>
                     <span class="si-main"><b>舞台快照</b><i>地点 / 时辰 / 在场人物 / 着装 · 防场景漂移</i></span>
                 </button>
@@ -280,60 +280,60 @@
                     <span class="si-ico">✨</span>
                     <span class="si-main"><b>AI 增强中心</b><i>大模型增强开关 · 采样策略 · 真实调用与成本明细</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('lunar')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('lunar')">
                     <span class="si-ico">🏮</span>
                     <span class="si-main"><b>干支纪年</b><i>故事世界历法随轮推进 · 今日黄历 · 八字五行排盘</i></span>
                 </button>
                 <div class="sheet-sec">阅读工具</div>
                 <!-- v3.17.0 长卷导航三件套 + 系统守望：目录 / 搜索 / 书签 / 密度仪表 / 周报 / 体检 / 护眼 -->
-<button class="sheet-item" onclick="Toolbox.act('week')">
+<button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('week')">
                     <span class="si-ico">📅</span>
                     <span class="si-main"><b>创作周报</b><i>本周字数 / 新人物 / 新成就 · 周周有交代</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('snap')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('snap')">
                     <span class="si-ico">💾</span>
                     <span class="si-main"><b>进度快照</b><i>3 个槽位一键存档 / 读档，写崩随时回滚</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('font')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('font')">
                     <span class="si-ico">🔤</span>
                     <span class="si-main"><b>字号调节</b><i>正文字号 0.85~1.40 档位，即时生效</i></span>
                     <span class="si-font">
-                        <button class="util-chip square" onclick="event.stopPropagation();StoryInput.setFontScale(-0.05)" title="减小字号">A⁻</button>
-                        <button class="util-chip square" onclick="event.stopPropagation();StoryInput.setFontScale(0.05)" title="增大字号">A⁺</button>
+                        <button class="util-chip square" onclick="event.stopPropagation();if(window.StoryInput)StoryInput.setFontScale(-0.05)" title="减小字号">A⁻</button>
+                        <button class="util-chip square" onclick="event.stopPropagation();if(window.StoryInput)StoryInput.setFontScale(0.05)" title="增大字号">A⁺</button>
                     </span>
                 </button>
 <div class="sheet-sec">书架与导出</div>
-<button class="sheet-item" onclick="Toolbox.act('worldpack')">
+<button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('worldpack')">
                     <span class="si-ico">🌐</span>
                     <span class="si-main"><b>导出世界包</b><i>世界书+设定打成一个 JSON，可备份可分享</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('share')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('share')">
                     <span class="si-ico">🔗</span>
                     <span class="si-main"><b>生成分享码</b><i>把整个世界变成一段文本，发给朋友导入</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('importshare')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('importshare')">
                     <span class="si-ico">📥</span>
                     <span class="si-main"><b>导入分享码</b><i>粘贴别人的分享码，还原他的世界书</i></span>
                 </button>
-                <button class="sheet-item" onclick="Toolbox.act('promptlab')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('promptlab')">
                     <span class="si-ico">🔬</span>
                     <span class="si-main"><b>提示词调试器</b><i>看本轮模型收到什么 · token 用量与成本估算</i></span>
                 </button>
 <div class="sheet-sec">系统</div>
 <!-- v3.55.3 流畅模式：低配设备性能档（动画/毛玻璃/粒子全停） -->
 <!-- v3.19.0 万象扩展版：庆典特效开关（成就金花雨/金榜礼炮） -->
-                <button class="sheet-item" onclick="Toolbox.act('celebrToggle')">
+                <button class="sheet-item" onclick="if(window.Toolbox)Toolbox.act('celebrToggle')">
                     <span class="si-ico">🎉</span>
                     <span class="si-main"><b>庆典特效</b><i>成就解锁金花雨 · 金榜刷新礼炮 · 掷骰星屑</i></span>
                     <span class="si-state" id="tbCelebrState">开</span>
                 </button>
                 <!-- v3.29.0 剧情主导权开关：自由扮演（剧情由玩家主导，AI 不推剧情） / 跟随原著 -->
-                <button class="sheet-item" id="tbFreedomItem" onclick="Toolbox.act('freedomToggle')">
+                <button class="sheet-item" id="tbFreedomItem" onclick="if(window.Toolbox)Toolbox.act('freedomToggle')">
                     <span class="si-ico">🕊</span>
                     <span class="si-main"><b>自由扮演</b><i>剧情由你主导 · AI 不推剧情 · 原著线可偏转</i></span>
                     <span class="si-state" id="tbFreedomState">自由</span>
                 </button>
-                <button class="sheet-item danger" onclick="Toolbox.act('restart')">
+                <button class="sheet-item danger" onclick="if(window.Toolbox)Toolbox.act('restart')">
                     <span class="si-ico">🔄</span>
                     <span class="si-main"><b>重新开篇</b><i>清空当前进度，回到故事设定台</i></span>
                 </button>
@@ -345,13 +345,13 @@
         <div class="sheet-box snap-box">
             <div class="sheet-header">
                 <span>💾 进度快照</span>
-                <button class="modal-close" onclick="Snapshots.close()" aria-label="关闭快照">✕</button>
+                <button class="modal-close" onclick="if(window.Snapshots)Snapshots.close()" aria-label="关闭快照">✕</button>
             </div>
             <p class="snap-tip">关键时刻一键存档，写崩了随时读回——比导出 JSON 更快的读档方式（数据保存在本机浏览器）。</p>
             <div class="sheet-body" id="snapList"></div>
         </div>
     </div>
-    <input type="file" id="toolboxImport" accept=".json" style="display:none" onchange="StoryInput.importSave(this.files[0])">
+    <input type="file" id="toolboxImport" accept=".json" style="display:none" onchange="if(window.StoryInput)StoryInput.importSave(this.files[0])">
 
     <!-- 框架核心（模仿原框架的脚本加载顺序：框架 → 功能模块 → 配置） -->
     <script defer src="story-framework.js?v=7.6.2"></script>
@@ -971,9 +971,9 @@ const Snapshots = {
                         <div class="snap-idx">${i + 1}</div>
                         <div class="snap-info">${info}</div>
                         <div class="snap-acts">
-                            <button class="snap-btn save" onclick="StoryInput.saveSnapshot(${i})">${snap ? "覆盖" : "存入"}</button>
-                            ${snap ? `<button class="snap-btn load" onclick="StoryInput.loadSnapshot(${i})">读取</button>
-                                      <button class="snap-btn del" onclick="StoryInput.clearSnapshot(${i})" title="清空该槽位" aria-label="清空该槽位">✕</button>` : ""}
+                            <button class="snap-btn save" onclick="if(window.StoryInput)StoryInput.saveSnapshot(${i})">${snap ? "覆盖" : "存入"}</button>
+                            ${snap ? `<button class="snap-btn load" onclick="if(window.StoryInput)StoryInput.loadSnapshot(${i})">读取</button>
+                                      <button class="snap-btn del" onclick="if(window.StoryInput)StoryInput.clearSnapshot(${i})" title="清空该槽位" aria-label="清空该槽位">✕</button>` : ""}
                         </div>`;
       box.appendChild(row);
     });

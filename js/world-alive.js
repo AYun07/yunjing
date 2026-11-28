@@ -17,7 +17,7 @@
 
   function slotId() { try { return (window.storyFramework && window.storyFramework.slotId) || "main"; } catch (e) { return "main"; } }
   function genre() {
-    try { if (window.WorldExt && WorldExt.genre) return WorldExt.genre; } catch (e) {}
+    try { if (window.WorldExt && WorldExt.genre) return WorldExt.genre; } catch (e) { console.warn('[WorldAlive] 读取界扩展题材(WorldExt.genre)失败：', e); }
     try { return new URLSearchParams(location.search).get("genre") || "free"; } catch (e) { return "free"; }
   }
   function vars() {
@@ -31,9 +31,9 @@
   /* 持久化：活跃事件 + 上轮影响力快照（用于 ↑↓ 显示）+ 事件连锁/AI 事件/生命周期记账 */
   var mem = { events: [], prevInf: {}, chain: [], aiEvents: [], lastLifeDay: -1, facts: [], stageFallback: 0, facSeed: "" };
   function loadMem() {
-    try { var raw = localStorage.getItem(STORE()); if (raw) { var d = JSON.parse(raw); if (d && typeof d === "object") { mem.events = Array.isArray(d.events) ? d.events : []; mem.prevInf = d.prevInf && typeof d.prevInf === "object" ? d.prevInf : {}; mem.chain = Array.isArray(d.chain) ? d.chain : []; mem.aiEvents = Array.isArray(d.aiEvents) ? d.aiEvents : []; mem.lastLifeDay = d.lastLifeDay != null ? Number(d.lastLifeDay) : -1; mem.facts = Array.isArray(d.facts) ? d.facts : []; mem.stageFallback = d.stageFallback != null ? Number(d.stageFallback) : 0; mem.facSeed = typeof d.facSeed === "string" ? d.facSeed : ""; } } } catch (e) {}
+    try { var raw = localStorage.getItem(STORE()); if (raw) { var d = JSON.parse(raw); if (d && typeof d === "object") { mem.events = Array.isArray(d.events) ? d.events : []; mem.prevInf = d.prevInf && typeof d.prevInf === "object" ? d.prevInf : {}; mem.chain = Array.isArray(d.chain) ? d.chain : []; mem.aiEvents = Array.isArray(d.aiEvents) ? d.aiEvents : []; mem.lastLifeDay = d.lastLifeDay != null ? Number(d.lastLifeDay) : -1; mem.facts = Array.isArray(d.facts) ? d.facts : []; mem.stageFallback = d.stageFallback != null ? Number(d.stageFallback) : 0; mem.facSeed = typeof d.facSeed === "string" ? d.facSeed : ""; } } } catch (e) { console.warn('[WorldAlive] 读取世界记忆失败：', e); }
   }
-  function saveMem() { try { localStorage.setItem(STORE(), JSON.stringify({ events: mem.events, prevInf: mem.prevInf, chain: mem.chain, aiEvents: mem.aiEvents, lastLifeDay: mem.lastLifeDay, facts: mem.facts, stageFallback: mem.stageFallback, facSeed: mem.facSeed })); } catch (e) {} }
+  function saveMem() { try { localStorage.setItem(STORE(), JSON.stringify({ events: mem.events, prevInf: mem.prevInf, chain: mem.chain, aiEvents: mem.aiEvents, lastLifeDay: mem.lastLifeDay, facts: mem.facts, stageFallback: mem.stageFallback, facSeed: mem.facSeed })); } catch (e) { console.warn('[WorldAlive] 保存世界记忆失败：', e); } }
   loadMem();
 
   /* ---------- 真实势力实体初始化（首轮从世界阶段静态表播种） ---------- */
@@ -46,7 +46,7 @@
     try {
       var st = window.FactionAtlasData && window.FactionAtlasData.anchors(genre());
       if (st && st.length) return { n: st[hashStr(genre() + name) % st.length] };
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 读取静态势力据点表失败：', e); }
     /* ② 地图脚本已真正加载时改用带坐标的真实舆图锚点 */
     try {
       var A = window.StoryAtlas;
@@ -54,7 +54,7 @@
         var pool = A.factionAnchors(genre());
         if (pool && pool.length) return pool[hashStr(genre() + name) % pool.length];
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 读取舆图势力据点失败：', e); }
     return null;
   }
   function territoryOf(name) { var a = anchorFor(name); return a ? a.n : ""; }
@@ -63,7 +63,7 @@
     try {
       var v = vars();
       if (window.StoryAtlas && StoryAtlas.syncFactions && v) StoryAtlas.syncFactions(v);
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 刷新舆图势力同步失败：', e); }
   }
 
   /* v3.88.0 修正 P2-1：势力名改从「本界真实知识库」取（33 界各不相同），静态 fa 表降为兜底。
@@ -119,7 +119,7 @@
           var isPlace = places.some(function (p) { return p === n; }) ||
             (!ORG.test(n) && places.some(function (p) { return p.length >= 2 && n.indexOf(p) >= 0; }));
           if (isPlace) return;
-        } catch (e) {}
+        } catch (e) { console.warn('[WorldAlive] 过滤知识库地标名失败：', e); }
         if (seen[n]) return;
         seen[n] = 1;
         scored.push({ n: n, s: hitCat ? 2 : 1 });
@@ -128,7 +128,7 @@
       var g = genre();
       scored.sort(function (a, b) { return (b.s - a.s) || (hashStr(g + a.n) - hashStr(g + b.n)); });
       out = scored.map(function (x) { return x.n; });
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 从知识库抽取势力名失败：', e); }
     return out.slice(0, 6);
   }
 
@@ -161,7 +161,7 @@
 
     /* KB 专名不足 3 个时用世界阶段静态表补齐：保证每界至少 3 方势力，不会因 KB 只抽到 1 个而只剩 1 方 */
     var names = kbNames.slice();
-    try { var D = window.WorldStage && window.WorldStage.data; var c = D && D[genre()]; if (c && c.fa) c.fa.forEach(function (x) { if (x && names.indexOf(x) < 0) names.push(x); }); } catch (e) {}
+    try { var D = window.WorldStage && window.WorldStage.data; var c = D && D[genre()]; if (c && c.fa) c.fa.forEach(function (x) { if (x && names.indexOf(x) < 0) names.push(x); }); } catch (e) { console.warn('[WorldAlive] 静态阶段表补齐势力名失败：', e); }
     var GEN = ["主角阵营", "对立阵营", "中立势力"];
     for (var gi = 0; names.length < 3 && gi < GEN.length; gi++) { if (names.indexOf(GEN[gi]) < 0) names.push(GEN[gi]); }
     names = names.slice(0, 6);
@@ -197,16 +197,16 @@
     });
   }
   function stageInfo() {
-    var m = null; try { m = window.WorldExt && WorldExt.modState ? WorldExt.modState("wr_stage") : null; } catch (e) {}
+    var m = null; try { m = window.WorldExt && WorldExt.modState ? WorldExt.modState("wr_stage") : null; } catch (e) { console.warn('[WorldAlive] 读取世界阶段(wr_stage)失败：', e); }
     /* v3.88.0 修正：模块未就绪时不再静默丢阶段，回落到 applyAI 留档的 mem.stageFallback */
     var st = m ? (Number(m.state.stage) || 1) : (Number(mem.stageFallback) || 1);
     var name = "";
-    try { var D = window.WorldStage && window.WorldStage.data; var c = D && D[genre()]; if (c && c.st) name = c.st[st - 1] || ""; } catch (e) {}
+    try { var D = window.WorldStage && window.WorldStage.data; var c = D && D[genre()]; if (c && c.st) name = c.st[st - 1] || ""; } catch (e) { console.warn('[WorldAlive] 读取阶段名称失败：', e); }
     return { stage: st, name: name };
   }
   function grudgePairs() {
     var out = [];
-    try { var g = window.WorldBus && window.WorldBus.grudges; if (g) for (var k in g) if (g.hasOwnProperty(k)) out.push({ name: k, v: Math.round(Number(g[k]) || 0) }); } catch (e) {}
+    try { var g = window.WorldBus && window.WorldBus.grudges; if (g) for (var k in g) if (g.hasOwnProperty(k)) out.push({ name: k, v: Math.round(Number(g[k]) || 0) }); } catch (e) { console.warn('[WorldAlive] 读取势力恩怨(grudges)失败：', e); }
     out.sort(function (a, b) { return a.v - b.v; });
     return out;
   }
@@ -224,8 +224,8 @@
           saveMem();
         }
       }
-    } catch (e) {}
-    try { if (window.WorldBus && WorldBus.recent) out = out.concat(WorldBus.recent() || []); } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 抽取世界事实(drainFacts)失败：', e); }
+    try { if (window.WorldBus && WorldBus.recent) out = out.concat(WorldBus.recent() || []); } catch (e) { console.warn('[WorldAlive] 读取近期世界信号失败：', e); }
     out = out.concat(mem.facts || []);
     var seen = {};
     return out.filter(function (s) { if (!s || seen[s]) return false; seen[s] = 1; return true; });
@@ -241,7 +241,7 @@
         var t = String(hist[i] || "");
         if (t.indexOf("【世界】") >= 0 || t.indexOf("【众生】") >= 0) out.push(t.replace(/【(?:世界|众生)】/, "").trim());
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 读取近期自动事件失败：', e); }
     return out.slice(0, 4);
   }
   function npcBehaviors() {
@@ -261,14 +261,14 @@
         if (!c || c.origin === "玩家") return;
         push({ name: name, goal: c.goal, goals: c.goal, emotion: c.emotion, trust: c.trust, personality: c.personality, ambition: c.ambition });
       });
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 读取主笔人物行为失败：', e); }
     try {
       var list = window.WorldRuntime && window.WorldRuntime.NPC ? WorldRuntime.NPC.list() : [];
       list.forEach(function (n) {
         if (n.faction === "离队") return;
         if (n.goals || n.emotion || n.personality || n.ambition) push({ name: n.name, goal: n.goals, goals: n.goals, emotion: n.emotion, trust: n.trust, personality: n.personality, ambition: n.ambition });
       });
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 读取 WorldRuntime.NPC 行为失败：', e); }
     return out.slice(0, 3);
   }
 
@@ -360,7 +360,7 @@
     mem.prevNpc = curN;
     var sig2 = recentSignals();
     if (sig2.length) parts.push("- 世界近期信号：" + sig2.slice(-3).join("；"));
-    try { if (window.OpportunitySystem && OpportunitySystem.buildPromptBlock) { var oq = OpportunitySystem.buildPromptBlock(); if (oq) parts.push(oq); } } catch (e) {}
+    try { if (window.OpportunitySystem && OpportunitySystem.buildPromptBlock) { var oq = OpportunitySystem.buildPromptBlock(); if (oq) parts.push(oq); } } catch (e) { console.warn('[WorldAlive] 机缘系统注入提示词失败：', e); }
     parts.push("【本轮硬约束】上述势力与恩怨的走向必须被正文体现；已断诱因的大事不得发生；玩家无动作时世界仍按上述状态自行演化。");
     /* 下行协议：首轮完整、后续一行提醒（省 token，模型仍被提醒要上报） */
     if (rd <= 1) {
@@ -413,7 +413,7 @@
     v.characters = v.characters || {};
     var c = v.characters[name] = v.characters[name] || {};
     for (var k in patch) if (patch.hasOwnProperty(k)) c[k] = patch[k];
-    try { if (window.WorldRuntime && WorldRuntime.NPC) WorldRuntime.NPC.upsert(Object.assign({ name: name }, patch)); } catch (e) {}
+    try { if (window.WorldRuntime && WorldRuntime.NPC) WorldRuntime.NPC.upsert(Object.assign({ name: name }, patch)); } catch (e) { console.warn('[WorldAlive] 镜像人物到 WorldRuntime.NPC 失败：', e); }
   }
   function setRelation(a, b, kind, strength) {
     var v = vars(); if (!v) return;
@@ -443,7 +443,7 @@
       var val = line.slice(eq + 1).trim();
       try {
         if (key === "stage") {
-          var m = null; try { m = window.WorldExt && WorldExt.modState ? WorldExt.modState("wr_stage") : null; } catch (e2) {}
+          var m = null; try { m = window.WorldExt && WorldExt.modState ? WorldExt.modState("wr_stage") : null; } catch (e2) { console.warn('[WorldAlive] 读取世界阶段(wr_stage)失败（阶段上报）：', e2); }
           var wantStage = clamp(parseInt(val, 10) || 1, 1, 3);
           /* v3.88.0 修正：模块未注册时不再静默无操作，改为留档到 mem，下一轮注入仍能看到阶段推进 */
           if (m) { m.state.stage = wantStage; }
@@ -520,7 +520,7 @@
               if (canonical === "count") it.count = Math.max(0, parseInt(val, 10) || 0);
               else it[canonical] = val;
               it.updatedAt = Date.now();
-              try { if (window.WorldBook && WorldBook.registerItem) WorldBook.registerItem(it); } catch (e) {}
+              try { if (window.WorldBook && WorldBook.registerItem) WorldBook.registerItem(it); } catch (e) { console.warn('[WorldAlive] 注册物品到世界书失败：', e); }
             }
           }
         } else if (key.indexOf("chance.") === 0) {
@@ -542,14 +542,14 @@
         } else if (key === "tension") {
           v.tension = numOrDelta(val, Number(v.tension) || 0);
         }
-      } catch (e) {}
+      } catch (e) { console.warn('[WorldAlive] 解析 (world_update) 单行失败：', e); }
     }
     /* 回写影响力快照用于下一轮 ↑↓ 显示 */
     try {
       var inf = {}; factionsList().forEach(function (f) { inf[f.name] = f.influence; });
       mem.prevInf = inf; saveMem();
-    } catch (e) {}
-    try { var fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 回写影响力快照失败：', e); }
+    try { var fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) { console.warn('[WorldAlive] 上报后保存故事失败：', e); }
     /* v3.93.0 主笔上报的势力新生/覆灭/迁徙，当场反映到舆图 */
     refreshAtlas();
   }
@@ -563,12 +563,12 @@
     try {
       var list = (window.KB_PRESETS && window.KB_PRESETS[genre()]) || [];
       list.forEach(function (it) { if (it && it.title && re.test((it.category || "") + " " + (it.tags || []).join(" "))) out.push(it); });
-    } catch (e) {}
+    } catch (e) { console.warn('[WorldAlive] 按类目检索知识库失败：', e); }
     return out;
   }
-  function logTimeline(name, status, opt) { try { if (window.CanonTimeline && CanonTimeline.event) CanonTimeline.event(name, status, opt || {}); } catch (e) {} }
+  function logTimeline(name, status, opt) { try { if (window.CanonTimeline && CanonTimeline.event) CanonTimeline.event(name, status, opt || {}); } catch (e) { console.warn('[WorldAlive] 写入时间线(CanonTimeline)失败：', e); } }
   function pushWorldHistory(txt) {
-    try { var v = vars(); if (!v) return; var h = v.history = Array.isArray(v.history) ? v.history : []; h.push("【世界】" + txt); if (h.length > 120) h.splice(0, h.length - 120); } catch (e) {}
+    try { var v = vars(); if (!v) return; var h = v.history = Array.isArray(v.history) ? v.history : []; h.push("【世界】" + txt); if (h.length > 120) h.splice(0, h.length - 120); } catch (e) { console.warn('[WorldAlive] 写入世界历史失败：', e); }
   }
 
   /* 选一条「动态事件」（连锁/AI/KB 优先；返回 {t, f, d, s}，f=势力名 d=对玩家恩怨增量） */
@@ -688,7 +688,7 @@
         var loss2 = (1.5 + conflict * 3) * amp;
         bump(a, -loss2); bump(b, -loss2 * 0.6);
         conflictFiredFlag = true;   /* v4.10.0 F8：冲突实际发生 = 矛盾释放，计入张力回落 */
-        try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: "「" + facs[a].name + "」与「" + facs[b].name + "」因地盘与资源起了冲突，双方各有损耗。" }); } catch (e) {}
+        try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: "「" + facs[a].name + "」与「" + facs[b].name + "」因地盘与资源起了冲突，双方各有损耗。" }); } catch (e) { console.warn('[WorldAlive] 派发势力冲突世界事件失败：', e); }
       }
     }
 
@@ -764,10 +764,10 @@
         var txt = "势力「" + f.name + "」影响力枯竭，分崩离析、树倒猢狲散。";
         pushWorldHistory(txt);
         logTimeline("势力覆灭·" + f.name, "prevented", { kind: "faction", now: txt, round: nowRound() });
-        try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: txt }); } catch (e) {}
-        try { if (window.showToast) window.showToast("🏚 " + txt, "warn"); } catch (e) {}
+        try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: txt }); } catch (e) { console.warn('[WorldAlive] 派发势力覆灭世界事件失败：', e); }
+        try { if (window.showToast) window.showToast("🏚 " + txt, "warn"); } catch (e) { console.warn('[WorldAlive] 弹出势力覆灭提示失败：', e); }
         /* 覆灭会把与玩家的旧怨部分清零（人已散，仇无处寻） */
-        try { if (window.WorldBus) { var g = WorldBus.grudges[f.name]; if (g != null) WorldBus.grudge(f.name, -Math.round(g * 0.6)); } } catch (e) {}
+        try { if (window.WorldBus) { var g = WorldBus.grudges[f.name]; if (g != null) WorldBus.grudge(f.name, -Math.round(g * 0.6)); } } catch (e) { console.warn('[WorldAlive] 清算覆灭势力旧怨失败：', e); }
       }
     });
     /* 新生：存活势力不足时，从知识库「势力/组织」中取名派生新势力 */
@@ -782,11 +782,11 @@
       var txt2 = "乱世之中，新势力「" + name + "」悄然崛起，开始在各处扩张。";
       pushWorldHistory(txt2);
       logTimeline("新兴势力·" + name, "new", { kind: "faction", now: txt2, round: nowRound() });
-      try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: txt2 }); } catch (e) {}
-      try { if (window.showToast) window.showToast("🌱 " + txt2, "success"); } catch (e) {}
+      try { if (window.WorldBus) WorldBus.emit({ type: "world.event", text: txt2 }); } catch (e) { console.warn('[WorldAlive] 派发新势力崛起世界事件失败：', e); }
+      try { if (window.showToast) window.showToast("🌱 " + txt2, "success"); } catch (e) { console.warn('[WorldAlive] 弹出新势力崛起提示失败：', e); }
     }
     saveMem();
-    try { var fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) {}
+    try { var fw = window.storyFramework; fw && fw.saveStory && fw.saveStory(); } catch (e) { console.warn('[WorldAlive] 自转后保存故事失败：', e); }
     /* v3.93.0 自转导致的势力覆灭/新生，同样当场反映到舆图 */
     refreshAtlas();
   }
@@ -814,7 +814,7 @@
       looseLines.push("faction." + lm[1] + "." + lm[2] + "=" + String(lm[3] || "").trim());
     }
     if (looseLines.length) {
-      try { applyAI("(world_update)\n" + looseLines.join("\n") + "\n(/world_update)"); found += looseLines.length; } catch (e) {}
+      try { applyAI("(world_update)\n" + looseLines.join("\n") + "\n(/world_update)"); found += looseLines.length; } catch (e) { console.warn('[WorldAlive] 解析正文散落上报行失败：', e); }
     }
     var DEAD = "(?:覆灭|被灭|灭门|分崩离析|土崩瓦解|就此除名|不复存在|灰飞烟灭|彻底垮台|一夜倾覆|夷为平地|满门被屠|从此除名)";
     var HEDGE = /(?:险些|差点|几乎|倘若|假如|传说|据说|当年|曾经|百年前|千年前|万年前|多年前|未必|谣传)/;
@@ -859,7 +859,7 @@
     }
     if (found) {
       refreshAtlas();
-      try { window.storyFramework && window.storyFramework.saveStory && window.storyFramework.saveStory(); } catch (e) {}
+      try { window.storyFramework && window.storyFramework.saveStory && window.storyFramework.saveStory(); } catch (e) { console.warn('[WorldAlive] 剧情文本识别后保存故事失败：', e); }
     }
     return found;
   }
@@ -901,14 +901,14 @@
     }
     if (n) {
       refreshAtlas();
-      try { window.storyFramework && window.storyFramework.saveStory && window.storyFramework.saveStory(); } catch (e) {}
+      try { window.storyFramework && window.storyFramework.saveStory && window.storyFramework.saveStory(); } catch (e) { console.warn('[WorldAlive] 玩家指令驱动后保存故事失败：', e); }
     }
     return n;
   }
 
   /* 每轮提示词装配后由 ai-message-builder 调用：刷新影响力快照（体现本轮自治变化） */
   function snapshotInfluence() {
-    try { var inf = {}; factionsList().forEach(function (f) { inf[f.name] = f.influence; }); mem.prevInf = inf; saveMem(); } catch (e) {}
+    try { var inf = {}; factionsList().forEach(function (f) { inf[f.name] = f.influence; }); mem.prevInf = inf; saveMem(); } catch (e) { console.warn('[WorldAlive] 刷新影响力快照失败：', e); }
   }
 
   window.WorldAlive = {

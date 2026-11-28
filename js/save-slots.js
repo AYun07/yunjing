@@ -22,7 +22,7 @@
     _fwGenre() {
       var fw = window.storyFramework;
       if (fw && fw.genre) return fw.genre;
-      try { if (window.SlotRegistry && SlotRegistry.genre) return SlotRegistry.genre() || "free"; } catch (e) {}
+      try { if (window.SlotRegistry && SlotRegistry.genre) return SlotRegistry.genre() || "free"; } catch (e) { console.warn('[SaveSlots] 读取 SlotRegistry 题材兜底失败：', e); }
       return this.genre();
     },
     /** 读注册表（恒含 main 槽——首次访问时惰性补建） */
@@ -55,7 +55,7 @@
             this.__quotaToastAt = now;
             if (window.showToast) window.showToast("存档书架写入失败：浏览器本地存储已满（档位未真正保存）。请到「工具箱 → 🛡 存档体检」清理空间后重试。", "error");
           }
-        } catch (e2) {}
+        } catch (e2) { console.warn('[SaveSlots] 配额不足提示(toast)失败：', e2); }
         console.warn("[SaveSlots] 注册表写入失败:", e && e.name || e);
         return false;
       }
@@ -83,6 +83,7 @@
       try {
         rows = JSON.parse(localStorage.getItem(this.regKey(g)) || "[]");
       } catch (e) {
+        console.warn('[SaveSlots] 同步书架元数据时读取注册表失败：', e);
       }
       if (!Array.isArray(rows)) rows = [];
       const v = fw.storyState.variables || {};
@@ -160,7 +161,7 @@
             localStorage.removeItem(k + suffix);
             if (!suffix) localStorage.removeItem(k);
           });
-        } catch (e) {}
+        } catch (e) { console.warn('[SaveSlots] 删除档位时兜底清理残留键失败：', e); }
       }
       this._write(this.list().filter((x) => x.id !== slotId));
       (_b = window.showToast) == null ? void 0 : _b.call(window, "已删除", "success");
@@ -177,13 +178,13 @@
          而界扩展模块（worldExt_*）的内存态只在 act()/onVars() 时才落盘，
          玩家在面板上改完没点任何按钮就切档 → 那部分进度直接消失。
          这里显式冲刷所有已知持久化入口。 */
-      try { if (fw.flushSave) fw.flushSave(); } catch (e) {}
-      try { if (window.WorldExt && window.WorldExt.persist) window.WorldExt.persist(); } catch (e) {}
-      try { if (window.WorldRuntime && window.WorldRuntime.persist) window.WorldRuntime.persist(); } catch (e) {}
-      try { if (window.WorldBus && window.WorldBus.persist) window.WorldBus.persist(); } catch (e) {}
-      try { if (window.WorldAlive && window.WorldAlive.persist) window.WorldAlive.persist(); } catch (e) {}
-      try { if (window.BeastSystem && window.BeastSystem.save) window.BeastSystem.save(); } catch (e) {}
-      try { if (window.SquadSystem && window.SquadSystem.save) window.SquadSystem.save(); } catch (e) {}
+      try { if (fw.flushSave) fw.flushSave(); } catch (e) { console.warn('[SaveSlots] 切档冲刷正文存档(flushSave)失败：', e); }
+      try { if (window.WorldExt && window.WorldExt.persist) window.WorldExt.persist(); } catch (e) { console.warn('[SaveSlots] 切档冲刷界扩展(WorldExt)存档失败：', e); }
+      try { if (window.WorldRuntime && window.WorldRuntime.persist) window.WorldRuntime.persist(); } catch (e) { console.warn('[SaveSlots] 切档冲刷世界运行时存档失败：', e); }
+      try { if (window.WorldBus && window.WorldBus.persist) window.WorldBus.persist(); } catch (e) { console.warn('[SaveSlots] 切档冲刷世界总线(WorldBus)存档失败：', e); }
+      try { if (window.WorldAlive && window.WorldAlive.persist) window.WorldAlive.persist(); } catch (e) { console.warn('[SaveSlots] 切档冲刷活世界(WorldAlive)存档失败：', e); }
+      try { if (window.BeastSystem && window.BeastSystem.save) window.BeastSystem.save(); } catch (e) { console.warn('[SaveSlots] 切档冲刷灵宠存档失败：', e); }
+      try { if (window.SquadSystem && window.SquadSystem.save) window.SquadSystem.save(); } catch (e) { console.warn('[SaveSlots] 切档冲刷小队存档失败：', e); }
       localStorage.setItem(this.activeKey(), slotId);
       (_a = window.showToast) == null ? void 0 : _a.call(window, "正在切换书档…", "info");
       setTimeout(() => location.reload(), 350);
@@ -191,7 +192,7 @@
     /** 导出槽位为 JSON（含注册表元信息 + 散落键 + IDB 正文，跨设备搬运） */
     async exportSlot(slotId) {
       var _a, _b;
-      try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) {}
+      try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) { console.warn('[SaveSlots] 导出单档前冲刷正文存档失败：', e); }
       const fw = window.storyFramework;
       const suffix = slotId !== "main" ? `~${slotId}` : "";
       const key = `storySave_${this._fwGenre()}${suffix}`;
@@ -216,7 +217,7 @@
           beasts: localStorage.getItem(`yunjingBeasts${suffix}`) || "",
           squad: localStorage.getItem(`yunjingSquad${suffix}`) || ""
         };
-      } catch (e) { }
+      } catch (e) { console.warn('[SaveSlots] 导出灵宠/小队附加数据失败：', e); }
       /* v4.28.0：单档导出也补齐该槽位的全部散落键（世界书/账本/时钟/关系…），
          不再只导 beasts/squad——否则导出的档换设备后世界演化进度全丢。 */
       pkg.scoped = this.collectLS('slot', slotId);
@@ -240,7 +241,7 @@
       try {
         const includeKey = !!(window.__yjExportIncludeKey);
         if (window.SaveCodec) pkg.config = window.SaveCodec.collectConfig(includeKey);
-      } catch (e) {}
+      } catch (e) { console.warn('[SaveSlots] 导出接口配置失败：', e); }
       await this._downloadSmart(pkg, `云境存档_${this._fwGenre()}_${(meta.title || meta.name || slotId).slice(0, 12)}_${slotId}`);
     },
     /** 导入槽位 JSON/gzip（收进新槽位，绝不覆盖现有档） */
@@ -280,7 +281,7 @@
               if (pkg.extras.beasts) localStorage.setItem(`yunjingBeasts${suffix}`, String(pkg.extras.beasts));
               if (pkg.extras.squad) localStorage.setItem(`yunjingSquad${suffix}`, String(pkg.extras.squad));
             }
-          } catch (e) { }
+          } catch (e) { console.warn('[SaveSlots] 导入灵宠/小队附加数据失败：', e); }
           /* v4.28.0：恢复该槽位的全部散落键。导入档的键是源槽位名，
              经 remapScopedKey 精确重映射到新槽位，覆盖全部键格式，杜绝污染主档。 */
           try {
@@ -300,7 +301,7 @@
                 localStorage.setItem(nk, String(pkg.scoped[k]));
               });
             }
-          } catch (e) { }
+          } catch (e) { console.warn('[SaveSlots] 导入槽位散落数据失败：', e); }
           /* v4.28.0：恢复 idb:// 占位指向的正文/图片实体。 */
           try {
             if (pkg.media && window.StorageBoost) {
@@ -308,7 +309,7 @@
                 await window.StorageBoost.put(key, pkg.media[key]);
               }
             }
-          } catch (e) { }
+          } catch (e) { console.warn('[SaveSlots] 导入正文/媒体实体失败：', e); }
           const arr = this.list();
           const r = arr.find((x) => x.id === id);
           if (r) {
@@ -327,7 +328,7 @@
               if (cr.networkKept) cfgMsg += ' · 接口地址沿用本机（安全保护）';
               if (cr.keyNeeded) cfgMsg += ' · 密钥需补填（导出时未含）';
             }
-          } catch (e) {}
+          } catch (e) { console.warn('[SaveSlots] 导入接口配置失败：', e); }
           (_j = window.showToast) == null ? void 0 : _j.call(window, `✅ 已收入书架（新档位）${cfgMsg}`, "success");
           this.open();
       }
@@ -375,7 +376,7 @@
             genre: this._fwGenre(), slotId: sid, meta: rows[i], save: save,
             scoped: this.collectLS('slot', sid)
           };
-          try { pkg.config = window.SaveCodec.collectConfig(!!window.__yjExportIncludeKey); } catch (e) {}
+          try { pkg.config = window.SaveCodec.collectConfig(!!window.__yjExportIncludeKey); } catch (e) { console.warn('[SaveSlots] 差分包导出接口配置失败：', e); }
           branches.push({ id: sid, meta: { title: rows[i].title || rows[i].name || sid }, obj: pkg });
         }
         if (!branches.length) { this._toast('没有可导出的存档正文', 'error'); return; }
@@ -408,7 +409,7 @@
           const i = sk.indexOf(key);
           if (i >= 0 && dk[i]) return dk[i];
         }
-      } catch (e) {}
+      } catch (e) { console.warn('[SaveSlots] 注册表精确键映射失败（转令牌替换兜底）：', e); }
       /* 兜底：令牌替换（覆盖 keysOf 未列、被 scanKeysOf 扫到的历史键） */
       const s = srcSid || 'main';
       const d = dstSid || 'main';
@@ -434,14 +435,14 @@
           const sid = slotId || this.activeId();
           const keys = new Set();
           if (window.SlotRegistry) {
-            try { (window.SlotRegistry.keysOf(sid, g) || []).forEach(k => keys.add(k)); } catch (e) {}
-            try { if (window.SlotRegistry.scanKeysOf) (window.SlotRegistry.scanKeysOf(sid, g) || []).forEach(k => keys.add(k)); } catch (e) {}
+            try { (window.SlotRegistry.keysOf(sid, g) || []).forEach(k => keys.add(k)); } catch (e) { console.warn('[SaveSlots] 枚举槽位键(keysOf)失败：', e); }
+            try { if (window.SlotRegistry.scanKeysOf) (window.SlotRegistry.scanKeysOf(sid, g) || []).forEach(k => keys.add(k)); } catch (e) { console.warn('[SaveSlots] 扫描槽位键(scanKeysOf)失败：', e); }
           }
           keys.add(this.regKey(g));
           keys.add(this.activeKey(g));
           keys.forEach(k => { const v = localStorage.getItem(k); if (v != null) out[k] = v; });
         }
-      } catch (e) {}
+      } catch (e) { console.warn('[SaveSlots] 收集槽位本地存储失败：', e); }
       return out;
     },
 
@@ -459,8 +460,8 @@
           try { db = req.result; } catch (e) { return resolve(out); }
           const stores = Array.prototype.slice.call(db.objectStoreNames || []);
           let pending = stores.length;
-          if (!pending) { try { db.close(); } catch (e) {} return resolve(out); }
-          const done = () => { if (--pending === 0) { try { db.close(); } catch (e) {} resolve(out); } };
+          if (!pending) { try { db.close(); } catch (e) { console.warn('[SaveSlots] 关闭空 IndexedDB 库失败：', e); } return resolve(out); }
+          const done = () => { if (--pending === 0) { try { db.close(); } catch (e) { console.warn('[SaveSlots] 关闭 IndexedDB 库失败：', e); } resolve(out); } };
           stores.forEach(sn => {
             try {
               const tx = db.transaction(sn, 'readonly');
@@ -492,17 +493,17 @@
         if (indexedDB.databases) {
           (await indexedDB.databases()).forEach(d => { if (d.name) names.add(d.name); });
         }
-      } catch (e) {}
+      } catch (e) { console.warn('[SaveSlots] 枚举 IndexedDB 库名失败：', e); }
       try {
         const dn = (n) => (window.YunjingID && window.YunjingID.dbName) ? window.YunjingID.dbName(n) : n;
         ['moshu', 'yunjing', 'moshu_mirror', 'yunjing_mirror', 'moshu_safe', 'yunjing_safe'].forEach(n => names.add(dn(n)));
-      } catch (e) {}
+      } catch (e) { console.warn('[SaveSlots] 推导备份库名失败：', e); }
       for (const n of names) {
         if (!n || String(n).indexOf('yunjing_backup') >= 0) continue;
         try {
           const d = await this._dumpDB(n);
           if (Object.keys(d).length) out[n] = d;
-        } catch (e) {}
+        } catch (e) { console.warn('[SaveSlots] 读取 IndexedDB 仓数据失败：', e); }
       }
       return out;
     },
@@ -515,15 +516,15 @@
       a.download = filename;
       document.body.appendChild(a);
       a.click();
-      setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} a.remove(); }, 1000);
+      setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { console.warn('[SaveSlots] 释放下载链接失败：', e); } a.remove(); }, 1000);
     },
 
-    _toast(msg, type) { try { if (window.showToast) window.showToast(msg, type || 'info'); } catch (e) {} },
+    _toast(msg, type) { try { if (window.showToast) window.showToast(msg, type || 'info'); } catch (e) { console.warn('[SaveSlots] 弹出提示(toast)失败：', e); } },
 
     /** v4.35.0：导出是否包含 API 密钥（全局开关，导出时读取） */
     setIncludeKey(on) {
       window.__yjExportIncludeKey = !!on;
-      try { localStorage.setItem('yunjingExportIncludeKey', on ? '1' : '0'); } catch (e) {}
+      try { localStorage.setItem('yunjingExportIncludeKey', on ? '1' : '0'); } catch (e) { console.warn('[SaveSlots] 保存导出密钥开关失败：', e); }
     },
     _initIncludeKey() {
       try { window.__yjExportIncludeKey = localStorage.getItem('yunjingExportIncludeKey') === '1'; } catch (e) { window.__yjExportIncludeKey = false; }
@@ -539,18 +540,18 @@
           const gz = await window.SaveCodec.gzip(json);
           if (gz && gz.length < json.length) { payload = gz; ext = '.json.gz'; compressed = true; }
         }
-      } catch (e) {}
+      } catch (e) { console.warn('[SaveSlots] gzip 压缩存档失败（回退明文）：', e); }
       if (!payload) { payload = new TextEncoder().encode(json); ext = '.json'; }
       const blob = new Blob([payload], { type: 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = baseName + ext;
       document.body.appendChild(a); a.click();
-      setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} a.remove(); }, 1200);
+      setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { console.warn('[SaveSlots] 释放压缩下载链接失败：', e); } a.remove(); }, 1200);
       try {
         const ratio = compressed ? ((payload.length / json.length) * 100).toFixed(0) + '%' : '未压缩';
         this._toast(`✅ 已导出${compressed ? '压缩存档' : '存档'}（${(payload.length / 1024).toFixed(0)} KB，体积 ${ratio}）`, 'success');
-      } catch (e) {}
+      } catch (e) { console.warn('[SaveSlots] 导出完成提示失败：', e); }
       return { bytes: payload.length, ext, compressed };
     },
     /** 读入并自动解压（gzip 魔数识别），兼容旧明文 .json。返回字符串 */
@@ -562,8 +563,8 @@
 
     /** 全量备份：所有槽位 + 全部 localStorage + 全部 IndexedDB，一键跨设备搬家 */
     async exportAll() {
-      try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) {}
-      try { const fw = window.storyFramework; if (fw && fw.storyState && fw.storyState.isStoryStarted && fw.saveStory) fw.saveStory(); } catch (e) {}
+      try { const fw = window.storyFramework; if (fw && fw.flushSave) fw.flushSave(); } catch (e) { console.warn('[SaveSlots] 全量导出前冲刷正文存档失败：', e); }
+      try { const fw = window.storyFramework; if (fw && fw.storyState && fw.storyState.isStoryStarted && fw.saveStory) fw.saveStory(); } catch (e) { console.warn('[SaveSlots] 全量导出前保存故事失败：', e); }
       this._toast('正在打包全部存档…', 'info');
       try {
         const pkg = {
@@ -605,10 +606,10 @@
         const keep = new Set(Object.keys(snap.ls || {}));
         const now = [];
         for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k) now.push(k); }
-        for (const k of now) if (!keep.has(k)) { try { localStorage.removeItem(k); } catch (e) {} }
-      } catch (e) {}
+        for (const k of now) if (!keep.has(k)) { try { localStorage.removeItem(k); } catch (e) { console.warn('[SaveSlots] 撤销时清理残留键失败：', e); } }
+      } catch (e) { console.warn('[SaveSlots] 撤销时枚举本地键失败：', e); }
       for (const k of Object.keys(snap.ls || {})) {
-        try { localStorage.setItem(k, snap.ls[k]); } catch (e) {}
+        try { localStorage.setItem(k, snap.ls[k]); } catch (e) { console.warn('[SaveSlots] 撤销时恢复本地键失败：', e); }
       }
       for (const db of Object.keys(snap.idb || {})) {
         if (db === 'yunjing_backup') continue;
@@ -618,9 +619,9 @@
             const inst = window.localforage.createInstance({ name: db, storeName: sn });
             const entries = stores[sn] || {};
             for (const k of Object.keys(entries)) {
-              try { await inst.setItem(k, entries[k]); } catch (e) {}
+              try { await inst.setItem(k, entries[k]); } catch (e) { console.warn('[SaveSlots] 撤销时恢复 IndexedDB 条目失败：', e); }
             }
-          } catch (e) {}
+          } catch (e) { console.warn('[SaveSlots] 撤销时恢复 IndexedDB 仓失败：', e); }
         }
       }
     },
@@ -752,8 +753,8 @@
       wrap.id = "slotModal";
       wrap.innerHTML = html;
       document.body.appendChild(wrap);
-      try { this._initIncludeKey(); const cb = wrap.querySelector('#ssIncludeKey'); if (cb) cb.checked = !!window.__yjExportIncludeKey; } catch (e) {}
-      try { this.refreshCapacity(); } catch (e) {}
+      try { this._initIncludeKey(); const cb = wrap.querySelector('#ssIncludeKey'); if (cb) cb.checked = !!window.__yjExportIncludeKey; } catch (e) { console.warn('[SaveSlots] 初始化导出密钥开关失败：', e); }
+      try { this.refreshCapacity(); } catch (e) { console.warn('[SaveSlots] 刷新存储容量显示失败：', e); }
     },
     /* v3.27.4 安卓适配：原生 prompt/confirm → 应用内 UIDialog（触屏体验统一，
      *  原生弹窗在部分 WebView 内嵌环境会被静默拦截；UIDialog 缺失时回退原生） */

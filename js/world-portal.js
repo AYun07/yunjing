@@ -26,7 +26,13 @@
     } catch (e) { return 'free'; }
   }
   function zhName() {
+    /* v7.6.3：与 card-hub/dlc-manager/knowledge-manager 统一 genreName 权威来源。
+     * 原实现只读 storyFramework.config.genreName，当该对象尚未就绪（如 mystery 界
+     * 首次进入、config 挂载时序晚于本模块渲染）时兜底成「未知世界」，玩家看到标题
+     * 不跟随 config。改为优先 GenreStoryConfig（各 config 通用导出名），再退 storyFramework。 */
     try {
+      var g = window.GenreStoryConfig;
+      if (g && g.genreName) return g.genreName;
       var fw = window.storyFramework;
       return (fw && fw.config && fw.config.genreName) || '未知世界';
     } catch (e) { return '未知世界'; }

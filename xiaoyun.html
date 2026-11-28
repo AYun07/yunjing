@@ -75,6 +75,12 @@
   .subhd{ font-size:12px; color:#9a94c0; margin:14px 0 8px; letter-spacing:.08em; }
   .try input{ width:100%; background:#16132e; border:1px solid var(--line); color:#efeaf8; border-radius:10px;
     padding:11px 13px; font-size:13px; font-family:inherit; }
+  /* v7.6.2：输入框旁增加可见「发送」按钮（点击等同回车），不再只能按 Enter */
+  .sayrow{ display:flex; gap:8px; align-items:stretch; }
+  .sayrow input{ flex:1; min-width:0; width:auto; }
+  .try .sendbtn{ flex:none; cursor:pointer; border:1px solid var(--gold); background:var(--gold); color:#1a1530;
+    font-weight:700; font-family:inherit; font-size:13px; border-radius:10px; padding:0 20px; transition:.15s; }
+  .try .sendbtn:hover{ filter:brightness(1.08); }
   .chips2{ display:flex; flex-wrap:wrap; gap:7px; margin:10px 0; }
   .chips2 span{ cursor:pointer; font-size:12px; color:var(--gold-soft); border:1px solid var(--line); border-radius:20px; padding:5px 11px; }
   .chips2 span:hover{ background:rgba(244,216,150,.12); }
@@ -113,11 +119,16 @@
           <img id="portrait" src="assets/xiaoyun-wenrou-happy.png" alt="小云立绘">
           <video id="video" playsinline muted preload="none"></video>
         </div>
+        <!-- v7.6.2：形态与情绪明确分组标注，避免玩家把「温柔/雨/邻家」和「欢呼/生气/害羞」混为一谈 -->
+        <div class="subhd">① 形态 · 点按切换小云的模样（高亮为当前形态）</div>
         <div class="forms" id="forms"></div>
-        <div class="subhd">精细情绪 · 点按试播</div>
+        <div class="subhd">② 情绪 · 点按试播动作</div>
         <div class="acts" id="emoActs"></div>
         <div class="try">
-          <input id="say" aria-label="对小云说话" placeholder="对她说一句：「太好了！」或「哼，才不是」……">
+          <div class="sayrow">
+            <input id="say" aria-label="对小云说话" placeholder="对她说一句：「太好了！」或「哼，才不是」……">
+            <button type="button" class="sendbtn" id="sayBtn" title="等同按回车发送">发送</button>
+          </div>
           <div class="chips2" id="chips2"></div>
           <div class="log" id="log">132 条动作视频全部本地预设，随话语触发，零内置生图接口。</div>
         </div>
@@ -253,6 +264,8 @@ function trySay(t){if(!t)return;var safe=esc(t);var it=match(t);if(!it){log('「
   if(it.emo){play('emo',it.emo);log('「'+safe+'」→ 命中情绪 <b>'+esc(EMO_CN[it.emo])+'</b>');}
   else{play('base',it.act);log('「'+safe+'」→ 命中动作 <b>'+esc(BASE_CN[it.act])+'</b>');}}
 document.getElementById('say').addEventListener('keydown',function(e){if(e.key==='Enter')trySay(this.value);});
+/* v7.6.2：可见发送按钮，点击完全等同回车（同一 trySay 出口，沿用 esc() 的 XSS 防护） */
+document.getElementById('sayBtn').addEventListener('click',function(){trySay(document.getElementById('say').value);});
 document.getElementById('chips2').addEventListener('click',function(e){if(e.target.tagName==='SPAN'){var t=e.target.textContent;document.getElementById('say').value=t;trySay(t);}});
 document.getElementById('note').innerHTML='<b>版本</b> · 小云创造中枢 v4.36.0。六项能力均来自项目既有真实模块（XYDev / FileBridge / PluginRuntime / MoDevtools / StoryDLCUI / CreatorForge），未新增任何生图或生视频接口；形象与动作视频为本地预设。所有创造内容仅存本机，不联网上传、不触碰 Git 仓库。';
 renderForms();renderActs();

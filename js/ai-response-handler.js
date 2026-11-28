@@ -322,6 +322,29 @@ const StoryResponseHandler = {
         body = window.NumberScrubber.scrub(body, _nsSnap, _nsTurns);
       } catch (e) { /* 清洗异常不阻断正文交付 */ }
     }
+    /* v7.6.3 · 剥离模型漏网的 markdown 面板结构行（scifi 界实测：正文里残留
+       「### 星海终端 · 通讯面板」「- **舰船状态**：氧气 100 / 燃料 85」等标题+列表）。
+       原清洗层只处理「第X章」标题与协议行，这类面板标题/加粗字段列表不在其中。
+       保守策略：① markdown 标题行（#{1,4} 开头）直接删——叙事正文不会以 # 开头；
+       ② 加粗字段列表行（- **键**：值）仅在「连续 ≥2 行」成组时才删，避免误伤正文里
+       偶发的单行 `**强调**：` 句式。两种都只作用于独立整行，绝不改行内正文。 */
+    body = (function (text) {
+      var lines = String(text).split("\n");
+      var fieldRe = /^[-*]\s+\*\*[^*\n]{1,24}\*\*\s*[:：]\s*\S/;
+      var headRe = /^#{1,4}\s+\S/;
+      return lines.filter(function (line) {
+        var t = line.trim();
+        if (headRe.test(t)) return false;
+        return true;
+      }).filter(function (line, idx, arr) {
+        var t = line.trim();
+        if (!fieldRe.test(t)) return true;
+        // 成组判定：前一行或后一行也是加粗字段列表行
+        var prev = idx > 0 && fieldRe.test(String(arr[idx - 1]).trim());
+        var next = idx < arr.length - 1 && fieldRe.test(String(arr[idx + 1]).trim());
+        return !(prev || next);
+      }).join("\n");
+    })(body);
     const out = body.trim();
     /* v3.46.2 防线：常规剥离后正文为空/过短 → 从原文打捞叙事段兜底
        （覆盖：正文整体被写进代码围栏、残缺标记连锁误剥、只吐变量块等情形） */
