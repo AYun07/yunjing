@@ -274,7 +274,8 @@ const StoryStatusRenderer = {
     let bonusHTML = "";
     if (window.BonusEngine) {
       try {
-        BonusEngine.recompute();
+        /* v7.6.4：渲染路径静默重算，避免 recompute 派发 yj:bonus-change 触发本面板再次重绘的递归 */
+        BonusEngine.recompute(true);
         const net = BonusEngine.netMods();
         if ((net.buffs && net.buffs.length) || (net.debuffs && net.debuffs.length) || net.title) {
           const bits = [];

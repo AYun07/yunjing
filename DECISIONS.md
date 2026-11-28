@@ -1879,3 +1879,18 @@ v6.4.0 的二创包是"整包收集"——把本机所有可持久化内容键�
 - 证据：v763 静态断言 29/29、真机 Electron（Xvfb+CDP+Playwright 真实点击）8/8（芯片 cs-trait→cs-trait on、竞态裸调用0、导出存档不崩、mystery标题悬疑推理、发送按钮命中情绪、设置页反馈）。
 - 未验证项强制披露：B6 scifi markdown 以清单证据+纯函数复刻验证，未实 API 重跑 38 界（耗时20+分钟）；config 字段按甄别后真实缺项补，未实现的字段缺口如实披露；setup GUI 双击流程沙箱无 Windows 桌面，以产物级解包+Electron 实测覆盖。
 - 失效条件：若将来流式输出让 markdown 面板行与叙事同行，成组清理规则需重估；若 GenreStoryConfig 导出名变更，mystery 标题兜底需同步。
+
+## DR-120 · v7.6.4 六轮实测与创作态栈溢出修复（2026-11-28）
+- 背景：用户要求「继续修复所有问题、五轮实测、继续找问题继续修复」，并提供了具备写权限的 GitHub PAT。先补完 v7.6.3 发布欠账（push/tag/Release/两件套上传，资产 size 与 update-latest 一致），再进入实测循环。
+- 六轮实测（真实 Chromium 点击 + 真机 Electron CDP，累计 200+ 次交互）：
+  - 第1轮 全页点击+设置深度：发现 1 真 bug；2 项甄别为误报（输入框默认隐藏属两段式设计、无 key 踏入弹提示属预期引导）。
+  - 第2轮 工具箱24项/7世界/快捷键：0 问题。
+  - 第3轮 XSS/连点竞态/损坏存档/损坏配置容错：0 问题（XSS 正确转义、连点无崩、容错启动）。
+  - 第4轮 7世界向导字段消费：1 项甄别为误报（freeworld 用专属文案「落笔成世，开始生活」而非「踏入世界」，非缺按钮）。
+  - 第5轮 真机 Electron 创作全流程：7/7 PASS。
+  - 第6轮 未捕获 Promise rejection：0。
+- 唯一真 bug（P1-01）：创作态渲染正文时稳定复现 `RangeError: Maximum call stack size exceeded`（3/3），堆栈 bonus-engine.js:401 recompute ← story-status-renderer.js:277 renderStats。根因：renderStats 调 recompute() 取值，recompute 派发 `yj:bonus-change`，该事件监听器又调 renderStats → 无限递归。
+- 修复：recompute 增加 silent 参数；渲染路径（story-status-renderer:277）与提示词构建（ai-message-builder:281）传 true 抑制事件派发，断开递归环；装备/称号真实变更仍走无参调用保留即时反馈。实测验证：无参派发/静默不派发语义正确（无参=1、静默后=1），创作流程栈溢出 0。
+- 关键教训（DR-118 同类）：源码修复后，内置基线（build-resources/yunjing 与 dist/win-unpacked/resources/yunjing）不含修复，Electron 真机会复现旧 bug。必须同步基线并重编两件套，否则新装用户拿到的还是带 bug 的内容。
+- 诚实披露：六轮实测以「能复现的真实异常/状态错误」为问题口径，不把测试工具的时序误判（默认隐藏输入框、世界专属文案、无 key 引导）计入修复数。除 P1-01 外未发现其它真 bug，如实记录，不凑数。
+- 失效条件：若将来 recompute 被新增到其它「渲染中被事件回环」的调用点，需同样传 silent；若 yj:bonus-change 监听器改为异步，递归风险自然消解但需重新验证事件语义。

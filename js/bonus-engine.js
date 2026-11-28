@@ -367,7 +367,10 @@
   }
 
   var CACHE = emptyNet();
-  function recompute() {
+  /* v7.6.4：silent=true 时只重算快照、不派发 yj:bonus-change。
+     渲染路径/提示词构建调用重算仅为取值，若派发事件会被 story-status-renderer 再次监听重绘，
+     而重绘又调 recompute → 无限递归栈溢出。装备/称号真实变更仍走无参调用保留即时反馈。 */
+  function recompute(silent) {
     var net = emptyNet();
     var names = equippedNames();
     net.equipped = names.slice();
@@ -394,13 +397,15 @@
       }
     });
     CACHE = net;
-    /* 派发即时反馈：状态栏/面板据此闪动刷新 */
-    try {
-      if (G.dispatchEvent) {
-        var Ctor = G.CustomEvent || G.Event;
-        G.dispatchEvent(new Ctor("yj:bonus-change", { bubbles: false, detail: { net: net } }));
-      }
-    } catch (e) {}
+    /* 派发即时反馈：状态栏/面板据此闪动刷新（silent 时跳过，断开渲染路径递归） */
+    if (!silent) {
+      try {
+        if (G.dispatchEvent) {
+          var Ctor = G.CustomEvent || G.Event;
+          G.dispatchEvent(new Ctor("yj:bonus-change", { bubbles: false, detail: { net: net } }));
+        }
+      } catch (e) {}
+    }
     lsSet(keyOf("yunjingBonusSnapshot"), {
       at: Date.now(), hp: net.hp, atk: net.atk, def: net.def, spd: net.spd, crit: net.crit,
       atkPct: net.atkPct, defPct: net.defPct, axes: net.axes, stats: net.stats, title: net.title,

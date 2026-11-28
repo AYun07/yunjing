@@ -278,7 +278,7 @@ ${rulePrompt}${inspirationNote}${freedomRule}${agencyGuard}${varAIRule}${closure
     /* v4.49.0：装备词条 + 称号净加成上行——先重算（读当前佩戴/称号），再注入，
        让主笔行文与即时计算的加成一致；无佩戴无称号时返回空串，零 token 浪费。 */
     if (window.BonusEngine) {
-      try { BonusEngine.recompute(); const _bb = BonusEngine.buildPromptBlock(); if (_bb) liveParts.push(_bb); } catch (e) {}
+      try { BonusEngine.recompute(true); const _bb = BonusEngine.buildPromptBlock(); if (_bb) liveParts.push(_bb); } catch (e) {}
     }
     if (liveParts.length) push({ role: "system", content: liveParts.join("\n") }, "活世界", 26);
   } catch (e) { if (window.YJ_DEBUG) console.warn("[MessageBuilder] 活世界上行装配失败:", e); }
