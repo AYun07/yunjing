@@ -1,0 +1,7 @@
+{
+  "pass": 10,
+  "fail": 1,
+  "issues": [
+    "R7 标题单行省略号 {\"nowrap\":null,\"ellipsis\":null,\"pillTop\":\"86px\",\"fab\":false}"
+  ]
+}

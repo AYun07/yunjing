@@ -543,8 +543,10 @@ const StorySetupWizard = {
   /** 任意下拉字段单独随机（identity/timeline/aptitude/perspective/scale/style…）
    *  避开「✎ 自定义」，且与当前选中值不同（薄池时最多试 8 次取异值） */
   diceField(field) {
-    const fw = window.storyFramework;
-    const meta = fw.config.setupMeta || {};
+    /* v7.6.5：与 dice()/diceAll() 的 v7.3.0 判空对齐——配置懒加载未就绪时 fw.config
+       可能为空对象，旧码裸读 fw.config.setupMeta 抛错，单个骰点击静默无反应。 */
+    const fw = window.storyFramework || {};
+    const meta = (fw.config || {}).setupMeta || {};
     const map = {
       identity: meta.identities,
       timeline: meta.timelines,
@@ -610,8 +612,9 @@ const StorySetupWizard = {
   /** 扮演模式：随机姓名/身世 */
   diceRoleplay(field) {
     var _a;
-    const fw = window.storyFramework;
-    const seeds = fw.config.nameSeeds || {};
+    /* v7.6.5：同 diceField，补配置判空，避免注入窗口内裸调用抛错。 */
+    const fw = window.storyFramework || {};
+    const seeds = (fw.config || {}).nameSeeds || {};
     if (field === "playerName") {
       const genderEl = document.getElementById("wiz_gender");
       const g = genderEl && genderEl.value || ((_a = this.state) == null ? void 0 : _a.gender) || "男";

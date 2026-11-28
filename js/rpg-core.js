@@ -1994,16 +1994,17 @@
         var ls = document.querySelectorAll('link[rel="stylesheet"]');
         for (var i = 0; i < ls.length; i++) if ((ls[i].href || '').indexOf('rpg-suite.css') >= 0) return;
         var l = document.createElement('link');
-        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=7.6.4'; l.setAttribute('data-rpg-suite', '1');
+        l.rel = 'stylesheet'; l.href = 'css/rpg-suite.css?v=7.6.5'; l.setAttribute('data-rpg-suite', '1');
         document.head.appendChild(l);
       } catch (e) {}
     })();
-    var css = '#rpgFab{position:fixed;right:16px;bottom:96px;z-index:9200;border:1px solid var(--ip,#c9a86a)66;'
+    /* v7.6.5：原 bottom:96px 的悬浮气泡压住右下「派系/剧本」可点区，上移至 138px 避让 */
+    var css = '#rpgFab{position:fixed;right:16px;bottom:138px;z-index:9200;border:1px solid var(--ip,#c9a86a)66;'
       + 'background:color-mix(in srgb,var(--ip,#c9a86a) 20%,#10161d);color:var(--itx,#e8dcc0);'
       + 'border-radius:22px;padding:9px 15px;font-size:12.5px;letter-spacing:1px;cursor:pointer;'
       + 'box-shadow:0 6px 22px rgba(0,0,0,.4);font-variant-numeric:tabular-nums}'
       + '#rpgFab:hover{background:color-mix(in srgb,var(--ip,#c9a86a) 34%,#10161d)}'
-      + '#rpgDrawer{position:fixed;right:14px;bottom:146px;z-index:9201;width:min(440px,92vw);'
+      + '#rpgDrawer{position:fixed;right:14px;bottom:188px;z-index:9201;width:min(440px,92vw);'
       + 'max-height:min(74vh,680px);overflow:auto;background:#0e141b;border:1px solid var(--ip,#c9a86a)44;'
       /* v4.08.0 修复（375px 小屏横向溢出 28px）：#rpgDrawer 是 content-box，
          width:calc(100vw - 16px) 之外还要加左右 padding（14px×2）→ 实际比视口宽 28px，
@@ -2018,8 +2019,8 @@
       + 'width:34px;height:34px;min-width:34px;border-radius:50%;display:inline-flex;'
       + 'align-items:center;justify-content:center;font-size:15px;line-height:1;cursor:pointer}'
       + '#rpgDrawer .rpg-hd button:hover{color:var(--ip,#c9a86a);border-color:var(--ip,#c9a86a)}'
-      + '@media(max-width:640px){#rpgFab{right:10px;bottom:78px;padding:8px 12px}'
-      + '#rpgDrawer{right:8px;bottom:126px;width:calc(100vw - 16px);max-height:66vh}'
+      + '@media(max-width:640px){#rpgFab{right:10px;bottom:118px;padding:8px 12px}'
+      + '#rpgDrawer{right:8px;bottom:166px;width:calc(100vw - 16px);max-height:66vh}'
       + '#rpgDrawer .rpg-hd button{width:38px;height:38px;min-width:38px;font-size:16px}}';
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
     var fab = document.createElement('button');

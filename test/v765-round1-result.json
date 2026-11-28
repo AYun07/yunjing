@@ -1,0 +1,102 @@
+{
+  "pass": 19,
+  "total": 19,
+  "results": [
+    {
+      "name": "R2 markdown标题/无前缀字段被剥离",
+      "pass": true,
+      "detail": "\"\""
+    },
+    {
+      "name": "R2 叙事正文保留",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "R3 单个骰配置未就绪不抛错",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "R4 遮罩关闭无裸调用",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "R5 wangyou nameSeeds.backgrounds",
+      "pass": true,
+      "detail": "count=5"
+    },
+    {
+      "name": "R5 wangyou nameSeeds.ageRange",
+      "pass": true,
+      "detail": "[16,32]"
+    },
+    {
+      "name": "R5 wangyou nameSeeds.names",
+      "pass": true,
+      "detail": "count=18"
+    },
+    {
+      "name": "R6 同键配额告警只一次",
+      "pass": true,
+      "detail": "warns=0"
+    },
+    {
+      "name": "R7 panel-title 单行省略号",
+      "pass": true,
+      "detail": "{\"nowrap\":\"nowrap\",\"ellipsis\":\"ellipsis\",\"pillTop\":\"86px\",\"fabExists\":true}"
+    },
+    {
+      "name": "R7 worldClockPill 下移(>=80px)",
+      "pass": true,
+      "detail": "top=86px"
+    },
+    {
+      "name": "R8 无\"写入项目源码\"玩家文案",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "点击审计 /index.html (8/8/8)",
+      "pass": true,
+      "detail": "clicked=8"
+    },
+    {
+      "name": "点击审计 /settings.html?goto=settings (12/12/85)",
+      "pass": true,
+      "detail": "clicked=12"
+    },
+    {
+      "name": "点击审计 /xiaoyun.html (8/8/8)",
+      "pass": true,
+      "detail": "clicked=8"
+    },
+    {
+      "name": "点击审计 /studio.html?genre=wangyou (12/12/218)",
+      "pass": true,
+      "detail": "clicked=12"
+    },
+    {
+      "name": "点击审计 /studio.html?genre=longzu (12/12/216)",
+      "pass": true,
+      "detail": "clicked=12"
+    },
+    {
+      "name": "点击审计 /studio.html?genre=scifi (12/12/217)",
+      "pass": true,
+      "detail": "clicked=12"
+    },
+    {
+      "name": "点击审计 /studio.html?genre=mystery (12/12/217)",
+      "pass": true,
+      "detail": "clicked=12"
+    },
+    {
+      "name": "点击审计 /selftest.html?view=selftest (4/4/4)",
+      "pass": true,
+      "detail": "clicked=4"
+    }
+  ],
+  "pageErrors": []
+}

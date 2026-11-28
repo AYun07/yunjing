@@ -330,7 +330,10 @@ const StoryResponseHandler = {
        偶发的单行 `**强调**：` 句式。两种都只作用于独立整行，绝不改行内正文。 */
     body = (function (text) {
       var lines = String(text).split("\n");
-      var fieldRe = /^[-*]\s+\*\*[^*\n]{1,24}\*\*\s*[:：]\s*\S/;
+      /* v7.6.5：longzu 界实测仍有面板字段残留——旧正则只认「- **键**：值」且键长≤24，
+         无列表前缀的「**键**：值」、长键名漏网。放宽为「可选 - 前缀 + 键长≤40」，
+         仍保留「连续≥2 行成组才删」的判定，避免误伤正文偶发单行 **强调**：句式。 */
+      var fieldRe = /^(?:[-*]\s+)?\*\*[^*\n]{1,40}\*\*\s*[:：]\s*\S/;
       var headRe = /^#{1,4}\s+\S/;
       return lines.filter(function (line) {
         var t = line.trim();

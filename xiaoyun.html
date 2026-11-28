@@ -2,13 +2,13 @@
 <html lang="zh-CN">
 <head>
 <!-- v6.3.3 唯一启动界面守卫：单独打开本页（无参数/无封面会话/非同源）弹回封面；开发者 ?dev=1 豁免 -->
-<script src="js/entry-guard.js?v=7.6.4"></script>
+<script src="js/entry-guard.js?v=7.6.5"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0e0b1e">
 <title>造物 · 小云创造中枢</title>
 <link rel="icon" href="assets/yj-favicon.ico">
-<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=7.6.4">
+<link rel="stylesheet" href="css/xiaoyun-buddy.css?v=7.6.5">
 <style>
   :root{ --gold:#f4d896; --gold-soft:#e7c899; --ink:#0e0b1e; --panel:rgba(24,20,48,.72); --line:rgba(244,216,150,.28); --ok:#8fd6a8; }
   *{ box-sizing:border-box; }
@@ -97,8 +97,8 @@
   /* 造物页自带底部小云展示区，隐藏 buddy.js 附带注入的全局助手浮窗，避免遮挡卡片 */
   .xy-buddy{ display:none!important; }
 </style>
-  <link rel="stylesheet" href="css/desktop-shell.css?v=7.6.4">
-  <script src="js/desktop-shell.js?v=7.6.4"></script>
+  <link rel="stylesheet" href="css/desktop-shell.css?v=7.6.5">
+  <script src="js/desktop-shell.js?v=7.6.5"></script>
 </head>
 <body>
 <div class="wrap">
@@ -106,7 +106,7 @@
     <a class="back" href="opening.html">‹ 返回开场</a>
     <h1>造物 · 小云创造中枢</h1>
   </header>
-  <p class="lead">小云不只是陪你写故事的伙伴——她是云境的<b>内置开发者</b>。说出你的想法，她能<b>写新模块、改项目源码、造文件、造 DLC、造插件、造原创设定</b>，并直接<b>应用</b>到你的云境里。所有代码与文件只留在你的本机，不上传、不动你的 GitHub。</p>
+  <p class="lead">小云不只是陪你写故事的伙伴——她是云境的<b>内置创作助手</b>。说出你的想法，她能<b>做新工具、生成文件、造 DLC、造插件、造原创设定</b>，并直接<b>应用</b>到你的云境里。所有内容只留在你的本机，不上传、不联网外传。</p>
   <div class="verdict">✦ 六项创造能力 · 全部真实接口 · 本机执行</div>
 
   <div class="grid" id="grid"></div>
@@ -136,8 +136,8 @@
       <div class="panelbox">
         <h2>关于「应用」——真实边界，不含糊</h2>
         <p style="font-size:13px;color:#c6c0d6;line-height:1.9;margin:0;">
-          <b style="color:var(--gold-soft)">造物工坊 / 造新模块：</b>小云按你的需求写出完整模块代码。点「挂载到大厅」即刻运行、刷新不丢；点「写入项目源码」需先用 Chrome/Edge 桌面版授权项目文件夹，她会把文件真实写进 <code>modules/</code> 目录。<br><br>
-          <b style="color:var(--gold-soft)">文件桥 / 改源码：</b>授权本地项目目录后可读写 js/css/html/json 等文件，每次写入前自动备份、可回滚，并带语法自检。不授权也能用「导出补丁包」。<br><br>
+          <b style="color:var(--gold-soft)">造物工坊 / 造新模块：</b>小云按你的需求做出完整的小工具。点「装进大厅」即刻可用、刷新不丢；点「导出到文件夹」需先用 Chrome/Edge 桌面版选一个保存位置，她会把工具文件存到那里。<br><br>
+          <b style="color:var(--gold-soft)">读取本地文件：</b>你授权本地文件夹后，小云可以读取和生成里面的文件；每次改动前会自动留备份、可撤销，并自动检查有没有写错。不授权也能用「导出补丁包」。<br><br>
           <b style="color:var(--gold-soft)">插件 / DLC / 原创设定：</b>插件从授权目录被发现并挂到 7 个扩展点；DLC 激活后注入知识库参与创作；原创设定落成世界书条目。后两项在创作室完成，造物页一键直达。<br><br>
           <b style="color:var(--gold-soft)">关于大模型：</b>让小云"按任意需求独立开发"需要你在工坊里填自己的模型接口与 Key；不填也能用内置模板体验完整流程。<b style="color:#c9b6ff">代码层无任何上传、无 git 操作</b>，唯一外发是把你的需求文本发给你自己配置的模型。
         </p>
@@ -151,12 +151,12 @@
 
 <!-- 造物工坊本体依赖的小云脚本 + 四项本页可用的基建 -->
 <!-- v4.41.0 全局动态并发闸门：早于小云（小云的大模型 fetch 需过闸） -->
-<script src="js/ai-governor.js?v=7.6.4"></script>
-<script src="js/xiaoyun-ops.js?v=7.6.4"></script>
-<script src="js/xiaoyun-buddy.js?v=7.6.4"></script>
-<script src="js/file-bridge.js?v=7.6.4"></script>
-<script src="js/plugin-runtime.js?v=7.6.4"></script>
-<script src="js/mo-devtools.js?v=7.6.4"></script>
+<script src="js/ai-governor.js?v=7.6.5"></script>
+<script src="js/xiaoyun-ops.js?v=7.6.5"></script>
+<script src="js/xiaoyun-buddy.js?v=7.6.5"></script>
+<script src="js/file-bridge.js?v=7.6.5"></script>
+<script src="js/plugin-runtime.js?v=7.6.5"></script>
+<script src="js/mo-devtools.js?v=7.6.5"></script>
 <script>
 /* ================= 六项创造能力卡片 ================= */
 function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on');
@@ -164,13 +164,13 @@ function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; 
 
 var CARDS = [
   { ic:'🛠', name:'造物工坊', sub:'造新模块 · 新功能', here:true,
-    desc:'说出你想要的功能，小云独立写出完整模块代码。可即时挂载到大厅运行，或授权后真实写入项目源码。',
-    chips:['按意志写码','预览自检','挂载/写入源码'], req:'<b>本页可用</b> · 写入源码需 Chrome/Edge 桌面版授权项目目录；填自己的模型 Key 可按任意需求开发。',
+    desc:'说出你想要的功能，小云做出完整的小工具。可即时装进大厅使用，或导出保存到你选的文件夹。',
+    chips:['按想法制作','预览自检','装进大厅/导出'], req:'<b>本页可用</b> · 导出到文件夹需 Chrome/Edge 桌面版选一个保存位置；填自己的模型 Key 可按任意需求创作。',
     btn:'打开造物工坊', act:function(){ if(window.XYDev){XYDev.open();} else toast('造物工坊未就绪，请刷新'); } },
 
-  { ic:'📝', name:'文件桥', sub:'改源码 · 造文件', here:true,
-    desc:'给小云一双手：读写项目里的 js/css/html/json 文件。写前自动备份、随时回滚，改完语法自检，出补丁先看 diff。',
-    chips:['读写文件','备份回滚','语法自检','yj-patch'], req:'<b>本页可用</b> · 需 Chrome/Edge 桌面版授权项目文件夹；不支持的浏览器自动降级为导出补丁包。',
+  { ic:'📝', name:'文件桥', sub:'生成文件 · 自动备份', here:true,
+    desc:'给小云一双手：在你授权的文件夹里读写文件。改动前自动留备份、随时可撤销，做完自动检查有没有出错。',
+    chips:['读写文件','备份回滚','自动检查','导出补丁'], req:'<b>本页可用</b> · 需 Chrome/Edge 桌面版选一个文件夹；不支持的浏览器自动降级为导出补丁包。',
     btn:'授权 / 自检', act:function(){ bridgeAction(); } },
 
   { ic:'🔌', name:'插件运行时', sub:'造插件 · 挂扩展点', here:true,
@@ -229,7 +229,7 @@ function pluginsAction(){
 /* ---- 研发中枢：巡检（只读）---- */
 async function devtoolsAction(){
   var M=window.MoDevtools; if(!M){ toast('研发中枢未就绪'); return; }
-  toast('小云正在巡检项目源码…');
+  toast('小云正在检查本地文件…');
   try{
     var rep=await M.scanProject();
     var txt = M.reportText ? M.reportText(rep) : JSON.stringify(rep).slice(0,600);

@@ -21,6 +21,7 @@
   var STORE = 'kv';
   var _db = null;
   var _mem = {};        // IndexedDB 暂存值的内存镜像（供同步读回退）
+  var _quotaWarned = {};// v7.6.5：按 key 记录已告警过的配额超限，避免同一键每写必刷（38 界实测刷 79 次）
   var _opening = null;
   /* v3.55.17：保存原始存储原语。全局兜底劫持 Storage.prototype 后，本模块内部
      必须走原生函数，否则会被自己的劫持层"假成功"吞掉（写进 _mem 又被 delete）。 */
@@ -130,6 +131,8 @@
             delete _mem[k];
             idbDel(k);
           }
+          // v7.6.5：成功写回 localStorage 后清除该键告警标记，后续再超限可重新提示一次
+          if (isLocal && _quotaWarned[k]) delete _quotaWarned[k];
           return ok;
         } catch (err) {
           var quota = err && (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED" || err.code === 22 || err.code === 1014);
@@ -140,8 +143,13 @@
           try { s = String(v); } catch (e2) { s = v; }
           _mem[k] = s;
           idbPut(k, s);
-          if (window.console && console.warn) {
-            console.warn("[存储兜底] 配额超限，已转存 IndexedDB：" + k + "（约 " + Math.round(String(s).length / 1024) + "KB）");
+          // v7.6.5：同一 key 在配额持续满时会每次写入都失败，告警只需一次；
+          // 转存/内存兜底照常执行，只压掉重复的 console.warn，不影响功能。
+          if (!_quotaWarned[k]) {
+            _quotaWarned[k] = 1;
+            if (window.console && console.warn) {
+              console.warn("[存储兜底] 配额超限，已转存 IndexedDB：" + k + "（约 " + Math.round(String(s).length / 1024) + "KB，本键后续不再重复告警）");
+            }
           }
           return undefined;
         }

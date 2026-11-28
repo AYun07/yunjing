@@ -98,7 +98,8 @@ body .input-area { visibility: visible !important; pointer-events: auto !importa
 
 /* ④ 边缘：四边统一安全区，fixed 元素不再贴死边缘遮住内容 */
 .wr-hud { bottom: calc(8px + env(safe-area-inset-bottom, 0px)); right: calc(8px + env(safe-area-inset-right, 0px)); left: calc(8px + env(safe-area-inset-left, 0px)); }
-#worldClockPill { top: calc(60px + env(safe-area-inset-top, 0px)); }
+/* v7.6.5：原 top:60px 压在顶部标题文字上挡字，下移到标题栏下方 */
+#worldClockPill { top: calc(82px + env(safe-area-inset-top, 0px)); }
 
 /* ============================================================
    状态栏可读性（v7.3.0 调整）

@@ -60,12 +60,29 @@
   };
 
   /* ---- 启动恢复:宝贵键在 LS 里丢了 → 从镜像灌回 ---- */
+  /* v7.6.5：旧界键不回灌。实测换 38 界后每个界的 storyKnowledge_<genre>/worldExt_<genre>
+     都被 PRECIOUS 镜像，rescue 又把它们逐个灌回 localStorage，累积打满 5MB 配额。
+     恢复只针对「当前界」的键 + 全局键；其它界的历史键不再回灌（其内容下次进界可重新生成）。 */
+  function currentGenre() {
+    try {
+      if (window.StoryKnowledge && window.StoryKnowledge.genre) return window.StoryKnowledge.genre;
+      if (window.WorldExt && window.WorldExt.genre) return window.WorldExt.genre;
+      return new URLSearchParams(location.search).get('genre') || '';
+    } catch (e) { return ''; }
+  }
+  function isStaleGenreKey(k) {
+    var m = /^(storyKnowledge_|worldExt_|storyKBEnabled_)(.+)$/.exec(String(k));
+    if (!m) return false;
+    var keyGenre = m[2].split('~')[0];
+    return keyGenre !== currentGenre();
+  }
   function rescue() {
     if (recovering) return;
     recovering = true;
     var fixed = [];
     MIRROR.iterate(function (v, k) {
       if (k.indexOf('evicted:') === 0) return;
+      if (isStaleGenreKey(k)) return; // v7.6.5：旧界残留键不回灌，避免配额累积
       var cur = null;
       try { cur = localStorage.getItem(k); } catch (e) {}
       if (cur == null && v != null) {

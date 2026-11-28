@@ -617,7 +617,7 @@
       clearTimeout(DEV.tt);
       DEV.tt = setTimeout(function () {
         if (DEV.html === html && !DEV.busy && st.className === 'status') {
-          st.textContent = demoMode ? '✅ 自检通过（内置模板演示）——接入 API 后可按任意需求独立开发' : '✅ 自检通过，无运行错误——可挂载或写入源码';
+          st.textContent = demoMode ? '✅ 做好了（内置模板演示）——接入 AI 后就能按你的想法自由创作' : '✅ 做好了，运行正常——可以装进大厅或导出保存';
         }
       }, 2200);
     }
@@ -629,7 +629,7 @@
     bOpen.onclick = function () { if (DEV.html) run({ name: lastName, html: DEV.html }); };
     bDisk.onclick = function () {
       if (!DEV.html) return;
-      if (!window.showDirectoryPicker) { st.className = 'status err'; st.textContent = '当前浏览器不支持目录写入（需 Chrome/Edge 桌面版）。请用「装进大厅」或复制源码。'; return; }
+      if (!window.showDirectoryPicker) { st.className = 'status err'; st.textContent = '当前浏览器不支持导出到文件夹（需 Chrome/Edge 桌面版）。可以改用「装进大厅」，一样随时能用。'; return; }
       window.showDirectoryPicker({ mode: 'readwrite' }).then(function (dir) {
         return dir.getDirectoryHandle('modules', { create: true }).then(function (md) {
           var fname = 'xy-' + Date.now().toString(36) + '.html';

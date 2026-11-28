@@ -104,7 +104,10 @@ const ConfigModal = {
 
   setView(v) {
     this._view = (v === 'full') ? 'full' : 'simple';
-    try { localStorage.setItem('cfgViewMode', this._view); } catch (e) {}
+    try { localStorage.setItem('cfgViewMode', this._view); } catch (e) {
+      /* v7.6.5：配置写入失败不再静默（清单 #52 空 catch 治理，仅高频写入路径补 warn） */
+      if (window.console && console.warn) console.warn('[ConfigModal] 视图模式写入失败：', e && e.name || e);
+    }
     this.applyView();
   },
   /** 当前配置界面的根容器：内联优先（设置页），否则弹窗。v7.3.0 */
