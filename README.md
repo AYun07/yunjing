@@ -114,13 +114,13 @@
 
 <!-- YJ_CHANGELOG_START -->
 
-## 🆕 当前版本：v7.6.3（2026-11-28 · 唯一当前版）
+## 🆕 当前版本：v7.6.4（2026-11-28 · 唯一当前版）
 
 | 版本 | 日期 | 状态 | 这一版做了什么 | 完整包 / 发布页 |
 |---|---|---|---|---|
-| **v7.6.3** | 2026-11-28 | **当前** | 消化玩家实测 100 条清单（先甄别剔除测试工具误报，再修真实项）：studio 33 处裸 onclick 竞态守卫消除入场崩溃、72 性格芯片选中态即时可见、scifi 正文 markdown 面板行清洗、mystery 标题跟随 config、存档/世界时钟 111 处空 catch 改可诊断日志；设置页/小云死按钮补反馈与档位同步、新增发送按钮、措辞玩家化。详见 DR-119。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.3.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.3) |
+| **v7.6.4** | 2026-11-28 | **当前** | 创作态栈溢出修复 + 六轮真实实测：修复 bonus-engine recompute ↔ story-status-renderer renderStats 经 yj:bonus-change 无限递归导致的栈溢出（silent 参数断开递归，装备/称号即时反馈保留）；六轮 200+ 次真实交互（含真机 Electron 创作全流程 7/7）仅此 1 真 bug，误报如实甄别。详见 DR-120。 | [zip](https://github.com/AYun07/yunjing/archive/refs/tags/v7.6.4.zip) · [发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.4) |
 
-**看版本**：[📚 版本页（132 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v7.6.2 的差异](https://github.com/AYun07/yunjing/compare/v7.6.2...v7.6.3) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.3)
+**看版本**：[📚 版本页（132 版 · 最新版永远在最上方 · 每版含「做了什么」与「和上一版的区别」)](VERSIONS.md) · [🗞 产品内创作日志](changelog/index.html) · [🔍 与 v7.6.3 的差异](https://github.com/AYun07/yunjing/compare/v7.6.3...v7.6.4) · [📄 发布页](https://github.com/AYun07/yunjing/releases/tag/v7.6.4)
 
 > 逐版沿革、历史功能说明与验收数据统一由 [VERSIONS.md](VERSIONS.md) 维护；本板块由 `scripts/update-readme.mjs` 自动生成，**主页不再展开版本列表**。新增版本请插到 VERSIONS.md 最上方。
 
